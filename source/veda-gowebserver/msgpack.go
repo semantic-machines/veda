@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"cbor"
+	"fmt"
 	"log"
 	"reflect"
 	"strings"
@@ -272,35 +273,31 @@ func MapToMsgpack(jsonMap map[string]interface{}) string {
 	return string(buf.Bytes())
 }
 
-func prepareElement(v interface{}) interface{} {
+func prepareElement(v interface{}) (interface{}, error) {
 	switch v.(type) {
 
 	case uint64, int64:
-		return []interface{}{map[string]interface{}{
+		return map[string]interface{}{
 			"data": v,
 			"type": dataTypeToString(Integer),
-		}}
+		}, nil
 
-		/*	case float32:
-				log.Printf("float32 %f", float64(i))
-				return true, ""
-			case float64:
-				log.Printf("float64 %f", i)
-				return true, ""*/
+		// case float32:
+		// log.Printf("float32 %f", float64(i))
+		// return true, ""
+		// case float64:
+		// log.Printf("float64 %f", i)
+		// return true, ""
 	case bool:
-		return []interface{}{map[string]interface{}{
+		return map[string]interface{}{
 			"data": v,
 			"type": dataTypeToString(Boolean),
-		}}
+		}, nil
 	case string:
-		return []interface{}{map[string]interface{}{
+		return map[string]interface{}{
 			"data": v,
 			"type": dataTypeToString(String),
-		}}
-
-	case nil:
-		log.Printf("nil")
-		return nil
+		}, nil
 
 	case cbor.CBORTag:
 		wrappedVal := v.(cbor.CBORTag).WrappedObject
@@ -308,43 +305,42 @@ func prepareElement(v interface{}) interface{} {
 		//		log.Printf("tag #1 subject_uri=%s, predicate_uri=%s", subject_uri, predicate_uri)
 
 		if tag == TAG_TEXT_RU {
-			return []interface{}{map[string]interface{}{
+			return map[string]interface{}{
 				"data": wrappedVal,
 				"type": dataTypeToString(String),
 				"lang": langToString(LangRu),
-			}}
+			}, nil
 		} else if tag == TAG_TEXT_EN {
-			return []interface{}{map[string]interface{}{
+			return map[string]interface{}{
 				"data": wrappedVal,
 				"type": dataTypeToString(String),
 				"lang": langToString(LangEn),
-			}}
+			}, nil
 		} else if tag == TAG_URI {
-			return []interface{}{map[string]interface{}{
+			return map[string]interface{}{
 				"data": wrappedVal,
 				"type": dataTypeToString(Uri),
-			}}
+			}, nil
 		} else if tag == TAG_DECIMAL_FRACTION {
+			log.Fatalln("decimal ", wrappedVal)
 			arr := wrappedVal.([]interface{})
 			mantissa := arr[0].(int64)
-			exponent := arr[0].(int64)
-			return []interface{}{map[string]interface{}{
+			exponent := arr[1].(int64)
+			return map[string]interface{}{
 				"data": decimalToString(mantissa, exponent),
 				"type": dataTypeToString(Decimal),
-			}}
+			}, nil
 		} else if tag == TAG_EPOCH_DATE_TIME {
-			return []interface{}{map[string]interface{}{
-				"data": time.Unix(wrappedVal.(int64), 0).Format("2006-01-02T15:04:05Z"),
+			return map[string]interface{}{
+				"data": time.Unix(int64(wrappedVal.(uint64)), 0).Format("2006-01-02T15:04:05Z"),
 				"type": dataTypeToString(Decimal),
-			}}
+			}, nil
 		}
+		return nil, fmt.Errorf("Unsupported tag: %v", tag)
 
 	default:
-		log.Printf("@VALUE IS %v\n", reflect.TypeOf(v))
-		return nil
+		return nil, fmt.Errorf("Unsupported type: %v", reflect.TypeOf(v))
 	}
-
-	return nil
 }
 
 func CborToMap(cborStr string) map[string]interface{} {
@@ -367,7 +363,10 @@ func CborToMap(cborStr string) map[string]interface{} {
 		return individual
 	}
 
+	log.Println(cborStr)
 	for k, v := range individualMap {
+
+		log.Println(k)
 		keyStr := k.(string)
 		if keyStr == "@" {
 			individual["@"] = v.(string)
@@ -379,155 +378,173 @@ func CborToMap(cborStr string) map[string]interface{} {
 			arr := v.([]interface{})
 			resources := make([]interface{}, len(arr))
 			for i := 0; i < len(arr); i++ {
-				resources[i] = prepareElement(v)
+
+				resource, err := prepareElement(arr[i])
+				if err != nil {
+					log.Println(cborStr)
+					log.Println(keyStr)
+					log.Fatalln(err)
+				}
+				resources = append(resources, resource)
 			}
 
 			individual[keyStr] = resources
-
 		case nil:
-			log.Printf("nil")
+			individual[keyStr] = nil
+
+		default:
+			resource, err := prepareElement(v)
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			individual[keyStr] = []interface{}{resource}
 		}
 	}
 
+	if individual["@"].(string) == "v-ui:TestUI" {
+		log.Fatal("")
+	}
 	return individual
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
 func MsgpackToMap(msgpackStr string) map[string]interface{} {
-	if msgpackStr[0] != 0xFF {
-		return CborToMap(msgpackStr)
-	}
-	//Allocate map and decode msgpack
-	individual := make(map[string]interface{})
-	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr))
-	decoder.DecodeArrayLen()
-
-	// log.Printf("@MSGPACK %v\n", msgpackStr)
-
-	//Set individual uri and decode map of resources
-	individual["@"], _ = decoder.DecodeString()
-	resMapI, _ := decoder.DecodeMap()
-	resMap := resMapI.(map[interface{}]interface{})
-	// log.Println("@URI ", individual["@"])
-	for keyI, resArrI := range resMap {
-		// log.Printf("\t@PREDICATE %v\n", keyI)
-
-		//Decode resource name
-		predicate := keyI.(string)
-
-		// log.Println("\t", predicate, resArrI)
-
-		//Decode resource values and allocate resources arrat
-		resArr := resArrI.([]interface{})
-		resources := make([]interface{}, 0, len(resArr))
-
-		for i := 0; i < len(resArr); i++ {
-			//Decode resource and check its type
-			resI := resArr[i]
-			// log.Printf("\t\t@RES %v : %v\n", resI, reflect.TypeOf(resI))
-			resource := make(map[string]interface{})
-			switch resI.(type) {
-			//Arrays can contain strings and date time
-			case []interface{}:
-				resArrI := resI.([]interface{})
-				//Arrays of len tow can be date time or string without lang
-				//Arrays of len three can be String with lang or Decimal
-				if len(resArrI) == 2 {
-					resType := DataType(resArrI[0].(uint64))
-					if resType == Datetime {
-						switch resArrI[1].(type) {
-						case int64:
-							resource["data"] = time.Unix(resArrI[1].(int64), 0).Format("2006-01-02T15:04:05Z")
-						case uint64:
-							resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).Format("2006-01-02T15:04:05Z")
-						default:
-							log.Printf("@ERR SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
-								reflect.TypeOf(resArrI[1]))
-							return nil
-						}
-						resource["type"] = dataTypeToString(Datetime)
-					} else if resType == String {
-						// fmt.Println("TRY TO DECODE STR")
-						switch resArrI[1].(type) {
-						case string:
-							resource["data"] = resArrI[1]
-						case nil:
-							resource["data"] = ""
-						default:
-							log.Printf("@ERR SIZE 2! NOT STRING: %s\n",
-								reflect.TypeOf(resArrI[1]))
-							return individual
-						}
-						resource["type"] = dataTypeToString(String)
-						resource["lang"] = langToString(LangNone)
-					}
-				} else if len(resArrI) == 3 {
-					resType := DataType(resArrI[0].(uint64))
-
-					if resType == Decimal {
-						var mantissa, exponent int64
-
-						switch resArrI[1].(type) {
-						case int64:
-							mantissa = resArrI[1].(int64)
-						case uint64:
-							mantissa = int64(resArrI[1].(uint64))
-						default:
-							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
-								reflect.TypeOf(resArrI[1]))
-							return nil
-						}
-
-						switch resArrI[2].(type) {
-						case int64:
-							exponent = resArrI[2].(int64)
-						case uint64:
-							exponent = int64(resArrI[2].(uint64))
-						default:
-							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s",
-								reflect.TypeOf(resArrI[1]))
-							return nil
-						}
-						resource["type"] = dataTypeToString(Decimal)
-						resource["data"] = decimalToString(mantissa, exponent)
-					} else if resType == String {
-						switch resArrI[1].(type) {
-						case string:
-							resource["data"] = resArrI[1]
-						case nil:
-							resource["data"] = ""
-						default:
-							log.Printf("@ERR SIZE 3! NOT STRING: %s\n",
-								reflect.TypeOf(resArrI[1]))
-							return nil
-						}
-
-						resource["type"] = dataTypeToString(String)
-						resource["lang"] = langToString(Lang(resArrI[2].(uint64)))
-					}
-				}
-
-			//Other types are simply decoded from msgpack
-			case string:
-				resource["type"] = dataTypeToString(Uri)
-				resource["data"] = resI
-			case int64:
-				resource["type"] = dataTypeToString(Integer)
-				resource["data"] = resI
-			case uint64:
-				resource["type"] = dataTypeToString(Integer)
-				resource["data"] = resI
-			case bool:
-				resource["type"] = dataTypeToString(Boolean)
-				resource["data"] = resI
-			default:
-				log.Printf("@ERR! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
-				return nil
-			}
-			resources = append(resources, resource)
+	return CborToMap(msgpackStr)
+	/*	if msgpackStr[0] != 0xFF {
+			return CborToMap(msgpackStr)
 		}
-		individual[predicate] = resources
-	}
+		//Allocate map and decode msgpack
+		individual := make(map[string]interface{})
+		decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr))
+		decoder.DecodeArrayLen()
 
-	return individual
+		// log.Printf("@MSGPACK %v\n", msgpackStr)
+
+		//Set individual uri and decode map of resources
+		individual["@"], _ = decoder.DecodeString()
+		resMapI, _ := decoder.DecodeMap()
+		resMap := resMapI.(map[interface{}]interface{})
+		// log.Println("@URI ", individual["@"])
+		for keyI, resArrI := range resMap {
+			// log.Printf("\t@PREDICATE %v\n", keyI)
+
+			//Decode resource name
+			predicate := keyI.(string)
+
+			// log.Println("\t", predicate, resArrI)
+
+			//Decode resource values and allocate resources arrat
+			resArr := resArrI.([]interface{})
+			resources := make([]interface{}, 0, len(resArr))
+
+			for i := 0; i < len(resArr); i++ {
+				//Decode resource and check its type
+				resI := resArr[i]
+				// log.Printf("\t\t@RES %v : %v\n", resI, reflect.TypeOf(resI))
+				resource := make(map[string]interface{})
+				switch resI.(type) {
+				//Arrays can contain strings and date time
+				case []interface{}:
+					resArrI := resI.([]interface{})
+					//Arrays of len tow can be date time or string without lang
+					//Arrays of len three can be String with lang or Decimal
+					if len(resArrI) == 2 {
+						resType := DataType(resArrI[0].(uint64))
+						if resType == Datetime {
+							switch resArrI[1].(type) {
+							case int64:
+								resource["data"] = time.Unix(resArrI[1].(int64), 0).Format("2006-01-02T15:04:05Z")
+							case uint64:
+								resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).Format("2006-01-02T15:04:05Z")
+							default:
+								log.Printf("@ERR SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
+									reflect.TypeOf(resArrI[1]))
+								return nil
+							}
+							resource["type"] = dataTypeToString(Datetime)
+						} else if resType == String {
+							// fmt.Println("TRY TO DECODE STR")
+							switch resArrI[1].(type) {
+							case string:
+								resource["data"] = resArrI[1]
+							case nil:
+								resource["data"] = ""
+							default:
+								log.Printf("@ERR SIZE 2! NOT STRING: %s\n",
+									reflect.TypeOf(resArrI[1]))
+								return individual
+							}
+							resource["type"] = dataTypeToString(String)
+							resource["lang"] = langToString(LangNone)
+						}
+					} else if len(resArrI) == 3 {
+						resType := DataType(resArrI[0].(uint64))
+
+						if resType == Decimal {
+							var mantissa, exponent int64
+
+							switch resArrI[1].(type) {
+							case int64:
+								mantissa = resArrI[1].(int64)
+							case uint64:
+								mantissa = int64(resArrI[1].(uint64))
+							default:
+								log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
+									reflect.TypeOf(resArrI[1]))
+								return nil
+							}
+
+							switch resArrI[2].(type) {
+							case int64:
+								exponent = resArrI[2].(int64)
+							case uint64:
+								exponent = int64(resArrI[2].(uint64))
+							default:
+								log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s",
+									reflect.TypeOf(resArrI[1]))
+								return nil
+							}
+							resource["type"] = dataTypeToString(Decimal)
+							resource["data"] = decimalToString(mantissa, exponent)
+						} else if resType == String {
+							switch resArrI[1].(type) {
+							case string:
+								resource["data"] = resArrI[1]
+							case nil:
+								resource["data"] = ""
+							default:
+								log.Printf("@ERR SIZE 3! NOT STRING: %s\n",
+									reflect.TypeOf(resArrI[1]))
+								return nil
+							}
+
+							resource["type"] = dataTypeToString(String)
+							resource["lang"] = langToString(Lang(resArrI[2].(uint64)))
+						}
+					}
+
+				//Other types are simply decoded from msgpack
+				case string:
+					resource["type"] = dataTypeToString(Uri)
+					resource["data"] = resI
+				case int64:
+					resource["type"] = dataTypeToString(Integer)
+					resource["data"] = resI
+				case uint64:
+					resource["type"] = dataTypeToString(Integer)
+					resource["data"] = resI
+				case bool:
+					resource["type"] = dataTypeToString(Boolean)
+					resource["data"] = resI
+				default:
+					log.Printf("@ERR! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
+					return nil
+				}
+				resources = append(resources, resource)
+			}
+			individual[predicate] = resources
+		}
+
+		return individual*/
 }

@@ -52,8 +52,12 @@ func configWebServer() {
 					continue
 				}
 				useHTTPS = boolVal
+			case "go_http_port":
+				webserverPort = paramVal
 			case "https_port":
 				webserverHTTPSPort = paramVal
+			case "acl_service_url":
+				aclServiceURL = paramVal
 
 			default:
 				continue

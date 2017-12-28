@@ -78,6 +78,7 @@ var ftQueryURL = "127.0.0.1:11112"
 var tarantoolURL = "127.0.0.1:9999"
 var webserverPort = "8080"
 var webserverHTTPSPort = "8020"
+var aclServiceURL = "tcp://127.0.0.1:22000"
 var useHTTPS = false
 
 //attachmentsPath is path where files from request are stored

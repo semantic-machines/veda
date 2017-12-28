@@ -4,12 +4,18 @@ import (
 	"bytes"
 	"log"
 	"net"
+	"os"
 	"time"
+
+	"github.com/bmatsuo/lmdb-go/lmdb"
 
 	"bufio"
 
 	"gopkg.in/vmihailenco/msgpack.v2"
 )
+
+var indivEnv *lmdb.Env
+var ticketEnv *lmdb.Env
 
 //Connector represents struct for connection to tarantool
 type Connector struct {
@@ -55,14 +61,45 @@ const (
 //Connect tries to connect to socket in tarantool while connection is not established
 func (conn *Connector) Connect(addr string) {
 	var err error
-	conn.addr = addr
-	conn.conn, err = net.Dial("tcp", addr)
-
-	for err != nil {
-		time.Sleep(3000 * time.Millisecond)
-		conn.conn, err = net.Dial("tcp", addr)
-		log.Println("@TRY CONNECT")
+	indivEnv, err = lmdb.NewEnv()
+	if err != nil {
+		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
 	}
+
+	err = indivEnv.SetMaxDBs(1)
+	if err != nil {
+		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
+	}
+
+	err = indivEnv.Open("./data/lmdb-individuals", 0, os.ModePerm)
+	if err != nil {
+		log.Fatal("Err: can not open lmdb individuals base: ", err)
+	}
+
+	ticketEnv, err = lmdb.NewEnv()
+	if err != nil {
+		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
+	}
+
+	err = ticketEnv.SetMaxDBs(1)
+	if err != nil {
+		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
+	}
+
+	err = ticketEnv.Open("./data/lmdb-tickets", 0, os.ModePerm)
+	if err != nil {
+		log.Fatal("Err: can not open tickets lmdb base: ", err)
+	}
+
+	/*	var err error
+		conn.addr = addr
+		conn.conn, err = net.Dial("tcp", addr)
+
+		for err != nil {
+			time.Sleep(3000 * time.Millisecond)
+			conn.conn, err = net.Dial("tcp", addr)
+			log.Println("@TRY CONNECT")
+		}*/
 }
 
 //doRequest encodes request  and sends it to tarantool, after that it reading and decoding response
@@ -288,46 +325,73 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		return rr
 	}
 
-	if trace {
-		log.Printf("@CONNECTOR GET: PACK GET REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
-			needAuth, userUri, uris)
+	rr.OpRC = make([]ResultCode, 0, len(uris))
+	rr.Data = make([]string, 0, len(uris))
+	err := indivEnv.View(func(txn *lmdb.Txn) (err error) {
+		dbi, err := txn.OpenDBI("", 0)
+		if err != nil {
+			return err
+		}
+		for _, uri := range uris {
+			val, err := txn.Get(dbi, []byte(uri))
+			if err == lmdb.NotFound {
+				rr.OpRC = append(rr.OpRC, NotFound)
+				continue
+			} else if err != nil {
+				return err
+			}
+
+			rr.OpRC = append(rr.OpRC, Ok)
+			rr.Data = append(rr.Data, string(val))
+		}
+		return nil
+	})
+
+	rr.CommonRC = Ok
+	if err != nil {
+		log.Println("@ERR GET INDIVIDUAL FROM LMDB")
+		rr.CommonRC = InternalServerError
 	}
+	/*	if trace {
+			log.Printf("@CONNECTOR GET: PACK GET REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
+				needAuth, userUri, uris)
+		}
 
-	//Send request to tarantool
-	rcRequest, response := doRequest(needAuth, userUri, uris, trace, false, Get)
-	if rcRequest != Ok {
-		rr.CommonRC = rcRequest
-		return rr
-	}
+		//Send request to tarantool
+		rcRequest, response := doRequest(needAuth, userUri, uris, trace, false, Get)
+		if rcRequest != Ok {
+			rr.CommonRC = rcRequest
+			return rr
+		}
 
-	//Decoding request response
-	decoder := msgpack.NewDecoder(bytes.NewReader(response))
-	arrLen, _ := decoder.DecodeArrayLen()
-	rc, _ := decoder.DecodeUint()
-	//Decoding common response code for request
-	rr.CommonRC = ResultCode(rc)
+		//Decoding request response
+		decoder := msgpack.NewDecoder(bytes.NewReader(response))
+		arrLen, _ := decoder.DecodeArrayLen()
+		rc, _ := decoder.DecodeUint()
+		//Decoding common response code for request
+		rr.CommonRC = ResultCode(rc)
 
-	if trace {
-		log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
-	}
-
-	//Decoding response, response represented with request code and string or nil
-	rr.Data = make([]string, 0)
-	rr.OpRC = make([]ResultCode, len(uris))
-	for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
-		rc, _ = decoder.DecodeUint()
-		rr.OpRC[j] = ResultCode(rc)
 		if trace {
-			log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
+			log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
 		}
 
-		if rr.OpRC[j] == Ok {
-			tmp, _ := decoder.DecodeString()
-			rr.Data = append(rr.Data, tmp)
-		} else {
-			decoder.DecodeNil()
-		}
-	}
+		//Decoding response, response represented with request code and string or nil
+		rr.Data = make([]string, 0)
+		rr.OpRC = make([]ResultCode, len(uris))
+		for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
+			rc, _ = decoder.DecodeUint()
+			rr.OpRC[j] = ResultCode(rc)
+			if trace {
+				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
+			}
+
+			if rr.OpRC[j] == Ok {
+				tmp, _ := decoder.DecodeString()
+				rr.Data = append(rr.Data, tmp)
+			} else {
+				decoder.DecodeNil()
+			}
+		}*/
 
 	return rr
 }
@@ -409,46 +473,74 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		return rr
 	}
 
-	if trace {
-		log.Printf("@CONNECTOR GET TICKET: PACK GET REQUEST ticket_ids=%v\n", ticketIDs)
+	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
+	rr.Data = make([]string, 0, len(ticketIDs))
+	err := ticketEnv.View(func(txn *lmdb.Txn) (err error) {
+		dbi, err := txn.OpenDBI("", 0)
+		if err != nil {
+			return err
+		}
+		for _, id := range ticketIDs {
+			val, err := txn.Get(dbi, []byte(id))
+			if err == lmdb.NotFound {
+				rr.OpRC = append(rr.OpRC, NotFound)
+				continue
+			} else if err != nil {
+				return err
+			}
+
+			rr.OpRC = append(rr.OpRC, Ok)
+			rr.Data = append(rr.Data, string(val))
+		}
+		return nil
+	})
+
+	rr.CommonRC = Ok
+	if err != nil {
+		log.Println("@ERR GET INDIVIDUAL FROM LMDB")
+		rr.CommonRC = InternalServerError
 	}
 
-	//Send request to tarantool
-	rcRequest, response := doRequest(false, "cfg:VedaSystem", ticketIDs, trace, false, GetTicket)
-	if rcRequest != Ok {
-		rr.CommonRC = rcRequest
-		return rr
-	}
+	/*	if trace {
+			log.Printf("@CONNECTOR GET TICKET: PACK GET REQUEST ticket_ids=%v\n", ticketIDs)
+		}
 
-	//Decoding requset response
-	decoder := msgpack.NewDecoder(bytes.NewReader(response))
-	arrLen, _ := decoder.DecodeArrayLen()
-	//Decoding common request response code
-	rc, _ := decoder.DecodeUint()
-	rr.CommonRC = ResultCode(rc)
+		//Send request to tarantool
+		rcRequest, response := doRequest(false, "cfg:VedaSystem", ticketIDs, trace, false, GetTicket)
+		if rcRequest != Ok {
+			rr.CommonRC = rcRequest
+			return rr
+		}
 
-	if trace {
-		log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
-	}
+		//Decoding requset response
+		decoder := msgpack.NewDecoder(bytes.NewReader(response))
+		arrLen, _ := decoder.DecodeArrayLen()
+		//Decoding common request response code
+		rc, _ := decoder.DecodeUint()
+		rr.CommonRC = ResultCode(rc)
 
-	//Decoding request response data, data here represented with operation result code,
-	//and ticket individual msgpack
-	rr.Data = make([]string, 0)
-	rr.OpRC = make([]ResultCode, len(ticketIDs))
-	for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
-		rc, _ = decoder.DecodeUint()
-		rr.OpRC[j] = ResultCode(rc)
 		if trace {
-			log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
+			log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
 		}
 
-		if rr.OpRC[j] == Ok {
-			tmp, _ := decoder.DecodeString()
-			rr.Data = append(rr.Data, tmp)
-		} else {
-			decoder.DecodeNil()
-		}
-	}
+		//Decoding request response data, data here represented with operation result code,
+		//and ticket individual msgpack
+		rr.Data = make([]string, 0)
+		rr.OpRC = make([]ResultCode, len(ticketIDs))
+		for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
+			rc, _ = decoder.DecodeUint()
+			rr.OpRC[j] = ResultCode(rc)
+			if trace {
+				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
+			}
+
+			if rr.OpRC[j] == Ok {
+				tmp, _ := decoder.DecodeString()
+				rr.Data = append(rr.Data, tmp)
+			} else {
+				decoder.DecodeNil()
+			}
+		}*/
 
 	return rr
 }
