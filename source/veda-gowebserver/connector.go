@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"log"
 	"net"
 	"os"
@@ -323,6 +324,35 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	if len(uris) == 0 {
 		rr.CommonRC = NoContent
 		return rr
+	}
+
+	// rights := make(map)
+	if needAuth {
+		aclRequest := make([]interface{}, 0, len(uris)+1)
+		aclRequest = append(aclRequest, userUri)
+		for _, uri := range uris {
+			aclRequest = append(aclRequest, []interface{}{uri, "r"})
+		}
+		aclRequestBytes, _ := json.Marshal(aclRequest)
+		log.Println(string(aclRequestBytes))
+		log.Println(`["td:RomanKarpov",["td:UserGroup_1","crud"],[":net4-tr1-r1","ru"]]`)
+		// _, err := aclSocket.Send(aclRequestBytes, 0)
+		// _, err := aclSocket.Send([]byte(`["td:RomanKarpov",["td:UserGroup_1","crud"],[":net4-tr1-r1","ru"]]`), 0)
+		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
+
+		if err != nil {
+			rr.CommonRC = InternalServerError
+			log.Println("@GET ERR SENDING ACL REQUEST")
+			return rr
+		}
+		aclResponseBytes, err := aclSocket.Recv(0)
+		if err != nil {
+			rr.CommonRC = InternalServerError
+			log.Println("@GET ERR RECIVING ACL RESPONSE")
+			return rr
+		}
+
+		log.Println(string(aclResponseBytes))
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
