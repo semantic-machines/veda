@@ -754,7 +754,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
 
 
             if (opres.result == ResultCode.OK)
-                log.trace("permission [%s] was created", sys_account_permission);
+                log.trace("permission was created [%s]", sys_account_permission);
         }
         catch (Exception ex)
         {
@@ -906,6 +906,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     // для обновляемого индивида проверим доступность бита Update
                     if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
                     {
+                        log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can update] [%s] ", ticket.user_uri, indv.uri);
                         res.result = ResultCode.Not_Authorized;
                         return res;
                     }
@@ -936,6 +937,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 {
                     if (acl_client.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create)
                     {
+                        log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can_create] [%s] ", ticket.user_uri, key);
                         res.result = ResultCode.Not_Authorized;
                         return res;
                     }
