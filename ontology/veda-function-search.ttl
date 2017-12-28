@@ -1990,7 +1990,7 @@ v-fs:FulltextBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Тестовый бланк"@ru ;
   rdfs:label "Test blank"@en ;
-#  v-fc:targetType v-s:UserThing ;
+  v-fc:targetType v-s:UserThing ;
 .
 
 v-fs:FulltextBlankTemplate
