@@ -1,0 +1,58 @@
+TARGET = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+CC_x86_64-unknown-linux-gnu = None
+CC_x86_64_unknown_linux_gnu = None
+HOST_CC = None
+CC = None
+HOST = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+CFLAGS_x86_64-unknown-linux-gnu = None
+CFLAGS_x86_64_unknown_linux_gnu = None
+HOST_CFLAGS = None
+CFLAGS = None
+DEBUG = Some("false")
+running: "cc" "-O2" "-ffunction-sections" "-fdata-sections" "-fPIC" "-m64" "-Wall" "-Wextra" "-o" "/repo/veda/source/lmdb-server/target/release/build/liblmdb-sys-68482b51331a06fb/out/mdb/libraries/liblmdb/mdb.o" "-c" "mdb/libraries/liblmdb/mdb.c"
+cargo:warning=mdb/libraries/liblmdb/mdb.c: In function ‘mdb_env_get_maxkeysize’:
+cargo:warning=mdb/libraries/liblmdb/mdb.c:9821:33: warning: unused parameter ‘env’ [-Wunused-parameter]
+cargo:warning= mdb_env_get_maxkeysize(MDB_env *env)
+cargo:warning=                                 ^
+exit code: 0
+TARGET = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+CC_x86_64-unknown-linux-gnu = None
+CC_x86_64_unknown_linux_gnu = None
+HOST_CC = None
+CC = None
+HOST = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+CFLAGS_x86_64-unknown-linux-gnu = None
+CFLAGS_x86_64_unknown_linux_gnu = None
+HOST_CFLAGS = None
+CFLAGS = None
+DEBUG = Some("false")
+running: "cc" "-O2" "-ffunction-sections" "-fdata-sections" "-fPIC" "-m64" "-Wall" "-Wextra" "-o" "/repo/veda/source/lmdb-server/target/release/build/liblmdb-sys-68482b51331a06fb/out/mdb/libraries/liblmdb/midl.o" "-c" "mdb/libraries/liblmdb/midl.c"
+exit code: 0
+TARGET = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+HOST = Some("x86_64-unknown-linux-gnu")
+AR_x86_64-unknown-linux-gnu = None
+AR_x86_64_unknown_linux_gnu = None
+HOST_AR = None
+AR = None
+TARGET = Some("x86_64-unknown-linux-gnu")
+TARGET = Some("x86_64-unknown-linux-gnu")
+running: "ar" "crs" "/repo/veda/source/lmdb-server/target/release/build/liblmdb-sys-68482b51331a06fb/out/liblmdb.a" "/repo/veda/source/lmdb-server/target/release/build/liblmdb-sys-68482b51331a06fb/out/mdb/libraries/liblmdb/mdb.o" "/repo/veda/source/lmdb-server/target/release/build/liblmdb-sys-68482b51331a06fb/out/mdb/libraries/liblmdb/midl.o"
+exit code: 0
+TARGET = Some("x86_64-unknown-linux-gnu")
+cargo:rustc-link-lib=static=lmdb
+cargo:rustc-link-search=native=/repo/veda/source/lmdb-server/target/release/build/liblmdb-sys-68482b51331a06fb/out

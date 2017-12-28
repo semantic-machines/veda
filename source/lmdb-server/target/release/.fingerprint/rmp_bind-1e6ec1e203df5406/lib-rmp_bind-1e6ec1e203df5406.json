@@ -1,0 +1,1 @@
+{"rustc":4122851168452794038,"features":"[]","target":15838472643178030914,"profile":8410117760005530537,"deps":[["rmp v0.8.7",3451063511228113709]],"local":[{"MtimeBased":[[1513577516,797526168],"/repo/veda/source/lmdb-server/target/release/.fingerprint/rmp_bind-1e6ec1e203df5406/dep-lib-rmp_bind-1e6ec1e203df5406"]}],"rustflags":[]}

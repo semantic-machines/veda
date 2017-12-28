@@ -107,15 +107,31 @@ veda.Module(function AppPresenter(veda) { "use strict";
     })
 
     .then(function (welcome) {
+      // Router function
       riot.route( function (hash) {
         if ( !hash ) { return welcome.present("#main"); }
         if ( hash.indexOf("#/") < 0 ) { return; }
-        var hash_tokens = decodeURIComponent(hash.slice(2)).split("/");
-        var uri = hash_tokens[0];
-        var params = hash_tokens.slice(1);
-        if (!params[0]) { params[0] = "#main"; }
-        var individual = uri ? new veda.IndividualModel(uri) : welcome ;
-        individual.present.apply(individual, params);
+        var tokens = decodeURI(hash).slice(2).split("/"),
+            uri = tokens[0],
+            container = tokens[1],
+            template = tokens[2],
+            mode = tokens[3],
+            extra = tokens[4];
+        if (extra) {
+          extra = extra.split("&").reduce(function (acc, pair) {
+            var split = pair.split("="),
+                name  = split[0] || "",
+                value = split[1] || "";
+            acc[name] = acc[name] || [];
+            acc[name].push( parse(value) );
+            return acc;
+          }, {});
+        }
+        if (uri === "drafts") {
+          return veda.trigger("load:drafts");
+        }
+        var individual = uri ? new veda.IndividualModel(uri) : welcome;
+        individual.present(container, template, mode, extra);
       });
       riot.route(location.hash);
     })
@@ -127,6 +143,24 @@ veda.Module(function AppPresenter(veda) { "use strict";
 
   });
 
+  function parse (value) {
+    if ( !isNaN( Date.parse(value) ) )  {
+      return new Date(value);
+    } else if ( !isNaN( parseFloat( value.split(" ").join("").split(",").join(".") ) ) ) {
+      return parseFloat( value.split(" ").join("").split(",").join(".") );
+    } else if ( !isNaN( parseInt( value.split(" ").join("").split(",").join("."), 10 ) ) ) {
+      return parseInt( value.split(" ").join("").split(",").join("."), 10 );
+    } else if ( value === "true" ) {
+      return true;
+    } else if ( value === "false" ) {
+      return false;
+    } else {
+      var individ = new veda.IndividualModel(value);
+      if ( individ.isSync() && !individ.isNew() ) { return individ; }
+    }
+    return value || null;
+  }
+  
   // Login invitation
   var loginTmpl = $("#login-template").html();
   var loginForm = $(loginTmpl);
