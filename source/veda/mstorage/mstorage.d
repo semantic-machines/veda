@@ -918,7 +918,10 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                         Resource rr = rdfType.get(itype, Resource.init);
 
                         if (rr !is Resource.init)
-                            rr.info = EXISTS_TYPE;
+                        {
+                            rr.info          = EXISTS_TYPE;
+                            rdfType[ itype ] = rr;
+                        }
                     }
                 }
             }
