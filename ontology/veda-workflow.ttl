@@ -1730,6 +1730,13 @@ v-wf:StartForm
   rdfs:subClassOf v-s:Temporal ;
 .
 
+v-wf:permission_on_start_from
+  rdf:type v-s:PermissionStatement ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:permissionObject v-wf:StartForm ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+.
+
 v-wf:processedDocument
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
