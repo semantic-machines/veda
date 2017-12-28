@@ -1471,6 +1471,14 @@ v-fs:AttributiveSearchTemplate
     searchBlank._init();
     searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
     searchBlank.object.on("search", formHandler);
+
+    // Populate blank with extra parameters from URL
+    if (extra) {
+      for (var property_uri in extra) {
+        searchBlank.object[property_uri] = extra[property_uri];
+      }
+    }
+
     template.one("remove", function () {
       searchBlank.object.off("search", formHandler);
     });

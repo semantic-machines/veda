@@ -4,8 +4,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
   veda.IndividualModel.prototype.present = function (container, template, mode, extra) {
 
-    //if (extra) { console.log(extra); }
-
     try {
 
       // Defaults
