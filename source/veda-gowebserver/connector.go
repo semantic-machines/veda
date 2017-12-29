@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/bmatsuo/lmdb-go/lmdb"
@@ -326,7 +327,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		return rr
 	}
 
-	// rights := make(map)
+	var rights []interface{}
 	if needAuth {
 		aclRequest := make([]interface{}, 0, len(uris)+1)
 		aclRequest = append(aclRequest, userUri)
@@ -352,7 +353,14 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 			return rr
 		}
 
-		log.Println(string(aclResponseBytes))
+		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
+		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
+		if err != nil {
+			log.Println("@ERR GET PARSING AUTH RESPONSE: ", err)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+		log.Println(rights)
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
@@ -362,8 +370,14 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		if err != nil {
 			return err
 		}
-		for _, uri := range uris {
-			val, err := txn.Get(dbi, []byte(uri))
+		for i := 0; i < len(uris); i++ {
+			if needAuth {
+				if !strings.Contains(rights[i].(string), "R") {
+					rr.OpRC = append(rr.OpRC, NotAuthorized)
+					continue
+				}
+			}
+			val, err := txn.Get(dbi, []byte(uris[i]))
 			if err == lmdb.NotFound {
 				rr.OpRC = append(rr.OpRC, NotFound)
 				continue
