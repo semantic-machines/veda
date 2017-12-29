@@ -84,7 +84,7 @@ abstract class ImplAuthorization : Authorization
 
                 ubyte[ string ] walked_groups;
                 Right *[] groups;
-                get_resource_groups(false, membership_prefix ~ user_uri, 15, groups, walked_groups, 0);
+                get_resource_groups(membership_prefix ~ user_uri, 15, groups, walked_groups, 0);
                 subject_groups = new RightSet(groups, log);
 
                 subject_groups.data[ user_uri ] = new Right(user_uri, 15, false);
@@ -94,9 +94,6 @@ abstract class ImplAuthorization : Authorization
                 // читаем группы object (uri)
                 if (trace_info !is null)
                     trace_info.write(format("\n%d PREPARE OBJECT GROUPS\n", str_num++));
-
-                ubyte[ string ] walked_groups1;
-                Right *[] groups1;
 
                 if (authorize_group(veda_schema__AllResourcesGroup, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
                 {
@@ -114,22 +111,21 @@ abstract class ImplAuthorization : Authorization
                     return calc_right_res;
                 }
 
-                if (get_resource_groups(true, membership_prefix ~ uri, 15, groups1, walked_groups1,
-                                        0) == true)
-                {
-                    if (trace_info !is null)
-                        trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
-
-                    if (trace_info is null && trace_group is null && trace_acl is null)
-                        return calc_right_res;
-                }
+                ubyte[ string ] walked_groups1;
 
                 if (trace_info is null && trace_group is null && trace_acl is null)
                 {
-                    //object_groups = new RightSet(log);
+                    if (prepare_group(membership_prefix ~ uri, 15, walked_groups1, 0) == true)
+                        return calc_right_res;
                 }
                 else
                 {
+                    Right *[] groups1;
+                    if (get_resource_groups(membership_prefix ~ uri, 15, groups1, walked_groups1, 0) == true)
+                    {
+                        if (trace_info !is null)
+                            trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                    }
                     object_groups = new RightSet(groups1, log);
 
                     if (trace_info !is null)
@@ -296,8 +292,7 @@ abstract class ImplAuthorization : Authorization
     }
 
 
-    private bool get_resource_groups(bool is_check_right, string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] walked_groups,
-                                     int level = 0)
+    private bool get_resource_groups(string uri, ubyte access, ref Right *[] result_set, ref ubyte[ string ] walked_groups, int level = 0)
     {
         if (level > 32)
         {
@@ -373,14 +368,8 @@ abstract class ImplAuthorization : Authorization
                     continue;
                 }
 
-                if (is_check_right == true && trace_info is null && trace_group is null && trace_acl is null)
-                {
-                    if (authorize_group(group.id, group.access) == true)
-                        return true;
-                }
-
                 Right *[] up_restrictions;
-                get_resource_groups(is_check_right, group_key, new_access, up_restrictions, walked_groups, level + 1);
+                get_resource_groups(group_key, new_access, up_restrictions, walked_groups, level + 1);
 
                 RightSet trs = new RightSet(up_restrictions, log);
 
@@ -402,6 +391,105 @@ abstract class ImplAuthorization : Authorization
 
         return false;
     }
+
+    private bool prepare_group(string uri, ubyte access, ref ubyte[ string ] walked_groups, int level = 0)
+    {
+        if (level > 32)
+        {
+            if (trace_info !is null)
+                trace_info.write(format("%d ERR! level down > 32, uri=%s\n", str_num++, uri));
+
+            return false;
+        }
+
+        string ll;
+
+        if (trace_info !is null)
+        {
+            if (level * 2 < lstr.length)
+                ll = lstr[ 0..level * 2 ];
+            else
+                ll = text(level);
+        }
+
+        try
+        {
+            string    groups_str = get_in_current_transaction(uri);
+
+            Right *[] result_set;
+
+            if (groups_str != null)
+                rights_from_string(groups_str, result_set);
+
+            //if (trace_info !is null)
+            //{
+            //    foreach (el; result_set)
+            //        trace_info.write(format("%s (%d) GROUP FROM DB [%s]", ll, level, *el));
+            //}
+
+            long res_lenght = result_set.length;
+
+            for (int idx = 0; idx < res_lenght; idx++)
+            {
+                Right *group = result_set[ idx ];
+
+                if (group is null)
+                {
+                    log.trace("WARN! WARN! group is null, uri=%s, idx=%d", uri, idx);
+                    continue;
+                }
+
+                ubyte orig_access = group.access;
+                ubyte new_access  = group.access & access;
+                group.access = new_access;
+
+                if (group.id in walked_groups)
+                {
+                    ubyte preur_access = walked_groups[ group.id ];
+                    if (preur_access == new_access)
+                    {
+                        if (trace_info !is null)
+                            trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, ALREADY ADDED\n", str_num++, ll, level, group.id,
+                                                    access_to_pretty_string(preur_access)));
+
+                        continue;
+                    }
+                }
+
+                walked_groups[ group.id ] = new_access;
+
+                if (trace_info !is null)
+                    trace_info.write(format("%d %s (%d)GROUP [%s] %s-> %s\n", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
+                                            access_to_pretty_string(new_access)));
+
+                string group_key = membership_prefix ~ group.id;
+                if (uri == group_key)
+                {
+                    if (trace_info !is null)
+                        trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key\n", str_num++, ll, level, group.id,
+                                                access_to_pretty_string(orig_access)));
+                    continue;
+                }
+
+                if (authorize_group(group.id, group.access) == true)
+                    return true;
+
+                prepare_group(group_key, new_access, walked_groups, level + 1);
+            }
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]", level, ex.line, ex.file, ex.info);
+
+            if (trace_info !is null)
+                trace_info.write(format("%d ERR! (%d) LINE:[%s], FILE:[%s], MSG:[%s]\n", str_num++, level, ex.line, ex.file, ex.info));
+
+            return false;
+        }
+
+        return false;
+    }
+
 
     abstract string get_in_current_transaction(string in_key);
     abstract void abort_transaction();
@@ -464,4 +552,28 @@ string access_to_short_string(const ubyte src)
         res ~= "D";
 
     return res;
+}
+
+string access_to_string(const ubyte src)
+{
+    char[] res = new char[ 4 ];
+
+    if (src & Access.can_create)
+        res[ 0 ] = 'C';
+    else
+        res[ 0 ] = '-';
+    if (src & Access.can_read)
+        res[ 1 ] = 'R';
+    else
+        res[ 1 ] = '-';
+    if (src & Access.can_update)
+        res[ 2 ] = 'U';
+    else
+        res[ 2 ] = '-';
+    if (src & Access.can_delete)
+        res[ 3 ] = 'D';
+    else
+        res[ 3 ] = '-';
+
+    return cast(string)res;
 }
