@@ -48,7 +48,7 @@ veda.Module(function (veda) { "use strict";
         template = new veda.IndividualModel(template);
         return template.load().then(function (template) {
           template = $( template["v-ui:template"][0].toString() );
-          return renderTemplate(individual, container, template, mode, specs);
+          return renderTemplate(individual, container, template, mode, extra, specs);
         });
       } else {
         return renderTemplate(individual, container, template, mode, extra, specs);
