@@ -26,7 +26,7 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function present(individual, container, template, mode) {
+  function present(individual, container, template, mode, extra) {
 
     var ontology = new veda.OntologyModel();
 
