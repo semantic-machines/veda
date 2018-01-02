@@ -197,32 +197,38 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     template.on("view edit search save cancel delete recover draft destroy", syncEmbedded);
 
     // Define handlers
-    function saveHandler (e) {
-      individual.save();
+    function saveHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.save();
+      }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
 
-    function draftHandler (e) {
-      individual.draft();
+    function draftHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.draft();
+      }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("draft", draftHandler);
 
-    function cancelHandler (e) {
+    function cancelHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.reset()
+          .then( function () {
+            if (container.prop("id") === "main") {
+              window.history.back();
+            }
+          }, function () {
+            if (container.prop("id") === "main") {
+              window.history.back();
+            }
+          });
+      }
       template.trigger("view");
-      individual.reset()
-        .then( function () {
-          if (container.prop("id") === "main") {
-            window.history.back();
-          }
-        }, function () {
-          if (container.prop("id") === "main") {
-            window.history.back();
-          }
-        });
       e.stopPropagation();
     }
     template.on("cancel", cancelHandler);
@@ -257,20 +263,26 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
     deletedHandler.call(individual);
 
-    function deleteHandler (e) {
-      individual.delete();
+    function deleteHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.delete();
+      }
       e.stopPropagation();
     }
     template.on("delete", deleteHandler);
 
-    function destroyHandler (e) {
-      individual.remove();
+    function destroyHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.remove();
+      }
       e.stopPropagation();
     }
     template.on("destroy", destroyHandler);
 
-    function recoverHandler (e) {
-      individual.recover();
+    function recoverHandler (e, parent) {
+      if (parent !== individual.id) {
+        individual.recover();
+      }
       e.stopPropagation();
     }
     template.on("recover", recoverHandler);
