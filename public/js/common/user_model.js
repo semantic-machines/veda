@@ -51,7 +51,6 @@ veda.Module(function (veda) { "use strict";
           acc[name] = language;
           return acc;
         }, {});
-      console.log("veda.user.availableLanguages", self.availableLanguages);
 
     }).then(function () {
       var defaultLanguageConfig = new veda.IndividualModel("v-ui:DefaultLanguage");
@@ -63,8 +62,6 @@ veda.Module(function (veda) { "use strict";
 
     }).then(function (defaultLanguage) {
       self.defaultLanguage = defaultLanguage["rdf:value"][0].toString();
-      console.log("veda.user.defaultLanguage", self.defaultLanguage);
-
     });
   };
 
