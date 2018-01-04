@@ -1692,34 +1692,35 @@ v-fs:AttributiveSearchTemplate
       resultDelta.map(function (uri, i) {
         var tmpl = resultTemplate.replace("###", total - delta + i + 1),
             item = new veda.IndividualModel(uri);
-        tmpl = item.present(resultContainer, tmpl);
-        if (item.id === self.marked) {
-          tmpl.addClass("warning");
-        }
-        setTimeout(function () {
-          $("td", tmpl).each( function () {
-            var text = this.innerText || this.textContent;
-            if (text && text.length > 100) {
-              var $this = $(this);
-              var contents = $this.contents();
-              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
-              $this.empty().append(wrapper);
-              wrapper.popover({
-                content: wrapper.html(),
-                html: true,
-                placement: "top"
-              });
-              var title = new veda.IndividualModel("v-fs:ClickToViewContent").load().then(function (title) {
-                title = title["rdfs:label"].join(" ");
-                wrapper.tooltip({
-                  title: title,
-                  placement: "bottom",
-                  delay: { show: 750, hide: 0 }
+        item.present(resultContainer, tmpl).then(function (tmpl) {
+          if (item.id === self.marked) {
+            tmpl.addClass("warning");
+          }
+          setTimeout(function () {
+            $("td", tmpl).each( function () {
+              var text = this.innerText || this.textContent;
+              if (text && text.length > 100) {
+                var $this = $(this);
+                var contents = $this.contents();
+                var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+                $this.empty().append(wrapper);
+                wrapper.popover({
+                  content: wrapper.html(),
+                  html: true,
+                  placement: "top"
                 });
-              });
-            }
-          });
-        }, 300);
+                var title = new veda.IndividualModel("v-fs:ClickToViewContent").load().then(function (title) {
+                  title = title["rdfs:label"].join(" ");
+                  wrapper.tooltip({
+                    title: title,
+                    placement: "bottom",
+                    delay: { show: 750, hide: 0 }
+                  });
+                });
+              }
+            });
+          }, 300);
+        });
       });
     });
   }
