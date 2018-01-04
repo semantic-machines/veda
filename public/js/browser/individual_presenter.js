@@ -41,23 +41,25 @@ veda.Module(function (veda) { "use strict";
     if (template) {
       if (template instanceof veda.IndividualModel) {
         return template.load().then(function (template) {
-          template = $( template["v-ui:template"][0].toString() );
+          template = template["v-ui:template"][0].toString();
           return renderTemplate(individual, container, template, mode, extra, specs);
         });
-      } else if (typeof template === "string") {
+      // if template is uri
+      } else if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
         template = new veda.IndividualModel(template);
         return template.load().then(function (template) {
-          template = $( template["v-ui:template"][0].toString() );
+          template = template["v-ui:template"][0].toString();
           return renderTemplate(individual, container, template, mode, extra, specs);
         });
-      } else {
-        return renderTemplate(individual, container, template, mode, extra, specs);
+      } else if (template instanceof HTMLElement) {
+        template = template.outerHTML;
       }
+      return renderTemplate(individual, container, template, mode, extra, specs);
     } else {
       if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
         template = individual["v-ui:hasCustomTemplate"][0];
         return template.load().then(function (template) {
-          template = $( template["v-ui:template"][0].toString() );
+          template = template["v-ui:template"][0].toString();
           return renderTemplate(individual, container, template, mode, extra, specs);
         });
       } else {
@@ -70,11 +72,10 @@ veda.Module(function (veda) { "use strict";
           });
           return Promise.all(templatesPromises);
         }).then(function (templates) {
-          var renderedTemplates = templates.map( function (template) {
-            template = $( template["v-ui:template"][0].toString() );
+          return templates.map( function (template) {
+            template = template["v-ui:template"][0].toString();
             return renderTemplate(individual, container, template, mode, extra, specs);
           });
-          return $(renderedTemplates);
         });
       }
     }
@@ -82,63 +83,71 @@ veda.Module(function (veda) { "use strict";
   }
 
   function renderTemplate(individual, container, template, mode, extra, specs) {
-
-    var pre_render_src,
+    var match,
+        pre_render_src,
         pre_render,
         post_render_src,
         post_render;
 
-    template = template.filter(function () { return this.nodeType === 1 });
+    template = template.trim();
 
-    if (template.first().is("script")) {
-      pre_render_src = template.first().text();
+    // Extract pre script, template and post script
+    // match = template.match(/^(?:<script[^>]*>([\s\S]*?)<\/script>)?([\s\S]*?)(?:<script[^>]*>(?![\s\S]*<script[^>]*>)([\s\S]*)<\/script>)?$/i);
+    match = preProcess(template);
+    pre_render_src = match[1];
+    template = $( match[2] );
+    post_render_src = match[3];
+
+    if (pre_render_src) {
+      pre_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + pre_render_src);
     }
-    pre_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + pre_render_src);
-
-    if (template.last().is("script")) {
-      post_render_src = template.last().text();
+    if (post_render_src) {
+      post_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + post_render_src);
     }
-    post_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + post_render_src);
 
-    template = template.filter("*:not(script)");
+    return Promise
+      .resolve(pre_render ? pre_render.call(individual, veda, individual, container, template, mode, extra) : undefined)
+      .then(function () {
 
-    return new Promise(function (resolve, reject) {
+        template = processTemplate (individual, container, template, mode, specs);
 
-      try {
-        var result = pre_render.call(individual, veda, individual, container, template, mode, extra);
-        resolve(result);
-      } catch (error) {
-        reject(error);
-      }
+        container.append(template);
 
-    }).catch(function (error) {
+        template.trigger(mode);
 
-      console.log(error);
+        if (post_render) {
+          post_render.call(individual, veda, individual, container, template, mode, extra);
+        }
 
-    }).then(function (result) {
+        return template;
 
-      template = processTemplate (individual, container, template, mode, specs);
+      }).catch(function (error) {
 
-      container.append(template);
+        console.log(error);
 
-      template.trigger(mode);
-
-      post_render.call(individual, veda, individual, container, template, mode, extra);
-
-      // Watch individual updates on server
-      var updateService = new veda.UpdateService();
-      updateService.subscribe(individual.id);
-      template.one("remove", function () {
-        updateService.unsubscribe(individual.id);
       });
+  }
 
-      return template;
+  function preProcess(template) {
+    var pre,
+        preStart = template.indexOf("<script>") + 8,
+        preEnd = template.indexOf("</script>"),
+        hasPre = preStart === 8;
+    if (hasPre) {
+      pre = template.substring(preStart, preEnd);
+      template = template.substring(preEnd + 9);
+    }
 
-    }).catch(function (error) {
-
-      console.log(error);
-
-    });
+    var post,
+        postStart = template.lastIndexOf("<script>") + 8,
+        postEnd = template.lastIndexOf("</script>"),
+        hasPost = postEnd === template.length - 9;
+    if (hasPost) {
+      post = template.substring(postStart, postEnd);
+      template = template.substring(0, postStart - 8);
+    }
+    // Compatible with regexp
+    return [undefined, pre, template, post];
   }
 
   function processTemplate (individual, container, template, mode, specs) {
@@ -467,21 +476,21 @@ veda.Module(function (veda) { "use strict";
     $("[about]:not([rel]):not([property])", wrapper).map( function () {
       var aboutContainer = $(this),
           about_template_uri = aboutContainer.attr("data-template"),
-          about_inline_template = aboutContainer.children(),
+          about_inline_template = aboutContainer.html().trim(),
           isEmbedded = aboutContainer.attr("data-embedded") === "true",
           about, aboutTemplate;
+      if ( about_template_uri ) {
+        aboutTemplate = new veda.IndividualModel( about_template_uri );
+      } else if ( about_inline_template.length ) {
+        aboutTemplate = about_inline_template;
+      }
+      aboutContainer.empty();
       if (aboutContainer.attr("about") === "@") {
         about = individual;
         aboutContainer.attr("about", about.id);
       } else {
         about = new veda.IndividualModel(aboutContainer.attr("about"));
       }
-      if ( about_template_uri ) {
-        aboutTemplate = new veda.IndividualModel( about_template_uri );
-      } else if ( about_inline_template.length ) {
-        aboutTemplate = about_inline_template.remove();
-      }
-      aboutContainer.empty();
       about.present(aboutContainer, aboutTemplate, isEmbedded ? mode : undefined).then(function (aboutTemplate) {
         if (isEmbedded) {
           aboutTemplate.data("isEmbedded", true);
@@ -770,7 +779,6 @@ veda.Module(function (veda) { "use strict";
   }
 
   function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
-    relTemplate = typeof relTemplate === "string" ? $(relTemplate) : relTemplate;
     return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined).then(function (valTemplate) {
       if (isEmbedded) {
         valTemplate.data("isEmbedded", true);
