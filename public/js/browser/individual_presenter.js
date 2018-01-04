@@ -119,6 +119,13 @@ veda.Module(function (veda) { "use strict";
           post_render.call(individual, veda, individual, container, template, mode, extra);
         }
 
+        // Watch server-side updates
+        var updateService = new veda.UpdateService();
+        updateService.subscribe(individual.id);
+        template.one("remove", function () {
+          updateService.unsubscribe(individual.id);
+        });
+
         return template;
 
       }).catch(function (error) {
