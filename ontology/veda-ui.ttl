@@ -567,15 +567,18 @@ v-ui:IconButtonsTemplate
 <script>
   // var allButtons = "edit save cancel delete";
   var defaultButtons = "edit save cancel delete";
-  var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
-  var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
-  var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
-  enabledButtons.forEach(function (id) {
-    if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
-    if ( !canUpdate && (id === "delete") ) { return; }
-    $("#" + id, template).removeClass("rm");
+  individual.rights.then(function (rights) {
+    var canUpdate = rights.hasValue("v-s:canUpdate", true);
+    var canDelete = rights.hasValue("v-s:canDelete", true);
+    var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
+    enabledButtons.forEach(function (id) {
+      if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
+      if ( !canDelete && (id === "delete") ) { return; }
+      $("#" + id, template).removeClass("rm");
+    });
+    $(".rm", template).remove();
   });
-  $(".rm", template).remove();
+
   template.on("click", "#edit, #save, #cancel, #delete", function (e) {
     e.preventDefault();
     var action = this.id;
@@ -585,7 +588,7 @@ v-ui:IconButtonsTemplate
     }
     template.parent().closest("[resource='" + individual.id + "']").trigger(action);
   });
-  //# sourceURL=v-ui:StandardButtonsTemplate_pre
+  //# sourceURL=v-ui:IconButtonsTemplate
 </script>
 <div class="standard-actions">
   <style>
@@ -620,7 +623,7 @@ v-ui:IconButtonsTemplate
     }
     e.stopPropagation();
   });
-  //# sourceURL=v-ui:StandardButtonsTemplate_post
+  //# sourceURL=v-ui:IconButtonsTemplate_post
 </script>
 """ ;
 .
@@ -745,12 +748,10 @@ v-ui:LinksTemplate
     if (isMutual) {
       Link["v-s:mutualMembership"] = [ true ];
     }
-    var newRow = Link.present(cntr, rowTmpl, "edit");
-    Link.one("beforeReset", function () {
-      newRow.remove();
-    });
-    Link.one("afterSave", function () {
-      newRow.remove();
+    Link.present(cntr, rowTmpl, "edit").then(function (newRow) {
+      Link.one("afterSave beforeReset", function () {
+        newRow.remove();
+      });
     });
   });
 
