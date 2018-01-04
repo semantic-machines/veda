@@ -7,7 +7,7 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string;
 import kaleidic.nanomsg.nano, commando, veda.util.properd;
 import veda.common.logger, veda.storage.authorization, veda.storage.common, veda.common.type;
-import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl;
+import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl, veda.storage.mdbx.mdbx_acl;
 
 static this()
 {
@@ -220,7 +220,12 @@ void main(string[] args)
     }
     else
     {
-        athrz = new LmdbAuthorization(DBMode.R, "acl", log);
+        string authorization_db_type = properties.as!(string)("authorization_db_type");
+
+        if (authorization_db_type == "mdbx")
+            athrz = new MdbxAuthorization(DBMode.R, "acl", log);
+        else
+            athrz = new LmdbAuthorization(DBMode.R, "acl", log);
     }
 
     while (!f_listen_exit)

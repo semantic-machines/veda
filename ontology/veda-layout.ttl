@@ -13,8 +13,8 @@
 @prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
 <http://semantic-machines.com/veda/veda-layout>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system layout ontology"@en ;
   rdfs:label "Онтология разметки системы Веда"@ru ;
+  rdfs:label "Veda system layout ontology"@en ;
   #owl:versionInfo "0.2" ;
   v-s:loadPriority 9 ;
 .
@@ -24,8 +24,8 @@
 v-l:MainPage
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Page"@en ;
   rdfs:label "Страница"@ru ;
+  rdfs:label "Page"@en ;
   v-ui:hasTemplate v-l:MainPageTemplate ;
 .
 v-l:MainPageTemplate
@@ -89,34 +89,34 @@ v-l:MainPageTemplate
 v-l:Menu
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Menu"@en ;
   rdfs:label "Меню"@ru ;
+  rdfs:label "Menu"@en ;
 .
 v-l:menuItem
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Menu item"@en ;
   rdfs:label "Пункт меню"@ru ;
+  rdfs:label "Menu item"@en ;
   rdfs:domain v-l:Menu ;
   rdfs:range v-l:Menu ;
 .
 v-l:staticLink
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Static link"@en ;
   rdfs:label "Статическая ссылка"@ru ;
+  rdfs:label "Static link"@en ;
   rdfs:domain v-l:Menu ;
   rdfs:range xsd:string ;
 .
 v-l:objectLink
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Link to individual"@en ;
   rdfs:label "Ссылка на индивид"@ru ;
+  rdfs:label "Link to individual"@en ;
   rdfs:domain v-l:Menu ;
   rdfs:range rdfs:Resource ;
 .
 v-l:MenuItemViewTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Menu item template"@en ;
   rdfs:label "Шаблон пункта Меню"@ru ;
+  rdfs:label "Menu item template"@en ;
   v-ui:template """
 <script>
   var type = (
@@ -136,7 +136,7 @@ v-l:MenuItemViewTemplate
   }
   //# sourceURL=v-l:MenuItemViewTemplate
 </script>
-<li> <!-- rel="v-l:objectLink" class="divider" class="dropdown" -->
+<li>
   <a id="static">
     <span property="rdfs:label"></span>
   </a>
@@ -152,8 +152,8 @@ v-l:MenuItemViewTemplate
 .
 v-l:MenuTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Menu class template"@en ;
   rdfs:label "Шаблон класса Меню"@ru ;
+  rdfs:label "Menu class template"@en ;
   v-ui:template """
 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-cog fa-lg"></span> <span class="caret"></span></a>
 <ul class="dropdown-menu" role="menu" about="@" rel="v-l:menuItem" data-template="v-l:MenuItemViewTemplate"></ul>
@@ -163,16 +163,16 @@ v-l:PsStrings
   rdf:type v-ui:DatatypePropertySpecification ;
   v-ui:forProperty rdfs:label, v-l:staticLink ;
   v-ui:forClass v-l:Menu ;
-  rdfs:label "Rdfs:label, v-l:staticLink specification for Menu class"@en ;
   rdfs:label "Спецификация rdfs:label, v-l:staticLink для класса Меню"@ru ;
+  rdfs:label "Rdfs:label, v-l:staticLink specification for Menu class"@en ;
   v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-l:PsMenuItem
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forProperty v-l:menuItem ;
   v-ui:forClass v-l:Menu ;
-  rdfs:label "V-l:menuItem specification for v-l:Menu class"@en ;
   rdfs:label "Спецификация v-l:menuItem для класса v-l:Menu"@ru ;
+  rdfs:label "V-l:menuItem specification for v-l:Menu class"@en ;
   v-ui:queryPrefix "('rdf:type' == 'v-l:Menu')"^^xsd:string ;
 .
 
@@ -181,8 +181,8 @@ v-l:PsMenuItem
 v-l:WelcomeAspect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Aspect ;
-  rdfs:label "Welcome aspect"@en ;
   rdfs:label "Приветственный аспект"@ru ;
+  rdfs:label "Welcome aspect"@en ;
   v-ui:hasTemplate v-l:WelcomeAspectTemplate ;
 .
 v-l:WelcomeAspectTemplate
@@ -206,13 +206,13 @@ v-l:WelcomeAspectTemplate
 
 v-l:SemanticMachines
   rdf:type v-s:Bundle ;
-  rdfs:label "Semantic machines"@en ;
   rdfs:label "Смысловые машины"@ru ;
+  rdfs:label "Semantic machines"@en ;
 .
 v-l:License
   rdf:type v-s:Bundle ;
-  rdfs:label "License"@en ;
   rdfs:label "Лицензия"@ru ;
+  rdfs:label "License"@en ;
 .
 v-l:WelcomeToVeda
   rdf:type v-s:Bundle ;
@@ -229,18 +229,18 @@ v-l:VedaDescription
 
 v-l:Main
   rdf:type v-l:MainPage ;
-  rdfs:label "Main page"@en ;
   rdfs:label "Главная страница"@ru ;
+  rdfs:label "Main page"@en ;
 .
 v-l:Welcome
   rdf:type v-l:WelcomeAspect ;
-  rdfs:label "Welcome"@en ;
   rdfs:label "Добро пожаловать"@ru ;
+  rdfs:label "Welcome"@en ;
 .
 v-l:MainMenu
   rdf:type v-l:Menu ;
-  rdfs:label "Main menu"@en ;
   rdfs:label "Главное меню"@ru ;
+  rdfs:label "Main menu"@en ;
   v-l:menuItem v-l:Inbox ;
   v-l:menuItem v-l:Outbox ;
   v-l:menuItem v-l:Completed ;
@@ -258,66 +258,66 @@ v-l:MainMenu
 .
 v-l:Divider
   rdf:type v-l:Menu ;
-  rdfs:label "Divider"@en ;
   rdfs:label "Разделитель"@ru ;
+  rdfs:label "Divider"@en ;
 .
 v-l:Inbox
   rdf:type v-l:Menu ;
-  rdfs:label "Inbox"@en ;
   rdfs:label "Входящие"@ru ;
+  rdfs:label "Inbox"@en ;
   v-l:objectLink v-ft:Inbox ;
 .
 v-l:Outbox
   rdf:type v-l:Menu ;
-  rdfs:label "Outbox"@en ;
   rdfs:label "Исходящие"@ru ;
+  rdfs:label "Outbox"@en ;
   v-l:objectLink v-ft:Outbox ;
 .
 v-l:Completed
   rdf:type v-l:Menu ;
-  rdfs:label "Completed"@en ;
   rdfs:label "Выполненные"@ru ;
+  rdfs:label "Completed"@en ;
   v-l:objectLink v-ft:Completed ;
 .
 v-l:Create
   rdf:type v-l:Menu ;
-  rdfs:label "Create"@en ;
   rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
   v-l:objectLink v-fc:Create ;
 .
 v-l:Find
   rdf:type v-l:Menu ;
-  rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
+  rdfs:label "Find"@en ;
   v-l:objectLink v-fs:Search ;
 .
 v-l:Graph
   rdf:type v-l:Menu ;
-  rdfs:label "Graph"@en ;
   rdfs:label "Граф"@ru ;
+  rdfs:label "Graph"@en ;
   v-l:staticLink "#/graph"^^xsd:string ;
 .
 v-l:Tests
   rdf:type v-l:Menu ;
-  rdfs:label "Tests"@en ;
   rdfs:label "Тесты"@ru ;
+  rdfs:label "Tests"@en ;
   v-l:staticLink "/tests"^^xsd:string ;
 .
 v-l:Clear
   rdf:type v-l:Menu ;
-  rdfs:label "Clear data"@en ;
   rdfs:label "Очистить данные"@ru ;
+  rdfs:label "Clear data"@en ;
   v-l:staticLink "javascript:location.reload(veda.Util.clearStorage())"^^xsd:string ;
 .
 v-l:Exit
   rdf:type v-l:Menu ;
-  rdfs:label "Exit"@en ;
   rdfs:label "Выйти"@ru ;
+  rdfs:label "Exit"@en ;
   v-l:staticLink "javascript:veda.logout()"^^xsd:string ;
 .
 v-l:Administration
   rdf:type v-l:Menu ;
-  rdfs:label "Administration"@en ;
   rdfs:label "Администрование"@ru ;
+  rdfs:label "Administration"@en ;
   v-l:objectLink v-s:AdministrationAspect1 ;
 .

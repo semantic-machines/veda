@@ -8,8 +8,8 @@
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 <http://semantic-machines.com/veda/veda-function-create>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system function 'Create' ontology"@en ;
   rdfs:label "Онтология функции 'Создать' системы Веда"@ru ;
+  rdfs:label "Veda system function 'Create' ontology"@en ;
 #  owl:versionInfo "0.2" ;
   v-s:loadPriority 9 ;
 .
@@ -19,8 +19,8 @@
 v-fc:FunctionCreate
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Function Create"@en ;
   rdfs:label "Функция Создать"@ru ;
+  rdfs:label "Function Create"@en ;
   v-ui:hasModel v-fc:FunctionCreateModel ;
   v-ui:hasTemplate v-fc:FunctionCreateTemplate ;
 .
@@ -40,28 +40,28 @@ v-fc:BlankMgmt
 .
 v-fc:SavedBlanks
   rdf:type v-s:Bundle ;
-  rdfs:label "Saved blanks"@en ;
   rdfs:label "Сохраненные бланки"@ru ;
+  rdfs:label "Saved blanks"@en ;
 .
 v-fc:Create
   rdf:type v-fc:FunctionCreate ;
-  rdfs:label "Create"@en ;
   rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
 .
 v-fc:ChooseType
   rdf:type v-s:Bundle ;
-  rdfs:label "Choose a type to create"@en ;
   rdfs:label "Выберите тип объекта"@ru ;
+  rdfs:label "Choose a type to create"@en ;
 .
 v-fc:CreateBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Create"@en ;
   rdfs:label "Создание"@ru ;
+  rdfs:label "Create"@en ;
 .
 v-fc:targetType
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Type"@en ;
   rdfs:label "Тип"@ru ;
+  rdfs:label "Type"@en ;
   rdfs:domain v-fc:Blank ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
@@ -91,8 +91,8 @@ v-fc:LabelSpec
 .
 v-fc:FunctionCreateModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "V-fc:FunctionCreate class model"@en ;
   rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
+  rdfs:label "V-fc:FunctionCreate class model"@en ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-s:script """
 var self = this;
@@ -101,8 +101,8 @@ var self = this;
 .
 v-fc:FunctionCreateTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "V-fc:FunctionCreate class template"@en ;
   rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
+  rdfs:label "V-fc:FunctionCreate class template"@en ;
   v-ui:forClass v-fc:FunctionCreate ;
   v-ui:template """
 <div class="container sheet">
@@ -166,8 +166,8 @@ v-fc:FunctionCreateTemplate
 
 v-fc:BlankModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "v-fc:Blank class model"@en ;
   rdfs:label "Модель класса v-fc:Blank"@ru ;
+  rdfs:label "v-fc:Blank class model"@en ;
   v-ui:forClass v-fc:Blank ;
   v-s:script """
 var self = this,
@@ -257,8 +257,8 @@ function updateAspect() {
 
 v-fc:BlankTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "V-fc:Blank class template"@en ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
+  rdfs:label "V-fc:Blank class template"@en ;
 #  v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
@@ -333,8 +333,8 @@ v-fc:BlankTemplate
 
 v-fc:BlankTemplateShort
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "V-fc:Blank class template"@en ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
+  rdfs:label "V-fc:Blank class template"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
@@ -393,8 +393,8 @@ v-fc:BlankTemplateShort
 
 v-fc:CreateBlankTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "v-fc:Blank class template"@en ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
+  rdfs:label "v-fc:Blank class template"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <div class="container sheet">

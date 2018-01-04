@@ -1,0 +1,23 @@
+{
+	"name": "az_lmdb_dump_2_tarantool",
+	"description": "az_lmdb_dump_2_tarantool",
+        "license": "LGPL v3",
+        "dependencies": {
+                "backtrace-d": "0.1.2",
+                "msgpack-d": "1.0.0-beta.6"
+        },
+        "libs": [
+                    "tarantool"
+        ],
+	"sourcePaths":[
+	    "source",
+	    "source/tarantool"
+	],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	}
+	]
+}

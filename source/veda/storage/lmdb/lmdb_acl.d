@@ -8,13 +8,6 @@ private
     import veda.storage.lmdb.lmdb_header, veda.storage.lmdb.lmdb_driver;
 }
 
-const string acl_indexes_db_path = "./data/acl-indexes";
-
-static this()
-{
-    paths_list ~= acl_indexes_db_path;
-}
-
 /// Хранение, чтение PermissionStatement, Membership
 class LmdbAuthorization : ImplAuthorization
 {
@@ -28,7 +21,7 @@ class LmdbAuthorization : ImplAuthorization
 
     this(DBMode mode, string _parent_thread_name, Logger _log)
     {
-        log         = _log;
+        log    = _log;
         driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
     }
 

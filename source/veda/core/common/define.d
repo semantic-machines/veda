@@ -59,6 +59,7 @@ enum EVENT : byte
     NOT_READY = 6
 }
 
+const string acl_indexes_db_path = "./data/acl-indexes";
 const string   attachments_db_path   = "./data/files";
 const string   docs_onto_path        = "./public/docs/onto";
 const string   dbs_backup            = "./backup";
@@ -78,7 +79,7 @@ const string   ft_indexer_queue_name = "fulltext_indexer0";
 string[] paths_list            =
 [
     tmp_path, logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, uris_db_path, queue_db_path,
-    xapian_info_path, module_info_path, trails_path
+    xapian_info_path, module_info_path, trails_path, acl_indexes_db_path
 ];
 
 private string[ string ] _xapian_search_db_path;

@@ -10,8 +10,8 @@
 
 <http://semantic-machines.com/veda/veda-schema-Org>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology"@en ;
   rdfs:label "Онтология системы Veda"@ru ;
+  rdfs:label "Veda system ontology"@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
@@ -24,10 +24,10 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
-  rdfs:label "Organization unit"@en ;
+  rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:label "Организационная единица"@ru ;
+  rdfs:label "Organization unit"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 v-s:OrganizationUnitModel
@@ -39,10 +39,10 @@ v-s:OrganizationUnitModel
   v-ui:forClass v-s:Department ;
   v-ui:forClass v-s:Position ;
   v-ui:forClass v-s:Appointment ;
-  rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
   rdfs:comment "Модель для класса v-s:OrganizationUnit"@ru ;
-  rdfs:label "Organization unit model"@en ;
+  rdfs:comment "Model for v-s:OrganizationUnit class"@en ;
   rdfs:label "Модель организационной единицы"@ru ;
+  rdfs:label "Organization unit model"@en ;
   v-s:script """
   /**
    * @method
@@ -81,30 +81,30 @@ v-s:OrganizationUnitModel
 v-s:childUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Child unit"@en ;
   rdfs:label "Дочерняя единица"@ru ;
+  rdfs:label "Child unit"@en ;
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:parentUnit ;
 .
 v-s:parentUnit
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Parent unit"@en ;
   rdfs:label "Родительская единица"@ru ;
+  rdfs:label "Parent unit"@en ;
   rdfs:range v-s:OrganizationUnit ;
   owl:inverseOf v-s:childUnit ;
 .
 v-s:hasChief
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Chief"@en ;
   rdfs:label "Непосредственный руководитель"@ru ;
+  rdfs:label "Chief"@en ;
   rdfs:range v-s:Appointment ;
 .
 v-s:hasFunctionalChief
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Functional chief"@en ;
   rdfs:label "Функциональный руководитель"@ru ;
+  rdfs:label "Functional chief"@en ;
   rdfs:domain v-s:OrganizationUnit ;
   rdfs:range v-s:Appointment ;
 .
@@ -115,44 +115,44 @@ v-s:Organization
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:subClassOf v-s:ClassifiedRus ;
   rdfs:subClassOf v-s:Contractual ;
-  rdfs:label "Organization"@en ;
   rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:OrganizationTemplate ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "VAT"@en ;
   rdfs:label "ИНН"@ru ;
+  rdfs:label "VAT"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
   rdfs:domain v-s:Contractor ;
 .
 v-s:taxRegistrationCause
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Tax registration cause classifier"@en ;
   rdfs:label "КПП"@ru ;
+  rdfs:label "Tax registration cause classifier"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
 .
 v-s:taxRegistrationNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Tax registration number"@en ;
   rdfs:label "ОГРН"@ru ;
+  rdfs:label "Tax registration number"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
 .
 v-s:hasSubsidiary
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Subsidiary"@en ;
   rdfs:label "Обособленное подразделение"@ru ;
+  rdfs:label "Subsidiary"@en ;
   rdfs:range v-s:Department ;
   rdfs:domain v-s:Organization ;
 .
 v-s:hasContractorProfile
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Contractor profile"@en ;
   rdfs:label "Досье контрагента"@ru ;
+  rdfs:label "Contractor profile"@en ;
   rdfs:range v-s:ContractorProfile ;
   rdfs:domain v-s:Organization ;
 .
@@ -160,15 +160,15 @@ v-s:hasContractorProfile
 v-s:Department
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
-  rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
+  rdfs:label "Department"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:DepartmentTemplate ;
 .
 v-s:parentOrganization
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Parent organization"@en ;
   rdfs:label "Основная организация"@ru ;
+  rdfs:label "Parent organization"@en ;
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Department ;
 .
@@ -178,8 +178,8 @@ v-s:Subsidiary
   rdfs:subClassOf v-s:Organization ;
   rdfs:subClassOf v-s:Department ;
   rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Subsidiary"@en ;
   rdfs:label "Филиал"@ru ;
+  rdfs:label "Subsidiary"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:SubsidiaryTemplate ;
 .
@@ -188,8 +188,8 @@ v-s:OrgGroup
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Organizational group"@en ;
   rdfs:label "Oрганизационная группа"@ru ;
+  rdfs:label "Organizational group"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 
@@ -197,8 +197,8 @@ v-s:OrgGroup
 v-s:Position
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:OrganizationUnit ;
-  rdfs:label "Position"@en ;
   rdfs:label "Должность"@ru ;
+  rdfs:label "Position"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
 .
 
@@ -207,8 +207,8 @@ v-s:HRRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Temporal ;
-  rdfs:label "HR record"@en ;
   rdfs:label "Кадровая запись"@ru ;
+  rdfs:label "HR record"@en ;
 .
 
 # Тут не хватает полей, которые описаны в v-s:PermissionStatement  v-s:startTime   v-s:endTime
@@ -216,22 +216,22 @@ v-s:HRRecord
 v-s:employee
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:HRRecord ;
-  rdfs:label "Employee"@en ;
   rdfs:label "Работник"@ru ;
+  rdfs:label "Employee"@en ;
   rdfs:range v-s:Person ;
 .
 v-s:occupation
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Occupation"@en ;
   rdfs:label "Занимает должность"@ru ;
+  rdfs:label "Occupation"@en ;
   rdfs:range v-s:Position ;
   rdfs:domain v-s:HRRecord ;
 .
 # ------------------------------------------------------------
 v-s:Appointment
   rdf:type owl:Class ;
-  rdfs:label "Appointment"@en ;
   rdfs:label "Назначение"@ru ;
+  rdfs:label "Appointment"@en ;
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
@@ -239,8 +239,8 @@ v-s:Appointment
 v-s:official
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Appointment ;
-  rdfs:label "Official"@en ;
   rdfs:label "Официально"@ru ;
+  rdfs:label "Official"@en ;
   rdfs:range xsd:boolean ;
 .
 # v-s:valid
@@ -248,8 +248,8 @@ v-s:official
 # ------------------------------------------------------------
 v-s:Absence
   rdf:type owl:Class ;
-  rdfs:label "Absence"@en ;
   rdfs:label "Отсутствие"@ru ;
+  rdfs:label "Absence"@en ;
   rdfs:subClassOf v-s:HRRecord ;
 .
 # ------------------------------------------------------------
@@ -260,77 +260,77 @@ v-s:Person
 #  rdfs:subClassOf v-s:Labeled ;
   rdfs:comment "A person." ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Person"@en ;
   rdfs:label "Персона"@ru ;
+  rdfs:label "Person"@en ;
   v-ui:hasTemplate td:PersonTemplate1 ;
 #  v-s:labelPattern "{@.rdf:type.rdfs:label}: {@.v-s:firstName} {@.v-s:lastName}" ;
 .
 v-s:birthday
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The birthday of this Person."@en ;
   rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:comment "The birthday of this Person."@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Birthday"@en ;
   rdfs:label "Дата рождения"@ru ;
+  rdfs:label "Birthday"@en ;
   rdfs:range xsd:dateTime ;
 .
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "Personnel number"@en ;
   rdfs:comment "Табельный номер"@ru ;
+  rdfs:comment "Personnel number"@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Personnel number"@en ;
   rdfs:label "Табельный номер"@ru ;
+  rdfs:label "Personnel number"@en ;
   rdfs:range xsd:integer ;
 .
 v-s:firstName
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The first name of a person."@en ;
   rdfs:comment "Имя персоны."@ru ;
+  rdfs:comment "The first name of a person."@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "First name"@en ;
   rdfs:label "Имя"@ru ;
+  rdfs:label "First name"@en ;
   rdfs:range xsd:string ;
 .
 v-s:lastName
   rdf:type owl:DatatypeProperty ;
-  rdfs:comment "The last name of a person."@en ;
   rdfs:comment "Фамилия персоны"@ru ;
+  rdfs:comment "The last name of a person."@en ;
   rdfs:domain v-s:Person ;
   rdfs:isDefinedBy v-s: ;
-  rdfs:label "Last name"@en ;
   rdfs:label "Фамилия"@ru ;
+  rdfs:label "Last name"@en ;
   rdfs:range xsd:string ;
 .
 v-s:middleName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Person ;
-  rdfs:label "Middle name"@en ;
   rdfs:label "Отчество"@ru ;
+  rdfs:label "Middle name"@en ;
   rdfs:range xsd:string ;
 .
 v-s:hasAccount
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:OrganizationUnit ;
   rdfs:domain v-s:Person ;
-  rdfs:label "Account"@en ;
   rdfs:label "Учетная запись"@ru ;
+  rdfs:label "Account"@en ;
   rdfs:range v-s:Account ;
 .
 v-s:hasAppointment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Appointment"@en ;
   rdfs:label "Назначение"@ru ;
+  rdfs:label "Appointment"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
 v-s:defaultAppointment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Default appointment"@en ;
   rdfs:label "Назначение по-умолчанию"@ru ;
+  rdfs:label "Default appointment"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Person ;
 .
@@ -364,8 +364,8 @@ v-s:PsHasContractorOrganization
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
   v-ui:rangeRestriction v-s:Contractor;
-  rdfs:label "v-s:hasContractor property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойства v-s:hasContractor для класса v-s:Organization"@ru ;
+  rdfs:label "v-s:hasContractor property specification for v-s:Organization"@en ;
 .
 
 v-s:PsHasClassifierCountryOrganization
@@ -375,8 +375,8 @@ v-s:PsHasClassifierCountryOrganization
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
   v-ui:defaultValue d:Country_RUS;
-  rdfs:label "v-s:hasClassifierCountry property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойства v-s:hasClassifierCountry для класса v-s:Organization"@ru ;
+  rdfs:label "v-s:hasClassifierCountry property specification for v-s:Organization"@en ;
 .
 
 v-s:PslabelForOrganization
@@ -388,8 +388,8 @@ v-s:PslabelForOrganization
   v-ui:forProperty v-s:postalAddress;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 100 ;
-  rdfs:label "rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойств rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress для класса v-s:Organization"@ru ;
+  rdfs:label "rdfs:label, v-s:shortLabel, v-s:legalAddress, v-s:postalAddress property specification for v-s:Organization"@en ;
 .
 
 v-s:taxRegistrationCauseForOrganization
@@ -399,8 +399,8 @@ v-s:taxRegistrationCauseForOrganization
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1;
   v-ui:regexp "^[0-9]{9}$";
-  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
   rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Organization"@ru ;
+  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Organization"@en ;
   v-ui:tooltip "Числовое значение, 9 символов, например: 123456789"@ru ;
   v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
 .
@@ -409,30 +409,30 @@ v-s:taxRegistrationCauseForOrganization
 
 v-s:NonUniqueTaxId
   rdf:type v-s:Bundle ;
-  rdfs:label "Non unique tax id message"@en ;
   rdfs:label "Сообщение не уникальный ИНН"@ru ;
-  rdfs:comment "Organization with this tax number already exists"@en ;
+  rdfs:label "Non unique tax id message"@en ;
   rdfs:comment "Организация с таким ИНН уже существует"@ru ;
+  rdfs:comment "Organization with this tax number already exists"@en ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:AddProfile
   rdf:type v-s:Bundle ;
-  rdfs:label "Add profile"@en ;
   rdfs:label "Создать досье"@ru ;
+  rdfs:label "Add profile"@en ;
 .
 v-s:AddSubsidiary
   rdf:type v-s:Bundle ;
-  rdfs:label "Add subsidiary"@en ;
   rdfs:label "Добавить филиал"@ru ;
+  rdfs:label "Add subsidiary"@en ;
 .
 
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Organization ;
-  rdfs:label "Template for v-s:Organization class"@en ;
   rdfs:label "Шаблон для класса v-s:Organization"@ru ;
+  rdfs:label "Template for v-s:Organization class"@en ;
   v-ui:template """
 <script>
   var classCP = new veda.IndividualModel("v-s:ContractorProfile");
@@ -699,10 +699,9 @@ v-s:OrganizationTemplate
       <span about="mnd-s:ContractorCreateChangeRequest" property="rdfs:label"></span>
     </button>
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">
@@ -814,8 +813,8 @@ v-s:OrganizationTemplate
 v-s:SubsidiaryTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Subsidiary ;
-  rdfs:label "Template for v-s:Subsidiary class"@en ;
   rdfs:label "Шаблон для класса v-s:Subsidiary"@ru ;
+  rdfs:label "Template for v-s:Subsidiary class"@en ;
   v-ui:template """
 <div class="container sheet">
   <h2>
@@ -864,12 +863,10 @@ v-s:SubsidiaryTemplate
     <em about="rdfs:comment" property="rdfs:label"></em>
     <div property="rdfs:comment" class="view -edit -search"></div>
     <veda-control data-type="text" rows="3" property="rdfs:comment" class="-view edit search"></veda-control>
-
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">
@@ -882,8 +879,8 @@ v-s:SubsidiaryTemplate
 v-s:DepartmentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Department ;
-  rdfs:label "Template for v-s:Department class"@en ;
   rdfs:label "Шаблон для класса v-s:Department"@ru ;
+  rdfs:label "Template for v-s:Department class"@en ;
   v-ui:template """
 <div class="container sheet">
   <h2>
@@ -927,10 +924,9 @@ v-s:DepartmentTemplate
     <div property="v-s:postalAddress" class="view -edit -search"></div>
     <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
   </div>
+
   <hr>
-  <div id="systemProperties">
-    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
-  </div><!--#systemProperties-->
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
   <div class="actions">

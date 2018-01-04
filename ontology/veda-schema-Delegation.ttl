@@ -10,8 +10,8 @@
 
 <http://semantic-machines.com/veda/veda-schema-Delegation>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology"@en ;
   rdfs:label "Онтология системы Veda"@ru ;
+  rdfs:label "Veda system ontology"@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
@@ -20,8 +20,8 @@
 
 v-s:RequestDelegation
   rdf:type owl:Class ;
-  rdfs:label "Request delegation"@en ;
   rdfs:label "Заявка на делегирование"@ru ;
+  rdfs:label "Request delegation"@en ;
   rdfs:subClassOf v-s:HRRecord ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   rdfs:subClassOf v-s:Temporal ;
@@ -30,42 +30,42 @@ v-s:RequestDelegation
 v-s:delegator
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Delegator"@en ;
   rdfs:label "Доверитель"@ru ;
+  rdfs:label "Delegator"@en ;
   rdfs:range v-s:Person ;
 .
 v-s:delegate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Delegate"@en ;
   rdfs:label "Заместитель"@ru ;
+  rdfs:label "Delegate"@en ;
   rdfs:range v-s:Person ;
 .
 v-s:delegatedPosition
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Delegated position"@en ;
   rdfs:label "Делегируемая должность"@ru ;
+  rdfs:label "Delegated position"@en ;
   rdfs:range v-s:Position ;
 .
 v-s:createdAppointment
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:RequestDelegation ;
-  rdfs:label "Created appointment"@en ;
   rdfs:label "Созданное назначение"@ru ;
+  rdfs:label "Created appointment"@en ;
   rdfs:range v-s:Appointment ;
 .
 v-s:RequestDelegationUser
   rdf:type owl:Class ;
-  rdfs:label "Request delegation for user"@en ;
   rdfs:label "Заявка на делегирование для пользователя"@ru ;
+  rdfs:label "Request delegation for user"@en ;
   rdfs:subClassOf v-s:RequestDelegation ;
   v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
 v-s:RequestDelegationAdmin
   rdf:type owl:Class ;
-  rdfs:label "Request delegation for admin"@en ;
   rdfs:label "Заявка на делегирование для администратора"@ru ;
+  rdfs:label "Request delegation for admin"@en ;
   rdfs:subClassOf v-s:RequestDelegation ;
   v-ui:hasTemplate v-s:RequestDelegationTemplate ;
 .
@@ -111,8 +111,8 @@ v-s:RequestDelegationTemplate
   v-ui:forClass v-s:RequestDelegation ;
   v-ui:forClass v-s:RequestDelegationUser ;
   v-ui:forClass v-s:RequestDelegationAdmin ;
-  rdfs:label "Template for v-s:RequestDelegationUser class"@en ;
   rdfs:label "Шаблон для класса v-s:RequestDelegationUser"@ru ;
+  rdfs:label "Template for v-s:RequestDelegationUser class"@en ;
   v-ui:template """
 <script>
   if ( individual.hasValue("rdf:type", new veda.IndividualModel("v-s:RequestDelegationAdmin")) ) {

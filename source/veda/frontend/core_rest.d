@@ -57,6 +57,10 @@ static this() {
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
+
+    @path("authorize") @method(HTTPMethod.GET)
+    ubyte authorize(string ticket, string uri, ubyte access);
+    
     /**
      * получить для индивида список прав на ресурс.
      * Params: ticket = указывает на индивида
@@ -258,7 +262,6 @@ class VedaStorageRest : VedaStorageRest_API
     }
 
     override :
-
     Json get_rights(string _ticket, string uri)
     {
         ResultCode rc;
@@ -273,7 +276,7 @@ class VedaStorageRest : VedaStorageRest_API
             if (ticket.result != ResultCode.OK)
                 throw new HTTPStatusException(ticket.result);
 
-            right_res = context.get_rights(ticket, uri);
+            right_res = context.get_rights(ticket, uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete);
 
             Individual indv_res;
             indv_res.uri = "_";
@@ -294,6 +297,30 @@ class VedaStorageRest : VedaStorageRest_API
 
             res = individual_to_json(indv_res);
             return res;
+        }
+        finally
+        {
+        }
+    }
+
+    override :
+    ubyte authorize(string _ticket, string uri, ubyte access)
+    {
+        ResultCode rc;
+        ubyte      right_res;
+        Json       res;
+        Ticket     *ticket;
+
+        try
+        {
+            ticket = get_ticket(context, _ticket);
+
+            if (ticket.result != ResultCode.OK)
+                throw new HTTPStatusException(ticket.result);
+
+            right_res = context.get_rights(ticket, uri, access);
+
+            return right_res;
         }
         finally
         {
@@ -370,7 +397,6 @@ class VedaStorageRest : VedaStorageRest_API
             OutBuffer trace_acl = new OutBuffer();
 
             context.get_rights_origin_from_acl(ticket, uri, trace_acl, trace_info);
-
             indv_info.addResource("rdfs:comment", Resource(trace_info.toString()));
             res ~= indv_info;
 
@@ -400,6 +426,9 @@ class VedaStorageRest : VedaStorageRest_API
                     json ~= individual_to_json(indv_res);
                 }
             }
+            
+            foreach (individual; res)
+                json ~= individual_to_json(individual);            
 
             return json;
         }

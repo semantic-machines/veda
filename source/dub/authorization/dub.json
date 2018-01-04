@@ -9,7 +9,7 @@
                 "urld": "2.0.1"
         },
         "libs": [
-                    "nanomsg", "tarantool"
+                    "nanomsg", "tarantool", "mdbx"
         ],
 	"sourcePaths":[
 	    "../../veda/authorization",
@@ -25,6 +25,9 @@
 	    "../../veda/storage/common.d",
 	    "../../veda/storage/right_set.d",
 	    "../../veda/storage/authorization.d",
+	    "../../veda/storage/mdbx/mdbx_acl.d",
+	    "../../veda/storage/mdbx/mdbx_driver.d",
+	    "../../veda/storage/mdbx/mdbx_header.d",
 	    "../../veda/storage/lmdb/lmdb_acl.d",
 	    "../../veda/storage/lmdb/lmdb_driver.d",
 	    "../../veda/storage/lmdb/lmdb_header.d",

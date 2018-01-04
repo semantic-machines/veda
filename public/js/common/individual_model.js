@@ -117,7 +117,7 @@ veda.Module(function (veda) { "use strict";
       configurable: false,
       enumerable: false
     });
-  }
+  };
 
   function parser(value) {
     if (value.type === "String") {

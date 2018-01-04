@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -71,6 +72,12 @@ var socket *nanomsg.Socket
 //endpoint is nanomsg endpoint connected to server
 var endpoint *nanomsg.Endpoint
 
+//aclSocket is nanomsg socket connected to acl service
+var aclSocket *nanomsg.Socket
+
+//aclEndpoint is nanomsg endpoint connected to acl service
+var aclEndpoint *nanomsg.Endpoint
+
 //mainModuleURL is tcp address of veda server
 var mainModuleURL = "tcp://127.0.0.1:9112"
 var notifyChannelURL = "tcp://127.0.0.1:9111"
@@ -78,6 +85,7 @@ var ftQueryURL = "127.0.0.1:11112"
 var tarantoolURL = "127.0.0.1:9999"
 var webserverPort = "8080"
 var webserverHTTPSPort = "8020"
+var aclServiceURL = "tcp://127.0.0.1:22000"
 var useHTTPS = false
 
 //attachmentsPath is path where files from request are stored
@@ -199,10 +207,10 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
 
 func main() {
 	var err error
-	socket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 
 	configWebServer()
 
+	socket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
 		log.Fatal("@ERR ON CREATING SOCKET")
 	}
@@ -212,6 +220,18 @@ func main() {
 		endpoint, err = socket.Connect(mainModuleURL)
 		time.Sleep(3000 * time.Millisecond)
 	}
+
+	aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	if err != nil {
+		log.Fatal("@ERR ON CREATING ACL SOCKET")
+	}
+
+	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
+	for err != nil {
+		endpoint, err = aclSocket.Connect(aclServiceURL)
+		time.Sleep(3000 * time.Millisecond)
+	}
+
 	conn.Connect(tarantoolURL)
 
 	ticketCache = make(map[string]ticket)
@@ -235,6 +255,7 @@ func main() {
 		}
 	}
 
+	fmt.Println("ready")
 	select {}
 	/*
 		err = fasthttp.ListenAndServeTLS("0.0.0.0:8020", "ssl-certs/server.crt",

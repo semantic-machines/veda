@@ -12,8 +12,8 @@
 @prefix v-asp: <http://semantic-machines.com/veda/veda-aspect/> .
 <http://semantic-machines.com/veda/veda-aspect>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system aspect ontology"@en ;
   rdfs:label "Онтология аспекта системы Веда"@ru ;
+  rdfs:label "Veda system aspect ontology"@en ;
 #  owl:versionInfo "1.1" ;
   v-s:loadPriority 9 ;
 .
@@ -21,39 +21,39 @@
 v-s:Aspect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Aspect"@en ;
   rdfs:label "Аспект"@ru ;
+  rdfs:label "Aspect"@en ;
 .
 
 v-s:PersonalAspect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Aspect ;
-  rdfs:label "Personal aspect"@en ;
   rdfs:label "Персональный аспект"@ru ;
+  rdfs:label "Personal aspect"@en ;
   v-ui:hasTemplate v-s:PersonalAspectTemplate ;
 .
 
 v-s:BusinessAspect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Aspect ;
-  rdfs:label "Business aspect"@en ;
   rdfs:label "Деловой аспект"@ru ;
+  rdfs:label "Business aspect"@en ;
 .
 
 v-s:hasFavorite
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
   rdfs:range rdfs:Resource ;
-  rdfs:label "Favorite"@en ;
   rdfs:label "Избранное"@ru ;
+  rdfs:label "Favorite"@en ;
 .
 
 v-s:hasBlank
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
   rdfs:range v-fc:Blank ;
-  rdfs:label "Blank"@en ;
   rdfs:label "Бланк"@ru ;
+  rdfs:label "Blank"@en ;
 .
 
 v-s:hasRegistry
@@ -61,32 +61,32 @@ v-s:hasRegistry
   rdfs:domain v-s:Aspect ;
   rdfs:range v-fs:FulltextRequest ;
   rdfs:range v-fs:AttributiveRequest ;
-  rdfs:label "Registry"@en ;
   rdfs:label "Реестр"@ru ;
+  rdfs:label "Registry"@en ;
 .
 
 v-s:hasReport
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
   rdfs:range rdfs:Resource ;
-  rdfs:label "Report"@en ;
   rdfs:label "Отчет"@ru ;
+  rdfs:label "Report"@en ;
 .
 
 v-s:hasArbitraryLink
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
   rdfs:range rdfs:Resource ;
-  rdfs:label "Arbitrary link"@en ;
   rdfs:label "Произвольная ссылка"@ru ;
+  rdfs:label "Arbitrary link"@en ;
 .
 
 v-s:hasWidget
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
   rdfs:range rdfs:Resource ;
-  rdfs:label "Widget"@en ;
   rdfs:label "Виджет"@ru ;
+  rdfs:label "Widget"@en ;
 .
 
 v-s:owner
@@ -97,8 +97,8 @@ v-s:hasBusinessAspect
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
   rdfs:range v-s:BusinessAspect ;
-  rdfs:label "Related business aspect"@en ;
   rdfs:label "Связанный деловой аспект"@ru ;
+  rdfs:label "Related business aspect"@en ;
 .
 
 v-s:hasAspect

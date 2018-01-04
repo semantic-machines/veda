@@ -428,6 +428,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
                         individuals[ uri ] = Individual.init;
 
                         Individual indv_in_storage = context.get_individual(&sticket, uri);
+						long prev_update_counter = indv_in_storage.getFirstInteger ("v-s:updateCounter"); 
                         indv_in_storage.removeResource("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:previousVersion");
                         indv_in_storage.removeResource("v-s:actualVersion");
@@ -444,6 +445,9 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
+
+								if (prev_update_counter > 0)
+									indv.addResource("v-s:updateCounter", Resource (prev_update_counter));
 
                                 ResultCode res = context.update(-1, &sticket, INDV_OP.PUT, &indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
 

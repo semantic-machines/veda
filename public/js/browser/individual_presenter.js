@@ -374,6 +374,7 @@ veda.Module(function (veda) { "use strict";
       } else if ( rel_inline_template.length ) {
         relTemplate = rel_inline_template;
       }
+      relContainer.empty();
 
       template.on("view edit search", function (e) {
         if (e.type === "view") {
@@ -552,7 +553,7 @@ veda.Module(function (veda) { "use strict";
           var embeddedValidation = embeddedTemplate.data("validation");
           return embeddedValidation ? acc && embeddedValidation.state : acc;
         }, true);
-        template.trigger("internal-validated");
+        template.trigger("internal-validated", [validation]);
       }
       // "validate" event should bubble up to be handled by parent template only if current template is embedded
       if ( !template.data("isEmbedded") ) {
@@ -604,7 +605,7 @@ veda.Module(function (veda) { "use strict";
       // Initial validation state
       validation[property_uri] = {state: true, cause: []};
 
-      function validatedHandler(e) {
+      function validatedHandler(e, validation) {
         if ( validation.state || !validation[property_uri] || validation[property_uri].state === true ) {
           control.removeClass("has-error");
           control.popover("destroy");
@@ -669,7 +670,7 @@ veda.Module(function (veda) { "use strict";
       // Initial validation state
       validation[rel_uri] = {state: true, cause: []};
 
-      function validatedHandler(e) {
+      function validatedHandler(e, validation) {
         if ( validation.state || !validation[rel_uri] || validation[rel_uri].state === true) {
           control.removeClass("has-error");
           control.popover("destroy");
@@ -764,7 +765,6 @@ veda.Module(function (veda) { "use strict";
       }).mouseleave(function () {
         valueHolder.removeClass("blue-outline");
       });
-      //valueHolder.after( wrapper );
       valueHolder.append( wrapper );
     });
   }

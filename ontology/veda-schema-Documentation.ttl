@@ -9,8 +9,8 @@
 
 <http://semantic-machines.com/veda/mondi-schema-Documentation/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. Documentation"@en ;
   rdfs:label "Онтология системы Veda. Документация"@ru ;
+  rdfs:label "Veda system ontology. Documentation"@en ;
   v-s:loadPriority 11 ;
 .
 #-- Классы --
@@ -18,13 +18,13 @@
 v-s:NormativeDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document"@en ;
 .
 v-s:hasNormativeDocumentRequirement
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Requirement"@en ;
   rdfs:label "Требование"@ru ;
+  rdfs:label "Requirement"@en ;
   rdfs:range v-s:NormativeDocumentRequirement ;
   rdfs:domain v-s:NormativeDocument ;
 .
@@ -33,27 +33,27 @@ v-s:NormativeDocumentRequirement
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Normative document requirement"@en ;
   rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document requirement"@en ;
 .
 v-s:checkQuestion
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Check question"@en ;
   rdfs:label "Контрольный вопрос"@ru ;
+  rdfs:label "Check question"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
 v-s:hasNormativeDocument
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Normative document"@en ;
   rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document"@en ;
   rdfs:range v-s:NormativeDocument ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
 v-s:requirementGroupNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Requirement group number"@en ;
   rdfs:label "Номер группы требований"@ru ;
+  rdfs:label "Requirement group number"@en ;
   rdfs:range xsd:integer ;
   rdfs:domain v-s:NormativeDocumentRequirement ;
 .
@@ -64,20 +64,20 @@ v-s:Risk
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Measurable ;
-  rdfs:label "Risk"@en ;
   rdfs:label "Риск"@ru ;
+  rdfs:label "Risk"@en ;
 .
 v-s:consequence
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Implication"@en ;
   rdfs:label "Последствия"@ru ;
+  rdfs:label "Implication"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Risk ;
 .
 v-s:possibleLossAmount
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Possible loss amount"@en ;
   rdfs:label "Величина возможного ущерба"@ru ;
+  rdfs:label "Possible loss amount"@en ;
   rdfs:range xsd:decimal;
   rdfs:domain v-s:Risk ;
 .
@@ -92,56 +92,56 @@ v-s:Observation
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Observation"@en ;
   rdfs:label "Наблюдение"@ru ;
+  rdfs:label "Observation"@en ;
 .
 v-s:observationDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Observation"@en ;
   rdfs:label "Наблюдение"@ru ;
+  rdfs:label "Observation"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
 v-s:deviationDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Deviation"@en ;
   rdfs:label "Отклонение"@ru ;
+  rdfs:label "Deviation"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
 v-s:recommendationDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Recommendation"@en ;
   rdfs:label "Рекомендация"@ru ;
+  rdfs:label "Recommendation"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
 v-s:isPositiveObservation
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Positive observation"@en ;
   rdfs:label "Положительное наблюдение"@ru ;
+  rdfs:label "Positive observation"@en ;
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Observation ;
 .
 
 v-s:effectsDescription
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "What are the consequences?"@en ;
   rdfs:label "Описание последствий"@ru ;
+  rdfs:label "What are the consequences?"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
 v-s:observationInitiator
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Оbservation initiator"@en ;
   rdfs:label "Кто обнаружил"@ru ;
+  rdfs:label "Оbservation initiator"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
 v-s:observationCircumstances
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "How was it discovered?"@en ;
   rdfs:label "Как было обнаружено?"@ru ;
+  rdfs:label "How was it discovered?"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Observation ;
 .
@@ -157,8 +157,8 @@ v-s:WorkReport
   rdfs:subClassOf v-s:Measurable ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:label "Work Report"@en ;
   rdfs:label "Отчет о работе"@ru ;
+  rdfs:label "Work Report"@en ;
 .
 # ------------------------------------------------------------
 v-s:Request
@@ -172,16 +172,16 @@ v-s:Request
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Controlled ;
-  rdfs:label "Request"@en ;
   rdfs:label "Запрос"@ru ;
+  rdfs:label "Request"@en ;
 .
 
 #---------------------------------------------------------
 v-s:RegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Regulatory document"@en ;
   rdfs:label "Распорядительный документ"@ru ;
+  rdfs:label "Regulatory document"@en ;
 .
 
 #---------------------------------------------------------
@@ -192,8 +192,8 @@ v-s:MaintainedObject
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:ClassifiedRus ;
-  rdfs:label "Maintained Object"@en ;
   rdfs:label "Обслуживаемый объект"@ru ;
+  rdfs:label "Maintained Object"@en ;
 .
 
 #---------------------------------------------------------
@@ -201,8 +201,8 @@ v-s:UnitOfMeasure
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ClassifiedRus ;
-  rdfs:label "Unit of measure"@en ;
   rdfs:label "Единицы измерения"@ru ;
+  rdfs:label "Unit of measure"@en ;
 .
 
 #---------------------------------------------------------
@@ -214,16 +214,16 @@ v-s:LocalRegulatoryDocument
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Local Regulatory document"@en ;
   rdfs:label "Локальный нормативный документ"@ru ;
+  rdfs:label "Local Regulatory document"@en ;
 .
 # v-s:hasDocumentKind
 # v-s:registrationNumber
 
 v-s:hasVersionOfLocalRegulatoryDocument
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Versions of documents"@en ;
   rdfs:label "Версии документов"@ru ;
+  rdfs:label "Versions of documents"@en ;
   rdfs:range v-s:VersionOfLocalRegulatoryDocument ;
   rdfs:domain v-s:LocalRegulatoryDocument ;
 .
@@ -233,20 +233,20 @@ v-s:VersionOfLocalRegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:LocalRegulatoryDocument ;
   rdfs:subClassOf v-s:Contractual ;
-  rdfs:label "Verions of local regulatory document"@en ;
   rdfs:label "Версия локального нормативного документа"@ru ;
+  rdfs:label "Verions of local regulatory document"@en ;
 .
 v-s:hasDescriptionOfChange
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Description of changes"@en ;
   rdfs:label "Описание изменений"@ru ;
+  rdfs:label "Description of changes"@en ;
   rdfs:range v-s:DescriptionOfChange ;
   rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
 .
 v-s:hasAddendum
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Addendum local regulatory document"@en ;
-  rdfs:label "Приложение ЛНД"@ru ;
+  rdfs:label "Приложение"@ru ;
+  rdfs:label "Addendum"@en ;
   rdfs:range v-s:Addendum ;
   rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
 .
@@ -255,20 +255,20 @@ v-s:DescriptionOfChange
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Description of changes"@en ;
   rdfs:label "Описание изменений"@ru ;
+  rdfs:label "Description of changes"@en ;
 .
 v-s:asis
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "As is"@en ;
   rdfs:label "Было"@ru ;
+  rdfs:label "As is"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:DescriptionOfChange ;
 .
 v-s:tobe
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "To be"@en ;
   rdfs:label "Стало"@ru ;
+  rdfs:label "To be"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:DescriptionOfChange ;
 .
@@ -279,8 +279,8 @@ v-s:Addendum
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:label "Addendum local regulatory document"@en ;
-  rdfs:label "Приложение ЛНД"@ru ;
+  rdfs:label "Addendum"@en ;
+  rdfs:label "Приложение"@ru ;
   v-ui:hasTemplate v-s:AddendumTemplate ;
 .
 #-------------------------------------------------
@@ -288,14 +288,14 @@ v-s:Addendum
 mnd-s:OriginalSource
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Original source"@en ;
   rdfs:label "Источник оригинала"@ru ;
+  rdfs:label "Original source"@en ;
 .
 v-s:OriginalSource
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Original source"@en ;
   rdfs:label "Источник оригинала"@ru ;
+  rdfs:label "Original source"@en ;
 .
 
 #---------------------------------------------------------
@@ -307,8 +307,8 @@ v-s:PowerOfAttorney
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Temporal ;
-  rdfs:label "Power of attorney"@en ;
   rdfs:label "Доверенность"@ru ;
+  rdfs:label "Power of attorney"@en ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate
@@ -319,15 +319,15 @@ v-s:PowerOfAttorney
 
 v-s:grantor
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Grantor"@en ;
   rdfs:label "Доверитель"@ru ;
+  rdfs:label "Grantor"@en ;
   rdfs:range v-s:Correspondent ;
   rdfs:domain v-s:Deliverable2 ;
 .
 v-s:grantee
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Grantee"@en ;
   rdfs:label "Доверенный"@ru ;
+  rdfs:label "Grantee"@en ;
   rdfs:range v-s:Correspondent ;
   rdfs:domain v-s:Deliverable2 ;
 .
@@ -342,8 +342,8 @@ v-s:BusinessTrip
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Business trip"@en ;
   rdfs:label "Командировка"@ru ;
+  rdfs:label "Business trip"@en ;
 .
 v-s:hasBusinessTripRegistrationRecord
   rdf:type owl:ObjectProperty ;
@@ -354,22 +354,22 @@ v-s:hasBusinessTripRegistrationRecord
 .
 v-s:businessTripEmployee
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Employee"@en ;
   rdfs:label "Сотрудник"@ru ;
+  rdfs:label "Employee"@en ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:BusinessTrip ;
 .
 v-s:businessTripDepartment
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Department"@en ;
   rdfs:label "Подразделение"@ru ;
+  rdfs:label "Department"@en ;
   rdfs:range v-s:Department ;
   rdfs:domain v-s:BusinessTrip ;
 .
 v-s:businessTripGoal
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Goal"@en ;
   rdfs:label "Цель"@ru ;
+  rdfs:label "Goal"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:BusinessTrip ;
 .
@@ -409,8 +409,8 @@ v-s:PassRequest
 # v-s:goal
 v-s:hasPass
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Pass"@en ;
   rdfs:label "Пропуск"@ru ;
+  rdfs:label "Pass"@en ;
   rdfs:range v-s:Pass ;
   rdfs:domain v-s:PassRequest ;
 .
@@ -450,8 +450,8 @@ v-s:Decree
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Deliverable2 ;
-  rdfs:label "Decree"@en ;
   rdfs:label "Распорядительный документ"@ru ;
+  rdfs:label "Decree"@en ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate
@@ -467,8 +467,8 @@ v-s:InternalDocument
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Enumerated ;
-  rdfs:label "Internal document"@en ;
   rdfs:label "Внутренний документ"@ru ;
+  rdfs:label "Internal document"@en ;
 .
 # v-s:hasDocumentKind
 # v-s:initiator
@@ -479,3 +479,53 @@ v-s:InternalDocument
 # v-s:attachment
 # v-s:hasLink
 # v-s:hasComment
+
+#---------------------------------------
+v-s:AddendumTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Addendum ;
+  rdfs:label "Template for v-s:Addendum class"@en ;
+  rdfs:label "Шаблон для класса v-s:Addendum"@ru ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Addendum" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+   <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+  <div class="checkbox no-margin">
+    <label>
+      <veda-control property="v-s:valid" data-type="boolean"></veda-control>
+      <em about="v-s:valid" property="rdfs:label"></em>
+    </label>
+  </div>
+  <em about="rdfs:label" property="rdfs:label"></em>
+  <div property="rdfs:label" class="view -edit -search"></div>
+  <veda-control data-type="text" property="rdfs:label" class="-view edit search"></veda-control>
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-s:dateFrom" property="rdfs:label"></em>
+      <div property="v-s:dateFrom" class="view -edit -search"></div>
+      <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:dateTo" property="rdfs:label"></em>
+      <div property="v-s:dateTo" class="view -edit -search"></div>
+      <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <em about="v-s:attachment" property="rdfs:label"></em>
+  <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+  <veda-control data-type="file"  rel="v-s:attachment" class="-view edit -search"></veda-control>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions view edit -search">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></div>
+  </div>
+</div>
+  """ ;
+.

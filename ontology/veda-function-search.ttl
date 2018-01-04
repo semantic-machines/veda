@@ -11,8 +11,8 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 <http://semantic-machines.com/veda/veda-function-search>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system function 'Search' ontology"@en ;
   rdfs:label "Онтология функции 'Поиск' системы Веда"@ru ;
+  rdfs:label "Veda system function 'Search' ontology"@en ;
 #  owl:versionInfo "0.2" ;
   v-s:loadPriority 9 ;
 .
@@ -22,30 +22,30 @@
 v-fs:FunctionSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Function Search"@en ;
   rdfs:label "Функция Поиск"@ru ;
+  rdfs:label "Function Search"@en ;
   v-ui:hasTemplate v-fs:SearchTemplate ;
 .
 v-fs:FulltextRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Fulltext request"@en ;
   rdfs:label "Полнотекстовый запрос"@ru ;
+  rdfs:label "Fulltext request"@en ;
   v-ui:hasModel v-fs:FulltextRequestModel ;
   v-ui:hasTemplate v-fs:FulltextRequestTemplate ;
 .
 v-fs:AttributiveRequest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Attributive request"@en ;
   rdfs:label "Атрибутивный запрос"@ru ;
+  rdfs:label "Attributive request"@en ;
   v-ui:hasModel v-fs:AttributiveRequestModel ;
   v-ui:hasTemplate v-fs:AttributiveRequestTemplate ;
 .
 v-fs:Search
   rdf:type v-fs:FunctionSearch ;
-  rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
+  rdfs:label "Find"@en ;
 .
 v-fs:Fulltext
   rdf:type v-fs:FulltextRequest ;
@@ -59,15 +59,16 @@ v-fs:Attributive
 .
 v-fs:fulltextQuery
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Query"@en ;
   rdfs:label "Запрос"@ru ;
+  rdfs:label "Query"@en ;
   rdfs:domain v-fs:FulltextRequest ;
+  rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:string ;
 .
 v-fs:sortOrder
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Sort order"@en ;
   rdfs:label "Порядок сортировки"@ru ;
+  rdfs:label "Sort order"@en ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:domain v-fs:AttributiveSearch ;
@@ -75,16 +76,16 @@ v-fs:sortOrder
 .
 v-fs:databases
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Databases"@en ;
   rdfs:label "Базы данных"@ru ;
+  rdfs:label "Databases"@en ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:string ;
 .
 v-fs:reopen
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Reopen"@en ;
   rdfs:label "Открыть заново"@ru ;
+  rdfs:label "Reopen"@en ;
   rdfs:domain v-fs:FulltextRequest ;
   rdfs:domain v-fs:AttributiveRequest ;
   rdfs:range xsd:boolean ;
@@ -155,118 +156,118 @@ v-fs:LabelSpec
 .
 v-fs:RequestMgmt
   rdf:type v-s:Bundle ;
-  rdfs:label "Remember"@en ;
   rdfs:label "Запомнить"@ru ;
+  rdfs:label "Remember"@en ;
 .
 v-fs:SavedRequests
   rdf:type v-s:Bundle ;
-  rdfs:label "Saved requests"@en ;
   rdfs:label "Сохраненные запросы"@ru ;
+  rdfs:label "Saved requests"@en ;
 .
 v-fs:FulltextBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Fulltext"@en ;
   rdfs:label "Полнотекстовый"@ru ;
+  rdfs:label "Fulltext"@en ;
 .
 v-fs:AttributiveBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Attributive"@en ;
   rdfs:label "Атрибутивный"@ru ;
+  rdfs:label "Attributive"@en ;
 .
 v-fs:Request
   rdf:type v-s:Bundle ;
-  rdfs:label "Request"@en ;
   rdfs:label "Запрос"@ru ;
+  rdfs:label "Request"@en ;
 .
 v-fs:EnterQuery
   rdf:type v-s:Bundle ;
-  rdfs:label "Enter query"@en ;
   rdfs:label "Введите запрос"@ru ;
+  rdfs:label "Enter query"@en ;
 .
 v-fs:ChooseType
   rdf:type v-s:Bundle ;
-  rdfs:label "Choose type to search"@en ;
   rdfs:label "Выберите тип объекта"@ru ;
+  rdfs:label "Choose type to search"@en ;
 .
 v-fs:Params
   rdf:type v-s:Bundle ;
-  rdfs:label "What we search for?"@en ;
   rdfs:label "Что ищем?"@ru ;
+  rdfs:label "What we search for?"@en ;
 .
 v-fs:Find
   rdf:type v-s:Bundle ;
-  rdfs:label "Find"@en ;
   rdfs:label "Найти"@ru ;
+  rdfs:label "Find"@en ;
 .
 v-fs:Excel
   rdf:type v-s:Bundle ;
-  rdfs:label "Excel"@en ;
   rdfs:label "Excel"@ru ;
+  rdfs:label "Excel"@en ;
 .
 v-fs:FilesRegistry
   rdf:type v-s:Bundle ;
-  rdfs:label "Registry with files"@en ;
   rdfs:label "Реестр с файлами"@ru ;
+  rdfs:label "Registry with files"@en ;
 .
 v-fs:SetColumns
   rdf:type v-s:Bundle ;
-  rdfs:label "Set columns"@en ;
   rdfs:label "Настроить столбцы"@ru ;
+  rdfs:label "Set columns"@en ;
 .
 v-fs:Results
   rdf:type v-s:Bundle ;
-  rdfs:label "Results"@en ;
   rdfs:label "Результаты"@ru ;
+  rdfs:label "Results"@en ;
 .
 v-fs:Empty
   rdf:type v-s:Bundle ;
-  rdfs:label "Empty!"@en ;
   rdfs:label "Пусто!"@ru ;
+  rdfs:label "Empty!"@en ;
 .
 v-fs:NothingFound
   rdf:type v-s:Bundle ;
-  rdfs:label "Nothing found for your request. Please refine the query."@en ;
   rdfs:label "По Вашему запросу ничего не найдено. Пожалуйста, уточните запрос."@ru ;
+  rdfs:label "Nothing found for your request. Please refine the query."@en ;
 .
 v-fs:MoreResults
   rdf:type v-s:Bundle ;
-  rdfs:label "More results"@en ;
   rdfs:label "Еще результаты"@ru ;
+  rdfs:label "More results"@en ;
 .
 v-fs:AllResults
   rdf:type v-s:Bundle ;
-  rdfs:label "Load all results"@en ;
   rdfs:label "Загрузить все результаты"@ru ;
+  rdfs:label "Load all results"@en ;
 .
 v-fs:NoMoreResults
   rdf:type v-s:Bundle ;
-  rdfs:label "All results loaded"@en ;
   rdfs:label "Все результаты загружены"@ru ;
+  rdfs:label "All results loaded"@en ;
 .
 v-fs:SetResultsTable
   rdf:type v-s:Bundle ;
-  rdfs:label "Set results table"@en ;
   rdfs:label "Настройте таблицу отображения результатов"@ru ;
+  rdfs:label "Set results table"@en ;
 .
 v-fs:GenericTable
   rdf:type v-s:Bundle ;
-  rdfs:label "Generic table"@en ;
   rdfs:label "Таблица по-умолчанию"@ru ;
+  rdfs:label "Generic table"@en ;
 .
 v-fs:CustomTable
   rdf:type v-s:Bundle ;
-  rdfs:label "Custom table"@en ;
   rdfs:label "Таблица для отображения"@ru ;
+  rdfs:label "Custom table"@en ;
 .
 v-fs:DragColumns
   rdf:type v-s:Bundle ;
-  rdfs:label "Drag columns from generic table"@en ;
   rdfs:label "Перетащите столбцы из таблицы по-умолчанию."@ru ;
+  rdfs:label "Drag columns from generic table"@en ;
 .
 v-fs:SearchTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Search class template"@en ;
   rdfs:label "Шаблон класса поиск"@ru ;
+  rdfs:label "Search class template"@en ;
   v-ui:forClass v-fs:FunctionSearch ;
   v-ui:template """
   <div class="container sheet">
@@ -339,8 +340,9 @@ v-fs:SearchTemplate
 .
 v-fs:FulltextRequestModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "V-fs:FulltextRequest class model"@en ;
   rdfs:label "Модель класса v-fs:FulltextRequest"@ru ;
+  rdfs:label "V-fs:FulltextRequest class model"@en ;
+  v-ui:forClass v-fs:FulltextRequest ;
   v-s:script """
   var self = this,
     q = mkQuery(),
@@ -381,8 +383,8 @@ v-fs:FulltextRequestModel
 .
 v-fs:FulltextRequestTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Fulltext request class template"@en ;
   rdfs:label "Шаблон класса полнотекстовый запрос"@ru ;
+  rdfs:label "Fulltext request class template"@en ;
   v-ui:forClass v-fs:FulltextRequest ;
   v-ui:template """
 <div role="tabpanel" class="container sheet">
@@ -575,7 +577,7 @@ v-fs:FulltextRequestTemplate
           var container = $("<li>").appendTo(resultsList);
           var result = new veda.IndividualModel( self.result[i] );
           var tmpl = genericTemplate(result);
-          result.present(container, $(tmpl));
+          result.present(container, tmpl);
         }, 0);
       }(i));
     }
@@ -598,8 +600,9 @@ v-fs:FulltextRequestTemplate
 .
 v-fs:AttributiveRequestModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "V-fs:AttributiveRequest class model"@en ;
   rdfs:label "Модель класса v-fs:AttributiveRequest"@ru ;
+  rdfs:label "V-fs:AttributiveRequest class model"@en ;
+  v-ui:forClass v-fs:AttributiveRequest ;
   v-s:script """
   var stopList = [
     "@",
@@ -676,8 +679,8 @@ v-fs:AttributiveRequestModel
 .
 v-fs:AttributiveRequestTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "V-fs:AttributiveRequest class template"@en ;
   rdfs:label "Шаблон класса v-fs:AttributiveRequest"@ru ;
+  rdfs:label "V-fs:AttributiveRequest class template"@en ;
   v-ui:forClass v-fs:AttributiveRequest ;
   v-ui:template """
 <div role="tabpanel" class="container sheet">
@@ -861,7 +864,7 @@ v-fs:AttributiveRequestTemplate
       head = gen_head(types[0]);
       genericHead.html(head);
       customHead.empty();
-      var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, $('<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>'));
+      var placeholder = (new veda.IndividualModel("v-fs:DragColumns")).present(customHead, '<tr><td><em about="v-fs:DragColumns" property="rdfs:label"></em></td></tr>');
     }
     tHead.html( head.clone() );
 
@@ -1005,9 +1008,8 @@ v-fs:AttributiveRequestTemplate
       (function (i) {
         setTimeout(function () {
           var _tmpl = tmpl.replace("###", i+1);
-          var $tmpl = $(_tmpl);
           var result = new veda.IndividualModel( self.result[i] );
-          result.present(tBody, $tmpl);
+          var $tmpl = result.present(tBody, _tmpl);
           $tmpl.dblclick(function (e) {
             riot.route("#/" + result.id);
           });
@@ -1055,7 +1057,7 @@ v-fs:AttributiveRequestTemplate
       (function (i) {
         var _tmpl = tmpl.replace("###", i+1);
         var result = new veda.IndividualModel( self.result[i] );
-        result.present($("tbody", tbl), $(_tmpl));
+        result.present($("tbody", tbl), _tmpl);
       }(i));
     }
     setTimeout(function () {
@@ -1098,8 +1100,8 @@ v-fs:AttributiveRequestTemplate
 v-fs:AttributiveSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Attributive search"@en ;
   rdfs:label "Атрибутивный поиск"@ru ;
+  rdfs:label "Attributive search"@en ;
   v-ui:hasTemplate v-fs:AttributiveSearchTemplate ;
 .
 
@@ -1144,20 +1146,20 @@ v-fs:loadAll
 
 v-fs:TotalFoundBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Total found"@en ;
   rdfs:label "Всего найдено"@ru ;
+  rdfs:label "Total found"@en ;
 .
 
 v-fs:TotalProcessedBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Processed"@en ;
   rdfs:label "Обработано"@ru ;
+  rdfs:label "Processed"@en ;
 .
 
 v-fs:TotalAuthorizedBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Authorized"@en ;
   rdfs:label "Вам доступно"@ru ;
+  rdfs:label "Authorized"@en ;
 .
 
 v-fs:SearchBundle
@@ -1181,8 +1183,8 @@ v-fs:ClickToViewContent
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
 <script>
 
@@ -1688,9 +1690,9 @@ v-fs:AttributiveSearchTemplate
       var delta = resultDelta.length;
       // Render each result
       resultDelta.map(function (uri, i) {
-        var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
+        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
             item = new veda.IndividualModel(uri);
-        item.present(resultContainer, tmpl);
+        tmpl = item.present(resultContainer, tmpl);
         if (item.id === self.marked) {
           tmpl.addClass("warning");
         }
@@ -1717,7 +1719,6 @@ v-fs:AttributiveSearchTemplate
               });
             }
           });
-          tmpl.show();
         }, 300);
       });
     });
@@ -2100,8 +2101,8 @@ v-fs:MinimalSearchResultTemplate
 v-fs:AttributiveSearchInlineTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
 <script>
 
@@ -2472,9 +2473,9 @@ v-fs:AttributiveSearchInlineTemplate
       var delta = resultDelta.length;
       // Render each result
       resultDelta.map(function (uri, i) {
-        var tmpl = $(resultTemplate.replace("###", total - delta + i + 1)).hide(),
+        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
             item = new veda.IndividualModel(uri);
-        item.present(resultContainer, tmpl);
+        tmpl = item.present(resultContainer, tmpl);
         if (item.id === self.marked) {
           tmpl.addClass("warning");
         }
@@ -2497,7 +2498,6 @@ v-fs:AttributiveSearchInlineTemplate
               });
             }
           });
-          tmpl.show();
         }, 300);
       });
     });

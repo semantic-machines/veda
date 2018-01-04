@@ -79,9 +79,9 @@ fi
     echo 'export GOPATH=$HOME/go'  >> $HOME/.bashrc
     source ~/.bashrc
 
-#    sudo rm -rf /usr/local/go
-#    sudo rm -rf /usr/bin/go
-#    sudo rm -rf /usr/bin/gofmt
+    sudo rm -rf /usr/local/go
+    sudo rm -rf /usr/bin/go
+    sudo rm -rf /usr/bin/gofmt
     sudo mv go $GOROOT
 
     go version
@@ -268,6 +268,29 @@ if ! ldconfig -p | grep libtarantool; then
     sudo ldconfig
 
     cd ..
+    cd ..
+
+fi
+
+if ! ldconfig -p | grep libmdbx; then
+
+    TTC=24a8bdec49ee360bf0412631ff8931de91e109fc
+
+    mkdir tmp
+    cd tmp
+
+    wget https://github.com/leo-yuriev/libmdbx/archive/$TTC.tar.gz -P .
+    tar -xvzf $TTC.tar.gz
+
+    cd libmdbx-$TTC
+
+    make
+
+    cp src/tools/*.1 ./
+
+    sudo make install
+    sudo ldconfig
+
     cd ..
 
 fi

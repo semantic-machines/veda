@@ -11,8 +11,8 @@
 
 <http://semantic-machines.com/veda/veda-bug-report>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system bug report ontology"@en ;
   rdfs:label "Онтология сообщений об ошибках системы Веда"@ru ;
+  rdfs:label "Veda system bug report ontology"@en ;
 #  owl:versionInfo "1.1" ;
   v-s:loadPriority 9 ;
 .
@@ -20,44 +20,44 @@
 v-s:BugReport
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Bug report"@en ;
   rdfs:label "Сообщение об ошибке"@ru ;
+  rdfs:label "Bug report"@en ;
   v-ui:hasTemplate v-s:BugReportTemplate ;
 .
 v-s:errorCode
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:BugReport ;
   rdfs:range xsd:string ;
-  rdfs:label "Error code"@en ;
   rdfs:label "Код ошибки"@ru ;
+  rdfs:label "Error code"@en ;
 .
 v-s:errorName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:BugReport ;
   rdfs:range xsd:string ;
-  rdfs:label "Error name"@en ;
   rdfs:label "Имя ошибки"@ru ;
+  rdfs:label "Error name"@en ;
 .
 v-s:errorMessage
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:BugReport ;
   rdfs:range xsd:string ;
-  rdfs:label "Error message"@en ;
   rdfs:label "Описание ошибки"@ru ;
+  rdfs:label "Error message"@en ;
 .
 v-s:errorStack
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:BugReport ;
   rdfs:range xsd:string ;
-  rdfs:label "Error stack"@en ;
   rdfs:label "Стек ошибки"@ru ;
+  rdfs:label "Error stack"@en ;
 .
 v-s:resolved
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:BugReport ;
   rdfs:range xsd:boolean ;
-  rdfs:label "Resolved"@en ;
   rdfs:label "Решена"@ru ;
+  rdfs:label "Resolved"@en ;
 .
 v-s:BugReportTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -78,6 +78,8 @@ v-s:BugReportTemplate
   <i about="@" property="v-s:errorMessage"></i>
   <em about="v-s:errorStack" property="rdfs:label"></em>
   <pre about="@" property="v-s:errorStack" style="border:none; background-color:transparent;"></pre>
+
+  <hr>
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
 </div>
   """ ;

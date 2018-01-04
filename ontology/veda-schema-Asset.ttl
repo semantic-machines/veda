@@ -9,8 +9,8 @@
 
 <http://semantic-machines.com/veda/veda-schema-Asset/>
   rdf:type owl:Ontology ;
-  rdfs:label "Veda system ontology. Asset"@en ;
   rdfs:label "Онтология системы Veda. Основное средство"@ru ;
+  rdfs:label "Veda system ontology. Asset"@en ;
   v-s:loadPriority 11 ;
 .
 #--------------------------------------------------
@@ -20,8 +20,8 @@ v-s:Asset
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Vehicle ;
-  rdfs:label "Asset"@en ;
   rdfs:label "Основное средство"@ru ;
+  rdfs:label "Asset"@en ;
   v-ui:hasTemplate mnd-s:AssetTemplate ;
 .
 # v-s:registrationNumber
@@ -34,16 +34,16 @@ v-s:RegistrationCertificate
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Spatial ;
-  rdfs:label "Registration сertificate"@en ;
   rdfs:label "Свидетельство о регистрации"@ru ;
+  rdfs:label "Registration сertificate"@en ;
   v-ui:hasTemplate mnd-s:RegistrationCertificateTemplate ;
 .
 # v-s:registrationNumber
 # v-s:registrationDate
 v-s:typeOfOwnership
   rdf:type owl:ObjectProperty ;
-  rdfs:label "type of ownership"@en ;
   rdfs:label "Вид собственности"@ru ;
+  rdfs:label "type of ownership"@en ;
   rdfs:range v-s:Sector ;
   rdfs:domain v-s:RegistrationCertificate ;
 .
@@ -51,23 +51,23 @@ v-s:typeOfOwnership
 # rdfs:label
 v-s:cadastralNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "cadastrl number"@en ;
   rdfs:label "Кадастровый номер"@ru ;
+  rdfs:label "cadastrl number"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:RegistrationCertificate ;
 .
 v-s:cadastralPassport
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Cadastral passport"@en ;
   rdfs:label "Кадастровый паспорт"@ru ;
+  rdfs:label "Cadastral passport"@en ;
   rdfs:range v-s:File ;
   rdfs:subPropertyOf v-s:attachment ;
   rdfs:domain v-s:RegistrationCertificate ;
 .
 v-s:egrpNumber
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "egrp number"@en ;
   rdfs:label "ЕГРП номер"@ru ;
+  rdfs:label "egrp number"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:RegistrationCertificate ;
 .

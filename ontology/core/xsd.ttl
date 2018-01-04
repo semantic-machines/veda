@@ -6,50 +6,50 @@
 
 xsd:
   rdf:type owl:Ontology ;
-  rdfs:label "XML data types ontology"@en ;
   rdfs:label "Онтология типов данных XML"@ru ;
+  rdfs:label "XML data types ontology"@en ;
 #  owl:versionInfo "1.0" ;
   v-s:loadPriority 4 ;
 .
 xsd:string
   rdf:type rdfs:Datatype ;
-  rdfs:label "String datatype"@en ;
   rdfs:label "Строковый тип данных"@ru ;
+  rdfs:label "String datatype"@en ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
 xsd:integer
   rdf:type rdfs:Datatype ;
-  rdfs:label "Integer datatype"@en ;
   rdfs:label "Целочисленный тип данных"@ru ;
+  rdfs:label "Integer datatype"@en ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
 xsd:nonNegativeInteger
   rdf:type rdfs:Datatype ;
-  rdfs:label "Non negative Integer datatype"@en ;
   rdfs:label "Неотрицательный целочисленный тип данных"@ru ;
+  rdfs:label "Non negative Integer datatype"@en ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
 xsd:decimal
   rdf:type rdfs:Datatype ;
-  rdfs:label "Decimal datatype"@en ;
   rdfs:label "Десятичный тип данных"@ru ;
+  rdfs:label "Decimal datatype"@en ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
 xsd:boolean
   rdf:type rdfs:Datatype ;
-  rdfs:label "Boolean datatype"@en ;
   rdfs:label "Булевый тип данных"@ru ;
+  rdfs:label "Boolean datatype"@en ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
 xsd:dateTime
   rdf:type rdfs:Datatype ;
-  rdfs:label "Datetime datatype"@en ;
   rdfs:label "Календарный тип данных"@ru ;
+  rdfs:label "Datetime datatype"@en ;
   rdfs:isDefinedBy xsd: ;
   rdfs:subClassOf rdf:XMLLiteral ;
 .
