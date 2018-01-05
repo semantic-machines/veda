@@ -1600,7 +1600,7 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <script>
-  individual.rights.load().then(function (rights) {
+  individual.rights.then(function (rights) {
     if ( !individual.hasValue("v-wf:read") && rights.hasValue("v-s:canUpdate", true) ) {
       individual["v-wf:read"] = [true];
       individual.save();
