@@ -109,7 +109,7 @@ veda.Module(function (veda) { "use strict";
       .resolve(pre_render ? pre_render.call(individual, veda, individual, container, template, mode, extra) : undefined)
       .then(function () {
 
-        template = processTemplate (individual, container, template, mode, specs);
+        template = processTemplate(individual, container, template, mode, specs);
 
         container.append(template);
 
@@ -441,16 +441,15 @@ veda.Module(function (veda) { "use strict";
       function propertyModifiedHandler (values) {
         ++counter;
         if (values.length) {
-          values.map(function (value) {
+          values.forEach(function (value) {
             if (value.id in rendered) {
               rendered[value.id].cnt = counter;
               return;
             }
-            value.load().then(function (value) {
-              return renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
-            }).then(function (renderedTmpl) {
-              rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-            });
+            renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode)
+              .then(function (renderedTmpl) {
+                rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
+              });
           });
         } else {
           relContainer.empty();
