@@ -749,7 +749,7 @@ v-ui:LinksTemplate
       Link["v-s:mutualMembership"] = [ true ];
     }
     Link.present(cntr, rowTmpl, "edit").then(function (newRow) {
-      Link.one("afterSave beforeReset", function () {
+      Link.one("afterSave afterDelete afterReset", function () {
         newRow.remove();
       });
     });
