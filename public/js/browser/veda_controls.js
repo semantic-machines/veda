@@ -731,9 +731,14 @@
     }
 
     function renderValue (value) {
-      if (template) {
-        var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      if (value instanceof veda.IndividualModel) {
+        return value.load().then(function (individual) {
+          if (template) {
+            return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+          } else {
+            return individual.toString();
+          }
+        });
       } else {
         return veda.Util.formatValue(value);
       }
@@ -837,9 +842,14 @@
     }
 
     function renderValue (value) {
-      if (template) {
-        var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      if (value instanceof veda.IndividualModel) {
+        return value.load().then(function (individual) {
+          if (template) {
+            return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+          } else {
+            return individual.toString();
+          }
+        });
       } else {
         return veda.Util.formatValue(value);
       }
@@ -957,9 +967,14 @@
     }
 
     function renderValue (value) {
-      if (template) {
-        var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      if (value instanceof veda.IndividualModel) {
+        return value.load().then(function (individual) {
+          if (template) {
+            return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+          } else {
+            return individual.toString();
+          }
+        });
       } else {
         return veda.Util.formatValue(value);
       }
@@ -1397,7 +1412,7 @@
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
-      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
     }
 
     if (queryPrefix) {
@@ -1549,7 +1564,7 @@
 
       fulltext.attr({
         "placeholder": placeholder,
-        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
       });
 
       var timeout;
@@ -1567,15 +1582,15 @@
         {
           name: "dataset",
           source: dataSource,
-          displayKey: function (individual) {
+          displayKey: function (value) {
             var result;
             try {
-              result = renderTemplate(individual);
+              result = renderTemplate(value);
             } catch (ex) {
               console.log(ex);
-              result = individual.id;
+              result = value.id;
             }
-            return result === "" ? individual.id : result;
+            return result === "" ? value.id : result;
           }
         }
       );
@@ -1595,11 +1610,13 @@
       // Fill in value in fulltext field
       var handler = function () {
         if (isSingle && individual.hasValue(rel_uri)) {
-          try {
-            typeAhead.typeahead( "val", renderTemplate( individual.get(rel_uri)[0]) );
-          } catch (e) {
-            typeAhead.typeahead("val", "");
-          }
+          individual[rel_uri][0].load().then(function (value) {
+            try {
+              typeAhead.typeahead( "val", renderTemplate(value) );
+            } catch (e) {
+              typeAhead.typeahead("val", "");
+            }
+          });
         } else {
           typeAhead.typeahead("val", "");
         }
@@ -1677,31 +1694,31 @@
       queryString = prefix;
     }
     var result = [];
-    query({
+    veda.Backend.query({
       ticket: veda.ticket,
       query: queryString,
       sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
       top: 100,
-      limit: 1000,
-      async: true
+      limit: 1000
     }).then(function (results) {
 
       var getList = results.result.filter( function (uri, index) {
         return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
       });
-      return getList.length ? get_individuals({
+
+      if (!getList.length) { return callback(result); }
+
+      veda.Backend.get_individuals({
         ticket: veda.ticket,
-        uris: getList,
-        async: true
-      }) : (callback(result), []);
-
-    }).then(function (individuals) {
-
-      individuals.map( function (json) {
-        result.push( new veda.IndividualModel(json) );
+        uris: getList
+      }).then(function (individuals) {
+        return Promise.all( individuals.map( function (json) {
+          return new veda.IndividualModel(json).load();
+        }));
+      }).then(function (individual_models) {
+        result = result.concat(individual_models);
+        callback(result);
       });
-      callback(result);
-
     });
   }
 
