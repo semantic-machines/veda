@@ -298,7 +298,7 @@ v-fc:BlankTemplate
 
   var _class = object["rdf:type"][0];
 
-  _class.rights.load().then(function (rights) {
+  _class.rights.then(function (rights) {
 
     if (rights.hasValue("v-s:canCreate", true)) {
       object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
@@ -358,7 +358,7 @@ v-fc:BlankTemplateShort
 
   var _class = object["rdf:type"][0];
 
-  _class.rights.load().then(function (rights) {
+  _class.rights.then(function (rights) {
 
     if (rights.hasValue("v-s:canCreate", true)) {
       object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
