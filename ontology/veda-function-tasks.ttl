@@ -461,58 +461,63 @@ v-ft:ActorFilterTemplate
   }
 
   var actors_uris = [ veda.user.id ];
-  var appointments_uris = query({
+  return veda.Backend.query({
     ticket: veda.ticket,
     query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "')"
-  }).result;
+  })
+  .then(function (queryResult) {
+    var appointments_uris = queryResult.result;
+    return veda.Backend.get_individuals(veda.ticket, appointments_uris);
+  })
+  .then(function (appointments) {
 
-  var appointments = get_individuals(veda.ticket, appointments_uris);
-  appointments.map(function (app) { actors_uris.push( app["v-s:occupation"][0].data ); });
+    appointments.map(function (app) { actors_uris.push( app["v-s:occupation"][0].data ); });
 
-  actors_uris.map(function (actor_uri) {
-    var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
-    var actor_template =
-      "<li " + (individual.hasValue(actor_property, actor_uri) ? "class='active'" : "") + ">" +
-        "<a href='#'>" +
-          "<span id='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
-          "<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
-        "</a>" +
-      "</li>";
-    template.append(actor_template);
-  });
-
-  template.on("click", "li a", function (e) {
-    e.preventDefault();
-    var $this = $(this);
-    $("li", template).removeClass("active");
-    $this.parent().addClass("active");
-    var actor_uri = $this.children("#actor").attr("about");
-    individual[actor_property] = [new veda.IndividualModel(actor_uri)];
-    individual.trigger("search");
-  });
-
-  // Update counter if counter & results count do not match
-  individual.on("search:complete", checkCounter);
-  template.one("remove", function () {
-    individual.off(checkCounter);
-  });
-  function checkCounter(results) {
-    try {
-      var actor_uri = individual[actor_property][0].id;
+    actors_uris.map(function (actor_uri) {
       var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
-      var counter = new veda.IndividualModel(counter_uri);
-      if ( counter.isNew() ) {
-        counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
+      var actor_template =
+        "<li " + (individual.hasValue(actor_property, actor_uri) ? "class='active'" : "") + ">" +
+          "<a href='#'>" +
+            "<span id='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
+            "<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
+          "</a>" +
+        "</li>";
+      template.append(actor_template);
+    });
+
+    template.on("click", "li a", function (e) {
+      e.preventDefault();
+      var $this = $(this);
+      $("li", template).removeClass("active");
+      $this.parent().addClass("active");
+      var actor_uri = $this.children("#actor").attr("about");
+      individual[actor_property] = [new veda.IndividualModel(actor_uri)];
+      individual.trigger("search");
+    });
+
+    // Update counter if counter & results count do not match
+    individual.on("search:complete", checkCounter);
+    template.one("remove", function () {
+      individual.off(checkCounter);
+    });
+    function checkCounter(results) {
+      try {
+        var actor_uri = individual[actor_property][0].id;
+        var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+        var counter = new veda.IndividualModel(counter_uri);
+        if ( counter.isNew() ) {
+          counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
+        }
+        var counter_val = counter[counter_prop][0];
+        if ( counter_val !== results.estimated ) {
+          counter[counter_prop] = [ results.estimated ];
+          counter.save();
+        }
+      } catch (err) {
+        console.log("Counter update error");
       }
-      var counter_val = counter[counter_prop][0];
-      if ( counter_val !== results.estimated ) {
-        counter[counter_prop] = [ results.estimated ];
-        counter.save();
-      }
-    } catch (err) {
-      console.log("Counter update error");
     }
-  }
+  });
 
   //# sourceURL=v-ft:ActorFilterTemplate_pre
 </script>
