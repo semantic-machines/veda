@@ -66,16 +66,17 @@ veda.Module(function (veda) { "use strict";
         var typePromises = individual["rdf:type"].map(function (type) {
           return type.load();
         });
-        Promise.all(typePromises).then(function (types) {
+        return Promise.all(typePromises).then(function (types) {
           var templatesPromises = types.map( function (type) {
             return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
           });
           return Promise.all(templatesPromises);
         }).then(function (templates) {
-          return templates.map( function (template) {
+          var renderedTemplates = templates.map( function (template) {
             template = template["v-ui:template"][0].toString();
             return renderTemplate(individual, container, template, mode, extra, specs);
           });
+          return renderedTemplates[0];
         });
       }
     }
