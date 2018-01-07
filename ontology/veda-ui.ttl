@@ -1707,13 +1707,13 @@ v-ui:SimplifiedJournalTemplate
       <tbody id="tbody">
         <tr>
           <td>###</td>
-          <td property="v-wf:from"></td>
-          <td property="v-wf:to"></td>
+          <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+          <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
           <td><a href="$$$" property="rdfs:label"></a><div property="v-s:description"></div></td>
           <td property="v-s:created"></td>
           <td rel="v-wf:takenDecision">
             <div>
-              <div property="v-s:creator"></div>
+              <div rel="v-s:creator" data-template="v-ui:LabelTemplate"></div>
               <strong property="rdfs:label"></strong><i property="rdfs:comment"></i>
               <div property="v-s:created"></div>
             </div>
@@ -1739,14 +1739,14 @@ v-ui:SimplifiedJournalTemplate
   buildJournal();
   function buildJournal() {
     tbody.empty();
-    var tasks = query({
+    var tasks = veda.Backend.query({
       ticket: veda.ticket,
       query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
       sort: "'v-s:created' asc",
       async: true
     }).then(function (query_res) {
       var tasks_uris = query_res.result;
-      return get_individuals({
+      return veda.Backend.get_individuals({
         ticket: veda.ticket,
         uris: tasks_uris,
         async: true
@@ -1770,7 +1770,7 @@ v-ui:JournalTemplate
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <script>
-  individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
+  //individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 
   var doc_uri = this.id.replace(/.$/, "");
   var doc = new veda.IndividualModel(doc_uri);
