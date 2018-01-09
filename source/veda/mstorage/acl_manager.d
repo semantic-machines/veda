@@ -9,7 +9,7 @@ import veda.util.properd;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define,
        veda.core.common.know_predicates;
 import veda.core.common.log_msg, veda.storage.common, veda.core.util.utils, veda.common.logger, veda.util.module_info, veda.core.impl.thread_context;
-import veda.storage.common, veda.storage.right_set;
+import veda.storage.common, veda.authorization.right_set;
 import veda.storage.lmdb.lmdb_acl, veda.storage.lmdb.lmdb_driver, veda.storage.mdbx.mdbx_acl, veda.storage.mdbx.mdbx_driver;
 import veda.storage.tarantool.tarantool_driver;
 

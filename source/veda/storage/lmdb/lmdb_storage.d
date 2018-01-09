@@ -5,7 +5,7 @@ module veda.storage.lmdb.lmdb_storage;
 
 import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
 import veda.common.type, veda.storage.common, veda.storage.storage;
-import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.storage.authorization;
+import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.authorization.authorization;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";

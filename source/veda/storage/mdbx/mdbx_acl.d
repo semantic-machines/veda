@@ -4,7 +4,7 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string;
     import veda.common.type, veda.core.common.define, veda.common.logger, veda.util.module_info;
-    import veda.storage.right_set, veda.storage.common, veda.storage.authorization;
+    import veda.authorization.right_set, veda.storage.common, veda.authorization.authorization;
     import veda.storage.mdbx.mdbx_header, veda.storage.mdbx.mdbx_driver;
 }
 

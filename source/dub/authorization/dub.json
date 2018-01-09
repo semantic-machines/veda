@@ -23,8 +23,6 @@
 	    "../../veda/util/container.d",
 	    "../../veda/util/module_info.d",
 	    "../../veda/storage/common.d",
-	    "../../veda/storage/right_set.d",
-	    "../../veda/storage/authorization.d",
 	    "../../veda/storage/mdbx/mdbx_acl.d",
 	    "../../veda/storage/mdbx/mdbx_driver.d",
 	    "../../veda/storage/mdbx/mdbx_header.d",
