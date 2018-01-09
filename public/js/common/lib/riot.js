@@ -11,6 +11,8 @@ riot.observable = function(el) {
         fn.typed = pos > 0;
       });
     }
+    // For debug
+    el._events = callbacks;
     return el;
   };
 
