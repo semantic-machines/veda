@@ -43,8 +43,6 @@ v-cal:FunctionCalendarModel
   rdfs:label "v-cal:FunctionCalendar class template"@en ;
   v-ui:forClass v-cal:FunctionCalendar ;
   v-s:script """
-  var tasks = new veda.IndividualModel();
-  tasks["rdf:type"] = [ new veda.IndividualModel("v-fs:FulltextRequest") ];
 
   this.getEventsUris = function (start, end) {
     if (typeof start === "undefined") {
@@ -57,43 +55,57 @@ v-cal:FunctionCalendarModel
       veda.user.id
     );
     var sort = this["v-cal:sortOrder"][0];
-    return tasks.search(q, sort);
+    return veda.Backend.query({
+      ticket: veda.ticket,
+      query: q,
+      sort: sort
+    }).then(function (result) {
+      return result.result;
+    });
   }
 
   this.getEvents = function (start, end) {
-    return this.getEventsUris(start, end).map(function (uri) {
-      var event = new veda.IndividualModel(uri);
-      var label;
-      try {
-        label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
-      } catch (e) {
-        event["rdfs:label"].join(" ");
-      }
-      var className;
-      var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
-      var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
-      var dueDate = event["v-wf:dateGiven"][0];
-      var now = new Date();
-      switch (true) {
-        case (dueDate < today) :
-          className = "fc-danger";
-        break;
-        case (today < dueDate && dueDate < tomorrow) :
-          className = "fc-warning";
-        break;
-        case (tomorrow < dueDate) :
-          className = "fc-success";
-        break;
-      }
-      return {
-        "id": event.id,
-        "title": label,
-        "url": "#/" + event.id,
-        "className": className,
-        "start": dueDate ? dueDate.valueOf() : now.valueOf(),
-        "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
-      }
-    });
+    return this.getEventsUris(start, end)
+      .then(function (uris) {
+
+        var eventsPromises = uris.map(function (uri) {
+          return new veda.IndividualModel(uri).load()
+            .then(function (event) {
+              var label;
+              try {
+                label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
+              } catch (e) {
+                event["rdfs:label"].join(" ");
+              }
+              var className;
+              var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
+              var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
+              var dueDate = event["v-wf:dateGiven"][0];
+              var now = new Date();
+              switch (true) {
+                case (dueDate < today) :
+                  className = "fc-danger";
+                break;
+                case (today < dueDate && dueDate < tomorrow) :
+                  className = "fc-warning";
+                break;
+                case (tomorrow < dueDate) :
+                  className = "fc-success";
+                break;
+              }
+              return {
+                "id": event.id,
+                "title": label,
+                "url": "#/" + event.id,
+                "className": className,
+                "start": dueDate ? dueDate.valueOf() : now.valueOf(),
+                "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
+              }
+            });
+        });
+
+        return Promise.all(eventsPromises);
+      });
   }
 
   function format(str) {
@@ -123,19 +135,25 @@ v-cal:FunctionCalendarTemplate
   <div id="fullcalendar"></div>
 </div>
 <script>
-  var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
-  var counter = new veda.IndividualModel(counter_uri);
   var fullCalendarOptions = {
     eventSources: [
       {
         events: function(start, end, timezone, callback) {
-          var events = individual.getEvents(start, end);
-          // Update counter if counter & events count do not match
-          if ( !counter.isNew() && !counter.hasValue("v-ft:inboxWeekCount", events.length) && start.toDate() <= new Date() && new Date() <= end.toDate() ) {
-            counter["v-ft:inboxWeekCount"] = [events.length];
-            counter.save();
-          }
-          callback(events);
+          individual.getEvents(start, end).then(function (events) {
+            // Update counter if counter & events count do not match
+            var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+            var counter = new veda.IndividualModel(counter_uri);
+            counter.load().then(function (counter) {
+              if ( counter.isNew() ) {
+                counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
+              }
+              if ( !counter.hasValue("v-ft:inboxWeekCount", events.length) && start.toDate() <= new Date() && new Date() <= end.toDate() ) {
+                counter["v-ft:inboxWeekCount"] = [events.length];
+                counter.save();
+              }
+            });
+            callback(events);
+          });
         }
       }
     ],
@@ -157,17 +175,21 @@ v-cal:FunctionCalendarTemplate
     locale: Object.keys(veda.user.language)[0].toLowerCase(),
     timezone: 'local',
     height: function () {
-      var top = fullCalendar.offset().top;
+      var top = $('#fullcalendar', template).offset().top;
       var bottom = container.next().offset().top;
       return (bottom - top - 30);
     }
   };
-  var fullCalendar = $('#fullcalendar', template);
-  fullCalendar.fullCalendar(fullCalendarOptions);
 
-  template.one("remove", function () {
-    fullCalendar.fullCalendar( 'destroy' );
-  });
+  setTimeout(function () {
+    var fullCalendar = $('#fullcalendar', template);
+    fullCalendar.fullCalendar(fullCalendarOptions);
+
+    template.one("remove", function () {
+      fullCalendar.fullCalendar("destroy");
+    });
+  }, 0);
+
   //# sourceURL=v-cal:FunctionCalendarTemplate
 </script>
   """ ;
@@ -180,7 +202,7 @@ v-cal:FunctionCalendarIndicatorTemplate
   v-ui:template """
 <script>
   var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
-  $(".label", template).attr("about", counter_uri);
+  $(".counter", template).attr("about", counter_uri);
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")
@@ -189,7 +211,7 @@ v-cal:FunctionCalendarIndicatorTemplate
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
   <span class="fa fa-calendar fa-lg"></span>
-  <span id="counter" class="label label-danger" property="v-ft:inboxWeekCount"></span>
+  <span class="counter label label-danger" property="v-ft:inboxWeekCount"></span>
 </a>
   """ ;
 .
