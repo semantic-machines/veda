@@ -30,8 +30,13 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
-    if (this._.cache && veda.cache[uri]) {
-      return veda.cache[uri];
+    if (typeof uri === "string" && this._.cache) {
+      var cached = veda.cache[uri];
+      if (cached) {
+        return cached;
+      } else {
+        veda.cache[uri] = this;
+      }
     }
 
     var self = riot.observable(this);
