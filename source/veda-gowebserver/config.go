@@ -41,8 +41,6 @@ func configWebServer() {
 				notifyChannelURL = paramVal
 			case "main_module_url":
 				mainModuleURL = paramVal
-			case "ft_query_url":
-				ftQueryURL = paramVal
 			case "tarantool_url":
 				tarantoolURL = paramVal
 			case "use_https":
@@ -58,6 +56,8 @@ func configWebServer() {
 				webserverHTTPSPort = paramVal
 			case "acl_service_url":
 				aclServiceURL = paramVal
+			case "ft_query_service_url":
+				queryServiceURL = "tcp://" + paramVal
 
 			default:
 				continue

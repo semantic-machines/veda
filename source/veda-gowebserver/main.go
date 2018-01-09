@@ -78,10 +78,16 @@ var aclSocket *nanomsg.Socket
 //aclEndpoint is nanomsg endpoint connected to acl service
 var aclEndpoint *nanomsg.Endpoint
 
+//querySocket is nanomsg socket connected to query service
+var querySocket *nanomsg.Socket
+
+//aclEndpoint is nanomsg endpoint connected to acl service
+var queryEndpoint *nanomsg.Endpoint
+
 //mainModuleURL is tcp address of veda server
 var mainModuleURL = "tcp://127.0.0.1:9112"
 var notifyChannelURL = "tcp://127.0.0.1:9111"
-var ftQueryURL = "127.0.0.1:11112"
+var queryServiceURL = "tcp://127.0.0.1:23000"
 var tarantoolURL = "127.0.0.1:9999"
 var webserverPort = "8080"
 var webserverHTTPSPort = "8020"
@@ -227,6 +233,17 @@ func main() {
 	}
 
 	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
+	for err != nil {
+		endpoint, err = aclSocket.Connect(aclServiceURL)
+		time.Sleep(3000 * time.Millisecond)
+	}
+
+	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	if err != nil {
+		log.Fatal("@ERR ON CREATING QUERY SOCKET")
+	}
+
+	queryEndpoint, err = querySocket.Connect(queryServiceURL)
 	for err != nil {
 		endpoint, err = aclSocket.Connect(aclServiceURL)
 		time.Sleep(3000 * time.Millisecond)
