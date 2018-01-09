@@ -336,6 +336,8 @@ func prepareElement(v interface{}) (interface{}, error) {
 				"type": dataTypeToString(Decimal),
 			}, nil
 		}
+
+		log.Fatalf("TAG: %v\n", tag)
 		return nil, fmt.Errorf("Unsupported tag: %v", tag)
 
 	default:
@@ -376,7 +378,7 @@ func CborToMap(cborStr string) map[string]interface{} {
 		switch v.(type) {
 		case []interface{}:
 			arr := v.([]interface{})
-			resources := make([]interface{}, len(arr))
+			resources := make([]interface{}, 0, len(arr))
 			for i := 0; i < len(arr); i++ {
 
 				resource, err := prepareElement(arr[i])
@@ -390,7 +392,7 @@ func CborToMap(cborStr string) map[string]interface{} {
 
 			individual[keyStr] = resources
 		case nil:
-			individual[keyStr] = nil
+			continue
 
 		default:
 			resource, err := prepareElement(v)
@@ -402,9 +404,6 @@ func CborToMap(cborStr string) map[string]interface{} {
 		}
 	}
 
-	if individual["@"].(string) == "v-ui:TestUI" {
-		log.Fatal("")
-	}
 	return individual
 }
 
