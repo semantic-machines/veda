@@ -6,15 +6,15 @@ class GroupInfo
     bool      is_deprecated;
     GroupInfo parent;
 }
-            
+
 class CacheElement
 {
     ubyte     req_access;
     ubyte     res_access;
-            
+
     GroupInfo subject_group;
     GroupInfo object_group;
-    
+
     this(ubyte _req_access, ubyte _res_access)
     {
         req_access = _req_access;
@@ -24,9 +24,29 @@ class CacheElement
 
 class Cache
 {
-    CacheElement[ string ] ckey_2_cache_element;
+    CacheElement[ string ] ckey_2_cache_element;  // ckey = subject_group_id ~ object_group_id
     GroupInfo[ string ] group_index;
+    int[ string ] ckey_2_permissons;              // ckey = subject_group_id ~ object_group_id
 
+
+    void add_permission(string subject_group_id, string object_group_id, ubyte access)
+    {
+        string ckey = subject_group_id ~ object_group_id;
+        ubyte  ea   = cast(ubyte)ckey_2_permissons.get(ckey, 0);
+
+        if ((ea & access) != access)
+            ckey_2_permissons[ ckey ] = ea & access;
+    }
+
+    void remove_permission(string subject_group_id, string object_group_id, ubyte prev_access)
+    {
+        string ckey = subject_group_id ~ object_group_id;
+        ubyte  ea   = cast(ubyte)ckey_2_permissons.get(ckey, 0);
+
+        ckey_2_permissons[ ckey ] = (ea ^ prev_access) & ea;
+    }
+
+    // добавляет группу в дерево
     void add_group(string id, string parent_id)
     {
         GroupInfo gi = group_index.get(id, null);
@@ -48,8 +68,19 @@ class Cache
                 }
             }
 
-            gi.level          = level;
+            gi.level          = level + 1;
             group_index[ id ] = gi;
+        }
+    }
+
+    // отмечает группу как deprecated
+    void deprecated_group(string group_id)
+    {
+        GroupInfo gi = group_index.get(group_id, null);
+
+        if (gi !is null)
+        {
+            gi.is_deprecated = true;
         }
     }
 
@@ -110,26 +141,17 @@ class Cache
                 }
             }
 
+            res = req_access & ce.req_access;
 
-            if (ce.object_group)
-                return req_access & ce.req_access;
+            int ea = ckey_2_permissons.get(ckey, -1);
+            if (ea != -1)
+            {
+                // для пары subject + object были изменения, откорректировать результат из кэша
+                return res & cast(ubyte)ea;
+            }
         }
 
         return res;
-    }
-
-    void reset_group(string group_id)
-    {
-        GroupInfo gi = group_index.get(group_id, null);
-
-        if (gi !is null)
-        {
-            gi.is_deprecated = true;
-        }
-    }
-
-    void reset_permission(string permission_id)
-    {
     }
 }
 
