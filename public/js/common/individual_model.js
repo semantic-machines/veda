@@ -25,25 +25,31 @@ veda.Module(function (veda) { "use strict";
       init: typeof init !== "undefined" ? init : true,
       isNew: typeof uri === "undefined",
       isSync: typeof uri === "object",
+      isLoaded: typeof uri === "object",
       uri: uri
     };
     this.properties = {};
     this.filtered = {};
 
-    if (typeof uri === "string" && this._.cache) {
-      var cached = veda.cache[uri];
+    if (this._.cache) {
+      var cached;
+      if (typeof uri === "string") {
+        this.id = uri;
+        cached = veda.cache[ this.id ];
+      } else if (typeof uri === "object") {
+        this.id = uri["@"];
+        cached = veda.cache[ this.id ];
+      } else if (typeof uri === "undefined") {
+        this.id = veda.Util.genUri();
+      }
       if (cached) {
         return cached;
       } else {
-        veda.cache[uri] = this;
+        veda.cache[ this.id ] = this;
       }
     }
 
     var self = riot.observable(this);
-
-    if (typeof uri === "string") {
-      this.id = uri;
-    }
 
     this.on("rdf:type", this.init);
     this.on("beforeSave", beforeSaveHandler);
@@ -187,7 +193,6 @@ veda.Module(function (veda) { "use strict";
         veda.cache[value] = this;
       }
       this.properties["@"] = value;
-      this.trigger("idChanged", value);
     }
   });
 
@@ -262,18 +267,18 @@ veda.Module(function (veda) { "use strict";
    */
   proto.load = function () {
     var self = this;
-    var uri = this.id || this._.uri ;
+    var uri = this._.uri ;
     this.trigger("beforeLoad");
     if (typeof uri === "string") {
-      if (this._.cache && veda.cache[uri]) {
-        this.trigger("afterLoad", veda.cache[uri]);
-        return Promise.resolve( veda.cache[uri] );
+      if ( this.isLoaded() ) {
+        this.trigger("afterLoad", this);
+        return Promise.resolve( this );
       }
       return veda.Backend.get_individual(veda.ticket, uri).then(function (individualJson) {
         self.isNew(false);
         self.isSync(true);
+        self.isLoaded(true);
         self.properties = individualJson;
-        if (self._.cache) veda.cache[self.id] = self;
         self.trigger("afterLoad", self);
         if (self._.init) {
           return self.init();
@@ -284,6 +289,7 @@ veda.Module(function (veda) { "use strict";
         if (error.code === 422) {
           self.isNew(true);
           self.isSync(false);
+          self.isLoaded(false);
           self.properties = {
             "@": uri,
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
@@ -295,6 +301,7 @@ veda.Module(function (veda) { "use strict";
         } else if (error.code === 472) {
           self.isNew(false);
           self.isSync(false);
+          self.isLoaded(false);
           self.properties = {
             "@": uri,
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
@@ -306,13 +313,13 @@ veda.Module(function (veda) { "use strict";
         } else {
           self.isNew(false);
           self.isSync(false);
+          self.isLoaded(false);
           self.properties = {
             "@": uri,
             "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
           };
         }
-        if (self._.cache) { veda.cache[self.id] = self; }
         self.trigger("afterLoad", self);
         return self;
       });
@@ -320,16 +327,14 @@ veda.Module(function (veda) { "use strict";
     } else if (typeof uri === "object") {
       this.isNew(false);
       this.isSync(true);
+      this.isLoaded(true);
       this.properties = uri;
     } else if (typeof uri === "undefined") {
       this.isNew(true);
       this.isSync(false);
-      this.id = veda.Util.genUri();
+      this.isLoaded(false);
     }
-    if (this._.cache) { veda.cache[this.id] = this; }
-
     this.trigger("afterLoad", this);
-
     if (this._.init) {
       return this.init();
     }
@@ -621,6 +626,15 @@ veda.Module(function (veda) { "use strict";
    */
   proto.isNew = function (value) {
     return ( typeof value !== "undefined" ? this._.isNew = value : this._.isNew );
+  };
+
+  /**
+   * @method
+   * Check whether individual was loaded from db
+   * @return {boolean}
+   */
+  proto.isLoaded = function (value) {
+    return ( typeof value !== "undefined" ? this._.isLoaded = value : this._.isLoaded );
   };
 
   /**
