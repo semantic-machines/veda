@@ -4,86 +4,81 @@ veda.Module(function (veda) { "use strict";
 
   veda.IndividualModel.prototype.present = function (container, template, mode, extra) {
 
-    return this.load().then(function (individual) {
+    container = container || "#main";
+    mode = mode || "view";
 
-      container = container || "#main";
-      mode = mode || "view";
+    if (typeof container === "string") {
+      container = $(container).empty();
+    }
 
-      if (typeof container === "string") {
-        container = $(container).empty();
-      }
+    return present(this, container, template, mode, extra)
+      .then(function (renderedTemplate) {
 
-      if (typeof container === "string") {
-        container = $(container).empty();
-      }
+        container.append(renderedTemplate);
+        return renderedTemplate;
 
-      return present(individual, container, template, mode, extra);
+      })
+      .catch(function (error) {
 
-    }).catch(function (error) {
+        console.log("Presenter error:", error);
 
-      console.log(error);
-
-    });
+      });
   }
 
   function present(individual, container, template, mode, extra) {
 
-    var ontology = new veda.OntologyModel();
+    return individual.load().then(function (individual) {
 
-    var specs = $.extend.apply (
-      {}, [].concat(
-        individual["rdf:type"].map( function (_class) {
-          return ontology.getClassSpecifications(_class.id);
-        })
-      )
-    );
-
-    if (template) {
-      if (template instanceof veda.IndividualModel) {
-        return template.load().then(function (template) {
-          template = template["v-ui:template"][0].toString();
-          return renderTemplate(individual, container, template, mode, extra, specs);
-        });
-      // if template is uri
-      } else if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
-        template = new veda.IndividualModel(template);
-        return template.load().then(function (template) {
-          template = template["v-ui:template"][0].toString();
-          return renderTemplate(individual, container, template, mode, extra, specs);
-        });
-      } else if (template instanceof HTMLElement) {
-        template = template.outerHTML;
-      }
-      return renderTemplate(individual, container, template, mode, extra, specs);
-    } else {
-      if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
-        template = individual["v-ui:hasCustomTemplate"][0];
-        return template.load().then(function (template) {
-          template = template["v-ui:template"][0].toString();
-          return renderTemplate(individual, container, template, mode, extra, specs);
-        });
-      } else {
-        var typePromises = individual["rdf:type"].map(function (type) {
-          return type.load();
-        });
-        return Promise.all(typePromises).then(function (types) {
-          var templatesPromises = types.map( function (type) {
-            return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
-          });
-          return Promise.all(templatesPromises);
-        }).then(function (templates) {
-          var renderedTemplates = templates.map( function (template) {
+      if (template) {
+        if (template instanceof veda.IndividualModel) {
+          return template.load().then(function (template) {
             template = template["v-ui:template"][0].toString();
-            return renderTemplate(individual, container, template, mode, extra, specs);
+            return renderTemplate(individual, container, template, mode, extra);
           });
-          return renderedTemplates[0];
-        });
+        // if template is uri
+        } else if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
+          template = new veda.IndividualModel(template);
+          return template.load().then(function (template) {
+            template = template["v-ui:template"][0].toString();
+            return renderTemplate(individual, container, template, mode, extra);
+          });
+        } else if (template instanceof HTMLElement) {
+          template = template.outerHTML;
+        }
+        return renderTemplate(individual, container, template, mode, extra);
+      } else {
+        if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
+          template = individual["v-ui:hasCustomTemplate"][0];
+          return template.load().then(function (template) {
+            template = template["v-ui:template"][0].toString();
+            return renderTemplate(individual, container, template, mode, extra);
+          });
+        } else {
+          var typePromises = individual["rdf:type"].map(function (type) {
+            return type.load();
+          });
+          return Promise.all(typePromises).then(function (types) {
+            var templatesPromises = types.map( function (type) {
+              return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
+            });
+            return Promise.all(templatesPromises);
+          }).then(function (templates) {
+            var renderedTemplatesPromises = templates.map( function (template) {
+              template = template["v-ui:template"][0].toString();
+              return renderTemplate(individual, container, template, mode, extra);
+            });
+            return Promise.all(renderedTemplatesPromises);
+          }).then(function (renderedTemplates) {
+            return renderedTemplates.reduce(function (acc, renderedTemplate) {
+              return acc.add(renderedTemplate);
+            }, $());
+          });
+        }
       }
-    }
-
+    });
   }
 
-  function renderTemplate(individual, container, template, mode, extra, specs) {
+  function renderTemplate(individual, container, template, mode, extra) {
     var match,
         pre_render_src,
         pre_render,
@@ -110,9 +105,7 @@ veda.Module(function (veda) { "use strict";
       .resolve(pre_render ? pre_render.call(individual, veda, individual, container, template, mode, extra) : undefined)
       .then(function () {
 
-        template = processTemplate(individual, container, template, mode, specs);
-
-        container.append(template);
+        template = processTemplate(individual, container, template, mode);
 
         template.trigger(mode);
 
@@ -158,7 +151,17 @@ veda.Module(function (veda) { "use strict";
     return [undefined, pre, template, post];
   }
 
-  function processTemplate (individual, container, template, mode, specs) {
+  function processTemplate (individual, container, template, mode) {
+
+    // Get properties specifications
+    var ontology = new veda.OntologyModel();
+    var specs = $.extend.apply (
+      {}, [].concat(
+        individual["rdf:type"].map( function (_class) {
+          return ontology.getClassSpecifications(_class.id);
+        })
+      )
+    );
 
     template.attr({
       "resource": individual.id,
@@ -420,9 +423,7 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       });
 
-      var values = about.get(rel_uri), rendered = {}, counter = 0;
-
-      relContainer.empty();
+      var values = about.get(rel_uri);
 
       propertyModifiedHandler(values);
       about.on(rel_uri, propertyModifiedHandler);
@@ -438,29 +439,20 @@ veda.Module(function (veda) { "use strict";
         });
       }
 
-      // Re-render link property if its' values were changed
       function propertyModifiedHandler (values) {
-        ++counter;
-        if (values.length) {
-          values.forEach(function (value) {
-            if (value.id in rendered) {
-              rendered[value.id].cnt = counter;
-              return;
-            }
-            renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode)
-              .then(function (renderedTmpl) {
-                rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-              });
-          });
-        } else {
-          relContainer.empty();
-        }
-        // Remove rendered templates for removed values
-        for (var i in rendered) {
-          if (rendered[i].cnt === counter) continue;
-          rendered[i].tmpl.remove();
-          delete rendered[i];
-        }
+        relContainer.empty();
+        var rendered = {};
+        var renderedTemplates = values.map(function (value, index) {
+          return renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode)
+            .then(function (renderedTemplate) {
+              rendered[index] = renderedTemplate;
+            });
+        });
+        Promise.all(renderedTemplates).then(function () {
+          for (var i in rendered) {
+            relContainer.append(rendered[i]);
+          }
+        });
       }
 
       function embeddedHandler(values) {
@@ -517,27 +509,29 @@ veda.Module(function (veda) { "use strict";
       } else {
         about = new veda.IndividualModel(propertyContainer.attr("about"));
       }
-      about.load().then(function () {
-        propertyModifiedHandler();
-      });
-      function propertyModifiedHandler() {
-        if (property_uri === "@") {
-          propertyContainer.text( about.id );
-        } else {
-          var formatted = about.get(property_uri).map(veda.Util.formatValue).join(" ");
-          propertyContainer.text( formatted );
-        }
-      }
-      about.on(property_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        about.off(property_uri, propertyModifiedHandler);
-      });
 
-      // Watch server-side updates
-      var updateService = new veda.UpdateService();
-      updateService.subscribe(about.id);
-      template.one("remove", function () {
-        updateService.unsubscribe(about.id);
+      about.load().then(function (about) {
+        propertyModifiedHandler( about[property_uri] );
+        about.on(property_uri, propertyModifiedHandler);
+        template.one("remove", function () {
+          about.off(property_uri, propertyModifiedHandler);
+        });
+
+        // Watch server-side updates
+        var updateService = new veda.UpdateService();
+        updateService.subscribe(about.id);
+        template.one("remove", function () {
+          updateService.unsubscribe(about.id);
+        });
+
+        function propertyModifiedHandler(values) {
+          if (property_uri === "@") {
+            propertyContainer.text( about.id );
+          } else {
+            var formatted = values.map(veda.Util.formatValue).join(" ");
+            propertyContainer.text( formatted );
+          }
+        }
       });
     });
 
