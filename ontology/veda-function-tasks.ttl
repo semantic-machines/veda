@@ -251,7 +251,7 @@ v-ft:FunctionTasksIndicatorTemplate
   v-ui:template """
 <script>
   var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
-  $("#counter", template).attr("about", counter_uri);
+  $(".counter", template).attr("about", counter_uri);
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")
@@ -260,7 +260,7 @@ v-ft:FunctionTasksIndicatorTemplate
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
   <span class="fa fa-envelope-o fa-lg"></span>
-  <span id="counter" class="label label-danger" property="v-ft:inboxCount"></span>
+  <span class="counter label label-danger" property="v-ft:inboxCount"></span>
 </a>
   """ ;
 .
@@ -501,10 +501,10 @@ v-ft:ActorFilterTemplate
       individual.off(checkCounter);
     });
     function checkCounter(results) {
-      try {
-        var actor_uri = individual[actor_property][0].id;
-        var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
-        var counter = new veda.IndividualModel(counter_uri);
+      var actor_uri = individual[actor_property][0].id;
+      var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+      var counter = new veda.IndividualModel(counter_uri);
+      counter.load().then(function (counter) {
         if ( counter.isNew() ) {
           counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
         }
@@ -513,9 +513,7 @@ v-ft:ActorFilterTemplate
           counter[counter_prop] = [ results.estimated ];
           counter.save();
         }
-      } catch (err) {
-        console.log("Counter update error");
-      }
+      });
     }
   });
 
@@ -590,7 +588,6 @@ v-ft:RelatedTasks
   v-fs:searchOnLoad true ;
 .
 
-
 v-ft:TaskRelatedTasksTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон связанных задач для задачи"@ru ;
@@ -598,15 +595,17 @@ v-ft:TaskRelatedTasksTemplate
   v-ui:template """
 <script>
   var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
-  var taskId = this.id;
-  var docId = this.hasValue("v-wf:onDocument") && this["v-wf:onDocument"][0].id;
-  var queryStr = [
-    "'@' != '" + taskId + "'",
-    "'v-wf:onDocument' == '" + docId + "'",
-    "'rdf:type'==='v-wf:DecisionForm'",
-    "'v-wf:isCompleted'== false "
-  ].join(" && ");
-  relatedTasks["v-fs:fulltextQuery"] = [ queryStr ];
+  return relatedTasks.load().then(function (relatedTasks) {
+    var taskId = individual.id;
+    var docId = individual.hasValue("v-wf:onDocument") && individual["v-wf:onDocument"][0].id;
+    var queryStr = [
+      "'@' != '" + taskId + "'",
+      "'v-wf:onDocument' == '" + docId + "'",
+      "'rdf:type'==='v-wf:DecisionForm'",
+      "'v-wf:isCompleted'== false "
+    ].join(" && ");
+    relatedTasks["v-fs:fulltextQuery"] = [ queryStr ];
+  });
   //# sourceURL=v-ft:TaskRelatedTasksTemplate_pre
 </script>
 <div>
