@@ -6,7 +6,7 @@ module veda.authorization.az_server;
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string;
 import kaleidic.nanomsg.nano, commando, veda.util.properd;
-import veda.common.logger, veda.storage.authorization, veda.storage.common, veda.common.type;
+import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type;
 import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl, veda.storage.mdbx.mdbx_acl;
 
 static this()

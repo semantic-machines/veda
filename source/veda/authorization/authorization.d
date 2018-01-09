@@ -1,9 +1,9 @@
-module veda.storage.authorization;
+module veda.authorization.authorization;
 
 import std.conv, std.datetime, std.uuid, std.outbuffer, std.string, std.stdio;
 import veda.common.logger, veda.core.common.define, veda.common.type;
 import veda.core.common.know_predicates, veda.util.module_info;
-import veda.storage.right_set, veda.storage.common;
+import veda.authorization.right_set, veda.storage.common;
 
 string lstr = "                                                                           ";
 
@@ -111,7 +111,7 @@ abstract class ImplAuthorization : Authorization
 
                 if (trace_info is null && trace_group is null && trace_acl is null)
                 {
-                    if (prepare_group(uri, 15, walked_groups1, 0) == true)
+                    if (prepare_obj_group(uri, 15, walked_groups1, 0) == true)
                         return calc_right_res;
                 }
                 else
@@ -392,7 +392,7 @@ abstract class ImplAuthorization : Authorization
         return false;
     }
 
-    private bool prepare_group(string uri, ubyte access, ref ubyte[ string ] walked_groups, int level = 0)
+    private bool prepare_obj_group(string uri, ubyte access, ref ubyte[ string ] walked_groups, int level = 0)
     {
         if (level > 32)
         {
@@ -403,16 +403,14 @@ abstract class ImplAuthorization : Authorization
         {
             string    groups_str = get_in_current_transaction(membership_prefix ~ uri);
 
-            Right *[] result_set;
+            Right *[] groups_set;
 
             if (groups_str != null)
-                rights_from_string(groups_str, result_set);
+                rights_from_string(groups_str, groups_set);
 
-            long res_lenght = result_set.length;
-
-            for (int idx = 0; idx < res_lenght; idx++)
+            for (int idx = 0; idx < groups_set.length; idx++)
             {
-                Right *group = result_set[ idx ];
+                Right *group = groups_set[ idx ];
 
                 if (group is null)
                 {
@@ -439,7 +437,7 @@ abstract class ImplAuthorization : Authorization
                 if (authorize_obj_group(group.id, group.access) == true)
                     return true;
 
-                prepare_group(group.id, new_access, walked_groups, level + 1);
+                prepare_obj_group(group.id, new_access, walked_groups, level + 1);
             }
         }
         catch (Throwable ex)

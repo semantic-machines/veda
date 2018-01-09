@@ -1,4 +1,4 @@
-module veda.storage.right_set;
+module veda.authorization.right_set;
 
 private import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
 private import veda.common.type, veda.core.common.know_predicates, veda.common.logger;
