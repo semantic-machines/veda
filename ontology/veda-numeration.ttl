@@ -144,8 +144,8 @@ v-s:SimpleNumerationYear
   v-s:numerationScope """
   (function (ticket, individual){
     if (!individual["rdf:type"]) { return ""; }
-    var y = typeof window === 'undefined' ? individual["v-s:registrationDate"][0].id.getFullYear() : individual["v-s:registrationDate"][0].data.getFullYear();
-    return "numeration-scope_" + ( ((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_') ) + "_" + y;
+    var y = typeof window === 'undefined' ? individual["v-s:registrationDate"][0].data.getFullYear() : individual["v-s:registrationDate"][0].getFullYear();
+    return "numeration-scope_" + (typeof window === "undefined" ? individual['rdf:type'][0].data : individual['rdf:type'][0].id).replace(':','_') + "_" + y;
   });
 """ ;
   v-s:numerationGetNextValue """
