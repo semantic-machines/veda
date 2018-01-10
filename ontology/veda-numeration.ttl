@@ -129,9 +129,31 @@ v-s:RegistrationNumberYearNumeration2_6
   v-s:enumeratedProperty v-s:registrationNumber ;
   v-s:hasNumerationRule v-s:YearNumeration2_6 ;
 .
-
+v-s:RegistrationNumberSimpleNumerationYear
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:SimpleNumerationYear ;
+.
 # --- Rules ---
 
+v-s:SimpleNumerationYear
+  rdf:type v-s:NumerationRule ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Нумерация в пределах класса в пределах года"@ru ;
+  rdfs:label "Numeration with class as scope"@en ;
+  v-s:numerationScope """
+  (function (ticket, individual){
+    if (!individual["rdf:type"]) { return ""; }
+    var y = typeof window === 'undefined' ? individual["v-s:registrationDate"][0].id.getFullYear() : individual["v-s:registrationDate"][0].data.getFullYear();
+    return "numeration-scope_" + ( ((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_') ) + "_" + y;
+  });
+""" ;
+  v-s:numerationGetNextValue """
+(function getNextValue(ticket, scope) {
+  return getNextValueSimple(ticket, scope, 1);
+})
+""" ;
+.
 v-s:SimpleNumeration
   rdf:type v-s:NumerationRule ;
   rdfs:isDefinedBy v-s: ;
