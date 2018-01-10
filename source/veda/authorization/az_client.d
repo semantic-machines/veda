@@ -4,7 +4,7 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.string, core.time, std.outbuffer, std.json;
     import url, kaleidic.nanomsg.nano;
-    import veda.common.type, veda.core.common.define, veda.storage.authorization;
+    import veda.common.type, veda.core.common.define, veda.authorization.authorization;
     import veda.common.logger, veda.util.module_info;
 }
 

@@ -23,8 +23,8 @@
         "sourceFiles":[
 	"../../lib64/libxapiand.a", 
         "../../lib64/liblmdb.a",
-        "../../veda/storage/right_set.d",
-	"../../veda/storage/authorization.d",
+        "../../veda/authorization/right_set.d",
+	"../../veda/authorization/authorization.d",
         "../../veda/authorization/az_client.d",
         "../../veda/util/commando.d",
         "../../veda/bind/nano.d",

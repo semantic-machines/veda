@@ -1,7 +1,7 @@
 module veda.storage.tarantool.tarantool_acl;
 
 import veda.common.type, veda.core.common.define, veda.common.logger;
-import veda.storage.right_set, veda.storage.common, veda.storage.authorization;
+import veda.authorization.right_set, veda.storage.common, veda.authorization.authorization;
 import veda.storage.tarantool.tarantool_driver;
 
 class TarantoolAuthorization : ImplAuthorization
