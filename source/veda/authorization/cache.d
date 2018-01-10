@@ -130,10 +130,10 @@ class Cache
         string       ckey = subject_group_id ~ object_group_id;
 
         CacheElement ce = ckey_2_cache_element.get(ckey, null);
+        stderr.writefln("cache.get, subject_group_id=%s, object_group_id=%s, req_access=%s", subject_group_id, object_group_id, access_to_pretty_string1(req_access));
 
         if (ce !is null)
         {
-            stderr.writefln("cache.get, subject_group_id=%s, object_group_id=%s, req_access=%s", subject_group_id, object_group_id, access_to_pretty_string1(req_access));
             stderr.writefln("cache.get, ce !is null");
 
             // проверить актуальность subject дерева в верх

@@ -397,7 +397,7 @@ abstract class ImplAuthorization : Authorization
                     if (level == 0)
                         cache.add_group(uri, null);
 
-                    cache.add_group(group.id, uri);
+                    cache.add_group(uri, group.id);
                 }
 
                 Right *[] up_restrictions;
@@ -471,7 +471,7 @@ abstract class ImplAuthorization : Authorization
                     if (level == 0)
                         cache.add_group(uri, null);
 
-                    cache.add_group(group.id, uri);
+                    cache.add_group(uri, group.id);
                 }
 
                 if (authorize_obj_group(group.id, group.access) == true)
