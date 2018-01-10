@@ -44,3 +44,6 @@ veda.properties
 /veda-mstorage
 /veda-fanout-sql-lp
 /veda-fanout-sql-np
+/veda-lmdb-server
+/veda-ft-query
+/veda-authorization
