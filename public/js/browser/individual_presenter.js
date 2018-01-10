@@ -327,15 +327,8 @@ veda.Module(function (veda) { "use strict";
           property_uri = propertyContainer.attr("property"),
           spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
 
-      function idModifiedHandler() {
-        propertyContainer.text(individual.id);
-      }
       if (property_uri === "@") {
         propertyContainer.text(individual.id);
-        individual.on("idChanged", idModifiedHandler);
-        template.one("remove", function () {
-          individual.off(property_uri, idModifiedHandler);
-        });
         return;
       }
       renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
