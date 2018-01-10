@@ -1,5 +1,10 @@
 #!/bin/bash
 
+TIMESTAMP=`date +%Y-%m-%d_%H_%M`
+
+mkdir ./logs/$TIMESTAMP
+cp ./logs/*-stderr.log ./logs/$TIMESTAMP
+
 start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
 killall -9 veda
 killall -9 veda-ccus
