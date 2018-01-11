@@ -240,7 +240,7 @@ v-s:IdeaAndProjectsNumeration
 (function (ticket, individual)
 {
     if (!individual['rdf:type']) return '';
-  return "numeration-scope_ideas_and_projects";
+  return "numeration-scope_ideas_and_projects" + (new Date()).getFullYear();
 })
 """ ;
   v-s:numerationGetNextValue """
