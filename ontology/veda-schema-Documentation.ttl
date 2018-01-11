@@ -384,11 +384,9 @@ v-s:BusinessTripRegistrationRecord
   rdfs:subClassOf v-s:RegistrationRecord ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Enumerated ;
-  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
-
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
   rdfs:label "Регистрационная запись командировки"@ru ;
   rdfs:label "Business trip registration record"@en ;
-#  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
 .
 
 ###----------------------------------ЗАЯВКА_НА_ПРОПУСК---------------------

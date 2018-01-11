@@ -3,7 +3,7 @@ module veda.authorization.authorization;
 import std.conv, std.datetime, std.uuid, std.outbuffer, std.string, std.stdio;
 import veda.common.logger, veda.core.common.define, veda.common.type;
 import veda.core.common.know_predicates, veda.util.module_info;
-import veda.authorization.right_set, veda.storage.common;
+import veda.authorization.right_set, veda.storage.common, veda.authorization.cache;
 
 string lstr = "                                                                           ";
 
@@ -34,9 +34,29 @@ abstract class ImplAuthorization : Authorization
     OutBuffer trace_group;
     OutBuffer trace_info;
 
+    bool      use_cache = false;
+    Cache     cache;
+
     ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                     OutBuffer _trace_info)
     {
+        if (use_cache)
+        {
+            if (cache is null)
+            {
+                cache = new Cache();
+            }
+            else
+            {
+                int res = cache.get(user_uri, _uri, _request_access);
+                if (res != -1)
+                {
+                    stderr.writefln("res=%s", access_to_pretty_string(cast(ubyte)res));
+                    return cast(ubyte)res;
+                }
+            }
+        }
+
         trace_acl   = _trace_acl;
         trace_group = _trace_group;
         trace_info  = _trace_info;
@@ -86,7 +106,7 @@ abstract class ImplAuthorization : Authorization
 
                 ubyte[ string ] walked_groups;
                 Right *[] groups;
-                get_resource_groups(membership_prefix ~ user_uri, 15, groups, walked_groups, 0);
+                get_resource_groups(user_uri, 15, groups, walked_groups, 0);
                 subject_groups = new RightSet(groups, log);
 
                 subject_groups.data[ user_uri ] = new Right(user_uri, 15, false);
@@ -119,7 +139,7 @@ abstract class ImplAuthorization : Authorization
                     // IF NEED TRACE
 
                     Right *[] groups1;
-                    if (get_resource_groups(membership_prefix ~ uri, 15, groups1, walked_groups1, 0) == true)
+                    if (get_resource_groups(uri, 15, groups1, walked_groups1, 0) == true)
                     {
                         if (trace_info !is null)
                             trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
@@ -207,7 +227,6 @@ abstract class ImplAuthorization : Authorization
                             //log.trace("@ authorize_obj_group %s %s %s %s", subj_id, object_group_id, access_to_pretty_string(
                             //                                                                                                 object_group_access),
                             //          access_to_pretty_string(calc_right_res));
-
                             Right *permission = permissions.data.get(subj_id, null);
 
                             if (trace_info !is null)
@@ -250,6 +269,12 @@ abstract class ImplAuthorization : Authorization
                                             else if (trace_group is null)
                                             {
                                                 is_authorized = true;
+
+                                                if (use_cache)
+                                                {
+                                                    cache.put(subj_id, object_group_id, request_access, calc_right_res);
+                                                }
+
                                                 return is_authorized;
                                             }
                                         }
@@ -314,7 +339,7 @@ abstract class ImplAuthorization : Authorization
 
         try
         {
-            string groups_str = get_in_current_transaction(uri);
+            string groups_str = get_in_current_transaction(membership_prefix ~ uri);
             if (groups_str != null)
                 rights_from_string(groups_str, result_set);
 
@@ -359,8 +384,7 @@ abstract class ImplAuthorization : Authorization
                     trace_info.write(format("%d %s (%d)GROUP [%s] %s-> %s\n", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
                                             access_to_pretty_string(new_access)));
 
-                string group_key = membership_prefix ~ group.id;
-                if (uri == group_key)
+                if (uri == group.id)
                 {
                     if (trace_info !is null)
                         trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key\n", str_num++, ll, level, group.id,
@@ -368,8 +392,16 @@ abstract class ImplAuthorization : Authorization
                     continue;
                 }
 
+                if (use_cache)
+                {
+                    if (level == 0)
+                        cache.add_group(uri, null);
+
+                    cache.add_group(uri, group.id);
+                }
+
                 Right *[] up_restrictions;
-                get_resource_groups(group_key, new_access, up_restrictions, walked_groups, level + 1);
+                get_resource_groups(group.id, new_access, up_restrictions, walked_groups, level + 1);
 
                 RightSet trs = new RightSet(up_restrictions, log);
 
@@ -433,6 +465,14 @@ abstract class ImplAuthorization : Authorization
 
                 if (uri == group.id)
                     continue;
+
+                if (use_cache)
+                {
+                    if (level == 0)
+                        cache.add_group(uri, null);
+
+                    cache.add_group(uri, group.id);
+                }
 
                 if (authorize_obj_group(group.id, group.access) == true)
                     return true;

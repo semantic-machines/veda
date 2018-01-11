@@ -857,16 +857,10 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         MapResource rdfType;
         Resources   _types = set_map_of_type(indv, rdfType);
 
-        if (rdfType.anyExists(owl_tags) == true)
-            is_onto = true;
+        string      prev_state;
+        Individual  prev_indv;
 
-        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
-            is_acl_element = true;
-
-        string     prev_state;
-        Individual prev_indv;
-
-        bool       is_new = false;
+        bool        is_new = false;
 
         if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
         {
@@ -899,6 +893,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
                     res.result = ResultCode.Unprocessable_Entity;
                     return res;
+                }
+
+                if (cmd == INDV_OP.REMOVE)
+                {
+                    indv.deserialize(prev_state);
+                    _types = set_map_of_type(indv, rdfType);
                 }
 
                 if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
@@ -948,6 +948,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         long   update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
         update_counter++;
         string new_state;
+
+        if (rdfType.anyExists(owl_tags) == true)
+            is_onto = true;
+
+        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+            is_acl_element = true;
 
         if (cmd == INDV_OP.REMOVE)
         {

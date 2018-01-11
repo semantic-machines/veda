@@ -1,5 +1,7 @@
 module veda.authorization.cache;
 
+import std.stdio, veda.common.type;
+
 class GroupInfo
 {
     int       level;
@@ -21,6 +23,10 @@ class CacheElement
         res_access = _res_access;
     }
 }
+
+//const byte EL_IN_TREE   = 1;
+//const byte OBJ_IN_TREE  = 1;
+//const byte SUBJ_IN_TREE = 2;
 
 class Cache
 {
@@ -47,12 +53,15 @@ class Cache
     }
 
     // добавляет группу в дерево
-    void add_group(string id, string parent_id)
+    bool add_group(string id, string parent_id)
     {
         GroupInfo gi = group_index.get(id, null);
 
         if (gi !is null && gi.is_deprecated)
+        {
             gi = null;
+            return false;
+        }
 
         if (gi is null)
         {
@@ -70,6 +79,14 @@ class Cache
 
             gi.level          = level + 1;
             group_index[ id ] = gi;
+
+            stderr.writefln("cache.add_group id=%s, parent_id=%s, level=%d", id, parent_id, level);
+
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -84,8 +101,11 @@ class Cache
         }
     }
 
-    void put(string subject_group_id, string object_group_id, ubyte req_access, ubyte res_access, string permission_id)
+    void put(string subject_group_id, string object_group_id, ubyte req_access, ubyte res_access)
     {
+        stderr.writefln("cache.put, subject_group_id=%s, object_group_id=%s, req_access=%s res_access=%s", subject_group_id, object_group_id,
+                        access_to_pretty_string1(req_access), access_to_pretty_string1(res_access));
+
         string       ckey = subject_group_id ~ object_group_id;
         CacheElement ce   = ckey_2_cache_element.get(ckey, null);
 
@@ -110,12 +130,17 @@ class Cache
         string       ckey = subject_group_id ~ object_group_id;
 
         CacheElement ce = ckey_2_cache_element.get(ckey, null);
+        stderr.writefln("cache.get, subject_group_id=%s, object_group_id=%s, req_access=%s", subject_group_id, object_group_id, access_to_pretty_string1(req_access));
 
         if (ce !is null)
         {
+            stderr.writefln("cache.get, ce !is null");
+
             // проверить актуальность subject дерева в верх
             if (ce.subject_group is null)
                 return -1;
+
+            stderr.writefln("cache.get, #1");
 
             for (GroupInfo igri = ce.subject_group; igri !is null; igri = igri.parent)
             {
@@ -127,9 +152,12 @@ class Cache
                 }
             }
 
+            stderr.writefln("cache.get, #2");
             // проверить актуальность object дерева в верх
             if (ce.object_group is null)
                 return -1;
+
+            stderr.writefln("cache.get, #3");
 
             for (GroupInfo igri = ce.object_group; igri !is null; igri = igri.parent)
             {
@@ -140,6 +168,7 @@ class Cache
                     return -1;
                 }
             }
+            stderr.writefln("cache.get, #4");
 
             res = req_access & ce.req_access;
 
@@ -150,8 +179,33 @@ class Cache
                 return res & cast(ubyte)ea;
             }
         }
+        else
+            return -1;
 
         return res;
     }
 }
 
+string access_to_pretty_string1(const ubyte src)
+{
+    string res = "";
+
+    if (src & Access.can_create)
+        res ~= "C ";
+    if (src & Access.can_read)
+        res ~= "R ";
+    if (src & Access.can_update)
+        res ~= "U ";
+    if (src & Access.can_delete)
+        res ~= "D ";
+    if (src & Access.cant_create)
+        res ~= "!C ";
+    if (src & Access.cant_read)
+        res ~= "!R ";
+    if (src & Access.cant_update)
+        res ~= "!U ";
+    if (src & Access.cant_delete)
+        res ~= "!D ";
+
+    return res;
+}

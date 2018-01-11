@@ -142,10 +142,15 @@ v-s:SimpleNumerationYear
   rdfs:label "Нумерация в пределах класса в пределах года"@ru ;
   rdfs:label "Numeration with class as scope"@en ;
   v-s:numerationScope """
-  (function (ticket, individual){
-    if (!individual["rdf:type"]) { return ""; }
-    var y = typeof window === 'undefined' ? individual["v-s:registrationDate"][0].id.getFullYear() : individual["v-s:registrationDate"][0].data.getFullYear();
-    return "numeration-scope_" + ( ((typeof window === "undefined")?individual['rdf:type'][0].data:individual['rdf:type'][0].id).replace(':','_') ) + "_" + y;
+  (function (ticket, individual) {
+    var year;
+    if ( hasValue(individual, "v-s:registrationDate") ) {
+      year = (typeof window === "object" ? individual["v-s:registrationDate"][0] : individual["v-s:registrationDate"][0].data).getFullYear();
+    } else {
+      year = new Date().getFullYear();
+    }
+    var type = (typeof window === "object" ? individual['rdf:type'][0].id : individual['rdf:type'][0].data).replace(':','_');
+    return ["numeration-scope", type, year].join("_");
   });
 """ ;
   v-s:numerationGetNextValue """
