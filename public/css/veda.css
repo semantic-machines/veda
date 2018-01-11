@@ -783,15 +783,51 @@ td > #rel-actions {
   outline: 3px dashed #aaa!important;
   outline-offset: -3px!important;
 }
-.label-draft {
-  display: block;
-  position: absolute;
-  top: 0px;
-  left:0px;
-  z-index: 99;
-  padding: 2px 4px;
-  opacity: 0.7;
+
+.is-draft:not(tr) {
+  position: relative;
 }
+.is-draft:not(tr)::before {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 1.1em;
+  line-height: .75em;
+  vertical-align: -15%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "\f14b";
+  opacity: 0.5;
+}
+
+tr.is-draft > td:first-child {
+  position: relative;
+}
+tr.is-draft > td:first-child::before {
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 1.1em;
+  line-height: .75em;
+  vertical-align: -15%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "\f14b";
+  opacity: 0.5;
+}
+
+.label-template.is-draft {
+  position: initial;
+}
+.label-template.is-draft::before {
+  position: static;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: 1.1em;
+  line-height: .75em;
+  vertical-align: -15%;
+  content: "\f14b";
+  margin-right: 10px;
+  opacity: 0.5;
+}
+
 .sortable-placeholder {
   outline: 3px dashed #aaa!important;
   outline-offset: -3px!important;
