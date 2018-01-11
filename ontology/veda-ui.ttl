@@ -607,7 +607,7 @@ v-ui:StandardButtonsTemplate
     }
     e.stopPropagation();
   });
-  //# sourceURL=v-ui:StandardButtonsTemplate_post
+  //# sourceURL=v-ui:IconButtonsTemplate_post
 </script>
 """ ;
 .
@@ -619,15 +619,15 @@ v-ui:IconButtonsTemplate
 <script>
   // var allButtons = "edit save cancel delete";
   var defaultButtons = "edit save cancel delete";
-  var canUpdate = individual.rights && individual.rights.hasValue("v-s:canUpdate", true);
-  var canDelete = individual.rights && individual.rights.hasValue("v-s:canDelete", true);
+  var canUpdate = individual.rights.hasValue("v-s:canUpdate", true);
+  var canDelete = individual.rights.hasValue("v-s:canDelete", true);
   var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
   enabledButtons.forEach(function (id) {
     if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
     if ( !canUpdate && (id === "delete") ) { return; }
-    $("#" + id, template).removeClass("rm");
+    $(".action#" + id, template).removeClass("rm");
   });
-  $(".rm", template).remove();
+  $(".action.rm", template).remove();
   template.on("click", "#edit, #save, #cancel, #delete", function (e) {
     e.preventDefault();
     var action = this.id;
@@ -637,7 +637,7 @@ v-ui:IconButtonsTemplate
     }
     template.parent().closest("[resource='" + individual.id + "']").trigger(action);
   });
-  //# sourceURL=v-ui:StandardButtonsTemplate_pre
+  //# sourceURL=v-ui:IconButtonsTemplate_pre
 </script>
 <div class="standard-actions">
   <style>
@@ -663,12 +663,8 @@ v-ui:IconButtonsTemplate
   closest.on("internal-validated", function (e, validation) {
     if (validation.state) {
       $(".action#save", template).removeAttr("disabled");
-      $(".action#send", template).removeAttr("disabled");
-      $(".action#task-button", template).removeAttr("disabled");
     } else {
       $(".action#save", template).attr("disabled", "disabled");
-      $(".action#send", template).attr("disabled", "disabled");
-      $(".action#task-button", template).attr("disabled", "disabled");
     }
     e.stopPropagation();
   });
@@ -804,6 +800,11 @@ v-ui:LinksTemplate
     Link.one("afterSave", function () {
       newRow.remove();
     });
+    template.on("save", function () {
+      if ( cntr.children("[resource='" + Link.id + "']").length ) {
+        newRow.trigger("save");
+      }
+    });
   });
 
   individual.on("v-s:hasLink", linksHandler);
@@ -833,7 +834,7 @@ v-ui:LinksTemplate
         <th width="10%"></th>
       </tr>
     </thead>
-    <tbody rel="v-s:hasLink">
+    <tbody rel="v-s:hasLink" data-embedded="true">
       <script>
         var displayedDoc = container.closest("[resource]").attr("resource");
         if ( this.hasValue("v-s:from", displayedDoc) ) {
@@ -2391,7 +2392,7 @@ td:PersonTemplate1
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
   <br>
-  <div about="@" class="container sheet view -edit -search" data-template="v-ui:LinksTemplate"></div>
+  <div about="@" class="container sheet view edit -search" data-template="v-ui:LinksTemplate" data-embedded="true"></div>
   <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
