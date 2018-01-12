@@ -43,6 +43,9 @@ class LmdbAuthorization : ImplAuthorization
         driver.close();
     }
 
+	long count_read_in_transaction;
+	long max_limin_read_in_transaction = 10; 
+
     override string get_in_current_transaction(string in_key)
     {
         string sres;
@@ -52,6 +55,13 @@ class LmdbAuthorization : ImplAuthorization
         rc          = mdb_get(txn_r, dbi, &key, &data);
         if (rc == 0)
             sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+
+		count_read_in_transaction++;
+		if (count_read_in_transaction > max_limin_read_in_transaction)
+		{
+			abort_transaction();
+			begin_transaction(false);
+		}
 
         return sres;
     }
@@ -118,6 +128,8 @@ class LmdbAuthorization : ImplAuthorization
         rc = mdb_dbi_open(txn_r, null, MDB_CREATE, &dbi);
         if (rc != 0)
             throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
+
+		count_read_in_transaction = 0;
 
         return true;
     }
