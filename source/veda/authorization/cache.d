@@ -1,12 +1,18 @@
 module veda.authorization.cache;
 
-import std.stdio, veda.common.type;
+import std.stdio, std.conv, veda.common.type;
 
 class GroupInfo
 {
-    int       level;
+    //int       level;    
     bool      is_deprecated;
-    GroupInfo parent;
+    GroupInfo[string] childs;
+    
+    override
+    string toString ()
+    {
+    	return "[" ~ text (childs) ~ "]";
+    }
 }
 
 class CacheElement
@@ -52,7 +58,7 @@ class Cache
         ckey_2_permissons[ ckey ] = (ea ^ prev_access) & ea;
     }
 
-    // добавляет группу в дерево
+    // добавляет группу id в дерево
     bool add_group(string id, string parent_id)
     {
         GroupInfo gi = group_index.get(id, null);
@@ -70,17 +76,18 @@ class Cache
             if (parent_id !is null)
             {
                 GroupInfo pgi = group_index.get(parent_id, null);
-                if (pgi !is null)
-                {
-                    level     = pgi.level;
-                    gi.parent = pgi;
-                }
+                
+                if (pgi is null)
+	                pgi = new GroupInfo();
+                
+                pgi.childs[id] = gi;
             }
 
-            gi.level          = level + 1;
             group_index[ id ] = gi;
 
-            stderr.writefln("cache.add_group id=%s, parent_id=%s, level=%d", id, parent_id, level);
+            stderr.writefln("cache.add_group id=%s, parent_id=%s", id, parent_id);
+
+			stderr.writefln("@ %s", group_index);
 
             return false;
         }
@@ -141,12 +148,12 @@ class Cache
                 return -1;
 
             stderr.writefln("cache.get, #1");
-
+/*
             for (GroupInfo igri = ce.subject_group; igri !is null; igri = igri.parent)
             {
                 if (igri.is_deprecated == true)
                 {
-                    // ветки выше устарели, удалить этот результат из кэша
+                    // ветки ниже устарели, удалить этот результат из кэша
                     ckey_2_cache_element.remove(ckey);
                     return -1;
                 }
@@ -169,7 +176,7 @@ class Cache
                 }
             }
             stderr.writefln("cache.get, #4");
-
+*/
             res = req_access & ce.req_access;
 
             int ea = ckey_2_permissons.get(ckey, -1);
