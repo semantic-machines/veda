@@ -607,7 +607,7 @@ v-ui:StandardButtonsTemplate
     }
     e.stopPropagation();
   });
-  //# sourceURL=v-ui:IconButtonsTemplate_post
+  //# sourceURL=v-ui:StandardButtonsTemplate_post
 </script>
 """ ;
 .
@@ -668,7 +668,7 @@ v-ui:IconButtonsTemplate
     }
     e.stopPropagation();
   });
-  //# sourceURL=v-ui:StandardButtonsTemplate_post
+  //# sourceURL=v-ui:IconButtonsTemplate_post
 </script>
 """ ;
 .
