@@ -316,16 +316,16 @@ veda.Module(function (veda) { "use strict";
   proto.save = function() {
     var self = this;
     // Do not save individual to server if nothing changed
-    if (self.isSync()) { return; }
-    self.trigger("beforeSave");
-    Object.keys(self.properties).reduce(function (acc, property_uri) {
+    if (this.isSync()) { return this; }
+    this.trigger("beforeSave");
+    Object.keys(this.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
       acc[property_uri] = self.properties[property_uri].filter(function (item) {
         return item && item.data !== "";
       });
       if (!acc[property_uri].length) delete acc[property_uri];
       return acc;
-    }, self.properties);
+    }, this.properties);
     try {
       this.undraft();
       put_individual(veda.ticket, this.properties);
