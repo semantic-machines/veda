@@ -579,6 +579,7 @@ v-ui:StandardButtonsTemplate
   }
   setTimeout(function () {
     var main = template.parent().closest("[resource='" + individual.id + "']");
+    if (!main.length) { return; }
     var actions = template.closest(".actions");
     if (!actions.length) { return; }
     var actionsStaticHeight = actions.height();
