@@ -153,7 +153,7 @@ v-s:LetterRegistrationRecordSender
   rdfs:subClassOf v-s:RegistrationRecord ;
   rdfs:label "Регистрационная запись отправителя письма"@ru ;
   rdfs:label "Letter registration record sender"@en ;
-  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
 .
 
 ### -------------------------------------------------------
@@ -163,7 +163,7 @@ v-s:LetterRegistrationRecordRecipient
   rdfs:subClassOf v-s:RegistrationRecord ;
   rdfs:label "Регистрационная запись получателя письма"@ru ;
   rdfs:label "Letter registration record recipient"@en ;
-  v-s:hasNumeration v-s:RegistrationNumberSimpleNumeration ;
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
 .
 
 # v-s:registrationNumber
