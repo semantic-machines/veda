@@ -491,12 +491,12 @@ veda.Module(function Util(veda) { "use strict";
         hiddenField.setAttribute("type", "hidden");
         hiddenField.setAttribute("name", key.replace(':','_'));
         var value = '';
-        individual[key].forEach(function(item, i, arr) {
+        individual.get(key).forEach(function(item, i, arr) {
           if (i>0) value+=',';
           value += (
-            individual[key][i] instanceof veda.IndividualModel ? individual[key][i].id :
-            individual[key][i] instanceof Date ? individual[key][i].toISOString() :
-            individual[key][i]
+            item instanceof veda.IndividualModel ? item.id :
+            item instanceof Date ? item.toISOString() :
+            item
           );
         });
         console.log(key, value);
