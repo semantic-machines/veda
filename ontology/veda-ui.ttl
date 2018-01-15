@@ -2530,7 +2530,7 @@ v-ui:json
   var height = $("#copyright").offset().top - container.offset().top - 120;
   pre.css("height", height);
   pre.html(anchorized);
-  textarea.text(formatted);
+  textarea.val(formatted);
   textarea.css("min-height", height);
   template.on("cancel", function () {
     pre.html(anchorized);
@@ -2540,9 +2540,10 @@ v-ui:json
     var notify = veda.Notify ? new veda.Notify() : function () {};
     var original = individual.properties;
     try {
-      formatted = pre.text();
+      formatted = textarea.val();
       anchorized = anchorize(formatted);
-      json = JSON.parse( formatted );
+      pre.html(anchorized);
+      json = JSON.parse(formatted);
       individual.properties = json;
       individual.isSync(false);
       individual.save();
