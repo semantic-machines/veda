@@ -527,6 +527,7 @@ v-ui:StandardButtonsTemplate
   }
   setTimeout(function () {
     var main = template.parent().closest("[resource='" + individual.id + "']");
+    if (!main.length) { return; }
     var actions = template.closest(".actions");
     if (!actions.length) { return; }
     var actionsStaticHeight = actions.height();
@@ -588,7 +589,7 @@ v-ui:IconButtonsTemplate
     }
     template.parent().closest("[resource='" + individual.id + "']").trigger(action);
   });
-  //# sourceURL=v-ui:IconButtonsTemplate
+  //# sourceURL=v-ui:IconButtonsTemplate_pre
 </script>
 <div class="standard-actions">
   <style>
@@ -596,10 +597,10 @@ v-ui:IconButtonsTemplate
       margin: 0 3px 0 0;
     }
   </style>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Edit" type="button" class="rm action btn btn-xs btn-default view -edit -search glyphicon glyphicon-pencil" id="edit"></button>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Save" type="button" class="rm action btn btn-xs btn-success -view edit -search glyphicon glyphicon-ok" id="save"></button>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Cancel" type="button" class="rm action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Delete" type="button" class="rm action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Edit" type="button" class="action btn btn-xs btn-default view -edit -search glyphicon glyphicon-pencil" id="edit"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Save" type="button" class="action btn btn-xs btn-success -view edit -search glyphicon glyphicon-ok" id="save"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Cancel" type="button" class="action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
+  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Delete" type="button" class="action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
 </div>
 <script>
   $('[data-toggle="tooltip"]').tooltip({
@@ -614,12 +615,8 @@ v-ui:IconButtonsTemplate
   closest.on("internal-validated", function (e, validation) {
     if (validation.state) {
       $(".action#save", template).removeAttr("disabled");
-      $(".action#send", template).removeAttr("disabled");
-      $(".action#task-button", template).removeAttr("disabled");
     } else {
       $(".action#save", template).attr("disabled", "disabled");
-      $(".action#send", template).attr("disabled", "disabled");
-      $(".action#task-button", template).attr("disabled", "disabled");
     }
     e.stopPropagation();
   });
@@ -745,6 +742,9 @@ v-ui:LinksTemplate
         Link = new veda.IndividualModel();
     Link["rdf:type"] = [_class];
     Link["v-s:from"] = [individual];
+
+    individual.isSync(false);
+
     if (isMutual) {
       Link["v-s:mutualMembership"] = [ true ];
     }
@@ -753,7 +753,20 @@ v-ui:LinksTemplate
         newRow.remove();
       });
     });
+    setTimeout(function () {
+      if ( individual.isNew() ) {
+        newRow.find(".action#save").hide();
+      }
+    }, 10);
   });
+
+  individual.on("afterSave", saveHandler);
+  template.one("remove", function () {
+    individual.off("afterSave", saveHandler);
+  });
+  function saveHandler() {
+    $("[rel='v-s:hasLink']", template).children().trigger("save");
+  }
 
   individual.on("v-s:hasLink", linksHandler);
   template.one("remove", function () {
@@ -782,7 +795,7 @@ v-ui:LinksTemplate
         <th width="10%"></th>
       </tr>
     </thead>
-    <tbody rel="v-s:hasLink">
+    <tbody about="@" rel="v-s:hasLink" data-embedded="true">
       <script>
         var displayedDoc = container.closest("[resource]").attr("resource");
         if ( this.hasValue("v-s:from", displayedDoc) ) {
@@ -2302,7 +2315,7 @@ td:PersonTemplate1
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
   <br>
-  <div about="@" class="container sheet view -edit -search" data-template="v-ui:LinksTemplate"></div>
+  <div about="@" class="container sheet view edit -search" data-template="v-ui:LinksTemplate" data-embedded="true"></div>
   <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
