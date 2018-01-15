@@ -453,7 +453,7 @@ v-ui:StandardButtonsTemplate
       var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
       if ( !confirm(warning) ) { return; }
     }
-    template.parent().closest("[resource='" + individual.id + "']").trigger(action);
+    template.parent().closest("[resource]").trigger(action);
   });
   $("#journal", template).on("click", function (e) {
     e.preventDefault();
@@ -474,7 +474,7 @@ v-ui:StandardButtonsTemplate
     }
   });
   $("#send", template).on("click", function () {
-    template.parent().closest("[resource='" + individual.id + "']").trigger("save");
+    template.parent().closest("[resource]").trigger("save");
     veda.Util.send(individual, template);
   });
   $("#createReport", template).on("click", function () { veda.Util.createReport(individual); });
@@ -578,7 +578,7 @@ v-ui:StandardButtonsTemplate
     }
   }
   setTimeout(function () {
-    var main = template.parent().closest("[resource='" + individual.id + "']");
+    var main = template.parent().closest("[resource]");
     if (!main.length) { return; }
     var actions = template.closest(".actions");
     if (!actions.length) { return; }
@@ -595,7 +595,7 @@ v-ui:StandardButtonsTemplate
   }, 500);
 
   // Respect validation state of parent template
-  var closest = template.parent().closest("[resource='" + individual.id + "']");
+  var closest = template.parent().closest("[resource]");
   closest.on("internal-validated", function (e, validation) {
     if (validation.state) {
       $(".action#save", template).removeAttr("disabled");
@@ -633,7 +633,7 @@ v-ui:IconButtonsTemplate
       var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
       if ( !confirm(warning) ) { return; }
     }
-    template.parent().closest("[resource='" + individual.id + "']").trigger(action);
+    template.parent().closest("[resource]").trigger(action);
   });
   //# sourceURL=v-ui:IconButtonsTemplate_pre
 </script>
@@ -657,7 +657,7 @@ v-ui:IconButtonsTemplate
   });
 
   // Respect validation state of parent template
-  var closest = template.parent().closest("[resource='" + individual.id + "']");
+  var closest = template.parent().closest("[resource]");
   closest.on("internal-validated", function (e, validation) {
     if (validation.state) {
       $(".action#save", template).removeAttr("disabled");
@@ -2504,8 +2504,8 @@ v-ui:ttl
 
 v-ui:json
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон TTL"@ru ;
-  rdfs:label "Template TTL"@en ;
+  rdfs:label "Шаблон JSON"@ru ;
+  rdfs:label "Template JSON"@en ;
   v-ui:template """
 <div class="container sheet">
   <pre style="border:none;background-color:#fff;"></pre>
@@ -2527,22 +2527,13 @@ v-ui:json
   var height = $("#copyright").offset().top - container.offset().top - 120;
   pre.css("height", height);
   pre.html(anchorized);
-  $("#edit", template).click(function () {
-    $(this).addClass("hidden");
-    $("#save", template).removeClass("hidden");
-    $("#cancel", template).removeClass("hidden");
+  template.on("edit", function () {
     pre.prop("contenteditable", true).text(formatted);
   });
-  $("#cancel", template).click(function () {
-    $("#edit", template).removeClass("hidden");
-    $("#save", template).addClass("hidden");
-    $("#cancel", template).addClass("hidden");
+  template.on("cancel", function () {
     pre.prop("contenteditable", false).html(anchorized);
   });
-  $("#save", template).click(function () {
-    $("#edit", template).removeClass("hidden");
-    $("#save", template).addClass("hidden");
-    $("#cancel", template).addClass("hidden");
+  template.on("save", function () {
     pre.prop("contenteditable", false);
     var notify = veda.Notify ? new veda.Notify() : function () {};
     var original = individual.properties;
