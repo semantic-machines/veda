@@ -24,6 +24,7 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Hierarchical ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:label "Организационная единица"@ru ;
@@ -77,22 +78,6 @@ v-s:OrganizationUnitModel
 
   // sourceURL=v-s:OrganizationUnitModel
   """ ;
-.
-v-s:childUnit
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Дочерняя единица"@ru ;
-  rdfs:label "Child unit"@en ;
-  rdfs:range v-s:OrganizationUnit ;
-  owl:inverseOf v-s:parentUnit ;
-.
-v-s:parentUnit
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:OrganizationUnit ;
-  rdfs:label "Родительская единица"@ru ;
-  rdfs:label "Parent unit"@en ;
-  rdfs:range v-s:OrganizationUnit ;
-  owl:inverseOf v-s:childUnit ;
 .
 v-s:hasChief
   rdf:type owl:ObjectProperty ;

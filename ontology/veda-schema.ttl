@@ -214,6 +214,7 @@ v-s:Sector
 v-s:DocumentKind
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:NormativeDocument ;
   rdfs:label "Вид документа"@ru ;
   rdfs:label "Document kind"@en ;
 .
@@ -592,3 +593,15 @@ v-s:AppointmentSaveEvent
   }
 """
 .
+
+####################################################################################
+
+v-s:Directory
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Hierarchical ;
+  rdfs:label "Директория"@ru ;
+  rdfs:label "Directory"@en ;
+.
+# v-s:childUnit
+# v-s:parentUnit

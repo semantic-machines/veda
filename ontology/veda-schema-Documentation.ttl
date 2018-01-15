@@ -33,6 +33,7 @@ v-s:NormativeDocumentRequirement
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:NormativeDocument ;
   rdfs:label "Нормативный документ"@ru ;
   rdfs:label "Normative document requirement"@en ;
 .
@@ -48,7 +49,7 @@ v-s:hasNormativeDocument
   rdfs:label "Нормативный документ"@ru ;
   rdfs:label "Normative document"@en ;
   rdfs:range v-s:NormativeDocument ;
-  rdfs:domain v-s:NormativeDocumentRequirement ;
+  rdfs:domain v-s:NormativeDocument ;
 .
 v-s:requirementGroupNumber
   rdf:type owl:DatatypeProperty ;

@@ -1168,3 +1168,24 @@ v-s:Document
   rdfs:label "Документ"@ru ;
   rdfs:label "Document"@en ;
 .
+### ------------------------------------------------------------
+v-s:Hierarchical
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Иерархическая сущность"@ru ;
+  rdfs:label "Hierarchical thing"@en ;
+.
+v-s:childUnit
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Hierarchical ;
+  rdfs:label "Дочерняя единица"@ru ;
+  rdfs:label "Child unit"@en ;
+  owl:inverseOf v-s:parentUnit ;
+.
+v-s:parentUnit
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Hierarchical ;
+  rdfs:label "Родительская единица"@ru ;
+  rdfs:label "Parent unit"@en ;
+  owl:inverseOf v-s:childUnit ;
+.
