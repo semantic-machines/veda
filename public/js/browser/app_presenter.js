@@ -113,7 +113,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
         if ( hash.indexOf("#/") < 0 ) { return; }
         var tokens = decodeURI(hash).slice(2).split("/"),
             uri = tokens[0],
-            container = tokens[1],
+            container = tokens[1] || "#main",
             template = tokens[2],
             mode = tokens[3],
             extra = tokens[4];
@@ -160,7 +160,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
     }
     return value || null;
   }
-  
+
   // Login invitation
   var loginTmpl = $("#login-template").html();
   var loginForm = $(loginTmpl);
