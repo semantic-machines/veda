@@ -4,7 +4,6 @@ veda.Module(function (veda) { "use strict";
 
   veda.IndividualModel.prototype.present = function (container, template, mode, extra) {
 
-    container = container || "#main";
     mode = mode || "view";
 
     if (typeof container === "string") {
@@ -14,7 +13,10 @@ veda.Module(function (veda) { "use strict";
     return present(this, container, template, mode, extra)
       .then(function (renderedTemplate) {
 
-        container.append(renderedTemplate);
+        if (container) {
+          container.append(renderedTemplate);
+        }
+
         return renderedTemplate;
 
       })
@@ -224,7 +226,7 @@ veda.Module(function (veda) { "use strict";
       if (parent !== individual.id) {
         individual.reset();
       }
-      if (container.prop("id") === "main") {
+      if (container && typeof container.prop === "function" && container.prop("id") === "main") {
         window.history.back();
       }
       template.trigger("view");
@@ -235,7 +237,7 @@ veda.Module(function (veda) { "use strict";
     // Deleted alert
     function deletedHandler () {
       if ( this.hasValue("v-s:deleted", true) ) {
-        if ( container.prop("id") === "main" && !template.hasClass("deleted") ) {
+        if ( container && typeof container.prop === "function" && container.prop("id") === "main" && !template.hasClass("deleted") ) {
           var alertModel = new veda.IndividualModel("v-s:DeletedAlert");
           var recoverModel = new veda.IndividualModel("v-s:Recover");
           Promise.all([ alertModel.load(), recoverModel.load() ]).then(function (arr) {
@@ -255,7 +257,7 @@ veda.Module(function (veda) { "use strict";
         template.addClass("deleted");
       } else {
         template.removeClass("deleted");
-        if ( container.prop("id") === "main" ) {
+        if ( container && typeof container.prop === "function" && container.prop("id") === "main" ) {
           $("#deleted-alert", template).remove();
         }
       }
