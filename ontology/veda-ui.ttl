@@ -2508,7 +2508,9 @@ v-ui:json
   rdfs:label "Template JSON"@en ;
   v-ui:template """
 <div class="container sheet">
-  <pre style="border:none;background-color:#fff;"></pre>
+  <pre class="view -edit -search" style="border:none;background-color:#fff;"></pre>
+  <textarea class="form-control -view edit search" style='font-family:Menlo,Monaco,Consolas,"Courier New",monospace;font-size:13px;color:black;'></textarea>
+  <br>
   <div class="pull-right">
     <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
     <a id="generic" class="btn btn-default" href="#/@//v-ui:generic">generic</a>
@@ -2521,20 +2523,20 @@ v-ui:json
 </div>
 <script>
   var pre = $("pre", template),
+      textarea = $("textarea", template),
       json = individual.properties;
   var formatted = format(json);
   var anchorized = anchorize(formatted);
   var height = $("#copyright").offset().top - container.offset().top - 120;
   pre.css("height", height);
   pre.html(anchorized);
-  template.on("edit", function () {
-    pre.prop("contenteditable", true).text(formatted);
-  });
+  textarea.text(formatted);
+  textarea.css("min-height", height);
   template.on("cancel", function () {
-    pre.prop("contenteditable", false).html(anchorized);
+    pre.html(anchorized);
+    textarea.text(formatted);
   });
   template.on("save", function () {
-    pre.prop("contenteditable", false);
     var notify = veda.Notify ? new veda.Notify() : function () {};
     var original = individual.properties;
     try {
