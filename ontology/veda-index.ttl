@@ -120,6 +120,7 @@ vdi:index_4
   vdi:indexed_field v-s:firstName ;
   vdi:indexed_field v-s:lastName ;
   vdi:indexed_field v-s:middleName ;
+  vdi:indexed_field v-s:hasAccount ;
 .
 vdi:index_5
   rdf:type vdi:ClassIndex ;
