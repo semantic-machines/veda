@@ -277,8 +277,8 @@ v-s:hasDecision
 .
 v-s:hasSector
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Отрасль экономической деятельности"@ru ;
-  rdfs:label "Sector"@en ;
+  rdfs:label "Тематика"@ru ;
+  rdfs:label "Subjects"@en ;
   rdfs:range v-s:Sector ;
   rdfs:domain v-s:Thing ;
 .
