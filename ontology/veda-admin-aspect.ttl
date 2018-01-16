@@ -727,7 +727,6 @@ v-ui:AdminBlankTemplate
   <veda-control property="*" data-type="string"></veda-control>
 </div>
 <script>
-  container.siblings(".search-button.pull-right").remove();
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;
