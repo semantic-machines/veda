@@ -719,8 +719,8 @@ jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
                 }
                 else
                 {
-                    cerr << "ERR! INVALID JS INDIVIDUAL FORMAT, NULL VALUE, " << endl;
-                    jsobject_log(value);
+                    //cerr << "ERR! INVALID JS INDIVIDUAL FORMAT, NULL VALUE, " << endl;
+                    //jsobject_log(value);
 
                     write_type_value(ARRAY, 0, ou);
                 }
