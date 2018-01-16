@@ -1715,7 +1715,7 @@
         }
       });
 
-      if (!getList.length) { return callback(loaded); }
+      if (!toLoad.length) { return callback(loaded); }
 
       veda.Backend.get_individuals({
         ticket: veda.ticket,
