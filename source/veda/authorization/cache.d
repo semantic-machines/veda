@@ -112,6 +112,8 @@ class Cache
         string       ckey = subject_group_id ~ object_group_id;
         CacheElement ce   = ckey_2_cache_element.get(ckey, null);
 
+        stderr.writefln("cache.put, ckey=%s", ckey);
+
         if (ce is null)
         {
             ce                           = new CacheElement(req_access, res_access);
@@ -137,6 +139,8 @@ class Cache
         stderr.writefln("cache.get, subject_group_id=%s, object_group_id=%s, req_access=%s", subject_group_id, object_group_id,
                         access_to_pretty_string1(
                                                  req_access));
+
+        stderr.writefln("cache.get, ckey=%s", ckey);
 
         if (ce !is null)
         {

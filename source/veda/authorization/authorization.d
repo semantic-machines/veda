@@ -117,20 +117,16 @@ abstract class ImplAuthorization : Authorization
                 if (trace_info !is null)
                     trace_info.write(format("\n%d PREPARE OBJECT GROUPS\n", str_num++));
 
-                if (authorize_obj_group(veda_schema__AllResourcesGroup, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
-                {
-                    return calc_right_res;
-                }
-
-                if (authorize_obj_group(uri, 15) == true && trace_info is null && trace_group is null && trace_acl is null)
-                {
-                    return calc_right_res;
-                }
-
                 ubyte[ string ] walked_groups1;
 
                 if (trace_info is null && trace_group is null && trace_acl is null)
                 {
+                    if (authorize_obj_group(veda_schema__AllResourcesGroup, 15) == true)
+                        return calc_right_res;
+
+                    if (authorize_obj_group(uri, 15) == true)
+                        return calc_right_res;
+
                     if (prepare_obj_group(uri, 15, walked_groups1, 0) == true)
                         return calc_right_res;
                 }
@@ -169,6 +165,11 @@ abstract class ImplAuthorization : Authorization
         finally
         {
             abort_transaction();
+
+            if (use_cache)
+            {
+                cache.put(user_uri, _uri, request_access, calc_right_res);
+            }
 
             if (trace_info !is null)
                 trace_info.write(format("%d authorize %s, request=%s, answer=[%s]\n", str_num++, uri, access_to_pretty_string(request_access),
