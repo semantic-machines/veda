@@ -220,12 +220,13 @@ void main(string[] args)
     }
     else
     {
-        string authorization_db_type = properties.as!(string)("authorization_db_type");
+        string authorization_db_type    = properties.as!(string)("authorization_db_type");
+        long   authorization_cache_size = properties.as!(long)("authorization_cache_size");
 
         if (authorization_db_type == "mdbx")
             athrz = new MdbxAuthorization(DBMode.R, "acl", log);
         else
-            athrz = new LmdbAuthorization(DBMode.R, "acl", log);
+            athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, log);
     }
 
     while (!f_listen_exit)

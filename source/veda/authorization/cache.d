@@ -61,29 +61,28 @@ class Cache
     // добавляет группу id в дерево
     bool add_group(string id, string parent_id)
     {
-        stderr.writefln("#0 cache.add_group id=%s, parent_id=%s", id, parent_id);
+        //stderr.writefln("#0 cache.add_group id=%s, parent_id=%s", id, parent_id);
 
-        GroupInfo gi  = group_index.get(id, null);
+        GroupInfo gi = group_index.get(id, null);
+
+        if (gi !is null && gi.is_deprecated)
+            return false;
+
+        if (gi is null)
+        {
+            gi                = new GroupInfo();
+            group_index[ id ] = gi;
+            //stderr.writefln("@ %s", group_index);
+        }
+
         GroupInfo pgi = group_index.get(parent_id, null);
+        if (pgi !is null && pgi.is_deprecated)
+            return false;
+
         if (pgi is null)
         {
             pgi                      = new GroupInfo();
             group_index[ parent_id ] = pgi;
-        }
-
-        if (gi !is null && gi.is_deprecated)
-        {
-            gi = null;
-            return false;
-        }
-
-        if (gi is null)
-        {
-            gi = new GroupInfo();
-
-            group_index[ id ] = gi;
-
-            stderr.writefln("@ %s", group_index);
         }
 
         if (pgi !is null && gi !is null)

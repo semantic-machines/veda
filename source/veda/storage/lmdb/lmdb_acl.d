@@ -19,10 +19,16 @@ class LmdbAuthorization : ImplAuthorization
     MDB_txn *txn_r;
     MDB_dbi dbi;
 
-    this(DBMode mode, string _parent_thread_name, Logger _log)
+    this(DBMode mode, string _parent_thread_name, long _cache_size, Logger _log)
     {
         log    = _log;
         driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
+
+        if (_cache_size > 0)
+        {
+            use_cache = true;
+            log.trace("USE CACHE");
+        }
     }
 
     bool open()
@@ -43,8 +49,8 @@ class LmdbAuthorization : ImplAuthorization
         driver.close();
     }
 
-	long count_read_in_transaction;
-	long max_limin_read_in_transaction = 10; 
+    long count_read_in_transaction;
+    long max_limin_read_in_transaction = 10;
 
     override string get_in_current_transaction(string in_key)
     {
@@ -56,12 +62,12 @@ class LmdbAuthorization : ImplAuthorization
         if (rc == 0)
             sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
 
-		count_read_in_transaction++;
-		if (count_read_in_transaction > max_limin_read_in_transaction)
-		{
-			abort_transaction();
-			begin_transaction(false);
-		}
+        count_read_in_transaction++;
+        if (count_read_in_transaction > max_limin_read_in_transaction)
+        {
+            abort_transaction();
+            begin_transaction(false);
+        }
 
         return sres;
     }
@@ -129,7 +135,7 @@ class LmdbAuthorization : ImplAuthorization
         if (rc != 0)
             throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
 
-		count_read_in_transaction = 0;
+        count_read_in_transaction = 0;
 
         return true;
     }
