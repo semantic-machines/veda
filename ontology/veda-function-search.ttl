@@ -1669,23 +1669,21 @@ v-fs:AttributiveSearchTemplate
       noMoreResults.addClass("hidden");
     }
 
-    // Prefetch new search results alltogether
-    var prefetch = [];
-    resultDelta.map(function (uri) {
-      if ( !veda.cache[uri] ) {
-        prefetch.push( uri );
-      }
+    // Load new search results alltogether
+    var toLoad = resultDelta.filter(function (uri) {
+      var individual = new veda.IndividualModel(uri);
+      return !individual.isLoaded();
     });
 
-    var deltaPromise = prefetch.length ? veda.Backend.get_individuals({
+    var deltaPromise = toLoad.length ? veda.Backend.get_individuals({
       ticket: veda.ticket,
-      uris: prefetch
+      uris: toLoad
     }) : Promise.resolve([]);
 
     return deltaPromise
-      .then(function (prefetched) {
-        prefetched.map(function (json) {
-          var fetched = new veda.IndividualModel(json);
+      .then(function (loaded) {
+        loaded.forEach(function (properties) {
+          var loadedIndividual = new veda.IndividualModel(properties);
         });
         var total = self.result.length;
         var delta = resultDelta.length;
@@ -2403,54 +2401,68 @@ v-fs:AttributiveSearchInlineTemplate
       noMoreResults.addClass("hidden");
     }
 
-    // Prefetch new search results alltogether
-    var prefetch = [];
-    resultDelta.map(function (uri) {
-      if ( !veda.cache[uri] ) {
-        prefetch.push( uri );
-      }
+    // Load new search results alltogether
+    var toLoad = resultDelta.filter(function (uri) {
+      var individual = new veda.IndividualModel(uri);
+      return !individual.isLoaded();
     });
-    return veda.Backend.get_individuals({
-      ticket: veda.ticket,
-      uris: prefetch,
-      async: true
-    }).then(function (prefetched) {
-      prefetched.map(function (json) {
-        var fetched = new veda.IndividualModel(json);
-      });
 
-      var total = self.result.length;
-      var delta = resultDelta.length;
-      // Render each result
-      resultDelta.map(function (uri, i) {
-        var tmpl = resultTemplate.replace("###", total - delta + i + 1),
-            item = new veda.IndividualModel(uri);
-        tmpl = item.present(resultContainer, tmpl);
-        if (item.id === self.marked) {
-          tmpl.addClass("warning");
-        }
-        setTimeout(function () {
-          $("td", tmpl).each( function () {
-            var text = this.innerText || this.textContent;
-            if (text && text.length > 100) {
-              var $this = $(this);
-              var contents = $this.contents();
-              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
-              $this.empty().append(wrapper);
-              wrapper.popover({
-                content: wrapper.html(),
-                html: true,
-                placement: "top"
-              }).tooltip({
-                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
-                placement: "bottom",
-                delay: { show: 750, hide: 0 }
-              });
+    var deltaPromise = toLoad.length ? veda.Backend.get_individuals({
+      ticket: veda.ticket,
+      uris: toLoad
+    }) : Promise.resolve([]);
+
+    return deltaPromise
+      .then(function (loaded) {
+        loaded.forEach(function (properties) {
+          var loadedIndividual = new veda.IndividualModel(properties);
+        });
+        var total = self.result.length;
+        var delta = resultDelta.length;
+        // Render each result
+        var renderedPromises = resultDelta.map(function (uri, i) {
+          var tmpl = resultTemplate.replace("###", total - delta + i + 1),
+              item = new veda.IndividualModel(uri);
+          return item.present(undefined, tmpl).then(function (tmpl) {
+            tmpl.prop("id", total - delta + i);
+            if (item.id === self.marked) {
+              tmpl.addClass("warning");
             }
+            setTimeout(function () {
+              $("td", tmpl).each( function () {
+                var text = this.innerText || this.textContent;
+                if (text && text.length > 100) {
+                  var $this = $(this);
+                  var contents = $this.contents();
+                  var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+                  $this.empty().append(wrapper);
+                  wrapper.popover({
+                    content: wrapper.html(),
+                    html: true,
+                    placement: "top"
+                  });
+                  var title = new veda.IndividualModel("v-fs:ClickToViewContent").load().then(function (title) {
+                    title = title["rdfs:label"].join(" ");
+                    wrapper.tooltip({
+                      title: title,
+                      placement: "bottom",
+                      delay: { show: 750, hide: 0 }
+                    });
+                  });
+                }
+              });
+            }, 300);
+            return tmpl;
           });
-        }, 300);
+        });
+        return Promise.all(renderedPromises);
+      })
+      .then(function (rendered) {
+        var sorted = rendered.sort(function (a, b) {
+          return a.prop("id") - b.prop("id");
+        });
+        resultContainer.append(sorted);
       });
-    });
   }
 
   // Spinner

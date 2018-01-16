@@ -595,7 +595,6 @@ veda.Module(function (veda) { "use strict";
       }
     });
 
-
     // Property control
     $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
 

@@ -1693,31 +1693,43 @@
     } else {
       queryString = prefix;
     }
-    var result = [];
     veda.Backend.query({
       ticket: veda.ticket,
       query: queryString,
       sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
       top: 100,
       limit: 1000
-    }).then(function (results) {
+    }).then(function (queryResult) {
 
-      var getList = results.result.filter( function (uri, index) {
-        return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
+      var result = queryResult.result;
+
+      var loaded = [];
+
+      var toLoad = result.filter( function (uri) {
+        var individual = new veda.IndividualModel(uri);
+        if ( individual.isLoaded() ) {
+          loaded.push(individual);
+          return false;
+        } else {
+          return true;
+        }
       });
 
-      if (!getList.length) { return callback(result); }
+      if (!getList.length) { return callback(loaded); }
 
       veda.Backend.get_individuals({
         ticket: veda.ticket,
-        uris: getList
+        uris: toLoad
       }).then(function (individuals) {
-        return Promise.all( individuals.map( function (json) {
-          return new veda.IndividualModel(json).load();
+        return individuals.map( function (json) {
+          return new veda.IndividualModel(json);
+        });
+      }).then(function () {
+        return Promise.all(result.map(function (uri) {
+          return new veda.IndividualModel(uri).load();
         }));
-      }).then(function (individual_models) {
-        result = result.concat(individual_models);
-        callback(result);
+      }).then(function (loaded) {
+        callback(loaded);
       });
     });
   }
