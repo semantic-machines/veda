@@ -4,14 +4,14 @@ import std.stdio, std.conv, veda.common.type;
 
 class GroupInfo
 {
-    //int       level;    
-    bool      is_deprecated;
-    GroupInfo[string] childs;
-    
+    //int       level;
+    bool is_deprecated;
+    GroupInfo[ string ] childs;
+
     override
-    string toString ()
+    string toString()
     {
-    	return "[" ~ text (childs) ~ "]";
+        return "" ~ text(childs) ~ "";
     }
 }
 
@@ -61,7 +61,15 @@ class Cache
     // добавляет группу id в дерево
     bool add_group(string id, string parent_id)
     {
-        GroupInfo gi = group_index.get(id, null);
+        stderr.writefln("#0 cache.add_group id=%s, parent_id=%s", id, parent_id);
+
+        GroupInfo gi  = group_index.get(id, null);
+        GroupInfo pgi = group_index.get(parent_id, null);
+        if (pgi is null)
+        {
+            pgi                      = new GroupInfo();
+            group_index[ parent_id ] = pgi;
+        }
 
         if (gi !is null && gi.is_deprecated)
         {
@@ -71,30 +79,19 @@ class Cache
 
         if (gi is null)
         {
-            int level;
             gi = new GroupInfo();
-            if (parent_id !is null)
-            {
-                GroupInfo pgi = group_index.get(parent_id, null);
-                
-                if (pgi is null)
-	                pgi = new GroupInfo();
-                
-                pgi.childs[id] = gi;
-            }
 
             group_index[ id ] = gi;
 
-            stderr.writefln("cache.add_group id=%s, parent_id=%s", id, parent_id);
-
-			stderr.writefln("@ %s", group_index);
-
-            return false;
+            stderr.writefln("@ %s", group_index);
         }
-        else
+
+        if (pgi !is null && gi !is null)
         {
-            return true;
+            pgi.childs[ id ] = gi;
         }
+
+        return true;
     }
 
     // отмечает группу как deprecated
@@ -137,7 +134,10 @@ class Cache
         string       ckey = subject_group_id ~ object_group_id;
 
         CacheElement ce = ckey_2_cache_element.get(ckey, null);
-        stderr.writefln("cache.get, subject_group_id=%s, object_group_id=%s, req_access=%s", subject_group_id, object_group_id, access_to_pretty_string1(req_access));
+
+        stderr.writefln("cache.get, subject_group_id=%s, object_group_id=%s, req_access=%s", subject_group_id, object_group_id,
+                        access_to_pretty_string1(
+                                                 req_access));
 
         if (ce !is null)
         {
@@ -176,7 +176,7 @@ class Cache
                 }
             }
             stderr.writefln("cache.get, #4");
-*/
+ */
             res = req_access & ce.req_access;
 
             int ea = ckey_2_permissons.get(ckey, -1);
