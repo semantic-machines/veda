@@ -189,7 +189,7 @@ public class IndexerContext
         bool is_deleted, prev_is_deleted, is_restored;
 
         //if (is_trace)
-            log.trace("index uri=%s", indv.uri);
+        log.trace("index uri=%s", indv.uri);
 
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
@@ -555,6 +555,11 @@ public class IndexerContext
                                                                 {
                                                                     index_double(ln ~ "." ~ indexed_field.uri, rc);
                                                                 }
+                                                            }
+
+                                                            if (rrc.length > 0)
+                                                            {
+                                                                index_boolean(ln ~ "." ~ indexed_field.uri ~ ".isExists", Resource(true));
                                                             }
                                                         }
                                                     }
