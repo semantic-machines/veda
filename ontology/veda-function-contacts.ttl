@@ -1,0 +1,43 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-function-contacts>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология функции контакты"@ru ;
+  rdfs:label "Contacts function ontology"@en ;
+  owl:versionInfo "3.9" ;
+  v-s:loadPriority 9 ;
+.
+v-s:Contacts
+  rdf:type v-s:Function ;
+  rdfs:label "Контакты"@ru ;
+  rdfs:label "Contacts"@en ;
+  v-ui:hasModel v-s:ContactsModel ;
+  v-ui:hasTemplate v-s:ContactsTemplate ;
+.
+v-s:ContactsModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель функции контакты"@ru ;
+  rdfs:label "Contacts function model"@en ;
+  v-s:script """
+//# sourceURL=v-s:FunctionContactsModel
+  """
+.
+v-s:ContactsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон функции контакты"@ru ;
+  rdfs:label "Contacts function template"@en ;
+  v-ui:template """
+<div class="container sheet">
+  Hello world!
+</div>
+<script>
+//# sourceURL=v-s:FunctionContactsTemplate
+</script>
+  """
+.
+
