@@ -659,7 +659,29 @@ v-ui:VersionTemplate
   rdfs:label "Шаблон для класса v-s:Version"@ru ;
   rdfs:label "Template for class v-s:Version"@en ;
   v-ui:forClass v-s:Version ;
-  v-ui:template "" ;
+  v-ui:template """
+<div class="alert alert-warning hidden">
+  <p>
+    <span about="v-s:VersionAlert" property="rdfs:label"></span>
+    <span class="pull-right" about="@" rel="v-s:actualVersion">
+      <a href="#/@" class="alert-link" about="v-s:actualVersion" property="rdfs:label"></a>
+    </span>
+  </p>
+</div>
+<script>
+  setTimeout(function () {
+    var renderedTemplates = $("[resource$='" + individual.id.substring(2) + "']");
+    renderedTemplates.each(function () {
+      var renderedTemplate = $(this);
+      renderedTemplate.find("a, button").addClass("disabled").attr("disabled", "disabled");
+      if ( renderedTemplate.parent().prop("id") === "main" ) {
+        var sheet = renderedTemplate.children(".sheet").first();
+        template.removeClass("hidden").prependTo(sheet.length ? sheet : renderedTemplate);
+      }
+    });
+  }, 100);
+</script>
+""" ;
 .
 v-ui:VersionedTemplate
   rdf:type v-ui:ClassTemplate ;
