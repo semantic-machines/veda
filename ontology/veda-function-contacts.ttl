@@ -3,27 +3,46 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 <http://semantic-machines.com/veda/veda-function-contacts>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология функции контакты"@ru ;
   rdfs:label "Contacts function ontology"@en ;
-  owl:versionInfo "3.9" ;
   v-s:loadPriority 9 ;
 .
 v-s:Contacts
   rdf:type v-s:Function ;
+  rdf:type v-fs:AttributiveSearch ;
   rdfs:label "Контакты"@ru ;
   rdfs:label "Contacts"@en ;
   v-ui:hasModel v-s:ContactsModel ;
   v-ui:hasTemplate v-s:ContactsTemplate ;
+  v-fs:searchBlank v-s:ContactsRegistryBlank ;
+  v-fs:searchBlankTemplate v-s:ContactsBlankTemplate ;
+  v-fs:searchResultTemplate v-s:ContactsResultTemplate ;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+v-s:ContactsRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Все группы"@ru ;
+  rdfs:label "All groups"@en ;
+  v-fc:targetType v-s:Person ;
 .
 v-s:ContactsModel
   rdf:type v-ui:ClassModel ;
   rdfs:label "Модель функции контакты"@ru ;
   rdfs:label "Contacts function model"@en ;
   v-s:script """
+  var self = this;
+  this.search = function () {
+    return veda.Backend.query({
+      ticket: veda.ticket,
+      query: self["v-fs:"]
+    });
+  }
 //# sourceURL=v-s:FunctionContactsModel
   """
 .
@@ -32,12 +51,111 @@ v-s:ContactsTemplate
   rdfs:label "Шаблон функции контакты"@ru ;
   rdfs:label "Contacts function template"@en ;
   v-ui:template """
+<script>
+  this.treeConfig = {
+    root: [ new veda.IndividualModel("d:org_RU1121003135") ],
+    displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
+    inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
+    outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
+    allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
+  }
+</script>
 <div class="container sheet">
-  Hello world!
+  <style>
+    table {
+      max-width: 250px;
+    }
+    td {
+      white-space: nowrap;
+    }
+  </style>
+  <h2 about="@" property="rdfs:label"></h2>
+  <hr>
+  <div class="row">
+    <div class="col-md-3 hidden-xs" style="border-right: 1px dotted #ccc;">
+      <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
+    </div>
+    <div class="col-md-9 col-xs-12" style="border-left: 1px dotted #ccc; margin-left: -1px;">
+      <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+    </div>
+  </div>
 </div>
 <script>
+  $(".org-tree table thead", template).remove();
+  //$(".result-heading h3 > span:first", template).remove();
+  $(".result-heading", template).remove();
 //# sourceURL=v-s:FunctionContactsTemplate
 </script>
   """
 .
 
+v-s:ContactsBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска контактов"@ru ;
+  rdfs:label "Contacts search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <style>
+    .input-group input {
+      border-top-left-radius: 4px!important;
+      border-bottom-left-radius: 4px!important;
+    }
+  </style>
+  <div class="col-md-12">
+    <div class="input-group">
+      <veda-control property="*" data-type="string"></veda-control>
+      <span class="input-group-btn">
+        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
+      </span>
+    </div>
+    <br>
+  </div>
+</div>
+<script>
+  container.siblings("br").remove();
+  var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
+  var customFind = $(".custom-find", template);
+  customFind.click(function () {
+    find.click();
+  });
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      find.click();
+    }
+  });
+  //# sourceURL=v-fs:FulltextBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-s:ContactsResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
+  rdfs:label "Contacts search result template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-striped">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:lastName"><span about="v-s:lastName" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:firstName"><span about="v-s:firstName" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:middleName"><span about="v-s:middleName" property="rdfs:label"></span></th>
+      <th><span about="v-s:occupation" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td about="@" property="v-s:lastName"></td>
+      <td about="@" property="v-s:firstName"></td>
+      <td about="@" property="v-s:middleName"></td>
+      <td about="@" rel="v-s:defaultAppointment"><span rel="v-s:occupation" data-template="v-ui:LabelTemplate"></span></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
