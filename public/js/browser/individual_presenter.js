@@ -51,8 +51,9 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       return renderTemplate(individual, container, template, mode, extra, specs);
     } else {
-      if ( individual.hasValue("v-ui:hasCustomTemplate") ) {
-        template = individual["v-ui:hasCustomTemplate"][0]["v-ui:template"][0].toString();
+      var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
+      if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
+        template = individual["v-ui:hasTemplate"][0]["v-ui:template"][0].toString();
         return renderTemplate(individual, container, template, mode, extra, specs);
       } else {
         return individual["rdf:type"].map(function (type) {
