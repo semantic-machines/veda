@@ -566,8 +566,9 @@ veda.Module(function (veda) { "use strict";
    */
   proto.init = function () {
     var self = this;
-    if ( this.hasValue("v-ui:hasCustomModel") ) {
-      return this.get("v-ui:hasCustomModel")[0].load()
+    var isClass = this.hasValue("rdf:type", "owl:Class") || this.hasValue("rdf:type", "rdfs:Class");
+    if ( this.hasValue("v-ui:hasModel") && !isClass ) {
+      return this.get("v-ui:hasModel")[0].load()
         .then(function (model) {
           model = new Function(model.get("v-s:script")[0]);
           model.call(self);
