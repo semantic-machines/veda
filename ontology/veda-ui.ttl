@@ -2153,26 +2153,32 @@ v-ui:TreeTemplate
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
 <div class="table-responsive">
-  <br>
   <table class="table table-condensed table-striped">
     <thead id="thead"></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 <script>
-  var tbody = $("#tbody", template),
-    thead = $("#thead", template),
-    headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>",
-    rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
-    literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"],
-    rel_uri = individual.treeConfig.targetRel_uri,
-    allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.map(function (_class) {
-      return _class.id;
-    }) : [],
-    selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.map(function (_class) {
-      return _class.id;
-    }) : [],
-    selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
+  var tbody = $("#tbody", template);
+  var thead = $("#thead", template);
+
+  var rel_uri = individual.treeConfig.targetRel_uri;
+  var headTmpl = "";
+  var rowTmpl = "";
+
+  if (rel_uri) {
+    headTmpl += "<th width='1px'><input type='checkbox' id='select-col' /></th>";
+    rowTmpl += "<td><input type='checkbox' class='select-row' /></td>";
+  }
+
+  var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+  var allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.map(function (_class) {
+    return _class.id;
+  }) : [];
+  var selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.map(function (_class) {
+    return _class.id;
+  }) : [];
+  var selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
   individual.treeConfig.displayedProperty.map( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
@@ -2249,47 +2255,64 @@ v-ui:TreeTemplate
     return false;
   });
 
-  template.on("click", "th > input", function (e) {
-    if ( $(this).is(":checked") ) {
-      var values = [];
-      $("table input", template).each(function () {
-        $(this).prop("checked", true);
-        var row = $(this).parent().parent(),
-            uri = row.attr("resource"),
-            value = new veda.IndividualModel(uri);
-        values.push(value);
-      });
-      individual[rel_uri] = values;
-    } else {
-      $("table input", template).prop("checked", false);
-      individual[rel_uri] = [];
-    }
-  });
+  if (rel_uri) {
 
-  template.on("click", "td", function (e) {
-    e.stopPropagation();
-    var row = $(this).parent();
-    $("input", row).click();
-  });
-
-  template.on("click", "td > input", function (e) {
-    e.stopPropagation();
-    var row = $(this).parent().parent(),
-        uri = row.attr("resource"),
-        value = new veda.IndividualModel(uri);
-    var filtered = individual[rel_uri].filter(function (item) {
-      return item.id !== value.id;
+    template.on("click", "th > input", function (e) {
+      if ( $(this).is(":checked") ) {
+        var values = [];
+        $("table input", template).each(function () {
+          $(this).prop("checked", true);
+          var row = $(this).parent().parent(),
+              uri = row.attr("resource"),
+              value = new veda.IndividualModel(uri);
+          values.push(value);
+        });
+        individual[rel_uri] = values;
+      } else {
+        $("table input", template).prop("checked", false);
+        individual[rel_uri] = [];
+      }
     });
-    if ( $(this).prop("checked") ) {
-      individual[rel_uri] = filtered.concat(value);
-    } else {
-      individual[rel_uri] = filtered;
-    }
-  });
 
-  individual.treeConfig.root.map( function (root) {
+    template.on("click", "td", function (e) {
+      e.stopPropagation();
+      var row = $(this).parent();
+      $("input", row).click();
+    });
+
+    template.on("click", "td > input", function (e) {
+      e.stopPropagation();
+      var row = $(this).parent().parent(),
+          uri = row.attr("resource"),
+          value = new veda.IndividualModel(uri);
+      var filtered = individual[rel_uri].filter(function (item) {
+        return item.id !== value.id;
+      });
+      if ( $(this).prop("checked") ) {
+        individual[rel_uri] = filtered.concat(value);
+      } else {
+        individual[rel_uri] = filtered;
+      }
+    });
+
+  } else {
+
+    template.on("click", "td", function (e) {
+      e.stopPropagation();
+      var row = $(this).parent();
+      $(".expand", row).click();
+    });
+
+  }
+
+  // Render tree
+  individual.treeConfig.root.map( function (root, index, all) {
     var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
     tmpl = root.present(tbody, tmpl[0].outerHTML);
+
+    if (all.length === 1) {
+      $(".expand", tmpl).click();
+    }
 
     var hasValue = individual.hasValue(rel_uri, root);
     $("input", tmpl).prop("checked", hasValue);
@@ -2327,7 +2350,7 @@ v-ui:TreeTemplate
         }).join(" || ");
       if (individual.treeConfig.allowedClass) {
         q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
-          return "'rdf:type'=='" + _class.id + "'";
+          return "'rdf:type'==='" + _class.id + "'";
         }).join(" || ") + ")";
       }
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
