@@ -871,7 +871,7 @@ v-ui:IconPersonTemplate
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
 <a href="#/@">
-  <span class="glyphicon glyphicon-user"></span>
+  <!--span class="glyphicon glyphicon-user"></span-->
   <span about="@" property="rdfs:label"></span>
 </a>
 """ ;
