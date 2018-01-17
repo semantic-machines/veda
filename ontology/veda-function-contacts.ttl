@@ -73,11 +73,11 @@ v-s:ContactsTemplate
   v-ui:template """
 <script>
   template.one("remove", function () {
-    individual.activeIndex = $("#contacts-tabs li.active", template).index();
+    individual.activeTab = $("#contacts-tabs li.active a", template).prop("href");
   });
-  if (typeof individual.activeIndex !== "undefined") {
-    $("#contacts-tabs li", template).eq(individual.activeIndex).addClass("active");
-  }
+  individual.activeTab = individual.activeTab || "#structure";
+  $("#contacts-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
+  $("#contacts-tabs-content " + individual.activeTab, template).addClass("active");
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
 <div class="container sheet">
@@ -93,11 +93,11 @@ v-s:ContactsTemplate
   <ul class="nav nav-tabs nav-right" role="tablist" id="contacts-tabs">
     <li role="presentation" class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
     <li role="presentation"><a href="#search" role="tab" data-toggle="tab" about="v-s:ContactsSearch" property="rdfs:label"></a></li>
-    <li role="presentation" class="active"><a href="#structure" role="tab" data-toggle="tab" about="v-s:Contacts" property="rdfs:comment"></a></li>
+    <li role="presentation"><a href="#structure" role="tab" data-toggle="tab" about="v-s:Contacts" property="rdfs:comment"></a></li>
   </ul>
   <br>
-  <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="structure">
+  <div class="tab-content" id="contacts-tabs-content">
+    <div role="tabpanel" class="tab-pane" id="structure">
       <em about="v-s:managedOrganization" property="rdfs:label"></em>
       <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
       <br>
