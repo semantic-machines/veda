@@ -13,52 +13,64 @@
   rdfs:label "Contacts function ontology"@en ;
   v-s:loadPriority 9 ;
 .
+v-s:ContactsFunction
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Function ;
+  rdfs:label "Функция управления контактами"@ru ;
+  rdfs:label "Contacts management function"@en ;
+.
+
+v-s:managedOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
+  rdfs:domain v-s:ContactsFunction ;
+  rdfs:range v-s:Organization ;
+.
+
+v-s:PSmanagedOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:managedOrganization для класса v-s:ContactsFunction"@ru ;
+  rdfs:label "v-s:managedOrganization property specification for v-s:ContactsFunction class"@en ;
+  v-ui:forClass v-s:ContactsFunction ;
+  v-ui:forProperty v-s:managedOrganization ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:placeholder "Выберите организацию"@ru ;
+  v-ui:placeholder "Choose organization"@en ;
+.
+
 v-s:Contacts
-  rdf:type v-s:Function ;
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-s:ContactsFunction ;
   rdfs:label "Контакты"@ru ;
   rdfs:label "Contacts"@en ;
-  v-ui:hasModel v-s:ContactsModel ;
   v-ui:hasTemplate v-s:ContactsTemplate ;
-  v-fs:searchBlank v-s:ContactsRegistryBlank ;
-  v-fs:searchBlankTemplate v-s:ContactsBlankTemplate ;
-  v-fs:searchResultTemplate v-s:ContactsResultTemplate ;
+.
+
+v-s:ContactsSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Поиск"@ru ;
+  rdfs:label "Search"@en ;
+  v-fs:searchBlank v-s:ContactsSearchRegistryBlank ;
+  v-fs:searchBlankTemplate v-s:ContactsSearchBlankTemplate ;
+  v-fs:searchResultTemplate v-s:ContactsSearchResultTemplate ;
   v-fs:sortOrder "'rdfs:label' asc";
 .
-v-s:ContactsRegistryBlank
+
+v-s:ContactsSearchRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все группы"@ru ;
-  rdfs:label "All groups"@en ;
+  rdfs:label "Бланк поиска контактов"@ru ;
+  rdfs:label "Contacts search blank"@en ;
   v-fc:targetType v-s:Person ;
 .
-v-s:ContactsModel
-  rdf:type v-ui:ClassModel ;
-  rdfs:label "Модель функции контакты"@ru ;
-  rdfs:label "Contacts function model"@en ;
-  v-s:script """
-  var self = this;
-  this.search = function () {
-    return veda.Backend.query({
-      ticket: veda.ticket,
-      query: self["v-fs:"]
-    });
-  }
-//# sourceURL=v-s:FunctionContactsModel
-  """
-.
+
 v-s:ContactsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон функции контакты"@ru ;
   rdfs:label "Contacts function template"@en ;
   v-ui:template """
 <script>
-  this.treeConfig = {
-    root: [ new veda.IndividualModel("d:org_RU1121003135") ],
-    displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
-    inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
-    outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
-    allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
-  }
+//# sourceURL=v-s:ContactsTemplate_pre
 </script>
 <div class="container sheet">
   <style>
@@ -71,25 +83,47 @@ v-s:ContactsTemplate
   </style>
   <h2 about="@" property="rdfs:label"></h2>
   <hr>
+  <em about="v-s:managedOrganization" property="rdfs:label"></em>
+  <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
+  <br>
   <div class="row">
     <div class="col-md-3 hidden-xs" style="border-right: 1px dotted #ccc;">
-      <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
+      <div about="@" rel="v-s:managedOrganization">
+        <script>
+          individual.treeConfig = {
+            root: [ individual ],
+            displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
+            inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
+            outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
+            allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
+          }
+          //# sourceURL=v-s:ContactsTemplate_inline_pre
+        </script>
+        <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
+        <script>
+          $("table thead", template).remove();
+          //# sourceURL=v-s:ContactsTemplate_inline_post
+        </script>
+      </div>
     </div>
     <div class="col-md-9 col-xs-12" style="border-left: 1px dotted #ccc; margin-left: -1px;">
-      <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      <div about="v-s:ContactsSearch">
+        <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+        <script>
+          $(".result-heading > h3 > span:first", template).remove();
+          //# sourceURL=v-s:ContactsTemplate_inline_post2
+        </script>
+      </div>
     </div>
   </div>
 </div>
 <script>
-  $(".org-tree table thead", template).remove();
-  //$(".result-heading h3 > span:first", template).remove();
-  $(".result-heading", template).remove();
-//# sourceURL=v-s:FunctionContactsTemplate
+//# sourceURL=v-s:ContactsTemplate_post
 </script>
   """
 .
 
-v-s:ContactsBlankTemplate
+v-s:ContactsSearchBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка поиска контактов"@ru ;
   rdfs:label "Contacts search blank template"@en ;
@@ -125,12 +159,12 @@ v-s:ContactsBlankTemplate
       find.click();
     }
   });
-  //# sourceURL=v-fs:FulltextBlankTemplate_post
+//# sourceURL=v-s:ContactsSearchBlankTemplate_post
 </script>
   """ ;
 .
 
-v-s:ContactsResultTemplate
+v-s:ContactsSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
   rdfs:label "Contacts search result template"@en ;
