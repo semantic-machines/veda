@@ -73,7 +73,7 @@ v-s:ContactsTemplate
   v-ui:template """
 <script>
   template.one("remove", function () {
-    individual.activeTab = $("#contacts-tabs li.active a", template).prop("href");
+    individual.activeTab = $("#contacts-tabs li.active a", template).attr("href");
   });
   individual.activeTab = individual.activeTab || "#structure";
   $("#contacts-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
@@ -101,29 +101,42 @@ v-s:ContactsTemplate
       <em about="v-s:managedOrganization" property="rdfs:label"></em>
       <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
       <br>
-      <div class="row">
-        <div class="col-md-3" style="border-right: 1px dotted #ccc;">
-          <div about="@" rel="v-s:managedOrganization">
-            <script>
-              individual.treeConfig = {
-                root: [ individual ],
-                displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
-                inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
-                outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
-                allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
-              }
-              //# sourceURL=v-s:ContactsTemplate_inline_pre
-            </script>
+      <div about="@" rel="v-s:managedOrganization">
+        <script>
+          individual.treeConfig = {
+            root: [ individual ],
+            displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
+            inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
+            outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
+            allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
+          }
+          //# sourceURL=v-s:ContactsTemplate_inline_pre
+        </script>
+        <div class="row">
+          <div class="col-md-3" style="border-right: 1px dotted #ccc;">
             <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
-            <script>
-              $("table thead", template).remove();
-              //# sourceURL=v-s:ContactsTemplate_inline_post
-            </script>
+          </div>
+          <div class="col-md-9" style="border-left: 1px dotted #ccc; margin-left: -1px;">
+            <div class="unit-container"></div>
           </div>
         </div>
-        <div class="col-md-9" style="border-left: 1px dotted #ccc; margin-left: -1px;">
-          Department content
-        </div>
+        <script>
+          $("table thead", template).remove();
+          template.on("click", "tr", function (e) {
+            e.stopPropagation();
+            var row = $(this);
+            var unitUri = row.attr("resource");
+            row.addClass("warning").siblings().removeClass("warning");
+            individual.selected = unitUri;
+            var unit = new veda.IndividualModel(unitUri);
+            var unitContainer = $(".unit-container", template).empty();
+            unit.present(unitContainer);
+          });
+          if (individual.selected) {
+            $("tr[resource='" + individual.selected + "']", template).click();
+          }
+          //# sourceURL=v-s:ContactsTemplate_inline_post
+        </script>
       </div>
     </div>
 
