@@ -2185,9 +2185,9 @@ v-ui:TreeTemplate
     var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
     if ( index === 0 ) {
       if (isLiteral) {
-        rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
+        rowTmpl += "<td><div class='spacer'></div><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
       } else {
-        rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' data-template='v-ui:LabelTemplate'></span></td>";
+        rowTmpl += "<td><div class='spacer'></div><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' data-template='v-ui:LabelTemplate'></span></td>";
       }
       return;
     } else {
@@ -2204,6 +2204,7 @@ v-ui:TreeTemplate
 
   template.on("click", "a.expand", function (e) {
     e.stopPropagation();
+    e.preventDefault();
     var that = $(this),
       thatRow = that.parents("tr"),
       thatLvl = parseInt( thatRow.attr("data-level") ),
@@ -2293,14 +2294,6 @@ v-ui:TreeTemplate
       } else {
         individual[rel_uri] = filtered;
       }
-    });
-
-  } else {
-
-    template.on("click", "td", function (e) {
-      e.stopPropagation();
-      var row = $(this).parent();
-      $(".expand", row).click();
     });
 
   }
