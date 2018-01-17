@@ -44,6 +44,8 @@ v-s:Contacts
   rdf:type v-s:ContactsFunction ;
   rdfs:label "Контакты"@ru ;
   rdfs:label "Contacts"@en ;
+  rdfs:comment "Оранизационная структура"@ru ;
+  rdfs:comment "Organization chart"@en ;
   v-ui:hasTemplate v-s:ContactsTemplate ;
 .
 
@@ -70,6 +72,12 @@ v-s:ContactsTemplate
   rdfs:label "Contacts function template"@en ;
   v-ui:template """
 <script>
+  template.one("remove", function () {
+    individual.activeIndex = $("#contacts-tabs li.active", template).index();
+  });
+  if (typeof individual.activeIndex !== "undefined") {
+    $("#contacts-tabs li", template).eq(individual.activeIndex).addClass("active");
+  }
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
 <div class="container sheet">
@@ -81,32 +89,45 @@ v-s:ContactsTemplate
       white-space: nowrap;
     }
   </style>
-  <h2 about="@" property="rdfs:label"></h2>
-  <hr>
-  <em about="v-s:managedOrganization" property="rdfs:label"></em>
-  <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
   <br>
-  <div class="row">
-    <div class="col-md-3 hidden-xs" style="border-right: 1px dotted #ccc;">
-      <div about="@" rel="v-s:managedOrganization">
-        <script>
-          individual.treeConfig = {
-            root: [ individual ],
-            displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
-            inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
-            outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
-            allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
-          }
-          //# sourceURL=v-s:ContactsTemplate_inline_pre
-        </script>
-        <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
-        <script>
-          $("table thead", template).remove();
-          //# sourceURL=v-s:ContactsTemplate_inline_post
-        </script>
+  <ul class="nav nav-tabs nav-right" role="tablist" id="contacts-tabs">
+    <li role="presentation" class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#search" role="tab" data-toggle="tab" about="v-s:ContactsSearch" property="rdfs:label"></a></li>
+    <li role="presentation" class="active"><a href="#structure" role="tab" data-toggle="tab" about="v-s:Contacts" property="rdfs:comment"></a></li>
+  </ul>
+  <br>
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="structure">
+      <em about="v-s:managedOrganization" property="rdfs:label"></em>
+      <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
+      <br>
+      <div class="row">
+        <div class="col-md-3" style="border-right: 1px dotted #ccc;">
+          <div about="@" rel="v-s:managedOrganization">
+            <script>
+              individual.treeConfig = {
+                root: [ individual ],
+                displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
+                inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
+                outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
+                allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
+              }
+              //# sourceURL=v-s:ContactsTemplate_inline_pre
+            </script>
+            <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
+            <script>
+              $("table thead", template).remove();
+              //# sourceURL=v-s:ContactsTemplate_inline_post
+            </script>
+          </div>
+        </div>
+        <div class="col-md-9" style="border-left: 1px dotted #ccc; margin-left: -1px;">
+          Department content
+        </div>
       </div>
     </div>
-    <div class="col-md-9 col-xs-12" style="border-left: 1px dotted #ccc; margin-left: -1px;">
+
+    <div role="tabpanel" class="tab-pane" id="search">
       <div about="v-s:ContactsSearch">
         <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
         <script>
@@ -115,6 +136,7 @@ v-s:ContactsTemplate
         </script>
       </div>
     </div>
+
   </div>
 </div>
 <script>
