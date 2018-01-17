@@ -1817,16 +1817,14 @@ v-fs:AttributiveSearchInlineTemplate
   }
 
   // Show results on load if they are available (e.g. if we came back)
-  if ( self.result.length && location.hash.indexOf(self.id) >= 0 ) {
+  if ( self.result.length ) {
     renderResult(self.result).then(function () {
       scrollTo(self.scroll);
     });
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     search().then(function () {
-      if (location.hash.indexOf(self.id) >= 0) {
-        scrollTo( $("#results", template).offset().top );
-      }
+      scrollTo( $("#results", template).offset().top );
     });
   }
 
