@@ -2632,7 +2632,7 @@ v-ui:generic
           $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
       );
 
-      var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
+      var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
 
       switch ( range ) {
         case "rdfs:Literal":
