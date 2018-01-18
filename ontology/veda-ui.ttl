@@ -1035,7 +1035,7 @@ v-ui:LabelLinkTemplate
   rdfs:label "Шаблон с меткой и ссылкой"@ru ;
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
-  <a class="label-template" href="#/@"><span property="rdfs:label"></span></a>
+  <a class="label-template" href="#/@"><span about="@" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
@@ -1188,17 +1188,20 @@ v-ui:DraftTemplate
 
 v-ui:RabbitHole
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Дерево докумментов"@ru ;
-  rdfs:label "Tree dokummentov"@en ;
+  rdfs:label "Кроличья нора"@ru ;
+  rdfs:label "Rabbit hole"@en ;
   v-ui:template """
 <script>
+  var defaultProperties = "v-s:parent v-s:backwardTarget";
+  var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
   var text = "<span>" + mkLabel(individual) + "</span>";
   var visited = [ individual.id ];
 
-  if (individual.hasValue("v-s:backwardTarget")) {
-    travel(individual["v-s:backwardTarget"][0]);
-  } else if (individual.hasValue("v-s:parent")) {
-    travel(individual["v-s:parent"][0]);
+  for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
+    if ( individual.hasValue(property) ) {
+      travel( individual[property][0] );
+      break;
+    }
   }
   $("small", template).append(text);
 
@@ -1208,16 +1211,16 @@ v-ui:RabbitHole
     } else {
       visited.push(individual.id);
     }
-    text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " &rarr; " + text;
-    if ( !individual.hasValue("v-s:parent") && !individual.hasValue("v-s:backwardTarget") ) { return; }
-    if (individual.hasValue("v-s:backwardTarget")) {
-      travel(individual["v-s:backwardTarget"][0]);
-    } else if (individual.hasValue("v-s:parent")) {
-      travel(individual["v-s:parent"][0]);
+    text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " / " + text;
+    for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
+      if ( individual.hasValue(property) ) {
+        travel( individual[property][0] );
+        break;
+      }
     }
   }
   function mkLabel(individual) {
-    return individual["rdf:type"][0]["rdfs:label"].join(" ")// + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
+    return individual["rdf:type"][0]["rdfs:label"].join(" ") + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
   }
 </script>
 <h5><small></small></h5>
