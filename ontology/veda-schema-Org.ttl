@@ -50,14 +50,15 @@ v-s:OrganizationUnitModel
    * @param unit {String/veda.IndividualModel} Super unit uri or individual.
    * @return {boolean}.
    */
-  this.isSubUnitOf = function (unit) {
+  this.isSubUnitOf = function (unit, depth) {
+    depth = depth || 0;
     var self = this;
     if (typeof unit.valueOf() === "string") {
       unit = new veda.IndividualModel( unit.valueOf() );
     }
-    if (!this.hasValue("v-s:parentUnit")) return false;
+    if (!this.hasValue("v-s:parentUnit") || depth > 16) return false;
     return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit);
+      return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit, depth + 1);
     }, false);
   };
 
@@ -66,13 +67,31 @@ v-s:OrganizationUnitModel
    * @param unit {String/veda.IndividualModel} Super unit uri or individual.
    * @return {veda.IndividualModel | false }.
    */
-  this.getChief = function () {
+  this.getChief = function (depth) {
+    depth = depth || 0;
     var self = this;
-    if ( this.hasValue("v-s:hasChief") ) {
+    if ( this.hasValue("v-s:hasChief") || depth > 16) {
       return this["v-s:hasChief"][0];
     }
     return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || self.getChief.apply(item);
+      return state || self.getChief.call(item, depth + 1);
+    }, undefined);
+  };
+
+  /**
+   * @method
+   * @param unit {String/veda.IndividualModel} Super unit uri or individual.
+   * @return {veda.IndividualModel | false }.
+   */
+  this.getOrganization = function (depth) {
+    depth = depth || 0;
+    var self = this;
+    if ( this.is("v-s:Organization") || depth > 16) {
+      return this;
+    }
+
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || self.getOrganization.call(item, depth + 1);
     }, undefined);
   };
 
