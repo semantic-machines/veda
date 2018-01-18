@@ -34,25 +34,20 @@ shared static this()
     bsd_signal(SIGINT, &handleTermination);
 }
 
-class VedaModule
+class VedaModuleBasic
 {
+    ModuleInfoFile       module_info;
+
     long   last_committed_op_id;
     long   last_check_time;
-
-    int    sock;
-    string notify_channel_url     = "tcp://127.0.0.1:9111\0";
-    bool   already_notify_channel = false;
-
-    Cache!(string, string) cache_of_indv;
-
-    ModuleInfoFile       module_info;
 
     long                 op_id           = 0;
     long                 committed_op_id = 0;
 
-    long                 count_signal           = 0;
-    long                 count_readed           = 0;
-    long                 count_success_prepared = 0;
+    int    sock;
+    string notify_channel_url     = "tcp://127.0.0.1:9111\0";
+
+    bool   already_notify_channel = false;
 
     string               main_queue_name = "individuals-flow";
     Queue                main_queue;
@@ -61,6 +56,13 @@ class VedaModule
 
     Queue                prepare_batch_queue;
     Consumer             prepare_batch_cs;
+}
+
+class VedaModule : VedaModuleBasic
+{
+    long                 count_signal           = 0;
+    long                 count_readed           = 0;
+    long                 count_success_prepared = 0;
 
     Context              context;
     Onto                 onto;
@@ -147,8 +149,6 @@ class VedaModule
 
         if (node == Individual.init)
             node = context.get_configuration();
-
-        cache_of_indv = new Cache!(string, string)(1000, "individuals");
 
         open();
         if (configure() == false)
@@ -464,8 +464,6 @@ class VedaModule
 
                 //if (new_indv.uri is null)
                 //    log.trace("WARN! individual not contain uri: %s", new_indv);
-
-                cache_of_indv.put(new_indv.uri, new_bin);
             }
 
             try
