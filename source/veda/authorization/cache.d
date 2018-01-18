@@ -7,11 +7,21 @@ class GroupInfo
     //int       level;
     bool is_deprecated;
     GroupInfo[ string ] parents;
+    GroupInfo[ string ] childs;
 
     override
     string toString()
     {
         return "" ~ text(parents) ~ "";
+    }
+
+    void set_as_depricated()
+    {
+        is_deprecated = true;
+        foreach (gr; childs.values)
+        {
+            gr.set_as_depricated();
+        }
     }
 }
 
@@ -86,7 +96,8 @@ class Cache
 
         if (pgi !is null && gi !is null)
         {
-            gi.parents[ id ] = pgi;
+            gi.parents[ parent_id ] = pgi;
+            pgi.childs[ id ]        = gi;
         }
 
         return true;
@@ -98,9 +109,7 @@ class Cache
         GroupInfo gi = group_index.get(group_id, null);
 
         if (gi !is null)
-        {
-            gi.is_deprecated = true;
-        }
+            gi.set_as_depricated();
     }
 
     void put(string subject_group_id, string object_group_id, ubyte req_access, ubyte res_access)
@@ -127,19 +136,6 @@ class Cache
         }
     }
 
-    bool is_contains_deprecated_way_up(GroupInfo start_gr)
-    {
-        foreach (gr; start_gr.parents)
-        {
-            if (gr.is_deprecated == true)
-                return false;
-
-            if (is_contains_deprecated_way_up(gr) == false)
-                return false;
-        }
-        return true;
-    }
-
     int get(string subject_group_id, string object_group_id, ubyte req_access)
     {
         ubyte        res;
@@ -156,22 +152,19 @@ class Cache
 
         if (ce !is null)
         {
-            stderr.writefln("cache.get, ce !is null");
+            stderr.writefln("cache element found in cache");
 
-            // проверить актуальность subject дерева в верх
-            if (ce.subject_group is null)
-                return -1;
-
-            stderr.writefln("cache.get, #1");
-
-            if (is_contains_deprecated_way_up(ce.subject_group) == true)
+            if (ce.subject_group is null || ce.object_group is null)
             {
-                ckey_2_cache_element.remove(ckey);
+                stderr.writefln("ERR! ce.subject_group is null || ce.object_group is null");
                 return -1;
             }
 
-            if (is_contains_deprecated_way_up(ce.object_group) == true)
+            stderr.writefln("cache.get, #1");
+
+            if (ce.subject_group.is_deprecated || ce.object_group.is_deprecated)
             {
+                stderr.writefln("INFO! ce.subject_group.is_deprecated || ce.object_group.is_deprecated, REMOVE cache element");
                 ckey_2_cache_element.remove(ckey);
                 return -1;
             }
@@ -181,12 +174,15 @@ class Cache
             int ea = ckey_2_permissons.get(ckey, -1);
             if (ea != -1)
             {
-                // для пары subject + object были изменения, откорректировать результат из кэша
+                // для пары [subject + object] были изменения, откорректировать результат из кэша
                 return res & cast(ubyte)ea;
             }
         }
         else
+        {
+            stderr.writefln("cache element NOT found in cache");
             return -1;
+        }
 
         return res;
     }
