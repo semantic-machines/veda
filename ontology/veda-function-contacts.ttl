@@ -78,6 +78,10 @@ v-s:ContactsTemplate
   individual.activeTab = individual.activeTab || "#structure";
   $("#contacts-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
   $("#contacts-tabs-content " + individual.activeTab, template).addClass("active");
+
+  if (veda.appointment && typeof veda.appointment.getOrganization === "function") {
+    individual["v-s:managedOrganization"] = [ veda.appointment.getOrganization() ];
+  }
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
 <div class="container sheet">
