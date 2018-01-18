@@ -1660,13 +1660,13 @@
 /* UTILS */
 
   function ftQuery(prefix, input, sort, callback) {
-    var queryString;
+    var queryString = "";
     if ( input ) {
       var tokens = input.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
-      var q = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
-      queryString = "(" + prefix + ") && (" + q + ")" ;
-    } else {
-      queryString = prefix;
+      queryString = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
+    }
+    if (prefix) {
+      queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
     }
     var result = [];
     query({
