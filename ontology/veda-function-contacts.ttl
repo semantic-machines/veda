@@ -98,7 +98,6 @@ v-s:ContactsTemplate
   <br>
   <div class="tab-content" id="contacts-tabs-content">
     <div role="tabpanel" class="tab-pane" id="structure">
-      <em about="v-s:managedOrganization" property="rdfs:label"></em>
       <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
       <br>
       <div about="@" rel="v-s:managedOrganization">
