@@ -130,7 +130,8 @@ v-s:ContactsTemplate
             individual.selected = unitUri;
             var unit = new veda.IndividualModel(unitUri);
             var unitContainer = $(".unit-container", template).empty();
-            unit.present(unitContainer);
+            //unit.present(unitContainer, "v-s:OrganizationUnitTemplate");
+            unit.present(unitContainer, "v-s:OrganizationUnitContentTemplate");
           });
           if (individual.selected) {
             $("tr[resource='" + individual.selected + "']", template).click();
@@ -141,13 +142,7 @@ v-s:ContactsTemplate
     </div>
 
     <div role="tabpanel" class="tab-pane" id="search">
-      <div about="v-s:ContactsSearch">
-        <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
-        <script>
-          $(".result-heading > h3 > span:first", template).remove();
-          //# sourceURL=v-s:ContactsTemplate_inline_post2
-        </script>
-      </div>
+      <div about="v-s:ContactsSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
     </div>
 
   </div>
@@ -226,5 +221,61 @@ v-s:ContactsSearchResultTemplate
     </tr>
   </tbody>
 </table>
+  """ ;
+.
+
+v-s:OrganizationUnitTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения единицы организационной структуры"@ru ;
+  rdfs:label "Organization unit template"@en ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:template """
+<div class="container sheet">
+  <h3><span about="@" property="rdfs:label"></span></h3>
+  <span about="@" data-template="v-ui:RabbitHole" data-properties="v-s:parentUnit"></span>
+  <hr>
+  <div>
+    <div class="-view edit search">
+      <em about="rdfs:label" property="rdfs:label"></em>
+      <div property="rdfs:label" class="view -edit -search"></div>
+      <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+      <hr class="view -edit -search">
+    </div>
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasChief" property="rdfs:label"></em>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:OrganizationUnitContentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения единицы организационной структуры"@ru ;
+  rdfs:label "Organization unit template"@en ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:template """
+<div>
+  <h4><span about="@" property="rdfs:label"></span></h4>
+  <span about="@" data-template="v-ui:RabbitHole" data-properties="v-s:parentUnit"></span>
+  <hr>
+</div>
   """ ;
 .
