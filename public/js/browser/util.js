@@ -83,7 +83,7 @@ veda.Module(function Util(veda) { "use strict";
     if (typeof performance !== "undefined" && typeof performance.now === "function"){
       d += performance.now(); //use high-precision timer if available
     }
-    return "xxxxxxxxxxxxxxxxxxxxxxxx".replace(/x/g, function (c) {
+    return "xxxxxxxxxxxxxxxxxxxxxxxxxx".replace(/x/g, function (c) {
       var r = (d + Math.random() * 36) % 36 | 0;
       d = Math.floor(d / 36);
       return r.toString(36);
