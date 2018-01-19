@@ -420,6 +420,7 @@ v-s:hasPass
 
 v-s:Pass
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Identification ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;

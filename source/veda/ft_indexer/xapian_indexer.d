@@ -479,7 +479,6 @@ public class IndexerContext
                                 //writeln (tab, "@idx = ", idx);
                                 foreach (predicate, values; idx.resources)
                                 {
-                                    //writeln (tab, "@@@5 predicate = ", predicate);
                                     if (predicate == "vdi:inherited_index")
                                     {
                                         foreach (value; values)
@@ -587,7 +586,7 @@ public class IndexerContext
                         {
                             // если это относится к class_property__2__indiviual, следует обновить
 
-                            if (predicate != rdf__type)
+                            //if (predicate != rdf__type)
                             {
                                 // используем информацию о типе
                                 foreach (_type; types)

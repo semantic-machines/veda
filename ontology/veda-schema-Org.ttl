@@ -259,32 +259,22 @@ v-s:Absence
 # ------------------------------------------------------------
 v-s:Person
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Identification ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ManuallyVersioned ;
 #  rdfs:subClassOf v-s:Labeled ;
   rdfs:comment "A person." ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
   v-ui:hasTemplate td:PersonTemplate1 ;
 #  v-s:labelPattern "{@.rdf:type.rdfs:label}: {@.v-s:firstName} {@.v-s:lastName}" ;
 .
-v-s:birthday
-  rdf:type owl:DatatypeProperty ;
-  rdfs:comment "День рождения этой персоны"@ru ;
-  rdfs:comment "The birthday of this Person."@en ;
-  rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Дата рождения"@ru ;
-  rdfs:label "Birthday"@en ;
-  rdfs:range xsd:dateTime ;
-.
+
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "Табельный номер"@ru ;
   rdfs:comment "Personnel number"@en ;
   rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Табельный номер"@ru ;
   rdfs:label "Personnel number"@en ;
   rdfs:range xsd:integer ;
@@ -294,7 +284,6 @@ v-s:firstName
   rdfs:comment "Имя персоны."@ru ;
   rdfs:comment "The first name of a person."@en ;
   rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Имя"@ru ;
   rdfs:label "First name"@en ;
   rdfs:range xsd:string ;
@@ -304,7 +293,6 @@ v-s:lastName
   rdfs:comment "Фамилия персоны"@ru ;
   rdfs:comment "The last name of a person."@en ;
   rdfs:domain v-s:Person ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Фамилия"@ru ;
   rdfs:label "Last name"@en ;
   rdfs:range xsd:string ;

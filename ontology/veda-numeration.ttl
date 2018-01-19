@@ -139,6 +139,11 @@ v-s:RegistrationNumberYearNumeration2_4
   v-s:enumeratedProperty v-s:registrationNumber ;
   v-s:hasNumerationRule v-s:YearNumeration2_4 ;
 .
+v-s:RegistrationNumberIdeaAndProjectsNumeration
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:IdeaAndProjectsNumeration ;
+.
 # --- Rules ---
 
 v-s:SimpleNumerationYear

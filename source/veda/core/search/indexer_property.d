@@ -7,7 +7,7 @@ module veda.core.search.indexer_property;
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.common.log_msg;
 private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type;
-private import veda.common.logger;
+private import veda.common.logger, veda.onto.onto;
 
 class IndexerProperty
 {
@@ -56,6 +56,8 @@ class IndexerProperty
         Resources forClasses    = indv.resources.get("vdi:forClass", Resources.init);
         Resources forProperties = indv.resources.get("vdi:forProperty", Resources.init);
 
+        //log.trace("INFO: add_schema_data forClasses=%s, forProperties=%s", forClasses, forProperties);
+
         Resources indexed_to = indv.resources.get("vdi:indexed_to", Resources.init);
 
         if (forClasses.length == 0)
@@ -66,20 +68,28 @@ class IndexerProperty
 
         foreach (forClass; forClasses)
         {
-            if (indexed_to.length > 0)
-            {
-//                      writeln ("@1 indexed_as_system=", indexed_as_system, ", indexed_as_system[0]=", indexed_as_system[0]);
-                class__2__database[ forClass.uri ]              = indexed_to[ 0 ].get!string;
-                database__2__true[ indexed_to[ 0 ].get!string ] = true;
-            }
+            Names subclasses = context.get_onto().get_sub_classes(forClass.uri);
+            //log.trace("forClass = %s", forClass);
 
-            foreach (forProperty; forProperties)
-            {
-                string key = forClass.uri ~ forProperty.uri;
-                class_property__2__indiviual[ key ] = indv;
+            if (subclasses.length == 0)
+                subclasses[ "" ] = true;
 
-                if (trace_msg[ 214 ] == 1)
-                    log.trace("search indexes, key=%s, uri=%s", key, indv.uri);
+            foreach (sc; subclasses.keys)
+            {
+                if (indexed_to.length > 0)
+                {
+                    class__2__database[ sc ]                        = indexed_to[ 0 ].get!string;
+                    database__2__true[ indexed_to[ 0 ].get!string ] = true;
+                }
+
+                foreach (forProperty; forProperties)
+                {
+                    string key = sc ~ forProperty.uri;
+                    class_property__2__indiviual[ key ] = indv;
+
+                    if (trace_msg[ 214 ] == 1)
+                        log.trace("SET search indexes, key=%s, uri=%s", key, indv.uri);
+                }
             }
         }
     }
@@ -88,7 +98,7 @@ class IndexerProperty
     {
         if (class_property__2__indiviual.length == 0 || force)
         {
-        	log.trace("load indexes:start");
+            log.trace("load indexes:start");
             context.reopen_ro_individuals_storage_db();
             context.reopen_ro_fulltext_indexer_db();
 

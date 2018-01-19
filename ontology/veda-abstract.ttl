@@ -349,6 +349,24 @@ v-s:Function
   rdfs:label "Function"@en ;
 .
 ### -------------------------------------------------------
+v-s:Identification
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource  ;
+  rdfs:label "Удостоверение личности"@ru ;
+  rdfs:label "Identification"@en ;
+.
+v-s:birthday
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:comment "The birthday of this Person."@en ;
+  rdfs:domain v-s:Identification ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Дата рождения"@ru ;
+  rdfs:label "Birthday"@en ;
+  rdfs:range xsd:dateTime ;
+.
+
+### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource  ;
