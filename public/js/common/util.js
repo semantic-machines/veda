@@ -45,7 +45,7 @@ function removeV(arr, what) {
 
 function genUri () {
   var uid = guid(), re = /^\d/;
-  return (re.test(uid) ? "d:d" + uid : "d:" + uid);
+  return (re.test(uid) ? "d:a" + uid : "d:" + uid);
 }
 function guid () {
   var d = new Date().getTime();
