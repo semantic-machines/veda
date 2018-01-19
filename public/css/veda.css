@@ -153,8 +153,8 @@ body {
   width: 100%;
 }
 
-/* FILE CARD */
-.file-card {
+/* HORIZONTAL CARD */
+.horizontal-card {
   width: 330px;
   height: 150px;
   display: inline-table;
@@ -163,26 +163,51 @@ body {
   border-radius: 4px;
   border: 1px solid #ddd;
   border-spacing: 10px;
+  background-color: #fff;
 }
-.file-card .file-thumbnail {
+.horizontal-card .thumbnail {
   display: table-cell;
   vertical-align: top;
+  border: none;
+  padding: 0;
 }
-.file-card .file-thumbnail:empty {
+.horizontal-card .thumbnail:empty {
   display: none;
 }
-.file-card .file-thumbnail img{
+.horizontal-card .thumbnail img {
   max-width: 128px;
   max-height: 128px;
+  border-radius: 4px;
 }
-.file-card .file-description {
+.horizontal-card .description {
   display: table-cell;
   word-wrap: break-word;
   vertical-align: top;
 }
-.file-card .comment:empty + hr {
+.horizontal-card .header:empty + hr {
   display: none!important;
 }
+
+.horizontal-card.horizontal-card-sm {
+  width: 220px;
+  height: 84px;
+}
+
+.horizontal-card.horizontal-card-sm .thumbnail img {
+  max-width: 64px;
+  max-height: 64px;
+}
+
+.horizontal-card.horizontal-card-lg {
+  width: 500px;
+  height: 212px;
+  margin: 0px 20px 20px 0px;
+}
+.horizontal-card.horizontal-card-lg .thumbnail img {
+  max-width: 192px;
+  max-height: 192px;
+}
+
 
 /* Gray tooltip */
 .tooltip-inner {
