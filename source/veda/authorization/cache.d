@@ -6,12 +6,22 @@ class GroupInfo
 {
     //int       level;
     bool is_deprecated;
+    GroupInfo[ string ] parents;
     GroupInfo[ string ] childs;
 
     override
     string toString()
     {
-        return "" ~ text(childs) ~ "";
+        return "" ~ text(parents) ~ "";
+    }
+
+    void set_as_depricated()
+    {
+        is_deprecated = true;
+        foreach (gr; childs.values)
+        {
+            gr.set_as_depricated();
+        }
     }
 }
 
@@ -58,7 +68,7 @@ class Cache
         ckey_2_permissons[ ckey ] = (ea ^ prev_access) & ea;
     }
 
-    // добавляет группу id в дерево
+    // добавляет группу id с родителем parent_id в дерево
     bool add_group(string id, string parent_id)
     {
         //stderr.writefln("#0 cache.add_group id=%s, parent_id=%s", id, parent_id);
@@ -72,7 +82,6 @@ class Cache
         {
             gi                = new GroupInfo();
             group_index[ id ] = gi;
-            //stderr.writefln("@ %s", group_index);
         }
 
         GroupInfo pgi = group_index.get(parent_id, null);
@@ -87,7 +96,8 @@ class Cache
 
         if (pgi !is null && gi !is null)
         {
-            pgi.childs[ id ] = gi;
+            gi.parents[ parent_id ] = pgi;
+            pgi.childs[ id ]        = gi;
         }
 
         return true;
@@ -99,9 +109,7 @@ class Cache
         GroupInfo gi = group_index.get(group_id, null);
 
         if (gi !is null)
-        {
-            gi.is_deprecated = true;
-        }
+            gi.set_as_depricated();
     }
 
     void put(string subject_group_id, string object_group_id, ubyte req_access, ubyte res_access)
@@ -144,53 +152,37 @@ class Cache
 
         if (ce !is null)
         {
-            stderr.writefln("cache.get, ce !is null");
+            stderr.writefln("cache element found in cache");
 
-            // проверить актуальность subject дерева в верх
-            if (ce.subject_group is null)
+            if (ce.subject_group is null || ce.object_group is null)
+            {
+                stderr.writefln("ERR! ce.subject_group is null || ce.object_group is null");
                 return -1;
+            }
 
             stderr.writefln("cache.get, #1");
-/*
-            for (GroupInfo igri = ce.subject_group; igri !is null; igri = igri.parent)
-            {
-                if (igri.is_deprecated == true)
-                {
-                    // ветки ниже устарели, удалить этот результат из кэша
-                    ckey_2_cache_element.remove(ckey);
-                    return -1;
-                }
-            }
 
-            stderr.writefln("cache.get, #2");
-            // проверить актуальность object дерева в верх
-            if (ce.object_group is null)
+            if (ce.subject_group.is_deprecated || ce.object_group.is_deprecated)
+            {
+                stderr.writefln("INFO! ce.subject_group.is_deprecated || ce.object_group.is_deprecated, REMOVE cache element");
+                ckey_2_cache_element.remove(ckey);
                 return -1;
-
-            stderr.writefln("cache.get, #3");
-
-            for (GroupInfo igri = ce.object_group; igri !is null; igri = igri.parent)
-            {
-                if (igri.is_deprecated == true)
-                {
-                    // ветки выше устарели, удалить этот результат из кэша
-                    ckey_2_cache_element.remove(ckey);
-                    return -1;
-                }
             }
-            stderr.writefln("cache.get, #4");
- */
+
             res = req_access & ce.req_access;
 
             int ea = ckey_2_permissons.get(ckey, -1);
             if (ea != -1)
             {
-                // для пары subject + object были изменения, откорректировать результат из кэша
+                // для пары [subject + object] были изменения, откорректировать результат из кэша
                 return res & cast(ubyte)ea;
             }
         }
         else
+        {
+            stderr.writefln("cache element NOT found in cache");
             return -1;
+        }
 
         return res;
     }
