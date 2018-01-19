@@ -207,7 +207,7 @@ v-s:PsSenderRecipientForLetter
   v-ui:forProperty v-s:sender ;
   v-ui:forProperty v-s:recipient ;
   v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 10 ;
+  v-ui:maxCardinality 50 ;
   rdfs:label "Спецификация v-s:sender, v-s:recipient для класса v-s:Letter"@ru ;
   rdfs:label "v-s:sender, v-s:recipient specification for v-s:Letter class"@en ;
 .
