@@ -1307,7 +1307,7 @@
       f["v-s:filePath"] = [ path ];
       f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
       if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        resize(file, 148, function (thumbnail) {
+        resize(file, 256, function (thumbnail) {
           uploadFile(thumbnail, undefined, function (_, path, uri) {
             var t = new veda.IndividualModel();
             t["rdf:type"] = range;
