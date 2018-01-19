@@ -127,16 +127,14 @@ vdi:index_5
   vdi:forClass v-s:OrganizationUnit ;
   vdi:indexed_field rdfs:label ;
 .
-
-vdi:rdf_type_index 
-    rdf:type vdi:ClassIndex ; 
-    vdi:forProperty rdf:type ; 
-    vdi:inherited_index vdi:class_name_index ; 
+vdi:rdf_type_index
+  rdf:type vdi:ClassIndex ;
+  vdi:forProperty rdf:type ;
+  vdi:inherited_index vdi:class_name_index ;
 .
-
-vdi:class_name_index 
-    rdf:type vdi:ClassIndex ; 
-    vdi:forClass rdfs:Resource ; 
-    vdi:indexed_field rdfs:label ; 
+vdi:class_name_index
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass rdfs:Resource ;
+  vdi:indexed_field rdfs:label ;
 .
 
