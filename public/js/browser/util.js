@@ -79,12 +79,15 @@ veda.Module(function Util(veda) { "use strict";
     return (re.test(uid) ? "d:a" + uid : "d:" + uid);
   };
   veda.Util.guid = function () {
-    return veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4() + veda.Util.s4();
-  };
-  veda.Util.s4 = function () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(36)
-      .substring(1);
+    var d = new Date().getTime();
+    if (typeof performance !== "undefined" && typeof performance.now === "function"){
+      d += performance.now(); //use high-precision timer if available
+    }
+    return "xxxxxxxxxxxxxxxxxxxxxxxx".replace(/x/g, function (c) {
+      var r = (d + Math.random() * 36) % 36 | 0;
+      d = Math.floor(d / 36);
+      return r.toString(36);
+    });
   };
 
   veda.Util.mlstring = function (ru, en) {
