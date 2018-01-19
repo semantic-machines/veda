@@ -1559,7 +1559,7 @@ v-fs:FulltextResultTemplate
     <tr>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="5%" class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
       <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
       <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
       <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
