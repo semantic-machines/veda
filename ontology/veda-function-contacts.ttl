@@ -84,7 +84,7 @@ v-s:ContactsTemplate
   }
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
-<div class="container-fluid sheet">
+<div class="container sheet">
   <style>
     table {
       max-width: 250px;
@@ -129,11 +129,10 @@ v-s:ContactsTemplate
             e.stopPropagation();
             var row = $(this);
             var unitUri = row.attr("resource");
-            row.addClass("warning").siblings().removeClass("warning");
+            row.addClass("warning").siblings(".warning").removeClass("warning");
             individual.selected = unitUri;
             var unit = new veda.IndividualModel(unitUri);
             var unitContainer = $(".unit-container", template).empty();
-            //unit.present(unitContainer, "v-s:OrganizationUnitTemplate");
             unit.present(unitContainer, "v-s:OrganizationUnitContentTemplate");
           });
           if (individual.selected) {
@@ -274,7 +273,8 @@ v-s:OrganizationUnitContentTemplate
   v-ui:template """
 <script>
   var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
-  blank["v-s:parentUnit"] = [ individual ];
+  blank._init();
+  blank.object["v-s:parentUnit"] = [ individual ];
 //# sourceURL=v-s:OrganizationUnitContentTemplate_pre
 </script>
 <div>
@@ -302,8 +302,8 @@ v-s:ContactsInUnitSearchRegistryBlank
   rdfs:label "Contacts search blank"@en ;
   v-fc:targetType v-s:Appointment ;
 #  v-fc:targetType v-s:Position ;
-  v-fc:targetType v-s:Department ;
-  v-fc:targetType v-s:OrgGroup ;
+#  v-fc:targetType v-s:Department ;
+#  v-fc:targetType v-s:OrgGroup ;
 .
 
 v-s:ContactsInUnitSearchResultTemplate
@@ -323,7 +323,7 @@ v-s:ContactsInUnitSearchResultTemplate
       }
       //# sourceURL=v-s:ContactsInUnitSearchResultTemplate_inline
     </script>
-    <span about="@" data-template="v-ui:LabelTemplate"></span>
+    <span about="@"></span>
   </div>
 </div>
   """ ;
