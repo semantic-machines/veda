@@ -134,8 +134,6 @@ private nothrow string az_prepare(string request, Authorization athrz, Logger lo
             return "[\"err:unknown json\"]";
         }
 
-        //stderr.writefln ("res_trace=%s", res_trace);
-
         if (trace_group !is null || trace_acl !is null || trace_info !is null)
         {
             string[] all_res;
@@ -161,6 +159,7 @@ private nothrow string az_prepare(string request, Authorization athrz, Logger lo
 
         response[ response_offset++ ] = ']';
         response[ response_offset++ ] = 0;
+        //stderr.writefln ("response=%s", response);
         return cast(string)response[ 0..response_offset ];
     }
     catch (Throwable tr)

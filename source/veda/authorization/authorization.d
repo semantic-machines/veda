@@ -133,6 +133,17 @@ abstract class ImplAuthorization : Authorization
                 else
                 {
                     // IF NEED TRACE
+                    if (authorize_obj_group(veda_schema__AllResourcesGroup, 15) == true)
+                    {
+                        if (trace_info !is null)
+                            trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                    }
+
+                    if (authorize_obj_group(uri, 15) == true)
+                    {
+                        if (trace_info !is null)
+                            trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                    }
 
                     Right *[] groups1;
                     if (get_resource_groups(uri, 15, groups1, walked_groups1, 0) == true)
