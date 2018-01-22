@@ -358,6 +358,23 @@ veda.Module(function (veda) { "use strict";
           relTemplate,
           isAbout;
 
+      if (about) {
+        isAbout = true;
+        about = (about === "@" ? individual : new veda.IndividualModel(about));
+        relContainer.attr("about", about.id);
+      } else {
+        isAbout = false;
+        about = individual;
+      }
+
+      if ( rel_template_uri ) {
+        relTemplate = rel_template_uri;
+      } else if ( rel_inline_template.length ) {
+        relTemplate = rel_inline_template;
+      }
+      relContainer.empty();
+
+
       var sortableOptions = {
         delay: 150,
         placeholder: "sortable-placeholder",
@@ -375,22 +392,6 @@ veda.Module(function (veda) { "use strict";
         }
       };
       relContainer.sortable(sortableOptions);
-
-      if (about) {
-        isAbout = true;
-        about = (about === "@" ? individual : new veda.IndividualModel(about));
-        relContainer.attr("about", about.id);
-      } else {
-        isAbout = false;
-        about = individual;
-      }
-
-      if ( rel_template_uri ) {
-        relTemplate = new veda.IndividualModel( rel_template_uri );
-      } else if ( rel_inline_template.length ) {
-        relTemplate = rel_inline_template;
-      }
-      relContainer.empty();
 
       template.on("view edit search", function (e) {
         if (e.type === "view") {
@@ -419,51 +420,55 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       });
 
-      var values = about.get(rel_uri);
+      about.load().then(function (about) {
 
-      propertyModifiedHandler(values);
-      about.on(rel_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        about.off(rel_uri, propertyModifiedHandler);
-      });
+        var values = about.get(rel_uri);
 
-      if (isEmbedded) {
-        embeddedHandler(values);
-        about.on(rel_uri, embeddedHandler);
+        propertyModifiedHandler(values);
+        about.on(rel_uri, propertyModifiedHandler);
         template.one("remove", function () {
-          about.off(rel_uri, embeddedHandler);
+          about.off(rel_uri, propertyModifiedHandler);
         });
-      }
 
-      function propertyModifiedHandler (values) {
-        relContainer.empty();
-        var rendered = {};
-        var renderedTemplates = values.map(function (value, index) {
-          return renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode)
-            .then(function (renderedTemplate) {
-              rendered[index] = renderedTemplate;
-            });
-        });
-        Promise.all(renderedTemplates).then(function () {
-          for (var i in rendered) {
-            relContainer.append(rendered[i]);
-          }
-        });
-      }
+        if (isEmbedded) {
+          embeddedHandler(values);
+          about.on(rel_uri, embeddedHandler);
+          template.one("remove", function () {
+            about.off(rel_uri, embeddedHandler);
+          });
+        }
 
-      function embeddedHandler(values) {
-        if (mode === "edit") {
-          values.map(function (value) {
-            if (
-              value.id !== about.id // prevent self parent
-              && rel_uri !== "v-s:parent" // prevent circular parent
-              && !value.hasValue("v-s:parent") // do not change parent
-            ) {
-              value["v-s:parent"] = [about];
+        function propertyModifiedHandler (values) {
+          relContainer.empty();
+          var rendered = {};
+          var renderedTemplates = values.map(function (value, index) {
+            return renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode)
+              .then(function (renderedTemplate) {
+                rendered[index] = renderedTemplate;
+              });
+          });
+          Promise.all(renderedTemplates).then(function () {
+            for (var i in rendered) {
+              relContainer.append(rendered[i]);
             }
           });
         }
-      }
+
+        function embeddedHandler(values) {
+          if (mode === "edit") {
+            values.map(function (value) {
+              if (
+                value.id !== about.id // prevent self parent
+                && rel_uri !== "v-s:parent" // prevent circular parent
+                && !value.hasValue("v-s:parent") // do not change parent
+              ) {
+                value["v-s:parent"] = [about];
+              }
+            });
+          }
+        }
+
+      });
 
     });
 
