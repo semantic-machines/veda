@@ -768,6 +768,20 @@ v-s:rationale
   rdfs:range xsd:string ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:evaluatingProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Оценивающий процесс "@ru ;
+  rdfs:label "Evaluating process"@en ;
+  rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:evaluatedProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Оцениваемый процесс "@ru ;
+  rdfs:label "Evaluated process"@en ;
+  rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
 ### -------------------------------------------------------
 v-s:Registered
   rdf:type owl:Class ;
@@ -938,6 +952,13 @@ v-s:hasUnitOfMeasure
   rdfs:label "Единицы измерения"@ru ;
   rdfs:label "Unit of measure"@en ;
   rdfs:range v-s:UnitOfMeasure ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:rating
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оценка"@ru ;
+  rdfs:label "Rating"@en ;
+  rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
 ### ------------------------------------------------------
