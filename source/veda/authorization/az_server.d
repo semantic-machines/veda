@@ -134,8 +134,6 @@ private nothrow string az_prepare(string request, Authorization athrz, Logger lo
             return "[\"err:unknown json\"]";
         }
 
-        //stderr.writefln ("res_trace=%s", res_trace);
-
         if (trace_group !is null || trace_acl !is null || trace_info !is null)
         {
             string[] all_res;
@@ -161,6 +159,7 @@ private nothrow string az_prepare(string request, Authorization athrz, Logger lo
 
         response[ response_offset++ ] = ']';
         response[ response_offset++ ] = 0;
+        //stderr.writefln ("response=%s", response);
         return cast(string)response[ 0..response_offset ];
     }
     catch (Throwable tr)
@@ -220,12 +219,13 @@ void main(string[] args)
     }
     else
     {
-        string authorization_db_type = properties.as!(string)("authorization_db_type");
+        string authorization_db_type    = properties.as!(string)("authorization_db_type");
+        long   authorization_cache_size = properties.as!(long)("authorization_cache_size");
 
         if (authorization_db_type == "mdbx")
             athrz = new MdbxAuthorization(DBMode.R, "acl", log);
         else
-            athrz = new LmdbAuthorization(DBMode.R, "acl", log);
+            athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, log);
     }
 
     while (!f_listen_exit)

@@ -1322,7 +1322,7 @@
       f["v-s:filePath"] = [ path ];
       f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
       if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        resize(file, 148, function (thumbnail) {
+        resize(file, 256, function (thumbnail) {
           uploadFile(thumbnail, undefined, function (_, path, uri) {
             var t = new veda.IndividualModel();
             t["rdf:type"] = range;
@@ -1685,13 +1685,13 @@
 /* UTILS */
 
   function ftQuery(prefix, input, sort, callback) {
-    var queryString;
+    var queryString = "";
     if ( input ) {
       var tokens = input.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
-      var q = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
-      queryString = "(" + prefix + ") && (" + q + ")" ;
-    } else {
-      queryString = prefix;
+      queryString = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
+    }
+    if (prefix) {
+      queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
     }
     veda.Backend.query({
       ticket: veda.ticket,

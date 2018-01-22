@@ -41,10 +41,8 @@ frontend proxy
   mode http
   acl acl-optiflow hdr_beg(host) -i optiflow. localhost
   acl acl-optiflow-ccus path_beg /ccus
-  acl acl-docflow hdr_beg(host) -i docflow.
   use_backend optiflow if acl-optiflow
   use_backend optiflow-ccus if acl-optiflow-ccus
-  use_backend docflow if acl-docflow
   default_backend optiflow
 
 backend optiflow
@@ -57,10 +55,3 @@ backend optiflow
 backend optiflow-ccus
   balance roundrobin
   server veda01 127.0.0.1:8088
-
-backend docflow
-  mode http
-  option forwardfor
-  option httpchk HEAD / HTTP/1.1\r\nHost:localhost
-  server dms01 127.0.0.1:8001 check
-

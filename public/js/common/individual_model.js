@@ -136,7 +136,6 @@ veda.Module(function (veda) { "use strict";
       if (value.lang !== "NONE") { string.language = value.lang };
       return string;
     } else if (value.type === "Uri") {
-      if (value.data.search(/^.{3,5}:\/\//) === 0) return value.data;
       return new veda.IndividualModel(value.data);
     } else if (value.type === "Datetime") {
       return new Date(Date.parse(value.data));
@@ -465,15 +464,18 @@ veda.Module(function (veda) { "use strict";
    */
   proto.addValue = function (property_uri, value) {
     if (typeof value !== "undefined" && value !== null) {
-      var serialized = serializer(value);
-      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
-        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
-      });
-      this.properties[property_uri].push(serialized);
-      var values = this.get(property_uri);
+      var serialized;
+      if ( Array.isArray(value) ) {
+        for (var i = 0, length = value.length; i < length; i++) {
+          serialized = value.map(serializer);
+          this.properties[property_uri].push(serialized);
+        }
+      } else {
+        serialized = serializer(value);
+        this.properties[property_uri].push(serialized);
+      }
       this.isSync(false);
-      this.trigger("propertyModified", property_uri, values);
-      this.trigger(property_uri, values);
+      this.trigger("valueAdded", property_uri, value);
     }
     return this;
   };

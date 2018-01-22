@@ -1384,21 +1384,37 @@ v-fs:FulltextBlank
 
 v-fs:FulltextBlankTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон бланка поиска персоны"@ru ;
-  rdfs:label "Person search blank template"@en ;
+  rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
+  rdfs:label "Fulltext search blank template"@en ;
   v-ui:template """
 <div class="row">
+  <style>
+    .input-group input {
+      border-top-left-radius: 4px!important;
+      border-bottom-left-radius: 4px!important;
+    }
+  </style>
   <div class="col-md-12">
-    <h3 about="v-fs:EnterQuery" property="rdfs:label"></h3>
-    <veda-control property="*" data-type="string"></veda-control>
+    <h2 about="v-fs:EnterQuery" property="rdfs:label"></h2>
+    <div class="input-group">
+      <veda-control property="*" data-type="string"></veda-control>
+      <span class="input-group-btn">
+        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
+      </span>
+    </div>
   </div>
 </div>
 <script>
+  var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
+  var customFind = $(".custom-find", template);
+  customFind.click(function () {
+    find.click();
+  });
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;
       individual.set("*", [value]);
-      container.siblings(".search-actions").find(".search-button").click();
+      find.click();
     }
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
@@ -1416,7 +1432,7 @@ v-fs:FulltextResultTemplate
     <tr>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="5%" class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
       <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
       <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
       <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
@@ -1704,7 +1720,6 @@ v-fs:AttributiveSearchInlineTemplate
       searchBlankContainer = $(".search-form", template),
       searchResultContainer = $(".search-result", template),
       searchButton = $(".search-button", template),
-      clearButton = $(".clear-button", template),
       moreResults = $(".more-results", template),
       allResults = $(".all-results", template),
       noMoreResults = $(".no-more-results", template),
@@ -1783,6 +1798,7 @@ v-fs:AttributiveSearchInlineTemplate
     });
   });
 
+  // Ctrl + Enter triggers search
   function ctrlEnterHandler (e) {
     if (e.ctrlKey && e.keyCode === 13) {
       self.top = veda.user.displayedElements || 10;
@@ -1791,7 +1807,6 @@ v-fs:AttributiveSearchInlineTemplate
       });
     }
   }
-
   $(window).on("keyup", ctrlEnterHandler);
   template.one("remove", function () {
     $(window).off("keyup", ctrlEnterHandler);
@@ -1976,8 +1991,7 @@ v-fs:AttributiveSearchInlineTemplate
   // Mark clicked row
   $(".search-result table", template).on("click", "tbody tr", function () {
     var that = $(this);
-    that.siblings(".warning").removeClass("warning");
-    that.addClass("warning");
+    that.addClass("warning").siblings(".warning").removeClass("warning");
     self.marked = that.attr("resource");
   });
 

@@ -1,0 +1,387 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-function-contacts>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология функции контакты"@ru ;
+  rdfs:label "Contacts function ontology"@en ;
+  v-s:loadPriority 9 ;
+.
+v-s:ContactsFunction
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Function ;
+  rdfs:label "Функция управления контактами"@ru ;
+  rdfs:label "Contacts management function"@en ;
+.
+
+v-s:managedOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
+  rdfs:domain v-s:ContactsFunction ;
+  rdfs:range v-s:Organization ;
+.
+
+v-s:PSmanagedOrganization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:managedOrganization для класса v-s:ContactsFunction"@ru ;
+  rdfs:label "v-s:managedOrganization property specification for v-s:ContactsFunction class"@en ;
+  v-ui:forClass v-s:ContactsFunction ;
+  v-ui:forProperty v-s:managedOrganization ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:placeholder "Выберите организацию"@ru ;
+  v-ui:placeholder "Choose organization"@en ;
+.
+
+v-s:Contacts
+  rdf:type v-s:ContactsFunction ;
+  rdfs:label "Контакты"@ru ;
+  rdfs:label "Contacts"@en ;
+  rdfs:comment "Оранизационная структура"@ru ;
+  rdfs:comment "Organization chart"@en ;
+  v-ui:hasTemplate v-s:ContactsTemplate ;
+.
+
+v-s:ContactsSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Поиск"@ru ;
+  rdfs:label "Search"@en ;
+  v-fs:searchBlank v-s:ContactsSearchRegistryBlank ;
+  v-fs:searchBlankTemplate v-s:ContactsSearchBlankTemplate ;
+  v-fs:searchResultTemplate v-s:ContactsSearchResultTemplate ;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+
+v-s:ContactsSearchRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Бланк поиска контактов"@ru ;
+  rdfs:label "Contacts search blank"@en ;
+  v-fc:targetType v-s:Person ;
+.
+
+v-s:ContactsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон функции контакты"@ru ;
+  rdfs:label "Contacts function template"@en ;
+  v-ui:template """
+<script>
+  template.one("remove", function () {
+    individual.activeTab = $("#contacts-tabs li.active a", template).attr("href");
+  });
+  individual.activeTab = individual.activeTab || "#structure";
+  $("#contacts-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
+  $("#contacts-tabs-content " + individual.activeTab, template).addClass("active");
+
+  if ( !individual.hasValue("v-s:managedOrganization") && veda.appointment && typeof veda.appointment.getOrganization === "function") {
+    individual["v-s:managedOrganization"] = [ veda.appointment.getOrganization() ];
+  }
+//# sourceURL=v-s:ContactsTemplate_pre
+</script>
+<div class="container sheet">
+  <style>
+    table {
+      max-width: 250px;
+    }
+    td {
+      white-space: nowrap;
+    }
+  </style>
+  <br>
+  <ul class="nav nav-tabs nav-right" role="tablist" id="contacts-tabs">
+    <li role="presentation" class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#search" role="tab" data-toggle="tab" about="v-s:ContactsSearch" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#structure" role="tab" data-toggle="tab" about="v-s:Contacts" property="rdfs:comment"></a></li>
+  </ul>
+  <br>
+  <div class="tab-content" id="contacts-tabs-content">
+    <div role="tabpanel" class="tab-pane" id="structure">
+      <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
+      <br>
+      <div about="@" rel="v-s:managedOrganization">
+        <script>
+          individual.treeConfig = {
+            root: [ individual ],
+            displayedProperty: [ new veda.IndividualModel("rdfs:label") ],
+            inProperty: [ new veda.IndividualModel("v-s:parentUnit") ],
+            outProperty: [ new veda.IndividualModel("v-s:childUnit") ],
+            allowedClass: [ new veda.IndividualModel("v-s:OrgGroup"), new veda.IndividualModel("v-s:Department"), new veda.IndividualModel("v-s:Organization") ]
+          }
+          //# sourceURL=v-s:ContactsTemplate_inline_pre
+        </script>
+        <div class="row">
+          <div class="col-md-3" style="border-right: 1px dotted #ccc;">
+            <div about="@" class="org-tree" data-template="v-ui:TreeTemplate"></div>
+          </div>
+          <div class="col-md-9" style="border-left: 1px dotted #ccc; margin-left: -1px;">
+            <div class="unit-container"></div>
+          </div>
+        </div>
+        <script>
+          $(".org-tree table thead", template).remove();
+          template.on("click", "tr", function (e) {
+            e.stopPropagation();
+            var row = $(this);
+            var unitUri = row.attr("resource");
+            row.addClass("warning").siblings(".warning").removeClass("warning");
+            individual.selected = unitUri;
+            var unit = new veda.IndividualModel(unitUri);
+            var unitContainer = $(".unit-container", template).empty();
+            unit.present(unitContainer, "v-s:OrganizationUnitContentTemplate");
+          });
+          if (individual.selected) {
+            $("tr[resource='" + individual.selected + "']", template).click();
+          }
+          //# sourceURL=v-s:ContactsTemplate_inline_post
+        </script>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="search">
+      <div about="v-s:ContactsSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+    </div>
+
+  </div>
+</div>
+  """
+.
+
+v-s:ContactsSearchBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска контактов"@ru ;
+  rdfs:label "Contacts search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <style>
+    .input-group input {
+      border-top-left-radius: 4px!important;
+      border-bottom-left-radius: 4px!important;
+    }
+  </style>
+  <div class="col-md-12">
+    <div class="input-group">
+      <veda-control property="*" data-type="string"></veda-control>
+      <span class="input-group-btn">
+        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
+      </span>
+    </div>
+    <br>
+  </div>
+</div>
+<script>
+  container.siblings("br").remove();
+  var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
+  var customFind = $(".custom-find", template);
+  customFind.click(function () {
+    find.click();
+  });
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      find.click();
+    }
+  });
+//# sourceURL=v-s:ContactsSearchBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-s:ContactsSearchResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
+  rdfs:label "Contacts search result template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-striped">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:lastName"><span about="v-s:lastName" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:firstName"><span about="v-s:firstName" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:middleName"><span about="v-s:middleName" property="rdfs:label"></span></th>
+      <th><span about="v-s:occupation" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td about="@" property="v-s:lastName"></td>
+      <td about="@" property="v-s:firstName"></td>
+      <td about="@" property="v-s:middleName"></td>
+      <td about="@" rel="v-s:defaultAppointment"><span rel="v-s:occupation" data-template="v-ui:LabelTemplate"></span></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-s:OrganizationUnitTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения единицы организационной структуры"@ru ;
+  rdfs:label "Organization unit template"@en ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:template """
+<div class="container sheet">
+  <h3><span about="@" property="rdfs:label"></span></h3>
+  <span about="@" data-template="v-ui:RabbitHole" data-properties="v-s:parentUnit"></span>
+  <hr>
+  <div>
+    <div class="-view edit search">
+      <em about="rdfs:label" property="rdfs:label"></em>
+      <div property="rdfs:label" class="view -edit -search"></div>
+      <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+      <hr class="view -edit -search">
+    </div>
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasChief" property="rdfs:label"></em>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
+      </div>
+    </div>
+  </div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:OrganizationUnitContentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения единицы организационной структуры"@ru ;
+  rdfs:label "Organization unit template"@en ;
+  v-ui:forClass v-s:OrganizationUnit ;
+  v-ui:template """
+<script>
+  var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
+  blank._init();
+  blank.object["v-s:parentUnit"] = [ individual ];
+//# sourceURL=v-s:OrganizationUnitContentTemplate_pre
+</script>
+<div>
+  <h4><span about="@" property="rdfs:label"></span></h4>
+  <span about="@" data-template="v-ui:RabbitHole" data-properties="v-s:parentUnit"></span>
+  <hr>
+  <div about="v-s:ContactsInUnitSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+</div>
+  """ ;
+.
+
+v-s:ContactsInUnitSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Поиск"@ru ;
+  rdfs:label "Search"@en ;
+  v-fs:searchBlank v-s:ContactsInUnitSearchRegistryBlank ;
+  v-fs:searchResultTemplate v-s:ContactsInUnitSearchResultTemplate ;
+  v-fs:sortOrder "'rdfs:label' asc" ;
+  v-fs:searchOnLoad true ;
+.
+
+v-s:ContactsInUnitSearchRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Бланк поиска контактов"@ru ;
+  rdfs:label "Contacts search blank"@en ;
+  v-fc:targetType v-s:Appointment ;
+#  v-fc:targetType v-s:Position ;
+#  v-fc:targetType v-s:Department ;
+#  v-fc:targetType v-s:OrgGroup ;
+.
+
+v-s:ContactsInUnitSearchResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
+  rdfs:label "Contacts search result template"@en ;
+  v-ui:template """
+<div>
+  <div class="result-container">
+    <script>
+      if ( individual.hasValue("rdf:type", "v-s:Appointment") ) {
+        template.attr("data-template", "v-s:AppointmentContactTemplate");
+      } else if ( individual.hasValue("rdf:type", "v-s:Position") ) {
+        template.attr("data-template", "v-s:PositionContactTemplate");
+      } else if ( individual.hasValue("rdf:type", "v-s:Department") || individual.hasValue("rdf:type", "v-s:OrgGroup") ) {
+        template.attr("data-template", "v-s:DepartmentContactTemplate");
+      }
+      //# sourceURL=v-s:ContactsInUnitSearchResultTemplate_inline
+    </script>
+    <span about="@"></span>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:AppointmentContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения контакта персоны"@ru ;
+  rdfs:label "Person contact template"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:template """
+<div class="horizontal-card horizontal-card-sm">
+  <div class="thumbnail" about="@" rel="v-s:hasImage">
+    <img src="/files/@">
+  </div>
+  <div class="description">
+    <div about="@" rel="v-s:employee" class="header">
+      <strong><span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span></strong>
+    </div>
+    <hr class="margin-sm">
+    <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
+  </div>
+</div>
+  """ ;
+.
+v-s:PositionContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения контакта персоны"@ru ;
+  rdfs:label "Person contact template"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:template """
+<div class="horizontal-card horizontal-card-sm">
+  <div class="thumbnail" about="@" rel="v-s:hasImage">
+    <img src="/files/@">
+  </div>
+  <div class="description">
+    <div class="header">
+      <strong about="@" property="rdfs:label"></strong>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+v-s:DepartmentContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения единицы организационной структуры"@ru ;
+  rdfs:label "Organization unit template"@en ;
+  v-ui:forClass v-s:Department ;
+  v-ui:template """
+<div class="horizontal-card horizontal-card-sm">
+  <div class="thumbnail">
+    <i class="fa fa-folder-open-o fa-2x"></i>
+  </div>
+  <div class="description">
+    <div class="header">
+      <strong about="@" property="rdfs:label"></strong>
+    </div>
+  </div>
+</div>
+  """ ;
+.

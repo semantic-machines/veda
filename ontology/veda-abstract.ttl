@@ -270,8 +270,8 @@ v-s:hasDecision
 .
 v-s:hasSector
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Отрасль экономической деятельности"@ru ;
-  rdfs:label "Sector"@en ;
+  rdfs:label "Тематика"@ru ;
+  rdfs:label "Subjects"@en ;
   rdfs:range v-s:Sector ;
   rdfs:domain v-s:Thing ;
 .
@@ -341,6 +341,24 @@ v-s:Function
   rdfs:label "Функция"@ru ;
   rdfs:label "Function"@en ;
 .
+### -------------------------------------------------------
+v-s:Identification
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource  ;
+  rdfs:label "Удостоверение личности"@ru ;
+  rdfs:label "Identification"@en ;
+.
+v-s:birthday
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "День рождения этой персоны"@ru ;
+  rdfs:comment "The birthday of this Person."@en ;
+  rdfs:domain v-s:Identification ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Дата рождения"@ru ;
+  rdfs:label "Birthday"@en ;
+  rdfs:range xsd:dateTime ;
+.
+
 ### -------------------------------------------------------
 v-s:Temporal
   rdf:type owl:Class ;
@@ -743,6 +761,20 @@ v-s:rationale
   rdfs:range xsd:string ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:evaluatingProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Оценивающий процесс "@ru ;
+  rdfs:label "Evaluating process"@en ;
+  rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
+v-s:evaluatedProcess
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Оцениваемый процесс "@ru ;
+  rdfs:label "Evaluated process"@en ;
+  rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
 ### -------------------------------------------------------
 v-s:Registered
   rdf:type owl:Class ;
@@ -913,6 +945,13 @@ v-s:hasUnitOfMeasure
   rdfs:label "Единицы измерения"@ru ;
   rdfs:label "Unit of measure"@en ;
   rdfs:range v-s:UnitOfMeasure ;
+  rdfs:domain v-s:Measurable ;
+.
+v-s:rating
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оценка"@ru ;
+  rdfs:label "Rating"@en ;
+  rdfs:range xsd:decimal ;
   rdfs:domain v-s:Measurable ;
 .
 ### ------------------------------------------------------

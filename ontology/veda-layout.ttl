@@ -45,7 +45,26 @@ v-l:MainPageTemplate
       </div>
       <div class="collapse navbar-collapse" id="navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li about="v-fs:FulltextSearch"><a href="#/@"><span class="fa fa-lg fa-search"></span></a></li>
+          <li about="v-s:Contacts">
+            <script>
+              template.tooltip({
+                container: template,
+                placement: "bottom",
+                title: individual["rdfs:label"].join(" ")
+              });
+            </script>
+            <a href="#/@"><span class="fa fa-lg fa-user-o"></span></a>
+          </li>
+          <li about="v-fs:FulltextSearch">
+            <script>
+              template.tooltip({
+                container: template,
+                placement: "bottom",
+                title: individual["rdfs:label"].join(" ")
+              });
+            </script>
+            <a href="#/@"><span class="fa fa-lg fa-search"></span></a>
+          </li>
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
           <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li id="user-info"></li>

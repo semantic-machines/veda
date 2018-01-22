@@ -613,7 +613,29 @@ v-ui:VersionTemplate
   rdfs:label "Шаблон для класса v-s:Version"@ru ;
   rdfs:label "Template for class v-s:Version"@en ;
   v-ui:forClass v-s:Version ;
-  v-ui:template "" ;
+  v-ui:template """
+<div class="alert alert-warning hidden">
+  <p>
+    <span about="v-s:VersionAlert" property="rdfs:label"></span>
+    <span class="pull-right" about="@" rel="v-s:actualVersion">
+      <a href="#/@" class="alert-link" about="v-s:actualVersion" property="rdfs:label"></a>
+    </span>
+  </p>
+</div>
+<script>
+  setTimeout(function () {
+    var renderedTemplates = $("[resource$='" + individual.id.substring(2) + "']");
+    renderedTemplates.each(function () {
+      var renderedTemplate = $(this);
+      renderedTemplate.find("a, button").addClass("disabled").attr("disabled", "disabled");
+      if ( renderedTemplate.parent().prop("id") === "main" ) {
+        var sheet = renderedTemplate.children(".sheet").first();
+        template.removeClass("hidden").prependTo(sheet.length ? sheet : renderedTemplate);
+      }
+    });
+  }, 100);
+</script>
+""" ;
 .
 v-ui:VersionedTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -823,7 +845,7 @@ v-ui:IconPersonTemplate
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
 <a href="#/@">
-  <span class="glyphicon glyphicon-user"></span>
+  <!--span class="glyphicon glyphicon-user"></span-->
   <span about="@" property="rdfs:label"></span>
 </a>
 """ ;
@@ -965,7 +987,7 @@ v-ui:LabelLinkTemplate
   rdfs:label "Шаблон с меткой и ссылкой"@ru ;
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
-  <a class="label-template" href="#/@"><span property="rdfs:label"></span></a>
+  <a class="label-template" href="#/@"><span about="@" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
@@ -1080,17 +1102,20 @@ v-ui:ClassNameLabelLinkEditTemplate
 
 v-ui:RabbitHole
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Дерево докумментов"@ru ;
-  rdfs:label "Tree dokummentov"@en ;
+  rdfs:label "Кроличья нора"@ru ;
+  rdfs:label "Rabbit hole"@en ;
   v-ui:template """
 <script>
+  var defaultProperties = "v-s:parent v-s:backwardTarget";
+  var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
   var text = "<span>" + mkLabel(individual) + "</span>";
   var visited = [ individual.id ];
 
-  if (individual.hasValue("v-s:backwardTarget")) {
-    travel(individual["v-s:backwardTarget"][0]);
-  } else if (individual.hasValue("v-s:parent")) {
-    travel(individual["v-s:parent"][0]);
+  for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
+    if ( individual.hasValue(property) ) {
+      travel( individual[property][0] );
+      break;
+    }
   }
   $("small", template).append(text);
 
@@ -1100,16 +1125,16 @@ v-ui:RabbitHole
     } else {
       visited.push(individual.id);
     }
-    text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " &rarr; " + text;
-    if ( !individual.hasValue("v-s:parent") && !individual.hasValue("v-s:backwardTarget") ) { return; }
-    if (individual.hasValue("v-s:backwardTarget")) {
-      travel(individual["v-s:backwardTarget"][0]);
-    } else if (individual.hasValue("v-s:parent")) {
-      travel(individual["v-s:parent"][0]);
+    text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " / " + text;
+    for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
+      if ( individual.hasValue(property) ) {
+        travel( individual[property][0] );
+        break;
+      }
     }
   }
   function mkLabel(individual) {
-    return individual["rdf:type"][0]["rdfs:label"].join(" ")// + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
+    return individual["rdf:type"][0]["rdfs:label"].join(" ") + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
   }
 </script>
 <h5><small></small></h5>
@@ -1450,24 +1475,24 @@ v-ui:FileTemplateWithComment
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
-<div class="file-card">
-  <div class="file-thumbnail" about="@" rel="v-s:thumbnail">
+<div class="horizontal-card">
+  <div class="thumbnail" about="@" rel="v-s:thumbnail">
     <img src="/files/@">
   </div>
-  <div class="file-description">
+  <div class="description">
     <strong about="rdfs:comment" property="rdfs:label" class="-view edit search"></strong>
     <veda-control data-type="string" property="rdfs:comment" class="-view edit search margin-sm"></veda-control>
-    <strong property="rdfs:comment" class="view -edit -search comment"></strong>
+    <strong property="rdfs:comment" class="view -edit -search header"></strong>
     <hr class="margin-sm view -edit -search">
     <div class="file-name">
-      <span id="icon" class="label label-primary"></span>
+      <span class="icon label label-primary"></span>
       <a href="/files/@">
         <span about="@" property="v-s:fileName"></span>
       </a>
     </div>
-    <div class="view -edit -search" style="font-style:italic">
+    <i class="view -edit -search">
       <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
-    </div>
+    </i>
   </div>
 </div>
 <script>
@@ -1475,7 +1500,7 @@ v-ui:FileTemplateWithComment
   if (typeof fn === "string" || fn instanceof String) {
     var idx = fn.lastIndexOf("."),
         ext = fn.substr(idx + 1);
-    $("span#icon", template).text(ext);
+    $("span.icon", template).text(ext);
   }
   //# sourceURL=v-ui:FileTemplateWithComment
 </script>
@@ -2045,35 +2070,41 @@ v-ui:TreeTemplate
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
 <div class="table-responsive">
-  <br>
   <table class="table table-condensed table-striped">
     <thead id="thead"></thead>
     <tbody id="tbody"></tbody>
   </table>
 </div>
 <script>
-  var tbody = $("#tbody", template),
-    thead = $("#thead", template),
-    headTmpl = "<th width='1px'><input type='checkbox' id='select-col' /></th>",
-    rowTmpl = "<td><input type='checkbox' class='select-row' /></td>",
-    literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"],
-    rel_uri = individual.treeConfig.targetRel_uri,
-    allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.map(function (_class) {
-      return _class.id;
-    }) : [],
-    selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.map(function (_class) {
-      return _class.id;
-    }) : [],
-    selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
+  var tbody = $("#tbody", template);
+  var thead = $("#thead", template);
+
+  var rel_uri = individual.treeConfig.targetRel_uri;
+  var headTmpl = "";
+  var rowTmpl = "";
+
+  if (rel_uri) {
+    headTmpl += "<th width='1px'><input type='checkbox' id='select-col' /></th>";
+    rowTmpl += "<td><input type='checkbox' class='select-row' /></td>";
+  }
+
+  var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
+  var allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.map(function (_class) {
+    return _class.id;
+  }) : [];
+  var selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.map(function (_class) {
+    return _class.id;
+  }) : [];
+  var selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
   individual.treeConfig.displayedProperty.map( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
     var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
     if ( index === 0 ) {
       if (isLiteral) {
-        rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
+        rowTmpl += "<td><div class='spacer'></div><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' property='" + property.id + "'></span></td>";
       } else {
-        rowTmpl += "<td><div class='spacer'></div><a class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' data-template='v-ui:LabelTemplate'></span></td>";
+        rowTmpl += "<td><div class='spacer'></div><a href='#' class='expand glyphicon glyphicon-chevron-right'></a> <span about='@' rel='" + property.id + "' data-template='v-ui:LabelTemplate'></span></td>";
       }
       return;
     } else {
@@ -2090,6 +2121,7 @@ v-ui:TreeTemplate
 
   template.on("click", "a.expand", function (e) {
     e.stopPropagation();
+    e.preventDefault();
     var that = $(this),
       thatRow = that.parents("tr"),
       thatLvl = parseInt( thatRow.attr("data-level") ),
@@ -2141,47 +2173,56 @@ v-ui:TreeTemplate
     return false;
   });
 
-  template.on("click", "th > input", function (e) {
-    if ( $(this).is(":checked") ) {
-      var values = [];
-      $("table input", template).each(function () {
-        $(this).prop("checked", true);
-        var row = $(this).parent().parent(),
-            uri = row.attr("resource"),
-            value = new veda.IndividualModel(uri);
-        values.push(value);
-      });
-      individual[rel_uri] = values;
-    } else {
-      $("table input", template).prop("checked", false);
-      individual[rel_uri] = [];
-    }
-  });
+  if (rel_uri) {
 
-  template.on("click", "td", function (e) {
-    e.stopPropagation();
-    var row = $(this).parent();
-    $("input", row).click();
-  });
-
-  template.on("click", "td > input", function (e) {
-    e.stopPropagation();
-    var row = $(this).parent().parent(),
-        uri = row.attr("resource"),
-        value = new veda.IndividualModel(uri);
-    var filtered = individual[rel_uri].filter(function (item) {
-      return item.id !== value.id;
+    template.on("click", "th > input", function (e) {
+      if ( $(this).is(":checked") ) {
+        var values = [];
+        $("table input", template).each(function () {
+          $(this).prop("checked", true);
+          var row = $(this).parent().parent(),
+              uri = row.attr("resource"),
+              value = new veda.IndividualModel(uri);
+          values.push(value);
+        });
+        individual[rel_uri] = values;
+      } else {
+        $("table input", template).prop("checked", false);
+        individual[rel_uri] = [];
+      }
     });
-    if ( $(this).prop("checked") ) {
-      individual[rel_uri] = filtered.concat(value);
-    } else {
-      individual[rel_uri] = filtered;
-    }
-  });
 
-  individual.treeConfig.root.map( function (root) {
+    template.on("click", "td", function (e) {
+      e.stopPropagation();
+      var row = $(this).parent();
+      $("input", row).click();
+    });
+
+    template.on("click", "td > input", function (e) {
+      e.stopPropagation();
+      var row = $(this).parent().parent(),
+          uri = row.attr("resource"),
+          value = new veda.IndividualModel(uri);
+      var filtered = individual[rel_uri].filter(function (item) {
+        return item.id !== value.id;
+      });
+      if ( $(this).prop("checked") ) {
+        individual[rel_uri] = filtered.concat(value);
+      } else {
+        individual[rel_uri] = filtered;
+      }
+    });
+
+  }
+
+  // Render tree
+  individual.treeConfig.root.map( function (root, index, all) {
     var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
     tmpl = root.present(tbody, tmpl[0].outerHTML);
+
+    if (all.length === 1) {
+      $(".expand", tmpl).click();
+    }
 
     var hasValue = individual.hasValue(rel_uri, root);
     $("input", tmpl).prop("checked", hasValue);
@@ -2219,7 +2260,7 @@ v-ui:TreeTemplate
         }).join(" || ");
       if (individual.treeConfig.allowedClass) {
         q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
-          return "'rdf:type'=='" + _class.id + "'";
+          return "'rdf:type'==='" + _class.id + "'";
         }).join(" || ") + ")";
       }
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
@@ -2501,7 +2542,7 @@ v-ui:generic
           $("<strong/>", {"about": property_uri, "property": "rdfs:label"}).addClass("text-muted")
       );
 
-      var range = property["rdfs:range"] ? property["rdfs:range"][0].id : "rdfs:Literal";
+      var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
 
       switch ( range ) {
         case "rdfs:Literal":

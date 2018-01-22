@@ -1,7 +1,7 @@
 body {
   position: relative;
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  color: #233333;
+  color: #333;
   background-color: #f0f0f0;
 }
 
@@ -153,8 +153,8 @@ body {
   width: 100%;
 }
 
-/* FILE CARD */
-.file-card {
+/* HORIZONTAL CARD */
+.horizontal-card {
   width: 330px;
   height: 150px;
   display: inline-table;
@@ -163,26 +163,51 @@ body {
   border-radius: 4px;
   border: 1px solid #ddd;
   border-spacing: 10px;
+  background-color: #fff;
 }
-.file-card .file-thumbnail {
+.horizontal-card .thumbnail {
   display: table-cell;
   vertical-align: top;
+  border: none;
+  padding: 0;
 }
-.file-card .file-thumbnail:empty {
+.horizontal-card .thumbnail:empty {
   display: none;
 }
-.file-card .file-thumbnail img{
+.horizontal-card .thumbnail img {
   max-width: 128px;
   max-height: 128px;
+  border-radius: 4px;
 }
-.file-card .file-description {
+.horizontal-card .description {
   display: table-cell;
   word-wrap: break-word;
   vertical-align: top;
 }
-.file-card .comment:empty + hr {
+.horizontal-card .header:empty + hr {
   display: none!important;
 }
+
+.horizontal-card.horizontal-card-sm {
+  width: 220px;
+  height: 84px;
+}
+
+.horizontal-card.horizontal-card-sm .thumbnail img {
+  max-width: 64px;
+  max-height: 64px;
+}
+
+.horizontal-card.horizontal-card-lg {
+  width: 500px;
+  height: 212px;
+  margin: 0px 20px 20px 0px;
+}
+.horizontal-card.horizontal-card-lg .thumbnail img {
+  max-width: 192px;
+  max-height: 192px;
+}
+
 
 /* Gray tooltip */
 .tooltip-inner {
@@ -1270,3 +1295,48 @@ svg.process-path-highlight path
     border-radius: 4px;
   }
 }
+
+/* Background colors from flat-ui */
+.bg-white { background-color: #fff; }
+.bg-turquoise { background-color: rgba(26, 188, 156, 1.0); /*#1abc9c;*/ }
+.bg-emerald { background-color: rgba(46, 204, 113, 1.0); /*#2ecc71;*/ }
+.bg-peter-river { background-color: rgba(52, 152, 219, 1.0); /*#3498db;*/ }
+.bg-amethyst { background-color: rgba(155, 89, 182, 1.0); /*#9b59b6;*/ }
+.bg-wet-asphalt { background-color: rgba(52, 73, 94, 1.0); /*#34495e;*/ }
+.bg-green-sea { background-color: rgba(22, 160, 133, 1.0); /*#16a085;*/ }
+.bg-nephritis { background-color: rgba(39, 174, 96, 1.0); /*#27ae60;*/ }
+.bg-belize-hole { background-color: rgba(41, 128, 185, 1.0); /*#2980b9;*/ }
+.bg-wisteria { background-color: rgba(142, 68, 173, 1.0); /*#8e44ad;*/ }
+.bg-midnight-blue { background-color: rgba(44, 62, 80, 1.0); /*#2c3e50;*/ }
+.bg-sun-flower { background-color: rgba(241, 196, 15, 1.0); /*#f1c40f;*/ }
+.bg-carrot { background-color: rgba(230, 126, 34, 1.0); /*#e67e22;*/ }
+.bg-alizarin { background-color: rgba(231, 76, 60, 1.0); /*#e74c3c;*/ }
+.bg-clouds { background-color: rgba(236, 240, 241, 1.0); /*#ecf0f1;*/ }
+.bg-concrete { background-color: rgba(149, 165, 166, 1.0); /*#95a5a6;*/ }
+.bg-orange { background-color: rgba(243, 156, 18, 1.0); /*#f39c12;*/ }
+.bg-pumpkin { background-color: rgba(211, 84, 0, 1.0); /*#d35400;*/ }
+.bg-pomegranate { background-color: rgba(192, 57, 43, 1.0); /*#c0392b;*/ }
+.bg-silver { background-color: rgba(189, 195, 199, 1.0); /*#bdc3c7;*/ }
+.bg-asbestos { background-color: rgba(127, 140, 141, 1.0); /*#7f8c8d;*/ }
+
+.bg-white * {  }
+.bg-turquoise * { color: #fff; }
+.bg-emerald * { color: #fff; }
+.bg-peter-river * { color: #fff; }
+.bg-amethyst * { color: #fff; }
+.bg-wet-asphalt * { color: #fff; }
+.bg-green-sea * { color: #fff; }
+.bg-nephritis * { color: #fff; }
+.bg-belize-hole * { color: #fff; }
+.bg-wisteria * { color: #fff; }
+.bg-midnight-blue * { color: #fff; }
+.bg-sun-flower * { color: #fff; }
+.bg-carrot * { color: #fff; }
+.bg-alizarin * { color: #fff; }
+.bg-clouds * {  }
+.bg-concrete * { color: #fff; }
+.bg-orange * { color: #fff; }
+.bg-pumpkin * { color: #fff; }
+.bg-pomegranate * { color: #fff; }
+.bg-silver * { color: #fff; }
+.bg-asbestos * { color: #fff; }

@@ -189,7 +189,7 @@ public class IndexerContext
         bool is_deleted, prev_is_deleted, is_restored;
 
         //if (is_trace)
-            log.trace("index uri=%s", indv.uri);
+        log.trace("index uri=%s", indv.uri);
 
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
@@ -479,7 +479,6 @@ public class IndexerContext
                                 //writeln (tab, "@idx = ", idx);
                                 foreach (predicate, values; idx.resources)
                                 {
-                                    //writeln (tab, "@@@5 predicate = ", predicate);
                                     if (predicate == "vdi:inherited_index")
                                     {
                                         foreach (value; values)
@@ -556,6 +555,11 @@ public class IndexerContext
                                                                     index_double(ln ~ "." ~ indexed_field.uri, rc);
                                                                 }
                                                             }
+
+                                                            if (rrc.length > 0)
+                                                            {
+                                                                index_boolean(ln ~ "." ~ indexed_field.uri ~ ".isExists", Resource(true));
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -582,7 +586,7 @@ public class IndexerContext
                         {
                             // если это относится к class_property__2__indiviual, следует обновить
 
-                            if (predicate != rdf__type)
+                            //if (predicate != rdf__type)
                             {
                                 // используем информацию о типе
                                 foreach (_type; types)

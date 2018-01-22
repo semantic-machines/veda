@@ -49,12 +49,12 @@ v-s:Enumerated
   rdfs:label "Перечисляемая сущность"@ru ;
   rdfs:label "Enumerated thing"@en ;
 .
-v-s:permission_on_enumerated
-  rdf:type v-s:PermissionStatement ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:permissionObject v-s:Enumerated ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-.
+#v-s:permission_on_enumerated
+#  rdf:type v-s:PermissionStatement ;
+#  v-s:canCreate "true"^^xsd:boolean ;
+#  v-s:permissionObject v-s:Enumerated ;
+#  v-s:permissionSubject cfg:AllUsersGroup ;
+#.
 
 v-s:NumerationRule
   rdf:type owl:Class ;
@@ -133,6 +133,16 @@ v-s:RegistrationNumberSimpleNumerationYear
   rdf:type v-s:Numeration ;
   v-s:enumeratedProperty v-s:registrationNumber ;
   v-s:hasNumerationRule v-s:SimpleNumerationYear ;
+.
+v-s:RegistrationNumberYearNumeration2_4
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:YearNumeration2_4 ;
+.
+v-s:RegistrationNumberIdeaAndProjectsNumeration
+  rdf:type v-s:Numeration ;
+  v-s:enumeratedProperty v-s:registrationNumber ;
+  v-s:hasNumerationRule v-s:IdeaAndProjectsNumeration ;
 .
 # --- Rules ---
 

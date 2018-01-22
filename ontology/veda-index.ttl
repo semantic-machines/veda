@@ -120,9 +120,21 @@ vdi:index_4
   vdi:indexed_field v-s:firstName ;
   vdi:indexed_field v-s:lastName ;
   vdi:indexed_field v-s:middleName ;
+  vdi:indexed_field v-s:hasAccount ;
 .
 vdi:index_5
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:OrganizationUnit ;
   vdi:indexed_field rdfs:label ;
 .
+vdi:rdf_type_index
+  rdf:type vdi:ClassIndex ;
+  vdi:forProperty rdf:type ;
+  vdi:inherited_index vdi:class_name_index ;
+.
+vdi:class_name_index
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass rdfs:Resource ;
+  vdi:indexed_field rdfs:label ;
+.
+

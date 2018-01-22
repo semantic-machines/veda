@@ -3,3 +3,8 @@
 /mondi-transform
 /veda-version.ttl
 /config.ttl
+/veda-common-dictionaries
+/veda-module-net-basic
+/veda-module-net-complex-route
+/veda-module-net-universal
+/veda-site
