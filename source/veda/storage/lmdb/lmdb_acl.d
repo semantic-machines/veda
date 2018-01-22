@@ -19,6 +19,11 @@ class LmdbAuthorization : ImplAuthorization
     MDB_txn *txn_r;
     MDB_dbi dbi;
 
+    long    count_read_in_transaction;
+    long    max_count_read_in_transaction = 10;
+    long    max_time_in_transaction       = 10000;
+    auto    swA                           = StopWatch();
+
     this(DBMode mode, string _parent_thread_name, long _cache_size, Logger _log)
     {
         log    = _log;
@@ -49,9 +54,6 @@ class LmdbAuthorization : ImplAuthorization
         driver.close();
     }
 
-    long count_read_in_transaction;
-    long max_limin_read_in_transaction = 10;
-
     override string get_in_current_transaction(string in_key)
     {
         string sres;
@@ -63,8 +65,17 @@ class LmdbAuthorization : ImplAuthorization
             sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
 
         count_read_in_transaction++;
-        if (count_read_in_transaction > max_limin_read_in_transaction)
+        swA.stop();
+        long tA = cast(long)swA.peek().usecs;
+        swA.start();
+
+        if (count_read_in_transaction > max_count_read_in_transaction || tA > max_time_in_transaction)
         {
+            if (tA > max_time_in_transaction)
+                log.trace("INFO! reopen transaction, count_read_in_transaction=%d, time_in_transaction=%d", count_read_in_transaction, tA);
+
+            swA.reset();
+            swA.start();
             abort_transaction();
             begin_transaction(false);
         }
@@ -78,11 +89,14 @@ class LmdbAuthorization : ImplAuthorization
         {
             mdb_dbi_close(driver.env, dbi);
             mdb_txn_abort(txn_r);
+            swA.stop();
         }
     }
 
     override bool begin_transaction(bool is_check_for_reload)
     {
+        swA.start();
+
         if (is_check_for_reload)
             acl_check_for_reload(&reopen, log);
 
