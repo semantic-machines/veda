@@ -1180,6 +1180,13 @@ v-fs:estimated
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:integer ;
 .
+v-fs:processed
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Обработано"@ru ;
+  rdfs:label "Processed"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
 v-fs:authorized
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Авторизовано"@ru ;
@@ -1245,7 +1252,6 @@ v-fs:AttributiveSearchModel
       self["v-fs:cursor"] = [cursor];
     } else {
       self["v-fs:cursor"] = [0];
-      self["v-fs:authorized"] = [0];
       self["v-fs:searchResult"] = [];
     }
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
@@ -1301,8 +1307,7 @@ v-fs:AttributiveSearchModel
         var delta = resultDelta.map(function (uri) {
           return new veda.IndividualModel(uri);
         });
-        self.addValue("v-fs:searchResult", delta);
-        self["v-fs:authorized"] = [ self["v-fs:authorized"][0] + delta.length ];
+        self["v-fs:searchResult"] = self["v-fs:searchResult"].concat(delta);
         if ( self.hasValue("v-fs:loadAll", true) && self["v-fs:cursor"][0] < self["v-fs:estimated"][0] ) {
           return self.search( self["v-fs:cursor"][0] );
         }
@@ -1310,10 +1315,9 @@ v-fs:AttributiveSearchModel
         // Notify search blank on search complete
         if ( self.hasValue("v-fs:searchBlank") ) {
           self["v-fs:searchBlank"][0]._init();
-          self["v-fs:searchBlank"][0].object.trigger("search:complete");
+          self["v-fs:searchBlank"][0].object.trigger("search:complete", self["v-fs:searchResult"]);
         }
-
-        return self.hasValue("v-fs:loadAll", true) ? self["v-fs:searchResult"] : delta ;
+        return self["v-fs:searchResult"];
       });
     } else {
       return Promise.resolve( self["v-fs:searchResult"] );
@@ -1887,8 +1891,8 @@ v-fs:AttributiveSearchInlineTemplate
         <small class="stats-top pull-right" style="color:black">
           <span about="v-fs:estimated" property="rdfs:label"></span>
           <span about="@" property="v-fs:estimated" class="badge"></span>&nbsp;&nbsp;
-          <span about="v-fs:cursor" property="rdfs:label"></span>
-          <span about="@" property="v-fs:cursor" class="badge"></span>&nbsp;&nbsp;
+          <span about="v-fs:processed" property="rdfs:label"></span>
+          <span about="@" property="v-fs:processed" class="badge"></span>&nbsp;&nbsp;
           <strong about="v-fs:authorized" property="rdfs:label"></strong>
           <span about="@" property="v-fs:authorized" class="badge"></span>&nbsp;&nbsp;
         </small>
@@ -1919,7 +1923,8 @@ v-fs:AttributiveSearchInlineTemplate
       searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined ,
       resultContainer = $(".result-container", template),
       notFound = $(".not-found", template),
-      statsTop = $(".stats-top", template);
+      statsTop = $(".stats-top", template),
+      statsBottom = $(".stats-bottom", template);
 
   // Render search form
   if ( searchBlank ) {
@@ -1995,10 +2000,16 @@ v-fs:AttributiveSearchInlineTemplate
 
   // More results handler
   function moreResultsHandler() {
-    return self.search( self["v-fs:cursor"][0] )
+    var $this = $(this);
+    toggleSpin($this);
+    self.search( self["v-fs:cursor"][0] )
       .then(renderResult)
+      .then(function () {
+        toggleSpin($this);
+      })
       .catch(function (error) {
         console.log(error);
+        toggleSpin($this);
       });
   }
 
@@ -2009,14 +2020,10 @@ v-fs:AttributiveSearchInlineTemplate
   allResults.click(function () {
     var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
     if ( self["v-fs:estimated"][0] - self["v-fs:cursor"][0] < 100 || confirm(warn) ) {
-      loadAll();
+      self["v-fs:loadAll"] = [ true ];
+      moreResultsHandler.call(this);
     }
   });
-  function loadAll() {
-    if (self["v-fs:cursor"][0] < self["v-fs:estimated"][0] && template.is(":visible")) {
-      moreResultsHandler().then(loadAll);
-    }
-  }
 
   // Double click on result table row routes to search result
   $(".search-result", template).on("dblclick", "table tbody tr", function () {
@@ -2058,6 +2065,12 @@ v-fs:AttributiveSearchInlineTemplate
   // Render result
   function renderResult(resultDelta) {
 
+    // Stats
+    if ( self["v-fs:searchResult"].length < 5 ) {
+      statsBottom.hide();
+    } else {
+      statsBottom.show();
+    }
     $(".results", template).removeClass("hidden");
 
     // Toggle "more results" button & "no more results" alert
@@ -2071,7 +2084,7 @@ v-fs:AttributiveSearchInlineTemplate
       noMoreResults.addClass("hidden");
     }
     // Toggle "not found" alert & "no more results" alert
-    if ( resultDelta.length ) {
+    if ( self["v-fs:searchResult"].length ) {
       notFound.addClass("hidden");
     } else {
       notFound.removeClass("hidden");
@@ -2079,17 +2092,13 @@ v-fs:AttributiveSearchInlineTemplate
     }
 
     // Render each result
-    var total = self["v-fs:authorized"][0];
+    var total = self["v-fs:searchResult"].length;
     var delta = resultDelta.length;
-
-    // New search triggered
-    if ( total === delta ) {
-      resultContainer.empty();
-    }
-    return resultDelta.map(function (result, i) {
-      var tmplString = individual.resultTemplate.replace("###", total - delta + i + 1);
-      var tmpl = result.present(resultContainer, tmplString);
-      if (result.id === self.marked) {
+    return resultDelta.map(function (uri, i) {
+      var tmpl = individual.resultTemplate.replace("###", total - delta + i + 1),
+          item = new veda.IndividualModel(uri);
+      tmpl = item.present(resultContainer, tmpl);
+      if (item.id === self.marked) {
         tmpl.addClass("warning");
       }
       setTimeout(function () {
