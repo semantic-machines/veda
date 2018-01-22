@@ -49,12 +49,12 @@ v-s:Enumerated
   rdfs:label "Перечисляемая сущность"@ru ;
   rdfs:label "Enumerated thing"@en ;
 .
-v-s:permission_on_enumerated
-  rdf:type v-s:PermissionStatement ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:permissionObject v-s:Enumerated ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-.
+#v-s:permission_on_enumerated
+#  rdf:type v-s:PermissionStatement ;
+#  v-s:canCreate "true"^^xsd:boolean ;
+#  v-s:permissionObject v-s:Enumerated ;
+#  v-s:permissionSubject cfg:AllUsersGroup ;
+#.
 
 v-s:NumerationRule
   rdf:type owl:Class ;

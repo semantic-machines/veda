@@ -145,12 +145,19 @@ v-s:RegistrationRecord
   rdfs:label "Регистрационная запись"@ru ;
   rdfs:label "Registration record"@en ;
 .
+### -------------------------------------------------------
+v-s:LetterRegistrationRecordEnumerated
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:label "Регистрационная запись письма автонумеруемая"@ru ;
+  rdfs:label "Letter registration record enumerated"@en ;
+.
 
 ### -------------------------------------------------------
 v-s:LetterRegistrationRecordSender
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:subClassOf v-s:RegistrationRecord ;  
   rdfs:label "Регистрационная запись отправителя письма"@ru ;
   rdfs:label "Letter registration record sender"@en ;
   v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
@@ -160,7 +167,7 @@ v-s:LetterRegistrationRecordSender
 v-s:LetterRegistrationRecordRecipient
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:subClassOf v-s:RegistrationRecord ;    
   rdfs:label "Регистрационная запись получателя письма"@ru ;
   rdfs:label "Letter registration record recipient"@en ;
   v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
