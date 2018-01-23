@@ -1251,6 +1251,7 @@ v-fs:AttributiveSearchModel
       self["v-fs:cursor"] = [cursor];
     } else {
       self["v-fs:cursor"] = [0];
+      self["v-fs:top"] = [ veda.user.displayedElements || 10 ];
       self["v-fs:authorized"] = [0];
       self["v-fs:searchResult"] = [];
     }
@@ -1417,7 +1418,7 @@ v-fs:AttributiveSearchTemplate
     var resultTable = $(".search-result > table").clone();
     resultTable.find(".hidden").remove();
     resultTable = resultTable.get(0);
-    tableToExcel(resultTable, self["rdfs:label"].join(", "));
+    tableToExcel(resultTable, individual["rdfs:label"].join(", "));
   });
 
   // Export to FileRegistry
@@ -1458,7 +1459,7 @@ v-fs:AttributiveSearchTemplate
 
     Promise.all(filesPromises).then(function (files) {
       var zip = new JSZip();
-      var registry = tableToBlob(resultTable, self["rdfs:label"].join(", "));
+      var registry = tableToBlob(resultTable, individual["rdfs:label"].join(", "));
       zip.file("registry.html", registry);
       var folder = zip.folder("files");
       files.forEach(function (file) {
@@ -1495,6 +1496,19 @@ v-fs:AttributiveSearchTemplate
       }
       xhr.send();
     });
+  }
+
+  // Spinner
+  function toggleSpin(el) {
+    var $el = $(el);
+    var hasSpinner = $el.children(".fa-spinner");
+    if ( hasSpinner.length ) {
+      $el.removeClass("disabled");
+      hasSpinner.remove();
+    } else {
+      $el.addClass("disabled");
+      $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
+    }
   }
 
   //# sourceURL=v-fs:AttributiveSearchTemplate_post
