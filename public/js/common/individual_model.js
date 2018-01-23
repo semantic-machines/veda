@@ -378,6 +378,11 @@ veda.Module(function (veda) { "use strict";
     this.trigger("beforeReset");
     var self = this;
     self.filtered = {};
+    if ( this.isNew() ) {
+      self.undraft();
+      self.trigger("afterReset");
+      return Promise.resolve();
+    }
     return get_individual({
       ticket: veda.ticket,
       uri: self.id,
