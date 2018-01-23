@@ -483,10 +483,8 @@ veda.Module(function (veda) { "use strict";
     if (typeof value !== "undefined" && value !== null) {
       var serialized;
       if ( Array.isArray(value) ) {
-        for (var i = 0, length = value.length; i < length; i++) {
-          serialized = value.map(serializer);
-          this.properties[property_uri].push(serialized);
-        }
+        serialized = value.map(serializer);
+        this.properties[property_uri] = this.properties[property_uri].concat(serialized);
       } else {
         serialized = serializer(value);
         this.properties[property_uri].push(serialized);
