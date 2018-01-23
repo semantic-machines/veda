@@ -2068,10 +2068,12 @@ v-fs:FulltextBlankTemplate
   var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
   var customFind = $(".custom-find", template);
   customFind.click(function () {
-    find.click();
+    if ( $("input", template).val() ) {
+      find.click();
+    }
   });
   $("input", template).keydown(function (e) {
-    if (e.which === 13) {
+    if (e.which === 13 && this.value) {
       var value = this.value;
       individual.set("*", [value]);
       find.click();
