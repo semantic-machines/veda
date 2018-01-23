@@ -1340,19 +1340,6 @@ v-fs:AttributiveSearchTemplate
     <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
     <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
-    <div class="dropup pull-right set-columns-wrapper">
-      <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <span about="v-fs:SetColumns" property="rdfs:label"></span>
-        <span class="caret"></span>
-      </button>
-      <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
-        <div class="checkbox">
-          <label>
-            <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
-          </label>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 <script>
@@ -1401,55 +1388,6 @@ v-fs:AttributiveSearchTemplate
       checkOffset(main, actions, actionsStaticHeight, placeholder);
     }
   }, 500);
-
-  // Set columns
-  var resultContainer = $(".result-container", template);
-  individual.hiddenColumns = individual.hiddenColumns || {};
-  var checksContainer = $(".set-columns-wrapper .dropdown-menu", template).on('click', function (e) {
-    e.stopPropagation();
-  });
-  var checkTmpl = $(".set-columns-wrapper .dropdown-menu .checkbox", template).remove();
-  if (checkTmpl.length) {
-    checkTmpl = checkTmpl.get(0).outerHTML;
-    $("#search-result table > thead > tr:last > th", template).each(function (index) {
-      var th = $(this);
-      var check = $(checkTmpl);
-      var checkbox = $("input", check);
-      var columnName = $(this).find("span").clone();
-      if ( columnName.length ) {
-        $(".column-name", check).append(columnName);
-      } else {
-        $(".column-name", check).text( th.text() );
-      }
-      if (index in individual.hiddenColumns) {
-        checkbox.prop("checked", false);
-      } else {
-        checkbox.prop("checked", true);
-      }
-      checkbox.change(checkHandler);
-      checkHandler.call( checkbox.get(0) );
-      checksContainer.append(check);
-
-      // Show/hide result table columns & update resultTemplate accordingly
-      function checkHandler() {
-        if ( $(this).is(":checked") ) {
-          th.removeClass("hidden");
-          $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
-          individual.resultTemplate = $(individual.resultTemplate);
-          individual.resultTemplate.not("script").children().eq(index).removeClass("hidden");
-          individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
-          delete individual.hiddenColumns[index];
-        } else {
-          th.addClass("hidden");
-          $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
-          individual.resultTemplate = $(individual.resultTemplate);
-          individual.resultTemplate.not("script").children().eq(index).addClass("hidden");
-          individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
-          individual.hiddenColumns[index] = true;
-        }
-      }
-    });
-  }
 
   // Export to Spreadsheet
   var tableToExcel = (function () {
@@ -1555,214 +1493,6 @@ v-fs:AttributiveSearchTemplate
 
   //# sourceURL=v-fs:AttributiveSearchTemplate_post
 </script>
-  """ ;
-.
-
-v-fs:TestSearch
-  rdf:type v-fs:AttributiveSearch ;
-  rdfs:label "Тестовый поиск"@ru ;
-  rdfs:label "Test search"@en ;
-  v-fs:searchBlank v-fs:TestBlank ;
-  v-fs:searchBlankTemplate v-fs:TestBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:TestResultTemplate ;
-  v-fs:fulltextQuery "('rdf:type'=='v-s:Person')" ;
-  v-fs:sortOrder "'rdfs:label' asc" ;
-.
-
-v-fs:TestBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Тестовый бланк"@ru ;
-  rdfs:label "Test blank"@en ;
-  v-fc:targetType v-s:Person ;
-  v-s:firstName "Роман" ;
-  v-s:lastName "Карпов" ;
-  v-s:middleName "Константинович" ;
-.
-
-v-fs:TestBlankTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон бланка поиска персоны"@ru ;
-  rdfs:label "Person search blank template"@en ;
-  v-ui:template """
-<div class="row">
-  <div class="col-md-3">
-    <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-    <veda-control property="v-s:lastName" data-type="string"></veda-control>
-    <div property="v-s:lastName"></div>
-  </div>
-  <div class="col-md-3">
-    <em about="v-s:firstName" property="rdfs:label">Имя</em>
-    <veda-control property="v-s:firstName" data-type="string"></veda-control>
-    <div property="v-s:firstName"></div>
-  </div>
-  <div class="col-md-3">
-    <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-    <veda-control property="v-s:middleName" data-type="string"></veda-control>
-    <div property="v-s:middleName"></div>
-  </div>
-  <div class="col-md-3">
-    <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-    <veda-control property="v-s:birthday" data-type="dateTime"></veda-control>
-    <div property="v-s:birthday"></div>
-  </div>
-</div>
-  """ ;
-.
-
-v-fs:TestResultTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон отображения результатов поиска персоны"@ru ;
-  rdfs:label "Person search result template"@en ;
-  v-ui:template """
-<table class="table table-bordered">
-  <thead class="result-header">
-    <tr>
-      <th width="1%">#</th>
-      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="30%" class="orderby" data-orderby="v-s:lastName"><span about="v-s:lastName" property="rdfs:label"></span></th>
-      <th width="30%" class="orderby" data-orderby="v-s:firstName"><span about="v-s:firstName" property="rdfs:label"></span></th>
-      <th width="30%" class="orderby" data-orderby="v-s:middleName"><span about="v-s:middleName" property="rdfs:label"></span></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td>###</td>
-      <td about="@" data-template="v-ui:IconModalTemplate"></td>
-      <td property="v-s:lastName"></td>
-      <td property="v-s:firstName"></td>
-      <td property="v-s:middleName"></td>
-    </tr>
-  </tbody>
-</table>
-  """ ;
-.
-
-v-fs:FulltextSearch
-  rdf:type v-fs:AttributiveSearch ;
-  rdfs:label "Полнотекстовый поиск"@ru ;
-  rdfs:label "Fulltext search"@en ;
-  v-fs:searchBlank v-fs:FulltextBlank ;
-  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
-  v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
-.
-
-v-fs:FulltextBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Тестовый бланк"@ru ;
-  rdfs:label "Test blank"@en ;
-  v-fc:targetType v-s:UserThing ;
-.
-
-v-fs:FulltextBlankTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
-  rdfs:label "Fulltext search blank template"@en ;
-  v-ui:template """
-<div class="row">
-  <style>
-    .input-group input {
-      border-top-left-radius: 4px!important;
-      border-bottom-left-radius: 4px!important;
-    }
-  </style>
-  <div class="col-md-12">
-    <h2 about="v-fs:EnterQuery" property="rdfs:label"></h2>
-    <div class="input-group">
-      <veda-control property="*" data-type="string"></veda-control>
-      <span class="input-group-btn">
-        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
-      </span>
-    </div>
-  </div>
-</div>
-<script>
-  var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
-  var customFind = $(".custom-find", template);
-  customFind.click(function () {
-    find.click();
-  });
-  $("input", template).keydown(function (e) {
-    if (e.which === 13) {
-      var value = this.value;
-      individual.set("*", [value]);
-      find.click();
-    }
-  });
-  //# sourceURL=v-fs:FulltextBlankTemplate_post
-</script>
-  """ ;
-.
-
-v-fs:FulltextResultTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон отображения результатов полнотекстового поиска"@ru ;
-  rdfs:label "Fulltext search result template"@en ;
-  v-ui:template """
-<table class="table table-bordered table-condensed">
-  <thead class="result-header">
-    <tr>
-      <th width="1%">#</th>
-      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="5%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
-      <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td>###</td>
-      <td about="@"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-      <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
-      <td about="@" property="rdfs:label"></td>
-      <td about="@" property="v-s:created"></td>
-      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
-    </tr>
-  </tbody>
-</table>
-  """ ;
-.
-
-v-fs:MinimalSearch
-  rdf:type v-fs:AttributiveSearch ;
-  rdfs:label "Минимальный поиск"@ru ;
-  rdfs:label "Minimal search"@en ;
-  v-fs:searchBlank v-fs:MinimalSearchBlank ;
-  v-fs:searchOnLoad true ;
-  v-fs:loadAll true ;
-.
-
-v-fs:MinimalSearchBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Тестовый бланк"@ru ;
-  rdfs:label "Test blank"@en ;
-  v-fc:targetType rdf:Property ;
-.
-
-v-fs:MinimalSearchResultTemplate
-  rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Шаблон отображения результатов минимального поиска"@ru ;
-  rdfs:label "Minimal search result template"@en ;
-  v-ui:template """
-<table class="table table-condensed table-striped">
-  <thead class="result-header">
-    <tr>
-      <th width="1%">#</th>
-      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th>@</th>
-      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td>###</td>
-      <td about="@" data-template="v-ui:IconModalTemplate"></td>
-      <td property="@"></td>
-      <td about="@" property="rdfs:label"></td>
-    </tr>
-  </tbody>
-</table>
   """ ;
 .
 
@@ -1877,6 +1607,19 @@ v-fs:AttributiveSearchInlineTemplate
     <br>
     <div class="search-actions">
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
+      <div class="dropup pull-right set-columns-wrapper">
+        <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span about="v-fs:SetColumns" property="rdfs:label"></span>
+          <span class="caret"></span>
+        </button>
+        <div class="dropdown-menu" style="padding:15px; width: 300px; max-height: 500px; overflow-y: auto;">
+          <div class="checkbox">
+            <label>
+              <input class="column-check" type="checkbox" checked="true"> <span class="column-name"></span>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
     <br>
   </div>
@@ -1920,6 +1663,55 @@ v-fs:AttributiveSearchInlineTemplate
       resultContainer = $(".result-container", template),
       notFound = $(".not-found", template),
       statsTop = $(".stats-top", template);
+
+  // Set columns
+  var resultContainer = $(".result-container", template);
+  individual.hiddenColumns = individual.hiddenColumns || {};
+  var checksContainer = $(".set-columns-wrapper .dropdown-menu", template).on('click', function (e) {
+    e.stopPropagation();
+  });
+  var checkTmpl = $(".set-columns-wrapper .dropdown-menu .checkbox", template).remove();
+  if (checkTmpl.length) {
+    checkTmpl = checkTmpl.get(0).outerHTML;
+    $(".search-result table > thead > tr:last > th", template).each(function (index) {
+      var th = $(this);
+      var check = $(checkTmpl);
+      var checkbox = $("input", check);
+      var columnName = $(this).find("span").clone();
+      if ( columnName.length ) {
+        $(".column-name", check).html( columnName );
+      } else {
+        $(".column-name", check).text( th.text() );
+      }
+      if (index in individual.hiddenColumns) {
+        checkbox.prop("checked", false);
+      } else {
+        checkbox.prop("checked", true);
+      }
+      checkbox.change(checkHandler);
+      checkHandler.call( checkbox.get(0) );
+      checksContainer.append(check);
+
+      // Show/hide result table columns & update resultTemplate accordingly
+      function checkHandler() {
+        if ( $(this).is(":checked") ) {
+          th.removeClass("hidden");
+          $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
+          individual.resultTemplate = $(individual.resultTemplate);
+          individual.resultTemplate.not("script").children().eq(index).removeClass("hidden");
+          individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
+          delete individual.hiddenColumns[index];
+        } else {
+          th.addClass("hidden");
+          $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
+          individual.resultTemplate = $(individual.resultTemplate);
+          individual.resultTemplate.not("script").children().eq(index).addClass("hidden");
+          individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
+          individual.hiddenColumns[index] = true;
+        }
+      }
+    });
+  }
 
   // Render search form
   if ( searchBlank ) {
@@ -2132,5 +1924,215 @@ v-fs:AttributiveSearchInlineTemplate
 
   //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
 </script>
+  """ ;
+.
+
+### INDIVIDUALS ###
+
+v-fs:TestSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Тестовый поиск"@ru ;
+  rdfs:label "Test search"@en ;
+  v-fs:searchBlank v-fs:TestBlank ;
+  v-fs:searchBlankTemplate v-fs:TestBlankTemplate ;
+  v-fs:searchResultTemplate v-fs:TestResultTemplate ;
+  v-fs:fulltextQuery "('rdf:type'=='v-s:Person')" ;
+  v-fs:sortOrder "'rdfs:label' asc" ;
+.
+
+v-fs:TestBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+  v-fc:targetType v-s:Person ;
+  v-s:firstName "Роман" ;
+  v-s:lastName "Карпов" ;
+  v-s:middleName "Константинович" ;
+.
+
+v-fs:TestBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска персоны"@ru ;
+  rdfs:label "Person search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <div class="col-md-3">
+    <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
+    <veda-control property="v-s:lastName" data-type="string"></veda-control>
+    <div property="v-s:lastName"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:firstName" property="rdfs:label">Имя</em>
+    <veda-control property="v-s:firstName" data-type="string"></veda-control>
+    <div property="v-s:firstName"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:middleName" property="rdfs:label">Отчество</em>
+    <veda-control property="v-s:middleName" data-type="string"></veda-control>
+    <div property="v-s:middleName"></div>
+  </div>
+  <div class="col-md-3">
+    <em about="v-s:birthday" property="rdfs:label">День рождения</em>
+    <veda-control property="v-s:birthday" data-type="dateTime"></veda-control>
+    <div property="v-s:birthday"></div>
+  </div>
+</div>
+  """ ;
+.
+
+v-fs:TestResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска персоны"@ru ;
+  rdfs:label "Person search result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="30%" class="orderby" data-orderby="v-s:lastName"><span about="v-s:lastName" property="rdfs:label"></span></th>
+      <th width="30%" class="orderby" data-orderby="v-s:firstName"><span about="v-s:firstName" property="rdfs:label"></span></th>
+      <th width="30%" class="orderby" data-orderby="v-s:middleName"><span about="v-s:middleName" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="v-s:lastName"></td>
+      <td property="v-s:firstName"></td>
+      <td property="v-s:middleName"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-fs:FulltextSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Полнотекстовый поиск"@ru ;
+  rdfs:label "Fulltext search"@en ;
+  v-fs:searchBlank v-fs:FulltextBlank ;
+  v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
+  v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
+.
+
+v-fs:FulltextBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+  v-fc:targetType v-s:UserThing ;
+.
+
+v-fs:FulltextBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
+  rdfs:label "Fulltext search blank template"@en ;
+  v-ui:template """
+<div class="row">
+  <style>
+    .input-group input {
+      border-top-left-radius: 4px!important;
+      border-bottom-left-radius: 4px!important;
+    }
+  </style>
+  <div class="col-md-12">
+    <h2 about="v-fs:EnterQuery" property="rdfs:label"></h2>
+    <div class="input-group">
+      <veda-control property="*" data-type="string"></veda-control>
+      <span class="input-group-btn">
+        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
+      </span>
+    </div>
+  </div>
+</div>
+<script>
+  var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
+  var customFind = $(".custom-find", template);
+  customFind.click(function () {
+    find.click();
+  });
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      find.click();
+    }
+  });
+  //# sourceURL=v-fs:FulltextBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-fs:FulltextResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов полнотекстового поиска"@ru ;
+  rdfs:label "Fulltext search result template"@en ;
+  v-ui:template """
+<table class="table table-bordered table-condensed">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="5%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="rdfs:label"></td>
+      <td about="@" property="v-s:created"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-fs:MinimalSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Минимальный поиск"@ru ;
+  rdfs:label "Minimal search"@en ;
+  v-fs:searchBlank v-fs:MinimalSearchBlank ;
+  v-fs:searchOnLoad true ;
+  v-fs:loadAll true ;
+.
+
+v-fs:MinimalSearchBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый бланк"@ru ;
+  rdfs:label "Test blank"@en ;
+  v-fc:targetType rdf:Property ;
+.
+
+v-fs:MinimalSearchResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Шаблон отображения результатов минимального поиска"@ru ;
+  rdfs:label "Minimal search result template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-striped">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th>@</th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td>###</td>
+      <td about="@" data-template="v-ui:IconModalTemplate"></td>
+      <td property="@"></td>
+      <td about="@" property="rdfs:label"></td>
+    </tr>
+  </tbody>
+</table>
   """ ;
 .
