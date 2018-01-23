@@ -56,14 +56,15 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         template = individual["v-ui:hasTemplate"][0]["v-ui:template"][0].toString();
         return renderTemplate(individual, container, template, mode, extra, specs);
       } else {
-        return individual["rdf:type"].map(function (type) {
+        return individual["rdf:type"].reduce(function (acc, type) {
           if ( type.hasValue("v-ui:hasTemplate") ) {
             template = type["v-ui:hasTemplate"][0]["v-ui:template"][0].toString();
           } else {
             template = new veda.IndividualModel("v-ui:generic")["v-ui:template"][0].toString();
           }
-          return renderTemplate(individual, container, template, mode, extra, specs);
-        });
+          var renderedTemplate = renderTemplate(individual, container, template, mode, extra, specs);
+          return acc.add(renderedTemplate);
+        }, $());
       }
     }
   }
