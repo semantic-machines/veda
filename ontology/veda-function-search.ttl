@@ -1135,13 +1135,19 @@ v-fs:searchResult
   rdfs:label "Результат"@ru ;
   rdfs:label "Result"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
-  rdfs:range v-fc:Blank ;
+  rdfs:range rdfs:Resource ;
 .
-
 v-fs:searchOnLoad
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Искать сразу"@ru ;
   rdfs:label "Search on load"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:boolean ;
+.
+v-fs:query
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Запрос"@ru ;
+  rdfs:label "Query"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:boolean ;
 .
@@ -1694,21 +1700,19 @@ v-fs:AttributiveSearchInlineTemplate
 
       // Show/hide result table columns & update resultTemplate accordingly
       function checkHandler() {
+        individual.resultTemplate = $(individual.resultTemplate);
         if ( $(this).is(":checked") ) {
           th.removeClass("hidden");
           $("tr td:nth-child(" + (index + 1) + ")", resultContainer).removeClass("hidden");
-          individual.resultTemplate = $(individual.resultTemplate);
           individual.resultTemplate.not("script").children().eq(index).removeClass("hidden");
-          individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
           delete individual.hiddenColumns[index];
         } else {
           th.addClass("hidden");
           $("tr td:nth-child(" + (index + 1) + ")", resultContainer).addClass("hidden");
-          individual.resultTemplate = $(individual.resultTemplate);
           individual.resultTemplate.not("script").children().eq(index).addClass("hidden");
-          individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
           individual.hiddenColumns[index] = true;
         }
+        individual.resultTemplate = individual.resultTemplate.map(function () { return this.outerHTML; }).get().join("");
       }
     });
   }
