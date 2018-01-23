@@ -1160,22 +1160,22 @@ v-fs:loadAll
 .
 v-fs:cursor
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Указатель"@ru ;
-  rdfs:label "Cursor"@en ;
+  rdfs:label "Обработано"@ru ;
+  rdfs:label "Processed"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:integer ;
 .
 v-fs:top
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Указатель"@ru ;
-  rdfs:label "Cursor"@en ;
+  rdfs:label "Топ"@ru ;
+  rdfs:label "Top"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:integer ;
 .
 v-fs:limit
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Указатель"@ru ;
-  rdfs:label "Cursor"@en ;
+  rdfs:label "Ограничение"@ru ;
+  rdfs:label "Limit"@en ;
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:integer ;
 .
@@ -1242,6 +1242,7 @@ v-fs:AttributiveSearchModel
   this["v-fs:top"] = [ veda.user.displayedElements || 10 ];
   this["v-fs:limit"] = [ this["v-fs:limit"][0] || 10000 ];
   this["v-fs:estimated"] = [ this["v-fs:estimated"][0] || 0 ];
+  this["v-fs:authorized"] = [ this["v-fs:authorized"][0] || 0 ];
   this["v-fs:sortOrder"] = [ this["v-fs:sortOrder"][0] || "'v-s:created' desc" ];
 
   // Search method
@@ -1305,11 +1306,11 @@ v-fs:AttributiveSearchModel
           return resultDelta;
         }
       }).then(function (resultDelta) {
+        self["v-fs:authorized"] = [ self["v-fs:authorized"][0] + resultDelta.length ];
         var delta = resultDelta.map(function (uri) {
           return new veda.IndividualModel(uri);
         });
         self.addValue("v-fs:searchResult", delta);
-        self["v-fs:authorized"] = [ self["v-fs:authorized"][0] + delta.length ];
         if ( self.hasValue("v-fs:loadAll", true) && self["v-fs:cursor"][0] < self["v-fs:estimated"][0] ) {
           return self.search( self["v-fs:cursor"][0] );
         }
@@ -1625,7 +1626,7 @@ v-fs:AttributiveSearchInlineTemplate
   <div class="params">
     <div class="search-form"></div>
     <br>
-    <div class="search-actions">
+    <div class="search-actions clearfix">
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
       <div class="dropup pull-right set-columns-wrapper">
         <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
