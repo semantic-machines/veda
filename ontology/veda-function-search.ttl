@@ -1103,6 +1103,7 @@ v-fs:AttributiveSearch
   rdfs:label "Атрибутивный поиск"@ru ;
   rdfs:label "Attributive search"@en ;
   v-ui:hasTemplate v-fs:AttributiveSearchTemplate ;
+  v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
 v-fs:searchBlankTemplate
@@ -1129,6 +1130,14 @@ v-fs:searchBlank
   rdfs:range v-fc:Blank ;
 .
 
+v-fs:searchResult
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Результат"@ru ;
+  rdfs:label "Result"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range v-fc:Blank ;
+.
+
 v-fs:searchOnLoad
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Искать сразу"@ru ;
@@ -1143,7 +1152,48 @@ v-fs:loadAll
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:boolean ;
 .
-
+v-fs:cursor
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Указатель"@ru ;
+  rdfs:label "Cursor"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
+v-fs:top
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Указатель"@ru ;
+  rdfs:label "Cursor"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
+v-fs:limit
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Указатель"@ru ;
+  rdfs:label "Cursor"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
+v-fs:estimated
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Найдено"@ru ;
+  rdfs:label "Estimated"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
+v-fs:processed
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Обработано"@ru ;
+  rdfs:label "Processed"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
+v-fs:authorized
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Авторизовано"@ru ;
+  rdfs:label "Authorized"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range xsd:integer ;
+.
 v-fs:TotalFoundBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Всего найдено"@ru ;
@@ -1178,6 +1228,104 @@ v-fs:ClickToViewContent
   rdf:type v-s:Bundle ;
   rdfs:label "Кликните, чтобы увидеть всё содержимое"@ru ;
   rdfs:label "Click to view all contents"@en ;
+.
+
+v-fs:AttributiveSearchModel
+  rdf:type v-ui:ClassModel ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-s:script """
+  var self = this;
+
+  // Defaults
+  this["v-fs:cursor"] = [ this["v-fs:cursor"][0] || 0 ];
+  this["v-fs:top"] = [ veda.user.displayedElements || 10 ];
+  this["v-fs:limit"] = [ this["v-fs:limit"][0] || 10000 ];
+  this["v-fs:estimated"] = [ this["v-fs:estimated"][0] || 0 ];
+  this["v-fs:sortOrder"] = [ this["v-fs:sortOrder"][0] || "'v-s:created' desc" ];
+
+  // Search method
+  this.search = function (cursor) {
+
+    if (cursor > 0) {
+      self["v-fs:cursor"] = [cursor];
+    } else {
+      self["v-fs:cursor"] = [0];
+      self["v-fs:searchResult"] = [];
+    }
+    var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
+    var queryString = [];
+    if ( self.hasValue("v-fs:searchBlank") ) {
+      self["v-fs:searchBlank"][0]._init();
+      queryString.push( veda.Util.queryFromIndividual(self["v-fs:searchBlank"][0].object) );
+    }
+    if ( self.hasValue("v-fs:fulltextQuery") ) {
+      queryString.push( self["v-fs:fulltextQuery"][0] )
+    }
+    queryString = queryString.join(" && ");
+    if ( queryString ) {
+      return query({
+        ticket: veda.ticket,
+        query: queryString,
+        sort: self["v-fs:sortOrder"][0],
+        top: self["v-fs:top"][0],
+        limit: self["v-fs:limit"][0],
+        from: self["v-fs:cursor"][0],
+        async: true
+      }).then(function (results) {
+        self["v-fs:estimated"] = [ results.estimated ];
+        self["v-fs:cursor"] = [ results.cursor ];
+        if (results.cursor === results.estimated) {
+          // Set top to results length to allow sorting of the whole list
+          self["v-fs:top"] = self["v-fs:estimated"];
+        }
+        return results.result;
+      }).then(function (resultDelta) {
+
+        var prefetch = [];
+        resultDelta.map(function (uri) {
+          if ( !veda.cache[uri] ) {
+            prefetch.push( uri );
+          }
+        });
+        if (prefetch.length) {
+          return get_individuals({
+            ticket: veda.ticket,
+            uris: prefetch,
+            async: true
+          }).then(function (prefetched) {
+            prefetched.forEach(function (json) {
+              var fetched = new veda.IndividualModel(json);
+            });
+            return resultDelta;
+          });
+        } else {
+          return resultDelta;
+        }
+      }).then(function (resultDelta) {
+        var delta = resultDelta.map(function (uri) {
+          return new veda.IndividualModel(uri);
+        });
+        self["v-fs:searchResult"] = self["v-fs:searchResult"].concat(delta);
+        if ( self.hasValue("v-fs:loadAll", true) && self["v-fs:cursor"][0] < self["v-fs:estimated"][0] ) {
+          return self.search( self["v-fs:cursor"][0] );
+        }
+
+        // Notify search blank on search complete
+        if ( self.hasValue("v-fs:searchBlank") ) {
+          self["v-fs:searchBlank"][0]._init();
+          self["v-fs:searchBlank"][0].object.trigger("search:complete", self["v-fs:searchResult"]);
+        }
+        return self["v-fs:searchResult"];
+      });
+    } else {
+      return Promise.resolve( self["v-fs:searchResult"] );
+    }
+  };
+
+//# sourceURL=v-fs:AttributiveSearchModel
+  """ ;
 .
 
 v-fs:AttributiveSearchTemplate
@@ -1802,7 +1950,6 @@ v-fs:AttributiveSearchInlineTemplate
     $(".params", template).remove();
   }
   function formHandler () {
-    self.top = veda.user.displayedElements || 10;
     search();
   }
 
@@ -1834,7 +1981,6 @@ v-fs:AttributiveSearchInlineTemplate
   searchButton.click(function () {
     var $this = $(this);
     // Reset top
-    self.top = veda.user.displayedElements || 10;
     toggleSpin($this);
     search().then(function () {
       scrollTo( $(".results", template).offset().top );
@@ -1845,7 +1991,6 @@ v-fs:AttributiveSearchInlineTemplate
   // Ctrl + Enter triggers search
   function ctrlEnterHandler (e) {
     if (e.ctrlKey && e.keyCode === 13) {
-      self.top = veda.user.displayedElements || 10;
       search().then(function () {
         scrollTo( $(".results", template).offset().top );
       });
@@ -1886,9 +2031,6 @@ v-fs:AttributiveSearchInlineTemplate
 
   // Manage sort
   var sortBy = "", dir = "";
-  if ( !self.hasValue("v-fs:sortOrder") ) {
-    self["v-fs:sortOrder"] = ["'v-s:created' desc"];
-  }
   var tmp = self["v-fs:sortOrder"][0].split(" ");
   sortBy = tmp[0]; dir = tmp[1];
   $(".orderby", template).each( function () {
