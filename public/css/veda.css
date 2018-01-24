@@ -1385,3 +1385,25 @@ svg.process-path-highlight path
 .bg-pomegranate * { color: #fff; }
 .bg-silver * { color: #fff; }
 .bg-asbestos * { color: #fff; }
+
+
+/* Sortable table */
+
+.table-sortable thead tr:last-child th:hover {
+  cursor: pointer;
+}
+
+.table-sortable thead tr:last-child th:before {
+  color: #707070;
+  content: "\25B2";
+}
+
+.table-sortable thead tr:last-child th.asc:before {
+  color: #337ab7;
+  content: "\25B2";
+}
+
+.table-sortable thead tr:last-child th.desc:before {
+  color: #337ab7;
+  content: "\25BC";
+}

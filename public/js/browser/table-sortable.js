@@ -1,31 +1,37 @@
 // Pagination plugin
 "use strict";
 (function( $ ) {
-  $.fn.tableSortable = function () {
+  $.fn.tableSortable = function (clicked) {
     return this.each(function() {
       var table = $(this);
+      if ( table.hasClass("table-sortable-done") ) {
+        return;
+      }
       var tbody = table.children("tbody");
       var thead = table.children("thead");
-      var th = thead.find("th");
+      var ths = thead.find("tr:last-child > th");
       var rows = tbody.children();
+      table.addClass("table-sortable-done");
 
-      th.each( function () {
+      ths.each( function () {
         var th = $(this);
-        var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
-        th.prepend(a, " ");
         var index = th.index();
 
-        a.click(function (e) {
+        th.click(function (e) {
           e.preventDefault();
           e.stopPropagation();
           var $this = $(this);
-          table.find("thead th a").addClass("text-muted");
-          var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? "asc" : "desc";
-          $this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
-          if (dir === "asc") {
+          $this.siblings().removeClass("asc desc");
+          var dir;
+          if ( $this.hasClass("asc") ) {
+            $this.removeClass("asc").addClass("desc");
+            rows.sort(orderDesc);
+          } else if ( $this.hasClass("desc") ) {
+            $this.addClass("asc").removeClass("desc");
             rows.sort(orderAsc);
           } else {
-            rows.sort(orderDesc);
+            $this.addClass("asc");
+            rows.sort(orderAsc);
           }
           rows.detach().appendTo(tbody);
         });
@@ -42,6 +48,9 @@
           return (valueA > valueB ? -1 : 1);
         }
       });
+
+      clicked.click();
+
     });
   };
 })(jQuery );
