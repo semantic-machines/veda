@@ -404,3 +404,24 @@ function recursiveCall(elem, path, ticket, _event_id) {
     });
   }
 }
+
+function set_err_on_indv (msg, indv, src)
+{
+    var bugreport = {
+      '@' : genUri () + '-err',
+      'rdf:type'     : newUri('v-s:BugReport'),
+      'v-s:created'  : newDate (new Date()),
+      'rdfs:comment' : newStr(src),
+      'v-s:errorMessage' : newStr (msg),
+      'v-s:resource': newUri (indv['@'])
+    };
+    put_individual(ticket, bugreport, _event_id);
+   
+    var add_to_indv = {
+        '@': indv['@'],
+        'v-s:hasError': newUri (bugreport['@'])
+        };
+    add_to_individual(ticket, add_to_indv, _event_id);
+
+    print("ERR! " + src + ':' +  msg);
+}

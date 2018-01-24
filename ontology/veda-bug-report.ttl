@@ -59,6 +59,15 @@ v-s:resolved
   rdfs:label "Решена"@ru ;
   rdfs:label "Resolved"@en ;
 .
+
+v-s:hasError
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Thing ;
+  rdfs:range  v-s:BugReport ;
+  rdfs:label "ссылка на ошибку"@ru ;
+  rdfs:label "link to error"@en ;
+.
+
 v-s:BugReportTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон графа"@ru ;

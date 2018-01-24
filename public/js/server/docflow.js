@@ -19,7 +19,11 @@ function prepare_decision_form(ticket, document)
 
         var f_onWorkOrder = document['v-wf:onWorkOrder'];
         var _work_order = get_individual(ticket, getUri(f_onWorkOrder));
-        if (!_work_order) return;
+        if (!_work_order)
+        {
+            set_err_on_indv("WorkOrder[" + getUri(f_onWorkOrder) + "], not found", document, "prepare decision form");
+            return;
+        }
 
         var f_executor = _work_order['v-wf:executor'];
         var executor;
@@ -27,17 +31,25 @@ function prepare_decision_form(ticket, document)
         if (f_executor && f_executor.length > 0)
             executor = f_executor[0];
 
-        //        print ("@@@executor=", toJson (executor));
+        //print ("@@@executor=", toJson (executor));
         //print("[WORKFLOW][DF1].1");
 
         var f_forWorkItem = _work_order['v-wf:forWorkItem'];
         var work_item = get_individual(ticket, getUri(f_forWorkItem));
-        if (!work_item) return;
+        if (!work_item)
+        {
+            set_err_on_indv("invalid WorkOrder[" + getUri(f_onWorkOrder) + "], field v-wf:forWorkItem[" + getUri(f_forWorkItem) + "], not found", document, "prepare decision form");
+            return;
+        }
 
         var forProcess = work_item['v-wf:forProcess'];
         var forProcess_uri = getUri(forProcess);
         var _process = get_individual(ticket, forProcess_uri);
-        if (!_process) return;
+        if (!_process)
+        {
+            set_err_on_indv("invalid WorkItem[" + getUri(f_forWorkItem) + "], field v-wf:forProcess[" + getUri(forProcess) + "], not found", document, "prepare decision form");
+            return;
+        }
 
         var trace_journal_uri = create_new_trace_subjournal(forProcess_uri, work_item, "prepare_decision_form:" + decision_form['@'], 'v-wf:DecisionFormStarted')
 
@@ -45,14 +57,27 @@ function prepare_decision_form(ticket, document)
 
         var f_forNetElement = work_item['v-wf:forNetElement'];
         var net_element = get_individual(ticket, getUri(f_forNetElement));
-        if (!net_element) return;
+        if (!net_element)
+        {
+            set_err_on_indv("invalid WorkItem[" + getUri(f_forWorkItem) + "], field v-wf:forNetElement[" + getUri(f_forNetElement) + "], not found", document, "prepare decision form");
+            return;
+        }
 
         //print("[WORKFLOW][DF1].3");
 
         var transform_link = getUri(net_element['v-wf:completeDecisionTransform']);
-        if (!transform_link) return;
+        if (!transform_link)
+        {
+            set_err_on_indv("invalid net_element[" + getUri(f_forNetElement) + "], field v-wf:completeDecisionTransform[" + transform_link + "], not found", document, "prepare decision form");
+            return;
+        }
+
         var transform = get_individual(ticket, transform_link);
-        if (!transform) return;
+        if (!transform)
+        {
+            set_err_on_indv("invalid net_element[" + getUri(f_forNetElement) + "], field v-wf:completeDecisionTransform[" + transform_link + "], not found", document, "prepare decision form");
+            return;
+        }
 
         //print("[WORKFLOW][DF1].4 document=", toJson(document));
         //print("[WORKFLOW][DF1].4 transform=", toJson(transform));
@@ -80,9 +105,7 @@ function prepare_decision_form(ticket, document)
     {
         print(e.stack);
     }
-
 }
-
 
 /*
  *   обработка рабочего задания
@@ -655,10 +678,9 @@ function prepare_work_item(ticket, document)
         var isCompleted = document['v-wf:isCompleted'];
         if (isCompleted)
         {
-            trace_journal_uri = get_trace_journal(document, _process)
-
             if (isCompleted[0].data === true)
             {
+        	    trace_journal_uri = get_trace_journal(document, _process)
                 if (trace_journal_uri)
                     traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
 
