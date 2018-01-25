@@ -835,11 +835,11 @@ v-ui:LinksTemplate
     }
   }
 
-//# sourceURL=v-ui:LinkTemplate_pre
+//# sourceURL=v-ui:LinksTemplate_pre
 </script>
 <div>
   <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <table class="hidden links-table table table-condensed table-striped">
+  <table class="hidden links-table table table-condensed table-striped table-sortable">
     <thead>
       <tr>
         <th width="30%" about="v-s:Document" property="rdfs:label"></th>
