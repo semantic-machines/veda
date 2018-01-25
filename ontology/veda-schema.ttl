@@ -218,6 +218,8 @@ v-s:DocumentKind
   rdfs:label "Вид документа"@ru ;
   rdfs:label "Document kind"@en ;
 .
+# v-s:hasNormativeDocument
+
 ### veda-workflow
 
 
