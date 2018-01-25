@@ -93,14 +93,11 @@ veda.Module(function AppPresenter(veda) { "use strict";
       individual.present(container, template, mode, extra);
     });
   });
-
   function parse (value) {
-    if ( !isNaN( Date.parse(value) ) )  {
-      return new Date(value);
-    } else if ( !isNaN( parseFloat( value.split(" ").join("").split(",").join(".") ) ) ) {
+    if ( !isNaN( value.split(" ").join("").split(",").join(".") ) ) {
       return parseFloat( value.split(" ").join("").split(",").join(".") );
-    } else if ( !isNaN( parseInt( value.split(" ").join("").split(",").join("."), 10 ) ) ) {
-      return parseInt( value.split(" ").join("").split(",").join("."), 10 );
+    } else if ( !isNaN( Date.parse(value) ) ) {
+      return new Date(value);
     } else if ( value === "true" ) {
       return true;
     } else if ( value === "false" ) {
