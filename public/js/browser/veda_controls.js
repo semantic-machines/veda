@@ -131,10 +131,8 @@
     parser: function (input) {
       if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
         return moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).toDate();
-      } else if ( !isNaN( parseFloat( input.split(" ").join("").split(",").join(".") ) ) ) {
+      } else if ( !isNaN( input.split(" ").join("").split(",").join(".") ) ) {
         return parseFloat( input.split(" ").join("").split(",").join(".") );
-      } else if ( !isNaN( parseInt( input.split(" ").join("").split(",").join("."), 10 ) ) ) {
-        return parseInt( input.split(" ").join("").split(",").join("."), 10 );
       } else if ( input === "true" ) {
         return true;
       } else if ( input === "false" ) {
