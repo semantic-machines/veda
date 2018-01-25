@@ -1339,6 +1339,14 @@ v-fs:AttributiveSearchTemplate
   rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
 <div class="container sheet">
+  <style>
+    td.number {
+      mso-number-format:General;
+    }
+    td.date {
+      mso-number-format:"Short Date";
+    }
+  </style>
   <div class="ribbon-wrapper top-left">
     <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
   </div>
@@ -1433,6 +1441,8 @@ v-fs:AttributiveSearchTemplate
         worksheet: name || 'Worksheet',
         table: table.innerHTML
       };
+      var re = new RegExp("<\/?(a|span|p|div) ?.*?>", "gi");
+      ctx.table = ctx.table.replace(re, "");
       var formatted = format(template, ctx);
       var blob = new Blob([formatted], {type: "text/html;charset=utf-8"});
       return blob;
