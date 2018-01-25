@@ -1732,6 +1732,39 @@ v-fs:AttributiveSearchInlineTemplate
     });
   }
 
+  // Read extra parameters from URL
+  var hash = window.location.hash;
+  var tokens = decodeURI(hash).slice(2).split("/"),
+      uri = tokens[0],
+      extra = tokens[4];
+  if (uri === self.id) {
+    if (extra) {
+      extra = extra.split("&").reduce(function (acc, pair) {
+        var split = pair.split("="),
+            name  = split[0] || "",
+            value = split[1] || "";
+        acc[name] = acc[name] || [];
+        acc[name].push( parse(value) );
+        return acc;
+      }, {});
+    }
+  }
+  function parse (value) {
+    if ( !isNaN( value.split(" ").join("").split(",").join(".") ) ) {
+      return parseFloat( value.split(" ").join("").split(",").join(".") );
+    } else if ( !isNaN( Date.parse(value) ) ) {
+      return new Date(value);
+    } else if ( value === "true" ) {
+      return true;
+    } else if ( value === "false" ) {
+      return false;
+    } else {
+      var individ = new veda.IndividualModel(value);
+      if ( individ.isSync() && !individ.isNew() ) { return individ; }
+    }
+    return value || null;
+  }
+
   // Render search form
   if ( searchBlank ) {
     searchBlank._init();
@@ -1742,6 +1775,13 @@ v-fs:AttributiveSearchInlineTemplate
     template.one("remove", function () {
       searchBlank.object.off("search", formHandler);
     });
+
+    // Populate blank with extra parameters from URL
+    if (extra) {
+      for (var property_uri in extra) {
+        searchBlank.object[property_uri] = extra[property_uri];
+      }
+    }
   } else {
     $(".params", template).remove();
   }
