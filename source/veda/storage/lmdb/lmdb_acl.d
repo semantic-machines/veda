@@ -21,7 +21,7 @@ class LmdbAuthorization : ImplAuthorization
 
     long    count_read_in_transaction;
     long    max_count_read_in_transaction = 10;
-    long    max_time_in_transaction       = 10000;
+    long    max_time_in_transaction       = 200000;
     auto    swA                           = StopWatch();
 
     this(DBMode mode, string _parent_thread_name, long _cache_size, Logger _log)
@@ -63,6 +63,9 @@ class LmdbAuthorization : ImplAuthorization
         rc          = mdb_get(txn_r, dbi, &key, &data);
         if (rc == 0)
             sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
+        else
+            log.trace("ERR! get_in_current_transaction [%s], rc=%s", in_key, fromStringz(mdb_strerror(rc)));
+
 
         count_read_in_transaction++;
         swA.stop();
@@ -74,8 +77,6 @@ class LmdbAuthorization : ImplAuthorization
             if (tA > max_time_in_transaction)
                 log.trace("INFO! reopen transaction, count_read_in_transaction=%d, time_in_transaction=%d", count_read_in_transaction, tA);
 
-            swA.reset();
-            swA.start();
             abort_transaction();
             begin_transaction(false);
         }
@@ -89,28 +90,26 @@ class LmdbAuthorization : ImplAuthorization
         {
             mdb_dbi_close(driver.env, dbi);
             mdb_txn_abort(txn_r);
-            swA.stop();
+            swA.reset();
         }
     }
 
     override bool begin_transaction(bool is_check_for_reload)
     {
-        swA.start();
-
         if (is_check_for_reload)
             acl_check_for_reload(&reopen, log);
 
         rc = mdb_txn_begin(driver.env, null, MDB_RDONLY, &txn_r);
         if (rc == MDB_BAD_RSLOT)
         {
-            log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
+            log.trace("WARN! begin_transaction 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
             for (int i = 0; i < 10 && rc != 0; i++)
             {
                 mdb_txn_abort(txn_r);
 
                 if (i > 3)
                 {
-                    log.trace("WARN! find 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
+                    log.trace("WARN! begin_transaction 1:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
                     core.thread.Thread.sleep(dur!("msecs")(10));
                 }
 
@@ -128,7 +127,7 @@ class LmdbAuthorization : ImplAuthorization
             }
             else if (rc == MDB_BAD_RSLOT)
             {
-                log.trace("WARN! 2: find:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
+                log.trace("WARN! 2: begin_transaction:" ~ text(__LINE__) ~ ",%s) MDB_BAD_RSLOT", driver.path);
                 mdb_txn_abort(txn_r);
 
                 // TODO: sleep ?
@@ -147,9 +146,13 @@ class LmdbAuthorization : ImplAuthorization
 
         rc = mdb_dbi_open(txn_r, null, MDB_CREATE, &dbi);
         if (rc != 0)
+        {
+            log.trace("ERR! 2: begin_transaction:" ~ fromStringz(mdb_strerror(rc)));
             throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
+        }
 
         count_read_in_transaction = 0;
+        swA.start();
 
         return true;
     }
