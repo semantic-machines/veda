@@ -484,21 +484,17 @@ v-ui:StandardButtonsTemplate
   });
 
   // Standart buttons labels change for drafts
-  var Edit = new veda.IndividualModel("v-s:Edit")["rdfs:label"].join(" ");
-  var ContinueEdit = new veda.IndividualModel("v-s:ContinueEdit")["rdfs:label"].join(" ");
-  var DeleteDraft = new veda.IndividualModel("v-s:DeleteDraft")["rdfs:label"].join(" ");
-  var Cancel = new veda.IndividualModel("v-s:Cancel")["rdfs:label"].join(" ");
   function isDraftHandler() {
     if ( individual.isDraft() ) {
       //Rename "Edit" -> "Continue edit"
-      $(".action#edit", template).text(ContinueEdit);
+      $(".action#edit", template).attr("about", "v-s:ContinueEdit");
       //Rename "Cancel" -> "Delete draft"
-      $(".action#cancel", template).text(DeleteDraft);
+      $(".action#cancel", template).attr("about", "v-s:DeleteDraft");
     } else {
       //Rename "Continue edit" -> Edit"
-      $(".action#edit", template).text(Edit);
+      $(".action#edit", template).attr("about", "v-s:Edit");
       //Rename "Delete draft" -> "Cancel"
-      $(".action#cancel", template).text(Cancel);
+      $(".action#cancel", template).attr("about", "v-s:Cancel");
     }
   }
   individual.on("propertyModified afterSave afterReset", isDraftHandler);

@@ -403,6 +403,7 @@ veda.Module(function (veda) { "use strict";
       self.trigger("afterReset");
     }).catch(function (error) {
       console.log("reset individual error", error);
+      self.undraft();
       self.trigger("afterReset");
     });
   };
