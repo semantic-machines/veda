@@ -1405,20 +1405,28 @@ v-fs:AttributiveSearchTemplate
     }
   }, 500);
 
-  // Export to Spreadsheet
-  var tableToExcel = (function () {
+  // Export table to 'blob' or 'xls'
+  var exportTable = (function () {
     var uri = 'data:application/vnd.ms-excel;base64,'
       , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
       , format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
-    return function(table, name) {
+    return function(table, name, exportAs, stripTags) {
       if (!table.nodeType) table = document.getElementById(table);
       var ctx = {
         worksheet: name || 'Worksheet',
         table: table.innerHTML
       };
+      if ( stripTags ) {
+        var re = new RegExp("<\/?(a|span|p|div|button) ?.*?>", "gi");
+        ctx.table = ctx.table.replace(re, "");
+      }
       var formatted = format(template, ctx);
       var blob = new Blob([formatted], {type: "application/vnd.ms-excel;charset=utf-8"});
-      saveAs(blob, name + ".xls");
+      if ( exportAs === "blob" ) {
+        return blob;
+      } else if ( exportAs === "xls" ) {
+        saveAs(blob, name + ".xls");
+      }
     }
   })();
 
@@ -1427,27 +1435,8 @@ v-fs:AttributiveSearchTemplate
     var resultTable = $(".search-result > table").clone();
     resultTable.find(".hidden").remove();
     resultTable = resultTable.get(0);
-    tableToExcel(resultTable, individual["rdfs:label"].join(", "));
+    exportTable(resultTable, individual["rdfs:label"].join(", "), "xls", true);
   });
-
-  // Export to FileRegistry
-  var tableToBlob = (function () {
-    var uri = 'data:text/html;base64,'
-      , template = '<html><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table border="1" cellpadding="5" cellspacing="0">{table}</table></body></html>'
-      , format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
-    return function(table, name) {
-      if (!table.nodeType) table = document.getElementById(table);
-      var ctx = {
-        worksheet: name || 'Worksheet',
-        table: table.innerHTML
-      };
-      var re = new RegExp("<\/?(a|span|p|div) ?.*?>", "gi");
-      ctx.table = ctx.table.replace(re, "");
-      var formatted = format(template, ctx);
-      var blob = new Blob([formatted], {type: "text/html;charset=utf-8"});
-      return blob;
-    }
-  })();
 
   $(".files", template).click(function (e) {
     var btn = $(this);
@@ -1470,7 +1459,7 @@ v-fs:AttributiveSearchTemplate
 
     Promise.all(filesPromises).then(function (files) {
       var zip = new JSZip();
-      var registry = tableToBlob(resultTable, individual["rdfs:label"].join(", "));
+      var registry = exportTable(resultTable, individual["rdfs:label"].join(", "), "blob");
       zip.file("registry.html", registry);
       var folder = zip.folder("files");
       files.forEach(function (file) {
