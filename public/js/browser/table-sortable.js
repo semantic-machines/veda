@@ -39,13 +39,25 @@
         function orderAsc (a, b) {
           var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
           var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
-          return (valueA < valueB ? -1 : 1);
+          if ( valueA < valueB ) {
+            return -1;
+          } else if ( valueA == valueB ) {
+            return 0;
+          } else {
+            return 1;
+          }
         }
 
         function orderDesc (a, b) {
           var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
           var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
-          return (valueA > valueB ? -1 : 1);
+          if ( valueA > valueB ) {
+            return -1;
+          } else if ( valueA == valueB ) {
+            return 0;
+          } else {
+            return 1;
+          }
         }
       });
 
