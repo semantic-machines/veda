@@ -15,7 +15,7 @@
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
-	    "../../lib64/liblmdb.a",
+	    "../../lib64/liblmdb_ro.a",
 	    "../../lib64/libxapiand.a",
         "../../veda/bind/nano.d",
             "../../veda/bind/xapian_d_header.d",

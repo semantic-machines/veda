@@ -23,7 +23,7 @@
             "../../veda/storage/lmdb"
 	],
         "sourceFiles":[
-	    "../../lib64/liblmdb.a",
+	    "../../lib64/liblmdb_ro.a",
 	    "../../lib64/libxapiand.a", 
 	    "../../veda/util/properd.d",
 	    "../../veda/bind/xapian_d_header.d",

@@ -43,7 +43,7 @@ class MdbxAuthorization : ImplAuthorization
         driver.close();
     }
 
-    override string get_in_current_transaction(string in_key)
+    override string get_in_current_transaction(string in_key, int level = 0)
     {
         string sres;
 

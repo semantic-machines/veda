@@ -20,7 +20,7 @@ class LmdbAuthorization : ImplAuthorization
     MDB_dbi dbi;
 
     long    count_read_in_transaction;
-    long    max_count_read_in_transaction = 10;
+    long    max_count_read_in_transaction = 100;
     long    max_time_in_transaction       = 200000;
     auto    swA                           = StopWatch();
 
@@ -54,18 +54,31 @@ class LmdbAuthorization : ImplAuthorization
         driver.close();
     }
 
-    override string get_in_current_transaction(string in_key)
+    override string get_in_current_transaction(string in_key, int level = 0)
     {
         string sres;
 
         key.mv_size = in_key.length;
         key.mv_data = cast(char *)in_key;
         rc          = mdb_get(txn_r, dbi, &key, &data);
+
         if (rc == 0)
             sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
-        else
-            log.trace("ERR! get_in_current_transaction [%s], rc=%s", in_key, fromStringz(mdb_strerror(rc)));
+        else if (rc == MDB_INVALID)
+        {
+            log.trace("ERR! get_in_current_transaction [%s], rc=%s, level=%d", in_key, fromStringz(mdb_strerror(rc)), level);
+            abort_transaction();
+            reopen();
+            begin_transaction(false);
+            core.thread.Thread.sleep(dur!("msecs")(10));
 
+            if (level > 10)
+                throw new Exception(cast(string)("get_in_current_transaction [" ~ in_key ~ ", rc=" ~ fromStringz(mdb_strerror(rc)) ~ ", level=" ~ text(level)));
+
+            return get_in_current_transaction(in_key, level + 1);
+        }
+        //else
+        //    log.trace("ERR! get_in_current_transaction [%s], rc=%s", in_key, fromStringz(mdb_strerror(rc)));
 
         count_read_in_transaction++;
         swA.stop();

@@ -22,7 +22,7 @@
 	],
         "sourceFiles":[
 	    "../../lib64/libxapiand.a", 
-    	    "../../lib64/liblmdb.a",
+    	    "../../lib64/liblmdb_ro.a",
     	    "../../veda/authorization/right_set.d",
             "../../veda/authorization/cache.d",
  	    "../../veda/authorization/authorization.d",
