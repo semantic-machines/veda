@@ -71,6 +71,13 @@ class IndexerProperty
             Names subclasses = context.get_onto().get_sub_classes(forClass.uri);
             //log.trace("forClass = %s", forClass);
 
+            if (indexed_to.length > 0)
+            {
+//                      writeln ("@1 indexed_as_system=", indexed_as_system, ", indexed_as_system[0]=", indexed_as_system[0]);
+                class__2__database[ forClass.uri ]              = indexed_to[ 0 ].get!string;
+                database__2__true[ indexed_to[ 0 ].get!string ] = true;
+            }
+
             if (subclasses.length == 0)
                 subclasses[ "" ] = true;
 
@@ -90,6 +97,15 @@ class IndexerProperty
                     if (trace_msg[ 214 ] == 1)
                         log.trace("SET search indexes, key=%s, uri=%s", key, indv.uri);
                 }
+            }
+
+            foreach (forProperty; forProperties)
+            {
+                string key = forClass.uri ~ forProperty.uri;
+                class_property__2__indiviual[ key ] = indv;
+
+                if (trace_msg[ 214 ] == 1)
+                    log.trace("search indexes, key=%s, uri=%s", key, indv.uri);
             }
         }
     }
