@@ -536,8 +536,9 @@ public class LmdbDriver : KeyValueDB
                 str = cast(string)(data.mv_data[ 0..data.mv_size ]);
             else if (rc == MDB_INVALID)
             {
-                log.trace("ERR! lmdb.find, MDB_INVALID");
+                log.trace("ERR! MDB_INVALID! lmdb.find, key=%s", uri);
                 reopen();
+                core.thread.Thread.sleep(dur!("msecs")(10));
                 return find(op_auth, user_uri, _uri);
             }
 

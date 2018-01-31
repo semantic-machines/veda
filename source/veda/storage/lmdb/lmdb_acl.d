@@ -19,11 +19,6 @@ class LmdbAuthorization : ImplAuthorization
     MDB_txn *txn_r;
     MDB_dbi dbi;
 
-    long    count_read_in_transaction;
-    long    max_count_read_in_transaction = 100;
-    long    max_time_in_transaction       = 200000;
-    auto    swA                           = StopWatch();
-
     this(DBMode mode, string _parent_thread_name, long _cache_size, Logger _log)
     {
         log    = _log;
@@ -66,7 +61,7 @@ class LmdbAuthorization : ImplAuthorization
             sres = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
         else if (rc == MDB_INVALID)
         {
-            log.trace("ERR! get_in_current_transaction [%s], rc=%s, level=%d", in_key, fromStringz(mdb_strerror(rc)), level);
+            log.trace("ERR! MDB_INVALID! get_in_current_transaction [%s], level=%d", in_key, level);
             abort_transaction();
             reopen();
             begin_transaction(false);
@@ -80,20 +75,6 @@ class LmdbAuthorization : ImplAuthorization
         //else
         //    log.trace("ERR! get_in_current_transaction [%s], rc=%s", in_key, fromStringz(mdb_strerror(rc)));
 
-        count_read_in_transaction++;
-        swA.stop();
-        long tA = cast(long)swA.peek().usecs;
-        swA.start();
-
-        if (count_read_in_transaction > max_count_read_in_transaction || tA > max_time_in_transaction)
-        {
-            if (tA > max_time_in_transaction)
-                log.trace("INFO! reopen transaction, count_read_in_transaction=%d, time_in_transaction=%d", count_read_in_transaction, tA);
-
-            abort_transaction();
-            begin_transaction(false);
-        }
-
         return sres;
     }
 
@@ -103,7 +84,6 @@ class LmdbAuthorization : ImplAuthorization
         {
             mdb_dbi_close(driver.env, dbi);
             mdb_txn_abort(txn_r);
-            swA.reset();
         }
     }
 
@@ -163,9 +143,6 @@ class LmdbAuthorization : ImplAuthorization
             log.trace("ERR! 2: begin_transaction:" ~ fromStringz(mdb_strerror(rc)));
             throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
         }
-
-        count_read_in_transaction = 0;
-        swA.start();
 
         return true;
     }
