@@ -1743,28 +1743,27 @@ v-fs:AttributiveSearchInlineTemplate
     if (extra) {
       extra = extra.split("&").reduce(function (acc, pair) {
         var split = pair.split("="),
-            name  = split[0] || "",
+            property_uri = split[0] || "",
             value = split[1] || "";
-        acc[name] = acc[name] || [];
-        acc[name].push( parse(value) );
+        acc[property_uri] = acc[name] || [];
+        acc[property_uri].push( parse(property_uri, value) );
         return acc;
       }, {});
     }
   }
-  function parse (value) {
-    if ( !isNaN( value.split(" ").join("").split(",").join(".") ) ) {
-      return parseFloat( value.split(" ").join("").split(",").join(".") );
-    } else if ( !isNaN( Date.parse(value) ) ) {
-      return new Date(value);
-    } else if ( value === "true" ) {
-      return true;
-    } else if ( value === "false" ) {
-      return false;
-    } else {
-      var individ = new veda.IndividualModel(value);
-      if ( individ.isSync() && !individ.isNew() ) { return individ; }
+  function parse (property_uri, value) {
+    var property = new veda.IndividualModel(property_uri);
+    var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
+    var parsed;
+    switch (range) {
+      case "xsd:string": parsed = value; break;
+      case "xsd:integer":
+      case "xsd:decimal": parsed = parseFloat( value.split(" ").join("").split(",").join(".") ); break;
+      case "xsd:boolean": parsed = value === "true"; break;
+      case "xsd:dateTime": parsed = new Date(value); break;
+      default: parsed = new veda.IndividualModel(value);
     }
-    return value || null;
+    return parsed;
   }
 
   // Render search form
