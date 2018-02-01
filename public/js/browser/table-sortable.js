@@ -10,7 +10,6 @@
       var tbody = table.children("tbody");
       var thead = table.children("thead");
       var ths = thead.find("tr:last-child > th");
-      var rows = tbody.children();
       table.addClass("table-sortable-done");
 
       ths.each( function () {
@@ -18,6 +17,7 @@
         var index = th.index();
 
         th.click(function (e) {
+          var rows = tbody.children();
           e.preventDefault();
           e.stopPropagation();
           var $this = $(this);
@@ -39,6 +39,13 @@
         function orderAsc (a, b) {
           var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
           var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
+          if ( !isNaN(valueA) ) {
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+          } else if ( !isNaN( Date.parse( valueA.split(".").reverse().join("-") ) ) ) {
+            valueA = Date.parse( valueA.split(".").reverse().join("-") );
+            valueB = Date.parse( valueB.split(".").reverse().join("-") );
+          }
           if ( valueA < valueB ) {
             return -1;
           } else if ( valueA == valueB ) {
@@ -51,6 +58,13 @@
         function orderDesc (a, b) {
           var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
           var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
+          if ( !isNaN(valueA) ) {
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+          } else if ( !isNaN( Date.parse( valueA.split(".").reverse().join("-") ) ) ) {
+            valueA = Date.parse( valueA.split(".").reverse().join("-") );
+            valueB = Date.parse( valueB.split(".").reverse().join("-") );
+          }
           if ( valueA > valueB ) {
             return -1;
           } else if ( valueA == valueB ) {
