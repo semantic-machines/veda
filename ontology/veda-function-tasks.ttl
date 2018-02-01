@@ -473,11 +473,22 @@ v-ft:ActorFilterTemplate
     individual[actor_property] = [veda.user];
   }
 
-  var actors_uris = [ veda.user.id ];
   var appointments_uris = query({
     ticket: veda.ticket,
     query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "')"
   }).result;
+
+  var hasDeletedAppointments = query({
+    ticket: veda.ticket,
+    query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "' && 'v-s:deleted' == true )"
+  }).result.length;
+
+  var actors_uris;
+  if (appointments_uris.length === 1 && !hasDeletedAppointments) {
+    actors_uris = [];
+  } else {
+    actors_uris = [ veda.user.id ];
+  }
 
   var appointments = get_individuals(veda.ticket, appointments_uris);
   appointments.map(function (app) { actors_uris.push( app["v-s:occupation"][0].data ); });
