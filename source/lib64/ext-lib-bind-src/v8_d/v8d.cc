@@ -884,6 +884,8 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     int        sort_len      = 0;
     int        databases_len = 0;
+    int        top           = 100000;
+    int        limit         = 100000;
 
     if (args.Length() > 2)
     {
@@ -902,11 +904,18 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
                 cdatabases    = ToCString(_databases);
                 databases_len = _databases.length();
             }
+
+            if (args.Length() > 4)
+            {
+                top = args[ 4 ]->ToObject()->Uint32Value();
+
+                if (args.Length() > 5)
+                {
+                    limit = args[ 5 ]->ToObject()->Uint32Value();
+                }
+            }
         }
     }
-
-    int                   top   = 100000;
-    int                   limit = 100000;
 
     _Buff                 *res  = query(cticket, _ticket.length(), cquery, _query.length(), csort, sort_len, cdatabases, databases_len, top, limit);
     v8::Handle<v8::Array> arr_1 = v8::Array::New(isolate, 0);
