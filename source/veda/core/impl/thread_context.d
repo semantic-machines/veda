@@ -93,7 +93,7 @@ class PThreadContext : Context
                 char *buf = cast(char *)0;
                 int  bytes;
 
-                bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+                bytes = nn_send(sock, cast(char *)req, req.length, 0);
                 //log.trace("N_CHANNEL BINOBJ send [%d](%s)", req.length, req);
                 bytes = nn_recv(sock, &buf, NN_MSG, 0);
                 if (bytes > 0)
