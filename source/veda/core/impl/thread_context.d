@@ -718,7 +718,7 @@ class PThreadContext : Context
 
                 if (rc == ResultCode.No_Content)
                 {
-                    this.get_logger().trace("WARN!: Rejected attempt to save an empty object: %s", item.new_indv);
+                    this.get_logger().trace("WARN!: Rejected attempt to store an empty object: %s", item.new_indv);
                 }
 
                 if (rc != ResultCode.OK && rc != ResultCode.No_Content)

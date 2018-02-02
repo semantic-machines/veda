@@ -354,7 +354,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
 
     long       op_id;
     ResultCode rc =
-        ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
+        ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
                                      -1, 0,
                                      OptFreeze.NONE,
                                      op_id);
@@ -731,7 +731,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
             long op_id;
-            ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
+            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
                                          -1, 0, OptFreeze.NONE,
                                          op_id);
             log.trace("systicket [%s] was created", ticket.id);
@@ -786,7 +786,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         if (items.length > 0)
         {
-            rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+            rc = indv_storage_thread.save(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
 
             log.trace("commit: rc=%s", rc);
 
@@ -978,13 +978,13 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                    indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
                                                res.op_id);
 
                 if (res.result == ResultCode.OK)
                 {
                     res.result =
-                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                        indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
                                                    res.op_id);
                 }
             }
@@ -1020,7 +1020,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                    indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
                                                res.op_id);
             }
             else
