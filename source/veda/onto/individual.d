@@ -43,10 +43,18 @@ public struct Individual
 
     int deserialize(string bin)
     {
-        return cbor2individual(&this, bin);
+    	if ((cast(ubyte[])bin)[0] == 0xFF)
+    	{
+    		// this MSGPACK 
+	        return msgpack2individual(this, bin);
+    	}
+    	else
+    	{    	
+	        return cbor2individual(&this, bin);
+    	}
     }
 
-    string serialize()
+    string serialize_to_cbor()
     {
         return individual2cbor(&this);
     }

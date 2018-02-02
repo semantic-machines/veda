@@ -350,7 +350,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
     // store ticket
-    string     ss_as_binobj = new_ticket.serialize();
+    string     ss_as_binobj = new_ticket.serialize_to_cbor();
 
     long       op_id;
     ResultCode rc =
@@ -959,7 +959,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         {
             prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
-            new_state = prev_indv.serialize();
+            new_state = prev_indv.serialize_to_cbor();
 
             if (new_state.length > max_size_of_individual)
             {
@@ -1005,7 +1005,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
-            new_state = indv.serialize();
+            new_state = indv.serialize_to_cbor();
 
             if (new_state.length > max_size_of_individual)
             {

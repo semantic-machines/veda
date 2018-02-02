@@ -766,13 +766,13 @@ class PThreadContext : Context
                     iti.addResource("update_counter", Resource(DataType.Integer, ti.update_counter));
                     iti.addResource("event_id", Resource(DataType.String, ti.event_id));
 
-                    string iti_binobj = iti.serialize();
+                    string iti_binobj = iti.serialize_to_cbor();
                     items ~= Resource(iti_binobj);
                 }
 
                 imm.setResources("items", items);
 
-                string binobj = imm.serialize();
+                string binobj = imm.serialize_to_cbor();
 
                 //log.trace("[%s] commit: (isModule), req=(%s)", name, binobj);
 

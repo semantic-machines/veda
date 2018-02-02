@@ -98,11 +98,15 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
     }
 }
 
+ubyte[] magic_header = [0xFF]; 
+
 public string individual2msgpack(ref Individual in_obj)
 {
-    ubyte[] buff = write_individual(in_obj);
-
-    return cast(string)buff[ 0..buff.length ].dup;
+	// this concatinate created copy ?
+	return cast(string) (magic_header ~ write_individual(in_obj));
+	
+    //ubyte[] buff = write_individual(in_obj);
+    //return cast(string)buff[ 0..buff.length ].dup;
 }
 
 /////////////////////////////////////////////////////////////////////
