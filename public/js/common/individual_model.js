@@ -588,6 +588,7 @@ veda.Module(function (veda) { "use strict";
     individual["@"] = veda.Util.genUri();
     var clone = new veda.IndividualModel(individual);
     clone.isNew(true);
+    clone.isSync(false);
     return clone;
   };
 
