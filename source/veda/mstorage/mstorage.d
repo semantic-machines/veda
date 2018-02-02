@@ -960,6 +960,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
             new_state = prev_indv.serialize_to_cbor();
+//            new_state = prev_indv.serialize_to_msgpack();
 
             if (new_state.length > max_size_of_individual)
             {
@@ -1006,6 +1007,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
             new_state = indv.serialize_to_cbor();
+//            new_state = indv.serialize_to_msgpack();
 
             if (new_state.length > max_size_of_individual)
             {
