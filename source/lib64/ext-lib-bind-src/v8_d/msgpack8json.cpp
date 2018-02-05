@@ -1,6 +1,8 @@
 #define _GLIBCXX_USE_CXX11_ABI    0
 
+#include <iostream>
 #include <algorithm>
+#include <msgpack.hpp>
 #include "util8json.h"
 #include "msgpack8json.h"
 
@@ -11,17 +13,242 @@ using namespace v8;
 
 Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
 {
-    Handle<Object> js_map = Object::New(isolate);
+    Handle<Object>    js_map = Object::New(isolate);
 
-    Handle<Value>  f_data = String::NewFromUtf8(isolate, "data");
-    Handle<Value>  f_lang = String::NewFromUtf8(isolate, "lang");
-    Handle<Value>  f_type = String::NewFromUtf8(isolate, "type");
-    const char     *src   = in_str.c_str();
+    Handle<Value>     f_data = String::NewFromUtf8(isolate, "data");
+    Handle<Value>     f_lang = String::NewFromUtf8(isolate, "lang");
+    Handle<Value>     f_type = String::NewFromUtf8(isolate, "type");
+    const char        *src   = in_str.c_str();
 
-    //ElementHeader  header;
-    Element        element;
+    Element           element;
 
-    int            size = in_str.size();
+    msgpack::unpacker unpk;
+
+    unpk.reserve_buffer(in_str.length());
+    memcpy(unpk.buffer(), in_str.c_str(), in_str.length());
+    unpk.buffer_consumed(in_str.length());
+    msgpack::object_handle result;
+    unpk.next(result);
+    msgpack::object        glob_obj(result.get());
+    msgpack::object_array  obj_arr = glob_obj.via.array;
+
+    if (obj_arr.size != 2)
+        return js_map;
+
+    msgpack::object *obj_uri = obj_arr.ptr;
+    msgpack::object *obj_map = obj_arr.ptr + 1;
+
+    string          uri = string(obj_uri->via.str.ptr, obj_uri->via.str.size);
+
+    js_map->Set(String::NewFromUtf8(isolate, "@"), String::NewFromUtf8(isolate, uri.c_str()));
+
+    msgpack::object_map map = obj_map->via.map;
+    // std::cerr << "MAP_SIZE " << map.size << endl;
+
+    for (int i = 0; i < map.size; i++)
+    {
+        // std::cerr << "\tKEY "  << *obj << endl;
+        // std::cerr << "\tKEY: " << pair->key << " VALUE: " << pair->val << endl;
+        msgpack::object_kv    pair     = map.ptr[ i ];
+        msgpack::object       key      = pair.key;
+        msgpack::object_array res_objs = pair.val.via.array;
+        if (key.type != msgpack::type::STR)
+        {
+            std::cerr << "@ERR! PREDICATE IS NOT STRING!" << endl;
+            return Object::New(isolate);
+        }
+
+        std::string           predicate(key.via.str.ptr, key.via.str.size);
+        Handle<Value>         predicate_v8 = String::NewFromUtf8(isolate, predicate.c_str());
+        v8::Handle<v8::Array> resources_v8 = v8::Array::New(isolate, 1);
+
+        // std::cerr << "SIZE " << res_objs.size << endl;
+        for (int j = 0; j < res_objs.size; j++)
+        {
+            msgpack::object value = res_objs.ptr[ j ];
+
+            switch (value.type)
+            {
+            case msgpack::type::ARRAY:
+                {
+                    // std::cerr << "is array" << endl;
+                    // std::cerr << "\t\t\tTRY ARR SIZE ";
+                    msgpack::object_array res_arr = value.via.array;
+                    // std::cerr << "ARR SIZE " << res_arr.size << endl;
+                    if (res_arr.size == 2)
+                    {
+                        long type = res_arr.ptr[ 0 ].via.u64;
+
+                        if (type == _Datetime)
+                        {
+                            long           value;
+
+                            Handle<Object> rr_v8 = Object::New(isolate);
+
+                            rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Datetime"));
+
+                            if (res_arr.ptr[ 1 ].type == msgpack::type::POSITIVE_INTEGER)
+                                rr_v8->Set(f_data, v8::Date::New(isolate, res_arr.ptr[ 1 ].via.u64 * 1000));
+                            else
+                                rr_v8->Set(f_data, v8::Date::New(isolate, res_arr.ptr[ 1 ].via.i64 * 1000));
+
+                            resources_v8->Set(j, rr_v8);
+                        }
+                        else if (type == _String)
+                        {
+                            Handle<Object> rr_v8 = Object::New(isolate);
+
+                            // std::cerr << "string" << endl;
+                            rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
+
+                            if (res_arr.ptr[ 1 ].type == msgpack::type::STR)
+                            {
+                                string val = string(res_arr.ptr[ 1 ].via.str.ptr, res_arr.ptr[ 1 ].via.str.size);
+                                rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
+                            }
+                            else if (res_arr.ptr[ 1 ].type == msgpack::type::NIL)
+                            {
+                                string val = "";
+                                rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
+                            }
+                            else
+                            {
+                                std::cerr << "@ERR! NOT A STRING IN RESOURCE ARRAY 2" << endl;
+                                return Object::New(isolate);
+                            }
+
+                            resources_v8->Set(j, rr_v8);
+                        }
+                        else
+                        {
+                            std::cerr << "@1" << endl;
+                            return Object::New(isolate);
+                        }
+                    }
+                    else if (res_arr.size == 3)
+                    {
+                        long type = res_arr.ptr[ 0 ].via.u64;
+                        // std::cerr << "TYPE " << type << endl;
+                        if (type == _Decimal)
+                        {
+                            long mantissa, exponent;
+                            // std::cerr << "is decimal" << endl << "\t\t\t\tTRY MANTISSA";
+                            if (res_arr.ptr[ 1 ].type == msgpack::type::POSITIVE_INTEGER)
+                                mantissa = res_arr.ptr[ 1 ].via.u64;
+                            else
+                                mantissa = res_arr.ptr[ 1 ].via.i64;
+                            // std::cerr << mantissa << endl << "\t\t\t\tTRY EXP";
+                            if (res_arr.ptr[ 2 ].type == msgpack::type::POSITIVE_INTEGER)
+                                exponent = res_arr.ptr[ 2 ].via.u64;
+                            else
+                                exponent = res_arr.ptr[ 2 ].via.i64;
+
+                            string ss = exponent_and_mantissa_to_string(mantissa, exponent);
+
+                            // std::cerr << exponent << endl;
+                            Handle<Object> rr_v8 = Object::New(isolate);
+                            rr_v8->Set(f_data, String::NewFromUtf8(isolate, ss.c_str()));
+                            rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Decimal"));
+                            resources_v8->Set(j, rr_v8);
+                        }
+                        else if (type == _String)
+                        {
+                            Handle<Object> rr_v8 = Object::New(isolate);
+
+                            rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
+
+                            if (res_arr.ptr[ 1 ].type == msgpack::type::STR)
+                            {
+                                string val = string(res_arr.ptr[ 1 ].via.str.ptr, res_arr.ptr[ 1 ].via.str.size);
+                                rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
+                            }
+                            else if (res_arr.ptr[ 1 ].type == msgpack::type::NIL)
+                            {
+                                string val = "";
+                                rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
+                            }
+                            else
+                            {
+                                std::cerr << "@ERR! NOT A STRING IN RESOURCE ARRAY 2" << endl;
+                                return Object::New(isolate);
+                            }
+
+                            long lang = res_arr.ptr[ 2 ].via.u64;
+
+                            if (lang == LANG_RU)
+                                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "RU"));
+                            else if (lang == LANG_EN)
+                                rr_v8->Set(f_lang, String::NewFromUtf8(isolate, "EN"));
+
+                            resources_v8->Set(j, rr_v8);
+                        }
+                        else
+                        {
+                            std::cerr << "@2" << endl;
+                            return Object::New(isolate);
+                        }
+                    }
+                    else
+                    {
+                        std::cerr << "@3" << endl;
+                        return Object::New(isolate);
+                    }
+                    break;
+                }
+
+            case msgpack::type::STR:
+                {
+                    Handle<Object> rr_v8 = Object::New(isolate);
+                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Uri"));
+
+                    string val = string(string(value.via.str.ptr, value.via.str.size));
+                    rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
+
+                    resources_v8->Set(j, rr_v8);
+
+                    break;
+                }
+
+            case msgpack::type::POSITIVE_INTEGER:
+                {
+                    Handle<Object> rr_v8 = Object::New(isolate);
+
+                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Integer"));
+                    rr_v8->Set(f_data, v8::Integer::New(isolate, value.via.u64));
+
+                    break;
+                }
+
+            case msgpack::type::NEGATIVE_INTEGER:
+                {
+                    Handle<Object> rr_v8 = Object::New(isolate);
+                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Integer"));
+                    rr_v8->Set(f_data, v8::Integer::New(isolate, value.via.i64));
+                    resources_v8->Set(j, rr_v8);
+
+                    break;
+                }
+
+            case msgpack::type::BOOLEAN:
+                {
+                    Handle<Object> rr_v8 = Object::New(isolate);
+
+                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Boolean"));
+                    rr_v8->Set(f_data, v8::Boolean::New(isolate, value.via.boolean));
+
+                    resources_v8->Set(j, rr_v8);
+
+                    break;
+                }
+
+            default:
+                {
+                    std::cerr << "@ERR! UNSUPPORTED RESOURCE TYPE " << value.type << endl;
+                    return Object::New(isolate);
+                }
+            }
+        }
+    }
 
     return js_map;
 }
