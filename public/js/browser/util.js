@@ -61,7 +61,7 @@ veda.Module(function Util(veda) { "use strict";
       });
     }
     function processResult(result) {
-      var portion = result.splice(-delta);
+      var portion = result.splice(0, delta);
       portion.forEach( fn );
       if ( (limit - result.length) / limit - processingProgress >= 0.05 ) {
         processingProgress = (limit - result.length) / limit;
