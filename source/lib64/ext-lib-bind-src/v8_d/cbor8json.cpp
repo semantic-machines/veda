@@ -1,22 +1,13 @@
 #define _GLIBCXX_USE_CXX11_ABI    0
 
-#include <assert.h>
-#include <iostream>
-#include <string>
-#include <string.h>
-#include <math.h>
-#include <sstream>
-#include <limits>
-#include <iomanip>
-#include <cstdlib>
-#include <cassert>
-#include <cstddef>
 #include <algorithm>
 #include "util8json.h"
 #include "cbor8json.h"
 
 using namespace std;
 using namespace v8;
+
+//  CBOR -> JSON
 
 Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
 {
@@ -269,9 +260,11 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
     return js_map;
 }
 
-void prepare_js_object(Local<Object> resource_obj, Handle<Value>         f_data, Handle<Value>         f_type,
-                       Handle<Value>         f_lang,
-                       std::vector<char> &ou)
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  JSON -> CBOR
+
+void js_el_2_cbor_el(Local<Object> resource_obj, Handle<Value> f_data, Handle<Value> f_type, Handle<Value> f_lang, std::vector<char> &ou)
 {
     v8::Handle<v8::Array> resource_keys = resource_obj->GetPropertyNames();
     Local<Value>          v_data        = resource_obj->Get(f_data);
@@ -403,7 +396,6 @@ void prepare_js_object(Local<Object> resource_obj, Handle<Value>         f_data,
 void jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 {
     //cerr <<"!!START LOGGING!!" << endl;
-
     //jsobject_log(value);
 
     //cerr << "@IS OBJECT " << value->IsObject() << endl;
@@ -441,7 +433,7 @@ void jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 //              {}
                 write_type_value(ARRAY, 1, ou);
                 Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
+                js_el_2_cbor_el(resource_obj, f_data, f_type, f_lang, ou);
             }
             else
             {
@@ -474,7 +466,7 @@ void jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
                     js_value = resources_in_arr->Get(0);
 
                     Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                    prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
+                    js_el_2_cbor_el(resource_obj, f_data, f_type, f_lang, ou);
                 }
                 else
                 {
@@ -491,7 +483,7 @@ void jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 //             [ {} ]
                     //cerr << "[ {} ]" << endl;
                     Local<Object> resource_obj = Local<Object>::Cast(js_value);
-                    prepare_js_object(resource_obj, f_data, f_type, f_lang, ou);
+                    js_el_2_cbor_el(resource_obj, f_data, f_type, f_lang, ou);
                 }
                 else
                 {
@@ -506,5 +498,3 @@ void jsobject2cbor(Local<Value> value, Isolate *isolate, std::vector<char> &ou)
 
     //cerr << "!!END LOGGING!!" << endl;
 }
-
-
