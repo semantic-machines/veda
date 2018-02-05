@@ -266,11 +266,10 @@ Handle<Value> cbor2jsobject(Isolate *isolate, string in_str)
 
 void js_el_2_cbor_el(Local<Object> resource_obj, Handle<Value> f_data, Handle<Value> f_type, Handle<Value> f_lang, std::vector<char> &ou)
 {
-    v8::Handle<v8::Array> resource_keys = resource_obj->GetPropertyNames();
-    Local<Value>          v_data        = resource_obj->Get(f_data);
-    Local<Value>          v_type        = resource_obj->Get(f_type);
+    Local<Value> v_data = resource_obj->Get(f_data);
+    Local<Value> v_type = resource_obj->Get(f_type);
 
-    int                   type = 2;
+    int          type = 2;
 
     if (v_type->IsString())
     {
