@@ -311,7 +311,7 @@ veda.Module(function Backend(veda) { "use strict";
         "databases" : (isObj ? arg.databases : databases) || null,
         "reopen" : (isObj ? arg.reopen : reopen) || false,
         "top" : (isObj ? arg.top : top) || 0,
-        "limit" : (isObj ? arg.limit : limit) || 10000,
+        "limit" : (isObj ? arg.limit : limit) || 100000,
         "from"  : (isObj ? arg.from : from) || 0
       }
     };
