@@ -13,7 +13,15 @@ veda.Module(function Util(veda) { "use strict";
     }
   };
 
-  veda.Util.processQuery = function (q, limit, delta, pause, fn) {
+  veda.Util.processQuery = function (q, sort, limit, delta, pause, fn) {
+    if (typeof q === "object") {
+      sort  = q.sort;
+      limit = q.limit;
+      delta = q.delta;
+      pause = q.pause;
+      fn    = q.fn;
+      q     = q.query;
+    }
     console.log((new Date()).toISOString(), "Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
     var result = [], append = [].push, fetchingProgress = 0, processingProgress = 0;
     console.time("Fetching total");
@@ -25,10 +33,10 @@ veda.Module(function Util(veda) { "use strict";
       query({
         ticket: veda.ticket,
         query: q,
-        sort: "'v-s:created' desc",
+        sort: sort || "'v-s:created' desc",
         from: from,
         top: delta,
-        //limit: limit,
+        limit: limit,
         async: true
       }).then(function (query_result) {
         var cursor = query_result.cursor;
