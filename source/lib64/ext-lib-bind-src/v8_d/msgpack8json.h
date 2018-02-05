@@ -1,9 +1,8 @@
-#ifndef CBOR8JSON_H
-#define CBOR8JSON_H
+#ifndef MSGPACK8JSON_H
+#define MSGPACK8JSON_H
 
 #include "v8.h"
-#include "cbor.h"
-#include "util8json.h"
+#include "msgpuck.h"
 
 using namespace std;
 
