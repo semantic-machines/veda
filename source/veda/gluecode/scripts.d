@@ -259,12 +259,12 @@ class ScriptProcess : VedaModule
         {
             auto mi = context.get_storage().get_info(MODULE.fulltext_indexer);
 
-            log.trace("wait for the ft-index to finish subject.op_id=%d ft.committed_op_id=%d ...", si.op_id, mi.committed_op_id);
+            log.trace("wait for the ft-index to finish storage.op_id=%d ft.committed_op_id=%d ...", si.op_id, mi.committed_op_id);
 
             if (mi.committed_op_id >= si.op_id - 1)
                 break;
 
-            core.thread.Thread.sleep(dur!("msecs")(30));
+            core.thread.Thread.sleep(dur!("msecs")(1000));
         }
 
         vql.reopen_db();
