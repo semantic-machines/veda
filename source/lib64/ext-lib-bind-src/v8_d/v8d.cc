@@ -414,18 +414,20 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         //std::cerr << "@c #get_individual uri=" << cstr << std::endl;
 
         Handle<Value> oo;
-	if (data[0] == 0xFF)
-	{
-	    if (data.size () < 2)
-	    {
-	        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "invalid msgpack, size < 2"));
-		return;
-	    }
-    	    oo = msgpack2jsobject(isolate, data.substr (1, data.size ()));
-	}
-	else
-    	    oo = cbor2jsobject(isolate, data);
-        // jsobject_log(oo, &individual, NULL, "");
+        if (data[ 0 ] == (char)0xFF)
+        {
+            //std::cerr << "@c MSGPACK" << std::endl;
+            if (data.size() < 2)
+            {
+                isolate->ThrowException(v8::String::NewFromUtf8(isolate, "invalid msgpack, size < 2"));
+                return;
+            }
+            oo = msgpack2jsobject(isolate, data.substr(1, data.size()));
+        }
+        else
+            oo = cbor2jsobject(isolate, data);
+
+        //jsobject_log(oo);
 
         //std::cerr << "@c #get_individual #E" << std::endl;
         args.GetReturnValue().Set(oo);

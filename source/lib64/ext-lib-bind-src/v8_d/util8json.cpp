@@ -173,11 +173,9 @@ jsobject_log(Local<Value> value)
         }
     }
 
-    cerr << "!!END LOGGING!!" << endl;
+    cerr << "!!END LOGGING!!\n" << endl;
     return true;
 }
-
-bool jsobject_log(Local<Value> value);
 
 template < typename T > std::string to_string( const T& n )
 {
