@@ -1219,8 +1219,8 @@
 
   // FILE UPLOAD CONTROL
   function uploadFile(file, acceptedFileType, success, progress) {
+    var notify = new veda.Notify();
     if (file instanceof File) {
-      var notify = new veda.Notify();
       var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
       if (acceptedFileType && acceptedFileType.split(",").indexOf(ext) < 0) {
         return notify("danger", {message: "Тип файла не разрешен (" + acceptedFileType + ")"});
@@ -1235,9 +1235,16 @@
     xhr.open("POST", url, true);
     xhr.upload.onprogress = progress;
     xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        success(file, path, uri);
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          success(file, path, uri);
+        } else {
+          notify("danger", {code: xhr.status, message: "File upload error"});
+        }
       }
+    };
+    xhr.onerror = function() {
+      notify("danger", {message: "File upload error"});
     };
     fd.append("path", path);
     fd.append("uri", uri);
