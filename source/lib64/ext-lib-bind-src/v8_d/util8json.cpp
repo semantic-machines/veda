@@ -177,4 +177,38 @@ jsobject_log(Local<Value> value)
     return true;
 }
 
+bool jsobject_log(Local<Value> value);
+
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+    
+int to_int(char const *s)
+{
+     if ( s == NULL || *s == '\0' )
+        throw std::invalid_argument("null or empty string argument");
+
+     bool negate = (s[0] == '-');
+     if ( *s == '+' || *s == '-' ) 
+         ++s;
+
+     if ( *s == '\0')
+        throw std::invalid_argument("sign character only.");
+
+     int result = 0;
+     while(*s)
+     {
+          if ( *s >= '0' && *s <= '9' )
+          {
+              result = result * 10  - (*s - '0');  //assume negative number
+          }
+          else
+              throw std::invalid_argument("invalid input string");
+          ++s;
+     }
+     return negate ? result : -result; //-result is positive!
+} 
 

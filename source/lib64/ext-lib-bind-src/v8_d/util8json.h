@@ -1,6 +1,8 @@
 #ifndef UTIL8JSON_H_INCLUDED
 #define UTIL8JSON_H_INCLUDED
 
+#include <string>
+#include <sstream>
 #include "v8.h"
 
 using namespace std;
@@ -34,9 +36,9 @@ typedef enum ResourceType
 } tResourceType;
 
 void double_to_mantissa_exponent(double inp, int64_t *mantissa, int64_t *exponent);
-
 string exponent_and_mantissa_to_string(long decimal_mantissa_data, long decimal_exponent_data);
-
 bool jsobject_log(Local<Value> value);
+template < typename T > std::string to_string( const T& n );   
+int to_int(char const *s);
 
 #endif

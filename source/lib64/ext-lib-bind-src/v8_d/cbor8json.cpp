@@ -340,12 +340,12 @@ void js_el_2_cbor_el(Local<Object> resource_obj, Handle<Value> f_data, Handle<Va
 
                 size_t sfp = rr.length();
 
-                decimal_mantissa_data = stol(ll + rr);
+                decimal_mantissa_data = to_int((ll + rr).c_str());
                 decimal_exponent_data = -sfp;
             }
             else
             {
-                decimal_mantissa_data = stol(num);
+                decimal_mantissa_data = to_int(num.c_str());
                 decimal_exponent_data = 0;
             }
         }
