@@ -348,6 +348,8 @@ void js_el_2_cbor_el(Local<Object> resource_obj, Handle<Value> f_data, Handle<Va
                 decimal_mantissa_data = to_int(num.c_str());
                 decimal_exponent_data = 0;
             }
+            //std::cerr << "@jsobject2individual decimal_mantissa_data=" << decimal_mantissa_data << std::endl;
+            //std::cerr << "@jsobject2individual decimal_exponent_data=" << decimal_exponent_data << std::endl;
         }
         else
         {

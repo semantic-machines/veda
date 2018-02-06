@@ -179,14 +179,14 @@ jsobject_log(Local<Value> value)
 
 bool jsobject_log(Local<Value> value);
 
-    template < typename T > std::string to_string( const T& n )
-    {
+template < typename T > std::string to_string( const T& n )
+{
         std::ostringstream stm ;
         stm << n ;
         return stm.str() ;
-    }
+}
     
-int to_int(char const *s)
+int64_t to_int(char const *s)
 {
      if ( s == NULL || *s == '\0' )
         throw std::invalid_argument("null or empty string argument");
@@ -198,7 +198,7 @@ int to_int(char const *s)
      if ( *s == '\0')
         throw std::invalid_argument("sign character only.");
 
-     int result = 0;
+     int64_t result = 0;
      while(*s)
      {
           if ( *s >= '0' && *s <= '9' )
