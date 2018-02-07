@@ -685,7 +685,6 @@ v-s:DirectoryTemplate
 
 v-s:Directory_Event
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
   v-s:triggerByType v-s:Directory;
   v-s:preventByType v-s:Version;
   rdfs:label "Обработчик каталогов" ;
