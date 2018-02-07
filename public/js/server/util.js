@@ -337,7 +337,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
       'rdf:type'     : newUri('v-s:Membership'),
       'v-s:memberOf' : newUri(actualId),
       'v-s:resource' : newUri(versionId),
-      'rdfs:comment' : newStr('создано cfg:Event_3'),
+      'rdfs:comment' : newStr('создано: server script create_version ()'),
       'v-s:canRead'  : newBool(true)
     };
     put_individual (ticket, membership, _event_id);
