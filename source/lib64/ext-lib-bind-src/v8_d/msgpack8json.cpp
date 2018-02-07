@@ -445,6 +445,7 @@ char* js_el_2_msgpack_el(Local<Object> resource_obj, Handle<Value> f_data, Handl
     Handle<Value>                     f_lang          = String::NewFromUtf8(isolate, "lang");
 
     uint32_t                          length = individual_keys->Length();
+	std::string uri;
 
     for (uint32_t i = 0; i < length; i++)
     {
@@ -454,15 +455,14 @@ char* js_el_2_msgpack_el(Local<Object> resource_obj, Handle<Value> f_data, Handl
         Local<Value>         js_value = obj->Get(js_key);
         if (resource_name == "@")
         {
-            std::string uri = std::string(*v8::String::Utf8Value(js_value));
-
-			bptr = mp_encode_array(bptr, 2);
-			bptr = mp_encode_str(bptr, uri.c_str(), uri.size ());			
-			bptr = mp_encode_map(bptr, length);			
-						
+            uri = std::string(*v8::String::Utf8Value(js_value));						
             break;
         }
     }
+
+	bptr = mp_encode_array(bptr, 2);
+	bptr = mp_encode_str(bptr, uri.c_str(), uri.size ());			
+	bptr = mp_encode_map(bptr, length);			
 
     for (uint32_t i = 0; i < length; i++)
     {
