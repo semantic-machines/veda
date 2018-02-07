@@ -30,7 +30,7 @@ private ubyte[] write_individual(ref Individual ii)
     foreach (key, resources; ii.resources)
         write_resources(key, resources, packer);
 
-    // writefln("PACKED %s", cast(string)packer.stream.data);
+    // writefln("PACKED [%s]", cast(string)packer.stream.data);
     // writeln("PACK END");
 
     return packer.stream.data;

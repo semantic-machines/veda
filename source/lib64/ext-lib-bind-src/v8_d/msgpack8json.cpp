@@ -25,35 +25,43 @@ Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
     Handle<Value>  f_lang = String::NewFromUtf8(isolate, "lang");
     Handle<Value>  f_type = String::NewFromUtf8(isolate, "type");
     const char     *binobj     = in_str.c_str();
-    //std::cerr << "SRC [" << in_str << "]" << endl;
+    //std::cerr << "MSGPACK->JS SRC [" << in_str << "]" << endl;
 
     Element        element;
+	string uri;
 
     uint32_t size = mp_decode_array(&binobj);
 
     if (size != 2)
         return js_map;
 
-    sval = mp_decode_str(&binobj, &sval_len);
-    string uri = string(sval, sval_len);
-    std::cerr << "URI " << uri << endl;
+    type = mp_typeof(*binobj);
+	if (type == MP_NIL)
+		mp_decode_nil(&binobj);				
+	else
+	{	
+		sval = mp_decode_str(&binobj, &sval_len);		
+		uri = string(sval, sval_len);
+	}
+		
+    std::cerr << "MSGPACK->JS URI [" << uri << "]" << endl;
 
     js_map->Set(String::NewFromUtf8(isolate, "@"), String::NewFromUtf8(isolate, uri.c_str()));
 
     uint32_t map_size = mp_decode_array(&binobj);
-    std::cerr << "MAP_SIZE " << map_size << endl;
+    std::cerr << "MSGPACK->JS MAP_SIZE " << map_size << endl;
 
     for (int i = 0; i < map_size; i++)
     {
         type = mp_typeof(*binobj);
         if (type != MP_STR)
         {
-            std::cerr << "@ERR! PREDICATE IS NOT STRING!" << endl;
+            std::cerr << "@ERR! MSGPACK->JS PREDICATE IS NOT STRING!" << endl;
             return Object::New(isolate);
         }
 
         sval = mp_decode_str(&binobj, &sval_len);
-		std::cerr << "TYPE " << type << endl;
+		std::cerr << "MSGPACK->JS TYPE " << type << endl;
 
         uint32_t              values_size = mp_decode_array(&binobj);
 
@@ -61,7 +69,7 @@ Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
         Handle<Value>         predicate_v8 = String::NewFromUtf8(isolate, predicate.c_str());
         v8::Handle<v8::Array> resources_v8 = v8::Array::New(isolate, 1);
 
-        std::cerr << "values_size " << values_size << endl;
+        std::cerr << "MSGPACK->JS values_size " << values_size << endl;
         for (int j = 0; j < values_size; j++)
         {
             type = mp_typeof(*binobj);
@@ -86,7 +94,15 @@ Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
 
                             rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Datetime"));
 
-                            uint64_t value = mp_decode_uint(&binobj);
+							type = mp_typeof(*binobj);
+							std::cerr << "MSGPACK->JS DATETIME " << type << endl;
+
+                            int64_t value;
+                            
+                            if (type == MP_INT)
+								value = mp_decode_int(&binobj);
+                            else if (type == MP_UINT)
+								value = mp_decode_uint(&binobj);
 
                             rr_v8->Set(f_data, v8::Date::New(isolate, value * 1000));
 
@@ -331,8 +347,8 @@ char* js_el_2_msgpack_el(Local<Object> resource_obj, Handle<Value> f_data, Handl
     {
 		bptr = mp_encode_array(bptr, 2);
 		bptr = mp_encode_uint(bptr, (uint)_Datetime);
-        uint64_t long_data = v_data->ToInteger()->Value() / 1000;
-		bptr = mp_encode_uint(bptr, long_data);
+        int64_t long_data = v_data->ToInteger()->Value() / 1000;
+		bptr = mp_encode_int(bptr, long_data);
         //cerr << "\t\t\t@DATETIME DATA " << long_data << endl;
     }
     else if (type == _Integer)
@@ -549,5 +565,4 @@ char* js_el_2_msgpack_el(Local<Object> resource_obj, Handle<Value> f_data, Handl
     ou.insert(ou.end(), buf, bptr);
 
     //cerr << "!!END LOGGING!!" << endl;
-
    }
