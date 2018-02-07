@@ -1,6 +1,7 @@
 #ifndef MSGPACK8JSON_H
 #define MSGPACK8JSON_H
 
+#include <vector>
 #include "v8.h"
 
 using namespace std;
