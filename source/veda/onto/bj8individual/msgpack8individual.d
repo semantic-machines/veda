@@ -22,19 +22,16 @@ private ubyte[] write_individual(ref Individual ii)
     // writeln("PACK START");
     Packer packer = Packer(false);
 
-    if (ii.uri != null && ii.resources.length > 0)
-    {
-        packer.beginArray(2).pack(ii.uri.dup);
+    packer.beginArray(2).pack(ii.uri.dup);
 
-        // stderr.writef("D WRITE ARRAY of 2\n");
-        packer.beginMap(ii.resources.length);
-        // stderr.writef("D WRITE RESOURCES\n");
-        foreach (key, resources; ii.resources)
-            write_resources(key, resources, packer);
+    // stderr.writef("D WRITE ARRAY of 2\n");
+    packer.beginMap(ii.resources.length);
+    // stderr.writef("D WRITE RESOURCES\n");
+    foreach (key, resources; ii.resources)
+        write_resources(key, resources, packer);
 
-        // writefln("PACKED %s", cast(string)packer.stream.data);
-        // writeln("PACK END");
-    }
+    // writefln("PACKED %s", cast(string)packer.stream.data);
+    // writeln("PACK END");
 
     return packer.stream.data;
 }
@@ -121,6 +118,12 @@ public int msgpack2individual(ref Individual individual, string in_str)
     if (src[ 0 ] != magic_header)
     {
         stderr.writeln("ERR! msgpack2individual: invalid format");
+        return -1;
+    }
+
+    if (src.length < 5)
+    {
+        stderr.writefln("ERR! msgpack2individual: binobj is empty [%s]", src);
         return -1;
     }
 
@@ -267,7 +270,7 @@ public int msgpack2individual(ref Individual individual, string in_str)
             }
             else
             {
-                stderr.writeln("ERR! msgpack2individual: serialized object is invalid! src=[%s]", in_str);
+                stderr.writefln("ERR! msgpack2individual: binobj is invalid! src=[%s]", in_str);
                 return -1;
             }
 

@@ -1040,7 +1040,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! add_to_transaction:no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text(res.result),
+            log.trace("ERR! add_to_transaction (%s): no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text (cmd), text(res.result),
                       indv !is null ? text(*indv) : "null",
                       ticket !is null ? text(*ticket) : "null");
 
