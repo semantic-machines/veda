@@ -139,14 +139,14 @@ void acl_manager(string thread_name)
                                 Individual new_ind;
                                 if (new_ind.deserialize(new_state) < 0)
                                 {
-                                    log.trace("ERR! invalid individual: [%s] op_id=%d", new_state, op_id);
+                                    log.trace("ERR! ACL: invalid individual: [%s] op_id=%d", new_state, op_id);
                                     return;
                                 }
 
                                 Individual prev_ind;
                                 if (prev_state !is null && prev_ind.deserialize(prev_state) < 0)
                                 {
-                                    log.trace("ERR! invalid individual: [%s] op_id=%d", prev_state, op_id);
+                                    log.trace("ERR! ACL: invalid individual: [%s] op_id=%d", prev_state, op_id);
                                     return;
                                 }
 

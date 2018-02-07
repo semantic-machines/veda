@@ -278,7 +278,7 @@ class VedaModule : VedaModuleBasic
             Individual imm;
             if (data !is null && imm.deserialize(data) < 0)
             {
-                log.trace("ERR! invalid individual:[%s]", data);
+                log.trace("ERR! read from queue: invalid individual:[%s]", data);
                 continue;
             }
             string uri = imm.getFirstLiteral("uri");
@@ -290,7 +290,7 @@ class VedaModule : VedaModuleBasic
                 string new_bin = imm.getFirstLiteral("new_state");
                 if (new_bin !is null && node.deserialize(new_bin) < 0)
                 {
-                    log.trace("ERR! invalid individual:[%s]", new_bin);
+                    log.trace("ERR! read configuration in queue: invalid individual:[%s]", new_bin);
                 }
                 else
                 {
@@ -393,7 +393,7 @@ class VedaModule : VedaModuleBasic
             if (data !is null && imm.deserialize(data) < 0)
             {
                 i = 0;
-                log.trace("ERR! invalid individual:[%s]", data);
+                log.trace("ERR! read in queue: invalid individual:[%s]", data);
                 continue;
             }
 
@@ -439,7 +439,7 @@ class VedaModule : VedaModuleBasic
             Individual prev_indv, new_indv;
             if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
             {
-                log.trace("ERR! invalid individual:[%s]", new_bin);
+                log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
             }
             else
             {
@@ -447,7 +447,7 @@ class VedaModule : VedaModuleBasic
 
                 if (prev_bin !is null && prev_indv.deserialize(prev_bin) < 0)
                 {
-                    log.trace("ERR! invalid individual:[%s]", prev_bin);
+                    log.trace("ERR!  read in queue, prev binobj is individual:[%s]", prev_bin);
                 }
             }
 
