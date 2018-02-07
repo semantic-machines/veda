@@ -202,17 +202,20 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
 
 private void write_individual(Individual *ii, ref OutBuffer ou)
 {
-    ulong     map_len = ii.resources.length + 1;
-    MajorType type    = MajorType.MAP;
-
-    write_type_value(type, map_len, ou);
-    write_string("@", ou);
-    write_string(ii.uri, ou);
-
-    foreach (key, resources; ii.resources)
+    if (ii.uri != null && ii.resources.length > 0)
     {
-        if (resources.length > 0)
-            write_resources(key, resources, ou);
+        ulong     map_len = ii.resources.length + 1;
+        MajorType type    = MajorType.MAP;
+
+        write_type_value(type, map_len, ou);
+        write_string("@", ou);
+        write_string(ii.uri, ou);
+
+        foreach (key, resources; ii.resources)
+        {
+            if (resources.length > 0)
+                write_resources(key, resources, ou);
+        }
     }
 }
 

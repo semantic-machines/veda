@@ -22,17 +22,20 @@ private ubyte[] write_individual(ref Individual ii)
     // writeln("PACK START");
     Packer packer = Packer(false);
 
-    packer.beginArray(2).pack(ii.uri.dup);
+    if (ii.uri != null && ii.resources.length > 0)
+    {
+        packer.beginArray(2).pack(ii.uri.dup);
 
+        // stderr.writef("D WRITE ARRAY of 2\n");
+        packer.beginMap(ii.resources.length);
+        // stderr.writef("D WRITE RESOURCES\n");
+        foreach (key, resources; ii.resources)
+            write_resources(key, resources, packer);
 
-    // stderr.writef("D WRITE ARRAY of 2\n");
-    packer.beginMap(ii.resources.length);
-    // stderr.writef("D WRITE RESOURCES\n");
-    foreach (key, resources; ii.resources)
-        write_resources(key, resources, packer);
+        // writefln("PACKED %s", cast(string)packer.stream.data);
+        // writeln("PACK END");
+    }
 
-    // writefln("PACKED %s", cast(string)packer.stream.data);
-    // writeln("PACK END");
     return packer.stream.data;
 }
 
@@ -98,13 +101,13 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
     }
 }
 
-ubyte magic_header = 0xFF; 
+ubyte magic_header = 0xFF;
 
 public string individual2msgpack(ref Individual in_obj)
 {
-	// this concatinate created copy ?
-	return cast(string) ([magic_header] ~ write_individual(in_obj));
-	
+    // this concatinate created copy ?
+    return cast(string)([ magic_header ] ~write_individual(in_obj));
+
     //ubyte[] buff = write_individual(in_obj);
     //return cast(string)buff[ 0..buff.length ].dup;
 }
@@ -113,19 +116,19 @@ public string individual2msgpack(ref Individual in_obj)
 
 public int msgpack2individual(ref Individual individual, string in_str)
 {
-	ubyte[] src = cast(ubyte[])in_str;
-	
-	if (src[0] != magic_header)
-	{
-		stderr.writeln("ERR! msgpack2individual: invalid format");
-        return -1;	
-	}                    
-	
+    ubyte[] src = cast(ubyte[])in_str;
+
+    if (src[ 0 ] != magic_header)
+    {
+        stderr.writeln("ERR! msgpack2individual: invalid format");
+        return -1;
+    }
+
     try
     {
         try
         {
-            StreamingUnpacker unpacker = StreamingUnpacker(src[1..$]);
+            StreamingUnpacker unpacker = StreamingUnpacker(src[ 1..$ ]);
 
             if (unpacker.execute())
             {
