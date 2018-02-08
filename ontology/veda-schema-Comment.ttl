@@ -80,6 +80,7 @@ v-s:CommentsTemplate
 </div>
 <script>
   $("#add-comment", template).click(function () {
+    var addComment = $(this).hide();
     var _class = new veda.IndividualModel("v-s:Comment"),
         comment = new veda.IndividualModel(),
         cntr = $("#new-comment", template).empty(),
@@ -90,6 +91,7 @@ v-s:CommentsTemplate
     comment["v-s:canRead"] = [ true ];
     comment.present(cntr, tmpl, "edit");
     comment.one("afterSave beforeReset", function () {
+      addComment.show();
       cntr.empty();
     });
   });
