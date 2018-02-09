@@ -16,7 +16,7 @@
     	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a",
     	    "../../veda/util/properd.d",
-    	    "../../veda/bind/libwebsockets.d",
+    	    "../../veda/bind/libwebsocketd.d",
 	    "../../veda/bind/nano.d", 
 	    "../../veda/bind/xapian_d_header.d",
 	    "../../veda/util/tools.d",
