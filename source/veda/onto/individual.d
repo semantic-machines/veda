@@ -77,7 +77,7 @@ public struct Individual
             {
                 string[ string ] properties;
                 properties = readProperties("./veda.properties");
-                string s_binobj_format = properties.as!(string)("binobj_format") ~ "\0";
+                string s_binobj_format = properties.as!(string)("binobj_format");
 
                 if (s_binobj_format == "cbor")
                     binobj_format = BOFormat.CBOR;
@@ -87,7 +87,7 @@ public struct Individual
             }
             catch (Throwable ex)
             {
-                log.trace("ERR! unable read ./veda.properties");
+                log.trace("ERR! unable read ./veda.properties, ex=%s", ex.msg);
             }
 
             log.trace("SET binobj_format=%s", text(binobj_format));

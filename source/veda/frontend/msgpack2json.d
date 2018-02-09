@@ -28,8 +28,6 @@ public int msgpack2json(Json *individual, string in_str)
             return -1;
         }
 
-
-
         StreamingUnpacker unpacker = StreamingUnpacker(src[ 1..$ ]);
 
         if (unpacker.execute())
@@ -48,8 +46,7 @@ public int msgpack2json(Json *individual, string in_str)
                 {
                 case Value.Type.raw:
 
-                    Json new_individual  = Json.emptyObject;
-                    individual           = &new_individual;
+                    //stderr.writefln("URI = %s", (cast(string)obj.via.raw));
                     (*individual)[ "@" ] = (cast(string)obj.via.raw).dup;
 
                     break;
@@ -161,6 +158,7 @@ public int msgpack2json(Json *individual, string in_str)
                                 string str              = (cast(string)resources_vals[ i ].via.raw).dup;
                                 resource_json[ "type" ] = text(DataType.Uri);
                                 resource_json[ "data" ] = str;
+                                resources ~= resource_json;
                                 break;
 
                             case Value.Type.unsigned:
@@ -168,6 +166,7 @@ public int msgpack2json(Json *individual, string in_str)
                                 long value              = resources_vals[ i ].via.uinteger;
                                 resource_json[ "type" ] = text(DataType.Integer);
                                 resource_json[ "data" ] = value;
+                                resources ~= resource_json;
 
                                 break;
 
@@ -176,6 +175,8 @@ public int msgpack2json(Json *individual, string in_str)
                                 long value              = resources_vals[ i ].via.integer;
                                 resource_json[ "type" ] = text(DataType.Integer);
                                 resource_json[ "data" ] = value;
+                                resources ~= resource_json;
+
                                 break;
 
 
@@ -183,6 +184,7 @@ public int msgpack2json(Json *individual, string in_str)
 
                                 resource_json[ "type" ] = text(DataType.Boolean);
                                 resource_json[ "data" ] = resources_vals[ i ].via.boolean;
+                                resources ~= resource_json;
 
                                 break;
 
@@ -206,10 +208,9 @@ public int msgpack2json(Json *individual, string in_str)
             return -1;
         }
 
-        return 1;
-        // return cast(int)(ptr - cast(char *)in_str.ptr); //read_element(individual, cast(ubyte[])in_str, dummy);
+        //stderr.writefln("JSON OUT: %s", individual.serializeToPrettyJson ());
 
-        // writeln ("JSON OUT:", individual.toString ());
+        return 1;
     }
     catch (Exception ex)
     {
