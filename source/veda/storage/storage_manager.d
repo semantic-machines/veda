@@ -410,7 +410,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
                                             //log.trace ("imm=[%s]", imm);
 
-                                            string binobj = imm.serialize_to_cbor();
+                                            string binobj = imm.serialize();
                                             //writeln("*binobj.length=", binobj.length);
 
                                             individual_queue.push(binobj);

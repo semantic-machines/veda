@@ -61,10 +61,6 @@ private Context l_context;
 private VQL     vql_r;
 private Ticket  sticket;
 
-const int       CBOR    = 0;
-const int       MSGPACK = 1;
-int             binobj_format;
-
 void main(char[][] args)
 {
     Tid[ P_MODULE ] tids;
@@ -93,26 +89,6 @@ void main(char[][] args)
 
     spawn(&ws_interface, cast(short)8091);
     //spawn (&ws_interface, cast(short)8092);
-
-    try
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        string s_binobj_format = properties.as!(string)("binobj_format") ~ "\0";
-
-        log.trace("binobj_format=%s", s_binobj_format);
-
-        if (s_binobj_format == "cbor")
-            binobj_format = CBOR;
-
-        if (s_binobj_format == "msgpack")
-            binobj_format = MSGPACK;
-    }
-    catch (Throwable ex)
-    {
-        log.trace("ERR! unable read ./veda.properties");
-    }
-
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -374,7 +350,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
     // store ticket
-    string     ss_as_binobj = new_ticket.serialize_to_cbor();
+    string     ss_as_binobj = new_ticket.serialize();
 
     long       op_id;
     ResultCode rc =
@@ -983,11 +959,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         {
             prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
-            if (binobj_format == CBOR)
-                new_state = prev_indv.serialize_to_cbor();
-            else if (binobj_format == MSGPACK)
-                new_state = prev_indv.serialize_to_msgpack();
-
+            new_state = prev_indv.serialize();
             if (new_state.length > max_size_of_individual)
             {
                 res.result = ResultCode.Size_too_large;
@@ -1032,11 +1004,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
-            if (binobj_format == CBOR)
-                new_state = indv.serialize_to_cbor();
-            else if (binobj_format == MSGPACK)
-                new_state = indv.serialize_to_msgpack();
-
+            new_state = indv.serialize();
             if (new_state.length > max_size_of_individual)
             {
                 res.result = ResultCode.Size_too_large;
