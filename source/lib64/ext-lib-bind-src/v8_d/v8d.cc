@@ -75,19 +75,19 @@ query(const char *_ticket, int _ticket_length, const char *_query, int _query_le
 _Buff *
 read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
 int
-put_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                int _event_id_length);
 int
 remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
                   int _event_id_length);
 int
-add_to_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                   int _event_id_length);
 int
-set_in_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length, const char *_event_id,
+set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
                   int _event_id_length);
 int
-remove_from_individual(const char *_ticket, int _ticket_length, const char *_cbor, int _cbor_length,
+remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length,
                        const char *_event_id, int _event_id_length);
 
 void log_trace(const char *_str, int _str_length);
@@ -405,11 +405,11 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     const char *cstr = ToCString(str1);
 
-    _Buff      *doc_as_cbor = read_individual(ticket, str.length(), cstr, str1.length());
+    _Buff      *doc_as_binobj = read_individual(ticket, str.length(), cstr, str1.length());
 
-    if (doc_as_cbor != NULL)
+    if (doc_as_binobj != NULL)
     {
-        std::string data(doc_as_cbor->data, doc_as_cbor->length);
+        std::string data(doc_as_binobj->data, doc_as_binobj->length);
 
         //std::cerr << "@c #get_individual uri=" << cstr << std::endl;
 

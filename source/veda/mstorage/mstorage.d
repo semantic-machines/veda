@@ -61,6 +61,10 @@ private Context l_context;
 private VQL     vql_r;
 private Ticket  sticket;
 
+const int       CBOR    = 0;
+const int       MSGPACK = 1;
+int             binobj_format;
+
 void main(char[][] args)
 {
     Tid[ P_MODULE ] tids;
@@ -89,6 +93,26 @@ void main(char[][] args)
 
     spawn(&ws_interface, cast(short)8091);
     //spawn (&ws_interface, cast(short)8092);
+
+    try
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        string s_binobj_format = properties.as!(string)("binobj_format") ~ "\0";
+
+        log.trace("binobj_format=%s", s_binobj_format);
+
+        if (s_binobj_format == "cbor")
+            binobj_format = CBOR;
+
+        if (s_binobj_format == "msgpack")
+            binobj_format = MSGPACK;
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+    }
+
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -355,9 +379,9 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     long       op_id;
     ResultCode rc =
         ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
-                                     -1, 0,
-                                     OptFreeze.NONE,
-                                     op_id);
+                                   -1, 0,
+                                   OptFreeze.NONE,
+                                   op_id);
     ticket.result = rc;
 
     if (rc == ResultCode.OK)
@@ -732,8 +756,8 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
 
             long op_id;
             ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
-                                         -1, 0, OptFreeze.NONE,
-                                         op_id);
+                                       -1, 0, OptFreeze.NONE,
+                                       op_id);
             log.trace("systicket [%s] was created", ticket.id);
 
             Individual sys_account_permission;
@@ -959,8 +983,10 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         {
             prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
-            new_state = prev_indv.serialize_to_cbor();
-//            new_state = prev_indv.serialize_to_msgpack();
+            if (binobj_format == CBOR)
+                new_state = prev_indv.serialize_to_cbor();
+            else if (binobj_format == MSGPACK)
+                new_state = prev_indv.serialize_to_msgpack();
 
             if (new_state.length > max_size_of_individual)
             {
@@ -980,13 +1006,13 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             {
                 res.result =
                     indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                               res.op_id);
+                                             res.op_id);
 
                 if (res.result == ResultCode.OK)
                 {
                     res.result =
                         indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
-                                                   res.op_id);
+                                                 res.op_id);
                 }
             }
             else
@@ -1006,8 +1032,10 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
-            new_state = indv.serialize_to_cbor();
-//            new_state = indv.serialize_to_msgpack();
+            if (binobj_format == CBOR)
+                new_state = indv.serialize_to_cbor();
+            else if (binobj_format == MSGPACK)
+                new_state = indv.serialize_to_msgpack();
 
             if (new_state.length > max_size_of_individual)
             {
@@ -1023,7 +1051,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             {
                 res.result =
                     indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                               res.op_id);
+                                             res.op_id);
             }
             else
             {
@@ -1040,7 +1068,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! add_to_transaction (%s): no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text (cmd), text(res.result),
+            log.trace("ERR! add_to_transaction (%s): no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text(cmd), text(res.result),
                       indv !is null ? text(*indv) : "null",
                       ticket !is null ? text(*ticket) : "null");
 
