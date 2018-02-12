@@ -1334,12 +1334,15 @@ private OpResult[] parseOpResults(string str)
         if (jtype.get!string == "OpResult")
         {
             auto jdata = jresp[ "data" ];
-            foreach (idata; jdata)
+            if (jdata.type is Json.Type.Array)
             {
-                OpResult res;
-                res.op_id  = idata[ "op_id" ].to!long;
-                res.result = cast(ResultCode)idata[ "result" ].to!int;
-                ress ~= res;
+                foreach (idata; jdata)
+                {
+                    OpResult res;
+                    res.op_id  = idata[ "op_id" ].to!long;
+                    res.result = cast(ResultCode)idata[ "result" ].to!int;
+                    ress ~= res;
+                }
             }
         }
     }
