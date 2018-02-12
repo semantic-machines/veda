@@ -19,7 +19,7 @@ int    writeable_flag  = 0;
 
 Logger _log;
 
-long   max_size_packet = 1024 * 64;
+long   max_size_packet = 1024 * 1024;
 extern (C) void handleTermination1(int _signal)
 {
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));

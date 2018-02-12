@@ -122,7 +122,7 @@ void ev_LWS_CALLBACK_CLIENT_WRITEABLE(lws *wsi)
 
 void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 {
-    //writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
+    //stderr.writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
     string res;
 
     if (rc == ResultCode.OK)
