@@ -850,7 +850,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
   function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
     var valTemplate = value.present(relContainer, relTemplate, isEmbedded ? mode : "view");
-    // TODO: valTemplate may be array!
     if (isEmbedded) {
       valTemplate.data("isEmbedded", true);
       embedded.push(valTemplate);
