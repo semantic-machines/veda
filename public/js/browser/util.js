@@ -62,9 +62,10 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.processResult = function (result, delta, pause, fn) {
-    console.time("Processing total");
     var total = result.length;
     var processingProgress = 0;
+    console.log((new Date()).toISOString(), "Process results |||", "total:", total, " | ", "delta:", delta, " | ", "pause:", pause);
+    console.time("Processing total");
     processPortion();
 
     function processPortion() {
@@ -82,7 +83,6 @@ veda.Module(function Util(veda) { "use strict";
       }
     }
   };
-
 
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
