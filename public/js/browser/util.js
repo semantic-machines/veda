@@ -23,7 +23,7 @@ veda.Module(function Util(veda) { "use strict";
       q     = q.query;
     }
     console.log((new Date()).toISOString(), "Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
-    var result = [], append = [].push, fetchingProgress = 0, processingProgress = 0;
+    var result = [], append = [].push, fetchingProgress = 0;
     console.time("Fetching total");
     fetchResult();
     return;
@@ -53,28 +53,36 @@ veda.Module(function Util(veda) { "use strict";
           console.log((new Date()).toString(), "Fetching done:", limit);
           console.timeEnd("Fetching total");
           result.splice(limit - cursor || limit); // cut result to limit
-          console.time("Processing total");
-          processResult(result);
+          veda.Util.processResult(result, delta, pause, fn);
         } else {
           fetchResult(query_result.cursor);
         }
       });
     }
-    function processResult(result) {
+  };
+
+  veda.Util.processResult = function (result, delta, pause, fn) {
+    console.time("Processing total");
+    var total = result.length;
+    var processingProgress = 0;
+    processPortion();
+
+    function processPortion() {
       var portion = result.splice(0, delta);
       portion.forEach( fn );
-      if ( (limit - result.length) / limit - processingProgress >= 0.05 ) {
-        processingProgress = (limit - result.length) / limit;
-        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (limit - result.length), "of", limit + ")");
+      if ( (total - result.length) / total - processingProgress >= 0.05 ) {
+        processingProgress = (total - result.length) / total;
+        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
       }
       if ( result.length ) {
-        setTimeout(processResult, pause, result);
+        setTimeout(processPortion, pause);
       } else {
-        console.log("Processing done:", limit);
+        console.log("Processing done:", total);
         console.timeEnd("Processing total");
       }
     }
   };
+
 
   // Escape function for css (jQuery) selectors
   veda.Util.escape4$ = function (str) {
