@@ -34,7 +34,7 @@
     	    "../../veda/gluecode/script.d",
     	    "../../veda/gluecode/ltr_scripts.d",
     	    "../../veda/gluecode/v8d_header.d",
-    	    "../../lib64/liblmdb_ro.a",
+    	    "../../lib64/liblmdb.a",
     	    "../../lib64/libv8d.a", 
 	    "../../lib64/libxapiand.a",
 	    "../../veda/core/util/utils.d",

@@ -21,7 +21,7 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
-    	    "../../lib64/liblmdb_ro.a",
+    	    "../../lib64/liblmdb.a",
     	    "../../lib64/libv8d.a", 
 	    "../../lib64/libxapiand.a",
     	    "../../veda/authorization/right_set.d",
