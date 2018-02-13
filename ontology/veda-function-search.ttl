@@ -1805,13 +1805,17 @@ v-fs:AttributiveSearchInlineTemplate
   // Show results on load if they are available (e.g. if we came back)
   if ( self.hasValue("v-fs:searchResult") ) {
     renderResult( self["v-fs:searchResult"] );
-    scrollTo(self.scroll);
+    if ( location.hash.indexOf(individual.id) >= 0 ) {
+      scrollTo(self.scroll);
+    }
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     self.search()
       .then(renderResult)
       .then(function () {
-        scrollTo( $(".results", template).offset().top );
+        if ( location.hash.indexOf(individual.id) >= 0 ) {
+          scrollTo( $(".results", template).offset().top );
+        }
       });
   }
 
@@ -1822,7 +1826,9 @@ v-fs:AttributiveSearchInlineTemplate
     self.search()
       .then(renderResult)
       .then(function () {
-        scrollTo( $(".results", template).offset().top );
+        if ( location.hash.indexOf(individual.id) >= 0 ) {
+          scrollTo( $(".results", template).offset().top );
+        }
         toggleSpin($this);
       })
       .catch(function (error) {
