@@ -42,6 +42,16 @@ function prepare_decision_form(ticket, document)
             return;
         }
 
+        var wi_isCompleted = work_item['v-wf:isCompleted'];
+        if (wi_isCompleted)
+        {
+            if (wi_isCompleted[0].data === true)
+            {
+        	set_err_on_indv("WorkItem[" + getUri(f_forWorkItem) + "], already prepared, skip prepare...", document, "prepare decision form");
+                return;
+            }
+        }
+
         var forProcess = work_item['v-wf:forProcess'];
         var forProcess_uri = getUri(forProcess);
         var _process = get_individual(ticket, forProcess_uri);
