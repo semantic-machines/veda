@@ -160,7 +160,7 @@ class ScriptProcess : VedaModule
                                     if (count_sckip > 0)
                                         count_sckip--;
  */
-                    log.trace("start: %s %s %d %s tnx=%d", script_id, individual_id, op_id, event_id, transaction_id);
+                    log.trace("start: %s %s %d %s", script_id, individual_id, op_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
@@ -168,9 +168,10 @@ class ScriptProcess : VedaModule
                     tnx.id            = transaction_id;
                     ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
+                    log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
                     foreach (item; tnx.get_queue())
                     {
-                        log.trace("tnx item: cmd=%s, uri=%s ", item.cmd, item.new_indv.uri);
+                        log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text (item.rc));
                     }
 
                     if (res != ResultCode.OK)

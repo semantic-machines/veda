@@ -201,6 +201,9 @@ class PThreadContext : Context
 
                 if (ress.length == 0)
                 {
+                    log.trace("ERR! reqrep_json_2_main_module, empty result");
+                    log.trace("req: %s", req);
+                    log.trace("rep: %s", rep);
                     OpResult res;
                     res.op_id  = -1;
                     res.result = ResultCode.Internal_Server_Error;
@@ -712,7 +715,34 @@ class PThreadContext : Context
                     item.new_indv.setResources("v-s:updateCounter", [ Resource(-1) ]);
                 }
 
+                long update_counter = item.new_indv.getFirstInteger("v-s:updateCounter", -1);
+
                 rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
+
+                if (rc == ResultCode.Internal_Server_Error)
+                {
+                    this.get_logger().trace("FAIL STORE ITEM: %s %s", item.uri, text(rc));
+
+                    int pause = 10;
+                    for (int attempt = 0; attempt < 10; attempt++)
+                    {
+                        Thread.sleep(dur!("msecs")(pause));
+                        pause += 10;
+
+                        Individual prev = this.get_individual(ticket, item.uri, OptAuthorize.NO);
+                        if (prev.getFirstInteger("v-s:updateCounter", -1) == update_counter)
+                        {
+                            rc = ResultCode.OK;
+                            break;
+                        }
+                        this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
+
+                        rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
+
+                        if (rc != ResultCode.Internal_Server_Error)
+                            break;
+                    }
+                }
 
                 uri2exists[ item.uri ] = true;
 
@@ -723,7 +753,7 @@ class PThreadContext : Context
 
                 if (rc != ResultCode.OK && rc != ResultCode.No_Content)
                 {
-                    this.get_logger().trace("FAIL COMMIT");
+                    this.get_logger().trace("FAIL COMMIT %s", in_tnx.id);
                     return rc;
                 }
                 //else
