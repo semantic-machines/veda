@@ -1599,19 +1599,23 @@ v-wf:DecisionFormTemplate
   rdfs:comment "Пустой шаблон сделан специально, поскольку индивиды этого класса не должны вводиться пользователями"@ru ;
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
+<div class="hidden"></div>
 <script>
-  if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
-    individual["v-wf:read"] = [true];
-    //individual.save();
-    put_individual({
-      ticket: veda.ticket,
-      individual: individual.properties,
-      async: true
-    });
-  }
+  var timeout = setTimeout(function () {
+    if ( !individual.hasValue("v-wf:takenDecision") && !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
+      individual["v-wf:read"] = [true];
+      put_individual({
+        ticket: veda.ticket,
+        individual: individual.properties,
+        async: true
+      });
+    }
+  }, 5000);
+  template.one("remove", function () {
+    clearTimeout(timeout);
+  });
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
-<div class="hidden"></div>
   """ ;
   .
 
