@@ -752,137 +752,6 @@ v-ui:VersionedTemplate
 """ ;
 .
 
-# ---------------- Link template -----------------
-
-v-ui:PSHasLinkThing
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:hasLink для класса v-s:Thing"@ru ;
-  rdfs:label "Specification v-s:hasLink for v-s:Thing class"@en ;
-  v-ui:forClass v-s:Thing ;
-  v-ui:forProperty v-s:hasLink ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 100 ;
-.
-v-ui:PSFromToForLink
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойств from to для класса v-s:Link"@ru ;
-  rdfs:label "Specification from to for v-s:Link class"@en ;
-  v-ui:forClass v-s:Link ;
-  v-ui:forProperty v-s:from, v-s:to ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
-.
-
-v-ui:LinksTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для управлениями произвольными связями документа"@ru ;
-  rdfs:label "Template to manage generic document links"@en ;
-  v-ui:template """
-<script>
-  var isMutual = container.attr("data-mutual") === "true";
-  var rowTmpl = $("tbody", template).html();
-
-  $("#add-link", template).click(function () {
-    $(".links-table", template).removeClass("hidden");
-    var cntr = $("[rel='v-s:hasLink']", template),
-        _class = new veda.IndividualModel("v-s:Link"),
-        Link = new veda.IndividualModel();
-    Link["rdf:type"] = [_class];
-    Link["v-s:from"] = [individual];
-
-    individual.isSync(false);
-
-    if (isMutual) {
-      Link["v-s:mutualMembership"] = [ true ];
-    }
-    var newRow = Link.present(cntr, rowTmpl, "edit");
-    Link.one("beforeReset", function () {
-      newRow.remove();
-    });
-    Link.one("afterSave", function () {
-      newRow.remove();
-    });
-    setTimeout(function () {
-      if ( individual.isNew() ) {
-        newRow.find(".action#save").hide();
-      }
-    }, 10);
-  });
-
-  individual.on("afterSave", saveHandler);
-  template.one("remove", function () {
-    individual.off("afterSave", saveHandler);
-  });
-  function saveHandler() {
-    $("[rel='v-s:hasLink']", template).children().trigger("save");
-  }
-
-  individual.on("v-s:hasLink", linksHandler);
-  template.one("remove", function () {
-    individual.off("v-s:hasLink", linksHandler);
-  });
-  linksHandler();
-  function linksHandler () {
-    if ( individual.hasValue("v-s:hasLink") ) {
-      $(".links-table", template).removeClass("hidden");
-    } else {
-      $(".links-table", template).addClass("hidden");
-    }
-  }
-
-//# sourceURL=v-ui:LinksTemplate_pre
-</script>
-<div>
-  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <table class="hidden links-table table table-condensed table-striped table-sortable">
-    <thead>
-      <tr>
-        <th width="30%" about="v-s:Document" property="rdfs:label"></th>
-        <th width="30%" about="rdfs:comment" property="rdfs:label"></th>
-        <th width="10%" about="v-s:mutualMembership" property="rdfs:label"></th>
-        <th width="20%" about="v-s:creator" property="rdfs:label"></th>
-        <th width="10%"></th>
-      </tr>
-    </thead>
-    <tbody about="@" rel="v-s:hasLink" data-embedded="true">
-      <script>
-        var displayedDoc = container.closest("[resource]").attr("resource");
-        if ( this.hasValue("v-s:from", displayedDoc) ) {
-          $(".link-from", template).remove();
-        } else if ( this.hasValue("v-s:to", displayedDoc) ) {
-          $(".link-to", template).remove();
-        }
-      </script>
-      <tr>
-        <td>
-          <div class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          <div class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
-        </td>
-        <td>
-          <div class="view -edit -search" about="@" property="rdfs:comment"></div>
-          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-        </td>
-        <td about="@" class="form-inline">
-          <div class="checkbox disabled">
-            <label>
-              <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
-            </label>
-          </div>
-        </td>
-        <td>
-          <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
-        </td>
-        <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
-      </tr>
-    </tbody>
-  </table>
-  <button class="margin-sm btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
-</div>
-""" ;
-.
-
 v-ui:IconPersonTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с иконкой"@ru ;
@@ -2422,7 +2291,7 @@ td:PersonTemplate1
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
   <br>
-  <div about="@" class="container sheet view edit -search" data-template="v-ui:LinksTemplate" data-embedded="true"></div>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>

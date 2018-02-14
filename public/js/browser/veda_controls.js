@@ -1386,13 +1386,6 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined,
       sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
-      root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
-      inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
-      outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
-      allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
-      selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
-      selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
-      displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ],
       rel_uri = opts.rel_uri,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       create = $(".create", control),
@@ -1508,35 +1501,44 @@
     }
 
     // Tree feature
-    if (
-      (this.hasClass("tree") || this.hasClass("full"))
-      && (root && (inProperty || outProperty))
-    ) {
-      var treeConfig = {
-        root: root,
-        targetRel_uri: rel_uri,
-        inProperty: inProperty,
-        outProperty: outProperty,
-        sort: sort,
-        allowedClass: allowedClass,
-        selectableClass: selectableClass,
-        selectableFilter: selectableFilter,
-        displayedProperty: displayedProperty
-      };
-      var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
-      var modal = $("#individual-modal-template").html();
-      tree.click(function () {
-        individual.treeConfig = treeConfig;
-        var $modal = $(modal);
-        var cntr = $(".modal-body", $modal);
-        $modal.on('hidden.bs.modal', function (e) {
-          $modal.remove();
-          delete individual.treeConfig;
+    if ( this.hasClass("tree") || this.hasClass("full") ) {
+      var root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
+          inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
+          outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
+          allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
+          selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
+          selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
+          displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
+
+      if (root && (inProperty || outProperty)) {
+        var treeConfig = {
+          root: root,
+          targetRel_uri: rel_uri,
+          inProperty: inProperty,
+          outProperty: outProperty,
+          sort: sort,
+          allowedClass: allowedClass,
+          selectableClass: selectableClass,
+          selectableFilter: selectableFilter,
+          displayedProperty: displayedProperty
+        };
+        var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
+        var modal = $("#individual-modal-template").html();
+        tree.click(function () {
+          individual.treeConfig = treeConfig;
+          var $modal = $(modal);
+          var cntr = $(".modal-body", $modal);
+          $modal.on('hidden.bs.modal', function (e) {
+            $modal.remove();
+            delete individual.treeConfig;
+          });
+          $modal.modal();
+          $("body").append($modal);
+          individual.present(cntr, treeTmpl);
         });
-        $modal.modal();
-        $("body").append($modal);
-        individual.present(cntr, treeTmpl);
-      });
+      } else {
+        tree.remove();
+      }
     } else {
       tree.remove();
     }
