@@ -3,7 +3,6 @@
 package main
 
 import (
-	"cbor"
 	"github.com/gorilla/websocket"
 	"log"
 	"net"
@@ -204,28 +203,21 @@ func queue_reader(ch_collector_update chan updateInfo) {
 			if data == "" {
 				break
 			}
-			//			log.Printf("@1 data=[%s].length=%d", data, len (data))
-			ring := cbor.NewDecoder(strings.NewReader(data))
-			var cborObject interface{}
-			err := ring.Decode(&cborObject)
-			if err != nil {
-				log.Fatalf("error decoding cbor: %v", err)
+			
+			individual := BinobjToMap (data)
+			if individual == nil {
+				log.Println("@ERR GET_INDIVIDUAL: DECODING INDIVIDUAL")
 				continue
 			}
 
-			var individual *Individual = NewIndividual()
-
-			cbor2individual(individual, cborObject)
-
-			//log.Printf("@2 individual=[%v]", individual)
-			uri := individual.getFirstResource("uri")
-			u_count, ok1 := individual.getFirstInt("u_count")
-			op_id, ok2 := individual.getFirstInt("op_id")
+			uri, _ := getFirstString(individual, "uri")
+			u_count, ok1 := getFirstInt(individual, "u_count")
+			op_id, ok2 := getFirstInt(individual, "op_id")
 
 			if ok1 == true && ok2 == true {
 				//log.Printf("@3 uri=[%s], u_count=[%d], op_id=[%d]", uri.data.(string), u_count, op_id)
 
-				new_info := updateInfo{uri.data.(string), op_id, u_count, false, nil}
+				new_info := updateInfo{uri, op_id, u_count, false, nil}
 				ch_collector_update <- new_info
 			}
 
@@ -315,5 +307,41 @@ func main() {
 	log.Printf("Listen and serve: %s", WS_LISTEN_ADDR)
 	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
 		log.Fatal("ERR! listen and serve:", err)
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+func getFirstInt(indv map[string]interface{}, predicate string) (int, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return 0, false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case int64:
+		return int(_data.(int64)), true
+	case uint64:
+		return int(_data.(uint64)), true
+	default:
+		return 0, false
+	}
+}
+
+func getFirstString(indv map[string]interface{}, predicate string) (string, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return "", false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case string:
+		return _data.(string), true
+	default:
+		return "", false
 	}
 }
