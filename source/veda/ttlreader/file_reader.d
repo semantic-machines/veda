@@ -524,7 +524,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
                 ress ~= Resource(prefix);
-                ss.resources[ veda_schema__fullUrl ] = ress;
+                ss.resources[ "v-s:fullUrl" ] = ress;
             }
 
             if (("rdfs:isDefinedBy" in ss.resources) is null)

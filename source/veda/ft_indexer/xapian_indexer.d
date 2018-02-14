@@ -669,7 +669,7 @@ public class IndexerContext
 
                     int slot_L1;
 
-                    if (type == xsd__string)
+                    if (type == "xsd:string")
                     {
                         bool sp = true;
                         foreach (oo; resources)
@@ -722,7 +722,7 @@ public class IndexerContext
                             }
                         }
                     }
-                    else if (type == xsd__decimal)
+                    else if (type == "xsd:decimal")
                     {
                         slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".decimal", key2slot);
                         prefix  = "X" ~ text(slot_L1) ~ "X";
@@ -740,7 +740,7 @@ public class IndexerContext
                             }
                         }
                     }
-                    else if (type == xsd__dateTime)
+                    else if (type == "xsd:dateTime")
                     {
                         slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".dateTime", key2slot);
                         prefix  = "X" ~ text(slot_L1) ~ "X";

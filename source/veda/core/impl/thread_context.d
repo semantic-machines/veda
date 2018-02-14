@@ -1,5 +1,5 @@
 /**
- * Внешнее API - Реализация
+ * Межмодульное API - Реализация
  */
 
 module veda.core.impl.thread_context;

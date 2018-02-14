@@ -257,7 +257,7 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     if (access == 0)
         access = default_access;
 
-    Resource  useFilter = new_ind.getFirstResource(veda_schema__useFilter);
+    Resource  useFilter = new_ind.getFirstResource("v-s:useFilter");
 
     Resources resource = new_ind.getResources(p_resource);
     Resources in_set   = new_ind.getResources(p_in_set);

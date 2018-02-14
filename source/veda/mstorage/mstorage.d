@@ -392,7 +392,7 @@ private Ticket authenticate(string login, string password)
     vql_r.get(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
     foreach (user; candidate_users)
     {
-        string user_id = user.getFirstResource(veda_schema__owner).uri;
+        string user_id = user.getFirstResource("v-s:owner").uri;
         if (user_id is null)
             continue;
 
@@ -1182,7 +1182,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
                                                                          OptAuthorize.NO);
             foreach (user; candidate_users)
             {
-                string user_id = user.getFirstResource(veda_schema__owner).uri;
+                string user_id = user.getFirstResource("v-s:owner").uri;
                 if (user_id is null)
                     continue;
 
