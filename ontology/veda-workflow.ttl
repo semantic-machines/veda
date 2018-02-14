@@ -1602,11 +1602,16 @@ v-wf:DecisionFormTemplate
 <div class="hidden"></div>
 <script>
   var timeout = setTimeout(function () {
-    if ( !individual.hasValue("v-wf:takenDecision") && !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
-      individual["v-wf:read"] = [true];
-      put_individual({
+    if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
+      set_in_individual({
         ticket: veda.ticket,
-        individual: individual.properties,
+        individual: {
+          "@": individual.id,
+          "v-wf:read": [{
+            data: true,
+            type: "Boolean"
+          }]
+        },
         async: true
       });
     }
