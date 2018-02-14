@@ -265,36 +265,117 @@ v-s:LinksTreeTemplate
   rdfs:label "Tree"@en ;
   v-ui:template """
 <script>
-  try {
-    var type = individual["rdf:type"][0];
-    var classLinksTree = type["v-s:hasClassLinksTree"][0];
-    var treeConfig = {
-      root: [ individual ],
-      displayedProperty: [ new veda.IndividualModel("rdf:type"), new veda.IndividualModel("rdfs:label") ],
-      inProperty: classLinksTree["v-s:inProperty"],
-      outProperty: classLinksTree["v-s:outProperty"]
-    };
-    individual.treeConfig = treeConfig;
-  } catch (error) {
-    console.log(error);
-    individual.treeConfig = {
-      root: [ individual ],
-      displayedProperty: [ new veda.IndividualModel("rdf:type"), new veda.IndividualModel("rdfs:label") ]
-    };
-  }
 //# sourceURL=v-s:LinksTreeTemplate_pre
 </script>
-<div class="table-responsive">
-  <table class="table table-condensed table-striped">
-    <thead>
-      <tr>
-        <th about="rdfs:label" property="rdfs:label"></th>
-      <tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+<div>
+  <style>
+    ul {
+      list-style-type: none;
+      padding-left: 18px;
+    }
+  </style>
+  <div about="@" data-template="v-s:LinksTreeRecursiveTemplate"></div>
 </div>
+""" ;
+.
+
+v-s:LinksTreeRecursiveTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
+  rdfs:label "Template to view document links tree"@en ;
+  rdfs:comment "Дерево"@ru ;
+  rdfs:label "Tree"@en ;
+  v-ui:template """
+<script>
+//# sourceURL=v-s:LinksTreeRecursiveTemplate_pre
+</script>
+<ul>
+  <li>
+    <a href="#" class="glyphicon glyphicon-chevron-right"></a> <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+    <div class="links"></div>
+    <ul class="allowed-types"></ul>
+  </li>
+</ul>
+<script>
+  var type = individual["rdf:type"][0];
+  var classLinksTree;
+  if ( !type.hasValue("v-s:hasClassLinksTree") ) {
+    classLinksTree = new veda.IndividualModel();
+    classLinksTree["rdf:type"] = [ new veda.IndividualModel("v-s:ClassLinksTree") ];
+    classLinksTree["v-s:outProperty"] = [ new veda.IndividualModel("v-s:hasLink") ];
+    classLinksTree["v-s:allowedClass"] = [ new veda.IndividualModel("v-s:Link") ];
+  } else {
+    classLinksTree = type["v-s:hasClassLinksTree"][0];
+  }
+  var inPropertiesUris = classLinksTree["v-s:inProperty"].map(function (property) {
+    return property.id;
+  });
+  var outPropertiesUris = classLinksTree["v-s:outProperty"].map(function (property) {
+    return property.id;
+  });
+  var allowedClassesUris = classLinksTree["v-s:allowedClass"].map(function (allowedClass) {
+    return allowedClass.id;
+  });
+
+  var linksHolder = $(".links", template);
+  template.on("click", ".glyphicon.glyphicon-chevron-right", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+    linksHolder.show();
+    if ( !linksHolder.children().length ) {
+      var outLinks = getOutLinks();
+      outLinks.forEach(presentLink);
+      getInLinks().then(function (inLinks) {
+        inLinks.forEach(presentLink);
+      });
+    }
+  });
+  function presentLink(link) {
+    link.present(linksHolder, "v-s:LinksTreeRecursiveTemplate");
+  }
+
+  template.on("click", ".glyphicon.glyphicon-chevron-down", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+    linksHolder.hide();
+  });
+
+  function getOutLinks() {
+    var links = [];
+    outPropertiesUris.forEach(function (outPropertyUri) {
+      links = links.concat( individual[outPropertyUri] );
+    });
+    links = links.filter(function (link) {
+      var linkTypeUri = link["rdf:type"][0].id;
+      return allowedClassesUris.length ? allowedClassesUris.indexOf(linkTypeUri) >= 0 : true ;
+    });
+    return links;
+  }
+
+  function getInLinks() {
+    var allowedClassesUrisQuery = allowedClassesUris.map(function (allowedClassUri) {
+      return "'rdf:type'==='" + allowedClassUri +"'";
+    }).join("||");
+    var inPropertiesUrisQuery = inPropertiesUris.map(function (inPropertyUri) {
+      return "'" + inPropertyUri + "'==='" + individual.id + "'";
+    }).join("||");
+    var q = "(" + allowedClassesUrisQuery + ") && (" + inPropertiesUrisQuery + ")";
+    return query({
+      ticket: veda.ticket,
+      query: q,
+      limit: 500,
+      async: true
+    }).then(function (queryResult) {
+      var links = queryResult.result.map(function (uri) {
+        return new veda.IndividualModel(uri);
+      });
+      return links;
+    });
+  }
+//# sourceURL=v-s:LinksTreeRecursiveTemplate_post
+</script>
 """ ;
 .
 
