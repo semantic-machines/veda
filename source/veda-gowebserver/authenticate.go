@@ -56,7 +56,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		//sending get request to tarantool
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false)
 		//decoding msgpack to individual map
-		user := MsgpackToMap(rr.Data[0])
+		user := BinobjToMap(rr.Data[0])
 		data, ok := user["v-s:origin"]
 		if !ok || (ok && !data.(map[string]interface{})["data"].(bool)) {
 			//if v-s:origin not found or value is false than return NotAuthorized

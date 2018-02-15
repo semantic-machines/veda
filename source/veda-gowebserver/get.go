@@ -126,7 +126,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.OpRC[0], timestamp)
 		return
 	} else {
-		individual = MsgpackToMap(rr.Data[0])
+		individual = BinobjToMap(rr.Data[0])
 		if individual == nil {
 			log.Println("@ERR GET_INDIVIDUAL: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -217,7 +217,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			// log.Println("rr.Data[i]=", rr.Data[i])
 			// log.Println("rr.OpRC[i]=", rr.OpRC[i])
 			if rr.OpRC[i] == Ok {
-				individual := MsgpackToMap(rr.Data[i])
+				individual := BinobjToMap(rr.Data[i])
 				if individual == nil {
 					log.Println("@ERR GET_INDIVIDUALS: DECODING INDIVIDUAL")
 					ctx.Response.SetStatusCode(int(InternalServerError))
@@ -247,7 +247,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		}
 
 		if rr.OpRC[0] == Ok {
-			individual := MsgpackToMap(rr.Data[0])
+			individual := BinobjToMap(rr.Data[0])
 			if individual == nil {
 				log.Println("@ERR GET_INDIVIDUALS: DECODING INDIVIDUAL")
 				ctx.Response.SetStatusCode(int(InternalServerError))

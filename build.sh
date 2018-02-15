@@ -85,6 +85,15 @@ if [ -z $1 ] || [ $1 == "lmdb-server" ] || [ $1 == "veda-lmdb-server" ] ; then
   cd $BUILD_PATH
 fi
 
+if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
+    cd source/veda-gowebserver
+    go build
+    cd ..
+    cd ..
+    cp source/veda-gowebserver/veda-gowebserver ./
+fi
+
+
 #if [ -z $1 ] || [ $1 == "db_handler" ] ; then
 #  cd source/rust_db_handler/db_handler
 #  cargo build --release
