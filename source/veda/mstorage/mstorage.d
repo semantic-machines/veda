@@ -58,8 +58,6 @@ extern (C) void handleTermination2(int _signal)
 
 private Context l_context;
 
-private Ticket  sticket;
-
 void main(char[][] args)
 {
     Tid[ P_MODULE ] tids;
@@ -157,6 +155,7 @@ class VedaServer : WSClient
 void init(string node_id)
 {
     Context core_context;
+	Ticket    sticket;
 
     if (node_id is null || node_id.length < 2)
         node_id = "cfg:standart_node";
@@ -279,14 +278,18 @@ void commiter(string thread_name)
 
 private KeyValueDB inividuals_storage_r;
 
-private Individual get_individual(Ticket *ticket, string uri)
+private Individual get_individual(Context ctx, Ticket *ticket, string uri)
 {
     if (inividuals_storage_r is null)
-    {
-        inividuals_storage_r = l_context.get_storage().get_inividuals_storage_r();
-    }
+        inividuals_storage_r = ctx.get_storage().get_inividuals_storage_r();
 
     Individual individual = Individual.init;
+
+    if (inividuals_storage_r is null)
+    {
+        log.trace("ERR! storage not ready");
+        return individual;
+    }
 
     if (ticket is null)
     {
@@ -374,6 +377,7 @@ private Ticket authenticate(Context ctx, string login, string password)
     StopWatch sw; sw.start;
 
     Ticket    ticket;
+    Ticket    sticket = ctx.sys_ticket(true);
 
     if (trace_msg[ T_API_70 ] == 1)
         log.trace("authenticate, login=[%s] password=[%s]", login, password);
@@ -401,7 +405,7 @@ private Ticket authenticate(Context ctx, string login, string password)
         if (usesCredential_uri !is null)
         {
             log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-            Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
+            Individual i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
             pass = i_usesCredential.getFirstLiteral("v-s:password");
         }
         else
