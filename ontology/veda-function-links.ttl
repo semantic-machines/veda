@@ -16,25 +16,25 @@
 
 # ---------------- Class links tree -----------------
 
-v-s:ClassLinksTree
+v-s:LinksTree
   rdf:type owl:Class ;
   rdfs:label "Настройки ссылок для класса"@ru ;
   rdfs:label "Class links setting"@en ;
 .
 
-v-s:hasClassLinksTree
+v-s:hasLinksTree
   rdf:type owl:ObjectProperty ;
   rdfs:label "Дерево ссылок для класса"@ru ;
   rdfs:label "Class links tree"@en ;
   rdfs:domain rdfs:Class ;
-  rdfs:range v-s:ClassLinksTree ;
+  rdfs:range v-s:LinksTree ;
 .
 
 v-s:inProperty
   rdf:type owl:ObjectProperty ;
   rdfs:label "Входящие свойства"@ru ;
   rdfs:label "In properties"@en ;
-  rdfs:domain v-s:ClassLinksTree ;
+  rdfs:domain v-s:LinksTree ;
   rdfs:range rdf:Property ;
 .
 
@@ -42,7 +42,7 @@ v-s:outProperty
   rdf:type owl:ObjectProperty ;
   rdfs:label "Исходящие свойства"@ru ;
   rdfs:label "Out properties"@en ;
-  rdfs:domain v-s:ClassLinksTree ;
+  rdfs:domain v-s:LinksTree ;
   rdfs:range rdf:Property ;
 .
 
@@ -50,7 +50,7 @@ v-s:allowedType
   rdf:type owl:ObjectProperty ;
   rdfs:label "Исходящие свойства"@ru ;
   rdfs:label "Out properties"@en ;
-  rdfs:domain v-s:ClassLinksTree ;
+  rdfs:domain v-s:LinksTree ;
   rdfs:range rdfs:Class ;
 .
 
@@ -226,37 +226,6 @@ v-s:LinksListTemplate
 """ ;
 .
 
-v-s:LinksTreeTemplate2
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
-  rdfs:label "Template to view document links tree"@en ;
-  rdfs:comment "Дерево"@ru ;
-  rdfs:label "Tree"@en ;
-  v-ui:template """
-<script>
-  try {
-    var type = individual["rdf:type"][0];
-    var classLinksTree = type["v-s:hasClassLinksTree"][0];
-    var treeConfig = {
-      root: [ individual ],
-      displayedProperty: [ new veda.IndividualModel("rdf:type"), new veda.IndividualModel("rdfs:label") ],
-      inProperty: classLinksTree["v-s:inProperty"],
-      outProperty: classLinksTree["v-s:outProperty"]
-    };
-    individual.treeConfig = treeConfig;
-  } catch (error) {
-    console.log(error);
-    individual.treeConfig = {
-      root: [ individual ],
-      displayedProperty: [ new veda.IndividualModel("rdf:type"), new veda.IndividualModel("rdfs:label") ]
-    };
-  }
-//# sourceURL=v-s:LinksTreeTemplate_pre
-</script>
-<div about="@" data-template="v-ui:TreeTemplate"></div>
-""" ;
-.
-
 v-s:LinksTreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
@@ -273,6 +242,9 @@ v-s:LinksTreeTemplate
       list-style-type: none;
       padding-left: 18px;
     }
+    li {
+      margin: 10px 0;
+    }
   </style>
   <div class="links-tree" about="@" data-template="v-s:LinksTreeRecursiveTemplate"></div>
 </div>
@@ -288,25 +260,25 @@ v-s:LinksTreeRecursiveTemplate
   v-ui:template """
 <script>
   var type = individual["rdf:type"][0];
-  var classLinksTree;
-  if ( !type.hasValue("v-s:hasClassLinksTree") ) {
-    classLinksTree = new veda.IndividualModel();
-    classLinksTree["rdf:type"] = [ new veda.IndividualModel("v-s:ClassLinksTree") ];
-    classLinksTree["v-s:outProperty"] = [ new veda.IndividualModel("v-s:hasLink") ];
-    classLinksTree["v-s:allowedType"] = [ new veda.IndividualModel("v-s:Link") ];
+  var linksTree;
+  if ( !type.hasValue("v-s:hasLinksTree") ) {
+    linksTree = new veda.IndividualModel();
+    linksTree["rdf:type"] = [ new veda.IndividualModel("v-s:LinksTree") ];
+    linksTree["v-s:outProperty"] = [ new veda.IndividualModel("v-s:hasLink") ];
+    linksTree["v-s:allowedType"] = [ new veda.IndividualModel("v-s:Link") ];
   } else {
-    classLinksTree = type["v-s:hasClassLinksTree"][0];
+    linksTree = type["v-s:hasLinksTree"][0];
   }
-  var inPropertiesUris = classLinksTree["v-s:inProperty"].map(function (property) {
+  var inPropertiesUris = linksTree["v-s:inProperty"].map(function (property) {
     return property.id;
   });
-  var outPropertiesUris = classLinksTree["v-s:outProperty"].map(function (property) {
+  var outPropertiesUris = linksTree["v-s:outProperty"].map(function (property) {
     return property.id;
   });
   if ( outPropertiesUris.indexOf("v-s:hasLink") < 0 ) {
     outPropertiesUris.push("v-s:hasLink");
   }
-  var allowedTypesUris = classLinksTree["v-s:allowedType"].map(function (allowedType) {
+  var allowedTypesUris = linksTree["v-s:allowedType"].map(function (allowedType) {
     return allowedType.id;
   });
   if ( allowedTypesUris.indexOf("v-s:Link") < 0 ) {
@@ -355,6 +327,10 @@ v-s:LinksTreeRecursiveTemplate
           });
         }).then(function () {
           $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+        }).then(function () {
+          if ( !typeLinksContainer.children().length ) {
+            $this.parent().hide(350, function () { $(this).remove() });
+          }
         });
       } else {
         $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
@@ -412,10 +388,11 @@ v-s:LinksTreeRecursiveTemplate
 </script>
 <ul class="link-node">
   <li>
-    <a href="#" class="glyphicon glyphicon-chevron-right expand"></a> <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+    <a href="#" class="glyphicon glyphicon-chevron-right expand"></a> <span about="@" data-template="v-s:TrimmedLinkTemplate"></span>
+    <hr class="margin-sm">
     <ul class="allowed-types hidden">
       <li>
-        <a href="#" class="glyphicon glyphicon-chevron-right expand-type"></a> <span about="@" property="rdfs:label"></span>
+        <a href="#" class="glyphicon glyphicon-chevron-right expand-type"></a> <span class="fa fa-folder-open-o"></span> <strong about="@" property="rdfs:label"></strong>
         <div class="type-links hidden"></div>
       </li>
     </ul>
@@ -425,6 +402,30 @@ v-s:LinksTreeRecursiveTemplate
 //# sourceURL=v-s:LinksTreeRecursiveTemplate_post
 </script>
 """ ;
+.
+
+v-s:TrimmedLinkTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Template with class name and label"@en ;
+  v-ui:template """
+  <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <script>
+    var re = new RegExp(".*?:");
+    var label = template.text();
+    template.attr("title", label);
+    if (label.length > 70) {
+      label = label.replace(re, function (typeName) {
+        return typeName.split(" ").reduce(function (abbr, word) {
+          return abbr += word.charAt(0);
+        }, "").toUpperCase() + ":";
+      });
+      label = label.substring(0, 70) + "...";
+      template.text(label);
+    }
+    //# sourceURL=v-s:TrimmedLinkTemplate_post
+  </script>
+  """ ;
 .
 
 v-s:LinksGraphTemplate
