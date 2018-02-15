@@ -289,7 +289,7 @@ v-s:LinksTreeRecursiveTemplate
 <script>
   var type = individual["rdf:type"][0];
   var classLinksTree;
-  if ( type.hasValue("v-s:hasClassLinksTree") ) {
+  if ( !type.hasValue("v-s:hasClassLinksTree") ) {
     classLinksTree = new veda.IndividualModel();
     classLinksTree["rdf:type"] = [ new veda.IndividualModel("v-s:ClassLinksTree") ];
     classLinksTree["v-s:outProperty"] = [ new veda.IndividualModel("v-s:hasLink") ];
