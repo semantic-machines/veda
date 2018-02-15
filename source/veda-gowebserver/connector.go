@@ -386,7 +386,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 
 	rr.CommonRC = Ok
 	if err != nil {
-		log.Printf("@ERR GET INDIVIDUAL FROM LMDB %s\n", err)
+		log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %s, keys=%s\n", err, uris)
 		rr.CommonRC = InternalServerError
 	}
 	/*	if trace {
@@ -732,7 +732,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	rr.CommonRC = Ok
 	if err != nil {
-		log.Println("@ERR GET INDIVIDUAL FROM LMDB")
+		log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
 		rr.CommonRC = InternalServerError
 	}
 

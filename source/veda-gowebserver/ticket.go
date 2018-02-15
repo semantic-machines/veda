@@ -192,7 +192,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	socket.Send(jsonRequest, 0)
 	responseBuf, _ := socket.Recv(0)
 	responseJSON := make(map[string]interface{})
-	err = json.Unmarshal(responseBuf[:len(responseBuf)-1], &responseJSON)
+	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
 		log.Printf("@ERR GET_TICKET_TRUSTED: DECODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))

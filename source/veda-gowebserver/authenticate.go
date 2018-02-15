@@ -29,7 +29,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	responseBuf, _ := socket.Recv(0)
 	//decoding authenticate response json
 	responseJSON := make(map[string]interface{})
-	err = json.Unmarshal(responseBuf[:len(responseBuf)-1], &responseJSON)
+	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
 		log.Printf("@ERR MODIFY AUTHENTICATE: DECODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
