@@ -58,7 +58,6 @@ extern (C) void handleTermination2(int _signal)
 
 private Context l_context;
 
-private VQL     vql_r;
 private Ticket  sticket;
 
 void main(char[][] args)
@@ -174,8 +173,6 @@ void init(string node_id)
 
         core_context = PThreadContext.create_new(node_id, "core_context-mstorage", log, null);
         l_context    = core_context;
-
-        vql_r = l_context.get_vql();
 
         sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
@@ -372,7 +369,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     return ticket;
 }
 
-private Ticket authenticate(string login, string password)
+private Ticket authenticate(Context ctx, string login, string password)
 {
     StopWatch sw; sw.start;
 
@@ -389,7 +386,10 @@ private Ticket authenticate(string login, string password)
     login = replaceAll(login, regex(r"[-]", "g"), " +");
 
     Individual[] candidate_users;
-    vql_r.get(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    string query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+    
+    ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+
     foreach (user; candidate_users)
     {
         string user_id = user.getFirstResource("v-s:owner").uri;
@@ -480,7 +480,7 @@ public string execute_json(string in_msg, Context ctx)
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
 
-            Ticket    ticket = authenticate(login.str, password.str);
+            Ticket    ticket = authenticate(ctx, login.str, password.str);
 
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
