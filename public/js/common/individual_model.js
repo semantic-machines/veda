@@ -565,13 +565,19 @@ veda.Module(function (veda) { "use strict";
     var self = this;
     var isClass = this.hasValue("rdf:type", "owl:Class") || this.hasValue("rdf:type", "rdfs:Class");
     if ( this.hasValue("v-ui:hasModel") && !isClass ) {
-      var model = new Function(this["v-ui:hasModel"][0]["v-s:script"][0]);
-      model.call(this);
+      var model = this["v-ui:hasModel"][0];
+      if ( !model.modelFn ) {
+        model.modelFn = new Function(model["v-s:script"][0]);
+      }
+      model.modelFn.call(this);
     } else {
       self["rdf:type"].map(function (_class) {
-        if ( _class.hasValue("v-ui:hasModel") && _class["v-ui:hasModel"][0].hasValue("v-s:script") ) {
-          var model = new Function(_class["v-ui:hasModel"][0]["v-s:script"][0]);
-          model.call(self);
+        if ( _class.hasValue("v-ui:hasModel") ) {
+          var model = _class["v-ui:hasModel"][0];
+          if ( !model.modelFn ) {
+            model.modelFn = new Function(model["v-s:script"][0]);
+          }
+          model.modelFn.call(self);
         }
       });
     }
