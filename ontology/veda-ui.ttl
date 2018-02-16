@@ -1829,7 +1829,7 @@ v-ui:DocumentEventTemplate
   v-ui:template """
 <script>
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  if (individual.hasValue("v-s:actor") && individual['v-s:actor'][0].id === 'cfg:VedaSystem') {
+  if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) {
     //template.hide();
     template.empty();
   }
@@ -1838,12 +1838,15 @@ v-ui:DocumentEventTemplate
     $("div[rel='v-s:processJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-s:ProcessStarted') {
+  if (individual.hasValue("rdf:type", "v-s:ProcessStarted")) {
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
     var process = individual['v-wf:onProcess'][0];
-    if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
-        (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
+    if (
+      (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
+      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
+      && process.rights.hasValue("v-s:canDelete")
+    ) {
       $(".stop-process", template).show();
     }
     if (process.hasValue("v-wf:isStopped", true)) {
@@ -1851,7 +1854,7 @@ v-ui:DocumentEventTemplate
       $(".start-process > .glyphicon-minus-sign", template).show();
     }
   }
-  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-wf:ProcessStopped') {
+  if (individual.hasValue("rdf:type", "v-wf:ProcessStopped")) {
     $(".row", template).addClass('text-danger');
   }
   //# sourceURL=v-ui:DocumentEventTemplate_pre
