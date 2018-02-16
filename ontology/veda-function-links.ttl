@@ -371,7 +371,7 @@ v-s:LinksTreeRecursiveTemplate
       return "'" + inPropertyUri + "'==='" + individual.id + "'";
     }).join("||");
     var q = allowedTypeUriQuery + " && (" + inPropertiesUrisQuery + ")";
-    return !inPropertiesUrisQuery ? Promise.resolve([]) : query({
+    return !inPropertiesUrisQuery || allowedTypeUri === "v-s:Link" ? Promise.resolve([]) : query({
       ticket: veda.ticket,
       query: q,
       limit: 500,
@@ -409,7 +409,7 @@ v-s:TrimmedLinkTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
   <script>
     var re = new RegExp(".*?:");
     var label = template.text();
