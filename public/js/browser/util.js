@@ -13,6 +13,19 @@ veda.Module(function Util(veda) { "use strict";
     }
   };
 
+  veda.Util.hash = function (str) {
+    var hash = 0, char;
+    if (str.length === 0) {
+        return hash;
+    }
+    for (var i = 0; i < str.length; i++) {
+      char = str.charCodeAt(i);
+      hash = ((hash<<5)-hash)+char;
+      hash = hash & hash;
+    }
+    return hash;
+  }
+
   veda.Util.processQuery = function (q, sort, limit, delta, pause, fn) {
     if (typeof q === "object") {
       sort  = q.sort;
