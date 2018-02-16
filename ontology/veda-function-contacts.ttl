@@ -211,7 +211,7 @@ v-s:ContactsSearchResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td about="@" data-template="v-ui:IconModalTemplate"></td>
       <td about="@" property="v-s:lastName"></td>
       <td about="@" property="v-s:firstName"></td>

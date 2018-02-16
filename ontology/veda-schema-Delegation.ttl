@@ -300,7 +300,7 @@ v-s:RequestDelegationRegistryResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-s:delegator" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-s:delegate" data-template="v-ui:LabelTemplate"></td>

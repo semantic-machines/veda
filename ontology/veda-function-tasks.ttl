@@ -564,7 +564,7 @@ v-ft:TaskResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
@@ -656,7 +656,7 @@ v-ft:RelatedTasksResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>

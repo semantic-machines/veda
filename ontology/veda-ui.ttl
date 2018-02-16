@@ -1619,10 +1619,33 @@ v-ui:SimplifiedJournalTemplate
   var tbody = $("#tbody", template);
   var task_template = tbody.html();
   tbody.empty();
-  this.tmpl = task_template;
-
   var doc_uri = this.id.replace(/.$/, "");
   var doc = new veda.IndividualModel(doc_uri);
+  $("#refresh", template).click(buildJournal);
+  buildJournal();
+
+  function buildJournal() {
+    tbody.empty();
+    var tasks = query({
+      ticket: veda.ticket,
+      query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
+      sort: "'v-s:created' asc",
+      async: true
+    }).then(function (query_res) {
+      var tasks_uris = query_res.result;
+      return get_individuals({
+        ticket: veda.ticket,
+        uris: tasks_uris,
+        async: true
+      }).then(function (tasks) {
+        tasks.forEach(function (task, index) {
+          var task_individual = new veda.IndividualModel(task);
+          var renderedTemplate = task_individual.present(tbody, task_template);
+          $(".sequence-number", renderedTemplate).text(index + 1)
+        });
+      });
+    });
+  };
 
   $("#on-document", template).attr("about", doc_uri);
 
@@ -1679,10 +1702,10 @@ v-ui:SimplifiedJournalTemplate
       </thead>
       <tbody id="tbody">
         <tr>
-          <td>###</td>
+          <td class="sequence-number"></td>
           <td property="v-wf:from"></td>
           <td property="v-wf:to"></td>
-          <td><a href="$$$" property="rdfs:label"></a><div property="v-s:description"></div></td>
+          <td><a href="#/@" property="rdfs:label"></a><div property="v-s:description"></div></td>
           <td property="v-s:created"></td>
           <td rel="v-wf:takenDecision">
             <div>
@@ -1702,38 +1725,6 @@ v-ui:SimplifiedJournalTemplate
     <button class="btn btn-default" id="refresh" about="v-s:RefreshBundle" property="rdfs:label"></button>
   </div>
 </div>
-<script>
-  var tbody = $("#tbody", template);
-  var task_template = this.tmpl;
-  $("#refresh", template).click(buildJournal);
-
-  var doc_uri = this.id.replace(/.$/, "");
-
-  buildJournal();
-  function buildJournal() {
-    tbody.empty();
-    var tasks = query({
-      ticket: veda.ticket,
-      query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
-      sort: "'v-s:created' asc",
-      async: true
-    }).then(function (query_res) {
-      var tasks_uris = query_res.result;
-      return get_individuals({
-        ticket: veda.ticket,
-        uris: tasks_uris,
-        async: true
-      }).then(function (tasks) {
-        tasks.forEach(function (task, index) {
-          var task_individual = new veda.IndividualModel(task);
-          var tmpl = task_template.replace("###", index + 1).replace("$$$", "#/@")
-          task_individual.present(tbody, tmpl);
-        });
-      });
-    });
-  };
-  //# sourceURL=v-ui:SimplifiedJournalTemplate_post
-</script>
   """ ;
 .
 v-ui:JournalTemplate

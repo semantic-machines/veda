@@ -703,7 +703,7 @@ v-s:UserScriptResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td property="rdfs:label"></td>
       <td rel="v-s:creator"><span property="rdfs:label"></span></td>
@@ -758,7 +758,7 @@ v-ui:AdminResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td about="@" data-template="v-ui:IconModalTemplate"></td>
       <td property="@" style="word-wrap: break-word; max-width:100px;"></td>
       <!--td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td-->
