@@ -335,7 +335,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
       'rdf:type'     : newUri('v-s:Membership'),
       'v-s:memberOf' : newUri(actualId),
       'v-s:resource' : newUri(versionId),
-      'rdfs:comment' : newStr('создано cfg:Event_3'),
+      'rdfs:comment' : newStr('создано: server script create_version ()'),
       'v-s:canRead'  : newBool(true)
     };
     put_individual (ticket, membership, _event_id);
@@ -401,4 +401,25 @@ function recursiveCall(elem, path, ticket, _event_id) {
       recursiveCall(get_individual(ticket, p.data), path, ticket, _event_id);
     });
   }
+}
+
+function set_err_on_indv (msg, indv, src)
+{
+    var bugreport = {
+      '@' : genUri () + '-err',
+      'rdf:type'     : newUri('v-s:BugReport'),
+      'v-s:created'  : newDate (new Date()),
+      'rdfs:comment' : newStr(src),
+      'v-s:errorMessage' : newStr (msg),
+      'v-s:resource': newUri (indv['@'])
+    };
+    put_individual(ticket, bugreport, _event_id);
+   
+    var add_to_indv = {
+        '@': indv['@'],
+        'v-s:hasError': newUri (bugreport['@'])
+        };
+    add_to_individual(ticket, add_to_indv, _event_id);
+
+    print("ERR! " + src + ':' +  msg);
 }

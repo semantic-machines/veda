@@ -503,7 +503,7 @@ abstract class ImplAuthorization : Authorization
     }
 
 
-    abstract string get_in_current_transaction(string in_key);
+    abstract string get_in_current_transaction(string in_key, int level = 0);
     abstract void abort_transaction();
     abstract bool begin_transaction(bool is_check_for_reload);
 }

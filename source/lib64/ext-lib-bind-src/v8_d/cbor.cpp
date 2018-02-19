@@ -1,3 +1,5 @@
+#define _GLIBCXX_USE_CXX11_ABI 0
+
 #include "cbor.h"
 
 #include <string.h>
@@ -31,30 +33,30 @@ void write_type_value(MajorType type, int64_t value, std::vector<char> &ou)
         {
             element_header = type | 27;
             ou.push_back(element_header);
-	    ou.push_back(value &  0x00000000000000ff);
-	    ou.push_back((value & 0x000000000000ff00) >> 8);
-	    ou.push_back((value & 0x0000000000ff0000) >> 16);
-	    ou.push_back((value & 0x00000000ff000000) >> 24);
-	    ou.push_back((value & 0x000000ff00000000) >> 32);
-	    ou.push_back((value & 0x0000ff0000000000) >> 40);
-	    ou.push_back((value & 0x00ff000000000000) >> 48);
-	    ou.push_back((value & 0xff00000000000000) >> 56);
+            ou.push_back(value &  0x00000000000000ff);
+            ou.push_back((value & 0x000000000000ff00) >> 8);
+            ou.push_back((value & 0x0000000000ff0000) >> 16);
+            ou.push_back((value & 0x00000000ff000000) >> 24);
+            ou.push_back((value & 0x000000ff00000000) >> 32);
+            ou.push_back((value & 0x0000ff0000000000) >> 40);
+            ou.push_back((value & 0x00ff000000000000) >> 48);
+            ou.push_back((value & 0xff00000000000000) >> 56);
         }
         else if (value > 65535)
         {
             element_header = type | 26;
             ou.push_back(element_header);
-	    ou.push_back(value & 0x000000ff);
-	    ou.push_back((value & 0x0000ff00) >> 8);
-	    ou.push_back((value & 0x00ff0000) >> 16);
-	    ou.push_back((value & 0xff000000) >> 24);
+            ou.push_back(value &  0x000000ff);
+            ou.push_back((value & 0x0000ff00) >> 8);
+            ou.push_back((value & 0x00ff0000) >> 16);
+            ou.push_back((value & 0xff000000) >> 24);
         }
         else if (value > 255)
         {
             element_header = type | 25;
             ou.push_back(element_header);
-	    ou.push_back(value & 0xff);
-	    ou.push_back(value >> 8);
+            ou.push_back(value & 0xff);
+            ou.push_back(value >> 8);
         }
         else
         {
@@ -137,7 +139,7 @@ uint32_t read_type_value(const char *src, int b_pos, int e_pos, ElementHeader *h
     {
         d_pos += 1 << (ld - 24);
         if (ld == 24)
-        	ld = ubyte_from_buff(src, b_pos, 1);
+            ld = ubyte_from_buff(src, b_pos, 1);
         else if (ld == 25)
             ld = ushort_from_buff(src, b_pos, 1);
         else if (ld == 26)

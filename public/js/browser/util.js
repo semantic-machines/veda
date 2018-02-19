@@ -13,9 +13,30 @@ veda.Module(function Util(veda) { "use strict";
     }
   };
 
-  veda.Util.processQuery = function (q, limit, delta, pause, fn) {
+  veda.Util.hash = function (str) {
+    var hash = 0, char;
+    if (str.length === 0) {
+        return hash;
+    }
+    for (var i = 0; i < str.length; i++) {
+      char = str.charCodeAt(i);
+      hash = ((hash<<5)-hash)+char;
+      hash = hash & hash;
+    }
+    return hash;
+  }
+
+  veda.Util.processQuery = function (q, sort, limit, delta, pause, fn) {
+    if (typeof q === "object") {
+      sort  = q.sort;
+      limit = q.limit;
+      delta = q.delta;
+      pause = q.pause;
+      fn    = q.fn;
+      q     = q.query;
+    }
     console.log((new Date()).toISOString(), "Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
-    var result = [], append = [].push, fetchingProgress = 0, processingProgress = 0;
+    var result = [], append = [].push, fetchingProgress = 0;
     console.time("Fetching total");
     fetchResult();
     return;
@@ -25,7 +46,7 @@ veda.Module(function Util(veda) { "use strict";
       veda.Backend.query({
         ticket: veda.ticket,
         query: q,
-        sort: "'v-s:created' desc",
+        sort: sort || "'v-s:created' desc",
         from: from,
         top: delta,
         limit: limit
@@ -44,24 +65,32 @@ veda.Module(function Util(veda) { "use strict";
           console.log((new Date()).toString(), "Fetching done:", limit);
           console.timeEnd("Fetching total");
           result.splice(limit - cursor || limit); // cut result to limit
-          console.time("Processing total");
-          processResult(result);
+          veda.Util.processResult(result, delta, pause, fn);
         } else {
           fetchResult(query_result.cursor);
         }
       });
     }
-    function processResult(result) {
-      var portion = result.splice(-delta);
+  };
+
+  veda.Util.processResult = function (result, delta, pause, fn) {
+    var total = result.length;
+    var processingProgress = 0;
+    console.log((new Date()).toISOString(), "Process results |||", "total:", total, " | ", "delta:", delta, " | ", "pause:", pause);
+    console.time("Processing total");
+    processPortion();
+
+    function processPortion() {
+      var portion = result.splice(0, delta);
       portion.forEach( fn );
-      if ( (limit - result.length) / limit - processingProgress >= 0.05 ) {
-        processingProgress = (limit - result.length) / limit;
-        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (limit - result.length), "of", limit + ")");
+      if ( (total - result.length) / total - processingProgress >= 0.05 ) {
+        processingProgress = (total - result.length) / total;
+        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
       }
       if ( result.length ) {
-        setTimeout(processResult, pause, result);
+        setTimeout(processPortion, pause);
       } else {
-        console.log("Processing done:", limit);
+        console.log("Processing done:", total);
         console.timeEnd("Processing total");
       }
     }

@@ -6,7 +6,7 @@ import vibe.d, vibe.core.core, vibe.core.log, vibe.core.task, vibe.inet.mimetype
 import veda.util.properd, TrailDB, veda.authorization.az_client;
 import veda.common.type, veda.core.common.context, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.log_msg;
 import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.frontend.individual8vjson;
-import veda.frontend.cbor8vjson, veda.util.queue, veda.storage.storage;
+import veda.frontend.cbor2vjson, veda.frontend.msgpack2vjson, veda.util.queue, veda.storage.storage;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -57,10 +57,9 @@ static this() {
 //////////////////////////////////////////////////// Rest API /////////////////////////////////////////////////////////////////
 
 interface VedaStorageRest_API {
-
     @path("authorize") @method(HTTPMethod.GET)
     ubyte authorize(string ticket, string uri, ubyte access);
-    
+
     /**
      * получить для индивида список прав на ресурс.
      * Params: ticket = указывает на индивида
@@ -426,9 +425,9 @@ class VedaStorageRest : VedaStorageRest_API
                     json ~= individual_to_json(indv_res);
                 }
             }
-            
+
             foreach (individual; res)
-                json ~= individual_to_json(individual);            
+                json ~= individual_to_json(individual);
 
             return json;
         }
@@ -749,7 +748,15 @@ class VedaStorageRest : VedaStorageRest_API
                     if (rc == ResultCode.OK)
                     {
                         Json res_i = Json.emptyObject;
-                        cbor2json(&res_i, cb);
+
+                        if (cb.length > 0)
+                        {
+                            if (cb[ 0 ] == 0xFF)
+                                msgpack2json(&res_i, cb);
+                            else
+                                cbor2json(&res_i, cb);
+                        }
+
                         res ~= res_i;
                         args ~= uri;
                     }
@@ -868,7 +875,14 @@ class VedaStorageRest : VedaStorageRest_API
                     if (rc == ResultCode.OK)
                     {
                         res = Json.emptyObject;
-                        cbor2json(&res, cb);
+
+                        if (cb.length > 0)
+                        {
+                            if (cb[ 0 ] == 0xFF)
+                                msgpack2json(&res, cb);
+                            else
+                                cbor2json(&res, cb);
+                        }
                     }
                 }
             }
@@ -1099,7 +1113,7 @@ class VedaStorageRest : VedaStorageRest_API
              uri
 
    Returns:
-            авторизованный индивид в виде строки CBOR
+            авторизованный индивид в виде строки содержащей бинарный обьект
  */
 string get_individual_as_binobj(Storage storage, Ticket *ticket, string uri, out ResultCode rs, bool is_trace)
 {
@@ -1320,12 +1334,15 @@ private OpResult[] parseOpResults(string str)
         if (jtype.get!string == "OpResult")
         {
             auto jdata = jresp[ "data" ];
-            foreach (idata; jdata)
+            if (jdata.type is Json.Type.Array)
             {
-                OpResult res;
-                res.op_id  = idata[ "op_id" ].to!long;
-                res.result = cast(ResultCode)idata[ "result" ].to!int;
-                ress ~= res;
+                foreach (idata; jdata)
+                {
+                    OpResult res;
+                    res.op_id  = idata[ "op_id" ].to!long;
+                    res.result = cast(ResultCode)idata[ "result" ].to!int;
+                    ress ~= res;
+                }
             }
         }
     }

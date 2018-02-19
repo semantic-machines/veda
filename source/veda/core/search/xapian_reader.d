@@ -177,7 +177,7 @@ class XapianReader : SearchReader
             int idx = 0;
             foreach (el; db_names)
             {
-                if (el[ 0 ] == ' ' || el[ $-1 ] == ' ')
+                if (el[ 0 ] == ' ' || el[ $ - 1 ] == ' ')
                     db_names[ idx ] = strip(el);
                 idx++;
             }
@@ -307,7 +307,7 @@ class XapianReader : SearchReader
         }
 
         //log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.count, sr.processed);
- 
+
         return sr;
     }
 

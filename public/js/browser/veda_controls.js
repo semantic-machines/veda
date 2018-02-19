@@ -131,10 +131,8 @@
     parser: function (input) {
       if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
         return moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).toDate();
-      } else if ( !isNaN( parseFloat( input.split(" ").join("").split(",").join(".") ) ) ) {
+      } else if ( !isNaN( input.split(" ").join("").split(",").join(".") ) ) {
         return parseFloat( input.split(" ").join("").split(",").join(".") );
-      } else if ( !isNaN( parseInt( input.split(" ").join("").split(",").join("."), 10 ) ) ) {
-        return parseInt( input.split(" ").join("").split(",").join("."), 10 );
       } else if ( input === "true" ) {
         return true;
       } else if ( input === "false" ) {
@@ -1236,8 +1234,8 @@
 
   // FILE UPLOAD CONTROL
   function uploadFile(file, acceptedFileType, success, progress) {
+    var notify = new veda.Notify();
     if (file instanceof File) {
-      var notify = new veda.Notify();
       var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
       if (acceptedFileType && acceptedFileType.split(",").indexOf(ext) < 0) {
         return notify("danger", {message: "Тип файла не разрешен (" + acceptedFileType + ")"});
@@ -1252,9 +1250,16 @@
     xhr.open("POST", url, true);
     xhr.upload.onprogress = progress;
     xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        success(file, path, uri);
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          success(file, path, uri);
+        } else {
+          notify("danger", {code: xhr.status, message: "File upload error"});
+        }
       }
+    };
+    xhr.onerror = function() {
+      notify("danger", {message: "File upload error"});
     };
     fd.append("path", path);
     fd.append("uri", uri);
@@ -1396,13 +1401,6 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined,
       sort = spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
-      root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
-      inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
-      outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
-      allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
-      selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
-      selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
-      displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ],
       rel_uri = opts.rel_uri,
       isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       create = $(".create", control),
@@ -1526,35 +1524,44 @@
     }
 
     // Tree feature
-    if (
-      (this.hasClass("tree") || this.hasClass("full"))
-      && (root && (inProperty || outProperty))
-    ) {
-      var treeConfig = {
-        root: root,
-        targetRel_uri: rel_uri,
-        inProperty: inProperty,
-        outProperty: outProperty,
-        sort: sort,
-        allowedClass: allowedClass,
-        selectableClass: selectableClass,
-        selectableFilter: selectableFilter,
-        displayedProperty: displayedProperty
-      };
-      var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
-      var modal = $("#individual-modal-template").html();
-      tree.click(function () {
-        individual.treeConfig = treeConfig;
-        var $modal = $(modal);
-        var cntr = $(".modal-body", $modal);
-        $modal.on('hidden.bs.modal', function (e) {
-          $modal.remove();
-          delete individual.treeConfig;
+    if ( this.hasClass("tree") || this.hasClass("full") ) {
+      var root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
+          inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
+          outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
+          allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
+          selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
+          selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
+          displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
+
+      if (root && (inProperty || outProperty)) {
+        var treeConfig = {
+          root: root,
+          targetRel_uri: rel_uri,
+          inProperty: inProperty,
+          outProperty: outProperty,
+          sort: sort,
+          allowedClass: allowedClass,
+          selectableClass: selectableClass,
+          selectableFilter: selectableFilter,
+          displayedProperty: displayedProperty
+        };
+        var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
+        var modal = $("#individual-modal-template").html();
+        tree.click(function () {
+          individual.treeConfig = treeConfig;
+          var $modal = $(modal);
+          var cntr = $(".modal-body", $modal);
+          $modal.on('hidden.bs.modal', function (e) {
+            $modal.remove();
+            delete individual.treeConfig;
+          });
+          $modal.modal();
+          $("body").append($modal);
+          individual.present(cntr, treeTmpl);
         });
-        $modal.modal();
-        $("body").append($modal);
-        individual.present(cntr, treeTmpl);
-      });
+      } else {
+        tree.remove();
+      }
     } else {
       tree.remove();
     }

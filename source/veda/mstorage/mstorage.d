@@ -58,9 +58,6 @@ extern (C) void handleTermination2(int _signal)
 
 private Context l_context;
 
-private VQL     vql_r;
-private Ticket  sticket;
-
 void main(char[][] args)
 {
     Tid[ P_MODULE ] tids;
@@ -122,7 +119,7 @@ void ev_LWS_CALLBACK_CLIENT_WRITEABLE(lws *wsi)
 
 void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
 {
-    //writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
+    //stderr.writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
     string res;
 
     if (rc == ResultCode.OK)
@@ -158,6 +155,7 @@ class VedaServer : WSClient
 void init(string node_id)
 {
     Context core_context;
+	Ticket    sticket;
 
     if (node_id is null || node_id.length < 2)
         node_id = "cfg:standart_node";
@@ -174,8 +172,6 @@ void init(string node_id)
 
         core_context = PThreadContext.create_new(node_id, "core_context-mstorage", log, null);
         l_context    = core_context;
-
-        vql_r = l_context.get_vql();
 
         sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
@@ -282,14 +278,18 @@ void commiter(string thread_name)
 
 private KeyValueDB inividuals_storage_r;
 
-private Individual get_individual(Ticket *ticket, string uri)
+private Individual get_individual(Context ctx, Ticket *ticket, string uri)
 {
     if (inividuals_storage_r is null)
-    {
-        inividuals_storage_r = l_context.get_storage().get_inividuals_storage_r();
-    }
+        inividuals_storage_r = ctx.get_storage().get_inividuals_storage_r();
 
     Individual individual = Individual.init;
+
+    if (inividuals_storage_r is null)
+    {
+        log.trace("ERR! storage not ready");
+        return individual;
+    }
 
     if (ticket is null)
     {
@@ -354,10 +354,10 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
 
     long       op_id;
     ResultCode rc =
-        ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
-                                     -1, 0,
-                                     OptFreeze.NONE,
-                                     op_id);
+        ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
+                                   -1, 0,
+                                   OptFreeze.NONE,
+                                   op_id);
     ticket.result = rc;
 
     if (rc == ResultCode.OK)
@@ -372,11 +372,12 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     return ticket;
 }
 
-private Ticket authenticate(string login, string password)
+private Ticket authenticate(Context ctx, string login, string password)
 {
     StopWatch sw; sw.start;
 
     Ticket    ticket;
+    Ticket    sticket = ctx.sys_ticket(true);
 
     if (trace_msg[ T_API_70 ] == 1)
         log.trace("authenticate, login=[%s] password=[%s]", login, password);
@@ -389,10 +390,13 @@ private Ticket authenticate(string login, string password)
     login = replaceAll(login, regex(r"[-]", "g"), " +");
 
     Individual[] candidate_users;
-    vql_r.get(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'", null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    string query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+    
+    ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+
     foreach (user; candidate_users)
     {
-        string user_id = user.getFirstResource(veda_schema__owner).uri;
+        string user_id = user.getFirstResource("v-s:owner").uri;
         if (user_id is null)
             continue;
 
@@ -401,7 +405,7 @@ private Ticket authenticate(string login, string password)
         if (usesCredential_uri !is null)
         {
             log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-            Individual i_usesCredential = get_individual(&sticket, usesCredential_uri);
+            Individual i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
             pass = i_usesCredential.getFirstLiteral("v-s:password");
         }
         else
@@ -480,7 +484,7 @@ public string execute_json(string in_msg, Context ctx)
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
 
-            Ticket    ticket = authenticate(login.str, password.str);
+            Ticket    ticket = authenticate(ctx, login.str, password.str);
 
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
@@ -731,9 +735,9 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
             long op_id;
-            ticket_storage_module.update(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
-                                         -1, 0, OptFreeze.NONE,
-                                         op_id);
+            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
+                                       -1, 0, OptFreeze.NONE,
+                                       op_id);
             log.trace("systicket [%s] was created", ticket.id);
 
             Individual sys_account_permission;
@@ -786,7 +790,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         if (items.length > 0)
         {
-            rc = indv_storage_thread.update(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+            rc = indv_storage_thread.save(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
 
             log.trace("commit: rc=%s", rc);
 
@@ -960,7 +964,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
             new_state = prev_indv.serialize();
-
             if (new_state.length > max_size_of_individual)
             {
                 res.result = ResultCode.Size_too_large;
@@ -978,14 +981,14 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                               res.op_id);
+                    indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                             res.op_id);
 
                 if (res.result == ResultCode.OK)
                 {
                     res.result =
-                        indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
-                                                   res.op_id);
+                        indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                                                 res.op_id);
                 }
             }
             else
@@ -1006,7 +1009,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
             new_state = indv.serialize();
-
             if (new_state.length > max_size_of_individual)
             {
                 res.result = ResultCode.Size_too_large;
@@ -1020,8 +1022,8 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.update(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                               res.op_id);
+                    indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                             res.op_id);
             }
             else
             {
@@ -1038,7 +1040,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     finally
     {
         if (res.result != ResultCode.OK)
-            log.trace("ERR! add_to_transaction:no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text(res.result),
+            log.trace("ERR! add_to_transaction (%s): no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text(cmd), text(res.result),
                       indv !is null ? text(*indv) : "null",
                       ticket !is null ? text(*ticket) : "null");
 
@@ -1184,7 +1186,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
                                                                          OptAuthorize.NO);
             foreach (user; candidate_users)
             {
-                string user_id = user.getFirstResource(veda_schema__owner).uri;
+                string user_id = user.getFirstResource("v-s:owner").uri;
                 if (user_id is null)
                     continue;
 

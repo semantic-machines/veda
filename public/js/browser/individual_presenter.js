@@ -132,26 +132,25 @@ veda.Module(function (veda) { "use strict";
       });
   }
 
-  function preProcess(template) {
+  function preProcess(templateString) {
     var pre,
-        preStart = template.indexOf("<script>") + 8,
-        preEnd = template.indexOf("</script>"),
+        preStart = templateString.indexOf("<script>") + 8,
+        preEnd = templateString.indexOf("</script>"),
         hasPre = preStart === 8;
     if (hasPre) {
-      pre = template.substring(preStart, preEnd);
-      template = template.substring(preEnd + 9);
+      pre = templateString.substring(preStart, preEnd);
+      templateString = templateString.substring(preEnd + 9);
     }
-
     var post,
-        postStart = template.lastIndexOf("<script>") + 8,
-        postEnd = template.lastIndexOf("</script>"),
-        hasPost = postEnd === template.length - 9;
+        postStart = templateString.lastIndexOf("<script>") + 8,
+        postEnd = templateString.lastIndexOf("</script>"),
+        hasPost = postEnd === templateString.length - 9;
     if (hasPost) {
-      post = template.substring(postStart, postEnd);
-      template = template.substring(0, postStart - 8);
+      post = templateString.substring(postStart, postEnd);
+      templateString = templateString.substring(0, postStart - 8);
     }
     // Compatible with regexp
-    return [undefined, pre, template, post];
+    return [undefined, pre, templateString, post];
   }
 
   function processTemplate (individual, container, template, mode) {

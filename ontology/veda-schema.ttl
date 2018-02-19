@@ -218,6 +218,8 @@ v-s:DocumentKind
   rdfs:label "Вид документа"@ru ;
   rdfs:label "Document kind"@en ;
 .
+# v-s:hasNormativeDocument
+
 ### veda-workflow
 
 
@@ -605,3 +607,145 @@ v-s:Directory
 .
 # v-s:childUnit
 # v-s:parentUnit
+# rdfs:label
+
+v-s:DirectoryTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Directory ;
+  rdfs:label "Template for v-s:Directory class"@en ;
+  rdfs:label "Шаблон для класса v-s:Directory"@ru ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Directory" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+   <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+  <div id="parentUnit">
+    <h3 about="v-s:parentUnit" property="rdfs:label" class="view edit -search" ></h3>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="view edit -search active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+          <th width="30%" about="rdf:type" property="rdfs:label"></th>
+          <th about="rdfs:label" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="v-s:parentUnit">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div property="rdf:type" class="view -edit -search"></div>
+          </td>
+          <td>
+            <div property="rdfs:label" class="view -edit -search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br>
+  <div id="childUnit">
+    <h3 about="v-s:childUnit" property="rdfs:label" class="view edit -search" ></h3>
+    <table class="table table-condensed table-bordered">
+      <thead>
+        <tr class="view edit -search active">
+          <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+          <th width="30%" about="rdf:type" property="rdfs:label"></th>
+          <th about="rdfs:label" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody rel="v-s:childUnit">
+        <tr>
+          <td about="@" data-template="v-ui:IconModalTemplate"></td>
+          <td>
+            <div property="rdf:type" class="view -edit -search"></div>
+          </td>
+          <td>
+            <div property="rdfs:label" class="view -edit -search"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br>
+  <div id="systemProperties">
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  </div><!--#systemProperties-->
+
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions view edit -search">
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></div>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:Directory_Event
+  rdf:type v-s:Event ;
+  v-s:triggerByType v-s:Directory;
+  v-s:preventByType v-s:Version;
+  rdfs:label "Обработчик каталогов" ;
+  rdfs:comment """
+При сохранении индивида класса v-s:Directory, помещать его в группу индивида, указанного в v-s:parentUnit
+При сохранении индивида класса v-s:Directory, все индивды, указанные в v-s:childUnit помещать в группу сохраняемого индивида.
+  """ ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = user whose actions triggered event
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+var directory_uri = document['@'];
+var parents = document["v-s:parentUnit"];
+var children = document["v-s:childUnit"];
+var deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+
+if (parents) {
+  parents.forEach(function (parent) {
+    var parent_uri = parent.data;
+    var membership_uri = 'd:membership_' + directory_uri.split(':').join('_') + '_' + parent_uri.split(':').join('_');
+    if (deleted) {
+      remove_individual(ticket, membership_uri, _event_id);
+    } else {
+      var membership = {
+        '@' : membership_uri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : newUri(parent_uri),
+        'v-s:resource' : newUri(directory_uri),
+        'rdfs:comment' : newStr('создано автоматически в обработчике v-s:Directory_Event')
+      };
+      print("this directory -> parent directory:", directory_uri, "->", parent_uri);
+      put_individual(ticket, membership, _event_id);
+    }
+  });
+}
+
+if (children) {
+  parents.forEach(function (child) {
+    var child_uri = child.data;
+    var membership_uri = 'd:membership_' + child_uri.split(':').join('_') + '_' + directory_uri.split(':').join('_');
+    if (deleted) {
+      remove_individual(ticket, membership_uri, _event_id);
+    } else {
+      var membership = {
+        '@' : membership_uri,
+        'rdf:type'     : newUri('v-s:Membership'),
+        'v-s:memberOf' : newUri(directory_uri),
+        'v-s:resource' : newUri(child_uri),
+        'rdfs:comment' : newStr('создано автоматически в обработчике v-s:Directory_Event')
+      };
+      print("children -> this directory:", child_uri, "->", directory_uri);
+      put_individual(ticket, membership, _event_id);
+    }
+  });
+}
+  """ ;
+.

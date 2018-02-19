@@ -21,7 +21,7 @@ if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
     export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
     export GOPATH=$HOME/go
     rm ./veda-ccus
-    go build -o veda-ccus source/ccus/src/ccus/individual.go source/ccus/src/ccus/binobj2individual.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
+    go build -o veda-ccus  source/ccus/src/ccus/cbor_tags.go source/ccus/src/ccus/binobj2map.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
     echo make end VEDA-CCUS
 fi
 
@@ -84,6 +84,15 @@ if [ -z $1 ] || [ $1 == "lmdb-server" ] || [ $1 == "veda-lmdb-server" ] ; then
   cp ./target/release/veda-lmdb-server $BUILD_PATH/veda-lmdb-server      
   cd $BUILD_PATH
 fi
+
+if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
+    cd source/veda-gowebserver
+    go build
+    cd ..
+    cd ..
+    cp source/veda-gowebserver/veda-gowebserver ./
+fi
+
 
 #if [ -z $1 ] || [ $1 == "db_handler" ] ; then
 #  cd source/rust_db_handler/db_handler

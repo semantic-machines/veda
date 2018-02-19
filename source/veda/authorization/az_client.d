@@ -58,7 +58,7 @@ class ClientAuthorization : Authorization
 
             string req = buff.toString();
 
-            bytes = nn_send(sock, cast(char *)req, req.length + 1, 0);
+            bytes = nn_send(sock, cast(char *)req, req.length, 0);
             //stderr.writefln("AZCL send [%d](%s)", req.length, req);
             bytes = nn_recv(sock, &buf, NN_MSG, 0);
             if (bytes > 0)

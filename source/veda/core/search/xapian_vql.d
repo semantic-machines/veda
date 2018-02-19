@@ -258,8 +258,8 @@ class XapianVQL
                     {
                         foreach (classz; subclasses.keys)
                             rs ~= " OR " ~ classz;
-                            
-                        rs = to_lower_and_replace_delimeters(rs);                            
+
+                        rs = to_lower_and_replace_delimeters(rs);
                     }
                 }
 

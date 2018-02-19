@@ -1,7 +1,7 @@
 /**
- * core API
+ * Межмодульное API
 
-   Copyright: © 2014-2017 Semantic Machines
+   Copyright: © 2014-2018 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
 
@@ -25,9 +25,6 @@ public struct SearchResult
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
-/**
- * Внешнее API - Интерфейс
- */
 interface Context
 {
     Storage get_storage();

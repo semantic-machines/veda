@@ -1,0 +1,444 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/veda-function-links>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология функции связей"@ru ;
+  rdfs:label "LInks function ontology"@en ;
+  v-s:loadPriority 9 ;
+.
+
+# ---------------- Class links tree -----------------
+
+v-s:LinksTree
+  rdf:type owl:Class ;
+  rdfs:label "Настройки ссылок для класса"@ru ;
+  rdfs:label "Class links setting"@en ;
+.
+
+v-s:hasLinksTree
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Дерево ссылок для класса"@ru ;
+  rdfs:label "Class links tree"@en ;
+  rdfs:domain rdfs:Class ;
+  rdfs:range v-s:LinksTree ;
+.
+
+v-s:inProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Входящие свойства"@ru ;
+  rdfs:label "In properties"@en ;
+  rdfs:domain v-s:LinksTree ;
+  rdfs:range rdf:Property ;
+.
+
+v-s:outProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Исходящие свойства"@ru ;
+  rdfs:label "Out properties"@en ;
+  rdfs:domain v-s:LinksTree ;
+  rdfs:range rdf:Property ;
+.
+
+v-s:allowedType
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Исходящие свойства"@ru ;
+  rdfs:label "Out properties"@en ;
+  rdfs:domain v-s:LinksTree ;
+  rdfs:range rdfs:Class ;
+.
+
+
+# ---------------- Link template -----------------
+
+v-s:PSHasLinkThing
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:hasLink для класса v-s:Thing"@ru ;
+  rdfs:label "Specification v-s:hasLink for v-s:Thing class"@en ;
+  v-ui:forClass v-s:Thing ;
+  v-ui:forProperty v-s:hasLink ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PSFromToForLink
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойств from to для класса v-s:Link"@ru ;
+  rdfs:label "Specification from to for v-s:Link class"@en ;
+  v-ui:forClass v-s:Link ;
+  v-ui:forProperty v-s:from, v-s:to ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
+.
+
+v-s:LinksTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения связей документа"@ru ;
+  rdfs:label "Template to view document links"@en ;
+  v-ui:template """
+<script>
+  template.one("remove", function () {
+    individual.activeTab = $("#links-tabs li.active a", template).attr("href");
+  });
+  individual.activeTab = individual.activeTab || "#links-list";
+  $("#links-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
+  $("#links-tabs-content " + individual.activeTab, template).addClass("active");
+
+//# sourceURL=v-s:LinksTemplate_pre
+</script>
+<div class="container sheet">
+  <br>
+  <ul class="nav nav-tabs nav-right" role="tablist" id="links-tabs">
+    <li role="presentation" class="pull-left"><h3 class="no-margin" about="v-s:hasLink" property="rdfs:label"></h3></li>
+    <!--li role="presentation"><a href="#links-graph" role="tab" data-toggle="tab" about="v-s:LinksGraphTemplate" property="rdfs:comment"></a></li-->
+    <li role="presentation"><a href="#links-tree" role="tab" data-toggle="tab" about="v-s:LinksTreeTemplate" property="rdfs:comment"></a></li>
+    <li role="presentation"><a href="#links-list" role="tab" data-toggle="tab" about="v-s:LinksListTemplate" property="rdfs:comment"></a></li>
+  </ul>
+  <br>
+  <div class="tab-content" id="links-tabs-content">
+    <div role="tabpanel" class="tab-pane" id="links-list">
+      <div about="@" data-template="v-s:LinksListTemplate"></div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="links-tree">
+      <div about="@" data-template="v-s:LinksTreeTemplate"></div>
+    </div>
+    <!--div role="tabpanel" class="tab-pane" id="links-graph">
+      <div about="@" data-template="v-s:LinksGraphTemplate"></div>
+    </div-->
+  </div>
+</div>
+""" ;
+.
+
+v-s:LinksListTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для управлениями произвольными связями документа"@ru ;
+  rdfs:label "Template to manage generic document links"@en ;
+  rdfs:comment "Список"@ru ;
+  rdfs:label "List"@en ;
+  v-ui:template """
+<script>
+  var isMutual = container.attr("data-mutual") === "true";
+  var rowTmpl = $("tbody", template).html();
+
+  $("#add-link", template).click(function () {
+    $(".links-table", template).removeClass("hidden");
+    var cntr = $("[rel='v-s:hasLink']", template),
+        _class = new veda.IndividualModel("v-s:Link"),
+        Link = new veda.IndividualModel();
+    Link["rdf:type"] = [_class];
+    Link["v-s:from"] = [individual];
+
+    individual.isSync(false);
+
+    if (isMutual) {
+      Link["v-s:mutualMembership"] = [ true ];
+    }
+    var newRow = Link.present(cntr, rowTmpl, "edit");
+    Link.one("beforeReset", function () {
+      newRow.remove();
+    });
+    Link.one("afterSave", function () {
+      newRow.remove();
+    });
+    setTimeout(function () {
+      if ( individual.isNew() ) {
+        newRow.find(".action#save").hide();
+      }
+    }, 10);
+  });
+
+  individual.on("afterSave", saveHandler);
+  template.one("remove", function () {
+    individual.off("afterSave", saveHandler);
+  });
+  function saveHandler() {
+    $("[rel='v-s:hasLink']", template).children().trigger("save");
+  }
+
+  individual.on("v-s:hasLink", linksHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasLink", linksHandler);
+  });
+  linksHandler();
+  function linksHandler () {
+    if ( individual.hasValue("v-s:hasLink") ) {
+      $(".links-table", template).removeClass("hidden");
+    } else {
+      $(".links-table", template).addClass("hidden");
+    }
+  }
+
+//# sourceURL=v-s:LinksListTemplate_pre
+</script>
+<div>
+  <table class="hidden links-table table table-condensed table-striped table-sortable">
+    <thead>
+      <tr>
+        <th width="30%" about="v-s:Document" property="rdfs:label"></th>
+        <th width="30%" about="rdfs:comment" property="rdfs:label"></th>
+        <th width="15%" about="v-s:mutualMembership" property="rdfs:label"></th>
+        <th width="15%" about="v-s:creator" property="rdfs:label"></th>
+        <th width="10%"></th>
+      </tr>
+    </thead>
+    <tbody about="@" rel="v-s:hasLink" data-embedded="true">
+      <script>
+        var displayedDoc = container.closest("[resource]").attr("resource");
+        if ( this.hasValue("v-s:from", displayedDoc) ) {
+          $(".link-from", template).remove();
+        } else if ( this.hasValue("v-s:to", displayedDoc) ) {
+          $(".link-to", template).remove();
+        }
+      </script>
+      <tr>
+        <td>
+          <div class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          <div class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
+        </td>
+        <td>
+          <div class="view -edit -search" about="@" property="rdfs:comment"></div>
+          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+        </td>
+        <td about="@" class="form-inline">
+          <div class="checkbox disabled">
+            <label>
+              <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
+            </label>
+          </div>
+        </td>
+        <td>
+          <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
+        </td>
+        <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  <button class="margin-sm btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
+</div>
+""" ;
+.
+
+v-s:LinksTreeTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
+  rdfs:label "Template to view document links tree"@en ;
+  rdfs:comment "Дерево"@ru ;
+  rdfs:label "Tree"@en ;
+  v-ui:template """
+<script>
+//# sourceURL=v-s:LinksTreeTemplate_pre
+</script>
+<div>
+  <style>
+    ul {
+      list-style-type: none;
+      padding-left: 18px;
+    }
+    li {
+      margin: 10px 0;
+    }
+  </style>
+  <div class="links-tree" about="@" data-template="v-s:LinksTreeRecursiveTemplate"></div>
+</div>
+""" ;
+.
+
+v-s:LinksTreeRecursiveTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
+  rdfs:label "Template to view document links tree"@en ;
+  rdfs:comment "Дерево"@ru ;
+  rdfs:label "Tree"@en ;
+  v-ui:template """
+<script>
+  var type = individual["rdf:type"][0];
+  var linksTree;
+  if ( !type.hasValue("v-s:hasLinksTree") ) {
+    linksTree = new veda.IndividualModel();
+    linksTree["rdf:type"] = [ new veda.IndividualModel("v-s:LinksTree") ];
+    linksTree["v-s:outProperty"] = [ new veda.IndividualModel("v-s:hasLink") ];
+    linksTree["v-s:allowedType"] = [ new veda.IndividualModel("v-s:Link") ];
+  } else {
+    linksTree = type["v-s:hasLinksTree"][0];
+  }
+  var inPropertiesUris = linksTree["v-s:inProperty"].map(function (property) {
+    return property.id;
+  });
+  var outPropertiesUris = linksTree["v-s:outProperty"].map(function (property) {
+    return property.id;
+  });
+  if ( outPropertiesUris.indexOf("v-s:hasLink") < 0 ) {
+    outPropertiesUris.push("v-s:hasLink");
+  }
+  var allowedTypesUris = linksTree["v-s:allowedType"].map(function (allowedType) {
+    return allowedType.id;
+  });
+  if ( allowedTypesUris.indexOf("v-s:Link") < 0 ) {
+    allowedTypesUris.push("v-s:Link");
+  }
+
+  var allowedTypesContainer = $(".allowed-types", template);
+  var allowedTypesTemplate = allowedTypesContainer.html();
+  allowedTypesContainer.empty();
+  allowedTypesUris.forEach(function (allowedTypeUri) {
+    var allowedType = new veda.IndividualModel(allowedTypeUri);
+    allowedType.present(allowedTypesContainer, allowedTypesTemplate);
+  });
+  $(".glyphicon.expand", template).click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var $this = $(this);
+
+    if ( $this.hasClass("glyphicon-chevron-right") ) {
+      $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+      allowedTypesContainer.removeClass("hidden");
+    } else if ( $this.hasClass("glyphicon-chevron-down") ) {
+      $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+      allowedTypesContainer.addClass("hidden");
+    }
+  });
+
+  $(".glyphicon.expand-type", template).click(function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var $this = $(this);
+    var typeLinksContainer = $this.siblings(".type-links");
+    if ( $this.hasClass("glyphicon-chevron-right") ) {
+      $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+      typeLinksContainer.removeClass("hidden");
+      $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+      if ( !typeLinksContainer.children().length ) {
+        var allowedTypeUri = $this.parent().attr("resource");
+        var outLinks = getOutTypeLinks(allowedTypeUri);
+        outLinks.forEach(function (link) {
+          presentTypeLink(link, typeLinksContainer);
+        });
+        getInTypeLinks(allowedTypeUri).then(function (inLinks) {
+          inLinks.forEach(function (link) {
+            presentTypeLink(link, typeLinksContainer);
+          });
+        }).then(function () {
+          $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+        }).then(function () {
+          if ( !typeLinksContainer.children().length ) {
+            $this.parent().hide(350, function () { $(this).remove() });
+          }
+        });
+      } else {
+        $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+      }
+    } else if ( $this.hasClass("glyphicon-chevron-down") ) {
+      $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+      typeLinksContainer.addClass("hidden");
+    }
+  });
+  function presentTypeLink(link, typeLinksContainer) {
+    if ( link.is("v-s:Link") ) {
+      if ( link.hasValue("v-s:from", individual) && link.hasValue("v-s:to") ) {
+        link = link["v-s:to"][0];
+      } else if ( link.hasValue("v-s:to", individual) && link.hasValue("v-s:from") ) {
+        link = link["v-s:from"][0];
+      }
+    }
+    if ( !template.closest(".link-node[resource='" + veda.Util.escape4$(link.id) + "']").length ) {
+      link.present(typeLinksContainer, "v-s:LinksTreeRecursiveTemplate");
+    }
+  }
+
+  function getOutTypeLinks(allowedTypeUri) {
+    var links = [];
+    outPropertiesUris.forEach(function (outPropertyUri) {
+      links = links.concat( individual[outPropertyUri] );
+    });
+    links = links.filter(function (link) {
+      var linkTypeUri = link["rdf:type"][0].id;
+      return linkTypeUri === allowedTypeUri ;
+    });
+    return links;
+  }
+
+  function getInTypeLinks(allowedTypeUri) {
+    var allowedTypeUriQuery = "'rdf:type'==='" + allowedTypeUri +"'";
+    var inPropertiesUrisQuery = inPropertiesUris.map(function (inPropertyUri) {
+      return "'" + inPropertyUri + "'==='" + individual.id + "'";
+    }).join("||");
+    var q = allowedTypeUriQuery + " && (" + inPropertiesUrisQuery + ")";
+    return !inPropertiesUrisQuery || allowedTypeUri === "v-s:Link" ? Promise.resolve([]) : query({
+      ticket: veda.ticket,
+      query: q,
+      limit: 500,
+      async: true
+    }).then(function (queryResult) {
+      var links = queryResult.result.map(function (uri) {
+        return new veda.IndividualModel(uri);
+      });
+      return links;
+    });
+  }
+
+//# sourceURL=v-s:LinksTreeRecursiveTemplate_pre
+</script>
+<ul class="link-node">
+  <li>
+    <a href="#" class="glyphicon glyphicon-chevron-right expand"></a> <span about="@" data-template="v-s:TrimmedLinkTemplate"></span>
+    <hr class="margin-sm">
+    <ul class="allowed-types hidden">
+      <li>
+        <a href="#" class="glyphicon glyphicon-chevron-right expand-type"></a> <span class="fa fa-folder-open-o"></span> <strong about="@" property="rdfs:label"></strong>
+        <div class="type-links hidden"></div>
+      </li>
+    </ul>
+  </li>
+</ul>
+<script>
+//# sourceURL=v-s:LinksTreeRecursiveTemplate_post
+</script>
+""" ;
+.
+
+v-s:TrimmedLinkTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон с именем класса и меткой"@ru ;
+  rdfs:label "Template with class name and label"@en ;
+  v-ui:template """
+  <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
+  <script>
+    var re = new RegExp(".*?:");
+    var label = template.text();
+    template.attr("title", label);
+    if (label.length > 70) {
+      label = label.replace(re, function (typeName) {
+        return typeName.split(" ").reduce(function (abbr, word) {
+          return abbr += word.charAt(0);
+        }, "").toUpperCase() + ":";
+      });
+      label = label.substring(0, 70) + "...";
+      template.text(label);
+    }
+    //# sourceURL=v-s:TrimmedLinkTemplate_post
+  </script>
+  """ ;
+.
+
+v-s:LinksGraphTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения графа связей документа"@ru ;
+  rdfs:label "Template to view document links graph"@en ;
+  rdfs:comment "Граф"@ru ;
+  rdfs:label "Graph"@en ;
+  v-ui:template """
+<script>
+
+//# sourceURL=v-s:LinksGraphTemplate_pre
+</script>
+<div about="@" data-template="v-ui:Graph"></div>
+""" ;
+.

@@ -8,9 +8,20 @@ private
     import std.stdio, std.typecons, std.conv, std.algorithm, std.digest.crc, std.exception : assumeUnique;
     import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils;
     import veda.util.container, veda.common.type, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
+    import veda.util.properd;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
+
+public enum BOFormat : ubyte
+{
+    UNKNOWN = 0,
+    CBOR    = 1,
+    MSGPACK = 2
+}
+
+BOFormat binobj_format = BOFormat.UNKNOWN;
+
 
 /// Индивидуал
 public struct Individual
@@ -43,17 +54,52 @@ public struct Individual
 
     int deserialize(string bin)
     {
-        return cbor2individual(&this, bin);
+        if (bin.length == 0)
+            return -1;
+
+        if ((cast(ubyte[])bin)[ 0 ] == 0xFF)
+        {
+            // this MSGPACK
+            return msgpack2individual(this, bin);
+        }
+        else
+        {
+            return cbor2individual(&this, bin);
+        }
     }
 
     string serialize()
     {
-        return individual2cbor(&this);
-    }
+        if (binobj_format == BOFormat.UNKNOWN)
+        {
+            binobj_format = BOFormat.CBOR;
+            try
+            {
+                string[ string ] properties;
+                properties = readProperties("./veda.properties");
+                string s_binobj_format = properties.as!(string)("binobj_format");
 
-    string serialize_to_msgpack()
-    {
-        return individual2msgpack(this);
+                if (s_binobj_format == "cbor")
+                    binobj_format = BOFormat.CBOR;
+
+                if (s_binobj_format == "msgpack")
+                    binobj_format = BOFormat.MSGPACK;
+            }
+            catch (Throwable ex)
+            {
+                log.trace("ERR! unable read ./veda.properties, ex=%s", ex.msg);
+            }
+
+            log.trace("SET binobj_format=%s", text(binobj_format));
+        }
+
+
+        if (binobj_format == BOFormat.CBOR)
+            return individual2cbor(&this);
+        else if (binobj_format == BOFormat.MSGPACK)
+            return individual2msgpack(this);
+        else
+            return "";
     }
 
     Individual dup()

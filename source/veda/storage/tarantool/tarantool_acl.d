@@ -33,7 +33,7 @@ class TarantoolAuthorization : ImplAuthorization
         driver.close();
     }
 
-    override string get_in_current_transaction(string in_key)
+    override string get_in_current_transaction(string in_key, int level = 0)
     {
         return driver.find(OptAuthorize.NO, null, in_key);
     }

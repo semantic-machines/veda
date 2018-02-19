@@ -1320,23 +1320,45 @@ svg.process-path-highlight path
 .bg-asbestos { background-color: rgba(127, 140, 141, 1.0); /*#7f8c8d;*/ }
 
 .bg-white * {  }
-.bg-turquoise * { color: #fff; }
-.bg-emerald * { color: #fff; }
-.bg-peter-river * { color: #fff; }
-.bg-amethyst * { color: #fff; }
-.bg-wet-asphalt * { color: #fff; }
-.bg-green-sea * { color: #fff; }
-.bg-nephritis * { color: #fff; }
-.bg-belize-hole * { color: #fff; }
-.bg-wisteria * { color: #fff; }
-.bg-midnight-blue * { color: #fff; }
-.bg-sun-flower * { color: #fff; }
-.bg-carrot * { color: #fff; }
-.bg-alizarin * { color: #fff; }
+.bg-turquoise * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-emerald * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-peter-river * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-amethyst * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-wet-asphalt * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-green-sea * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-nephritis * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-belize-hole * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-wisteria * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-midnight-blue * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-sun-flower * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-carrot * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-alizarin * { color: #fff; text-shadow: 0px 1px 2px black; }
 .bg-clouds * {  }
-.bg-concrete * { color: #fff; }
-.bg-orange * { color: #fff; }
-.bg-pumpkin * { color: #fff; }
-.bg-pomegranate * { color: #fff; }
-.bg-silver * { color: #fff; }
-.bg-asbestos * { color: #fff; }
+.bg-concrete * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-orange * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-pumpkin * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-pomegranate * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-silver * { color: #fff; text-shadow: 0px 1px 2px black; }
+.bg-asbestos * { color: #fff; text-shadow: 0px 1px 2px black; }
+
+
+/* Sortable table */
+
+.table-sortable thead tr:last-child th:hover {
+  cursor: pointer;
+}
+
+.table-sortable thead tr:last-child th:before {
+  color: #707070;
+  content: "\25B2";
+}
+
+.table-sortable thead tr:last-child th.asc:before {
+  color: #337ab7;
+  content: "\25B2";
+}
+
+.table-sortable thead tr:last-child th.desc:before {
+  color: #337ab7;
+  content: "\25BC";
+}

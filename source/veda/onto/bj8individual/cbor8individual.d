@@ -1,7 +1,7 @@
 /**
  * CBOR: cbor <-> individual
 
-   Copyright: © 2014-2015 Semantic Machines
+   Copyright: © 2014-2018 Semantic Machines
    License: Subject to the terms of the MIT license, as written in the included LICENSE.txt file.
    Authors: Valeriy Bushenev
  */

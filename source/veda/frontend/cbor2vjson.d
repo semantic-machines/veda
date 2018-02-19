@@ -1,14 +1,13 @@
 /**
- * CBOR: cbor <-> vibe Json
+ * CBOR <-> vibe Json
  */
-module veda.frontend.cbor8vjson;
+module veda.frontend.cbor2vjson;
 
 private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json;
 private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.bj8individual.cbor, veda.onto.lang;
 
 string dummy;
-string nullz = "00000000000000000000000000000000";
 
 private static int read_element(Json *individual, ubyte[] src, out string _key, string subject_uri = null,
                                 string predicate_uri = null)

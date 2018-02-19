@@ -710,135 +710,6 @@ v-ui:VersionedTemplate
 """ ;
 .
 
-# ---------------- Link template -----------------
-
-v-ui:PSHasLinkThing
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:hasLink для класса v-s:Thing"@ru ;
-  rdfs:label "Specification v-s:hasLink for v-s:Thing class"@en ;
-  v-ui:forClass v-s:Thing ;
-  v-ui:forProperty v-s:hasLink ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 100 ;
-.
-v-ui:PSFromToForLink
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойств from to для класса v-s:Link"@ru ;
-  rdfs:label "Specification from to for v-s:Link class"@en ;
-  v-ui:forClass v-s:Link ;
-  v-ui:forProperty v-s:from, v-s:to ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
-.
-
-v-ui:LinksTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для управлениями произвольными связями документа"@ru ;
-  rdfs:label "Template to manage generic document links"@en ;
-  v-ui:template """
-<script>
-  var isMutual = container.attr("data-mutual") === "true";
-  var rowTmpl = $("tbody", template).html();
-
-  $("#add-link", template).click(function () {
-    $(".links-table", template).removeClass("hidden");
-    var cntr = $("[rel='v-s:hasLink']", template),
-        _class = new veda.IndividualModel("v-s:Link"),
-        Link = new veda.IndividualModel();
-    Link["rdf:type"] = [_class];
-    Link["v-s:from"] = [individual];
-
-    individual.isSync(false);
-
-    if (isMutual) {
-      Link["v-s:mutualMembership"] = [ true ];
-    }
-    Link.present(cntr, rowTmpl, "edit").then(function (newRow) {
-      Link.one("afterSave afterDelete afterReset", function () {
-        newRow.remove();
-      });
-    });
-    setTimeout(function () {
-      if ( individual.isNew() ) {
-        newRow.find(".action#save").hide();
-      }
-    }, 10);
-  });
-
-  individual.on("afterSave", saveHandler);
-  template.one("remove", function () {
-    individual.off("afterSave", saveHandler);
-  });
-  function saveHandler() {
-    $("[rel='v-s:hasLink']", template).children().trigger("save");
-  }
-
-  individual.on("v-s:hasLink", linksHandler);
-  template.one("remove", function () {
-    individual.off("v-s:hasLink", linksHandler);
-  });
-  linksHandler();
-  function linksHandler () {
-    if ( individual.hasValue("v-s:hasLink") ) {
-      $(".links-table", template).removeClass("hidden");
-    } else {
-      $(".links-table", template).addClass("hidden");
-    }
-  }
-
-//# sourceURL=v-ui:LinkTemplate_pre
-</script>
-<div>
-  <h3 about="v-s:hasLink" property="rdfs:label"></h3>
-  <table class="hidden links-table table table-condensed table-striped">
-    <thead>
-      <tr>
-        <th width="30%" about="v-s:Document" property="rdfs:label"></th>
-        <th width="30%" about="rdfs:comment" property="rdfs:label"></th>
-        <th width="10%" about="v-s:mutualMembership" property="rdfs:label"></th>
-        <th width="20%" about="v-s:creator" property="rdfs:label"></th>
-        <th width="10%"></th>
-      </tr>
-    </thead>
-    <tbody about="@" rel="v-s:hasLink" data-embedded="true">
-      <script>
-        var displayedDoc = container.closest("[resource]").attr("resource");
-        if ( this.hasValue("v-s:from", displayedDoc) ) {
-          $(".link-from", template).remove();
-        } else if ( this.hasValue("v-s:to", displayedDoc) ) {
-          $(".link-to", template).remove();
-        }
-      </script>
-      <tr>
-        <td>
-          <div class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          <div class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
-        </td>
-        <td>
-          <div class="view -edit -search" about="@" property="rdfs:comment"></div>
-          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
-        </td>
-        <td about="@" class="form-inline">
-          <div class="checkbox disabled">
-            <label>
-              <veda-control property="v-s:mutualMembership" data-type="boolean"></veda-control>
-            </label>
-          </div>
-        </td>
-        <td>
-          <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
-        </td>
-        <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
-      </tr>
-    </tbody>
-  </table>
-  <button class="margin-sm btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
-</div>
-""" ;
-.
-
 v-ui:IconPersonTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с иконкой"@ru ;
@@ -1668,10 +1539,34 @@ v-ui:SimplifiedJournalTemplate
   var tbody = $("#tbody", template);
   var task_template = tbody.html();
   tbody.empty();
-  this.tmpl = task_template;
-
   var doc_uri = this.id.replace(/.$/, "");
   var doc = new veda.IndividualModel(doc_uri);
+  $("#refresh", template).click(buildJournal);
+  buildJournal();
+
+  function buildJournal() {
+    tbody.empty();
+    var tasks = query({
+      ticket: veda.ticket,
+      query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
+      sort: "'v-s:created' asc",
+      async: true
+    }).then(function (query_res) {
+      var tasks_uris = query_res.result;
+      return get_individuals({
+        ticket: veda.ticket,
+        uris: tasks_uris,
+        async: true
+      }).then(function (tasks) {
+        tasks.forEach(function (task, index) {
+          var task_individual = new veda.IndividualModel(task);
+          task_individual.present(tbody, task_template).then(function (renderedTemplate) {
+            $(".sequence-number", renderedTemplate).text(index + 1);
+          });
+        });
+      });
+    });
+  };
 
   $("#on-document", template).attr("about", doc_uri);
 
@@ -1728,10 +1623,10 @@ v-ui:SimplifiedJournalTemplate
       </thead>
       <tbody id="tbody">
         <tr>
-          <td>###</td>
-          <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
-          <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
-          <td><a href="$$$" property="rdfs:label"></a><div property="v-s:description"></div></td>
+          <td class="sequence-number"></td>
+          <td property="v-wf:from"></td>
+          <td property="v-wf:to"></td>
+          <td><a href="#/@" property="rdfs:label"></a><div property="v-s:description"></div></td>
           <td property="v-s:created"></td>
           <td rel="v-wf:takenDecision">
             <div>
@@ -1751,38 +1646,6 @@ v-ui:SimplifiedJournalTemplate
     <button class="btn btn-default" id="refresh" about="v-s:RefreshBundle" property="rdfs:label"></button>
   </div>
 </div>
-<script>
-  var tbody = $("#tbody", template);
-  var task_template = this.tmpl;
-  $("#refresh", template).click(buildJournal);
-
-  var doc_uri = this.id.replace(/.$/, "");
-
-  buildJournal();
-  function buildJournal() {
-    tbody.empty();
-    var tasks = veda.Backend.query({
-      ticket: veda.ticket,
-      query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
-      sort: "'v-s:created' asc",
-      async: true
-    }).then(function (query_res) {
-      var tasks_uris = query_res.result;
-      return veda.Backend.get_individuals({
-        ticket: veda.ticket,
-        uris: tasks_uris,
-        async: true
-      }).then(function (tasks) {
-        tasks.forEach(function (task, index) {
-          var task_individual = new veda.IndividualModel(task);
-          var tmpl = task_template.replace("###", index + 1).replace("$$$", "#/@")
-          task_individual.present(tbody, tmpl);
-        });
-      });
-    });
-  };
-  //# sourceURL=v-ui:SimplifiedJournalTemplate_post
-</script>
   """ ;
 .
 v-ui:JournalTemplate
@@ -1887,7 +1750,7 @@ v-ui:DocumentEventTemplate
   v-ui:template """
 <script>
   if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  if (individual.hasValue("v-s:actor") && individual['v-s:actor'][0].id === 'cfg:VedaSystem') {
+  if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) {
     //template.hide();
     template.empty();
   }
@@ -1896,12 +1759,15 @@ v-ui:DocumentEventTemplate
     $("div[rel='v-s:processJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-s:ProcessStarted') {
+  if (individual.hasValue("rdf:type", "v-s:ProcessStarted")) {
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
     var process = individual['v-wf:onProcess'][0];
-    if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
-        (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
+    if (
+      (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
+      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
+      && process.rights.hasValue("v-s:canDelete")
+    ) {
       $(".stop-process", template).show();
     }
     if (process.hasValue("v-wf:isStopped", true)) {
@@ -1909,7 +1775,7 @@ v-ui:DocumentEventTemplate
       $(".start-process > .glyphicon-minus-sign", template).show();
     }
   }
-  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-wf:ProcessStopped') {
+  if (individual.hasValue("rdf:type", "v-wf:ProcessStopped")) {
     $(".row", template).addClass('text-danger');
   }
   //# sourceURL=v-ui:DocumentEventTemplate_pre
@@ -2340,7 +2206,7 @@ td:PersonTemplate1
     <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
   </div>
   <br>
-  <div about="@" class="container sheet view edit -search" data-template="v-ui:LinksTemplate" data-embedded="true"></div>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>

@@ -466,10 +466,8 @@ veda.Module(function (veda) { "use strict";
     if (typeof value !== "undefined" && value !== null) {
       var serialized;
       if ( Array.isArray(value) ) {
-        for (var i = 0, length = value.length; i < length; i++) {
-          serialized = value.map(serializer);
-          this.properties[property_uri].push(serialized);
-        }
+        serialized = value.map(serializer);
+        this.properties[property_uri] = this.properties[property_uri].concat(serialized);
       } else {
         serialized = serializer(value);
         this.properties[property_uri].push(serialized);
@@ -572,8 +570,10 @@ veda.Module(function (veda) { "use strict";
     if ( this.hasValue("v-ui:hasModel") && !isClass ) {
       return this.get("v-ui:hasModel")[0].load()
         .then(function (model) {
-          model = new Function(model.get("v-s:script")[0]);
-          model.call(self);
+          if ( !model.modelFn ) {
+            model.modelFn = new Function(model["v-s:script"][0]);
+          }
+          model.modelFn.call(self);
           return self;
         });
     } else {
@@ -592,8 +592,10 @@ veda.Module(function (veda) { "use strict";
         })
         .then( function (models) {
           models.map(function (model) {
-            var model_fn = new Function( model.get("v-s:script")[0] );
-            model_fn.call(self);
+            if ( !model.modelFn ) {
+              model.modelFn = new Function(model["v-s:script"][0]);
+            }
+            model.modelFn.call(self);
           });
           return self;
         });
@@ -610,6 +612,7 @@ veda.Module(function (veda) { "use strict";
     individual["@"] = veda.Util.genUri();
     var clone = new veda.IndividualModel(individual);
     clone.isNew(true);
+    clone.isSync(false);
     return clone;
   };
 

@@ -543,7 +543,7 @@ v-ft:TaskResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
@@ -610,7 +610,7 @@ v-ft:TaskRelatedTasksTemplate
 </script>
 <div>
   <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
-  <div about="v-ft:RelatedTasks"></div>
+  <div about="v-ft:RelatedTasks" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
 </div>
   """
 .
@@ -635,7 +635,7 @@ v-ft:RelatedTasksResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
-      <td>###</td>
+      <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>

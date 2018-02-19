@@ -8,11 +8,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
-
 	"strconv"
-
 	"bytes"
-
 	"gopkg.in/vmihailenco/msgpack.v2"
 )
 
@@ -197,6 +194,15 @@ func stringToLang(str string) Lang {
 	}
 }
 
+//MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
+func BinobjToMap(binobjStr string) map[string]interface{} {
+	if binobjStr[0] == 0xFF {
+			return MsgpackToMap(binobjStr)
+		} else {
+			return CborToMap(binobjStr)			
+		}	
+}
+
 //MapToMsgpack converts individual map from client to msgpack for sending to tarantool
 func MapToMsgpack(jsonMap map[string]interface{}) string {
 	var buf bytes.Buffer
@@ -361,14 +367,14 @@ func CborToMap(cborStr string) map[string]interface{} {
 	case map[interface{}]interface{}:
 		individualMap = cborObject.(map[interface{}]interface{})
 	default:
-		log.Printf("@ERR DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
+		log.Printf("@ERR CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
 		return individual
 	}
 
-	log.Println(cborStr)
+	//log.Println(cborStr)
 	for k, v := range individualMap {
 
-		log.Println(k)
+		//log.Println(k)
 		keyStr := k.(string)
 		if keyStr == "@" {
 			individual["@"] = v.(string)
@@ -409,20 +415,22 @@ func CborToMap(cborStr string) map[string]interface{} {
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
 func MsgpackToMap(msgpackStr string) map[string]interface{} {
-	return CborToMap(msgpackStr)
-	/*	if msgpackStr[0] != 0xFF {
-			return CborToMap(msgpackStr)
-		}
 		//Allocate map and decode msgpack
 		individual := make(map[string]interface{})
-		decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr))
+		decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[1:len (msgpackStr)]))
 		decoder.DecodeArrayLen()
 
 		// log.Printf("@MSGPACK %v\n", msgpackStr)
 
 		//Set individual uri and decode map of resources
 		individual["@"], _ = decoder.DecodeString()
-		resMapI, _ := decoder.DecodeMap()
+		resMapI, err := decoder.DecodeMap()
+		
+		if err != nil {
+			log.Fatalln(err)
+			return nil
+		}
+		
 		resMap := resMapI.(map[interface{}]interface{})
 		// log.Println("@URI ", individual["@"])
 		for keyI, resArrI := range resMap {
@@ -545,5 +553,5 @@ func MsgpackToMap(msgpackStr string) map[string]interface{} {
 			individual[predicate] = resources
 		}
 
-		return individual*/
+		return individual
 }

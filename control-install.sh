@@ -3,7 +3,7 @@
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
-GO_VER=go1.9.2
+GO_VER=go1.9.3
 TARANTOOL_VER=1.7.6
 MSGPUCK_VER=2.0
 
@@ -99,8 +99,23 @@ fi
     go version
     cd ..
 
+
+#lmdb-go
+#go get -v github.com/muller95/lmdb-go/lmdb
+go get github.com/itiu/lmdb-go/lmdb
+
+#fasthttp
+go get -v github.com/valyala/fasthttp
+
+#go-nanomsg
+go get -v github.com/op/go-nanomsg
+
+#traildb-go
+go get github.com/traildb/traildb-go
+
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
+go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go 
 
