@@ -1268,7 +1268,7 @@ v-fs:AttributiveSearchModel
     }
     queryString = queryString.join(" && ");
     if ( queryString ) {
-      return query({
+      return veda.Backend.query({
         ticket: veda.ticket,
         query: queryString,
         sort: self["v-fs:sortOrder"][0],
@@ -1293,7 +1293,7 @@ v-fs:AttributiveSearchModel
           }
         });
         if (prefetch.length) {
-          return get_individuals({
+          return veda.Backend.get_individuals({
             ticket: veda.ticket,
             uris: prefetch,
             async: true
@@ -1957,32 +1957,33 @@ v-fs:AttributiveSearchInlineTemplate
       resultContainer.empty();
     }
     return resultDelta.map(function (result, i) {
-      var tmpl = result.present(resultContainer, individual.resultTemplate);
-      $(".serial-number", tmpl).text(total - delta + i + 1);
-      if (result.id === self.marked) {
-        tmpl.addClass("warning");
-      }
-      setTimeout(function () {
-        $("td", tmpl).each( function () {
-          var text = this.innerText || this.textContent;
-          if (text && text.length > 100) {
-            var $this = $(this);
-            var contents = $this.contents();
-            var wrapper = $("<div class='td-wrapper'></div>").append(contents);
-            $this.empty().append(wrapper);
-            wrapper.popover({
-              content: wrapper.html(),
-              html: true,
-              placement: "top"
-            }).tooltip({
-              title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
-              placement: "bottom",
-              delay: { show: 750, hide: 0 }
-            });
-          }
-        });
-      }, 300);
-      return tmpl;
+      result.present(resultContainer, individual.resultTemplate).then(function (tmpl) {
+        $(".serial-number", tmpl).text(total - delta + i + 1);
+        if (result.id === self.marked) {
+          tmpl.addClass("warning");
+        }
+        setTimeout(function () {
+          $("td", tmpl).each( function () {
+            var text = this.innerText || this.textContent;
+            if (text && text.length > 100) {
+              var $this = $(this);
+              var contents = $this.contents();
+              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+              $this.empty().append(wrapper);
+              wrapper.popover({
+                content: wrapper.html(),
+                html: true,
+                placement: "top"
+              }).tooltip({
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                placement: "bottom",
+                delay: { show: 750, hide: 0 }
+              });
+            }
+          });
+        }, 300);
+        return tmpl;
+      });
     });
   }
 
