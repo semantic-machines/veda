@@ -2174,7 +2174,7 @@ v-wf:event_df5
 var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean});
 
 if ( !deleted ) {
-  prepare_decision_form (ticket, document);
+    prepare_decision_form (ticket, document, prev_state);
 }
 """ ;
   rdfs:label "Триггер обработки решения пользователя"@ru ;

@@ -425,3 +425,13 @@ function set_err_on_indv (msg, indv, src)
 
     print("ERR! " + src + ':' +  msg);
 }
+
+function set_field_to_document (field_name, value, doc_id)
+{
+    var set_in_document = {
+		'@': doc_id
+    };
+
+    set_in_document[field_name] = value;
+    set_in_individual(ticket, set_in_document, _event_id);
+}

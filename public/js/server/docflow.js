@@ -3,18 +3,39 @@
 /*
  *   обработка формы решения пользователя
  */
-function prepare_decision_form(ticket, document)
+function prepare_decision_form(ticket, document, prev_state)
 {
     try
     {
         var decision_form = document;
+        var prev_state_decision_form = prev_state;
+        var f_prev_takenDecision = null;
 
-        if (decision_form['v-wf:isCompleted'] && decision_form['v-wf:isCompleted'][0].data == true)
+        if (prev_state_decision_form)
+			f_prev_takenDecision = prev_state_decision_form['v-wf:takenDecision'];
+
+        var f_takenDecision = decision_form['v-wf:takenDecision'];
+
+        if (!f_takenDecision && !f_prev_takenDecision)
             return;
 
-        //print("[WORKFLOW][DF1].0");
-        var f_takenDecision = decision_form['v-wf:takenDecision'];
-        if (!f_takenDecision)
+		var enforce_processing = hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: _Boolean});
+		if (f_prev_takenDecision && !enforce_processing)
+		{
+			if (!f_takenDecision)
+			{
+				set_err_on_indv("attempt clear decision[" + getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
+	            set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);            				
+			}
+			else if (f_takenDecision.length != f_prev_takenDecision.length || getUri(f_takenDecision) != getUri(f_prev_takenDecision))
+			{
+				set_err_on_indv("attempt set another decision " + toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
+	            set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);            
+			}
+			return;
+		}
+
+        if (decision_form['v-wf:isCompleted'] && decision_form['v-wf:isCompleted'][0].data == true)
             return;
 
         var f_onWorkOrder = document['v-wf:onWorkOrder'];
@@ -47,7 +68,7 @@ function prepare_decision_form(ticket, document)
         {
             if (wi_isCompleted[0].data === true)
             {
-        	set_err_on_indv("WorkItem[" + getUri(f_forWorkItem) + "], already prepared, skip prepare...", document, "prepare decision form");
+				set_err_on_indv("WorkItem[" + getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
                 return;
             }
         }
@@ -100,11 +121,8 @@ function prepare_decision_form(ticket, document)
 
         if (process_output_vars.length > 0)
         {
-            _work_order['v-wf:outVars'] = new_vars;
-            put_individual(ticket, _work_order, _event_id);
-
-            document['v-wf:isCompleted'] = newBool(true);
-            put_individual(ticket, document, _event_id);
+            set_field_to_document ('v-wf:outVars', new_vars, _work_order['@']);
+            set_field_to_document ('v-wf:isCompleted', newBool(true), document['@']);
 
             //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
             mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order, null, getJournalUri(_work_order['@']));
