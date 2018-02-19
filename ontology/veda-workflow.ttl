@@ -1604,7 +1604,7 @@ v-wf:DecisionFormTemplate
   var timeout = setTimeout(function () {
     individual.rights.then(function (rights) {
       if ( !individual.hasValue("v-wf:read") && rights.hasValue("v-s:canUpdate", true) ) {
-        set_in_individual({
+        veda.Backend.set_in_individual({
           ticket: veda.ticket,
           individual: {
             "@": individual.id,
@@ -1614,16 +1614,16 @@ v-wf:DecisionFormTemplate
             }]
           }
         });
-      }  
+      }
     });
-  }, 5000);
+  }, 250);
   template.one("remove", function () {
     clearTimeout(timeout);
   });
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
   """ ;
-  .
+.
 
 #---------------------------- Decision Form ------------------------
 
