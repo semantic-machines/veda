@@ -1615,7 +1615,7 @@ v-wf:DecisionFormTemplate
         async: true
       });
     }
-  }, 5000);
+  }, 250);
   template.one("remove", function () {
     clearTimeout(timeout);
   });
