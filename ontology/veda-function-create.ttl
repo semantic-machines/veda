@@ -298,22 +298,15 @@ v-fc:BlankTemplate
 
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
-    object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
-    $("#cancel.action", objectContainer).click(function () {
+    var objectTemplate = object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
+    $("#cancel.action", objectTemplate).click(function () {
       window.history.back();
     });
-    object.one("afterSave", saveHandler);
-    template.one("remove", function () {
-      object.off("afterSave", saveHandler);
-      self.off("beforeSave");
-      self.off("afterSave");
-      //delete self.object;
-    });
+    objectTemplate.one("save", saveHandler);
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
   function saveHandler () {
-    //delete self.object;
     if (container.attr("id") === "main") {
       setTimeout(function () {
         riot.route("#/" + object.id);
@@ -352,22 +345,15 @@ v-fc:BlankTemplateShort
 
   var _class = object["rdf:type"][0];
   if (_class.rights.hasValue("v-s:canCreate", true)) {
-    object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
-    $("#cancel.action", objectContainer).click(function () {
+    var objectTemplate = object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit");
+    $("#cancel.action", objectTemplate).click(function () {
       window.history.back();
     });
-    object.one("afterSave", saveHandler);
-    template.one("remove", function () {
-      object.off("afterSave", saveHandler);
-      self.off("beforeSave");
-      self.off("afterSave");
-      //delete self.object;
-    });
+    objectTemplate.one("save", saveHandler);
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
   function saveHandler () {
-    //delete self.object;
     if (container.attr("id") === "main") {
       setTimeout(function () {
         riot.route("#/" + object.id);

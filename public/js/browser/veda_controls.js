@@ -1436,7 +1436,6 @@
         create.off("click");
       } else {
         create.click( function (e) {
-          e.stopPropagation();
           var newVal = createValue();
           if ( inModal ) {
             var modal = $("#individual-modal-template").html();
