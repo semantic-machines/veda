@@ -393,6 +393,12 @@ private Ticket authenticate(Context ctx, string login, string password)
     string query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
     
     ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+	auto storage = ctx.get_storage();
+	if (storage is null)
+	{
+		log.trace("authenticate:fail authenticate, storage not ready");
+		return ticket; 				
+	}
 
     foreach (user; candidate_users)
     {
@@ -421,7 +427,7 @@ private Ticket authenticate(Context ctx, string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             OpResult op_res = add_to_transaction(
-                                                 l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
                                                  OptFreeze.NONE, OptAuthorize.YES,
                                                  OptTrace.NONE);
 
@@ -432,7 +438,7 @@ private Ticket authenticate(Context ctx, string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             op_res            = add_to_transaction(
-                                                   l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "",
+                                                   storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "",
                                                    OptFreeze.NONE,
                                                    OptAuthorize.YES,
                                                    OptTrace.NONE);
