@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"github.com/valyala/fasthttp"
 	"log"
 	"time"
-	"bytes"
-	"github.com/valyala/fasthttp"
 )
 
 //putIndividual handles put_individual request
@@ -21,10 +21,10 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 	//Decoding request paramets
 
 	var jsonData map[string]interface{}
-	
+
 	d := json.NewDecoder(bytes.NewReader(ctx.Request.Body()))
-    d.UseNumber()	
-	
+	d.UseNumber()
+
 	//err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 	if err := d.Decode(&jsonData); err != nil {
 		log.Println("@ERR PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
@@ -37,7 +37,7 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 	if jsonData["assigned_subsystems"] != nil {
 		aa := jsonData["assigned_subsystems"].(json.Number)
 		assignedSubsystems1, _ := aa.Int64()
-		assignedSubsystems = uint64 (assignedSubsystems1)
+		assignedSubsystems = uint64(assignedSubsystems1)
 	}
 	eventID = jsonData["event_id"].(string)
 

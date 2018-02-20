@@ -58,12 +58,12 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 
 		var duration int64
 
-		ticket.UserURI, _ = getFirstString (individual, "ticket:accessor")
-		tt, _ := getFirstString (individual, "ticket:when")
+		ticket.UserURI, _ = getFirstString(individual, "ticket:accessor")
+		tt, _ := getFirstString(individual, "ticket:when")
 		mask := "2006-01-02T15:04:05.00000000"
 		startTime, _ := time.Parse(mask[0:len(tt)], tt)
 		ticket.StartTime = startTime.Unix()
-		dd, _ := getFirstString (individual, "ticket:duration")
+		dd, _ := getFirstString(individual, "ticket:duration")
 		duration, _ = strconv.ParseInt(dd, 10, 64)
 
 		ticket.Id = ticketKey

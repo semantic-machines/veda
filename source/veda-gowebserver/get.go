@@ -114,10 +114,10 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	rr := conn.Get(true, ticket.UserURI, uris, false)
 
-	if rr.CommonRC != Ok{
+	if rr.CommonRC != Ok {
 		if rr.CommonRC != NotFound {
 			log.Println("@ERR GET_INDIVIDUAL: GET INDIVIDUAL COMMON ", rr.CommonRC)
-		}	
+		}
 		ctx.Response.SetStatusCode(int(rr.CommonRC))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.CommonRC, timestamp)
 

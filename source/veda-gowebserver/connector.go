@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 	//"github.com/bmatsuo/lmdb-go/lmdb"
-	"github.com/itiu/lmdb-go/lmdb"
 	"bufio"
+	"github.com/itiu/lmdb-go/lmdb"
 	"gopkg.in/vmihailenco/msgpack.v2"
 )
 
@@ -71,7 +71,7 @@ func (conn *Connector) Connect(addr string) {
 		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
 	}
 
-	err = indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly | lmdb.NoMetaSync | lmdb.NoSync | lmdb.NoLock, 0644)
+	err = indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 	if err != nil {
 		log.Fatal("Err: can not open lmdb individuals base: ", err)
 	}
@@ -85,8 +85,8 @@ func (conn *Connector) Connect(addr string) {
 	if err != nil {
 		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
 	}
-	
-	err = ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly | lmdb.NoMetaSync | lmdb.NoSync | lmdb.NoLock, 0644)
+
+	err = ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 	if err != nil {
 		log.Fatal("Err: can not open tickets lmdb base: ", err)
 	}
@@ -385,13 +385,13 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	})
 
 	rr.CommonRC = Ok
-	if err != nil {		
-		if lmdb.IsErrno (err, lmdb.NotFound) == true {
+	if err != nil {
+		if lmdb.IsErrno(err, lmdb.NotFound) == true {
 			rr.CommonRC = NotFound
-		} else {		
+		} else {
 			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
 			rr.CommonRC = InternalServerError
-		}	
+		}
 	}
 	/*	if trace {
 			log.Printf("@CONNECTOR GET: PACK GET REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
