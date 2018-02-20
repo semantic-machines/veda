@@ -1769,14 +1769,13 @@ v-fs:AttributiveSearchInlineTemplate
   // Render search form
   if ( searchBlank ) {
     searchBlank._init();
-    if ( searchBlankTemplate && searchBlankContainer.length ) {
-      searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
-    }
     searchBlank.object.on("search", formHandler);
     template.one("remove", function () {
       searchBlank.object.off("search", formHandler);
     });
-
+    if ( searchBlankTemplate && searchBlankContainer.length ) {
+      searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
+    }
     // Populate blank with extra parameters from URL
     if (extra) {
       for (var property_uri in extra) {
