@@ -385,9 +385,13 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	})
 
 	rr.CommonRC = Ok
-	if err != nil {
-		log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %s, keys=%s\n", err, uris)
-		rr.CommonRC = InternalServerError
+	if err != nil {		
+		if lmdb.IsErrno (err, lmdb.NotFound) == true {
+			rr.CommonRC = NotFound
+		} else {		
+			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
+			rr.CommonRC = InternalServerError
+		}	
 	}
 	/*	if trace {
 			log.Printf("@CONNECTOR GET: PACK GET REQUEST need_auth=%v, user_uri=%v, uris=%v \n",

@@ -3,13 +3,13 @@ package main
 import (
 	"bufio"
 	"cbor"
-	"fmt"
 	"log"
 	"reflect"
 	"strings"
 	"time"
 	"strconv"
 	"bytes"
+	"fmt"
 	"gopkg.in/vmihailenco/msgpack.v2"
 )
 
@@ -308,7 +308,6 @@ func prepareElement(v interface{}) (interface{}, error) {
 	case cbor.CBORTag:
 		wrappedVal := v.(cbor.CBORTag).WrappedObject
 		tag := TAG(v.(cbor.CBORTag).Tag)
-		//		log.Printf("tag #1 subject_uri=%s, predicate_uri=%s", subject_uri, predicate_uri)
 
 		if tag == TAG_TEXT_RU {
 			return map[string]interface{}{
@@ -328,22 +327,48 @@ func prepareElement(v interface{}) (interface{}, error) {
 				"type": dataTypeToString(Uri),
 			}, nil
 		} else if tag == TAG_DECIMAL_FRACTION {
-			log.Fatalln("decimal ", wrappedVal)
-			arr := wrappedVal.([]interface{})
-			mantissa := arr[0].(int64)
-			exponent := arr[1].(int64)
+			
+			v_e := (wrappedVal.(reflect.Value)).Index(1).Interface()					
+			var exponent int64
+			switch v_e.(type) {
+			case int64:	
+				exponent = v_e.(int64)
+			case uint64:
+				exponent = int64(v_e.(uint64))									
+			}
+			
+			v_m := (wrappedVal.(reflect.Value)).Index(0).Interface()
+			var mantissa int64
+			switch v_m.(type) {
+			case int64:	
+				mantissa = v_m.(int64)
+			case uint64:
+				mantissa = int64(v_m.(uint64))									
+			}
+						
 			return map[string]interface{}{
 				"data": decimalToString(mantissa, exponent),
 				"type": dataTypeToString(Decimal),
 			}, nil
 		} else if tag == TAG_EPOCH_DATE_TIME {
-			return map[string]interface{}{
-				"data": time.Unix(int64(wrappedVal.(uint64)), 0).Format("2006-01-02T15:04:05Z"),
-				"type": dataTypeToString(Decimal),
-			}, nil
+			var tt time.Time 
+
+			switch wrappedVal.(type) {
+								
+			case int64:
+				tt = time.Unix(int64(wrappedVal.(int64)), 0).UTC()						
+
+			case uint64:			
+				tt = time.Unix(int64(wrappedVal.(uint64)), 0).UTC()
+			}
+
+			return map[string]interface{}{				
+				"data": tt.Format("2006-01-02T15:04:05Z"),
+				"type": dataTypeToString(Datetime),
+			}, nil			
+			
 		}
 
-		log.Fatalf("TAG: %v\n", tag)
 		return nil, fmt.Errorf("Unsupported tag: %v", tag)
 
 	default:
@@ -461,9 +486,9 @@ func MsgpackToMap(msgpackStr string) map[string]interface{} {
 						if resType == Datetime {
 							switch resArrI[1].(type) {
 							case int64:
-								resource["data"] = time.Unix(resArrI[1].(int64), 0).Format("2006-01-02T15:04:05Z")
+								resource["data"] = time.Unix(resArrI[1].(int64), 0).UTC().Format("2006-01-02T15:04:05Z")
 							case uint64:
-								resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).Format("2006-01-02T15:04:05Z")
+								resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).UTC().Format("2006-01-02T15:04:05Z")
 							default:
 								log.Printf("@ERR SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
 									reflect.TypeOf(resArrI[1]))

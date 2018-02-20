@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"time"
-
+	"bytes"
 	"github.com/valyala/fasthttp"
 )
 
@@ -19,9 +19,14 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 	// var ticket ticket
 
 	//Decoding request paramets
+
 	var jsonData map[string]interface{}
-	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
-	if err != nil {
+	
+	d := json.NewDecoder(bytes.NewReader(ctx.Request.Body()))
+    d.UseNumber()	
+	
+	//err := json.Unmarshal(ctx.Request.Body(), &jsonData)
+	if err := d.Decode(&jsonData); err != nil {
 		log.Println("@ERR PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
@@ -30,7 +35,9 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 	ticketKey = jsonData["ticket"].(string)
 
 	if jsonData["assigned_subsystems"] != nil {
-		assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+		aa := jsonData["assigned_subsystems"].(json.Number)
+		assignedSubsystems1, _ := aa.Int64()
+		assignedSubsystems = uint64 (assignedSubsystems1)
 	}
 	eventID = jsonData["event_id"].(string)
 

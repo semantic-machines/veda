@@ -119,47 +119,47 @@ func (dec *Decoder) reflectDecode(rv reflect.Value) error {
 }
 
 func (dec *Decoder) handleInfoBits(cborInfo byte) (uint64, error) {
-	var aux uint64
+        var aux uint64
 
-	if cborInfo <= 23 {
-		aux = uint64(cborInfo)
-		return aux, nil
-	} else if cborInfo == int8Follows {
-		didread, err := io.ReadFull(dec.rin, dec.b8[:1])
-		if didread == 1 {
-			aux = uint64(dec.b8[0])
-		}
-		return aux, err
-	} else if cborInfo == int16Follows {
-		didread, err := io.ReadFull(dec.rin, dec.b8[:2])
-		if didread == 2 {
-			aux = (uint64(dec.b8[1]) << 8) | uint64(dec.b8[0])
-		}
-		return aux, err
-	} else if cborInfo == int32Follows {
-		didread, err := io.ReadFull(dec.rin, dec.b8[:4])
-		if didread == 4 {
-			aux = (uint64(dec.b8[3]) << 24) |
-				(uint64(dec.b8[2]) << 16) |
-				(uint64(dec.b8[1]) << 8) |
-				uint64(dec.b8[0])
-		}
-		return aux, err
-	} else if cborInfo == int64Follows {
-		didread, err := io.ReadFull(dec.rin, dec.b8)
-		if didread == 8 {
-			var shift uint = 0
-			i := 0
-			aux = uint64(dec.b8[i]) << shift
-			for i < 7 {
-				i += 1
-				shift += 8
-				aux |= uint64(dec.b8[i]) << shift
-			}
-		}
-		return aux, err
-	}
-	return 0, nil
+        if (cborInfo <= 23) {
+                aux = uint64(cborInfo)
+                return aux, nil
+        } else if (cborInfo == int8Follows) {
+                didread, err := io.ReadFull(dec.rin, dec.b8[:1])
+                if didread == 1 {
+                        aux = uint64(dec.b8[0])
+                }
+                return aux, err
+        } else if (cborInfo == int16Follows) {
+                didread, err := io.ReadFull(dec.rin, dec.b8[:2])
+                if didread == 2 {
+                        aux = (uint64(dec.b8[1]) << 8) | uint64(dec.b8[0])
+                }
+                return aux, err
+        } else if (cborInfo == int32Follows) {
+                didread, err := io.ReadFull(dec.rin, dec.b8[:4])
+                if didread == 4 {
+                aux = (uint64(dec.b8[3]) << 24) |
+                        (uint64(dec.b8[2]) << 16) |
+                        (uint64(dec.b8[1]) <<  8) |
+                        uint64(dec.b8[0])
+                }
+                return aux, err
+        } else if (cborInfo == int64Follows) {
+                didread, err := io.ReadFull(dec.rin, dec.b8[:8])
+                if didread == 8 {
+                        aux = (uint64(dec.b8[7]) << 56) |
+                                (uint64(dec.b8[6]) << 48) |
+                                (uint64(dec.b8[5]) << 40) |
+                                (uint64(dec.b8[4]) << 32) |
+                                (uint64(dec.b8[3]) << 24) |
+                                (uint64(dec.b8[2]) << 16) |
+                                (uint64(dec.b8[1]) << 8) |
+                                uint64(dec.b8[0])
+                }
+                return aux, err
+        }
+        return 0, nil
 }
 
 func (dec *Decoder) decodeDecimal(rv reflect.Value, c byte) error {
@@ -227,7 +227,7 @@ func (dec *Decoder) innerDecodeC(rv reflect.Value, c byte) error {
 			//log.Printf("built big negint: %v", bn)
 			return setBignum(rv, bn)
 		}
-		return setInt(rv, -1-int64(aux))
+		return setInt(rv, 0-int64(aux)) // ???!!! O_o
 	} else if cborType == cborBytes {
 		//log.Printf("cborType %x bytes cborInfo %d aux %x", cborType, cborInfo, aux)
 		if cborInfo == varFollows {
