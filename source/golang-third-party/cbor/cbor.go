@@ -186,7 +186,7 @@ func (dec *Decoder) decodeDecimal(rv reflect.Value, c byte) error {
 		log.Printf("error decoding array subob")
 		return err
 	}
-	log.Println(reflect.ValueOf(reflect.Indirect(subrv).Interface()))
+	//log.Println(reflect.ValueOf(reflect.Indirect(subrv).Interface()))
 	irv = reflect.Append(irv, reflect.Indirect(subrv))
 	err = dec.reflectDecode(subrv)
 	if err != nil {
@@ -195,7 +195,7 @@ func (dec *Decoder) decodeDecimal(rv reflect.Value, c byte) error {
 	}
 	irv = reflect.Append(irv, reflect.Indirect(subrv))
 
-	log.Println(elemType)
+	//log.Println(elemType)
 	ctag := CBORTag{}
 	ctag.Tag = tagDecimal
 	ctag.WrappedObject = irv
