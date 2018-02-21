@@ -14,15 +14,17 @@ import (
 	"gopkg.in/vmihailenco/msgpack.v2"
 )
 
-var indivEnv *lmdb.Env
-var ticketEnv *lmdb.Env
-
 //Connector represents struct for connection to tarantool
 type Connector struct {
 	//Tcp connection to tarantool
 	conn net.Conn
 	//Address of tarantool database
 	addr string
+
+	indivEnv  *lmdb.Env
+	ticketEnv *lmdb.Env
+
+	db_is_open bool
 }
 
 //RequestResponse represents structure for tarantool request response
@@ -58,37 +60,46 @@ const (
 	Remove = 51
 )
 
+func (conn *Connector) open_db() {
+	var err error
+	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+	if err != nil {
+		log.Fatal("Err: can not open lmdb individuals base: ", err)
+		conn.db_is_open = false
+		return
+	}
+
+	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+	if err != nil {
+		log.Fatal("Err: can not open tickets lmdb base: ", err)
+		conn.db_is_open = false
+		return
+	}
+
+	conn.db_is_open = true
+}
+
 //Connect tries to connect to socket in tarantool while connection is not established
 func (conn *Connector) Connect(addr string) {
 	var err error
-	indivEnv, err = lmdb.NewEnv()
+	conn.indivEnv, err = lmdb.NewEnv()
 	if err != nil {
 		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
 	}
 
-	err = indivEnv.SetMaxDBs(1)
+	err = conn.indivEnv.SetMaxDBs(1)
 	if err != nil {
 		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
 	}
 
-	err = indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open lmdb individuals base: ", err)
-	}
-
-	ticketEnv, err = lmdb.NewEnv()
+	conn.ticketEnv, err = lmdb.NewEnv()
 	if err != nil {
 		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
 	}
 
-	err = ticketEnv.SetMaxDBs(1)
+	err = conn.ticketEnv.SetMaxDBs(1)
 	if err != nil {
 		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
-	}
-
-	err = ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open tickets lmdb base: ", err)
 	}
 
 	/*	var err error
@@ -257,6 +268,10 @@ func doRequest(needAuth bool, userUri string, data []string, trace, traceAuth bo
 func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, trace bool) RequestResponse {
 	var rr RequestResponse
 
+	if conn.db_is_open == false {
+		conn.open_db()
+	}
+
 	//If user uri is too shorth than return not authorized
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
@@ -312,6 +327,10 @@ func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, 
 func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool) RequestResponse {
 	var rr RequestResponse
 
+	if conn.db_is_open == false {
+		conn.open_db()
+	}
+
 	//If user uri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
@@ -358,7 +377,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
 	rr.Data = make([]string, 0, len(uris))
-	err := indivEnv.View(func(txn *lmdb.Txn) (err error) {
+	err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
 		dbi, err := txn.OpenDBI("", 0)
 		if err != nil {
 			return err
@@ -706,6 +725,10 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uris []string, o
 func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse {
 	var rr RequestResponse
 
+	if conn.db_is_open == false {
+		conn.open_db()
+	}
+
 	//If no ticket ids passed than NoContent returned to client.
 	if len(ticketIDs) == 0 {
 		rr.CommonRC = NoContent
@@ -714,7 +737,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
 	rr.Data = make([]string, 0, len(ticketIDs))
-	err := ticketEnv.View(func(txn *lmdb.Txn) (err error) {
+	err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {
 		dbi, err := txn.OpenDBI("", 0)
 		if err != nil {
 			return err
