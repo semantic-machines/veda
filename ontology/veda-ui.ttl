@@ -417,6 +417,8 @@ v-ui:StandardButtonsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с набором стандартных кнопок"@ru ;
   rdfs:label "Template with standard buttons"@en ;
+  rdfs:comment "Действия"@ru ;
+  rdfs:comment "Actions"@en ;
   v-ui:template """
 <script>
   // var allButtons = "send edit save cancel delete destroy journal journal-dms task";
@@ -534,8 +536,22 @@ v-ui:StandardButtonsTemplate
       <li><a href="#" about="v-s:Sign" property="rdfs:label"></a></li>
     </ul>
   </div>
+  <button type="button" class="btn btn-link view edit -search toggle-buttons hidden">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+    <span class="description hidden" about="v-ui:StandardButtonsTemplate" property="rdfs:comment"></span>
+  </button>
 </div>
 <script>
+  $(".toggle-buttons", template).click(function () {
+    var actions = template.closest(".actions");
+    var actionButtons = $(".btn:not(.toggle-buttons)", actions);
+    actionButtons.toggleClass("hidden");
+    var button = $(this);
+    button.find(".glyphicon").toggleClass("glyphicon-chevron-left glyphicon-chevron-right");
+    button.find(".description").toggleClass("hidden");
+    button.toggleClass("btn-link btn-info");
+  });
+
   // Make position fixed for buttons bar that doesn't fit the window
   function checkOffset(main, actions, actionsStaticHeight, placeholder) {
     var mainTop = main.offset().top;
@@ -569,6 +585,7 @@ v-ui:StandardButtonsTemplate
     template.one("remove", function () {
       $(window).off("scroll", scrollHandler);
     });
+    $(".toggle-buttons", template).detach().appendTo(actions).removeClass("hidden");
     function scrollHandler () {
       checkOffset(main, actions, actionsStaticHeight, placeholder);
     }
