@@ -157,7 +157,7 @@ v-s:SingleCommentTemplate
     <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
     <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
     <br>
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete"></span>
   </div>
 </div>
   """ ;

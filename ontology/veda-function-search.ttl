@@ -437,7 +437,7 @@ v-fs:FulltextRequestTemplate
       <veda-control id="query" data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
       <br>
       <div class="actions">
-        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></div>
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></span>
       </div>
     </div>
   </div>
@@ -745,7 +745,7 @@ v-fs:AttributiveRequestTemplate
       <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
       <br>
       <div class="actions">
-        <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></div>
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></span>
       </div>
     </div>
   </div>

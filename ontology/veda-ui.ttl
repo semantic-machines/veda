@@ -531,16 +531,14 @@ v-ui:StandardButtonsTemplate
       <li><a href="#" about="v-s:Sign" property="rdfs:label"></a></li>
     </ul>
   </div>
-  <button type="button" class="btn btn-link view edit -search toggle-buttons hidden">
+  <button type="button" class="btn btn-link view edit -search toggle-actions hidden">
     <span class="glyphicon glyphicon-chevron-left"></span>
     <span class="description hidden" about="v-ui:StandardButtonsTemplate" property="rdfs:comment"></span>
   </button>
 </span>
 <script>
-  $(".toggle-buttons", template).click(function () {
-    var actions = template.closest(".actions");
-    var actionButtons = $(".btn:not(.toggle-buttons)", actions);
-    actionButtons.toggleClass("hidden");
+  $(".toggle-actions", template).click(function () {
+    template.closest(".actions").children(":not(.toggle-actions)").toggleClass("hidden");
     var button = $(this);
     button.find(".glyphicon").toggleClass("glyphicon-chevron-left glyphicon-chevron-right");
     button.find(".description").toggleClass("hidden");
@@ -580,7 +578,7 @@ v-ui:StandardButtonsTemplate
     template.one("remove", function () {
       $(window).off("scroll", scrollHandler);
     });
-    $(".toggle-buttons", template).detach().appendTo(actions).removeClass("hidden");
+    $(".toggle-actions", template).detach().appendTo(actions).removeClass("hidden");
     function scrollHandler () {
       checkOffset(main, actions, actionsStaticHeight, placeholder);
     }
@@ -1126,7 +1124,7 @@ v-ui:SavedSearchTemplate
     <div property="v-s:query"></div>
     <br/>
     <div class="actions">
-      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
     </div>
   </div>
   """ ;
@@ -1365,7 +1363,7 @@ v-ui:TestUITemplate
   <veda-control rel="v-ui:testFile" data-type="file" class="-view edit -search"></veda-control>
 
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
   """ ;
@@ -1497,7 +1495,7 @@ v-ui:FileTemplateWithComment2
 
   <!--Remove-->
   <div class="actions panel-footer">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save"></span>
   </div>
   <!--/Remove-->
 
@@ -2289,7 +2287,7 @@ td:PersonTemplate1
       </div>
     </div>
     <br>
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
   <br>
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
@@ -2346,7 +2344,7 @@ td:AppointmentTemplate1
       </div>
     </div>
     <!--div class="actions panel-footer">
-      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
     </div-->
   </div>
   """ ;
@@ -2372,7 +2370,7 @@ v-ui:ttl
 <div class="container sheet">
   <pre style="border:none;background-color:#fff;"></pre>
   <div class="actions pull-left">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete destroy"></span>
   </div>
   <div class="pull-right">
     <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
@@ -2409,7 +2407,7 @@ v-ui:json
     <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
   <div class="actions pull-left">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
 <script>
@@ -2615,15 +2613,13 @@ v-ui:generic
   </div>
   <br>
   <br>
-  <div class="actions clearfix">
-    <div about="@" class="pull-left" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></div>
-    <div class="pull-left">
-      <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
-      <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
-      <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
-      <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
-      <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
-    </div>
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></span>
+    <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+    <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+    <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
+    <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+    <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
 </div>
 <script>
@@ -2717,7 +2713,7 @@ td:PreferencesTemplate1
       </div>
     </div>
     <!--div class="actions panel-footer">
-      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
     </div-->
   </div>
   """ ;

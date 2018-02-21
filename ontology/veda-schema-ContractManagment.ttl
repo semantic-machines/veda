@@ -542,7 +542,7 @@ v-s:ContractorTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
   """ ;
@@ -610,7 +610,7 @@ v-s:CurrencyExchangeRateTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
   """ ;
