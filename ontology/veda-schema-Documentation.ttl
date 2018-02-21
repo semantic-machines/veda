@@ -524,7 +524,7 @@ v-s:AddendumTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
   </div>
 </div>
   """ ;

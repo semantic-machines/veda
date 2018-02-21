@@ -2825,7 +2825,7 @@ v-wf:TaskTemplateAsModal
 <!-- BUTTONS -->
   <hr class="margin-sm">
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
   </div>
 </div>
 <script>
@@ -3020,7 +3020,7 @@ rdf:type v-ui:ClassTemplate ;
   </div>
   <hr style="margin: 10px 0px">
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
 """
@@ -3097,7 +3097,7 @@ v-wf:RuleTemplate
   </div>
   <hr style="margin: 10px 0px">
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
 <script>

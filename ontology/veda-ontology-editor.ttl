@@ -298,7 +298,7 @@ v-ui:ClassClassTemplate
   </div>
   <hr>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
 <script>
@@ -429,7 +429,7 @@ v-ui:PropertyClassTemplate
   </div>
   <hr>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -550,7 +550,7 @@ v-ui:PropertySpecificationTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -706,7 +706,7 @@ v-ui:DatatypePropertySpecificationTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -911,7 +911,7 @@ v-ui:ObjectPropertySpecificationTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -959,7 +959,7 @@ v-ui:ClassTemplateTemplate
   <veda-control property="v-ui:template" data-type="source"></veda-control>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -979,7 +979,7 @@ v-ui:ClassModelTemplate
   <veda-control property="v-s:script" data-type="source"></veda-control>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -1079,7 +1079,7 @@ v-ui:EventTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -1133,7 +1133,7 @@ v-ui:ModuleTemplate
   </div> -->
   <hr>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="cancel delete"></span>
   </div>
 </div>
 <script>
@@ -1209,7 +1209,7 @@ v-ui:GroupTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -1293,7 +1293,7 @@ v-ui:PermissionStatementTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
@@ -1377,7 +1377,7 @@ v-ui:MembershipTemplate
   <br>
   <br>
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
   """ ;
