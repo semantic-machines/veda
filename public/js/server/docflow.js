@@ -122,6 +122,8 @@ function prepare_decision_form(ticket, document, prev_state)
         if (process_output_vars.length > 0)
         {
             set_field_to_document ('v-wf:outVars', new_vars, _work_order['@']);
+            _work_order['v-wf:outVars'] = new_vars;
+
             set_field_to_document ('v-wf:isCompleted', newBool(true), document['@']);
 
             //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
