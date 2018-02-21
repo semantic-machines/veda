@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"log"
 	"time"
-
 	"encoding/json"
-
 	"strings"
 
 	//	"github.com/muller95/traildb-go"
@@ -272,7 +270,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("ready")
+	fmt.Println("web server ready, listen " + webserverPort)
 	select {}
 	/*
 		err = fasthttp.ListenAndServeTLS("0.0.0.0:8020", "ssl-certs/server.crt",
