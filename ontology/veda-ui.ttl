@@ -508,12 +508,7 @@ v-ui:StandardButtonsTemplate
   isDraftHandler();
   //# sourceURL=v-ui:StandardButtonsTemplate_pre
 </script>
-<div class="standard-actions">
-  <style>
-    .standard-actions {
-      margin: 0 3px 0 0;
-    }
-  </style>
+<span>
   <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
   <button type="button" class="rm action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
   <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
@@ -540,7 +535,7 @@ v-ui:StandardButtonsTemplate
     <span class="glyphicon glyphicon-chevron-left"></span>
     <span class="description hidden" about="v-ui:StandardButtonsTemplate" property="rdfs:comment"></span>
   </button>
-</div>
+</span>
 <script>
   $(".toggle-buttons", template).click(function () {
     var actions = template.closest(".actions");
@@ -634,17 +629,12 @@ v-ui:IconButtonsTemplate
   });
   //# sourceURL=v-ui:IconButtonsTemplate_pre
 </script>
-<div class="standard-actions">
-  <style>
-    .standard-actions {
-      margin: 0 3px 0 0;
-    }
-  </style>
+<span>
   <button data-toggle="tooltip" data-placement="top" data-title="v-s:Edit" type="button" class="action btn btn-xs btn-default view -edit -search glyphicon glyphicon-pencil" id="edit"></button>
   <button data-toggle="tooltip" data-placement="top" data-title="v-s:Save" type="button" class="action btn btn-xs btn-success -view edit -search glyphicon glyphicon-ok" id="save"></button>
   <button data-toggle="tooltip" data-placement="top" data-title="v-s:Cancel" type="button" class="action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
   <button data-toggle="tooltip" data-placement="top" data-title="v-s:Delete" type="button" class="action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
-</div>
+</span>
 <script>
   $('[data-toggle="tooltip"]').tooltip({
     title: function () {
