@@ -238,11 +238,11 @@ v-s:LinksTreeTemplate
 </script>
 <div>
   <style>
-    ul {
+    .links-tree ul {
       list-style-type: none;
       padding-left: 18px;
     }
-    li {
+    .links-tree ul li {
       margin: 10px 0;
     }
   </style>
