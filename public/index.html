@@ -271,11 +271,16 @@
 
     <!-- File control template -->
     <script type="html/template" id="file-control-template">
-      <div>
-        <input class="file" type="file" style="display:none"/>
-        <button class="btn btn-default">
-          Browse...<strong class="indicator-percentage"></strong><span class="indicator-spinner fa fa-spinner fa-pulse fa-lg fa-fw text-info" style="display:none"></span>
-        </button>
+      <div class="form-inline">
+        <input type="file" style="display:none"/>
+        <div class="input-group" role="group">
+          <input type="text" class="paste form-control" placeholder="Вставьте из буфера обмена"/>
+          <span class="input-group-btn">
+            <button class="browse btn btn-default">
+              Browse...<strong class="indicator-percentage"></strong><span class="indicator-spinner fa fa-spinner fa-pulse fa-lg fa-fw text-info" style="display:none"></span>
+            </button>
+          </span>
+        </div>
       </div>
     </script>
 
