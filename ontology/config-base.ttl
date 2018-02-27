@@ -1143,22 +1143,20 @@ cfg:Event_15
       put_individual(ticket, linkFrom, _event_id);
     }
   }
-  if (linkTo && linkFrom) {
+  if (linkDeleted) {
+    remove_individual(ticket, membershipToFromUri, _event_id);
+    print( "membershipToFrom removed", membershipToFrom["@"] );
+  } else {
+    put_individual(ticket, membershipToFrom, _event_id);
+    print( "membershipToFrom added", JSON.stringify(membershipToFrom) );
+  }
+  if (mutualMembership) {
     if (linkDeleted) {
-      remove_individual(ticket, membershipToFromUri, _event_id);
-      print( "membershipToFrom removed", membershipToFrom["@"] );
+      remove_individual(ticket, membershipFromToUri, _event_id);
+      print( "membershipFromTo removed", membershipFromTo["@"] );
     } else {
-      put_individual(ticket, membershipToFrom, _event_id);
-      print( "membershipToFrom added", JSON.stringify(membershipToFrom) );
-    }
-    if (mutualMembership) {
-      if (linkDeleted) {
-        remove_individual(ticket, membershipFromToUri, _event_id);
-        print( "membershipFromTo removed", membershipFromTo["@"] );
-      } else {
-        put_individual(ticket, membershipFromTo, _event_id);
-        print( "membershipFromTo added", JSON.stringify(membershipFromTo) );
-      }
+      put_individual(ticket, membershipFromTo, _event_id);
+      print( "membershipFromTo added", JSON.stringify(membershipFromTo) );
     }
   }
   """ ;
