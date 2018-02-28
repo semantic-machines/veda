@@ -2005,7 +2005,7 @@ for (i = 0; i < 1; i++)
             'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
             'document["v-s:test_ArArObj"]= [newDate(new Date("2017-02-03"))];' +
             'document["v-s:test_Obj"]= newDate(new Date("2017-03-03"))[0];' +
-            'Backend.put_individual(ticket, document, _event_id);'),
+            'put_individual(ticket, document, _event_id);'),
         'v-s:created': newDate(new Date()),
         'v-s:author': newUri(ticket_admin.user_uri)
       };
