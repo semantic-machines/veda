@@ -68,7 +68,9 @@ veda.Module(function AppPresenter(veda) { "use strict";
     }
     // Router function
     riot.route( function (hash) {
-      if ( !hash ) { return welcome.present("#main"); }
+      if ( !hash ) {
+        return riot.route("#/" + welcome.id);
+      }
       if ( hash.indexOf("#/") < 0 ) { return; }
       var tokens = decodeURI(hash).slice(2).split("/"),
           uri = tokens[0],
@@ -89,8 +91,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
       if (uri === "drafts") {
         return veda.trigger("load:drafts");
       }
-      var individual = uri ? new veda.IndividualModel(uri) : welcome;
-      individual.present(container, template, mode, extra);
+      if (uri) {
+        var individual = new veda.IndividualModel(uri);
+        individual.present(container, template, mode, extra);
+      } else {
+        riot.route("#/" + welcome.id);
+      }
     });
   });
   function parse (value) {
