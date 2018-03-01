@@ -913,9 +913,19 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
                 if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
                 {
-                    // для обновляемого индивида проверим доступность бита Update
-                    if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
+			        if (indv.isExists("v-s:deleted", true))
+			        {
+	                	if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_delete, true, null, null, null) != Access.can_delete)
+	                	{
+		                    // для устаноки аттрибута v-s:deleted у индивида проверим доступность бита Delete
+	                        log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can delete] [%s] ", ticket.user_uri, indv.uri);
+	                        res.result = ResultCode.Not_Authorized;
+	                        return res;	                		
+	                	}
+			        }
+			        else if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
                     {
+	                    // для обновляемого индивида проверим доступность бита Update
                         log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can update] [%s] ", ticket.user_uri, indv.uri);
                         res.result = ResultCode.Not_Authorized;
                         return res;
