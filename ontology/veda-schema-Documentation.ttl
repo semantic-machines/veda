@@ -480,6 +480,15 @@ v-s:InternalDocument
 # v-s:hasLink
 # v-s:hasComment
 
+###----------------------------------Жизненный_Цикл_Изделия---------------------
+v-s:LifecycleStage
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Стадия жизненного цикла изделия"@ru ;
+  rdfs:label "Stage of lifecycle "@en ;
+.
+
+
 #---------------------------------------
 v-s:AddendumTemplate
   rdf:type v-ui:ClassTemplate ;

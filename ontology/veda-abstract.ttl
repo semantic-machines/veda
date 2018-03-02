@@ -1031,6 +1031,13 @@ v-s:productionCondition
   rdfs:range xsd:string ;
   rdfs:domain v-s:Maintained ;
 .
+v-s:hasLifecycleStage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Стадия жизненного цикла изделия"@ru ;
+  rdfs:label "Stage of Lifeсycle"@en ;
+  rdfs:range v-s:LifecycleStage ;
+  rdfs:domain v-s:Maintained ;
+.
 
 ### ------------------------------------------------------------
 v-s:Financial
