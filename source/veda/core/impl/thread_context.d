@@ -519,7 +519,7 @@ class PThreadContext : Context
 
     public Individual[] get_individuals(Ticket *ticket, string[] uris)
     {
-        StopWatch sw; sw.start;
+        //StopWatch sw; sw.start;
 
         try
         {
@@ -567,7 +567,7 @@ class PThreadContext : Context
     {
         //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
 
-        StopWatch sw; sw.start;
+        //StopWatch sw; sw.start;
 
         OpResult  res = OpResult(ResultCode.Fail_Store, -1);
 

@@ -374,7 +374,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
 
 private Ticket authenticate(Context ctx, string login, string password)
 {
-    StopWatch sw; sw.start;
+    //StopWatch sw; sw.start;
 
     Ticket    ticket;
     Ticket    sticket = ctx.sys_ticket(true);
