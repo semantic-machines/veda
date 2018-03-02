@@ -166,36 +166,6 @@ v-s:Level
   rdfs:label "Level"@en ;
 .
 ### ------------------------------------------------------
-v-s:Link
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:label "Связь"@ru ;
-  rdfs:label "Link"@en ;
-  v-ui:hasTemplate v-s:LinksTemplate ;
-.
-v-s:from
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Link ;
-  rdfs:label "Источник"@ru ;
-  rdfs:label "Source"@en ;
-  rdfs:range v-s:Thing ;
-.
-v-s:to
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Link ;
-  rdfs:label "Цель"@ru ;
-  rdfs:label "Target"@en ;
-  rdfs:range v-s:Thing ;
-.
-v-s:mutualMembership
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Link ;
-  rdfs:label "Обоюдные права"@ru ;
-  rdfs:label "Mutual rights"@en ;
-  rdfs:range xsd:boolean ;
-.
-### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
