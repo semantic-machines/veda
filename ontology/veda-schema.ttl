@@ -172,6 +172,7 @@ v-s:Link
   rdfs:subClassOf v-s:Exportable ;
   rdfs:label "Связь"@ru ;
   rdfs:label "Link"@en ;
+  v-ui:hasTemplate v-s:LinksTemplate ;
 .
 v-s:from
   rdf:type owl:ObjectProperty ;
