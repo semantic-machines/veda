@@ -1211,6 +1211,9 @@ function prepare_start_form(ticket, document)
         processedDocumentId = processedDocument["v-wf:onDocument"] ? processedDocument["v-wf:onDocument"][0].data : processedDocument['@'];
         processedDocumentValue = processedDocument["v-wf:onDocument"] || [{ data: document['@'], type: _Uri }];
         document['v-wf:processedDocument'] = processedDocumentValue;
+        document["v-wf:hasParentTask"] = [{ data: processedDocument['@'], type: _Uri }];
+        processedDocument["v-wf:hasChildTask"] = (processedDocument["v-wf:hasChildTask"] || []).concat( newUri(document['@']) );
+        put_individual(ticket, processedDocument, _event_id);
       }
     } else {
       processedDocumentId = document['@'];

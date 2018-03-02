@@ -1728,6 +1728,24 @@ v-wf:read
   rdfs:range xsd:boolean ;
 .
 
+v-wf:hasChildTask
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Есть дочерняя задача"@ru ;
+  rdfs:label "Has child task"@en ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:range v-wf:StartForm ;
+.
+
+v-wf:hasParentTask
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Есть родительская задача"@ru ;
+  rdfs:label "Has parent task"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:range v-wf:DecisionForm ;
+.
+
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
   rdf:type owl:Class ;
