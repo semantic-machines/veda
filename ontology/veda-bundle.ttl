@@ -253,8 +253,8 @@ v-s:Recover
 .
 v-s:Instruction
   rdf:type v-s:Bundle ;
-  rdfs:label "Поручение"@ru ;
-  rdfs:label "Instruction"@en ;
+  rdfs:label "Исполнить поручение"@ru ;
+  rdfs:label "Perform instruction"@en ;
 .
 v-s:VersionAlert
   rdf:type v-s:Bundle ;
@@ -268,22 +268,22 @@ v-s:Distribution
 .
 v-s:Question
   rdf:type v-s:Bundle ;
-  rdfs:label "Вопрос"@ru ;
-  rdfs:label "Question"@en ;
+  rdfs:label "Ответить на вопрос"@ru ;
+  rdfs:label "Answer question"@en ;
 .
 v-s:Introduction
   rdf:type v-s:Bundle ;
-  rdfs:label "На ознакомление"@ru ;
-  rdfs:label "Introduction"@en ;
+  rdfs:label "Ознакомиться"@ru ;
+  rdfs:label "Get informed"@en ;
 .
 v-s:Coordination
   rdf:type v-s:Bundle ;
-  rdfs:label "На согласование"@ru ;
-  rdfs:label "Coordination"@en ;
+  rdfs:label "Согласовать"@ru ;
+  rdfs:label "Coordinate"@en ;
 .
 v-s:Sign
   rdf:type v-s:Bundle ;
-  rdfs:label "Подписание"@ru ;
+  rdfs:label "Подписать"@ru ;
   rdfs:label "Sign"@en ;
 .
 

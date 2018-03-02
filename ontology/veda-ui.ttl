@@ -469,20 +469,8 @@ v-ui:StandardButtonsTemplate
   // Standard tasks
   template.on("click", "ul#standard-tasks a", function (e) {
     e.preventDefault();
-    var task = $(this).attr("about");
-    if (task === "v-s:Question") {
-      veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true);
-    } else if (task === "v-s:Instruction") {
-      veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true);
-    } else if (task === "v-s:Introduction") {
-      veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true);
-    } else if (task === "v-s:Distribution") {
-      veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true);
-    } else if (task === "v-s:Coordination") {
-      veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true);
-    } else if (task === "v-s:Sign") {
-      veda.Util.send(individual, template, 'v-wf:signRouteStartForm', true);
-    }
+    var startFormTransform = $(this).attr("about");
+    veda.Util.send(individual, template, startFormTransform, true);
   });
 
   // Standart buttons labels change for drafts
@@ -523,12 +511,13 @@ v-ui:StandardButtonsTemplate
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" id="standard-tasks">
-      <li><a href="#" about="v-s:Question" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Instruction" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Introduction" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Distribution" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Coordination" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Sign" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:questionRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:instructionRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:taskRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:coordinationRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:signRouteStartForm" property="rdfs:label"></a></li>
+      <li class="divider"></li>
+      <li><a href="#" about="v-wf:distributionRouteStartForm" property="rdfs:label"></a></li>
     </ul>
   </div>
   <button type="button" class="btn btn-link view edit -search toggle-actions hidden">
