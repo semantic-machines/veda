@@ -123,6 +123,7 @@ v-s:Organization
   rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:OrganizationTemplate ;
+  v-s:hasLinksTree v-s:OrganizationLinksTree ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
@@ -688,6 +689,9 @@ v-s:OrganizationTemplate
   <div class="actions">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
+  <br>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
+  <br>
 </div>
 <script>
   $("#add-profile", template).click(function () {
