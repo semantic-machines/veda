@@ -867,7 +867,7 @@ v-ui:LabelTemplate
   <span class="label-template" about="@" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-      template.text(individual.id);
+      template.children().first().text(individual.id);
     }
     //# sourceURL=v-ui:LabelTemplate
   </script>
@@ -897,7 +897,7 @@ v-ui:LabelLinkTemplate
   <a class="label-template" href="#/@"><span about="@" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-      template.text(individual.id);
+      template.children().first().text(individual.id);
     }
     //# sourceURL=v-ui:LabelLinkTemplate
   </script>
