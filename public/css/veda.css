@@ -1322,7 +1322,7 @@ svg.process-path-highlight path
 }
 
 /* Fixed buttons */
-@media (min-width: 992px) {
+@media (min-width: 576px) {
   .modal .actions-fixed {
     position: static;
     margin: 0;

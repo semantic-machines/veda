@@ -236,8 +236,8 @@ v-fs:MoreResults
 .
 v-fs:AllResults
   rdf:type v-s:Bundle ;
-  rdfs:label "Загрузить все результаты"@ru ;
-  rdfs:label "Load all results"@en ;
+  rdfs:label "Загрузить все"@ru ;
+  rdfs:label "Load all"@en ;
 .
 v-fs:NoMoreResults
   rdf:type v-s:Bundle ;
@@ -1352,16 +1352,16 @@ v-fs:AttributiveSearchTemplate
   </div>
   <br>
   <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
-  <div class="additional-actions hidden">
+  <span class="additional-actions">
     <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
     <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
-  </div>
+  </span>
 </div>
 <script>
   // Append additional actions
   setTimeout(function () {
-    var additionalActions = $(".additional-actions", template).children();
+    var additionalActions = $(".additional-actions", template);
     var searchActions = $(".search-actions", template);
     additionalActions.appendTo(searchActions);
   }, 0);
@@ -1630,8 +1630,10 @@ v-fs:AttributiveSearchInlineTemplate
     <br>
     <div class="search-actions clearfix">
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-      <div class="dropup pull-right set-columns-wrapper">
-        <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
+      <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      <div class="pull-right btn-group dropup set-columns-wrapper">
+        <button type="button" class="btn btn-info dropdown-toggle set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-fs:SetColumns" property="rdfs:label"></span>
           <span class="caret"></span>
         </button>
@@ -1666,10 +1668,6 @@ v-fs:AttributiveSearchInlineTemplate
     </div>
     <div class="no-more-results alert alert-success hidden">
       <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
-    </div>
-    <div class="text-center">
-      <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
-      <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
     </div>
   </div>
 </div>
