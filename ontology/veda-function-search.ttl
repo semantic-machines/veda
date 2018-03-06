@@ -2086,6 +2086,12 @@ v-fs:FulltextBlank
   v-fc:targetType v-s:UserThing ;
 .
 
+v-fs:AdvancedSearchBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Расширенный поиск"@ru ;
+  rdfs:label "Advanced search"@en ;
+.
+
 v-fs:FulltextBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
@@ -2106,6 +2112,14 @@ v-fs:FulltextBlankTemplate
         <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
       </span>
     </div>
+    <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
+    <div class="advanced-search hidden panel panel-default margin-md">
+      <div class="panel-body bg-default">
+        <em about="rdf:type" property="rdfs:label"></em>
+        <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
+        <veda-control rel="rdf:type" data-type="link" class="fulltext dropdown"></veda-control>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -2122,6 +2136,10 @@ v-fs:FulltextBlankTemplate
       individual.set("*", [value]);
       find.click();
     }
+  });
+  $(".advanced-toggle", template).click(function (e) {
+    e.preventDefault();
+    $(".advanced-search", template).toggleClass("hidden");
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
 </script>
