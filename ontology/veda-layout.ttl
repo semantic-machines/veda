@@ -71,6 +71,7 @@ v-l:MainPageTemplate
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-l:MainMenu" data-template="v-l:MenuTemplate"></li>
           <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
+          <li style="padding-left:10px; margin-left:10px; border-left:1px solid #eee;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
         </ul>
       </div>
     </div>

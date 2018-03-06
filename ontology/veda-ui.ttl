@@ -315,6 +315,13 @@ v-ui:displayedElements
   rdfs:label "Display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
 .
+v-ui:fullWidth
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:Preferences ;
+  rdfs:label "Во всю ширину"@ru ;
+  rdfs:label "Full width"@en ;
+  rdfs:range xsd:boolean ;
+.
 
 # --------------- System properties template ------------------
 
@@ -374,6 +381,50 @@ v-ui:LanguageSwitchTemplate
   //# sourceURL=v-ui:LanguageSwitchTemplate
 </script>
 
+  """
+.
+v-ui:FullWidthSwitchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон переключения режима на всю ширину"@ru ;
+  rdfs:label "Full width switch template"@en ;
+  v-ui:template """
+<script>
+  template.click(function () {
+    try {
+      var value = veda.user.preferences["v-ui:fullWidth"][0];
+      veda.user.preferences["v-ui:fullWidth"] = [ !value ];
+      veda.user.preferences.save();
+    } catch (error) {
+      console.log("Full width switch error", error);
+    }
+  });
+  veda.user.preferences.on("v-ui:fullWidth", widthHandler);
+  template.one("remove", function () {
+    veda.user.preferences.off("v-ui:fullWidth", widthHandler);
+  });
+  widthHandler();
+  function widthHandler() {
+    var style = $("#full-width-style", template);
+    if (veda.user.preferences.hasValue("v-ui:fullWidth", true) ) {
+      style.attr("media", "all");
+      template.removeClass("btn-default").addClass("btn-success active");
+    } else {
+      style.attr("media", "not all");
+      template.addClass("btn-default").removeClass("btn-success active");
+    }
+  }
+  //# sourceURL=v-ui:FullWidthSwitchTemplate
+</script>
+<button class="btn btn-xs btn-default navbar-btn">
+  <span class="glyphicon glyphicon-fullscreen"></span>
+  <style id="full-width-style" media="not all">
+    .container {
+      width: 98%!important;
+      margin-left: 1%!important;
+      margin-right: 1%!important;
+    }
+  </style>
+</button>
   """
 .
 
