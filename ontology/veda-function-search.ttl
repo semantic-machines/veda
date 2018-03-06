@@ -2117,7 +2117,7 @@ v-fs:FulltextBlankTemplate
       <div class="panel-body bg-default">
         <em about="rdf:type" property="rdfs:label"></em>
         <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
-        <veda-control rel="rdf:type" data-type="link" class="fulltext dropdown"></veda-control>
+        <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing' && '@'=='mnd-s:*'" class="fulltext dropdown"></veda-control>
       </div>
     </div>
   </div>
@@ -2137,9 +2137,17 @@ v-fs:FulltextBlankTemplate
       find.click();
     }
   });
+  if (individual.advanced) {
+    $(".advanced-search", template).removeClass("hidden");
+  }
   $(".advanced-toggle", template).click(function (e) {
     e.preventDefault();
-    $(".advanced-search", template).toggleClass("hidden");
+    individual.advanced = !individual.advanced;
+    if (individual.advanced) {
+      $(".advanced-search", template).removeClass("hidden");
+    } else {
+      $(".advanced-search", template).addClass("hidden");
+    }
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
 </script>
