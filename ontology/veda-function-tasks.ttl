@@ -404,6 +404,16 @@ v-ft:MyBundle
   rdfs:label "Мои"@ru ;
   rdfs:label "My"@en ;
 .
+v-ft:DocumentTypeBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Тип документа"@ru ;
+  rdfs:label "Document type"@en ;
+.
+v-ft:DocumentBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Документ"@ru ;
+  rdfs:label "Document"@en ;
+.
 v-ft:TaskBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка задачи"@ru ;
@@ -431,29 +441,56 @@ v-ft:TaskBlankTemplate
   <br>
   <div about="@" data-template="v-ft:ActorFilterTemplate"></div>
   <div class="row">
-    <div class="col-md-2">
+    <div class="col-md-3">
       <em about="v-wf:from" property="rdfs:label"></em>
       <veda-control property="v-wf:from.rdfs:label" data-type="string"></veda-control>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
       <em about="v-wf:to" property="rdfs:label"></em>
       <veda-control property="v-wf:to.rdfs:label" data-type="string"></veda-control>
     </div>
+    <div class="col-md-3">
+      <em about="v-ft:DocumentTypeBundle" property="rdfs:label"></em>
+      <veda-control rel="v-wf:onDocument.rdf:type" data-type="link" class="dropdown fulltext" data-single="true" data-placeholder=" " data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing' && '@'=='mnd-s:*'"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-ft:DocumentBundle" property="rdfs:label"></em>
+      <veda-control property="v-wf:onDocument.rdfs:label" data-type="string"></veda-control>
+    </div>
+  </div>
+  <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
+  <div class="advanced-search row hidden">
     <div class="col-md-3">
       <em about="v-s:description" property="rdfs:label"></em>
       <veda-control property="rdfs:label" data-type="string"></veda-control>
     </div>
     <div class="col-md-3">
-      <em about="v-wf:onDocument" property="rdfs:label"></em>
-      <veda-control property="v-wf:onDocument.rdfs:label" data-type="string"></veda-control>
+      <em about="v-s:created" property="rdfs:label"></em>
+      <veda-control property="v-s:created" data-type="date"></veda-control>
+      <div property="v-s:created"></div>
     </div>
-    <div class="col-md-2">
+    <div class="col-md-3">
       <em about="v-wf:dateGiven" property="rdfs:label"></em>
       <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
       <div property="v-wf:dateGiven"></div>
     </div>
   </div>
 </div>
+<script>
+  if (individual.advanced) {
+    $(".advanced-search", template).removeClass("hidden");
+  }
+  $(".advanced-toggle", template).click(function (e) {
+    e.preventDefault();
+    individual.advanced = !individual.advanced;
+    if (individual.advanced) {
+      $(".advanced-search", template).removeClass("hidden");
+    } else {
+      $(".advanced-search", template).addClass("hidden");
+    }
+  });
+  //# sourceURL=v-ft:TaskBlankTemplate_post
+</script>
   """ ;
 .
 
@@ -560,7 +597,7 @@ v-ft:TaskResultTemplate
       <th width="15%" class="orderby" data-orderby="v-wf:from"><span about="v-wf:from" property="rdfs:label"></span></th>
       <th width="15%" class="orderby" data-orderby="v-wf:to"><span about="v-wf:to" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-wf:onDocument"><span about="v-wf:onDocument" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-wf:onDocument"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
     </tr>
