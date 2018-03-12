@@ -1552,9 +1552,9 @@
 
       var timeout;
 
-      var dataSource = function (input, callback) {
+      var dataSource = function (input, sync, async) {
         if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(ftQuery, input ? defaultDelay : 0, queryPrefix, input, sort, callback);
+        timeout = setTimeout(ftQuery, input ? defaultDelay : 0, queryPrefix, input, sort, sync, async);
       }
 
       var typeAhead = fulltext.typeahead (
@@ -1565,7 +1565,39 @@
         {
           name: "dataset",
           source: dataSource,
-          displayKey: function (individual) {
+          templates: {
+            suggestion: function (suggestion) {
+              var cnt = $("<div>");
+              var tmpl = `
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox">
+                    <span about="@" property="rdfs:label"></span>
+                  </label>
+                </div>
+                <script>
+                  template.on("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  });
+                </script>
+              `;
+              return suggestion.present(cnt, tmpl);
+            },
+            header: `
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox">
+                  <strong>Выбрать все / Select all</strong>
+                </label>
+                <hr class="margin-sm">
+              </div>
+            `,
+            footer: `
+              <button class="btn btn-success">Ok</button>
+            `
+          },
+          display: function (individual) {
             var result;
             try {
               result = renderTemplate(individual);
@@ -1581,6 +1613,7 @@
       // Assign values in individual
       typeAhead.on("typeahead:selected", function (e, selected) {
         select(selected);
+        handler();
       });
 
       // Clear values from individual if isSingle && typeAhead was emptied
@@ -1665,7 +1698,7 @@
 
 /* UTILS */
 
-  function ftQuery(prefix, input, sort, callback) {
+  function ftQuery(prefix, input, sort, sync, async) {
     var queryString = "";
     if ( input ) {
       var tokens = input.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
@@ -1691,14 +1724,14 @@
         ticket: veda.ticket,
         uris: getList,
         async: true
-      }) : (callback(result), []);
+      }) : (async(result), []);
 
     }).then(function (individuals) {
 
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });
-      callback(result);
+      async(result);
 
     });
   }

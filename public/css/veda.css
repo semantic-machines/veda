@@ -659,39 +659,27 @@ fieldset[disabled] .form-control {
 
 /* [BEGIN] Typeahead */
 
-span.twitter-typeahead .tt-dropdown-menu {
+span.twitter-typeahead .tt-menu {
   width: 100%;
   position: absolute;
   top: 100%;
   left: 0;
   z-index: 1000;
   display: none;
-  float: left;
   min-width: 160px;
-  padding: 5px 0;
-  margin: 3px 0 30px;
-  list-style: none;
-  font-size: 14px;
-  text-align: left;
+  margin: 3px 0;
+  padding: 10px;
   background-color: #ffffff;
   border: 1px solid #cccccc;
-  border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
 }
-span.twitter-typeahead .tt-suggestion > p {
-  display: block;
-  padding: 3px 20px;
-  margin-bottom: 0px;
-  clear: both;
-  font-weight: normal;
-  line-height: 1.42857143;
-  color: #333333;
+span.twitter-typeahead .tt-dataset > *:not(button) {
+  padding: 3px;
   white-space: nowrap;
 }
-span.twitter-typeahead .tt-suggestion.tt-cursor > p {
+span.twitter-typeahead .tt-suggestion:hover, span.twitter-typeahead .tt-suggestion.tt-cursor {
   color: #ffffff;
   background-color: #428bca;
 }
@@ -701,19 +689,19 @@ span.twitter-typeahead {
 .input-group span.twitter-typeahead {
   display: block !important;
 }
-.input-group span.twitter-typeahead .tt-dropdown-menu {
+.input-group span.twitter-typeahead .tt-menu {
   top: 32px !important;
 }
-.input-group.input-group-lg span.twitter-typeahead .tt-dropdown-menu {
+.input-group.input-group-lg span.twitter-typeahead .tt-menu {
   top: 44px !important;
 }
-.input-group.input-group-sm span.twitter-typeahead .tt-dropdown-menu {
+.input-group.input-group-sm span.twitter-typeahead .tt-menu {
   top: 28px !important;
 }
 span.twitter-typeahead .tt-hint {
   color: transparent;
 }
-.scrollable-typeahead .tt-dropdown-menu {
+.scrollable-typeahead .tt-menu {
   max-height: 400px;
   overflow-y: auto;
 }
