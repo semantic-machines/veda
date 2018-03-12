@@ -123,7 +123,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     renderedTemplate = processTemplate (individual, container, renderedTemplate, mode, extra, specs);
     container.append(renderedTemplate);
-    individual.trigger("individual:templateReady", renderedTemplate);
 
     // Timeout to wait all related individuals to render
     setTimeout(function () {
