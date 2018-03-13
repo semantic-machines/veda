@@ -761,6 +761,13 @@ v-s:taskDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:reportDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Описание отчета"@ru ;
+  rdfs:label "Report description"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
 v-s:rationale
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Обоснование"@ru ;
