@@ -290,7 +290,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
     // для каждого из ресурсов выполним операцию добавления/удаления
     foreach (rs; resource)
     {
-        RightSet new_right_set = new RightSet(log);
+        RightSet new_right_set = new RightSet();
 
         string   prev_data_str = storage.find(OptAuthorize.NO, null, prefix ~ rs.uri);
         if (prev_data_str !is null)

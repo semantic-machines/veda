@@ -41,6 +41,10 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
 fi
 
 if [ -z $1 ] || [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
+    cd source/authorization
+    cargo build --release
+    cd $BUILD_PATH
+
     ./build-component.sh veda-authorization authorization
 fi
 

@@ -1,0 +1,16 @@
+[package]
+name = "authorization"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>", "muller95 <muller95@yandex.ru>"]
+
+[lib]
+name = "authorization"
+path = "src/authorization.rs"
+crate-type = ["staticlib"]
+    
+[dependencies]
+lazy_static = "1.0"
+lmdb-rs = "0.7.6"
+#libc = "0.2"
+#chrono = "0.3"
+#juniper = "0.8.1"

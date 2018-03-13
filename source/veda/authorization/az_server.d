@@ -9,6 +9,8 @@ import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.defi
 import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type, veda.util.queue;
 import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl, veda.storage.mdbx.mdbx_acl;
 
+extern (C) ubyte authorize_r(immutable(char)* _uri, immutable(char)* _user_uri, ubyte _request_access, bool _is_check_for_reload);
+
 static this()
 {
     bsd_signal(SIGINT, &handleTermination3);
@@ -175,6 +177,7 @@ void main(string[] args)
 {
     string bind_url      = "tcp://127.0.0.1:22000";
     string test_user_url = null;
+    string experimental_authorize = null;
 
     try
     {
@@ -185,6 +188,8 @@ void main(string[] args)
                                                "Set binding url, example: --bind=tcp://127.0.0.1:22000");
                                  syntax.option('t', "test_user_uri", &test_user_url, Required.no,
                                                "Unload az result for user_uri, example: --test_user_uri=td:RomanKarpov");
+                                 syntax.option('a', "authorize_core", &experimental_authorize, Required.no,
+                                               "set authorize core, example: --authorize_core=experimental");
                              });
     }
     catch (ArgumentParserException ex)
@@ -271,21 +276,35 @@ void main(string[] args)
                     }
 
                     count++;
-					if (count % 1000 == 0)
-					{
 
                     if (data.indexOf("membership") < 0 && data.indexOf("_d:mondi_position_") < 0 && data.indexOf("_d:mondi_employee_") < 0 
                     	&& data.indexOf("_position") < 0 && data.indexOf("_person") < 0 && data.indexOf("_employee_") < 0 
                     	&& data.indexOf("-r") < 0 && data.indexOf("right") < 0)
                     {
+
+//data = "d:722c20635eb6475ea12d79ef45c0a6fa";
+					if (count % 1000 == 0)
+					{
                         ubyte request_access = 15;
-                        ubyte res            = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
+                        
+                        ubyte res = 0;
+                        if (experimental_authorize !is null && experimental_authorize == "experimental")
+                        {
+                                   	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false);
+                        }           	
+						else
+						{
+                                    res = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
+						}            
+                        
                         count_prepared++;
                         writefln("%d;%d;%s;%s;%s", count, count_prepared, data, access_to_string(request_access), access_to_string(res));
-                    }
 					}
+                    }
+					
 
                     prepare_batch_cs.commit_and_next(true);
+                    //break;
                 }
 
                 sw.stop();
