@@ -2,7 +2,7 @@ extern crate core;
 /// This module gives function to check access of user to individual
 #[macro_use]
 extern crate lazy_static;
-extern crate lmdb_rs;
+extern crate lmdb_rs_m;
 
 //use std::ffi::CString;
 //use std::ptr;
@@ -17,8 +17,8 @@ use std::thread;
 use std::time;
 
 //use std::io::{stderr, stdout, Write};
-use lmdb_rs::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
-use lmdb_rs::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
+use lmdb_rs_m::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
+use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
 
 const PERMISSION_PREFIX: &str = "P";
 const FILTER_PREFIX: &str = "F";
