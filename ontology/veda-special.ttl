@@ -61,16 +61,34 @@ v-s:isSuccess
 .
 v-s:subject
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Subject" ;
+  rdfs:label "Тема письма"@ru ;
+  rdfs:label "Subject"@en ;
   rdfs:domain v-s:Deliverable ;
   rdfs:range xsd:string ;
 .
 v-s:messageBody
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Message body" ;
+  rdfs:label "Содержание письма"@ru ;
+  rdfs:label "Message body"@en ;
   rdfs:domain v-s:Deliverable ;
   rdfs:range xsd:string ;
 .
+v-s:senderMailbox
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Электронный адрес отправителя"@ru ;  
+  rdfs:label "Sender Mailbox"@en ;
+  rdfs:domain v-s:Deliverable ;
+  rdfs:range xsd:string ;
+.
+v-s:recipientMailbox
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Электронный адрес получателя"@ru ;
+  rdfs:label "Recipient Mailbox"@en ;  
+  rdfs:domain v-s:Deliverable ;
+  rdfs:range xsd:string ;
+.
+
+
 # ------------------------------------------------------------
 v-s:Email
   rdf:type owl:Class ;
