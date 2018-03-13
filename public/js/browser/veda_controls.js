@@ -1565,38 +1565,7 @@
         {
           name: "dataset",
           source: dataSource,
-          templates: {
-            suggestion: function (suggestion) {
-              var cnt = $("<div>");
-              var tmpl = `
-                <div class="checkbox">
-                  <label>
-                    <input type="checkbox">
-                    <span about="@" property="rdfs:label"></span>
-                  </label>
-                </div>
-                <script>
-                  template.on("click", function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  });
-                </script>
-              `;
-              return suggestion.present(cnt, tmpl);
-            },
-            header: `
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox">
-                  <strong>Выбрать все / Select all</strong>
-                </label>
-                <hr class="margin-sm">
-              </div>
-            `,
-            footer: `
-              <button class="btn btn-success">Ok</button>
-            `
-          },
+          limit: 100,
           display: function (individual) {
             var result;
             try {
@@ -1650,10 +1619,12 @@
     if ( (this.hasClass("dropdown") || this.hasClass("full")) && queryPrefix ) {
       dropdown.click(function () {
         var minLength = typeAhead.data().ttTypeahead.minLength;
+        var query = typeAhead.data().ttTypeahead.input.query;
         typeAhead.data().ttTypeahead.minLength = 0;
-        typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
+        typeAhead.data().ttTypeahead.input.query = "";
         typeAhead.focus();
         typeAhead.data().ttTypeahead.minLength = minLength;
+        typeAhead.data().ttTypeahead.input.query = query;
       });
     } else {
       dropdown.remove();
