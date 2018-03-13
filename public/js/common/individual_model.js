@@ -482,6 +482,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.addValue = function (property_uri, value) {
     if (typeof value !== "undefined" && value !== null) {
+      this.properties[property_uri] = this.properties[property_uri] || [];
       var serialized;
       if ( Array.isArray(value) ) {
         serialized = value.map(serializer);
@@ -491,7 +492,8 @@ veda.Module(function (veda) { "use strict";
         this.properties[property_uri].push(serialized);
       }
       this.isSync(false);
-      this.trigger("valueAdded", property_uri, value);
+      this.trigger("propertyModified", property_uri, this.get(property_uri));
+      this.trigger(property_uri, this.get(property_uri));
     }
     return this;
   };
@@ -513,8 +515,8 @@ veda.Module(function (veda) { "use strict";
       });
       var values = this.get(property_uri);
       this.isSync(false);
-      this.trigger("propertyModified", property_uri, values);
-      this.trigger(property_uri, values);
+      this.trigger("propertyModified", property_uri, this.get(property_uri));
+      this.trigger(property_uri, this.get(property_uri));
     }
     return this;
   };
