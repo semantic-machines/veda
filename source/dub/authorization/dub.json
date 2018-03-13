@@ -17,6 +17,7 @@
             "../../veda/bind/tarantool"
 	],
         "sourceFiles":[
+            "../../lib64/libauthorization.a",
 	    "../../lib64/liblmdb.a",
 	    "../../veda/util/commando.d",
 	    "../../veda/bind/nano.d",
