@@ -720,19 +720,23 @@ v-s:OrganizationTemplate
     });
   });
 
-   //перезапись лабел досье контрагента
-  function shortLabelFunction () {
-    if (individual.hasValue("v-s:shortLabel") && individual.hasValue("v-s:hasContractorProfile")){
-      individual["v-s:hasContractorProfile"][0]["rdfs:label"] = individual["v-s:shortLabel"];
-      individual["v-s:hasContractorProfile"][0].save();
+  //Генерация Uri
+  function makeUri () {
+    var shortLabel = individual["v-s:hasClassifierCountry"][0]["v-s:shortLabel"] ;
+    var taxId = individual["v-s:taxId"] ;
+    if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && individual.isNew() ){
+      individual.id = "d:org_"+ shortLabel + taxId ;
+    } else if ( individual.isNew() ) {
+      individual.id = "d:org_"+ taxId ;
     }
   }
-    individual.on("beforeSave", shortLabelFunction);
-    template.one("remove", function () {
-    individual.off("beforeSave", shortLabelFunction);
+
+  individual.on("beforeSave", makeUri);
+  template.one("remove", function () {
+    individual.off("beforeSave", makeUri);
   });
 
-    $("#add-subsidiary", template).click(function () {
+  $("#add-subsidiary", template).click(function () {
     var modal = $("#notification-modal-template").html();
     modal = $(modal);
     modal.modal({"show": false});
