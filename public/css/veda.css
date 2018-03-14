@@ -657,10 +657,14 @@ fieldset[disabled] .form-control {
   overflow: hidden!important;
 }
 
-
 /* [BEGIN] Link control */
+
 .link-control {
   position: relative;
+}
+
+.link-control .input-group {
+  width: 100%;
 }
 
 .link-control .fulltext-menu {
@@ -678,10 +682,7 @@ fieldset[disabled] .form-control {
   border-radius: 4px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
-}
-
-.link-control .suggestions {
-  max-height: 250px;
+  max-height: 300px;
   overflow-y: auto;
 }
 
@@ -703,95 +704,20 @@ fieldset[disabled] .form-control {
 }
 
 .link-control .suggestion:hover {
-  background-color: #f5f5f5;
+  background-color: #eee;
   cursor: pointer;
 }
 
-.scrollable-typeahead .tt-menu  {
-}
-
-/* [END] Link control */
-
-
-/* [BEGIN] Typeahead */
-span.twitter-typeahead .tt-menu {
-  width: 100%;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  display: none;
-  min-width: 160px;
-  margin: 3px 0;
-  padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
-  border-radius: 4px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  background-clip: padding-box;
-}
-span.twitter-typeahead .tt-dataset > *:not(button) {
-  padding: 3px;
-  white-space: nowrap;
-}
-span.twitter-typeahead .tt-suggestion:hover, span.twitter-typeahead .tt-suggestion.tt-cursor {
-  color: #ffffff;
-  background-color: #428bca;
-}
-span.twitter-typeahead {
-  width: 100%;
-}
-.input-group span.twitter-typeahead {
-  display: block !important;
-}
-.input-group span.twitter-typeahead .tt-menu {
-  top: 32px !important;
-}
-.input-group.input-group-lg span.twitter-typeahead .tt-menu {
-  top: 44px !important;
-}
-.input-group.input-group-sm span.twitter-typeahead .tt-menu {
-  top: 28px !important;
-}
-span.twitter-typeahead .tt-hint {
-  color: transparent;
-}
-.scrollable-typeahead .tt-menu  {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.scrollable-typeahead .input-group {
-    width: 100%;
-}
-
-.input-group > .twitter-typeahead:first-child > .tt-input.form-control {
+.link-control .input-group > .form-control:first-child {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
-.input-group > .twitter-typeahead:first-child > .tt-input.form-control.input-sm {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-}
-.input-group > .twitter-typeahead:first-child > .tt-input.form-control.input-lg {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
-}
-.input-group > .twitter-typeahead:last-child > .tt-input.form-control {
+.link-control .input-group > .form-control:last-child {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
-.input-group > .twitter-typeahead:last-child > .tt-input.form-control.input-sm {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-.input-group > .twitter-typeahead:last-child > .tt-input.form-control.input-lg {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-}
 
-/* [END] Typeahead */
-
+/* [END] Link control */
 
 .has-success .panel {
   color: #3c763d;

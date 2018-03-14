@@ -1540,79 +1540,6 @@
       tree.remove();
     }
 
-    /*
-    // Fulltext search feature
-    if ( this.hasClass("fulltext") || this.hasClass("full") ) {
-
-      fulltext.attr({
-        "placeholder": placeholder,
-        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
-      });
-
-      fulltext.typeahead (
-        {
-          minLength: 3,
-          highlight: true
-        },
-        {
-          name: "dataset",
-          source: (function () {
-            var timeout;
-            return function (input, sync, async) {
-              if (timeout) { clearTimeout(timeout); }
-              timeout = setTimeout(ftQuery, input ? defaultDelay : 0, queryPrefix, input, sort, sync, async);
-            }
-          }()),
-          limit: 100,
-          display: function (individual) {
-            var result;
-            try {
-              result = renderTemplate(individual);
-            } catch (ex) {
-              console.log(ex);
-              result = individual.id;
-            }
-            return result === "" ? individual.id : result;
-          }
-        }
-      );
-
-      // Assign values in individual
-      fulltext.on("typeahead:selected", function (e, selected) {
-        select(selected);
-        handler();
-      });
-
-      // Clear values from individual if isSingle && fulltext was emptied
-      fulltext.on("change keyup", function () {
-        if (isSingle && this.value === "") {
-          individual.set(rel_uri, []);
-        }
-      });
-
-      // Fill in value in fulltext field
-      var handler = function () {
-        if (isSingle && individual.hasValue(rel_uri)) {
-          try {
-            fulltext.typeahead( "val", renderTemplate( individual.get(rel_uri)[0]) );
-          } catch (e) {
-            fulltext.typeahead("val", "");
-          }
-        } else {
-          fulltext.typeahead("val", "");
-        }
-      }
-      individual.on(rel_uri, handler);
-      control.one("remove", function () {
-        individual.off(rel_uri, handler);
-      });
-
-      handler(rel_uri);
-
-    } else {
-      fulltext.remove();
-    } */
-
     // Fulltext search feature
     var fulltext = $(".fulltext", control);
     var fulltextMenu = $(".fulltext-menu", control);
@@ -1623,88 +1550,79 @@
         "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
       });
 
-      var resultHolder = control.find(".suggestions");
+      fulltextMenu.on("click", ".suggestion", function (e) {
+        var tmpl = $(this);
+        var suggestion_uri = tmpl.attr("resource");
+        var suggestion = new veda.IndividualModel(suggestion_uri);
+        tmpl.toggleClass("selected");
+        if ( individual.hasValue(rel_uri, suggestion) ) {
+          if (isSingle) {
+            individual
+              .set(rel_uri, [])
+              .set(rel_uri, [suggestion]);
+            fulltextMenu.hide();
+          } else {
+            individual.removeValue(rel_uri, suggestion);
+          }
+        } else {
+          if (isSingle) {
+            individual.set(rel_uri, [suggestion]);
+            fulltextMenu.hide();
+          } else {
+            individual.removeValue(rel_uri, suggestion);
+            individual.addValue(rel_uri, suggestion);
+          }
+        }
+      });
 
-      var header = control.find(".header");
-      if (!isSingle) {
-        header.find(".select-all").text( new veda.IndividualModel("v-s:SelectAll").toString() );
-      } else {
-        header.remove();
-      }
-
-      var singleTmpl = `
+      var suggestionTmpl = `
         <div class="suggestion" about="@" property="rdfs:label"></div>
-      `;
-      var multiTmpl = `
-        <div class="suggestion checkbox">
-          <label>
-            <input type="checkbox">
-            <span about="@" property="rdfs:label"></span>
-          </label>
-        </div>
       `;
 
       var keyupHandler = (function () {
         var timeout;
         var minLength = 3;
-        var limit = 10;
         return function (e) {
           if (timeout) { clearTimeout(timeout); }
-          timeout = setTimeout(function (e) {
-            var value = e.target.value;
-            if (value.length >= minLength) {
-              ftQuery(queryPrefix, value, sort)
-                .then(function (results) {
-
-                  if (results.length) {
-                    var tmp = $("<div></div>");
-                    var rendered = results.map(function (result) {
-                      var tmpl = result.present(tmp, singleTmpl);
-                      if (individual.hasValue(rel_uri, result)) {
-                        tmpl.addClass("selected");
-                      }
-                      tmpl.click(function () {
-                        tmpl.toggleClass("selected");
-                        if ( individual.hasValue(rel_uri, result) ) {
-                          if (isSingle) {
-                            individual.set(rel_uri, []);
-                          } else {
-                            individual.removeValue(rel_uri, result);
-                          }
-                        } else {
-                          if (isSingle) {
-                            individual.set(rel_uri, [result]);
-                          } else {
-                            individual.removeValue(rel_uri, result);
-                            individual.addValue(rel_uri, result);
-                          }
-                        }
-                      });
-                      return tmpl;
-                    });
-                    resultHolder.empty().append(rendered);
-                    fulltextMenu.show();
-                    $(document).click(clickOutsideMenuHandler);
-                    tmp.remove();
-                  } else {
-                    resultHolder.empty();
-                    fulltextMenu.hide();
-                  }
-
-                })
-                .catch(function (error) {
-
-                  console.log(error);
-
-                });
-            } else if (!value.length)  {
-              fulltextMenu.hide();
-              resultHolder.empty();
+          var value = e.target.value;
+          if (value.length >= minLength) {
+            timeout = setTimeout(performSearch, timeout, e, value);
+          } else if (!value.length)  {
+            if (isSingle) {
+              individual.set(rel_uri, []);
             }
-          }, defaultDelay, e);
+            fulltextMenu.empty().hide();
+          }
         }
       }());
-      fulltext.keyup(keyupHandler);
+
+      fulltext
+        .on("keyup", keyupHandler)
+        .on("triggerSearch", performSearch);
+
+      function performSearch (e, value) {
+        ftQuery(queryPrefix, value, sort)
+          .then(function (results) {
+            if (results.length) {
+              var tmp = $("<div></div>");
+              var rendered = results.map(function (result) {
+                var tmpl = result.present(tmp, suggestionTmpl);
+                if (individual.hasValue(rel_uri, result)) {
+                  tmpl.addClass("selected");
+                }
+                return tmpl;
+              });
+              fulltextMenu.empty().append(rendered).show();
+              $(document).click(clickOutsideMenuHandler);
+              tmp.remove();
+            } else {
+              fulltextMenu.empty().hide();
+            }
+          })
+          .catch(function (error) {
+            console.log("Fulltext query error", error);
+          });
+      }
 
       function clickOutsideMenuHandler(event) {
         if( !$(event.target).closest(fulltextMenu).length ) {
@@ -1744,13 +1662,9 @@
     var dropdown = $(".dropdown", control);
     if ( (this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full")) && queryPrefix ) {
       dropdown.click(function () {
-        var minLength = fulltext.data().ttTypeahead.minLength;
-        var query = fulltext.data().ttTypeahead.input.query;
-        fulltext.data().ttTypeahead.minLength = 0;
-        fulltext.data().ttTypeahead.input.query = "";
-        fulltext.focus();
-        fulltext.data().ttTypeahead.minLength = minLength;
-        fulltext.data().ttTypeahead.input.query = query;
+        if ( !fulltextMenu.is(":visible") ) {
+          fulltext.trigger("triggerSearch", [""]);
+        }
       });
     } else {
       dropdown.remove();

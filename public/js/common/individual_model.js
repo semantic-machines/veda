@@ -83,6 +83,7 @@ veda.Module(function (veda) { "use strict";
       this.trigger("propertyModified", property_uri, values);
       this.trigger(property_uri, values);
     }
+    return this;
   };
 
   function unique (arr) {
