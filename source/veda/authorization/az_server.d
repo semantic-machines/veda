@@ -9,7 +9,8 @@ import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.defi
 import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type, veda.util.queue;
 import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl, veda.storage.mdbx.mdbx_acl;
 
-extern (C) ubyte authorize_r(immutable(char)* _uri, immutable(char)* _user_uri, ubyte _request_access, bool _is_check_for_reload);
+extern (C) ubyte authorize_r(immutable(char)* _uri, immutable(char)* _user_uri, ubyte _request_access, bool _is_check_for_reload, 
+	void function (immutable(char)* _trace_acl), void function (immutable(char)* _trace_group), void function (immutable(char)* _trace_info));
 
 static this()
 {
@@ -290,7 +291,23 @@ void main(string[] args)
                         ubyte res = 0;
                         if (experimental_authorize !is null && experimental_authorize == "experimental")
                         {
-                                   	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false);
+                        	extern (C) void trace_acl (immutable(char)* uu)
+                        	{
+                        		writef ("%s", to!string (uu));
+                        	}
+
+                        	extern (C) void trace_group (immutable(char)* uu)
+                        	{
+                        		writef ("%s", to!string (uu));
+                        	}
+
+                        	extern (C) void trace_info (immutable(char)* uu)
+                        	{
+                        		writef ("%s", to!string (uu));
+                        	}
+                        	
+                           	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, &trace_acl, &trace_group, &trace_info);
+//                           	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, null, null, null);
                         }           	
 						else
 						{
