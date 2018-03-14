@@ -306,8 +306,8 @@ void main(string[] args)
                         		writef ("%s", to!string (uu));
                         	}
                         	
-                           	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, &trace_acl, &trace_group, &trace_info);
-//                           	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, null, null, null);
+                           	//res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, &trace_acl, &trace_group, &trace_info);
+                           	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, null, null, null);
                         }           	
 						else
 						{

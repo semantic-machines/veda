@@ -152,7 +152,6 @@ pub fn rights_map_from_string(src: String, results: &mut HashMap<String, Right>)
                 is_deleted: false,
             };
             results.insert(rr.id.clone(), rr);
-
         } else {
             break;
         }
@@ -205,7 +204,6 @@ pub fn rights_vec_from_string(src: String, results: &mut Vec<Right>) -> bool {
                 is_deleted: false,
             };
             results.push(rr);
-
         } else {
             break;
         }
@@ -220,7 +218,6 @@ pub fn rights_vec_from_string(src: String, results: &mut Vec<Right>) -> bool {
 }
 
 pub fn authorize_obj_group(azc: &mut AzContext, object_group_id: &str, object_group_access: u8, db: &Database) -> bool {
-
     let mut is_authorized = false;
     let mut calc_bits;
 
@@ -266,7 +263,6 @@ pub fn authorize_obj_group(azc: &mut AzContext, object_group_id: &str, object_gr
         rights_vec_from_string(str, permissions);
 
         for permission in permissions {
-
             if azc.is_trace_info {
                 let req_acs = azc.request_access;
                 print_to_trace_info(
@@ -425,7 +421,6 @@ pub fn prepare_obj_group(azc: &mut AzContext, uri: &str, access: u8, level: u8, 
 }
 
 pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: &mut HashMap<String, Right>, level: u8, db: &Database) -> bool {
-
     if level > 32 {
         if azc.is_trace_info {
             print_to_trace_info(azc, format!("ERR! level down > 32, uri={}\n", uri));
@@ -451,6 +446,7 @@ pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: 
         }
 
         let new_access = group.access & access;
+        let orig_access = group.access;
         group.access = new_access;
 
         if azc.walked_groups_s.contains_key(&group.id) {
@@ -474,15 +470,33 @@ pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: 
         }
         azc.walked_groups_s.insert(group.id.clone(), new_access);
 
-        //                if (trace_info !is null)
-        //                    trace_info.write(format("%d %s (%d)GROUP [%s] %s-> %s\n", str_num++, ll, level, group.id, access_to_pretty_string(orig_access),
-        //                                            access_to_pretty_string(new_access)));
+        if azc.is_trace_info {
+            print_to_trace_info(
+                azc,
+                format!(
+                    "{:1$} ({})GROUP [{}] {}-> {}\n",
+                    level * 2,
+                    level as usize,
+                    group.id,
+                    access_to_pretty_string(orig_access),
+                    access_to_pretty_string(new_access)
+                ),
+            );
+        }
 
         if uri == group.id {
-            //                    if (trace_info !is null)
-            //                        trace_info.write(format("%d %s (%d)GROUP [%s].access=%s SKIP, uri == group_key\n", str_num++, ll, level, group.id,
-            //                                                access_to_pretty_string(orig_access)));
-
+            if azc.is_trace_info {
+                print_to_trace_info(
+                    azc,
+                    format!(
+                        "{:1$} ({})GROUP [{}].access={} SKIP, uri == group_key\n",
+                        level * 2,
+                        level as usize,
+                        group.id,
+                        access_to_pretty_string(orig_access)
+                    ),
+                );
+            }
             continue;
         }
 
