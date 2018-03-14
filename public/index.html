@@ -135,12 +135,12 @@
 
     <!-- Link control template -->
     <script type="html/template" id="link-control-template">
-      <div class="scrollable-typeahead">
+      <div class="link-control">
         <div class="input-group">
           <div class="input-group-addon btn btn-default tree">
             <i class="fa fa-sitemap"></i>
           </div>
-          <input type="text" class="form-control fulltext"/>
+          <input type="text" class="form-control fulltext" autocomplete="off"/>
           <div class="input-group-addon btn btn-default dropdown">
             <i class="caret"></i>
           </div>
@@ -148,6 +148,7 @@
             <i class="glyphicon glyphicon-plus"></i>
           </div>
         </div>
+        <div class="fulltext-menu"></div>
       </div>
     </script>
 

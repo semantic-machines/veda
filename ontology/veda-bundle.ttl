@@ -206,6 +206,11 @@ v-s:DeleteAll
   rdfs:label "Удалить все"@ru ;
   rdfs:label "Delete all"@en ;
 .
+v-s:SelectAll
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать все"@ru ;
+  rdfs:label "Select all"@en ;
+.
 v-s:DeleteDraft
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить черновик"@ru ;

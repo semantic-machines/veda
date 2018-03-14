@@ -746,7 +746,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, renderOptions);
+        ftQuery(queryPrefix).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -852,7 +852,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, renderOptions);
+        ftQuery(queryPrefix).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -972,7 +972,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, renderOptions);
+        ftQuery(queryPrefix).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -1387,11 +1387,7 @@
       sort = this.data("sort") || spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       rel_uri = opts.rel_uri,
-      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
-      create = $(".create", control),
-      dropdown = $(".dropdown", control),
-      fulltext = $(".fulltext", control),
-      tree = $(".tree", control);
+      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single");
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
@@ -1428,6 +1424,7 @@
     }
 
     // Create feature
+    var create = $(".create", control);
     if ( this.hasClass("create") || this.hasClass("full") ) {
       var inModal = this.hasClass("create-modal");
       var rel_range = rangeRestriction ? rangeRestriction : (new veda.IndividualModel(rel_uri))["rdfs:range"][0];
@@ -1500,6 +1497,7 @@
     }
 
     // Tree feature
+    var tree = $(".tree", control);
     if ( this.hasClass("tree") || this.hasClass("full") ) {
       var root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
           inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
@@ -1543,6 +1541,8 @@
     }
 
     // Fulltext search feature
+    var fulltext = $(".fulltext", control);
+    var fulltextMenu = $(".fulltext-menu", control);
     if ( this.hasClass("fulltext") || this.hasClass("full") ) {
 
       fulltext.attr({
@@ -1550,77 +1550,123 @@
         "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
       });
 
-      var timeout;
-
-      var dataSource = function (input, callback) {
-        if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(ftQuery, input ? defaultDelay : 0, queryPrefix, input, sort, callback);
-      }
-
-      var typeAhead = fulltext.typeahead (
-        {
-          minLength: 3,
-          highlight: true
-        },
-        {
-          name: "dataset",
-          source: dataSource,
-          displayKey: function (individual) {
-            var result;
-            try {
-              result = renderTemplate(individual);
-            } catch (ex) {
-              console.log(ex);
-              result = individual.id;
-            }
-            return result === "" ? individual.id : result;
+      fulltextMenu.on("click", ".suggestion", function (e) {
+        var tmpl = $(this);
+        var suggestion_uri = tmpl.attr("resource");
+        var suggestion = new veda.IndividualModel(suggestion_uri);
+        tmpl.toggleClass("selected");
+        if ( individual.hasValue(rel_uri, suggestion) ) {
+          if (isSingle) {
+            individual
+              .set(rel_uri, [])
+              .set(rel_uri, [suggestion]);
+            fulltextMenu.hide();
+          } else {
+            individual.removeValue(rel_uri, suggestion);
+          }
+        } else {
+          if (isSingle) {
+            individual.set(rel_uri, [suggestion]);
+            fulltextMenu.hide();
+          } else {
+            individual.removeValue(rel_uri, suggestion);
+            individual.addValue(rel_uri, suggestion);
           }
         }
-      );
-
-      // Assign values in individual
-      typeAhead.on("typeahead:selected", function (e, selected) {
-        select(selected);
       });
 
-      // Clear values from individual if isSingle && typeAhead was emptied
-      typeAhead.on("change keyup", function () {
-        if (isSingle && this.value === "") {
-          individual.set(rel_uri, []);
+      var suggestionTmpl = `
+        <div class="suggestion" about="@" property="rdfs:label"></div>
+      `;
+
+      var keyupHandler = (function () {
+        var timeout;
+        var minLength = 3;
+        return function (e) {
+          if (timeout) { clearTimeout(timeout); }
+          var value = e.target.value;
+          if (value.length >= minLength) {
+            timeout = setTimeout(performSearch, timeout, e, value);
+          } else if (!value.length)  {
+            if (isSingle) {
+              individual.set(rel_uri, []);
+            }
+            fulltextMenu.empty().hide();
+          }
         }
-      });
+      }());
 
-      // Fill in value in fulltext field
+      fulltext
+        .on("keyup", keyupHandler)
+        .on("triggerSearch", performSearch);
+
+      function performSearch (e, value) {
+        ftQuery(queryPrefix, value, sort)
+          .then(renderResults)
+          .catch(function (error) {
+            console.log("Fulltext query error", error);
+          });
+      }
+
+      function renderResults(results) {
+        if (results.length) {
+          var tmp = $("<div></div>");
+          var rendered = results.map(function (result) {
+            var tmpl = result.present(tmp, suggestionTmpl);
+            if (individual.hasValue(rel_uri, result)) {
+              tmpl.addClass("selected");
+            }
+            return tmpl;
+          });
+          fulltextMenu.empty().append(rendered).show();
+          $(document).click(clickOutsideMenuHandler);
+          tmp.remove();
+        } else {
+          fulltextMenu.empty().hide();
+        }
+      }
+
+      function clickOutsideMenuHandler(event) {
+        if( !$(event.target).closest(fulltextMenu).length ) {
+          if( fulltextMenu.is(":visible") ) {
+            fulltextMenu.hide();
+            removeClickOutsideMenuHandler();
+          }
+        }
+      }
+      function removeClickOutsideMenuHandler() {
+        $(document).off("click", clickOutsideMenuHandler);
+      }
+
       var handler = function () {
         if (isSingle && individual.hasValue(rel_uri)) {
           try {
-            typeAhead.typeahead( "val", renderTemplate( individual.get(rel_uri)[0]) );
+            fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
           } catch (e) {
-            typeAhead.typeahead("val", "");
+            fulltext.val("");
           }
         } else {
-          typeAhead.typeahead("val", "");
+          fulltext.val("");
         }
       }
       individual.on(rel_uri, handler);
       control.one("remove", function () {
         individual.off(rel_uri, handler);
       });
-
       handler(rel_uri);
 
     } else {
       fulltext.remove();
+      fulltextMenu.remove();
     }
 
     // Dropdown feature
-    if ( (this.hasClass("dropdown") || this.hasClass("full")) && queryPrefix ) {
+    var dropdown = $(".dropdown", control);
+    if ( (this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full")) && queryPrefix ) {
       dropdown.click(function () {
-        var minLength = typeAhead.data().ttTypeahead.minLength;
-        typeAhead.data().ttTypeahead.minLength = 0;
-        typeAhead.data().ttTypeahead.input.trigger("queryChanged", "");
-        typeAhead.focus();
-        typeAhead.data().ttTypeahead.minLength = minLength;
+        if ( !fulltextMenu.is(":visible") ) {
+          fulltext.trigger("triggerSearch", [""]);
+        }
       });
     } else {
       dropdown.remove();
@@ -1665,7 +1711,7 @@
 
 /* UTILS */
 
-  function ftQuery(prefix, input, sort, callback) {
+  function ftQuery(prefix, input, sort) {
     var queryString = "";
     if ( input ) {
       var tokens = input.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
@@ -1675,7 +1721,8 @@
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
     }
     var result = [];
-    query({
+
+    return query({
       ticket: veda.ticket,
       query: queryString,
       sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
@@ -1685,20 +1732,30 @@
     }).then(function (results) {
 
       var getList = results.result.filter( function (uri, index) {
-        return ( veda.cache[uri] ? (result.push(veda.cache[uri]), false) : true );
+        if ( veda.cache[uri] ) {
+          result.push(veda.cache[uri]);
+          return false;
+        } else {
+          return true;
+        }
       });
-      return getList.length ? get_individuals({
-        ticket: veda.ticket,
-        uris: getList,
-        async: true
-      }) : (callback(result), []);
+
+      if (getList.length) {
+        return get_individuals({
+          ticket: veda.ticket,
+          uris: getList,
+          async: true
+        });
+      } else {
+        return [];
+      }
 
     }).then(function (individuals) {
 
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });
-      callback(result);
+      return result;
 
     });
   }
