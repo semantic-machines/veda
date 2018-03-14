@@ -1550,6 +1550,14 @@
         "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
       });
 
+      autosize(fulltext);
+      this.on("edit", function () {
+        autosize.update(fulltext);
+      });
+      this.on("remove", function () {
+        autosize.destroy(fulltext);
+      });
+
       fulltextMenu.on("click", ".suggestion", function (e) {
         var tmpl = $(this);
         var suggestion_uri = tmpl.attr("resource");
@@ -1672,7 +1680,7 @@
       dropdown.remove();
     }
 
-    if ( !$("input", control).length ) {
+    if ( !$(".fulltext", control).length ) {
       $(".input-group", control).toggleClass("input-group btn-group");
       $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
     }
@@ -1714,8 +1722,12 @@
   function ftQuery(prefix, input, sort) {
     var queryString = "";
     if ( input ) {
-      var tokens = input.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
-      queryString = tokens.map(function (token) { return "'*' == '" + token + "*'" }).join(" && ");
+      var lines = input.split("\n");
+      var lineQueries = lines.map(function (line) {
+        var words = line.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
+        return words.map(function (word) { return "'*' == '" + word + "*'" }).join(" && ");
+      });
+      queryString = lineQueries.join(" || ");
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
