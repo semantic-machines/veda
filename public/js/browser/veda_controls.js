@@ -746,7 +746,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, renderOptions);
+        ftQuery(queryPrefix).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -852,7 +852,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, renderOptions);
+        ftQuery(queryPrefix).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -972,7 +972,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, renderOptions);
+        ftQuery(queryPrefix).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -1602,26 +1602,28 @@
 
       function performSearch (e, value) {
         ftQuery(queryPrefix, value, sort)
-          .then(function (results) {
-            if (results.length) {
-              var tmp = $("<div></div>");
-              var rendered = results.map(function (result) {
-                var tmpl = result.present(tmp, suggestionTmpl);
-                if (individual.hasValue(rel_uri, result)) {
-                  tmpl.addClass("selected");
-                }
-                return tmpl;
-              });
-              fulltextMenu.empty().append(rendered).show();
-              $(document).click(clickOutsideMenuHandler);
-              tmp.remove();
-            } else {
-              fulltextMenu.empty().hide();
-            }
-          })
+          .then(renderResults)
           .catch(function (error) {
             console.log("Fulltext query error", error);
           });
+      }
+
+      function renderResults(results) {
+        if (results.length) {
+          var tmp = $("<div></div>");
+          var rendered = results.map(function (result) {
+            var tmpl = result.present(tmp, suggestionTmpl);
+            if (individual.hasValue(rel_uri, result)) {
+              tmpl.addClass("selected");
+            }
+            return tmpl;
+          });
+          fulltextMenu.empty().append(rendered).show();
+          $(document).click(clickOutsideMenuHandler);
+          tmp.remove();
+        } else {
+          fulltextMenu.empty().hide();
+        }
       }
 
       function clickOutsideMenuHandler(event) {
@@ -1709,7 +1711,7 @@
 
 /* UTILS */
 
-  function ftQuery(prefix, input, sort, sync, async) {
+  function ftQuery(prefix, input, sort) {
     var queryString = "";
     if ( input ) {
       var tokens = input.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
@@ -1745,7 +1747,6 @@
           async: true
         });
       } else {
-        if (async) async(result);
         return [];
       }
 
@@ -1754,7 +1755,6 @@
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });
-      if (async) async(result);
       return result;
 
     });
