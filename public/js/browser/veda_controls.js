@@ -1724,7 +1724,7 @@
     if ( input ) {
       var lines = input.split("\n");
       var lineQueries = lines.map(function (line) {
-        var words = line.trim().replace(/[-*]/g, " ").replace(/\s+/g, " ").split(" ");
+        var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
         return words.map(function (word) { return "'*' == '" + word + "*'" }).join(" && ");
       });
       queryString = lineQueries.join(" || ");
