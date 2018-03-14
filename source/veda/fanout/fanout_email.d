@@ -17,7 +17,7 @@ void main(char[][] args)
 
     Thread.sleep(dur!("seconds")(1));
 
-    FanoutProcess p_fanout = new FanoutProcess(SUBSYSTEM.FANOUT_EMAIL,  MODULE.fanout_email, new Logger("veda-core-fanout-email", "log", ""));
+    FanoutProcess p_fanout = new FanoutProcess(SUBSYSTEM.FANOUT_EMAIL, MODULE.fanout_email, new Logger("veda-core-fanout-email", "log", ""));
 
     p_fanout.run();
 }
@@ -269,16 +269,24 @@ class FanoutProcess : VedaModule
                 delete smtp_conn;
                 connect_to_smtp(context);
 
-                string from         = new_indv.getFirstLiteral("v-wf:from");
-                string to           = new_indv.getFirstLiteral("v-wf:to");
-                string subject      = new_indv.getFirstLiteral("v-s:subject");
-                string reply_to     = new_indv.getFirstLiteral("v-wf:replyTo");
-                string message_body = new_indv.getFirstLiteral("v-s:messageBody");
+                string    from         = new_indv.getFirstLiteral("v-wf:from");
+                string    to           = new_indv.getFirstLiteral("v-wf:to");
+                string    subject      = new_indv.getFirstLiteral("v-s:subject");
+                string    reply_to     = new_indv.getFirstLiteral("v-wf:replyTo");
+                string    message_body = new_indv.getFirstLiteral("v-s:messageBody");
+
+                string    senderMailbox    = new_indv.getFirstLiteral("v-s:senderMailbox");
+                Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
 
                 if (from !is null && to !is null)
                 {
                     string from_label;
-                    string email_from = extract_email(sticket, from, from_label).getFirstString();
+                    string email_from;
+
+                    if (senderMailbox is null)
+                        email_from = extract_email(sticket, from, from_label).getFirstString();
+                    else
+                        email_from = senderMailbox;
 
                     if (from_label is null || from_label.length == 0)
                         from_label = "Veda System";
@@ -287,6 +295,9 @@ class FanoutProcess : VedaModule
                     Recipient[] rr_email_to;
                     foreach (Resource el; extract_email(sticket, to, label))
                         rr_email_to ~= Recipient(el.data(), label);
+
+                    foreach (Resource el; recipientMailbox)
+                        rr_email_to ~= Recipient(el.data(), "");
 
                     string str_email_reply_to = "";
                     foreach (Resource el; extract_email(sticket, reply_to, label))
