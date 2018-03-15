@@ -226,6 +226,53 @@
     }
   };
 
+  // WorkTime control
+  $.fn.veda_worktime = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_worktime.defaults, options ),
+      control = veda_literal_input.call(this, opts);
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+      if (e.type === "search") {
+        control.isSingle = false;
+      }
+    });
+    var mainInput=$("input.form-control", control);
+    var pseudoInputs=$("div.input-group>input", control).addClass("form-control");
+    feelPseudoInput(mainInput.val());
+    pseudoInputs.change(feelMainInput);
+    function feelMainInput(){
+      var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
+      mainInput.val(count);
+      mainInput.change();
+    };
+    function feelPseudoInput(allTime){
+      var days=0, hours=0, minutes=0;
+      if (allTime!=0){
+        days=Math.floor(allTime/480);
+        allTime=allTime-days*480;
+        if (allTime!=0){
+          hours=Math.floor(allTime/60);
+          allTime=allTime-hours*60;
+          if (allTime!=0){
+            minutes=allTime;
+          };  
+        };
+      };
+      pseudoInputs[0].value=days;
+      pseudoInputs[1].value=hours;
+      pseudoInputs[2].value=minutes;
+    };
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_worktime.defaults = {
+    template: $("#worktime-control-template").html(),
+    parser: function (input) {
+      var int = parseInt( input.split(" ").join("").split(",").join("."), 10 );
+      return !isNaN(int) ? int : null;
+    }
+  };
+
   // Decimal control
   $.fn.veda_decimal = function( options ) {
     var opts = $.extend( {}, $.fn.veda_decimal.defaults, options ),
