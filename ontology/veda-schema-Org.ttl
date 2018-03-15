@@ -491,7 +491,7 @@ v-s:OrganizationTemplate
       }
     }
     // Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102 то поле v-s:taxRegistrationCause должно быть обязательным.
-    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && !individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ) {
+    if (individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && !individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50102") && !individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50000") ) {
       result["v-s:taxRegistrationCause"] = {
         state: /^[0-9]{9}$/.test(individual["v-s:taxRegistrationCause"][0]),
         cause: ["v-ui:regexp"]
