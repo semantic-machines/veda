@@ -218,27 +218,33 @@
     <!-- WorkTime control template -->
     <script type="html/template" id="worktime-control-template">
       <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="input-group">
-            <span class="input-group-addon">Дней</span>
+            <span class="input-group-addon">DD</span>
             <input type="text">
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="input-group">
-            <span class="input-group-addon">Часов</span>
+            <span class="input-group-addon">HH</span>
             <input type="text">
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="input-group">
-            <span class="input-group-addon">Минут</span>
+            <span class="input-group-addon">mm</span>
             <input type="text">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group">
+            <span class="input-group-addon">&sum;</span>
+            <span id="worktime-summary-text"></span>
           </div>
         </div>
       </div>
       <div>
-        <input type="text" class="form-control" style="display:none" placeholder="#" />
+        <input type="text" class="form-control" style="display:none"/>
       </div>
     </script>
 

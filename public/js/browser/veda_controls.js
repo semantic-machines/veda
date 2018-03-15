@@ -238,23 +238,26 @@
     });
     var mainInput=$("input.form-control", control);
     var pseudoInputs=$("div.input-group>input", control).addClass("form-control");
+    var summaryText=$("#worktime-summary-text", control).addClass("form-control");
     feelPseudoInput(mainInput.val());
     pseudoInputs.change(feelMainInput);
     function feelMainInput(){
       var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
       mainInput.val(count);
+      summaryText.text(count);
       mainInput.change();
     };
-    function feelPseudoInput(allTime){
+    function feelPseudoInput(summaryTime){
       var days=0, hours=0, minutes=0;
-      if (allTime!=0){
-        days=Math.floor(allTime/480);
-        allTime=allTime-days*480;
-        if (allTime!=0){
-          hours=Math.floor(allTime/60);
-          allTime=allTime-hours*60;
-          if (allTime!=0){
-            minutes=allTime;
+      summaryText.text(summaryTime);
+      if (summaryTime!=0){
+        days=Math.floor(summaryTime/480);
+        summaryTime=summaryTime-days*480;
+        if (summaryTime!=0){
+          hours=Math.floor(summaryTime/60);
+          summaryTime=summaryTime-hours*60;
+          if (summaryTime!=0){
+            minutes=summaryTime;
           };  
         };
       };
