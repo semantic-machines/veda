@@ -1608,35 +1608,6 @@
         autosize.destroy(fulltext);
       });
 
-      var suggestions = $(".suggestions", control);
-      suggestions.on("click", ".suggestion", function (e) {
-        var tmpl = $(this);
-        var suggestion_uri = tmpl.attr("resource");
-        var suggestion = new veda.IndividualModel(suggestion_uri);
-        tmpl.toggleClass("selected");
-        if ( individual.hasValue(rel_uri, suggestion) ) {
-          if (isSingle) {
-            individual
-              .set(rel_uri, [])
-              .set(rel_uri, [suggestion]);
-            fulltextMenu.hide();
-          } else {
-            individual.removeValue(rel_uri, suggestion);
-          }
-        } else {
-          if (isSingle) {
-            individual.set(rel_uri, [suggestion]);
-            fulltextMenu.hide();
-          } else {
-            individual.addValue(rel_uri, suggestion);
-          }
-        }
-      });
-
-      var suggestionTmpl = `
-        <div class="suggestion" about="@" property="rdfs:label"></div>
-      `;
-
       var header = $(".header", control);
       header.find(".select-all")
         .click(function () { suggestions.children(":not(.selected)").click(); })
@@ -1685,7 +1656,13 @@
           });
       }
 
+      var suggestionTmpl = `
+        <div class="suggestion" about="@" property="rdfs:label"></div>
+      `;
+      var selected = [];
+
       function renderResults(results) {
+        selected = individual.get(rel_uri);
         if (results.length) {
           var tmp = $("<div></div>");
           var rendered = results.map(function (result) {
@@ -1705,6 +1682,37 @@
         }
       }
 
+      var suggestions = $(".suggestions", control);
+      suggestions.on("click", ".suggestion", function (e) {
+        var tmpl = $(this);
+        var suggestion_uri = tmpl.attr("resource");
+        var suggestion = new veda.IndividualModel(suggestion_uri);
+        tmpl.toggleClass("selected");
+        if ( individual.hasValue(rel_uri, suggestion) ) {
+          if (isSingle) {
+            individual
+              .set(rel_uri, [])
+              .set(rel_uri, [suggestion]);
+            fulltextMenu.hide();
+          } else {
+            //individual.removeValue(rel_uri, suggestion);
+            selected = selected.filter(function (value) {
+              return value !== suggestion;
+            });
+          }
+        } else {
+          if (isSingle) {
+            individual.set(rel_uri, [suggestion]);
+            fulltextMenu.hide();
+          } else {
+            //individual.addValue(rel_uri, suggestion);
+            selected = selected.filter(function (value) {
+              return value !== suggestion;
+            }).concat(suggestion);
+          }
+        }
+      });
+
       function clickOutsideMenuHandler(event) {
         if( !$(event.target).closest(fulltextMenu).length ) {
           if( fulltextMenu.is(":visible") ) {
@@ -1714,6 +1722,9 @@
         }
       }
       function removeClickOutsideMenuHandler() {
+        if (control.is(":visible")) {
+          individual.set(rel_uri, selected);
+        }
         $(document).off("click", clickOutsideMenuHandler);
       }
 
