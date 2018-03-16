@@ -1618,6 +1618,12 @@
       header.find(".invert-selection")
         .click(function () { suggestions.children().click(); })
         .text( new veda.IndividualModel("v-s:InvertSelection").toString() );
+      header.find(".close-menu")
+        .click(function () {
+          fulltextMenu.hide();
+          individual.set(rel_uri, selected);
+        })
+        .text( new veda.IndividualModel("v-s:Close").toString() );
       if (isSingle) {
         header.hide();
       }

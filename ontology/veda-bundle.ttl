@@ -216,6 +216,11 @@ v-s:CancelSelection
   rdfs:label "Отменить выбор"@ru ;
   rdfs:label "Cancel selection"@en ;
 .
+v-s:Close
+  rdf:type v-s:Bundle ;
+  rdfs:label "Закрыть"@ru ;
+  rdfs:label "Close"@en ;
+.
 v-s:InvertSelection
   rdf:type v-s:Bundle ;
   rdfs:label "Инвертировать"@ru ;
