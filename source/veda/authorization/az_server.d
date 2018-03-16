@@ -7,7 +7,7 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string, std.datetime;
 import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.define;
 import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type, veda.util.queue;
-import veda.storage.tarantool.tarantool_acl, veda.storage.lmdb.lmdb_acl, veda.storage.mdbx.mdbx_acl;
+import veda.storage.lmdb.lmdb_acl;
 
 extern (C) ubyte authorize_r(immutable(char)* _uri, immutable(char)* _user_uri, ubyte _request_access, bool _is_check_for_reload, 
 	void function (immutable(char)* _trace_acl), void function (immutable(char)* _trace_group), void function (immutable(char)* _trace_info));
@@ -220,22 +220,11 @@ void main(string[] args)
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
-    string tarantool_url = properties.as!(string)("tarantool_url");
 
-    if (tarantool_url !is null)
-    {
-        athrz = new TarantoolAuthorization(log);
-    }
-    else
-    {
-        string authorization_db_type    = properties.as!(string)("authorization_db_type");
-        long   authorization_cache_size = properties.as!(long)("authorization_cache_size");
+    string authorization_db_type    = properties.as!(string)("authorization_db_type");
+    long   authorization_cache_size = properties.as!(long)("authorization_cache_size");
 
-        if (authorization_db_type == "mdbx")
-            athrz = new MdbxAuthorization(DBMode.R, "acl", log);
-        else
-            athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, log);
-    }
+    athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, log);
 
     if (test_user_url !is null)
     {
