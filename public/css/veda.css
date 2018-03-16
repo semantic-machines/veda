@@ -676,18 +676,27 @@ fieldset[disabled] .form-control {
   z-index: 1000;
   min-width: 160px;
   margin: 3px 0;
-  padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
+  background-color: #fff;
+  border: 1px solid #ccc;
   border-radius: 4px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   background-clip: padding-box;
-  max-height: 300px;
+}
+
+.link-control .header {
+  padding: 5px 15px;
+  border-bottom: 1px solid #ccc;
+  background-color: #eee;
+}
+
+.link-control .suggestions {
+  padding: 10px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
 .link-control .suggestion {
-  padding: 3px;
+  padding: 5px;
   white-space: nowrap;
 }
 

@@ -32,13 +32,13 @@
         timeout = setTimeout(keyupHandler, defaultDelay, e);
       });
 
-    individual.on(property_uri, modifiedHandler);
+    individual.on(property_uri, propertyModifiedHandler);
     control.one("remove", function () {
-      individual.off(property_uri, modifiedHandler);
+      individual.off(property_uri, propertyModifiedHandler);
     });
-    modifiedHandler();
+    propertyModifiedHandler();
 
-    function modifiedHandler () {
+    function propertyModifiedHandler () {
       if (control.isSingle) {
         var field = input[0];
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
@@ -258,7 +258,7 @@
           summaryTime=summaryTime-hours*60;
           if (summaryTime!=0){
             minutes=summaryTime;
-          };  
+          };
         };
       };
       pseudoInputs[0].value=days;
@@ -1608,7 +1608,8 @@
         autosize.destroy(fulltext);
       });
 
-      fulltextMenu.on("click", ".suggestion", function (e) {
+      var suggestions = $(".suggestions", control);
+      suggestions.on("click", ".suggestion", function (e) {
         var tmpl = $(this);
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
@@ -1627,7 +1628,6 @@
             individual.set(rel_uri, [suggestion]);
             fulltextMenu.hide();
           } else {
-            individual.removeValue(rel_uri, suggestion);
             individual.addValue(rel_uri, suggestion);
           }
         }
@@ -1636,6 +1636,24 @@
       var suggestionTmpl = `
         <div class="suggestion" about="@" property="rdfs:label"></div>
       `;
+
+      var header = $(".header", control);
+      header.find(".select-all")
+        .click(function () { suggestions.children(":not(.selected)").click(); })
+        .text( new veda.IndividualModel("v-s:SelectAll").toString() );
+      header.find(".cancel-selection")
+        .click(function () { suggestions.children(".selected").click(); })
+        .text( new veda.IndividualModel("v-s:CancelSelection").toString() );
+      header.find(".invert-selection")
+        .click(function () { suggestions.children().click(); })
+        .text( new veda.IndividualModel("v-s:InvertSelection").toString() );
+      if (isSingle) {
+        header.hide();
+      }
+      this.on("search", function (e) {
+        e.stopPropagation();
+        header.show();
+      });
 
       var keyupHandler = (function () {
         var timeout;
@@ -1649,7 +1667,8 @@
             if (isSingle) {
               individual.set(rel_uri, []);
             }
-            fulltextMenu.empty().hide();
+            suggestions.empty();
+            fulltextMenu.hide();
           }
         }
       }());
@@ -1676,11 +1695,13 @@
             }
             return tmpl;
           });
-          fulltextMenu.empty().append(rendered).show();
+          suggestions.empty().append(rendered);
+          fulltextMenu.show();
           $(document).click(clickOutsideMenuHandler);
           tmp.remove();
         } else {
-          fulltextMenu.empty().hide();
+          suggestions.empty();
+          fulltextMenu.hide();
         }
       }
 
@@ -1696,22 +1717,20 @@
         $(document).off("click", clickOutsideMenuHandler);
       }
 
-      var handler = function () {
+      function propertyModifiedHandler () {
         if (isSingle && individual.hasValue(rel_uri)) {
           try {
             fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
           } catch (e) {
             fulltext.val("");
           }
-        } else {
-          fulltext.val("");
         }
       }
-      individual.on(rel_uri, handler);
+      individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
-        individual.off(rel_uri, handler);
+        individual.off(rel_uri, propertyModifiedHandler);
       });
-      handler(rel_uri);
+      propertyModifiedHandler(rel_uri);
 
     } else {
       fulltext.remove();

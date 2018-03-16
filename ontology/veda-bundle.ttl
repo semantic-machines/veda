@@ -211,6 +211,16 @@ v-s:SelectAll
   rdfs:label "Выбрать все"@ru ;
   rdfs:label "Select all"@en ;
 .
+v-s:CancelSelection
+  rdf:type v-s:Bundle ;
+  rdfs:label "Отменить выбор"@ru ;
+  rdfs:label "Cancel selection"@en ;
+.
+v-s:InvertSelection
+  rdf:type v-s:Bundle ;
+  rdfs:label "Инвертировать"@ru ;
+  rdfs:label "Invert"@en ;
+.
 v-s:DeleteDraft
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить черновик"@ru ;
