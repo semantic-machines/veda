@@ -177,10 +177,15 @@ public class FanoutProcess : VedaModule
                         }
                         catch (Exception ex)
                         {
-                        	//  1488 ER_FIELD_NOT_FOUND_PART_ERROR
-							// 1054 ER_BAD_FIELD_ERROR
-
                             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                            if (ex.msg.indexOf("Unknown column 'deleted'") >= 0)
+                            {
+                                mysql_conn.query(
+                                                 "ALTER TABLE `veda_db`.`" ~ predicate ~ "` " ~
+                                                 "ADD `deleted` BOOL NULL");
+                                log.trace("alter table [%s]", predicate);
+                                insert_to_sql(predicate, rss, new_indv);
+                            }
                         }
                     }
                 }
@@ -203,6 +208,11 @@ public class FanoutProcess : VedaModule
         Resources types      = new_indv.getResources("rdf:type");
         bool      is_deleted = new_indv.isExists("v-s:deleted", true);
 
+        int       i_is_deleted = 0;
+
+        if (is_deleted)
+            i_is_deleted = 1;
+
         if (rss.length > 0)
         {
             create_table_if_not_exists(predicate, rss[ 0 ]);
@@ -211,53 +221,41 @@ public class FanoutProcess : VedaModule
             {
                 foreach (rtype; types)
                 {
-                	MysqlResult res;
-                	
-                    string type = rtype.data;
+                    MysqlResult res;
+
+                    string      type = rtype.data;
                     mysql_conn.query("SET NAMES 'utf8'");
 
                     if (rs.type == DataType.Boolean)
                     {
-                        if (rs.get!bool == true)
-                        {
-                            res = mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, deleted) VALUES (?, ?, ?, ?, ?)",
-                                             predicate,
-                                             new_indv.uri,
-                                             type,
-                                             created.asString(), 1, is_deleted);
+                        int bval = 0;
 
-                            log.trace(
-                                      "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value) VALUES (%s, %s, %s, %s %d), res=%s",
-                                      predicate,
-                                      new_indv.uri, type,
-                                      created.asString(), 1, is_deleted, mysql_conn.error());
-                        }
-                        else
-                        {
-                            res = mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value) VALUES (?, ?, ?, ?, ?)",
-                                             predicate,
-                                             new_indv.uri,
-                                             type,
-                                             created.asString(), 0, is_deleted);
-                            log.trace(
-                                      "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value) VALUES (%s, %s, %s, %s %s), res=%s",
-                                      predicate,
-                                      new_indv.uri, type,
-                                      created.asString(), 0, is_deleted, mysql_conn.error());
-                        }
+                        if (rs.get!bool == true)
+                            bval = 1;
+
+                        res = mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, deleted) VALUES (?, ?, ?, ?, ?)",
+                                               predicate,
+                                               new_indv.uri,
+                                               type,
+                                               created.asString(), bval, i_is_deleted);
+                        log.trace(
+                                  "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value, deleted) VALUES (%s, %s, %s, %s %s), res=%s",
+                                  predicate,
+                                  new_indv.uri, type,
+                                  created.asString(), bval, i_is_deleted, mysql_conn.error());
                     }
                     else
                     {
-                        res = mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang) VALUES (?, ?, ?, ?, ?, ?)",
-                                         predicate,
-                                         new_indv.uri, type,
-                                         created.asString(), rs.asString().toUTF8(), text(rs.lang), is_deleted);
+                        res = mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang, deleted) VALUES (?, ?, ?, ?, ?, ?)",
+                                               predicate,
+                                               new_indv.uri, type,
+                                               created.asString(), rs.asString().toUTF8(), text(rs.lang), i_is_deleted);
 
                         log.trace(
-                                  "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value, lang) VALUES (%s, %s, %s, %s, %s %s), res=%s",
+                                  "push_to_mysql: INSERT INTO `%s` (doc_id, doc_type, created, value, lang, deleted) VALUES (%s, %s, %s, %s, %s %s), res=%s",
                                   predicate,
                                   new_indv.uri, type,
-                                  created.asString(), rs.asString().toUTF8(), text(rs.lang), is_deleted, mysql_conn.error());
+                                  created.asString(), rs.asString().toUTF8(), text(rs.lang), i_is_deleted, mysql_conn.error());
                     }
                 }
             }
