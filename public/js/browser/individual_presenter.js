@@ -517,10 +517,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
                 rendered[value.id].cnt = counter;
                 return;
               }
-              setTimeout (function () {
+              //setTimeout (function () {
                 var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
                 rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-              }, 0);
+              //}, 0);
             });
           } else {
             relContainer.empty();
