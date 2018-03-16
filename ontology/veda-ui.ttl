@@ -814,23 +814,25 @@ v-ui:ImageAppointmentTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<div class="panel panel-default" style="word-wrap:break-word;display:inline-block;margin:7px 7px 0 0;overflow:hidden; max-width:200px; height:125px">
-  <div class="panel-body" style="padding:7px;">
-    <div about="@" rel="v-s:employee">
-      <script>
-        individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-        //# sourceURL=v-ui:ImageAppointmentTemplate_pre
-      </script>
-      <div style="width:50px">
-        <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
-        <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
-      </div>
+<div class="horizontal-card horizontal-card-sm">
+  <div class="thumbnail" about="@" rel="v-s:employee">
+    <script>
+      if ( !individual.hasValue("v-s:hasImage") ) {
+        template.removeAttr("rel").empty().append('<span class="text-muted fa fa-user fa-4x"></span>');
+      }
+      //# sourceURL=v-ui:ImageAppointmentTemplate_pre
+    </script>
+    <div about="@" rel="v-s:hasImage">
+      <img src="/files/@"/>
     </div>
-    <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong><br>
+  </div>
+  <div class="description">
+    <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
+    <hr class="no-margin">
     <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
   </div>
 </div>
-""" ;
+  """ ;
 .
 
 v-ui:ImageAppointmentFixedTemplate

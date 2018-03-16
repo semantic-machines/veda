@@ -189,10 +189,14 @@ body {
 }
 
 .horizontal-card.horizontal-card-sm {
-  width: 220px;
+  max-width: 220px;
   height: 84px;
 }
 
+.horizontal-card.horizontal-card-sm .thumbnail {
+  width: 64px;
+  height: 64px;
+}
 .horizontal-card.horizontal-card-sm .thumbnail img {
   max-width: 64px;
   max-height: 64px;
@@ -1300,6 +1304,10 @@ svg.process-path-highlight path
   display: inline-block;
   margin-right: 7px;
   margin-bottom: 7px;
+}
+.label-template:only-child {
+  margin-right: 0px;
+  margin-bottom: 0px;
 }
 .label-template > #rel-actions {
   position: relative!important;
