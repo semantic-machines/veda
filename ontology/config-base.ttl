@@ -1228,13 +1228,12 @@ cfg:Event_16
     }
   }
   backwardReplaceUris.map(function (replaceUri) {
-    backwardTarget[replaceUri]=document[replaceUri];
+    backwardTarget[replaceUri] = document[replaceUri];
   });
   if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
     put_individual(ticket, backwardTarget, _event_id);
     //print( "BL target updated =", JSON.stringify(backwardTarget) );
   }
-  //# sourceURL=mnd-s:EngineeringRequest_pre
   """ ;
 .
 
