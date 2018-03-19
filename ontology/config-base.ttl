@@ -1173,6 +1173,7 @@ cfg:Event_16
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      backwardReplaceUris = getUris(document["v-s:backwardReplace"]),
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
@@ -1226,10 +1227,14 @@ cfg:Event_16
       backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
     }
   }
+  backwardReplaceUris.map(function (replaceUri) {
+    backwardTarget[replaceUri]=document[replaceUri];
+  });
   if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
     put_individual(ticket, backwardTarget, _event_id);
     //print( "BL target updated =", JSON.stringify(backwardTarget) );
   }
+  //# sourceURL=mnd-s:EngineeringRequest_pre
   """ ;
 .
 
