@@ -230,7 +230,7 @@ class XapianReader : SearchReader
             if (state < 0)
             {
                 attempt_count++;
-                if (attempt_count > 10)
+                if (attempt_count > 3)
                 {
                     query = null;
                     break;
@@ -283,7 +283,7 @@ class XapianReader : SearchReader
                 {
                     add_out_element(null); // reset previous collected data
                     attempt_count++;
-                    if (attempt_count > 10)
+                    if (attempt_count > 3)
                         break;
 
                     reopen_db();

@@ -752,7 +752,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     sr.result_code = ResultCode.Internal_Server_Error;
-                    log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%d)", err);
+                    log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%d), user_uri=%s", err, user_uri);
 //                    sr.err = err;
                     return sr;
                 }
@@ -763,7 +763,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     sr.result_code = ResultCode.Internal_Server_Error;
-                    log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%d)", err);
+                    log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg (err), user_uri);
 //                    sr.err = err;
                     return sr;
                 }
@@ -789,7 +789,8 @@ class XapianVQL
                 }
                 else
                 {
-                    log.trace("subject_id:[%s] not authorized, user_uri=[%s]", subject_id, user_uri);
+	                if (trace)
+	                    log.trace("subject_id:[%s] not authorized, user_uri=[%s]", subject_id, user_uri);
                 }
 
                 acl_db_reopen = false;
