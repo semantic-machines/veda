@@ -834,46 +834,67 @@ v-ui:ImageAppointmentTemplate
 </div>
   """ ;
 .
-
-v-ui:ImageAppointmentFixedTemplate
+v-ui:AppointmentPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны с иконкой фиксированного размера"@ru ;
-  rdfs:label "Person template with icon"@en ;
+  rdfs:label "Шаблон назначения с фотографией"@ru ;
+  rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
-<div class="panel panel-default" >
-  <div class="panel-body" style="padding:7px;">
-    <div class="row">
-      <div class="col-md-2">
-        <div about="@" rel="v-s:employee">
-          <script>
-            individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-            //# sourceURL=v-ui:ImageAppointmentTemplate_pre
-          </script>
-          <div style="width:50px">
-            <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
-            <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-10">
-        <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong><br>
-        <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
+<div class="media" style="margin-top:0px;">
+  <div class="media-left" rel="v-s:employee">
+    <a href="#/@" rel="v-s:hasImage">
+      <img style="width:64px" class="media-object" src="/files/@">
+    </a>
+  </div>
+  <div class="media-body" style="width:auto">
+    <strong class="media-heading" about="@" rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
+    <hr class="no-margin">
+    <small about="@" rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
+    <div about="@" rel="v-s:occupation">
+      <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+    </div>
+    <div about="@" rel="v-s:employee">
+      <div about="@" rel="v-s:hasAccount">
+        <small about="@" property="v-s:mailbox"></small>
       </div>
     </div>
   </div>
 </div>
-""" ;
+  """ ;
 .
-
-v-ui:PersonAppointmentTemplate
+v-ui:PersonPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны с выбором назначения"@ru ;
-  rdfs:label "Person template with appointment select"@en ;
+  rdfs:label "Шаблон назначения с фотографией"@ru ;
+  rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
-  <div>
-    <veda-control data-type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" data-template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
+<div class="media" style="margin-top:0px;">
+  <div class="media-left">
+    <a href="#" rel="v-s:hasImage">
+      <img style="width:64px" class="media-object" src="/files/@">
+    </a>
   </div>
-""" ;
+  <div class="media-body" style="width:auto">
+    <strong class="media-heading" about="@" property="rdfs:label"></strong>
+    <hr class="no-margin">
+    <div about="@" rel="v-s:hasAccount">
+      <small about="@" property="v-s:mailbox"></small>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+v-ui:PositionPopoverTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон должности"@ru ;
+  rdfs:label "Position template"@en ;
+  v-ui:template """
+<div class="media" style="margin-top:0px;">
+  <div class="media-body" style="width:auto">
+    <strong class="media-heading" about="@" property="rdfs:label"></strong>
+    <hr class="no-margin">
+    <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+  </div>
+</div>
+  """ ;
 .
 v-ui:PS_PersonDefaultAppointment
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -921,6 +942,24 @@ v-ui:LabelTemplate
   <script>
     if (!individual.hasValue("rdfs:label")) {
       template.children().first().text(individual.id);
+    }
+    if (individual.is("v-s:Appointment") || individual.is("v-s:Person") || individual.is("v-s:Position")) {
+      template.popover({
+        trigger: "click hover",
+        delay: { "show": 750, "hide": 100 },
+        placement: "auto top",
+        html: true,
+        container: "body",
+        content: function () {
+          var cntr = $("<div></div>");
+          return individual.is("v-s:Appointment") ? individual.present(cntr, "v-ui:AppointmentPopoverTemplate") :
+                 individual.is("v-s:Person") ? individual.present(cntr, "v-ui:PersonPopoverTemplate") :
+                 individual.present(cntr, "v-ui:PositionPopoverTemplate");
+        }
+      });
+      template.one("remove", function () {
+        template.popover("destroy");
+      });
     }
     //# sourceURL=v-ui:LabelTemplate
   </script>

@@ -899,12 +899,12 @@ v-s:DepartmentTemplate
     <div class="row">
       <div class="col-sm-6">
         <em about="v-s:hasChief" property="rdfs:label"></em>
-        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
-        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
       </div>
     </div>
