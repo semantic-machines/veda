@@ -556,7 +556,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
 
     // About resource
-    $("[about]:not([rel]):not([property])", wrapper).map( function () {
+    $("[about]:not([rel] *):not([about] *):not([rel]):not([property])", wrapper).map( function () {
       var aboutContainer = $(this),
           about_template_uri = aboutContainer.attr("data-template"),
           about_inline_template = aboutContainer.html().trim(),
