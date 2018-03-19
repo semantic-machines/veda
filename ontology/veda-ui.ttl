@@ -848,14 +848,20 @@ v-ui:AppointmentPopoverTemplate
   <div class="media-body" style="width:auto">
     <strong class="media-heading" about="@" rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
     <hr class="no-margin">
-    <small about="@" rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
     <div about="@" rel="v-s:occupation">
-      <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+      <div>
+        <small about="@" property="v-s:title"></small><br>
+        <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+      </div>
     </div>
     <div about="@" rel="v-s:employee">
       <div about="@" rel="v-s:hasAccount">
-        <small about="@" property="v-s:mailbox"></small>
+        <div>
+          <small about="@" property="v-s:mailbox"></small>
+          <small about="@" property="v-s:phone"></small>
+        </div>
       </div>
+      <small about="@" property="v-s:phone"></small>
     </div>
   </div>
 </div>
@@ -876,8 +882,12 @@ v-ui:PersonPopoverTemplate
     <strong class="media-heading" about="@" property="rdfs:label"></strong>
     <hr class="no-margin">
     <div about="@" rel="v-s:hasAccount">
-      <small about="@" property="v-s:mailbox"></small>
+      <div>
+        <small about="@" property="v-s:mailbox"></small>
+        <small about="@" property="v-s:phone"></small>
+      </div>
     </div>
+    <small about="@" property="v-s:phone"></small>
   </div>
 </div>
   """ ;
