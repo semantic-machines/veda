@@ -1707,8 +1707,8 @@ v-ui:PsHasImage
 .
 v-ui:SimplifiedJournalTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Упрощенный журнал"@ru ;
-  rdfs:label "Simplified journal"@en ;
+  rdfs:label "Упрощенный"@ru ;
+  rdfs:label "Simplified"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <script>
@@ -1763,12 +1763,18 @@ v-ui:SimplifiedJournalTemplate
   //# sourceURL=v-ui:SimplifiedJournalTemplate_pre
 </script>
 <div class="container sheet">
-  <div class="row">
-    <div class="col-md-6">
-      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  <br>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 class="no-margin" about="v-s:Journal" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a></li>
+    <li role="presentation" class="active"><a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a></li>
+  </ul>
+  <br>
+  <div class="clearfix">
+    <div class="pull-left">
+      <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
     </div>
-    <div class="col-md-6 text-right">
-      <a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a>
+    <div class="pull-right">
       <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
       <div class="btn-group dropdown">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1783,11 +1789,11 @@ v-ui:SimplifiedJournalTemplate
       </div>
     </div>
   </div>
-  <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
+  <br>
   <div id="tasks" class="table-responsive">
     <table class="table">
       <thead>
-        <tr class="active">
+        <tr>
           <th width="1%">#</th>
           <th width="15%" about="v-wf:from" property="rdfs:label"></th>
           <th width="15%" about="v-wf:to" property="rdfs:label"></th>
@@ -1799,15 +1805,22 @@ v-ui:SimplifiedJournalTemplate
       <tbody id="tbody">
         <tr>
           <td class="sequence-number"></td>
-          <td property="v-wf:from"></td>
-          <td property="v-wf:to"></td>
-          <td><a href="#/@" property="rdfs:label"></a><div property="v-s:description"></div></td>
-          <td property="v-s:created"></td>
-          <td rel="v-wf:takenDecision">
+          <td about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+          <td about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
+          <td><a href="#/@" about="@" property="rdfs:label"></a><div about="@" property="v-s:description"></div></td>
+          <td about="@" property="v-s:created"></td>
+          <td about="@" rel="v-wf:takenDecision">
             <div>
-              <div property="v-s:creator"></div>
-              <strong property="rdfs:label"></strong><i property="rdfs:comment"></i>
-              <div property="v-s:created"></div>
+              <strong about="@" property="rdfs:label"></strong>
+              <span about="@" rel="v-wf:to">
+                <span>
+                  <span>&rarr;</span>
+                  <span about="@" data-template="v-ui:LabelTemplate"></span>
+                </span>
+              </span>
+              <div><i about="@" property="rdfs:comment"></i></div>
+              <hr class="margin-sm">
+              <small about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></small> &middot; <small aboout="@" property="v-s:created"></small>
             </div>
           </td>
         </tr>
@@ -1825,8 +1838,8 @@ v-ui:SimplifiedJournalTemplate
 .
 v-ui:JournalTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Детальный журнал"@ru ;
-  rdfs:label "Detailed journal"@en ;
+  rdfs:label "Детальный"@ru ;
+  rdfs:label "Detailed"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <script>
@@ -1859,12 +1872,18 @@ v-ui:JournalTemplate
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
-  <div class="row">
-    <div class="col-md-6">
-      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  <br>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 class="no-margin" about="v-s:Journal" property="rdfs:label"></h2></li>
+    <li role="presentation" class="active"><a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a></li>
+    <li role="presentation"><a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a></li>
+  </ul>
+  <br>
+  <div class="clearfix">
+    <div class="pull-left">
+      <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
     </div>
-    <div class="col-md-6 text-right">
-      <a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a>
+    <div class="pull-right">
       <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
       <div class="btn-group dropdown">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1879,26 +1898,22 @@ v-ui:JournalTemplate
       </div>
     </div>
   </div>
-  <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
   <div rel="v-wf:onProcess">
-    <div>
-      <h4>
-        <span about="rdf:type" property="rdfs:label"></span>:
-        <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
-      </h4>
-    </div>
+    <h4>
+      <span about="rdf:type" property="rdfs:label"></span>:
+      <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+    </h4>
   </div>
-  <div class="well well-sm">
-    <div class="row">
-      <div class="col-md-3 col-sm-3">
-        <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
-      </div>
-      <div class="col-md-7 col-sm-6">
-        <strong about="v-s:description" property="rdfs:label"></strong>
-      </div>
-      <div class="col-md-2 col-sm-3 text-right">
-        <strong about="v-s:created" property="rdfs:label"></strong>
-      </div>
+  <br>
+  <div class="row">
+    <div class="col-md-3 col-sm-3">
+      <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7 col-sm-6">
+      <strong about="v-s:description" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-2 col-sm-3 text-right">
+      <strong about="v-s:created" property="rdfs:label"></strong>
     </div>
   </div>
   <div id="records">
@@ -1924,11 +1939,7 @@ v-ui:DocumentEventTemplate
   v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
   v-ui:template """
 <script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) {
-    //template.hide();
-    template.empty();
-  }
+  if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) { template.empty(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:processJournal']", template).toggle();
@@ -1946,12 +1957,9 @@ v-ui:DocumentEventTemplate
       $(".stop-process", template).show();
     }
     if (process.hasValue("v-wf:isStopped", true)) {
-      $(".start-process", template).addClass('text-danger');
-      $(".start-process > .glyphicon-minus-sign", template).show();
+      $(".process-id", template).addClass('text-danger');
+      $(".process-stopped", template).show();
     }
-  }
-  if (individual.hasValue("rdf:type", "v-wf:ProcessStopped")) {
-    $(".row", template).addClass('text-danger');
   }
   //# sourceURL=v-ui:DocumentEventTemplate_pre
 </script>
@@ -1961,22 +1969,13 @@ v-ui:DocumentEventTemplate
     <div class="col-md-3 col-sm-3 event-type">
       <span class="start-process" href="#" style="display:none">
         <a href="#" id="exp"><span class="glyphicon glyphicon-chevron-down"></span></a>
-        <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
-        <span class="glyphicon glyphicon-minus-sign" style="display:none;"></span>
+        <strong about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
       </span>
-      <span class="non-start-process" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span class="non-start-process" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
-    <div class="col-md-3 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <span class="actor">
-        <span about="v-s:actor" property="rdfs:label"></span>:
-        <strong rel="v-s:actor" data-template="v-ui:LabelTemplate"></strong>
-      </span>
-    </div>
-    <div class="col-md-4 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <div rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
-      <div rel="v-wf:onProcess">
+    <div class="col-md-7 col-sm-6 event-desc">
+      <div about="@" rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
+      <div about="@" rel="v-wf:onProcess">
         <script>
           var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
             return vrbl.hasValue("v-wf:variableName",  "startForm_id");
@@ -1988,8 +1987,9 @@ v-ui:DocumentEventTemplate
           }
         </script>
         <div>
-          <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
-          <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
+          <a about="@" class="process-id" href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
+          <a href="#" class="stop-process glyphicon glyphicon-remove text-danger" style="display:none;"></a>
+          <span class="process-stopped glyphicon glyphicon-minus-sign text-danger" style="display:none;"></span>
           <div about="start-form">
             <div>
               <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>
@@ -1997,19 +1997,21 @@ v-ui:DocumentEventTemplate
           </div>
         </div>
       </div>
+      <span about="@" rel="v-s:actor" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
-  <div rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
+  <div about="@" rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
 <script>
   if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-s:ProcessStarted') {
     var process = individual['v-wf:onProcess'][0];
     if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
-      $(".stop-process", template).on("click", function() {
+      $(".stop-process", template).on("click", function (e) {
+        e.preventDefault();
         var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
         if ( confirm(warn) ) {
           process['v-wf:isStopped'] = [ true ];

@@ -2451,30 +2451,21 @@ v-wf:TaskGivenTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskGiven ;
   v-ui:template """
-<script>
-  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
-  if (!individual.hasValue("rdfs:comment")) { $("#comment", template).remove(); }
-  //# sourceURL=v-ui:TaskGivenTemplate
-</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
-      <span rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <div id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>:
-        <b rel="v-wf:executor" data-template="v-ui:LabelTemplate"></b>
+      <strong about="@" property="rdfs:label"></strong>
+      <div>
+        <i about="@" property="rdfs:comment"></i>
       </div>
-      <div id="comment">
-        <span about="rdfs:comment" property="rdfs:label"></span>:
-        <b property="rdfs:comment"></b>
-      </div>
+      <span about="@" rel="v-wf:executor" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2487,48 +2478,31 @@ v-wf:TaskCompletedTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskCompleted ;
   v-ui:template """
-<script>
-  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
-  if (!individual.hasValue("v-wf:takenDecision")) { $("#decision", template).remove(); }
-  if (!individual.hasValue("v-wf:takenDecision") || !individual["v-wf:takenDecision"][0].hasValue("rdfs:comment")) { $("#comment", template).remove(); }
-  //# sourceURL=v-ui:TaskCompletedTemplate
-</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
-      <span rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <span id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>:
-        <em rel="v-wf:executor" data-template="v-ui:LabelTemplate"></em>
-      </span>
-      <div id="decision">
-        <div rel="v-wf:takenDecision">
-          <span>
-            <span about="v-s:creator" property="rdfs:label"></span>:
-            <strong rel="v-s:creator" data-template="v-ui:LabelTemplate"></strong>
-          </span>
-        </div>
-        <div id="decision">
-          <span about="v-wf:takenDecision" property="rdfs:label"></span>:
-          <span rel="v-wf:takenDecision">
-          <span>
-            <strong property="rdfs:label"></strong>
-            <span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
-            <div id="comment">
-            <span about="rdfs:comment" property="rdfs:label"></span>:
-            <b property="rdfs:comment"></b>
-          </div>
+      <div id="decision" about="@" rel="v-wf:takenDecision">
+        <div>
+          <strong about="@" property="rdfs:label"></strong>
+          <span about="@" rel="v-wf:to">
+            <span>
+              <span>&rarr;</span>
+              <span about="@" data-template="v-ui:LabelTemplate"></span>
             </span>
           </span>
+          <div>
+            <i about="@" property="rdfs:comment"></i>
+          </div>
+          <div about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2558,7 +2532,7 @@ v-wf:ProcessEventTemplate
       </span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2581,7 +2555,6 @@ v-wf:WorkItemStartedEventTemplate
   v-ui:forClass v-wf:WorkItemStarted ;
   v-ui:template """
 <script>
-  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:subJournal']", template).toggle();
@@ -2594,20 +2567,16 @@ v-wf:WorkItemStartedEventTemplate
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
       <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>
-      <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <span id="initiator">
-          <span about="v-wf:initiator" property="rdfs:label"></span>:
-        <em rel="v-wf:initiator" data-template="v-ui:LabelTemplate"></em>
-      </span>
+      <span about="@" property="rdfs:label"></span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
-  <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
+  <div about="@" rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
   """ ;
 .
@@ -2650,7 +2619,7 @@ v-wf:DecisionFormStartedEventTemplate
       </span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
@@ -2676,7 +2645,7 @@ v-wf:TraceRecordTemplate
       <pre property="rdfs:comment"></pre>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
