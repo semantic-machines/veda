@@ -1662,9 +1662,7 @@
           });
       }
 
-      var suggestionTmpl = `
-        <div class="suggestion" about="@" property="rdfs:label"></div>
-      `;
+      var suggestionTmpl = '<div class="suggestion" about="@" property="rdfs:label"></div>';
       var selected = [];
 
       function renderResults(results) {
