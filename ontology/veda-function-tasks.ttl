@@ -607,15 +607,25 @@ v-ft:TaskResultTemplate
       <td class="serial-number"></td>
       <td><span class="child-task"></span></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-      <td rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
-      <td rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
+      <!--td about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></td-->
+      <td>
+        <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
+        <div about="@" rel="v-wf:redirect_from_task">
+          <div>
+            <hr class="no-margin">
+            <strong><small about="v-s:TaskIsRedirectedFrom" property="rdfs:label"></small></strong>
+            <small about="@" property="v-wf:to"></small>
+          </div>
+        </div>
+      </td>
+      <td about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
       <td>
         <a href="#/@" about="@" property="rdfs:label"></a><br/>
-        <i property="v-s:description"></i>
+        <i about="@" property="v-s:description"></i>
       </td>
-      <td rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
-      <td property="v-s:created"></td>
-      <td property="v-wf:dateGiven" class="date-given"></td>
+      <td about="@" rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
+      <td about="@" property="v-s:created"></td>
+      <td about="@" property="v-wf:dateGiven" class="date-given"></td>
     </tr>
     <script>
       // Read indicator
