@@ -1757,6 +1757,27 @@ v-wf:StartForm
   rdfs:subClassOf v-s:Temporal ;
 .
 
+
+v-wf:StartForm_canEdit
+  rdf:type rdf:Property ;
+  rdfs:label "Разрешить редактировать"@ru ;
+  rdfs:label "Permission to edit"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:range xsd:boolean ;
+  rdfs:isDefinedBy v-wf: ;
+.
+
+v-wf:PsStartForm_canEdit
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-wf:StartForm ;
+  v-ui:forProperty v-wf:StartForm_canEdit ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:defaultValue "false"^^xsd:boolean ;
+  rdfs:label "Спецификация для свойства разрешения редактирования класса StartForm"@ru ;
+  rdfs:label "Permission to edit specification for StartForm class"@en ;
+.
+
 v-wf:permission_on_start_from
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
