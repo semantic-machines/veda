@@ -239,8 +239,8 @@ class FanoutProcess : VedaModule
                 if (actualVersion !is null && actualVersion != new_indv.uri)
                     log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", new_indv.uri, actualVersion, new_indv.uri);
 
-//<----><------>if (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)
-//        <---->log.trace("prev[%s].v-s:previousVersion[%s] == new[%s].v-s:previousVersion[%s], ignore", prev_indv.uri, previousVersion_prev, new_indv.uri, previousVersion_new);
+//				if (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)
+//                  log.trace("prev[%s].v-s:previousVersion[%s] == new[%s].v-s:previousVersion[%s], ignore", prev_indv.uri, previousVersion_prev, new_indv.uri, previousVersion_new);
 
                 return ResultCode.OK;
             }
@@ -277,8 +277,9 @@ class FanoutProcess : VedaModule
 
                 string    senderMailbox    = new_indv.getFirstLiteral("v-s:senderMailbox");
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
+                Resources attachments      = new_indv.getResources("v-s:attachment");
 
-                if (from !is null && to !is null)
+                if ((from !is null || senderMailbox !is null) && (to !is null || recipientMailbox !is null))
                 {
                     string from_label;
                     string email_from;
@@ -303,7 +304,7 @@ class FanoutProcess : VedaModule
                     foreach (Resource el; extract_email(sticket, reply_to, label))
                         str_email_reply_to ~= el.data() ~ ";";
 
-                    if (from.length > 0 && to.length > 0)
+                    if (email_from.length > 0 && rr_email_to.length > 0)
                     {
                         string[] attachment_ids;
                         message_body = extract_cids(message_body, attachment_ids);
@@ -315,6 +316,39 @@ class FanoutProcess : VedaModule
                                               message_body,
                                               str_email_reply_to
                                               );
+
+                        foreach (el; attachments)
+                        {
+                            string attachment_id = el.uri;
+                            try
+                            {
+                                //writeln("@1 attachment_id=", attachment_ids);
+                                Individual file_info = context.get_individual(&sticket, attachment_id);
+                                if (file_info !is Individual.init)
+                                {
+                                    string path     = file_info.getFirstResource("v-s:filePath").get!string;
+                                    string file_uri = file_info.getFirstResource("v-s:fileUri").get!string;
+                                    string fileName = file_info.getFirstResource("v-s:fileName").get!string;
+                                    if (path !is null && file_uri !is null && file_uri.length > 0)
+                                    {
+                                        if (path.length > 0)
+                                            path = path ~ "/";
+
+                                        string full_path  = attachments_db_path ~ "/" ~ path ~ file_uri;
+                                        auto   bytes      = cast(ubyte[]) read(full_path);
+                                        auto   attachment = SmtpAttachment(fileName, bytes, uri_2_cid(attachment_id));
+
+                                        message.attach(attachment);
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                log.trace("#EX! fail prepare attachment for e-mail [%s], LINE:[%s], FILE:[%s], MSG:[%s]", new_indv.uri, ex.line,
+                                          ex.file,
+                                          ex.msg);
+                            }
+                        }
 
                         foreach (attachment_id; attachment_ids)
                         {
@@ -331,10 +365,8 @@ class FanoutProcess : VedaModule
                                         if (path.length > 0)
                                             path = path ~ "/";
 
-                                        string full_path = attachments_db_path ~ "/" ~ path ~ file_uri;
-
-                                        auto   bytes = cast(ubyte[]) read(full_path);
-
+                                        string full_path  = attachments_db_path ~ "/" ~ path ~ file_uri;
+                                        auto   bytes      = cast(ubyte[]) read(full_path);
                                         auto   attachment = SmtpAttachment(file_uri, bytes, uri_2_cid(attachment_id));
                                         message.attach(attachment);
                                     }
@@ -342,7 +374,7 @@ class FanoutProcess : VedaModule
                             }
                             catch (Exception ex)
                             {
-                                log.trace("#EX! fail prepare attachment for e-mail [%s], LINE:[%s], FILE:[%s], MSG:[%s]", new_indv.uri, ex.line,
+                                log.trace("#EX! fail prepare CID attachment for e-mail [%s], LINE:[%s], FILE:[%s], MSG:[%s]", new_indv.uri, ex.line,
                                           ex.file,
                                           ex.msg);
                             }
@@ -380,7 +412,7 @@ class FanoutProcess : VedaModule
                 }
                 else
                 {
-                    log.trace("WARN: push_to_smtp[%s]: invalid field from[%s] or to[%s]", new_indv.uri, from, to);
+                    log.trace("WARN: push_to_smtp[%s]: empty field from[%s] or to[%s]", new_indv.uri, from, to);
                 }
             }
 
