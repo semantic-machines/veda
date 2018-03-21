@@ -9,6 +9,10 @@ then
 fi
 ./update-version-ttl.sh
 
+    cd source/authorization
+    cargo build --release
+    cd $BUILD_PATH
+
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
     echo make start VEDA-CCUS
@@ -41,10 +45,6 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
 fi
 
 if [ -z $1 ] || [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
-    cd source/authorization
-    cargo build --release
-    cd $BUILD_PATH
-
     ./build-component.sh veda-authorization authorization
 fi
 
