@@ -9,12 +9,14 @@ import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.defi
 import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type, veda.util.queue;
 import veda.storage.lmdb.lmdb_acl;
 
-extern (C) ubyte authorize_r(immutable(char)* _uri, immutable(char)* _user_uri, ubyte _request_access, bool _is_check_for_reload, 
-	void function (immutable(char)* _trace_acl), void function (immutable(char)* _trace_group), void function (immutable(char)* _trace_info));
+extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload,
+                             void function(immutable(char) *_trace_acl), void function(immutable(char) *_trace_group), void function(
+                                                                                                                                     immutable(char)
+                                                                                                                                     *_trace_info));
 
 static this()
 {
-    bsd_signal(SIGINT, &handleTermination3);
+bsd_signal(SIGINT, &handleTermination3);
 }
 
 bool f_listen_exit = false;
@@ -176,8 +178,8 @@ private long   count;
 private Logger log;
 void main(string[] args)
 {
-    string bind_url      = "tcp://127.0.0.1:22000";
-    string test_user_url = null;
+    string bind_url               = "tcp://127.0.0.1:22000";
+    string test_user_url          = null;
     string experimental_authorize = null;
 
     try
@@ -223,8 +225,9 @@ void main(string[] args)
 
     string authorization_db_type    = properties.as!(string)("authorization_db_type");
     long   authorization_cache_size = properties.as!(long)("authorization_cache_size");
+    string authorization_lib        = properties.as!(string)("authorization_lib");
 
-    athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, log);
+    athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, authorization_lib == "external", log);
 
     if (test_user_url !is null)
     {
@@ -235,8 +238,8 @@ void main(string[] args)
 
         if (prepare_batch_queue.isReady)
         {
-                long      count          = 0;
-                long      count_prepared = 0;
+            long count          = 0;
+            long count_prepared = 0;
 
             auto prepare_batch_cs = new Consumer(prepare_batch_queue, tmp_path, process_name, Mode.RW, log);
             if (!prepare_batch_cs.open(false))
@@ -245,10 +248,10 @@ void main(string[] args)
             }
             else
             {
-            	count = prepare_batch_cs.count_popped;
-            	count_prepared = prepare_batch_cs.count_popped;
+                count          = prepare_batch_cs.count_popped;
+                count_prepared = prepare_batch_cs.count_popped;
                 writefln("found uncompleted batch");
-            }    
+            }
 
             if (prepare_batch_cs !is null)
             {
@@ -267,47 +270,30 @@ void main(string[] args)
 
                     count++;
 
-                    if (data.indexOf("membership") < 0 && data.indexOf("_d:mondi_position_") < 0 && data.indexOf("_d:mondi_employee_") < 0 
-                    	&& data.indexOf("_position") < 0 && data.indexOf("_person") < 0 && data.indexOf("_employee_") < 0 
-                    	&& data.indexOf("-r") < 0 && data.indexOf("right") < 0)
+                    if (data.indexOf("membership") < 0 && data.indexOf("_d:mondi_position_") < 0 && data.indexOf("_d:mondi_employee_") < 0
+                        && data.indexOf("_position") < 0 && data.indexOf("_person") < 0 && data.indexOf("_employee_") < 0
+                        && data.indexOf("-r") < 0 && data.indexOf("right") < 0)
                     {
-
-//data = "d:722c20635eb6475ea12d79ef45c0a6fa";
-					if (count % 1000 == 0)
-					{
-                        ubyte request_access = 15;
-                        
-                        ubyte res = 0;
-                        if (experimental_authorize !is null && experimental_authorize == "experimental")
+                        if (count % 1000 == 0)
                         {
-                        	extern (C) void trace_acl (immutable(char)* uu)
-                        	{
-                        		writef ("%s", to!string (uu));
-                        	}
+                            ubyte request_access = 15;
 
-                        	extern (C) void trace_group (immutable(char)* uu)
-                        	{
-                        		writef ("%s", to!string (uu));
-                        	}
+                            ubyte res = 0;
+                            if (experimental_authorize !is null && experimental_authorize == "experimental")
+                            {
+                                //res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, &trace_acl, &trace_group, &trace_info);
+                                res = authorize_r((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, null, null, null);
+                            }
+                            else
+                            {
+                                res = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
+                            }
 
-                        	extern (C) void trace_info (immutable(char)* uu)
-                        	{
-                        		writef ("%s", to!string (uu));
-                        	}
-                        	
-                           	//res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, &trace_acl, &trace_group, &trace_info);
-                           	res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, null, null, null);
-                        }           	
-						else
-						{
-                                    res = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
-						}            
-                        
-                        count_prepared++;
-                        writefln("%d;%d;%s;%s;%s", count, count_prepared, data, access_to_string(request_access), access_to_string(res));
-					}
+                            count_prepared++;
+                            writefln("%d;%d;%s;%s;%s", count, count_prepared, data, access_to_string(request_access), access_to_string(res));
+                        }
                     }
-					
+
 
                     prepare_batch_cs.commit_and_next(true);
                     //break;

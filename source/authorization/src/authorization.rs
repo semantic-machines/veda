@@ -12,15 +12,35 @@ use std::os::raw::c_char;
 use std::collections::HashMap;
 use std::thread;
 use std::time;
+//use std::time::SystemTime;
+//use std::cell::Cell;
+//use std::sync::Mutex;
 
 use lmdb_rs_m::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
 use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
+
+//const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
+const DB_PATH: &str = "./data/acl-indexes/";
 
 const PERMISSION_PREFIX: &str = "P";
 const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
 
+const ROLE_SUBJECT: u8 = 0;
+const ROLE_OBJECT: u8 = 1;
+
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
+static ACCESS_LIST_PREDICATES: [&str; 9] = [
+    "",
+    "v-s:canCreate",
+    "v-s:canRead",
+    "",
+    "v-s:canUpdate",
+    "",
+    "",
+    "",
+    "v-s:canDelete",
+];
 
 pub struct Right {
     id: String,
@@ -52,12 +72,16 @@ pub struct AzContext<'a> {
 }
 
 lazy_static! {
-    pub static ref ENV: Environment = {
+
+#[derive(Debug)]
+    //static ref LAST_MODIFIED_INFO : Mutex<Cell<SystemTime>> = Mutex::new(Cell::new (SystemTime:: now()));
+
+    static ref ENV: Environment = {
     let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
     let env1;
     loop {
-        match env_builder.open("./data/acl-indexes/", 0o644) {
+        match env_builder.open(DB_PATH, 0o644) {
             Ok(env_res) => {
                 env1 = env_res;
                 break
@@ -74,7 +98,7 @@ lazy_static! {
     };
 
 
-    pub static ref DB_HANDLE: DbHandle = {
+    static ref DB_HANDLE: DbHandle = {
     let db_handle;
     loop {
         match ENV.get_default_db(DbFlags::empty()) {
@@ -113,58 +137,6 @@ pub fn get_from_db(key: &str, db: &Database) -> String {
     }
 }
 
-pub fn rights_map_from_string(src: String, results: &mut HashMap<String, Right>) -> bool {
-    if src.is_empty() {
-        return false;
-    }
-
-    let tokens: Vec<&str> = src.split(';').collect();
-
-    let mut idx = 0;
-    loop {
-        if idx + 1 < tokens.len() {
-            let key = tokens[idx];
-            let access;
-
-            match tokens[idx + 1].chars().next() {
-                Some(c) => match c.to_digit(16) {
-                    Some(v) => access = v,
-                    None => {
-                        println!(
-                            "ERR! rights_from_string, fail parse, access is not hex digit {}",
-                            src
-                        );
-                        continue;
-                    }
-                },
-                None => {
-                    println!(
-                        "ERR! rights_from_string, fail parse, not found access char {}",
-                        src
-                    );
-                    continue;
-                }
-            }
-
-            let rr = Right {
-                id: key.to_string(),
-                access: access as u8,
-                is_deleted: false,
-            };
-            results.insert(rr.id.clone(), rr);
-        } else {
-            break;
-        }
-
-        idx += 2;
-        if idx >= tokens.len() {
-            break;
-        }
-    }
-
-    return true;
-}
-
 pub fn rights_vec_from_string(src: String, results: &mut Vec<Right>) -> bool {
     if src.is_empty() {
         return false;
@@ -176,11 +148,14 @@ pub fn rights_vec_from_string(src: String, results: &mut Vec<Right>) -> bool {
     loop {
         if idx + 1 < tokens.len() {
             let key = tokens[idx];
-            let access;
+            let mut access = 0;
+            let mut shift = 0;
 
-            match tokens[idx + 1].chars().next() {
-                Some(c) => match c.to_digit(16) {
-                    Some(v) => access = v,
+            let mut element = tokens[idx + 1].chars();
+
+            while let Some(c) = element.next() {
+                match c.to_digit(16) {
+                    Some(v) => access = access | (v << shift),
                     None => {
                         println!(
                             "ERR! rights_from_string, fail parse, access is not hex digit {}",
@@ -188,14 +163,8 @@ pub fn rights_vec_from_string(src: String, results: &mut Vec<Right>) -> bool {
                         );
                         continue;
                     }
-                },
-                None => {
-                    println!(
-                        "ERR! rights_from_string, fail parse, not found access char {}",
-                        src
-                    );
-                    continue;
                 }
+                shift = shift + 4;
             }
 
             let rr = Right {
@@ -241,7 +210,7 @@ pub fn authorize_obj_group(azc: &mut AzContext, object_group_id: &str, object_gr
             .insert(object_group_id.to_string(), object_group_access);
     }
 
-    if azc.is_trace_group {
+    if azc.is_trace_group == true {
         print_to_trace_group(azc, format!("{}\n", object_group_id));
     }
 
@@ -329,7 +298,10 @@ pub fn authorize_obj_group(azc: &mut AzContext, object_group_id: &str, object_gr
                             if azc.is_trace_acl {
                                 print_to_trace_acl(
                                     azc,
-                                    format!("{};{};{}\n", object_group_id, subj_id, i_access),
+                                    format!(
+                                        "{};{};{}\n",
+                                        object_group_id, subj_id, ACCESS_LIST_PREDICATES[*i_access as usize]
+                                    ),
                                 );
                             }
                         }
@@ -420,7 +392,7 @@ pub fn prepare_obj_group(azc: &mut AzContext, uri: &str, access: u8, level: u8, 
     return false;
 }
 
-pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: &mut HashMap<String, Right>, level: u8, db: &Database) -> bool {
+pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u8, results: &mut HashMap<String, Right>, level: u8, db: &Database) -> bool {
     if level > 32 {
         if azc.is_trace_info {
             print_to_trace_info(azc, format!("ERR! level down > 32, uri={}\n", uri));
@@ -449,26 +421,49 @@ pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: 
         let orig_access = group.access;
         group.access = new_access;
 
-        if azc.walked_groups_s.contains_key(&group.id) {
-            let preur_access = azc.walked_groups_s[&group.id];
-            if preur_access == new_access {
-                if azc.is_trace_info {
-                    print_to_trace_info(
-                        azc,
-                        format!(
-                            "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
-                            level * 2,
-                            level as usize,
-                            group.id,
-                            access_to_pretty_string(preur_access)
-                        ),
-                    );
-                }
+        if p_role == ROLE_SUBJECT {
+            if azc.walked_groups_s.contains_key(&group.id) {
+                let preur_access = azc.walked_groups_s[&group.id];
+                if preur_access == new_access {
+                    if azc.is_trace_info {
+                        print_to_trace_info(
+                            azc,
+                            format!(
+                                "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
+                                level * 2,
+                                level as usize,
+                                group.id,
+                                access_to_pretty_string(preur_access)
+                            ),
+                        );
+                    }
 
-                continue;
+                    continue;
+                }
             }
+            azc.walked_groups_s.insert(group.id.clone(), new_access);
+        } else {
+            if azc.walked_groups_o.contains_key(&group.id) {
+                let preur_access = azc.walked_groups_o[&group.id];
+                if preur_access == new_access {
+                    if azc.is_trace_info {
+                        print_to_trace_info(
+                            azc,
+                            format!(
+                                "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
+                                level * 2,
+                                level as usize,
+                                group.id,
+                                access_to_pretty_string(preur_access)
+                            ),
+                        );
+                    }
+
+                    continue;
+                }
+            }
+            azc.walked_groups_o.insert(group.id.clone(), new_access);
         }
-        azc.walked_groups_s.insert(group.id.clone(), new_access);
 
         if azc.is_trace_info {
             print_to_trace_info(
@@ -500,7 +495,7 @@ pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: 
             continue;
         }
 
-        get_resource_groups(azc, &group.id, 15, results, level + 1, &db);
+        get_resource_groups(p_role, azc, &group.id, 15, results, level + 1, &db);
         results.insert(
             group.id.clone(),
             Right {
@@ -516,16 +511,14 @@ pub fn get_resource_groups(azc: &mut AzContext, uri: &str, access: u8, results: 
 
 fn print_to_trace_acl(azc: &mut AzContext, text: String) {
     if let Some(f) = azc.trace_acl {
-        azc.str_num = azc.str_num + 1;
-        let c_string = CString::new(azc.str_num.to_string() + " " + &text).unwrap();
+        let c_string = CString::new(text).unwrap();
         f(c_string.as_ptr());
     }
 }
 
 fn print_to_trace_group(azc: &mut AzContext, text: String) {
     if let Some(f) = azc.trace_group {
-        azc.str_num = azc.str_num + 1;
-        let c_string = CString::new(azc.str_num.to_string() + " " + &text).unwrap();
+        let c_string = CString::new(text).unwrap();
         f(c_string.as_ptr());
     }
 }
@@ -557,6 +550,22 @@ fn access_to_pretty_string(src: u8) -> String {
         res.push_str("D ");
     }
 
+    if src & 16 == 16 {
+        res.push_str("!C ");
+    }
+
+    if src & 32 == 32 {
+        res.push_str("!R ");
+    }
+
+    if src & 64 == 64 {
+        res.push_str("!U ");
+    }
+
+    if src & 128 == 128 {
+        res.push_str("!D ");
+    }
+
     return res;
 }
 
@@ -570,6 +579,36 @@ pub extern "C" fn authorize_r(
     _trace_group: Option<extern "C" fn(*const c_char)>,
     _trace_info: Option<extern "C" fn(*const c_char)>,
 ) -> u8 {
+    //
+/*	
+    fn check_for_reload() -> std::io::Result<bool> {
+
+        use std::fs::File;
+        let f = File::open(MODULE_INFO_PATH)?;
+
+        let metadata = f.metadata()?;
+
+        if let Ok(new_time) = metadata.modified() {
+            let prev_time = LAST_MODIFIED_INFO.lock().unwrap().get();
+
+            if new_time != prev_time {
+                LAST_MODIFIED_INFO.lock().unwrap().set(new_time);
+                println!("LAST_MODIFIED_INFO={:?}", new_time);
+                return Ok ((true));
+            }
+        }
+
+        Ok(false)
+    }
+    
+    if _is_check_for_reload == true {
+	    if let Ok (need_reload) = check_for_reload() {
+		    if (need_reload == true) {
+		    	ENV.sync (true);
+		    } 	
+	    }
+    }    
+*/
     let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
     let uri;
     match c_uri.to_str() {
@@ -652,7 +691,7 @@ pub extern "C" fn authorize_r(
                 print_to_trace_info(&mut azc, "READ SUBJECT GROUPS\n".to_string());
             }
 
-            get_resource_groups(&mut azc, user_uri, 15, s_groups, 0, &db);
+            get_resource_groups(ROLE_SUBJECT, &mut azc, user_uri, 15, s_groups, 0, &db);
 
             azc.subject_groups = s_groups;
 
@@ -702,7 +741,7 @@ pub extern "C" fn authorize_r(
                 }
 
                 let mut o_groups = &mut HashMap::new();
-                if get_resource_groups(&mut azc, uri, 15, o_groups, 0, &db) == true {
+                if get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, 0, &db) == true {
                     if azc.is_trace_info {
                         print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
                     }

@@ -5,6 +5,9 @@ import veda.common.logger, veda.core.common.define, veda.common.type;
 import veda.core.common.know_predicates, veda.util.module_info;
 import veda.authorization.right_set, veda.storage.common, veda.authorization.cache;
 
+extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload,
+                             void function(immutable(char) *_trace_acl), void function(immutable(char) *_trace_group), void function(immutable(char) *_trace_info));
+
 string lstr = "                                                                           ";
 
 interface Authorization
@@ -17,49 +20,77 @@ interface Authorization
     public void close();
 }
 
+OutBuffer trace_acl;
+OutBuffer trace_group;
+OutBuffer trace_info;
+
 abstract class ImplAuthorization : Authorization
 {
-    Logger    log;
-    string    filter_value;
-    ubyte     calc_right_res;
+    Logger   log;
+    string   filter_value;
+    ubyte    calc_right_res;
 
-    RightSet  subject_groups;
-    ubyte     request_access;
+    RightSet subject_groups;
+    ubyte    request_access;
     ubyte[ string ] checked_groups;
-    string    str;
-    int       rc;
-    int       str_num;
-    int       count_permissions = 0;
-    OutBuffer trace_acl;
-    OutBuffer trace_group;
-    OutBuffer trace_info;
+    string   str;
+    int      rc;
+    int      str_num;
+    int      count_permissions = 0;
 
-    bool      use_cache = false;
-    Cache     cache;
+    bool     use_cache = false;
+    Cache    cache;
+
+    bool     use_ext_libauthorization = false;
+
 
     ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                     OutBuffer _trace_info)
     {
-        if (use_cache)
-        {
-            if (cache is null)
-            {
-                cache = new Cache();
-            }
-            else
-            {
-                int res = cache.get(user_uri, _uri, _request_access);
-                if (res != -1)
-                {
-                    stderr.writefln("res=%s", access_to_pretty_string(cast(ubyte)res));
-                    return cast(ubyte)res;
-                }
-            }
-        }
-
         trace_acl   = _trace_acl;
         trace_group = _trace_group;
-        trace_info  = _trace_info;
+        trace_info = _trace_info;
+
+        if (use_ext_libauthorization)
+        {
+            extern (C) void function(immutable(char) *uu) dg_tr_acl;
+
+            extern (C) void fn_trace_acl(immutable(char) *uu)
+            {
+                trace_acl.writef("%s", to!string(uu));
+            }
+
+            extern (C) void function(immutable(char) *uu) dg_tr_group;
+
+            extern (C) void fn_trace_group(immutable(char) *uu)
+            {
+                trace_group.writef("%s", to!string(uu));
+            }
+
+            extern (C) void function(immutable(char) *uu) dg_tr_info;
+
+            extern (C) void fn_trace_info(immutable(char) *uu)
+            {
+                trace_info.writef("%s", to!string(uu));
+            }
+
+            if (trace_acl !is null)
+                dg_tr_acl = &fn_trace_acl;
+            else
+                dg_tr_acl = null;
+
+            if (trace_group !is null)
+                dg_tr_group = &fn_trace_group;
+            else
+                dg_tr_group = null;
+
+            if (trace_info !is null)
+                dg_tr_info = &fn_trace_info;
+            else
+                dg_tr_info = null;
+
+            return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, is_check_for_reload, dg_tr_acl, dg_tr_group, dg_tr_info);
+        }
 
         // reset local vars
         checked_groups = (ubyte[ string ]).init;
