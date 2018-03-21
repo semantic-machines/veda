@@ -156,8 +156,8 @@
     template: $("#string-control-template").html(),
     parser: function (input) {
       return (input ? new String(input) : null);
-    },
-    isSingle: true
+    }/*,
+    isSingle: true*/
   };
 
   // Password input
