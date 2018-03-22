@@ -392,18 +392,18 @@ pub fn prepare_obj_group(azc: &mut AzContext, uri: &str, access: u8, level: u8, 
     return false;
 }
 
-pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u8, results: &mut HashMap<String, Right>, level: u8, db: &Database) -> bool {
+pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u8, results: &mut HashMap<String, Right>, level: u8, db: &Database) {
     if level > 32 {
         if azc.is_trace_info {
             print_to_trace_info(azc, format!("ERR! level down > 32, uri={}\n", uri));
         }
-        return false;
+        return;
     }
 
     let groups_str = get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db);
 
     if groups_str.is_empty() {
-        return false;
+        return;
     }
 
     let groups_set: &mut Vec<Right> = &mut Vec::new();
@@ -505,8 +505,6 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
             },
         );
     }
-
-    return false;
 }
 
 fn print_to_trace_acl(azc: &mut AzContext, text: String) {
@@ -741,11 +739,7 @@ pub extern "C" fn authorize_r(
                 }
 
                 let mut o_groups = &mut HashMap::new();
-                if get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, 0, &db) == true {
-                    if azc.is_trace_info {
-                        print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                    }
-                }
+                get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, 0, &db);
 
                 if azc.is_trace_info {
                     let str = format!("object_groups={:?}\n", o_groups);
