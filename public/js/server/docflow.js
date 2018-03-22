@@ -1244,7 +1244,10 @@ function prepare_start_form(ticket, document)
         return;
     }
 
-    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", document['@']);
+    // Include start form to processed document group
+    if ( hasValue(document, "v-wf:processedDocument") ) {
+      addToGroup(ticket, getUri(document["v-wf:processedDocument"]), document["@"], [can_read]);
+    }
 
     var new_process_uri = genUri() + "-prs";
 
