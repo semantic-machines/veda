@@ -270,9 +270,9 @@ class FanoutProcess : VedaModule
                 connect_to_smtp(context);
 
                 string    from         = new_indv.getFirstLiteral("v-wf:from");
-                string    to           = new_indv.getFirstLiteral("v-wf:to");
+                Resources to           = new_indv.getResources("v-wf:to");
                 string    subject      = new_indv.getFirstLiteral("v-s:subject");
-                string    reply_to     = new_indv.getFirstLiteral("v-wf:replyTo");
+                Resources reply_to     = new_indv.getResources("v-wf:replyTo");
                 string    message_body = new_indv.getFirstLiteral("v-s:messageBody");
 
                 string    senderMailbox    = new_indv.getFirstLiteral("v-s:senderMailbox");
@@ -294,15 +294,22 @@ class FanoutProcess : VedaModule
 
                     string      label;
                     Recipient[] rr_email_to;
-                    foreach (Resource el; extract_email(sticket, to, label))
-                        rr_email_to ~= Recipient(el.data(), label);
+
+                    foreach (Resource elt; to)
+                    {
+                        foreach (Resource el; extract_email(sticket, elt.uri(), label))
+                            rr_email_to ~= Recipient(el.data(), label);
+                    }
 
                     foreach (Resource el; recipientMailbox)
                         rr_email_to ~= Recipient(el.data(), "");
 
                     string str_email_reply_to = "";
-                    foreach (Resource el; extract_email(sticket, reply_to, label))
-                        str_email_reply_to ~= el.data() ~ ";";
+                    foreach (Resource elt; reply_to)
+                    {
+                        foreach (Resource el; extract_email(sticket, elt.uri(), label))
+                            str_email_reply_to ~= el.data() ~ ";";
+                    }
 
                     if (email_from.length > 0 && rr_email_to.length > 0)
                     {
