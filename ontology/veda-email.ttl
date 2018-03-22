@@ -16,6 +16,7 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
+### --------------------Спецификация----------------------
 
 ### ------------------------------------------------------
 v-s:Email
@@ -99,13 +100,15 @@ v-s:EmailTemplate
   <div class="container sheet">
     <h2>
       <span about="v-s:sendEmailBundle" property="rdfs:label"></span><br>
+      <small about="@" property="rdfs:label"></small>
     </h2>
     <hr class="view edit -search">
     <div class="row">
       <div class="col-sm-6">
-        <em about="v-s:senderMailbox" property="rdfs:label"></em>
-        <div property="v-s:senderMailbox" class="view edit -search"></div>
-        <veda-control data-type="string" property="v-s:senderMailbox" class="-view edit search"></veda-control>
+        <em about="v-s:senderMailbox" property="rdfs:label" ></em>
+        <div about="@" property="v-s:senderMailbox" class="-view edit -search"></div>
+        <div property="v-s:senderMailbox" class="view -edit search"></div>
+        <veda-control data-type="string" property="v-s:senderMailbox" class="-view -edit search"></veda-control>
         <em about="v-s:recipientMailbox" property="rdfs:label"></em>
         <div property="v-s:recipientMailbox" class="view edit -search"></div>
         <veda-control data-type="string" property="v-s:recipientMailbox" class="-view edit search"></veda-control>
