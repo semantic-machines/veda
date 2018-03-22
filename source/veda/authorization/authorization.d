@@ -18,6 +18,8 @@ interface Authorization
     public bool open();
     public void reopen();
     public void close();
+
+    public void set_use_ext_libauthorization(bool is_ext);
 }
 
 OutBuffer trace_acl;
@@ -43,13 +45,17 @@ abstract class ImplAuthorization : Authorization
 
     bool     use_ext_libauthorization = false;
 
+    public void set_use_ext_libauthorization(bool is_ext)
+    {
+        use_ext_libauthorization = is_ext;
+    }
 
     ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                     OutBuffer _trace_info)
     {
         trace_acl   = _trace_acl;
         trace_group = _trace_group;
-        trace_info = _trace_info;
+        trace_info  = _trace_info;
 
         if (use_ext_libauthorization)
         {

@@ -280,14 +280,12 @@ void main(string[] args)
 
                             ubyte res = 0;
                             if (experimental_authorize !is null && experimental_authorize == "experimental")
-                            {
-                                //res = authorize_r ((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, &trace_acl, &trace_group, &trace_info);
-                                res = authorize_r((data ~ "\0").ptr, (test_user_url ~ "\0").ptr, request_access, false, null, null, null);
-                            }
+                                athrz.set_use_ext_libauthorization(true);
                             else
-                            {
-                                res = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
-                            }
+                                athrz.set_use_ext_libauthorization(false);
+
+                            res = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
+
 
                             count_prepared++;
                             writefln("%d;%d;%s;%s;%s", count, count_prepared, data, access_to_string(request_access), access_to_string(res));

@@ -20,6 +20,10 @@ class ClientAuthorization : Authorization
         log             = _log;
     }
 
+    public void set_use_ext_libauthorization(bool is_ext)
+    {
+    }
+
     ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                     OutBuffer _trace_info)
     {
