@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-extern const uint8_t[4] ACCESS_LIST;
+//extern const uint8_t[4] ACCESS_LIST;
 
 uint8_t authorize_r(const char *_uri,
                     const char *_user_uri,

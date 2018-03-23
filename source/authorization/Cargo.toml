@@ -7,7 +7,7 @@ authors = ["itiu <ValeriyBushenev@gmail.com>", "muller95 <muller95@yandex.ru>"]
 [lib]
 name = "authorization"
 path = "src/authorization.rs"
-crate-type = ["staticlib"]
+crate-type = ["staticlib", "cdylib"]
     
 [dependencies]
 lazy_static = "1.0"
