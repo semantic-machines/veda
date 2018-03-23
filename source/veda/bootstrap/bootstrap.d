@@ -182,7 +182,7 @@ void main(string[] args)
         modules ~= "veda";
         modules ~= "veda-ccus";
         modules ~= "veda-ft-query";
-        modules ~= "veda-authorization";
+        //modules ~= "veda-authorization";
         modules ~= "veda-mstorage";
         modules ~= "veda-ttlreader";
         modules ~= "veda-fanout-email";

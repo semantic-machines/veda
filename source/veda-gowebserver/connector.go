@@ -1,5 +1,10 @@
 package main
 
+// #cgo CFLAGS: -I../authorization
+// #cgo LDFLAGS: -L../lib64 -lauthorization
+// #include <authorization.h>
+import "C"
+
 import (
 	"bytes"
 	"encoding/json"
@@ -10,8 +15,10 @@ import (
 	"time"
 	//"github.com/bmatsuo/lmdb-go/lmdb"
 	"bufio"
+	"fmt"
 	"github.com/itiu/lmdb-go/lmdb"
 	"gopkg.in/vmihailenco/msgpack.v2"
+	"unsafe"
 )
 
 //Connector represents struct for connection to tarantool
@@ -290,7 +297,7 @@ func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, 
 			needAuth, userUri, individuals)
 	}
 
-	//Send request to tarantool
+	//Send request
 	rcRequest, response := doRequest(needAuth, userUri, individuals, trace, false, Put)
 	//If failed return fail code
 	if rcRequest != Ok {
@@ -344,37 +351,6 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		return rr
 	}
 
-	var rights []interface{}
-	if needAuth {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "r"})
-		}
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
-
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@GET ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@GET ERR RECIVING ACL RESPONSE")
-			return rr
-		}
-
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@ERR GET PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
-	}
-
 	rr.OpRC = make([]ResultCode, 0, len(uris))
 	rr.Data = make([]string, 0, len(uris))
 	err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
@@ -384,7 +360,15 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		}
 		for i := 0; i < len(uris); i++ {
 			if needAuth {
-				if !strings.Contains(rights[i].(string), "R") {
+
+				curi := C.CString(uris[i])
+				defer C.free(unsafe.Pointer(curi))
+
+				cuser_uri := C.CString(userUri)
+				defer C.free(unsafe.Pointer(cuser_uri))
+
+				if C.authorize_r(curi, cuser_uri, 2, true, nil, nil, nil) != 2 {
+					fmt.Println("C.authorize_r NOT AUTHORIZE")
 					rr.OpRC = append(rr.OpRC, NotAuthorized)
 					continue
 				}
@@ -412,46 +396,6 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 			rr.CommonRC = InternalServerError
 		}
 	}
-	/*	if trace {
-			log.Printf("@CONNECTOR GET: PACK GET REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
-				needAuth, userUri, uris)
-		}
-
-		//Send request to tarantool
-		rcRequest, response := doRequest(needAuth, userUri, uris, trace, false, Get)
-		if rcRequest != Ok {
-			rr.CommonRC = rcRequest
-			return rr
-		}
-
-		//Decoding request response
-		decoder := msgpack.NewDecoder(bytes.NewReader(response))
-		arrLen, _ := decoder.DecodeArrayLen()
-		rc, _ := decoder.DecodeUint()
-		//Decoding common response code for request
-		rr.CommonRC = ResultCode(rc)
-
-		if trace {
-			log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
-		}
-
-		//Decoding response, response represented with request code and string or nil
-		rr.Data = make([]string, 0)
-		rr.OpRC = make([]ResultCode, len(uris))
-		for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
-			rc, _ = decoder.DecodeUint()
-			rr.OpRC[j] = ResultCode(rc)
-			if trace {
-				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
-			}
-
-			if rr.OpRC[j] == Ok {
-				tmp, _ := decoder.DecodeString()
-				rr.Data = append(rr.Data, tmp)
-			} else {
-				decoder.DecodeNil()
-			}
-		}*/
 
 	return rr
 }
@@ -678,46 +622,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uris []string, o
 		rr.CommonRC = Ok
 	}
 
-	//Send request to tarantool
-	/*	rcRequest, response := doRequest(needAuth, userUri, uris, trace, traceAuth, operation)
-		if rcRequest != Ok {
-			rr.CommonRC = rcRequest
-			return rr
-		}
-
-		//Decoding msgpack response
-		decoder := msgpack.NewDecoder(bytes.NewReader(response))
-		arrLen, _ := decoder.DecodeArrayLen()
-		//Decoding common request code
-		rc, _ := decoder.DecodeUint()
-		rr.CommonRC = ResultCode(rc)
-
-		if trace {
-			log.Println("@CONNECTOR AUTHORIZE: COMMON RC ", rr.CommonRC)
-		}
-
-		//Decoding response data, data represented by operation response code, access rights,
-		//nil for authorize and string data fro GetRightsOrigin and GetMembership.
-		rr.OpRC = make([]ResultCode, len(uris))
-		rr.Rights = make([]uint8, len(uris))
-		if operation == GetMembership || operation == GetRightsOrigin {
-			rr.Data = make([]string, len(uris))
-		}
-		for i, j := 1, 0; i < arrLen; i, j = i+3, j+1 {
-			rc, _ = decoder.DecodeUint()
-			rr.OpRC[j] = ResultCode(rc)
-			if trace {
-				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
-			}
-
-			rr.Rights[j], _ = decoder.DecodeUint8()
-			if operation == GetRightsOrigin || operation == GetMembership {
-				rr.Data[j], _ = decoder.DecodeString()
-			} else {
-				decoder.DecodeNil()
-			}
-		}*/
-
 	return rr
 }
 
@@ -762,47 +666,6 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
 		rr.CommonRC = InternalServerError
 	}
-
-	/*	if trace {
-			log.Printf("@CONNECTOR GET TICKET: PACK GET REQUEST ticket_ids=%v\n", ticketIDs)
-		}
-
-		//Send request to tarantool
-		rcRequest, response := doRequest(false, "cfg:VedaSystem", ticketIDs, trace, false, GetTicket)
-		if rcRequest != Ok {
-			rr.CommonRC = rcRequest
-			return rr
-		}
-
-		//Decoding requset response
-		decoder := msgpack.NewDecoder(bytes.NewReader(response))
-		arrLen, _ := decoder.DecodeArrayLen()
-		//Decoding common request response code
-		rc, _ := decoder.DecodeUint()
-		rr.CommonRC = ResultCode(rc)
-
-		if trace {
-			log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
-		}
-
-		//Decoding request response data, data here represented with operation result code,
-		//and ticket individual msgpack
-		rr.Data = make([]string, 0)
-		rr.OpRC = make([]ResultCode, len(ticketIDs))
-		for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
-			rc, _ = decoder.DecodeUint()
-			rr.OpRC[j] = ResultCode(rc)
-			if trace {
-				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
-			}
-
-			if rr.OpRC[j] == Ok {
-				tmp, _ := decoder.DecodeString()
-				rr.Data = append(rr.Data, tmp)
-			} else {
-				decoder.DecodeNil()
-			}
-		}*/
 
 	return rr
 }
