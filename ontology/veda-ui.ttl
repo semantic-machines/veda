@@ -840,12 +840,13 @@ v-ui:AppointmentPopoverTemplate
   rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
 <div class="media" style="margin-top:0px;">
+  <span class="close">&times;</span>
   <div class="media-left" rel="v-s:employee">
     <a href="#/@" rel="v-s:hasImage">
       <img style="width:64px" class="media-object" src="/files/@">
     </a>
   </div>
-  <div class="media-body" style="width:auto">
+  <div class="media-body" style="width:auto;">
     <strong class="media-heading" about="@" rel="v-s:employee">
       <span about="@" property="rdfs:label"></span>
     </strong>
@@ -875,6 +876,7 @@ v-ui:PersonPopoverTemplate
   rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
 <div class="media" style="margin-top:0px;">
+  <span class="close">&times;</span>
   <div class="media-left">
     <a href="#" rel="v-s:hasImage">
       <img style="width:64px" class="media-object" src="/files/@">
@@ -900,6 +902,7 @@ v-ui:PositionPopoverTemplate
   rdfs:label "Position template"@en ;
   v-ui:template """
 <div class="media" style="margin-top:0px;">
+  <span class="close">&times;</span>
   <div class="media-body" style="width:auto">
     <strong class="media-heading" about="@" property="rdfs:label"></strong>
     <hr class="no-margin">
@@ -957,16 +960,25 @@ v-ui:LabelTemplate
     }
     if (individual.is("v-s:Appointment") || individual.is("v-s:Person") || individual.is("v-s:Position")) {
       template.popover({
-        trigger: "click hover",
+        trigger: "hover click",
         delay: { "show": 750, "hide": 100 },
         placement: "auto top",
         html: true,
         container: "body",
         content: function () {
           var cntr = $("<div></div>");
-          return individual.is("v-s:Appointment") ? individual.present(cntr, "v-ui:AppointmentPopoverTemplate") :
-                 individual.is("v-s:Person") ? individual.present(cntr, "v-ui:PersonPopoverTemplate") :
-                 individual.present(cntr, "v-ui:PositionPopoverTemplate");
+          var content;
+          if (individual.is("v-s:Appointment")) {
+            content = individual.present(cntr, "v-ui:AppointmentPopoverTemplate");
+          } else if (individual.is("v-s:Person")) {
+            content = individual.present(cntr, "v-ui:PersonPopoverTemplate");
+          } else {
+            content = individual.present(cntr, "v-ui:PositionPopoverTemplate");
+          }
+          return content.on("click", ".close", function (e) {
+            e.stopPropagation();
+            template.click();
+          });
         }
       });
       template.one("remove", function () {
