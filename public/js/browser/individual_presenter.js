@@ -493,12 +493,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       var values = about.get(rel_uri), rendered = {}, counter = 0;
 
-      propertyModifiedHandler(values);
-      about.on(rel_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        about.off(rel_uri, propertyModifiedHandler);
-      });
-
       if (isEmbedded) {
         embeddedHandler(values);
         about.on(rel_uri, embeddedHandler);
@@ -506,6 +500,12 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           about.off(rel_uri, embeddedHandler);
         });
       }
+
+      propertyModifiedHandler(values);
+      about.on(rel_uri, propertyModifiedHandler);
+      template.one("remove", function () {
+        about.off(rel_uri, propertyModifiedHandler);
+      });
 
       // Re-render link property if its' values were changed
       function propertyModifiedHandler (values) {
