@@ -322,3 +322,8 @@ if ! ldconfig -p | grep libmdbx; then
 
 fi
 
+    cd source/authorization
+    cargo build --release
+    cd ..
+    sudo cp ./source/lib64/libauthorization.so /usr/local/lib
+    sudo ldconfig
