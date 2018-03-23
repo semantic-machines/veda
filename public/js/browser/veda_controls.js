@@ -1692,14 +1692,13 @@
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
         tmpl.toggleClass("selected");
-        if ( individual.hasValue(rel_uri, suggestion) ) {
+        if ( selected.indexOf(suggestion) >= 0 ) {
           if (isSingle) {
             individual
               .set(rel_uri, [])
               .set(rel_uri, [suggestion]);
             fulltextMenu.hide();
           } else {
-            //individual.removeValue(rel_uri, suggestion);
             selected = selected.filter(function (value) {
               return value !== suggestion;
             });
@@ -1709,7 +1708,6 @@
             individual.set(rel_uri, [suggestion]);
             fulltextMenu.hide();
           } else {
-            //individual.addValue(rel_uri, suggestion);
             selected = selected.filter(function (value) {
               return value !== suggestion;
             }).concat(suggestion);
