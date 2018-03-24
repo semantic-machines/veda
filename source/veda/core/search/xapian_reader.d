@@ -187,7 +187,7 @@ class XapianReader : SearchReader
             db_names = [ "base" ];
 
         if (trace)
-            log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
+            log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query, user_uri, str_query, str_sort, _db_names, from, top, limit);
 
         if (trace)
             log.trace("[Q:%X] TTA [%s]", cast(void *)str_query, tta.toString());
