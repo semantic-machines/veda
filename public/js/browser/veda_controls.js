@@ -249,7 +249,7 @@
     };
     function feelPseudoInput(summaryTime){
       var days=0, hours=0, minutes=0;
-      summaryText.text(summaryTime);
+      summaryText.text(+summaryTime);
       if (summaryTime!=0){
         days=Math.floor(summaryTime/480);
         summaryTime=summaryTime-days*480;
@@ -1623,7 +1623,7 @@
           fulltextMenu.hide();
           individual.set(rel_uri, selected);
         })
-        .text( new veda.IndividualModel("v-s:Close").toString() );
+        .text( new veda.IndividualModel("v-s:Ok").toString() );
       if (isSingle) {
         header.hide();
       }
