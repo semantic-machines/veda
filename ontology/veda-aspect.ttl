@@ -130,187 +130,85 @@ v-s:PsHasAspect
   v-ui:queryPrefix "('rdf:type'=='v-s:PersonalAspect')"^^xsd:string ;
 .
 
+v-s:AboutMe
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обо мне"@ru ;
+  rdfs:label "About me"@en ;
+.
+v-s:Favorites
+  rdf:type v-s:Bundle ;
+  rdfs:label "Избранное"@ru ;
+  rdfs:label "Favorites"@en ;
+.
+v-s:Settings
+  rdf:type v-s:Bundle ;
+  rdfs:label "Настройки"@ru ;
+  rdfs:label "Settings"@en ;
+.
+
 v-s:PersonalAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Персональный аспект"@ru ;
   rdfs:label "Template for Personal aspect class"@en ;
   v-ui:forClass v-s:PersonalAspect ;
   v-ui:template """
+<script>
+  template.one("remove", function () {
+    individual.activeTab = $("#personal-tabs li.active a", template).attr("href");
+  });
+  individual.activeTab = individual.activeTab || "#about-me";
+  $("#personal-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
+  $("#personal-tabs-content " + individual.activeTab, template).addClass("active");
+//# sourceURL=v-s:PersonalAspectTemplate_pre
+</script>
 <div class="container sheet">
-  <div class="row">
-    <div class="col-md-2">
-      <div about="@" rel="v-s:owner">
-        <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
-        <br/>
-        <a href="#/@">
-          <span class="glyphicon glyphicon-user"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span>
-        </a>
-      </div>
-    </div>
-    <div class="col-md-10">
-      <h3><span about="v-s:MyPage" property="rdfs:label"></span></h3>
-      <hr/>
-      <div class="row">
-        <div class="col-md-4 col-sm-6 col-xs-6">
-          <div about="v-ft:Inbox">
-            <div class="panel panel-danger">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-3">
-                    <i class="fa fa-tasks fa-5x"></i>
-                  </div>
-                  <div class="col-xs-9 text-right">
-                    <div id="tasks-count" class="huge"></div>
-                    <div property="rdfs:label"></div>
-                  </div>
-                </div>
-              </div>
-              <a href="#/v-ft:Inbox">
-                <div class="panel-body clearfix">
-                  <span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-                  <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                </div>
-              </a>
-            </div>
-            <script>
-              var tasks = individual.tasks;
-              tasks.search();
-              $("#tasks-count", template).text(tasks.count);
-              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template
-            </script>
-          </div>
+  <br/>
+  <ul id="personal-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 class="no-margin" about="v-s:MyPage" property="rdfs:label"></h2></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#settings" about="v-s:Settings" property="rdfs:label"></a></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#favorites" about="v-s:Favorites" property="rdfs:label"></a></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#about-me" about="v-s:AboutMe" property="rdfs:label"></a></li>
+  </ul>
+  <br>
+  <div class="tab-content" id="personal-tabs-content">
+    <div role="tabpanel" class="tab-pane" id="about-me">
+      <div class="row" about="@" rel="v-s:owner">
+        <div class="col-md-2">
+          <div rel="v-s:hasImage" data-template="v-ui:ModalImageTemplate"></div>
+          <veda-control rel="v-s:hasImage" data-type="file" class="-view edit search"></veda-control>
         </div>
-        <div class="col-md-4 col-sm-6 col-xs-6">
-          <div about="v-ft:Outbox">
-            <div class="panel panel-warning">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-3">
-                    <i class="fa fa-comments fa-5x"></i>
-                  </div>
-                  <div class="col-xs-9 text-right">
-                    <div id="tasks-count" class="huge"></div>
-                    <div property="rdfs:label"></div>
-                  </div>
-                </div>
-              </div>
-              <a href="#/v-ft:Outbox">
-                <div class="panel-body clearfix">
-                  <span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-                  <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                </div>
-              </a>
-            </div>
-            <script>
-              var tasks = individual.tasks;
-              tasks.search();
-              $("#tasks-count", template).text(tasks.count);
-              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_2
-            </script>
-          </div>
-        </div>
-        <div class="col-md-4 col-sm-6 col-xs-6">
-          <div about="v-ft:Completed">
-            <div class="panel panel-success">
-              <div class="panel-heading">
-                <div class="row">
-                  <div class="col-xs-3">
-                    <i class="fa fa-shopping-cart fa-5x"></i>
-                  </div>
-                  <div class="col-xs-9 text-right">
-                    <div id="tasks-count" class="huge"></div>
-                    <div property="rdfs:label"></div>
-                  </div>
-                </div>
-              </div>
-              <a href="#/v-ft:Completed">
-                <div class="panel-body clearfix">
-                  <span class="pull-left" about="v-s:ViewDetails" property="rdfs:label"></span>
-                  <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                </div>
-              </a>
-            </div>
-            <script>
-              var tasks = individual.tasks;
-              tasks.search();
-              $("#tasks-count", template).text(tasks.count);
-              //# sourceURL=v-s:PersonalAspectTemplate_inline_tasks_template_3
-            </script>
+        <div class="col-md-10">
+          <h4><span about="@" property="v-s:lastName"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:middleName"></span></h4>
+          <p>
+            <span about="v-s:phone" property="rdfs:label"></span>:
+            <strong about="@" property="v-s:phone"></strong>
+          </p>
+          <p>
+            <span about="v-s:mailbox" property="rdfs:label"></span>:
+            <strong about="@" rel="v-s:hasAccount">
+              <a about="@" property="v-s:mailbox"></a>
+              <script>
+                template.attr("href", "mailto:" + individual["v-s:mailbox"][0]);
+              </script>
+            </strong>
+          </p>
+          <p>
+            <span about="v-s:birthday" property="rdfs:label"></span>:
+            <strong about="@" property="v-s:birthday"></strong>
+          </p>
+          <br/>
+          <div class="actions">
+            <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <hr/>
-
-  <div class="row">
-    <div class="col-md-4">
-      <div class="panel panel-warning">
-        <div class="panel-heading">
-          <h3 class="no-margin"><i class="fa fa-eye"></i> <strong about="v-s:Aspects" property="rdfs:label"></strong></h3>
-        </div>
-        <div class="panel-body">
-          <div rel="v-s:hasBusinessAspect">
-            <div>
-              <a href="#/@" class="btn btn-warning btn-lg btn-block"><span property="rdfs:label"></span></a>
-              <br>
-            </div>
-          </div>
-          <veda-control data-type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control>
-        </div>
-      </div>
+    <div role="tabpanel" class="tab-pane" id="favorites">
+      <span about="v-s:Favorites" property="rdfs:label"></span>
     </div>
-    <div class="col-md-4">
-      <div class="panel panel-success">
-        <div class="panel-heading">
-          <h3 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Blanks" property="rdfs:label"></strong></h3>
-        </div>
-        <div class="panel-body">
-          <div rel="v-s:hasBlank">
-            <div>
-              <a href="#/@" class="btn btn-success btn-lg btn-block"><span property="rdfs:label"></span></a>
-              <br>
-            </div>
-          </div>
-          <veda-control data-type="link" rel="v-s:hasBlank" class="fulltext dropdown -view edit"></veda-control>
-        </div>
-      </div>
+    <div role="tabpanel" class="tab-pane" id="settings">
+      <span about="v-s:Settings" property="rdfs:label"></span>
     </div>
-    <div class="col-md-4">
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          <h3 class="no-margin"><i class="fa fa-table"></i> <strong about="v-s:Registries" property="rdfs:label"></strong></h3>
-        </div>
-        <div class="panel-body">
-          <div rel="v-s:hasRegistry">
-            <div>
-              <a href="#/@" class="btn btn-info btn-lg btn-block"><span property="rdfs:label"></span></a>
-              <br>
-            </div>
-          </div>
-          <veda-control data-type="link" rel="v-s:hasRegistry" class="fulltext dropdown -view edit"></veda-control>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="no-margin"><i class="fa fa-file-text-o"></i> <strong about="v-s:Drafts" property="rdfs:label"></strong></h3>
-        </div>
-        <div class="panel-body">
-          <ol rel="v-s:hasDocumentDraft">
-            <li><a href="#/@" property="rdfs:label"></a></li>
-          </ol>
-          <!--veda-control data-type="link" rel="v-s:hasBusinessAspect" class="fulltext dropdown -view edit"></veda-control-->
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="actions">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
   """ ;

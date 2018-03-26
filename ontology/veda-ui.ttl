@@ -2348,7 +2348,7 @@ td:PersonTemplate1
     </div>
     <div class="row">
       <div class="col-md-2">
-        <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
+        <div rel="v-s:hasImage" data-template="v-ui:ModalImageTemplate"></div>
         <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
       </div>
       <div class="col-md-10">
