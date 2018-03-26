@@ -567,6 +567,7 @@ v-ui:StandardButtonsTemplate
       <li><a href="#" about="v-wf:taskRouteStartForm" property="rdfs:label"></a></li>
       <li><a href="#" about="v-wf:coordinationRouteStartForm" property="rdfs:label"></a></li>
       <li><a href="#" about="v-wf:signRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:confirmationRouteStartForm" property="rdfs:label"></a></li>
       <li class="divider"></li>
       <li><a href="#" about="v-wf:distributionRouteStartForm" property="rdfs:label"></a></li>
     </ul>
