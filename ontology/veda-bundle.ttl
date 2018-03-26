@@ -38,6 +38,11 @@ v-s:Add
   rdfs:label "Добавить"@ru ;
   rdfs:label "Add"@en ;
 .
+v-s:Ok
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ок"@ru ;
+  rdfs:label "Ok"@en ;
+.
 v-s:Forward
   rdf:type v-s:Bundle ;
   rdfs:label "Вперед"@ru ;
