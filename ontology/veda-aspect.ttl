@@ -130,10 +130,10 @@ v-s:PsHasAspect
   v-ui:queryPrefix "('rdf:type'=='v-s:PersonalAspect')"^^xsd:string ;
 .
 
-v-s:AboutMe
+v-s:PersonalInfo
   rdf:type v-s:Bundle ;
-  rdfs:label "Обо мне"@ru ;
-  rdfs:label "About me"@en ;
+  rdfs:label "Личная информация"@ru ;
+  rdfs:label "Personal info"@en ;
 .
 v-s:Favorites
   rdf:type v-s:Bundle ;
@@ -156,7 +156,7 @@ v-s:PersonalAspectTemplate
   template.one("remove", function () {
     individual.activeTab = $("#personal-tabs li.active a", template).attr("href");
   });
-  individual.activeTab = individual.activeTab || "#about-me";
+  individual.activeTab = individual.activeTab || "#personal-info";
   $("#personal-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
   $("#personal-tabs-content " + individual.activeTab, template).addClass("active");
 //# sourceURL=v-s:PersonalAspectTemplate_pre
@@ -167,11 +167,11 @@ v-s:PersonalAspectTemplate
     <li class="pull-left"><h2 class="no-margin" about="v-s:MyPage" property="rdfs:label"></h2></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#settings" about="v-s:Settings" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#favorites" about="v-s:Favorites" property="rdfs:label"></a></li>
-    <li role="presentation"><a role="tab" data-toggle="tab" href="#about-me" about="v-s:AboutMe" property="rdfs:label"></a></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#personal-info" about="v-s:PersonalInfo" property="rdfs:label"></a></li>
   </ul>
   <br>
   <div class="tab-content" id="personal-tabs-content">
-    <div role="tabpanel" class="tab-pane" id="about-me">
+    <div role="tabpanel" class="tab-pane" id="personal-info">
       <div about="@" rel="v-s:owner" data-template="v-s:PersonalInfoTemplate"></div>
     </div>
     <div role="tabpanel" class="tab-pane" id="favorites">
