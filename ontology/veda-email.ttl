@@ -111,7 +111,7 @@ v-s:EmailTemplate
         <veda-control data-type="string" property="v-s:senderMailbox" class="-view -edit search"></veda-control>
         <em about="v-s:recipientMailbox" property="rdfs:label"></em>
         <div property="v-s:recipientMailbox" class="view edit -search"></div>
-        <veda-control data-type="string" property="v-s:recipientMailbox" class="-view edit search"></veda-control>
+        <veda-control data-type="generic" property="v-s:recipientMailbox" class="-view edit search"></veda-control>
         <em about="v-s:themeEmailBundle" property="rdfs:label"></em>
         <div property="v-s:subject" class="view -edit -search"></div>
         <veda-control data-type="string" property="v-s:subject" class="-view edit search"></veda-control>
