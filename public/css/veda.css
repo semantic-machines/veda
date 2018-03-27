@@ -800,6 +800,9 @@ veda-control {
 .form-inline veda-control {
   display: inline-block;
 }
+.form-inline veda-control .checkbox {
+  margin-left: 10px;
+}
 .value-holder {
   margin-right: 10px;
   display: inline-block;
