@@ -15,110 +15,6 @@
   v-s:loadPriority 6 ;
 .
 
-### veda-function-search
-v-s:SavedSearch
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Сохраненный запрос"@ru ;
-  rdfs:label "Saved search"@en ;
-  v-ui:hasTemplate v-ui:SavedSearchTemplate ;
-.
-
-### veda-function-search
-v-s:Empty
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Пусто"@ru ;
-  rdfs:label "Empty"@en ;
-.
-
-### veda-function-search
-v-s:LastMonth
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлый месяц"@ru ;
-  rdfs:label "Last month"@en ;
-.
-
-### veda-function-search
-v-s:LastQuarter
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлый квартал"@ru ;
-  rdfs:label "Last quarter"@en ;
-.
-
-### veda-function-search
-v-s:LastWeek
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлая неделя"@ru ;
-  rdfs:label "Last week"@en ;
-.
-
-### veda-function-search
-v-s:LastYear
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлый год"@ru ;
-  rdfs:label "Last year"@en ;
-.
-
-### veda-function-search
-v-s:NotEmpty
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Не пусто"@ru ;
-  rdfs:label "Not empty"@en ;
-.
-
-### veda-function-search
-v-s:SpecialSearchValues
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Логический оператор"@ru ;
-  rdfs:label "Logical operator"@en ;
-.
-
-### veda-function-search
-v-s:ThisMonth
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Этот месяц"@ru ;
-  rdfs:label "This month"@en ;
-.
-
-### veda-function-search
-v-s:ThisQuarter
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Этот квартал"@ru ;
-  rdfs:label "This quarter"@en ;
-.
-
-### veda-function-search
-v-s:ThisWeek
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Эта неделя"@ru ;
-  rdfs:label "This week"@en ;
-.
-
-### veda-function-search
-v-s:ThisYear
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Этот год"@ru ;
-  rdfs:label "This year"@en ;
-.
-
-### veda-function-search
-v-s:Today
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Сегодня"@ru ;
-  rdfs:label "Today"@en ;
-.
-
-### veda-function-search
-v-s:Yesterday
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Вчера"@ru ;
-  rdfs:label "Yesterday"@en ;
-.
-
-
-### veda-ui
 # ------------------------------------------------------------
 v-s:File
   rdf:type owl:Class ;
@@ -192,16 +88,6 @@ v-s:DocumentKind
 # v-s:hasNormativeDocument
 
 ### veda-workflow
-
-
-### veda-function-search
-v-s:query
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:SavedSearch ;
-  rdfs:label "Запрос"@ru ;
-  rdfs:label "Query"@en ;
-  rdfs:range xsd:string ;
-.
 
 # veda-ui-reports (v-ui:)
 ################################ REPORTS START ####################################################
