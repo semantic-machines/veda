@@ -1,8 +1,10 @@
 package main
 
-// #cgo CFLAGS: -I../authorization
-// #cgo LDFLAGS: -L../lib64 -lauthorization
-// #include <authorization.h>
+/*
+ #cgo CFLAGS: -I../authorization
+ #cgo LDFLAGS: -L../lib64 -lauthorization
+ #include <authorization.h>
+*/
 import "C"
 
 import (
@@ -11,11 +13,10 @@ import (
 	"log"
 	"net"
 	//"os"
+	"bufio"
 	"strings"
 	"time"
-	//"github.com/bmatsuo/lmdb-go/lmdb"
-	"bufio"
-	"fmt"
+	//"fmt"
 	"github.com/itiu/lmdb-go/lmdb"
 	"gopkg.in/vmihailenco/msgpack.v2"
 	"unsafe"
@@ -367,8 +368,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				cuser_uri := C.CString(userUri)
 				defer C.free(unsafe.Pointer(cuser_uri))
 
-				if C.authorize_r(curi, cuser_uri, 2, true, nil, nil, nil) != 2 {
-					fmt.Println("C.authorize_r NOT AUTHORIZE")
+				if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
 					rr.OpRC = append(rr.OpRC, NotAuthorized)
 					continue
 				}
@@ -419,205 +419,149 @@ func strRightToByte(strRight string) uint8 {
 	return right
 }
 
-//Authorize sends authorize, get membership or get rights origin request to tarantool,
+func trace_acl(str *C.char) {
+
+}
+
+//Authorize sends authorize, get membership or get rights origin request,
 //it depends on parametr operation. Individuals uris passed as data here
-func (conn *Connector) Authorize(needAuth bool, userUri string, uris []string, operation uint,
+func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, operation uint,
 	trace, traceAuth bool) RequestResponse {
 	var rr RequestResponse
 
 	//If userUri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR AUTHORIZE: ", uris)
+		log.Println("@ERR CONNECTOR AUTHORIZE: ", uri)
 		return rr
 	}
 
 	//If no uris passed than NoContent returned to client.
-	if len(uris) == 0 {
+	if len(uri) == 0 {
 		rr.CommonRC = NoContent
 		return rr
 	}
 
 	if trace {
-		log.Printf("@CONNECTOR AUTHORIZE: PACK AUTHORIZE REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
-			needAuth, userUri, uris)
+		log.Printf("@CONNECTOR AUTHORIZE: PACK AUTHORIZE REQUEST need_auth=%v, user_uri=%v, uri=%v \n",
+			needAuth, userUri, uri)
 	}
 
-	var rights []interface{}
 	if operation == Authorize {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "crud"})
-		}
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
 
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR RECIVING ACL RESPONSE")
-			return rr
-		}
+		rr.Rights = make([]uint8, 1)
+		rr.OpRC = make([]ResultCode, 1)
 
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@AUTHORIZE PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
-		rr.Rights = make([]uint8, len(rights))
-		rr.OpRC = make([]ResultCode, len(rights))
-		for i := 0; i < len(rights); i++ {
-			right := strRightToByte(rights[i].(string))
-			rr.Rights[i] = right
-			rr.OpRC[i] = Ok
-		}
+		curi := C.CString(uri)
+		defer C.free(unsafe.Pointer(curi))
+
+		cuser_uri := C.CString(userUri)
+		defer C.free(unsafe.Pointer(cuser_uri))
+
+		right := C.authorize_r(curi, cuser_uri, 15, true)
+
+		rr.Rights[0] = uint8(right)
+		rr.OpRC[0] = Ok
+
 		rr.CommonRC = Ok
 	}
 
 	if operation == GetRightsOrigin {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "crud", "TRACE-ACL", "TRACE-INFO"})
-		}
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
 
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR RECIVING ACL RESPONSE")
-			return rr
-		}
+		curi := C.CString(uri)
+		defer C.free(unsafe.Pointer(curi))
 
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@AUTHORIZE PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
+		cuser_uri := C.CString(userUri)
+		defer C.free(unsafe.Pointer(cuser_uri))
 
-		rr.Rights = make([]uint8, len(rights))
-		rr.Data = make([]string, len(rights))
-		rr.OpRC = make([]ResultCode, len(rights))
-		for i := 0; i < len(rights); i += 3 {
-			rr.Rights[i] = strRightToByte(rights[i].(string))
-			statements := strings.Split(rights[i+1].(string), "\n")
-			data := make([]interface{}, 0)
-			for j := 0; j < len(statements)-1; j++ {
-				parts := strings.Split(statements[j], ";")
-				statementIndiv := map[string]interface{}{
-					"@": "_",
-					"rdf:type": []interface{}{
-						map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
-					},
-					"v-s:permissionSubject": []interface{}{
-						map[string]interface{}{"type": "Uri", "data": parts[1]},
-					},
-					"v-s:permissionObject": []interface{}{
-						map[string]interface{}{"type": "Uri", "data": parts[0]},
-					},
-					parts[2]: []interface{}{
-						map[string]interface{}{"type": "Boolean", "data": true},
-					},
-				}
-				data = append(data, statementIndiv)
-			}
+		rights_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_ACL, true))
+		//defer C.free(unsafe.Pointer(right))
 
-			commentIndiv := map[string]interface{}{
+		rr.Rights = make([]uint8, 1)
+		rr.Data = make([]string, 1)
+		rr.OpRC = make([]ResultCode, 1)
+
+		statements := strings.Split(rights_str, "\n")
+
+		data := make([]interface{}, 0)
+		for j := 0; j < len(statements)-1; j++ {
+
+			parts := strings.Split(statements[j], ";")
+			statementIndiv := map[string]interface{}{
 				"@": "_",
 				"rdf:type": []interface{}{
 					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
 				},
 				"v-s:permissionSubject": []interface{}{
-					map[string]interface{}{"type": "Uri", "data": "?"},
+					map[string]interface{}{"type": "Uri", "data": parts[1]},
 				},
-
-				"rdfs:comment": []interface{}{
-					map[string]interface{}{"type": "String", "lang": "NONE", "data": rights[i+2]},
+				"v-s:permissionObject": []interface{}{
+					map[string]interface{}{"type": "Uri", "data": parts[0]},
+				},
+				parts[2]: []interface{}{
+					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			data = append(data, commentIndiv)
-			jsonBytes, _ := json.Marshal(data)
-			rr.Data[i] = string(jsonBytes)
-			rr.OpRC[i] = Ok
+			data = append(data, statementIndiv)
 		}
+
+		//			commentIndiv := map[string]interface{}{
+		//				"@": "_",
+		//				"rdf:type": []interface{}{
+		//					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
+		//				},
+		//				"v-s:permissionSubject": []interface{}{
+		//					map[string]interface{}{"type": "Uri", "data": "?"},
+		//				},
+
+		//				"rdfs:comment": []interface{}{
+		//					map[string]interface{}{"type": "String", "lang": "NONE", "data": rights[i+2]},
+		//				},
+		//			}
+		//			data = append(data, commentIndiv)
+
+		jsonBytes, _ := json.Marshal(data)
+		rr.Data[0] = string(jsonBytes)
+		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
 	}
 
 	if operation == GetMembership {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "crud", "TRACE-GROUP"})
+
+		curi := C.CString(uri)
+		defer C.free(unsafe.Pointer(curi))
+
+		cuser_uri := C.CString(userUri)
+		defer C.free(unsafe.Pointer(cuser_uri))
+
+		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
+
+		rr.Rights = make([]uint8, 1)
+		rr.Data = make([]string, 1)
+		rr.OpRC = make([]ResultCode, 1)
+
+		parts := strings.Split(info_str, "\n")
+
+		memberOf := make([]interface{}, len(parts)-1)
+		for k := 0; k < len(parts)-1; k++ {
+			memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
 		}
 
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
-
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR RECIVING ACL RESPONSE")
-			return rr
+		membershipIndividual := map[string]interface{}{
+			"@": "_",
+			"rdf:type": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
+			},
+			"v-s:resource": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": uri},
+			},
+			"v-s:memberOf": memberOf,
 		}
 
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@AUTHORIZE PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
-
-		rr.Rights = make([]uint8, len(rights))
-		rr.Data = make([]string, len(rights))
-		rr.OpRC = make([]ResultCode, len(rights))
-
-		for i, j := 0, 0; i < len(rights); i, j = i+2, j+1 {
-			uri := uris[j]
-			parts := strings.Split(rights[i+1].(string), "\n")
-
-			memberOf := make([]interface{}, len(parts)-1)
-			for k := 0; k < len(parts)-1; k++ {
-				memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
-			}
-
-			membershipIndividual := map[string]interface{}{
-				"@": "_",
-				"rdf:type": []interface{}{
-					map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
-				},
-				"v-s:resource": []interface{}{
-					map[string]interface{}{"type": "Uri", "data": uri},
-				},
-				"v-s:memberOf": memberOf,
-			}
-
-			jsonBytes, _ := json.Marshal(membershipIndividual)
-			rr.Data[j] = string(jsonBytes)
-			rr.OpRC[j] = Ok
-		}
+		jsonBytes, _ := json.Marshal(membershipIndividual)
+		rr.Data[0] = string(jsonBytes)
+		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
 	}

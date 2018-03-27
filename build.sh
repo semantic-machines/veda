@@ -3,6 +3,8 @@ BUILD_PATH=$PWD
 #!/bin/sh
 rm *.log
 rm ./logs/*.log
+rm -r ./logs
+
 if [ ! -f ./ontology/config.ttl ]
 then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl
@@ -12,6 +14,8 @@ fi
     cd source/authorization
     cargo build --release
     cd $BUILD_PATH
+    sudo cp ./source/lib64/libauthorization.so /usr/local/lib
+    sudo ldconfig
 
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
@@ -92,9 +96,8 @@ fi
 if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
     cd source/veda-gowebserver
     go build
-    cd ..
-    cd ..
-    cp source/veda-gowebserver/veda-gowebserver ./
+    cd $BUILD_PATH
+#    cp source/veda-gowebserver/veda-gowebserver ./veda-webserver
 fi
 
 

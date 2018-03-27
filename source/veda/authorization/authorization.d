@@ -5,8 +5,9 @@ import veda.common.logger, veda.core.common.define, veda.common.type;
 import veda.core.common.know_predicates, veda.util.module_info;
 import veda.authorization.right_set, veda.storage.common, veda.authorization.cache;
 
-extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload,
-                             void function(immutable(char) *_trace_acl), void function(immutable(char) *_trace_group), void function(immutable(char) *_trace_info));
+extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload);
+extern (C) char *get_trace(immutable(char) * _uri, immutable(char) * _user_uri, ubyte _request_access, ubyte trace_mode, bool _is_check_for_reload);
+
 
 string lstr = "                                                                           ";
 
@@ -25,6 +26,14 @@ interface Authorization
 OutBuffer trace_acl;
 OutBuffer trace_group;
 OutBuffer trace_info;
+
+const     TRACE_ACL   = 0;
+const     TRACE_GROUP = 1;
+const     TRACE_INFO  = 2;
+
+char   *cstr_acl;
+char   *cstr_group;
+char   *cstr_info;
 
 abstract class ImplAuthorization : Authorization
 {
@@ -59,43 +68,35 @@ abstract class ImplAuthorization : Authorization
 
         if (use_ext_libauthorization)
         {
-            extern (C) void function(immutable(char) *uu) dg_tr_acl;
-
-            extern (C) void fn_trace_acl(immutable(char) *uu)
+            if (trace_acl !is null || trace_group !is null || trace_info !is null)
             {
-                trace_acl.writef("%s", to!string(uu));
+                if (trace_acl !is null)
+                {
+                    cstr_acl = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_ACL, is_check_for_reload);
+                    string str   = to!string(cstr_acl);
+                    _trace_acl.write(str);
+                }
+
+                if (trace_group !is null)
+                {
+                    cstr_group = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_GROUP, is_check_for_reload);
+                    string str   = to!string(cstr_group);
+                    stderr.writeln("G ", str);
+                    _trace_group.write(str);
+                }
+
+                if (trace_info !is null)
+                {
+                    cstr_info = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_INFO, is_check_for_reload);
+                    string str   = to!string(cstr_info);
+                    _trace_info.write(str);
+                }
+                return 0;
             }
-
-            extern (C) void function(immutable(char) *uu) dg_tr_group;
-
-            extern (C) void fn_trace_group(immutable(char) *uu)
+            else
             {
-                trace_group.writef("%s", to!string(uu));
+                return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, is_check_for_reload);
             }
-
-            extern (C) void function(immutable(char) *uu) dg_tr_info;
-
-            extern (C) void fn_trace_info(immutable(char) *uu)
-            {
-                trace_info.writef("%s", to!string(uu));
-            }
-
-            if (trace_acl !is null)
-                dg_tr_acl = &fn_trace_acl;
-            else
-                dg_tr_acl = null;
-
-            if (trace_group !is null)
-                dg_tr_group = &fn_trace_group;
-            else
-                dg_tr_group = null;
-
-            if (trace_info !is null)
-                dg_tr_info = &fn_trace_info;
-            else
-                dg_tr_info = null;
-
-            return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, is_check_for_reload, dg_tr_acl, dg_tr_group, dg_tr_info);
         }
 
         // reset local vars

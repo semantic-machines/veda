@@ -7,7 +7,8 @@ if (typeof exports === 'object') {
 
 function Backend () {
 
-  var base = "http://localhost:8080/";
+//  var base = "http://127.0.0.1:8080/";
+    var base = "";
 
   function call_server(params) {
     var method = params.method,

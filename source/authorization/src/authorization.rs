@@ -12,12 +12,137 @@ use std::os::raw::c_char;
 use std::collections::HashMap;
 use std::thread;
 use std::time;
+use std::ptr;
 //use std::time::SystemTime;
 //use std::cell::Cell;
 //use std::sync::Mutex;
 
 use lmdb_rs_m::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
 use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
+
+const TRACE_ACL: u8 = 0;
+const TRACE_GROUP: u8 = 1;
+const TRACE_INFO: u8 = 2;
+
+#[no_mangle]
+pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _request_access: u8, trace_mode: u8, _is_check_for_reload: bool) -> *const c_char {
+    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
+    let uri;
+    match c_uri.to_str() {
+        Ok(value) => uri = value,
+        Err(e) => {
+            println!("ERR! invalid param uri {:?}", e);
+            return ptr::null();
+        }
+    }
+
+    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
+    let user_uri;
+    match c_user_uri.to_str() {
+        Ok(value) => user_uri = value,
+        Err(e) => {
+            println!("ERR! invalid param user_uri {:?}", e);
+            return ptr::null();
+        }
+    }
+
+    let trace_acl = &mut String::new();
+    let mut is_trace_acl = false;
+    if trace_mode == TRACE_ACL {
+        is_trace_acl = true;
+    }
+
+    let trace_group = &mut String::new();
+    let mut is_trace_group = false;
+    if trace_mode == TRACE_GROUP {
+        is_trace_group = true;
+    }
+
+    let trace_info = &mut String::new();
+    let mut is_trace_info = false;
+    if trace_mode == TRACE_INFO {
+        is_trace_info = true;
+    }
+
+    _authorize(
+        &uri,
+        &user_uri,
+        _request_access,
+        _is_check_for_reload,
+        is_trace_acl,
+        trace_acl,
+        is_trace_group,
+        trace_group,
+        is_trace_info,
+        trace_info,
+    );
+
+    let mut trace_res = &mut String::new();
+
+    if trace_mode == TRACE_ACL {
+        trace_res = trace_acl;
+    } else if trace_mode == TRACE_GROUP {
+        trace_res = trace_group;
+    } else if trace_mode == TRACE_INFO {
+        trace_res = trace_info;
+    }
+
+//	println! ("trace_res={}", trace_res);
+
+//	let bytes = trace_res.into_bytes();
+	let cres = CString::new (trace_res.clone ()).unwrap();
+
+	// http://jakegoulding.com/rust-ffi-omnibus/string_return/
+	//cres.into_raw()
+
+	let p = cres.as_ptr();
+
+	std::mem::forget (cres);
+	
+    return p;
+}
+
+#[no_mangle]
+pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, _request_access: u8, _is_check_for_reload: bool) -> u8 {
+    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
+    let uri;
+    match c_uri.to_str() {
+        Ok(value) => uri = value,
+        Err(e) => {
+            println!("ERR! invalid param uri {:?}", e);
+            return 0;
+        }
+    }
+
+    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
+    let user_uri;
+    match c_user_uri.to_str() {
+        Ok(value) => user_uri = value,
+        Err(e) => {
+            println!("ERR! invalid param user_uri {:?}", e);
+            return 0;
+        }
+    }
+
+    let trace_acl = &mut String::new();
+    let trace_group = &mut String::new();
+    let trace_info = &mut String::new();
+
+    return _authorize(
+        uri,
+        user_uri,
+        _request_access,
+        _is_check_for_reload,
+        false,
+        trace_acl,
+        false,
+        trace_group,
+        false,
+        trace_info,
+    ); //qq.as_mut_str()
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
 const DB_PATH: &str = "./data/acl-indexes/";
@@ -62,12 +187,16 @@ pub struct AzContext<'a> {
     walked_groups_o: &'a mut HashMap<String, u8>,
     subject_groups: &'a mut HashMap<String, Right>,
     checked_groups: &'a mut HashMap<String, u8>,
-    trace_acl: Option<extern "C" fn(*const c_char)>,
+    //
+    trace_acl: &'a mut String,
     is_trace_acl: bool,
-    trace_group: Option<extern "C" fn(*const c_char)>,
+
+    trace_group: &'a mut String,
     is_trace_group: bool,
-    trace_info: Option<extern "C" fn(*const c_char)>,
+
+    trace_info: &'a mut String,
     is_trace_info: bool,
+    //
     str_num: u32,
 }
 
@@ -93,7 +222,7 @@ lazy_static! {
             }
         }
     }
-    println! ("Opened environment ./data/acl-indexes");
+    println! ("LIB_AZ: Opened environment ./data/acl-indexes");
     env1
     };
 
@@ -277,7 +406,7 @@ pub fn authorize_obj_group(azc: &mut AzContext, object_group_id: &str, object_gr
                                             access_to_pretty_string(crr_acs)
                                         ),
                                     );
-                                } else if azc.is_trace_group == false {
+                                } else if azc.is_trace_group == false && azc.is_trace_acl == false {
                                     is_authorized = true;
                                     return is_authorized;
                                 }
@@ -508,25 +637,17 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
 }
 
 fn print_to_trace_acl(azc: &mut AzContext, text: String) {
-    if let Some(f) = azc.trace_acl {
-        let c_string = CString::new(text).unwrap();
-        f(c_string.as_ptr());
-    }
+    azc.trace_acl.push_str(&text);
 }
 
 fn print_to_trace_group(azc: &mut AzContext, text: String) {
-    if let Some(f) = azc.trace_group {
-        let c_string = CString::new(text).unwrap();
-        f(c_string.as_ptr());
-    }
+    azc.trace_group.push_str(&text);
 }
 
 fn print_to_trace_info(azc: &mut AzContext, text: String) {
-    if let Some(f) = azc.trace_info {
-        azc.str_num = azc.str_num + 1;
-        let c_string = CString::new(azc.str_num.to_string() + " " + &text).unwrap();
-        f(c_string.as_ptr());
-    }
+    azc.str_num = azc.str_num + 1;
+    azc.trace_info
+        .push_str(&(azc.str_num.to_string() + " " + &text));
 }
 
 fn access_to_pretty_string(src: u8) -> String {
@@ -567,65 +688,45 @@ fn access_to_pretty_string(src: u8) -> String {
     return res;
 }
 
-#[no_mangle]
-pub extern "C" fn authorize_r(
-    _uri: *const c_char,
-    _user_uri: *const c_char,
+pub fn _authorize(
+    uri: &str,
+    user_uri: &str,
     _request_access: u8,
     _is_check_for_reload: bool,
-    _trace_acl: Option<extern "C" fn(*const c_char)>,
-    _trace_group: Option<extern "C" fn(*const c_char)>,
-    _trace_info: Option<extern "C" fn(*const c_char)>,
+    is_trace_acl: bool,
+    _trace_acl: &mut String,
+    is_trace_group: bool,
+    _trace_group: &mut String,
+    is_trace_info: bool,
+    _trace_info: &mut String,
 ) -> u8 {
+    //    fn check_for_reload() -> std::io::Result<bool> {
     //
-/*	
-    fn check_for_reload() -> std::io::Result<bool> {
-
-        use std::fs::File;
-        let f = File::open(MODULE_INFO_PATH)?;
-
-        let metadata = f.metadata()?;
-
-        if let Ok(new_time) = metadata.modified() {
-            let prev_time = LAST_MODIFIED_INFO.lock().unwrap().get();
-
-            if new_time != prev_time {
-                LAST_MODIFIED_INFO.lock().unwrap().set(new_time);
-                println!("LAST_MODIFIED_INFO={:?}", new_time);
-                return Ok ((true));
-            }
-        }
-
-        Ok(false)
-    }
-    
-    if _is_check_for_reload == true {
-	    if let Ok (need_reload) = check_for_reload() {
-		    if (need_reload == true) {
-		    	ENV.sync (true);
-		    } 	
-	    }
-    }    
-*/
-    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
-    let uri;
-    match c_uri.to_str() {
-        Ok(value) => uri = value,
-        Err(e) => {
-            println!("ERR! invalid param uri {:?}", e);
-            return 0;
-        }
-    }
-
-    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
-    let user_uri;
-    match c_user_uri.to_str() {
-        Ok(value) => user_uri = value,
-        Err(e) => {
-            println!("ERR! invalid param user_uri {:?}", e);
-            return 0;
-        }
-    }
+    //        use std::fs::File;
+    //        let f = File::open(MODULE_INFO_PATH)?;
+    //
+    //        let metadata = f.metadata()?;
+    //
+    //        if let Ok(new_time) = metadata.modified() {
+    //            let prev_time = LAST_MODIFIED_INFO.lock().unwrap().get();
+    //
+    //            if new_time != prev_time {
+    //                LAST_MODIFIED_INFO.lock().unwrap().set(new_time);
+    //                println!("LAST_MODIFIED_INFO={:?}", new_time);
+    //                return Ok ((true));
+    //            }
+    //        }
+    //
+    //        Ok(false)
+    //    }
+    //
+    //    if _is_check_for_reload == true {
+    //	    if let Ok (need_reload) = check_for_reload() {
+    //		    if (need_reload == true) {
+    //		    	ENV.sync (true);
+    //		    }
+    //	    }
+    //    }
 
     match ENV.get_reader() {
         Ok(txn) => {
@@ -642,19 +743,6 @@ pub extern "C" fn authorize_r(
             let mut subject_groups = &mut HashMap::new();
             let mut s_groups = &mut HashMap::new();
             let mut checked_groups = &mut HashMap::new();
-
-            let mut is_trace_acl: bool = false;
-            if let Some(_f) = _trace_acl {
-                is_trace_acl = true
-            }
-            let mut is_trace_group: bool = false;
-            if let Some(_f) = _trace_group {
-                is_trace_group = true
-            }
-            let mut is_trace_info: bool = false;
-            if let Some(_f) = _trace_info {
-                is_trace_info = true
-            }
 
             let mut azc = AzContext {
                 request_access: _request_access,

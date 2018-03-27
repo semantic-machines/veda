@@ -54,8 +54,8 @@ func configWebServer() {
 				webserverPort = paramVal
 			case "https_port":
 				webserverHTTPSPort = paramVal
-			case "acl_service_url":
-				aclServiceURL = paramVal
+//			case "acl_service_url":
+//				aclServiceURL = paramVal
 			case "ft_query_service_url":
 				queryServiceURL = "tcp://" + paramVal
 

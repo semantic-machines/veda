@@ -360,7 +360,7 @@ for (i = 0; i < 1; i++)
             res = Backend.put_individual(ticket_user1.id, new_test_doc5, false);
             res = Backend.put_individual(ticket_user1.id, new_test_doc6, false);
 
-            Backend.flush (m_fulltext_indexer, res.op_id);
+//            Backend.flush (m_fulltext_indexer, res.op_id);
 
             Backend.wait_module(m_fulltext_indexer, res.op_id);
             Backend.wait_module(m_subject, res.op_id);
@@ -963,7 +963,7 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket_user1.id, new_test_doc3, false);
             var res = Backend.put_individual(ticket_user1.id, new_test_doc4, false);
 
-            Backend.flush (m_fulltext_indexer, res.op_id);
+//            Backend.flush (m_fulltext_indexer, res.op_id);
 
             Backend.wait_module(m_fulltext_indexer, res.op_id);
             Backend.wait_module(m_subject, res.op_id);
