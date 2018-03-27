@@ -1639,7 +1639,7 @@
           if (timeout) { clearTimeout(timeout); }
           var value = e.target.value;
           if (value.length >= minLength) {
-            timeout = setTimeout(performSearch, timeout, e, value);
+            timeout = setTimeout(performSearch, defaultDelay, e, value);
           } else if (!value.length)  {
             if (isSingle) {
               individual.set(rel_uri, []);
