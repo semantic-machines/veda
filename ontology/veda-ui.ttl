@@ -30,11 +30,13 @@ v-ui:DefaultLanguage
 v-ui:EN
   rdf:type v-ui:Language ;
   rdfs:label "Eng"^^xsd:string ;
+  rdfs:comment "English"^^xsd:string ;
   rdf:value "EN" ;
 .
 v-ui:RU
   rdf:type v-ui:Language ;
   rdfs:label "Рус"^^xsd:string ;
+  rdfs:comment "Русский"^^xsd:string ;
   rdf:value "RU" ;
 .
 v-ui:preferredLanguage
@@ -358,14 +360,7 @@ v-ui:LanguageSwitchTemplate
     veda.user.preferences.off("v-ui:preferredLanguage", langHandler);
   });
   langHandler();
-  template.on("click", function(e) {
-    e.stopPropagation();
-    var target = $(e.target);
-    var lang_uri = target.attr("resource");
-    var lang = new veda.IndividualModel(lang_uri);
-    var lang_name = lang["rdf:value"][0].toString();
-    veda.user.toggleLanguage(lang_name);
-  });
+  template.on("click", toggleLanguage);
   function langHandler() {
     var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
     switches.each(function () {
@@ -378,6 +373,18 @@ v-ui:LanguageSwitchTemplate
       }
     });
   }
+  function toggleLanguage (e) {
+    e.stopPropagation();
+    var target = $(e.target);
+    var lang_uri = target.attr("resource");
+    var lang = new veda.IndividualModel(lang_uri);
+    var lang_name = lang["rdf:value"][0].toString();
+    if (lang_name in veda.user.language && Object.keys(veda.user.language).length == 1) return;
+    lang_name in veda.user.language ? delete veda.user.language[lang_name] : veda.user.language[lang_name] = veda.user.availableLanguages[lang_name];
+    veda.user.preferences["v-ui:preferredLanguage"] = Object.keys(veda.user.language).map ( function (lang_name) {
+      return veda.user.language[lang_name];
+    });
+  };
   //# sourceURL=v-ui:LanguageSwitchTemplate
 </script>
 
@@ -574,7 +581,7 @@ v-ui:StandardButtonsTemplate
   </div>
   <button type="button" class="btn btn-link view edit -search toggle-actions hidden">
     <span class="glyphicon glyphicon-chevron-left"></span>
-    <span class="description hidden" about="v-ui:StandardButtonsTemplate" property="rdfs:comment"></span>
+    <!--span class="description hidden" about="v-ui:StandardButtonsTemplate" property="rdfs:comment"></span-->
   </button>
 </span>
 <script>
@@ -803,10 +810,12 @@ v-ui:IconPersonTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<a href="#/@">
-  <!--span class="glyphicon glyphicon-user"></span-->
-  <span about="@" property="rdfs:label"></span>
-</a>
+<script>
+  if (individual.hasValue("v-s:hasAspect")) {
+    template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
+  }
+</script>
+<a href="#/@" about="@" property="rdfs:label"></a>
 """ ;
 .
 
@@ -911,14 +920,6 @@ v-ui:PositionPopoverTemplate
   </div>
 </div>
   """ ;
-.
-v-ui:PS_PersonDefaultAppointment
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация назначения по-умолчанию для класса Персона"@ru ;
-  rdfs:label "Default appointment property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:defaultAppointment ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}' && 'v-s:official'=='true')"^^xsd:string ;
 .
 
 v-ui:ResourceTemplate
@@ -1119,20 +1120,6 @@ v-ui:ClassNameLabelLinkTemplate
   </script>
   """ ;
 .
-v-ui:ClassNameLabelLinkEditTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса и меткой"@ru ;
-  rdfs:label "Template with class name and label"@en ;
-  v-ui:template """
-  <a class="label-template" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
-  </script>
-  """ ;
-.
 v-ui:DraftLinkEditTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон черновика со ссылкой"@ru ;
@@ -1215,24 +1202,6 @@ v-ui:ClassNameLabelTemplate
     }
     //# sourceURL=v-ui:ClassNameLabelTemplate
   </script>
-  """ ;
-.
-v-ui:SavedSearchTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
-  rdfs:label "Template for Saved search class"@en ;
-  v-ui:forClass v-s:SavedSearch ;
-  v-ui:template """
-  <div>
-    <em about="rdfs:label" property="rdfs:label"></em>
-    <div property="rdfs:label"></div>
-    <em about="v-s:query" property="rdfs:label"></em>
-    <div property="v-s:query"></div>
-    <br/>
-    <div class="actions">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-    </div>
-  </div>
   """ ;
 .
 
@@ -1711,14 +1680,6 @@ v-ui:ImageTemplateTransparent
   //# sourceURL=v-ui:ImageTemplateTransparent
 </script>
   """ ;
-.
-v-ui:PsHasImage
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация изображения для класса Персона"@ru ;
-  rdfs:label "Has image property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:hasImage ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
 .
 v-ui:SimplifiedJournalTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -2334,142 +2295,6 @@ v-ui:TreeTemplate
   """ ;
 .
 
-td:PersonTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны"@ru ;
-  rdfs:label "Person template"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:template """
-<div>
-  <div class="container sheet">
-    <div class="text-right">
-      <a href="#/@"><span property="@">ID</span></a>
-      <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-    </div>
-    <div class="row">
-      <div class="col-md-2">
-        <div rel="v-s:hasImage" data-template="v-ui:ModalImageTemplate"></div>
-        <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
-      </div>
-      <div class="col-md-10">
-        <h3>
-          <span property="rdfs:label"></span>
-          <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-        </h3>
-        <div class="row">
-          <div class="col-md-3">
-            <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-            <div property="v-s:lastName"></div>
-            <veda-control property="v-s:lastName" data-type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <em about="v-s:firstName" property="rdfs:label">Имя</em>
-            <div property="v-s:firstName"></div>
-            <veda-control property="v-s:firstName" data-type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-            <div property="v-s:middleName"></div>
-            <veda-control property="v-s:middleName" data-type="string" class="-view edit search"></veda-control>
-          </div>
-            <div class="col-md-3">
-            <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-            <div property="v-s:birthday"></div>
-            <veda-control property="v-s:birthday" data-type="dateTime" class="-view edit search"></veda-control>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr />
-    <div class="row">
-      <div class="col-md-6">
-        <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1" data-embedded="true"></div>
-        <veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-      </div>
-      <div class="col-md-6">
-        <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1" data-embedded="true"></div>
-        <veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-        <br>
-        <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1" data-embedded="true"></div>
-        <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-      </div>
-    </div>
-    <br>
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-  </div>
-  <br>
-  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
-  <br>
-  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
-</div>
-""" ;
-.
-td:PsHasAppointmentPerson
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация назначения для класса Персона"@ru ;
-  rdfs:label "Appointment property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:hasAppointment ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-.
-td:AppointmentTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон Назначения"@ru ;
-  rdfs:label "Appointment template"@en ;
-  v-ui:template """
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-6">
-        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
-        </div>
-        <div class="col-md-6 text-right">
-          <a href="#/@"><span property="@">ID</span></a>
-      </div>
-    </div>
-    </div>
-    <div class="panel-body">
-      <h3 property="rdfs:label"></h3>
-      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-      <div class="row">
-        <div class="col-md-6">
-          <em about="v-s:employee" property="rdfs:label"></em>
-          <div rel="v-s:employee" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fulltext full"></veda-control>
-        </div>
-        <div class="col-md-6">
-          <em about="v-s:occupation" property="rdfs:label"></em>
-          <div rel="v-s:occupation" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fulltext"></veda-control>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <em about="v-s:parentUnit" property="rdfs:label"></em>
-          <div rel="v-s:parentUnit" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fulltext"></veda-control>
-        </div>
-      </div>
-    </div>
-    <!--div class="actions panel-footer">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-    </div-->
-  </div>
-  """ ;
-.
-
-td:AppointmentTemplate2
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон Назначения 2"@ru ;
-  rdfs:label "Appointment template 2"@en ;
-  v-ui:template """
-  <div>
-    <span rel="v-s:employee" data-template="v-ui:LabelTemplate">Работник</span>,
-    <span rel="v-s:occupation" data-template="v-ui:LabelTemplate">Должность</span>
-  </div>
-  """ ;
-.
-
 v-ui:ttl
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон TTL"@ru ;
@@ -2736,235 +2561,6 @@ v-ui:generic
   });
 </script>
   """ ;
-.
-
-td:AccountTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон Учетной записи"@ru ;
-  rdfs:label "Account template"@en ;
-  v-ui:forClass v-s:Account ;
-  v-ui:template """
-<script>
-  var _class = new veda.IndividualModel("v-s:Credential");
-  var canCreate = _class.rights.hasValue("v-s:canCreate", true);
-  if ( !canCreate ) {
-    $("[rel='v-s:usesCredential']", template).remove();
-  }
-  //# sourceURL=td:AccountTemplate1_pre
-</script>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <div class="row">
-      <div class="col-md-6">
-        <span about="v-s:Account" property="rdfs:label">Имя класса</span>
-      </div>
-      <div class="col-md-6 text-right">
-        <a href="#/@"><span property="@">ID</span></a>
-      </div>
-    </div>
-  </div>
-  <div class="panel-body">
-    <h3 property="rdfs:label"></h3>
-    <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-    <em about="v-s:owner" property="rdfs:label">Владелец</em>
-    <div rel="v-s:owner" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-    <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
-    <div class="row">
-      <div class="col-md-6">
-        <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
-        <div property="v-s:mailbox" class="view -edit -search"></div>
-        <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
-      </div>
-      <div class="col-md-6">
-        <em about="v-s:login" property="rdfs:label">Логин</em>
-        <div property="v-s:login" class="view -edit -search"></div>
-        <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <div class="row" rel="v-s:usesCredential" data-embedded="true">
-      <div class="col-md-6">
-        <em about="v-s:password" property="rdfs:label"></em>
-        <veda-control property="v-s:password" data-type="password" class="-view edit search"></veda-control>
-      </div>
-    </div>
-  </div>
-</div>
-  """ ;
-.
-
-td:PreferencesTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Предпочтения"@ru ;
-  rdfs:label "Template for Preferences class"@en ;
-  v-ui:template """
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-4">
-        <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
-        </div>
-        <div class="col-md-8 text-right">
-        <a href="#/@"><span property="@">ID</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div>
-        <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>
-        <ul rel="v-ui:preferredLanguage">
-          <li><div property="rdfs:label"></div></li>
-        </ul>
-        <veda-control rel="v-ui:preferredLanguage" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-        <em about="v-ui:displayedElements" property="rdfs:label"></em>
-        <div property="v-ui:displayedElements" class="view -edit -search"></div>
-        <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <!--div class="actions panel-footer">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-    </div-->
-  </div>
-  """ ;
-.
-td:PropertySpecification5
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация работника для класса Назначение"@ru ;
-  rdfs:label "Employee property specification for Appointment class"@en ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:employee ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:treeRoot d:org_RU1121003135 ;
-  v-ui:treeRoot d:org_RU1121003135 ;
-  v-ui:treeInProperty v-s:parentUnit ;
-  v-ui:treeDisplayedProperty rdfs:label ;
-.
-td:PropertySpecification6
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация работника для класса Назначение"@ru ;
-  rdfs:label "Employee property specification for Appointment class"@en ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:occupation ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-.
-td:PsParentUnitForAppointment
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация родительского подразделения для класса Назначение"@ru ;
-  rdfs:label "ParentUnit property specification for Appointment class"@en ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:parentUnit ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Department')"^^xsd:string ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-.
-td:PropertySpecification7
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация учетной записи для класса Персона"@ru ;
-  rdfs:label "Account property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:hasAccount ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Учетная запись."@ru ;
-  v-ui:tooltip "Required, single value. Link to instance of Account class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Account')"^^xsd:string ;
-  v-ui:placeholder "Учетная запись"@ru ;
-  v-ui:placeholder "Account"@en ;
-.
-td:PropertySpecification8
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация предпочтений для класса Персона"@ru ;
-  rdfs:label "Preferences property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-ui:hasPreferences ;
-#  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-#  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Предпочтения."@ru ;
-  v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-ui:Preferences')"^^xsd:string ;
-.
-td:PropertySpecification10
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
-  rdfs:label "Test property specification for Preferences class"@en ;
-  v-ui:forClass v-ui:Preferences ;
-  v-ui:forProperty v-ui:displayedElements ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное целочисленное значение."@ru ;
-  v-ui:tooltip "Required, single integer value."@en ;
-  v-ui:defaultValue "10"^^xsd:integer ;
-.
-td:PropertySpecification11
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
-  rdfs:label "Test property specification for Preferences class"@en ;
-  v-ui:forClass v-s:Account ;
-  v-ui:forProperty v-s:login, v-s:password ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное строковое значение."@ru ;
-  v-ui:tooltip "Required, single string value."@en ;
-.
-td:PropertySpecification1
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация даты рождения для класса персона"@ru ;
-  rdfs:label "Birthday property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:birthday ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
-  v-ui:tooltip "Required, single value."@en ;
-  v-ui:placeholder "день рождения"@ru ;
-  v-ui:placeholder "birthday"@en ;
-.
-
-td:PropertySpecification2
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация имени для класса персона"@ru ;
-  rdfs:label "First name property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:firstName ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
-  v-ui:minLength "2"^^xsd:integer ;
-  v-ui:maxLength "50"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
-  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
-  v-ui:placeholder "имя"@ru ;
-  v-ui:placeholder "first name"@en ;
-.
-td:PropertySpecification3
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация фамилии для класса персона"@ru ;
-  rdfs:label "Last name property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:lastName ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
-  v-ui:minLength "2"^^xsd:integer ;
-  v-ui:maxLength "20"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
-  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
-  v-ui:placeholder "фамилия"@ru ;
-  v-ui:placeholder "last name"@en ;
-.
-td:PropertySpecification4
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация отчества для класса персона"@ru ;
-  rdfs:label "Middle name property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:middleName ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:minLength "2"^^xsd:integer ;
-  v-ui:maxLength "20"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
-  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
-  v-ui:placeholder "отчество"@ru ;
-  v-ui:placeholder "middle name"@en ;
 .
 
 v-ui:Graph

@@ -172,44 +172,202 @@ v-s:PersonalAspectTemplate
   <br>
   <div class="tab-content" id="personal-tabs-content">
     <div role="tabpanel" class="tab-pane" id="about-me">
-      <div class="row" about="@" rel="v-s:owner">
-        <div class="col-md-2">
-          <div rel="v-s:hasImage" data-template="v-ui:ModalImageTemplate"></div>
-          <veda-control rel="v-s:hasImage" data-type="file" class="-view edit search"></veda-control>
-        </div>
-        <div class="col-md-10">
-          <h4><span about="@" property="v-s:lastName"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:middleName"></span></h4>
-          <p>
-            <span about="v-s:phone" property="rdfs:label"></span>:
-            <strong about="@" property="v-s:phone"></strong>
-          </p>
-          <p>
-            <span about="v-s:mailbox" property="rdfs:label"></span>:
-            <strong about="@" rel="v-s:hasAccount">
-              <a about="@" property="v-s:mailbox"></a>
-              <script>
-                template.attr("href", "mailto:" + individual["v-s:mailbox"][0]);
-              </script>
-            </strong>
-          </p>
-          <p>
-            <span about="v-s:birthday" property="rdfs:label"></span>:
-            <strong about="@" property="v-s:birthday"></strong>
-          </p>
-          <br/>
-          <div class="actions">
-            <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
-          </div>
-        </div>
-      </div>
+      <div about="@" rel="v-s:owner" data-template="v-s:PersonalInfoTemplate"></div>
     </div>
     <div role="tabpanel" class="tab-pane" id="favorites">
       <span about="v-s:Favorites" property="rdfs:label"></span>
     </div>
     <div role="tabpanel" class="tab-pane" id="settings">
-      <span about="v-s:Settings" property="rdfs:label"></span>
+      <div about="@" rel="v-s:owner">
+        <div about="@" rel="v-ui:hasPreferences" data-template="v-s:PersonalPreferencesTemplate"></div>
+      </div>
     </div>
   </div>
 </div>
   """ ;
+.
+
+v-s:PersonalInfoTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения персональной информации"@ru ;
+  rdfs:label "Personal information template"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:template """
+<div class="container sheet">
+  <div class="row">
+    <div class="col-md-3">
+      <div rel="v-s:hasImage" data-template="v-ui:ModalImageTemplate"></div>
+      <br class="-view edit search"/>
+      <veda-control rel="v-s:hasImage" data-type="file" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-9">
+      <h3><span about="@" property="v-s:lastName"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:middleName"></span></h3>
+      <div class="row">
+        <div class="col-md-4">
+          <veda-control property="v-s:lastName" data-type="multilingualString" class="-view edit search"></veda-control>
+        </div>
+        <div class="col-md-4">
+          <veda-control property="v-s:firstName" data-type="multilingualString" class="-view edit search"></veda-control>
+        </div>
+        <div class="col-md-4">
+          <veda-control property="v-s:middleName" data-type="multilingualString" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <br/>
+      <div class="form-inline">
+        <div class="form-group">
+          <label about="v-s:birthday" property="rdfs:label"></label>:
+          <span class="view -edit -search" about="@" property="v-s:birthday"></span>
+          <veda-control property="v-s:birthday" data-type="date" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <br/>
+      <div class="form-inline">
+        <div class="form-group">
+          <label about="v-s:occupation" property="rdfs:label"></label>:
+          <span about="@" rel="v-s:defaultAppointment">
+            <span about="@" rel="v-s:occupation" data-template="v-ui:LabelTemplate"></span>,
+            <span about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></span>
+          </span>
+        </div>
+      </div>
+      <br/>
+      <div class="form-inline">
+        <div class="form-group">
+          <label about="v-s:phone" property="rdfs:label"></label>:
+          <span class="view -edit -search" about="@" property="v-s:phone"></span>
+          <veda-control property="v-s:phone" data-type="string" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <br/>
+      <div class="form-inline">
+        <div class="form-group">
+          <label about="v-s:mailbox" property="rdfs:label"></label>:
+          <span about="@" rel="v-s:hasAccount" data-embedded="true">
+            <span>
+              <a class="view -edit -search" about="@" property="v-s:mailbox"></a>
+              <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
+            </span>
+            <script>
+              template.find("a").attr("href", "mailto:" + individual["v-s:mailbox"][0]);
+            </script>
+          </span>
+        </div>
+      </div>
+      <br/>
+      <div class="form-inline">
+        <div class="form-group">
+          <label about="v-s:login" property="rdfs:label"></label>:
+          <span about="@" rel="v-s:hasAccount">
+            <span about="@" property="v-s:login"></span>
+          </span>
+        </div>
+      </div>
+      <hr/>
+      <div class="actions">
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+      </div>
+    </div>
+  </div>
+</div>
+  """;
+.
+
+v-s:PersonSpecification1
+  rdf:type v-ui:DatatypePropertySpecification ;
+  rdfs:label "Спецификация имени для класса персона"@ru ;
+  rdfs:label "First name property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:firstName ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
+  v-ui:minLength "2"^^xsd:integer ;
+  v-ui:maxLength "50"^^xsd:integer ;
+  v-ui:placeholder "Имя"@ru ;
+  v-ui:placeholder "First name"@en ;
+.
+v-s:PersonSpecification2
+  rdf:type v-ui:DatatypePropertySpecification ;
+  rdfs:label "Спецификация фамилии для класса персона"@ru ;
+  rdfs:label "Last name property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:lastName ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
+  v-ui:minLength "2"^^xsd:integer ;
+  v-ui:maxLength "50"^^xsd:integer ;
+  v-ui:placeholder "Фамилия"@ru ;
+  v-ui:placeholder "Last name"@en ;
+.
+v-s:PersonSpecification3
+  rdf:type v-ui:DatatypePropertySpecification ;
+  rdfs:label "Спецификация отчества для класса персона"@ru ;
+  rdfs:label "Middle name property specification for Person class"@en ;
+  v-ui:forClass v-s:Person ;
+  v-ui:forProperty v-s:middleName ;
+  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
+  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
+  v-ui:minLength "2"^^xsd:integer ;
+  v-ui:maxLength "50"^^xsd:integer ;
+  v-ui:placeholder "Отчество"@ru ;
+  v-ui:placeholder "Middle name"@en ;
+.
+
+v-s:UISettings
+  rdf:type v-s:Bundle ;
+  rdfs:label "Настройки интерфейса"@ru ;
+  rdfs:label "Interface settings"@en ;
+.
+
+v-s:NotificationSettings
+  rdf:type v-s:Bundle ;
+  rdfs:label "Настройки уведомлений"@ru ;
+  rdfs:label "Notification settings"@en ;
+.
+
+v-s:PersonalPreferencesTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон персональных предпочтений"@ru ;
+  rdfs:label "Personal preferences template"@en ;
+  v-ui:template """
+  <div class="container sheet">
+    <h3 about="v-s:UISettings" property="rdfs:label"></h3>
+    <br/>
+    <div class="form-inline">
+      <div class="form-group">
+        <label about="v-ui:preferredLanguage" property="rdfs:label"></label>:
+        <veda-control rel="v-ui:preferredLanguage" data-type="checkbox" class="view edit search fulltext dropdown"></veda-control>
+      </div>
+    </div>
+    <br/>
+    <div class="form-inline">
+      <div class="form-group">
+        <label about="v-ui:displayedElements" property="rdfs:label"></label>:
+        <span class="view -edit -search" about="@" property="v-ui:displayedElements"></span>
+        <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <br/>
+    <div class="checkbox" style="margin-top:0px;">
+      <label>
+        <veda-control property="v-ui:fullWidth" data-type="boolean"></veda-control>
+        <strong about="v-ui:fullWidth" property="rdfs:label"></strong>
+      </label>
+    </div>
+    <hr/>
+    <h3 about="v-s:NotificationSettings" property="rdfs:label"></h3>
+    <hr/>
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+    </div>
+  </div>
+  """ ;
+.
+v-s:PersonalPreferencesSpecification1
+  rdf:type v-ui:DatatypePropertySpecification ;
+  rdfs:label "Спецификация свойства v-ui:preferredLanguage для класса v-ui:Preferences"@ru ;
+  rdfs:label "v-ui:preferredLanguage property specification for v-ui:Preferences class"@en ;
+  v-ui:forClass v-ui:Preferences ;
+  v-ui:forProperty v-ui:preferredLanguage ;
+  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
 .

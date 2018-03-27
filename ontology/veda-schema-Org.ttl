@@ -227,8 +227,8 @@ v-s:employee
 .
 v-s:occupation
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Занимает должность"@ru ;
-  rdfs:label "Occupation"@en ;
+  rdfs:label "Должность"@ru ;
+  rdfs:label "Position"@en ;
   rdfs:range v-s:Position ;
   rdfs:domain v-s:HRRecord ;
 .
@@ -263,12 +263,12 @@ v-s:Person
   rdfs:subClassOf v-s:Identification ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ManuallyVersioned ;
-#  rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:comment "A person." ;
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
-  v-ui:hasTemplate td:PersonTemplate1 ;
-#  v-s:labelPattern "{@.rdf:type.rdfs:label}: {@.v-s:firstName} {@.v-s:lastName}" ;
+  v-ui:hasTemplate v-s:PersonalInfoTemplate ;
+  v-s:labelPattern "{@.v-s:firstName} {@.v-s:lastName}" ;
 .
 
 v-s:tabNumber
