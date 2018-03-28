@@ -164,6 +164,11 @@ v-s:Save
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;
 .
+v-s:Update
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обновить"@ru ;
+  rdfs:label "Update"@en ;
+.
 v-s:Draft
   rdf:type v-s:Bundle ;
   rdfs:label "Черновик"@ru ;
