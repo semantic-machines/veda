@@ -321,9 +321,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       // If individual is draft
       if ( individual.isDraft() && showLabel ) {
-        template.addClass("is-draft");
+        if ( template.children(".sheet").length ) {
+          template.children(".sheet").first().addClass("is-draft");
+        } else {
+          template.addClass("is-draft");
+        }
       } else {
-        template.removeClass("is-draft");
+        if ( template.children(".sheet").length ) {
+          template.children(".sheet").first().removeClass("is-draft");
+        } else {
+          template.removeClass("is-draft");
+        }
       }
     }
     individual.on("propertyModified afterSave afterReset", isDraftHandler);
