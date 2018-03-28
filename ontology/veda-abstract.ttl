@@ -382,7 +382,7 @@ v-s:date
 .
 v-s:datePlan
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Плановая дата"@ru ;
+  rdfs:label "Дата плановая"@ru ;
   rdfs:label "Date plan"@en ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
