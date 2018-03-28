@@ -1155,7 +1155,7 @@ v-ui:RabbitHole
   rdfs:label "Rabbit hole"@en ;
   v-ui:template """
 <script>
-  var defaultProperties = "v-s:parent v-s:backwardTarget";
+  var defaultProperties = "v-s:backwardTarget v-s:parent";
   var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
   var text = "<span>" + mkLabel(individual) + "</span>";
   var visited = [ individual.id ];
