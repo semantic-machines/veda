@@ -157,7 +157,7 @@ v-s:LinksTemplate
 
 //# sourceURL=v-s:LinksTemplate_pre
 </script>
-<div class="container sheet">
+<div>
   <br>
   <ul class="nav nav-tabs nav-right" role="tablist" id="links-tabs">
     <li role="presentation" class="pull-left"><h3 class="no-margin" about="v-s:hasLink" property="rdfs:label"></h3></li>
