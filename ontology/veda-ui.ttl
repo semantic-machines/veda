@@ -930,7 +930,10 @@ v-ui:ResourceTemplate
   v-ui:template """
 <div class="container sheet">
   <div class="clearfix">
-    <h2 class="pull-left"><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><small about="@" property="rdfs:label"></small></h2>
+    <h2 class="pull-left">
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <small about="@" property="rdfs:label"></small>
+    </h2>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
   </div>
 </div>
