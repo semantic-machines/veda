@@ -40,14 +40,6 @@ v-s:BusinessAspect
   rdfs:label "Business aspect"@en ;
 .
 
-v-s:hasDocumentDraft
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:PersonalAspect ;
-  rdfs:range rdfs:Resource ;
-  rdfs:label "Draft"@ru ;
-  rdfs:label "Черновик"@en ;
-.
-
 v-s:hasFavorite
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
@@ -135,6 +127,16 @@ v-s:PersonalInfo
   rdfs:label "Личная информация"@ru ;
   rdfs:label "Personal info"@en ;
 .
+v-s:Registries
+  rdf:type v-s:Bundle ;
+  rdfs:label "Реестры"@ru ;
+  rdfs:label "Registries"@en ;
+.
+v-s:Blanks
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
+.
 v-s:Favorites
   rdf:type v-s:Bundle ;
   rdfs:label "Избранное"@ru ;
@@ -166,6 +168,8 @@ v-s:PersonalAspectTemplate
   <ul id="personal-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 class="no-margin" about="v-s:MyPage" property="rdfs:label"></h2></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#settings" about="v-s:Settings" property="rdfs:label"></a></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#registries" about="v-s:Registries" property="rdfs:label"></a></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#blanks" about="v-s:Blanks" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#favorites" about="v-s:Favorites" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#personal-info" about="v-s:PersonalInfo" property="rdfs:label"></a></li>
   </ul>
@@ -174,8 +178,26 @@ v-s:PersonalAspectTemplate
     <div role="tabpanel" class="tab-pane" id="personal-info">
       <div about="@" rel="v-s:owner" data-template="v-s:PersonalInfoTemplate"></div>
     </div>
+    <div role="tabpanel" class="tab-pane" id="registries">
+      <div rel="v-s:hasRegistry" data-template="v-ui:LabelLinkTemplate"></div>
+      <br/>
+      <div class="actions">
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+      </div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="blanks">
+      <div rel="v-s:hasBlank" data-template="v-ui:LabelLinkTemplate"></div>
+      <br/>
+      <div class="actions">
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+      </div>
+    </div>
     <div role="tabpanel" class="tab-pane" id="favorites">
-      <span about="v-s:Favorites" property="rdfs:label"></span>
+      <div rel="v-s:hasFavorite" data-template="v-ui:LabelLinkTemplate"></div>
+      <br/>
+      <div class="actions">
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+      </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="settings">
       <div about="@" rel="v-s:owner">
@@ -263,7 +285,7 @@ v-s:PersonalInfoTemplate
           </span>
         </div>
       </div>
-      <hr/>
+      <br/>
       <div class="actions">
         <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
       </div>
@@ -356,7 +378,7 @@ v-s:PersonalPreferencesTemplate
     </div>
     <hr/>
     <h3 about="v-s:NotificationSettings" property="rdfs:label"></h3>
-    <hr/>
+    <br/>
     <div class="actions">
       <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
     </div>
