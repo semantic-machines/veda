@@ -790,10 +790,10 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
   });
-
-
-
-
+  //ремувит кнопку редактировать, если объект физическое лицо
+  if ( individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0] == "000000000000" ) {
+    $(".action#edit", template).remove();
+  }
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
   """ ;
