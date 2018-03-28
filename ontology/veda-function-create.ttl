@@ -170,8 +170,7 @@ v-fc:BlankModel
   rdfs:label "v-fc:Blank class model"@en ;
   v-ui:forClass v-fc:Blank ;
   v-s:script """
-var self = this,
-  asp = veda.user.aspect;
+var self = this;
 
 var stopList = [
   "@",
@@ -209,16 +208,12 @@ this._init = function () {
       self.object.set(property_uri, self.get(property_uri).slice(0));
     }
   });
-  self.object.one("afterSave", function () {
-    delete self.object;
-  });
-  self.object.one("afterReset", function () {
+  self.object.one("afterSave afterReset", function () {
     delete self.object;
   });
 }
 
 self.on("beforeSave", updateBlank);
-//self.on("afterSave", updateAspect);
 
 function updateBlank() {
   Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
@@ -237,18 +232,6 @@ function updateBlank() {
       self.set(property_uri, self.object.get(property_uri).slice(0));
     }
   });
-}
-function updateAspect() {
-  if (self["v-s:deleted"][0] == true) {
-    asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
-    asp.save();
-  } else if (
-    !asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
-    && !self.hasValue("v-s:parent") // Not embedded
-  ) {
-    asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
-    asp.save();
-  }
 }
 
 //# sourceURL=v-fc:BlankModel
@@ -318,6 +301,36 @@ v-fc:BlankTemplate
   """
 .
 
+v-fc:EnterLabel
+  rdf:type v-s:Bundle ;
+  rdfs:label "Введите название"@ru ;
+  rdfs:label "Enter label"@en ;
+.
+
+v-fc:SavePersonalBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сохранить личный бланк"@ru ;
+  rdfs:label "Save personal blank"@en ;
+.
+
+v-fc:UpdatePersonalBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обновить личный бланк"@ru ;
+  rdfs:label "Update personal blank"@en ;
+.
+
+v-fc:BlankSuccessfullySaved
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланк успешно сохранен"@ru ;
+  rdfs:label "Blank successfully saved"@en ;
+.
+
+v-fc:BlankSuccessfullyUpdated
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланк успешно обновлен"@ru ;
+  rdfs:label "Blank successfully updated"@en ;
+.
+
 v-fc:BlankTemplateShort
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
@@ -326,12 +339,55 @@ v-fc:BlankTemplateShort
   v-ui:template """
 <script>
   individual._init();
+
+  var notify = new veda.Notify();
+
+  if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
+    $(".action.save-blank", template).click(function () {
+      var personalLabel = prompt( new veda.IndividualModel("v-fc:EnterLabel").toString(), individual.toString() );
+      var personalBlank = individual.clone();
+      personalBlank.object = individual.object;
+      personalBlank["rdfs:label"] = [ personalLabel ];
+      personalBlank.save();
+      var aspect = veda.user.aspect;
+      aspect.addValue("v-s:hasBlank", personalBlank);
+      aspect.save();
+      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullySaved").toString() });
+    });
+  } else {
+    $(".action.save-blank", template).remove();
+  }
+
+  if (individual.rights.hasValue("v-s:canUpdate", true)) {
+    $(".action.update-blank", template).click(function () {
+      individual.isSync(false);
+      template.trigger("save");
+      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").toString() });
+    });
+  } else {
+    $(".action.update-blank", template).remove();
+  }
+  if (individual.rights.hasValue("v-s:canDelete", true)) {
+    $(".action.delete-blank", template).click(function () {
+      template.trigger("delete");
+    });
+  } else {
+    $(".action.delete-blank", template).remove();
+  }
+//# sourceURL=v-fc:BlankTemplateShort_pre
 </script>
-<div class="container sheet">
-  <br>
-  <div class="ribbon-wrapper top-left">
-    <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
+<div>
+  <div class="container sheet">
+    <div class="ribbon-wrapper top-left">
+      <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
+    </div>
+    <div class="actions text-right">
+      <button class="action save-blank btn btn-success" about="v-fc:SavePersonalBlank" property="rdfs:label"></button>
+      <button class="action update-blank btn btn-success" about="v-fc:UpdatePersonalBlank" property="rdfs:label"></button>
+      <button class="action delete-blank btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
+    </div>
   </div>
+  <br>
   <div id="object-container"></div>
   <div id="no-rights" class="alert alert-warning container hidden">
     <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
