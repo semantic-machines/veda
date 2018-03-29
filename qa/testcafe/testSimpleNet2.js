@@ -9,6 +9,8 @@ test('testSimpleNet', async t => {
     //basic.openCreateDocumentForm('Мероприятие');
     const timeStamp = ''+Math.round(+new Date()/1000);
     const red = Selector('div#workflow-canvas').find('div.state-io-condition-output[colored-to="red"]').count;
+    const red1 = Selector('div#workflow-canvas').find('div.state-io-condition-input[colored-to="red"]').count;
+    const green = Selector('div#workflow-canvas').find('div.state-task[colored-to="green"]').count;
     await t
         .typeText('#login', 'karpovrt')
         .typeText('#password', '123')
@@ -22,7 +24,10 @@ test('testSimpleNet', async t => {
         .typeText('div.col-md-10.col-sm-9 div#holder div.tab-content div#object-container div#props-col div#props table#taskTemplateProperties tbody tr td veda-control#VClabel input.form-control', timeStamp)
         //.click('span.glyphicon.glyphicon-play')
         
-        .dragToElement('.state-io-condition-input .ep', '.glyphicon-stop')
+        .click('button.create-task')
+        
+        .dragToElement('.state-io-condition-input .ep', '.state-task')
+        .dragToElement('.state-task .ep', '.glyphicon-stop')
         
         .click('button#workflow-save-button')
         
@@ -41,5 +46,9 @@ test('testSimpleNet', async t => {
         .click('button.btn.btn-link.view.edit.-search.toggle-actions')
         .click('div[rel="v-wf:isProcess"] span#label')
         .expect(red).eql(1)
+        .expect(red1).eql(1)
+        .expect(green).eql(1)
+        
+        .wait(6000)
         
 });

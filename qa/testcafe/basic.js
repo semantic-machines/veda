@@ -18,8 +18,8 @@ export default class basic {
 		await t
 			.click('#menu')
 			.click('li[id="menu"] li[resource="v-l:Create"]')
-			.typeText('#fulltext', name)
-			.click('');
+			.typeText('input.fulltext.tt-input', name)
+			.click('veda-control.fulltext div.tt-suggestion>p')
 	}
 	
 	async chooseFromDropdown(attribute, valueToSearch, valueToChoose) {
@@ -32,8 +32,8 @@ export default class basic {
 			.click('#menu')
 			.click('li[id="menu"] li[resource="v-l:Create"]')
 			.typeText('#fulltext', 'Стартовая форма')
-			.click()
-			.
+			.click('veda-control.fulltext div.tt-suggestion>p')
+			
 	}
 	
 	async openFulltextSearchDocumentForm(name) {
