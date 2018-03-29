@@ -213,27 +213,6 @@ this._init = function () {
   });
 }
 
-self.on("beforeSave", updateBlank);
-
-function updateBlank() {
-  Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
-    if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( self.object.hasValue(property_uri) && self.object.get(property_uri)[0] instanceof veda.IndividualModel && self.object.get(property_uri)[0].is("v-s:Embedded")) {
-      self.set(property_uri, self.object.get(property_uri).map(function (item) {
-        var blank = item.clone();
-        var types = blank["rdf:type"];
-        blank["v-fc:targetType"] = types;
-        blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-        blank["v-s:parent"] = [ self ];
-        blank.save();
-        return blank;
-      }));
-    } else {
-      self.set(property_uri, self.object.get(property_uri).slice(0));
-    }
-  });
-}
-
 //# sourceURL=v-fc:BlankModel
   """
 .
@@ -374,6 +353,44 @@ v-fc:BlankTemplateShort
   } else {
     $(".action.delete-blank", template).remove();
   }
+
+individual.on("beforeSave", updateBlank);
+
+var stopList = [
+  "@",
+  "rdf:type",
+  "v-s:author",
+  "v-s:publisher",
+  "v-s:creator",
+  "v-s:lastEditor",
+  "v-s:created",
+  "v-s:edited",
+  "v-s:updateCounter",
+  "v-s:deleted",
+  "rdfs:label",
+  "rdfs:isDefinedBy",
+  "v-fc:targetType"
+];
+
+function updateBlank() {
+  Object.getOwnPropertyNames(individual.object.properties).map( function (property_uri) {
+    if ( stopList.indexOf(property_uri) >= 0 ) { return; }
+    if ( individual.object.hasValue(property_uri) && individual.object.get(property_uri)[0] instanceof veda.IndividualModel && individual.object.get(property_uri)[0].is("v-s:Embedded")) {
+      individual.set(property_uri, individual.object.get(property_uri).map(function (item) {
+        var blank = item.clone();
+        var types = blank["rdf:type"];
+        blank["v-fc:targetType"] = types;
+        blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+        blank["v-s:parent"] = [ individual ];
+        blank.save();
+        return blank;
+      }));
+    } else {
+      individual.set(property_uri, individual.object.get(property_uri).slice(0));
+    }
+  });
+}
+
 //# sourceURL=v-fc:BlankTemplateShort_pre
 </script>
 <div>
