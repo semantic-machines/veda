@@ -419,13 +419,16 @@ textarea {
   margin: 0px;
 }
 .margin-sm {
-  margin: 5px 0px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .margin-md {
-  margin: 10px 0px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .margin-lg {
-  margin: 15px 0px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 .no-padding {
   padding: 0px;
@@ -443,7 +446,7 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted, .deleted *:not(#deleted-alert):not(#deleted-alert-msg):not(#deleted-alert-recover) {
+.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover) {
   text-decoration: none!important;
   color: #aaa;
 }
