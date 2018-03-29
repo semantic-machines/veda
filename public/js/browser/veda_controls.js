@@ -1560,14 +1560,15 @@
       if (root && (inProperty || outProperty)) {
         var treeConfig = {
           root: root,
-          targetRel_uri: rel_uri,
           inProperty: inProperty,
           outProperty: outProperty,
           sort: sort,
           allowedClass: allowedClass,
           selectableClass: selectableClass,
           selectableFilter: selectableFilter,
-          displayedProperty: displayedProperty
+          displayedProperty: displayedProperty,
+          targetRel_uri: rel_uri,
+          isSingle: isSingle
         };
         var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
         var modal = $("#individual-modal-template").html();
@@ -1731,12 +1732,10 @@
       }
 
       function propertyModifiedHandler () {
-        if (isSingle && individual.hasValue(rel_uri)) {
-          try {
-            fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
-          } catch (e) {
-            fulltext.val("");
-          }
+        if ( isSingle && individual.hasValue(rel_uri) ) {
+          fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
+        } else if ( isSingle ) {
+          fulltext.val("");
         }
       }
       individual.on(rel_uri, propertyModifiedHandler);
