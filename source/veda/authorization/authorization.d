@@ -81,7 +81,6 @@ abstract class ImplAuthorization : Authorization
                 {
                     cstr_group = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_GROUP, is_check_for_reload);
                     string str   = to!string(cstr_group);
-                    stderr.writeln("G ", str);
                     _trace_group.write(str);
                 }
 
