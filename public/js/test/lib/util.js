@@ -1160,7 +1160,7 @@ function removeFromGroup(ticket, group, resource)
   return [new_membership, res];
 }
 
-function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
+function addRight(ticket, rights, subj_uri, obj_uri, right_uri, filter) {
 
   if (subj_uri === undefined || obj_uri === undefined) {
     var error = new Error();
@@ -1205,6 +1205,10 @@ function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
     } else if (rights[i] === cant_create) {
       permission['v-s:canCreate'] = newBool(false);
     }
+  }
+
+  if (filter) {
+      permission['v-s:useFilter'] = newUri(filter);
   }
 
   var res = Backend.put_individual(ticket, permission, typeof _event_id !== "undefined" ? _event_id : undefined);

@@ -31,9 +31,9 @@ const     TRACE_ACL   = 0;
 const     TRACE_GROUP = 1;
 const     TRACE_INFO  = 2;
 
-char   *cstr_acl;
-char   *cstr_group;
-char   *cstr_info;
+char      *cstr_acl;
+char      *cstr_group;
+char      *cstr_info;
 
 abstract class ImplAuthorization : Authorization
 {
@@ -73,21 +73,21 @@ abstract class ImplAuthorization : Authorization
                 if (trace_acl !is null)
                 {
                     cstr_acl = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_ACL, is_check_for_reload);
-                    string str   = to!string(cstr_acl);
+                    string str = to!string(cstr_acl);
                     _trace_acl.write(str);
                 }
 
                 if (trace_group !is null)
                 {
                     cstr_group = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_GROUP, is_check_for_reload);
-                    string str   = to!string(cstr_group);
+                    string str = to!string(cstr_group);
                     _trace_group.write(str);
                 }
 
                 if (trace_info !is null)
                 {
                     cstr_info = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_INFO, is_check_for_reload);
-                    string str   = to!string(cstr_info);
+                    string str = to!string(cstr_info);
                     _trace_info.write(str);
                 }
                 return 0;
@@ -135,7 +135,13 @@ abstract class ImplAuthorization : Authorization
                 filter_value = get_in_current_transaction(filter);
 
                 if (trace_info !is null)
+                {
                     trace_info.write(format("%d user_uri=%s\n", str_num++, user_uri));
+
+                    trace_info.write(format("%d filter=%s\n", str_num++, filter));
+                    if (filter_value !is null)
+                        trace_info.write(format("%d filter_value=%s\n", str_num++, filter_value));
+                }
 
                 // читаем группы subject (ticket.user_uri)
                 if (trace_info !is null)

@@ -280,7 +280,7 @@ for (i = 0; i < 1; i++)
         });
 
     QUnit.test(
-        "#030 search form test",
+        "#004 search form test",
         function(assert)
         {
             var res;
@@ -486,7 +486,7 @@ for (i = 0; i < 1; i++)
     );
 
     QUnit.test(
-        "#004 Individual store user1 and no read user2, +lang",
+        "#005 Individual store user1 and no read user2, +lang",
         function(assert)
         {
             var ticket_user1 = get_user1_ticket();
@@ -526,7 +526,7 @@ for (i = 0; i < 1; i++)
         });
 
     QUnit.test(
-        "#005 Individual store user1 and add right, user2 successfully read it, next user1 add denied right and no user2 fail read it",
+        "#006 Individual store user1 and add right, user2 successfully read it, next user1 add denied right and no user2 fail read it",
         function(assert)
         {
             var ticket_user1 = get_user1_ticket();
@@ -613,7 +613,7 @@ for (i = 0; i < 1; i++)
         });
 
     QUnit.test(
-        "#006 Individual store user1 and read admin",
+        "#007 Individual store user1 and read admin",
         function(assert)
         {
 
@@ -655,7 +655,7 @@ for (i = 0; i < 1; i++)
         });
 
     QUnit.test(
-      "#007 Individual store and read, test datatype",
+      "#008 Individual store and read, test datatype",
       function(assert) {
         var ticket = get_user1_ticket();
 
@@ -674,7 +674,7 @@ for (i = 0; i < 1; i++)
       }
     );
 
-    QUnit.test("#008 test [v-s:PermissionStatement]: user1 store file, user2 not read file, add right for user2, add cant read right for user2",
+    QUnit.test("#009 test [v-s:PermissionStatement]: user1 store file, user2 not read file, add right for user2, add cant read right for user2",
         function(assert)
         {
             var ticket1 = get_user1_ticket();
@@ -711,7 +711,7 @@ for (i = 0; i < 1; i++)
         });
 
     QUnit.test(
-        "#009 Individual of [v-s:NoPermissionStatement] store 3 and read 3",
+        "#010 Individual of [v-s:NoPermissionStatement] store 3 and read 3",
         function(assert)
         {
             var ticket = get_user1_ticket();
@@ -786,7 +786,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket, new_test_doc3['@'], new_test_doc3);
         });
 
-    QUnit.test("#010 Individual of [v-s:Membership]",
+    QUnit.test("#011 Individual of [v-s:Membership]",
         function(assert)
         {
             var ticket1 = get_user1_ticket();
@@ -829,7 +829,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket1, new_test_doc1['@'], new_test_doc1);
         });
 
-    QUnit.test("#011 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",
+    QUnit.test("#012 Individual of [v-s:NoMembership] store 3 and read 3 (this no membership)",
         function(assert)
         {
             var ticket = get_user1_ticket();
@@ -904,7 +904,7 @@ for (i = 0; i < 1; i++)
         });
 
     QUnit.test(
-        "#012 user1 store 3 individuals (one of the individuals contains an invalid field [author]), the user1 finds 2 individuals, and the user2 does not find anything.",
+        "#013 user1 store 3 individuals (one of the individuals contains an invalid field [author]), the user1 finds 2 individuals, and the user2 does not find anything.",
         function(assert)
         {
             var ticket_user1 = get_user1_ticket();
@@ -1267,7 +1267,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket1, doc2['@'], doc2);
         });
 
-    QUnit.test("#018 Nested groups with restrictions 1",
+    QUnit.test("#017 Nested groups with restrictions 1",
         function(assert)
         {
             var ticket1 = get_user1_ticket();
@@ -1350,7 +1350,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    QUnit.test("#019 Nested groups with restrictions 2",
+    QUnit.test("#018 Nested groups with restrictions 2",
         function(assert)
         {
             var ticket1 = get_user1_ticket();
@@ -1435,7 +1435,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    QUnit.test("#020 Nested groups with restrictions & cycles",
+    QUnit.test("#019 Nested groups with restrictions & cycles",
         function(assert)
         {
             var ticket1 = get_user1_ticket();
@@ -1516,7 +1516,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket1, doc3['@'], doc3);
         });
 
-    QUnit.test("#021 Search with cursor",
+    QUnit.test("#020 Search with cursor",
         function(assert)
         {
           var user = Backend.authenticate("bushenevvt", "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3");
@@ -1598,7 +1598,7 @@ for (i = 0; i < 1; i++)
 
         });
 
-    QUnit.test("#022 Individual A, B, C store and read use Backend.get_individuals", function(assert)
+    QUnit.test("#021 Individual A, B, C store and read use Backend.get_individuals", function(assert)
     {
         var ticket = get_user1_ticket();
 
@@ -1644,7 +1644,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(assert, ticket, C['@'], C);
     });
 
-    QUnit.test("#023 test search on invalid query", function(assert)
+    QUnit.test("#022 test search on invalid query", function(assert)
     {
         var ticket = get_user1_ticket();
 
@@ -1669,55 +1669,8 @@ for (i = 0; i < 1; i++)
         //#2
         test_fail_read(assert, ticket, A['@'], A);
     });
-/*
-    QUnit.test("#024 test Backend.put_individuals (user1 stores three individuals)", function(assert)
-    {
-        var ticket_user1 = get_user1_ticket();
 
-        //#1
-        assert.ok(ticket_user1.id.length > 0);
-
-        var new_test_doc1_uri_1 = "test21_1:" + guid();
-
-        var test_data_uid = guid();
-        var test_data = 'testdata ' + test_data_uid;
-
-        var new_test_doc1 = {
-            '@': new_test_doc1_uri_1,
-            'rdf:type': newUri('rdfs:Resource'),
-            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-            'v-s:test_field': newStr(test_data, 'NONE'),
-            'v-s:test_fieldA': newUri('BBB' + test_data_uid),
-            'v-s:test_fieldB': newUri('CCC' + test_data_uid)
-        };
-
-        // document content author != user1
-        var new_test_doc1_uri_2 = "test21_2:" + guid();
-        var new_test_doc2 = {
-            '@': new_test_doc1_uri_2,
-            'rdf:type': newUri('rdfs:Resource'),
-            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-            'v-s:test_field': newUri(test_data)
-        };
-
-        var new_test_doc1_uri_3 = "test21_3:" + guid();
-        var new_test_doc3 = {
-            '@': new_test_doc1_uri_3,
-            'rdf:type': newUri('rdfs:Resource'),
-            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
-            'v-s:test_field': newUri(test_data),
-            'v-s:test_fieldA': newUri('BBB' + test_data_uid)
-        };
-        var res = Backend.put_individuals(ticket_user1.id, [new_test_doc1, new_test_doc2, new_test_doc3], false);
-        var read_individual1 = Backend.get_individual(ticket_user1.id, new_test_doc1_uri_1);
-        var read_individual2 = Backend.get_individual(ticket_user1.id, new_test_doc1_uri_2);
-        var read_individual3 = Backend.get_individual(ticket_user1.id, new_test_doc1_uri_3);
-        //#2
-        assert.ok(compare(new_test_doc1, read_individual1) && compare(new_test_doc2, read_individual2) &&
-            compare(new_test_doc3, read_individual3));
-    });
-*/
-    QUnit.test("#025 test get_rights_origin", function(assert)
+    QUnit.test("#023 test get_rights_origin", function(assert)
     {
         var ticket_admin = get_admin_ticket();
 
@@ -1754,7 +1707,7 @@ for (i = 0; i < 1; i++)
         assert.ok(result_rights == expected_rights);
     });
 
-    QUnit.test("#026 test get_membership", function(assert)
+    QUnit.test("#024 test get_membership", function(assert)
     {
     //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
 
@@ -1780,7 +1733,7 @@ for (i = 0; i < 1; i++)
         assert.ok(check && (found == 3));
     });
 
-    QUnit.test("#027 test cycle of group", function(assert)
+    QUnit.test("#025 test cycle of group", function(assert)
     {
         var ticket_admin = get_admin_ticket();
 
@@ -1829,7 +1782,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(assert, ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    QUnit.test("#028 test different group subtrees 1", function(assert)
+    QUnit.test("#026 test different group subtrees 1", function(assert)
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1886,7 +1839,7 @@ for (i = 0; i < 1; i++)
 
     });
 
-    QUnit.test("#029 test different group subtrees 2", function(assert)
+    QUnit.test("#027 test different group subtrees 2", function(assert)
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1942,7 +1895,7 @@ for (i = 0; i < 1; i++)
         test_fail_read(assert, ticket_admin, new_test_doc1['@'], new_test_doc1);
     });
 
-    QUnit.test("#030 test different group subtrees 3", function(assert)
+    QUnit.test("#028 test different group subtrees 3", function(assert)
     {
         var ticket_admin = get_admin_ticket();
         var ticket1 = get_user1_ticket();
@@ -1992,7 +1945,7 @@ for (i = 0; i < 1; i++)
     });
 
 
-    QUnit.test("#031 test server side script: decimal, and various format [{}], {}, [[{}]]", function(assert)
+    QUnit.test("#029 test server side script: decimal, and various format [{}], {}, [[{}]]", function(assert)
     {
       var ticket_admin = get_admin_ticket();
 
@@ -2029,7 +1982,7 @@ for (i = 0; i < 1; i++)
     });
 
     QUnit.test(
-        "#013 user1 store 5 individuals, ft search use range ",
+        "#030 user1 store 5 individuals, ft search use range ",
         function(assert)
         {
             var ticket_user1 = get_user1_ticket();
@@ -2148,10 +2101,63 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
 
+QUnit.test(
+        "#031 1) [A] store user1 and read user2. 2) store right content filter. 3) read A user 1 and dont read [A] user2",
+        function(assert)
+        {
+            var ticket_user1 = get_user1_ticket();
+            assert.ok(ticket_user1.id.length > 0);
 
+            var ticket_user2 = get_user2_ticket();
+            assert.ok(ticket_user2.id.length > 0);
+
+			var ticket_admin = get_admin_ticket();
+            assert.ok(ticket_admin.id.length > 0);
+
+            var new_test_doc1_uri = "test31:" + guid();
+            var new_test_doc1 = {
+                '@': new_test_doc1_uri,
+                'rdf:type': newUri('rdfs:Resource'),
+                'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+                'v-s:test_field': newStr('test data', 'EN')
+            };
+
+            var res = Backend.put_individual(ticket_user1.id, new_test_doc1);
+            Backend.wait_module(m_scripts, res.op_id);
+            Backend.wait_module(m_acl, res.op_id);
+
+            test_success_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
+            test_fail_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+
+            var res = addRight(ticket_user1.id, [can_read], ticket_user2.user_uri, new_test_doc1_uri);
+            var new_permission = res[0];
+            Backend.wait_module(m_acl, res[1].op_id);
+
+            test_success_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
+            test_success_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+
+            var new_permission_filter_uri = "test31-pf:" + guid();
+            var new_permission_filter = {
+                '@': new_permission_filter_uri,
+                'rdf:type': newUri('v-s:PermissionFilter'),
+                'v-s:permissionObject': newUri(new_test_doc1_uri),
+            };
+            var res = Backend.put_individual(ticket_user1.id, new_permission_filter);
+
+            Backend.wait_module(m_acl, res.op_id);
+
+            test_fail_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
+            test_fail_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+
+            var res1 = addRight(ticket_admin.id, [can_read], ticket_user2.user_uri, new_test_doc1_uri, undefined, new_permission_filter_uri);
+            Backend.wait_module(m_acl, res1[1].op_id);
+
+            test_fail_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
+            test_success_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+        });
 
 /*
-    QUnit.test("#032 test create individual with rdf:type rdfs:Resource", function(assert)
+    QUnit.test("#040 test create individual with rdf:type rdfs:Resource", function(assert)
     {
       var ticket_admin = get_admin_ticket();
 
@@ -2189,4 +2195,54 @@ for (i = 0; i < 1; i++)
 
     });
 */
+
+/*
+    QUnit.test("#041 test Backend.put_individuals (user1 stores three individuals)", function(assert)
+    {
+        var ticket_user1 = get_user1_ticket();
+    
+        //#1
+        assert.ok(ticket_user1.id.length > 0);
+        
+        var new_test_doc1_uri_1 = "test21_1:" + guid();
+        
+        var test_data_uid = guid();
+        var test_data = 'testdata ' + test_data_uid;
+
+        var new_test_doc1 = {
+            '@': new_test_doc1_uri_1,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newStr(test_data, 'NONE'),
+            'v-s:test_fieldA': newUri('BBB' + test_data_uid),
+            'v-s:test_fieldB': newUri('CCC' + test_data_uid)
+        };
+
+        // document content author != user1
+        var new_test_doc1_uri_2 = "test21_2:" + guid();
+        var new_test_doc2 = {
+            '@': new_test_doc1_uri_2,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newUri(test_data)
+        };
+
+        var new_test_doc1_uri_3 = "test21_3:" + guid();
+        var new_test_doc3 = {
+            '@': new_test_doc1_uri_3,
+            'rdf:type': newUri('rdfs:Resource'),
+            'v-s:author': newUri('td:ValeriyBushenev-Programmer1'),
+            'v-s:test_field': newUri(test_data),
+            'v-s:test_fieldA': newUri('BBB' + test_data_uid)
+        };
+        var res = Backend.put_individuals(ticket_user1.id, [new_test_doc1, new_test_doc2, new_test_doc3], false);
+        var read_individual1 = Backend.get_individual(ticket_user1.id, new_test_doc1_uri_1);
+        var read_individual2 = Backend.get_individual(ticket_user1.id, new_test_doc1_uri_2);
+        var read_individual3 = Backend.get_individual(ticket_user1.id, new_test_doc1_uri_3);
+        //#2
+        assert.ok(compare(new_test_doc1, read_individual1) && compare(new_test_doc2, read_individual2) &&
+            compare(new_test_doc3, read_individual3));
+    });
+*/
+
 }
