@@ -28,6 +28,8 @@ v-s:Aspect
 v-s:PersonalAspect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Aspect ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:owner.rdfs:label}" ;
   rdfs:label "Персональный аспект"@ru ;
   rdfs:label "Personal aspect"@en ;
   v-ui:hasTemplate v-s:PersonalAspectTemplate ;
@@ -142,10 +144,74 @@ v-s:Favorites
   rdfs:label "Избранное"@ru ;
   rdfs:label "Favorites"@en ;
 .
+v-s:AddToFavorites
+  rdf:type v-s:Bundle ;
+  rdfs:label "Добавить избранное"@ru ;
+  rdfs:label "Add favorite"@en ;
+.
+v-s:RemoveFromFavorites
+  rdf:type v-s:Bundle ;
+  rdfs:label "Удалить избранное"@ru ;
+  rdfs:label "Remove favorite"@en ;
+.
 v-s:Settings
   rdf:type v-s:Bundle ;
   rdfs:label "Настройки"@ru ;
   rdfs:label "Settings"@en ;
+.
+v-s:FavoritesIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон индикатора избранных"@ru ;
+  rdfs:label "Favorites indicator template"@en ;
+  v-ui:template """
+<script>
+  indicateFavorite();
+  riot.route(indicateFavorite);
+
+  template.tooltip({
+    container: template,
+    placement: "bottom",
+    title: function () {
+      var current = getCurrent(location.hash);
+      var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
+      return title.toString();
+    }
+  }).click(function (e) {
+    var aspect = veda.user.aspect;
+    e.preventDefault();
+    var current = getCurrent(location.hash);
+    if ( aspect.hasValue("v-s:hasFavorite", current) ) {
+      aspect.removeValue("v-s:hasFavorite", current);
+    } else {
+      aspect.addValue("v-s:hasFavorite", current);
+    }
+    aspect.save();
+  });
+  veda.user.aspect.on("v-s:hasFavorite", function () {
+    indicateFavorite(location.hash);
+  });
+
+  function indicateFavorite(hash) {
+    var current = getCurrent(hash);
+    if ( current ) {
+      template.show();
+      if ( veda.user.aspect.hasValue("v-s:hasFavorite", current) ) {
+        template.addClass("fa-star").removeClass("fa-star-o");
+      } else {
+        template.removeClass("fa-star").addClass("fa-star-o");
+      }
+    } else {
+      template.hide();
+    }
+  }
+  function getCurrent(hash) {
+    var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : undefined;
+    return current_uri ? new veda.IndividualModel(current_uri) : undefined;
+  }
+//# sourceURL=v-s:FavoritesIndicatorTemplate_pre
+</script>
+<a href="#" class="fa fa-lg"></a>
+  """ ;
 .
 
 v-s:PersonalAspectTemplate
@@ -198,7 +264,7 @@ v-s:PersonalAspectTemplate
     </div>
     <div role="tabpanel" class="tab-pane" id="favorites">
       <ul rel="v-s:hasFavorite">
-        <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
+        <li about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></li>
       </ul>
       <br/>
       <div class="actions">

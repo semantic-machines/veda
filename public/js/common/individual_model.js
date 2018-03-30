@@ -516,8 +516,8 @@ veda.Module(function (veda) { "use strict";
       });
       var values = this.get(property_uri);
       this.isSync(false);
-      this.trigger("propertyModified", property_uri, this.get(property_uri));
-      this.trigger(property_uri, this.get(property_uri));
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
     }
     return this;
   };
