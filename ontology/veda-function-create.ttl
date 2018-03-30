@@ -188,7 +188,7 @@ var stopList = [
   "v-fc:targetType"
 ];
 
-this._init = function () {
+this.initBlank = function () {
   if (self.object) { return; }
   self.object = new veda.IndividualModel(),
   self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
@@ -198,7 +198,7 @@ this._init = function () {
       self.object.set(property_uri, self.get(property_uri).map(function (item) {
         // Embedded blanks are for v-s:Embedded objects only
         // Prevent mutual v-s:parent links
-        item._init();
+        item.initBlank();
         if ( item.object.is("v-s:Embedded") && property_uri !== "v-s:parent" ) {
           item.object["v-s:parent"] = [ self.object ];
         }
@@ -213,6 +213,25 @@ this._init = function () {
   });
 }
 
+this.updateBlank = function () {
+  var blank = this;
+  Object.getOwnPropertyNames(blank.object.properties).map( function (property_uri) {
+    if ( stopList.indexOf(property_uri) >= 0 ) { return; }
+    if ( blank.object.hasValue(property_uri) && blank.object.get(property_uri)[0] instanceof veda.IndividualModel && blank.object.get(property_uri)[0].is("v-s:Embedded")) {
+      blank.set(property_uri, blank.object.get(property_uri).map(function (item) {
+        var embeddedBlank = item.clone();
+        var types = embeddedBlank["rdf:type"];
+        embeddedBlank["v-fc:targetType"] = types;
+        embeddedBlank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+        embeddedBlank["v-s:parent"] = [ blank ];
+        embeddedBlank.save();
+        return embeddedBlank;
+      }));
+    } else {
+      blank.set(property_uri, blank.object.get(property_uri).slice(0));
+    }
+  });
+}
 //# sourceURL=v-fc:BlankModel
   """
 .
@@ -224,7 +243,7 @@ v-fc:BlankTemplate
 #  v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
-  individual._init();
+  individual.initBlank();
 </script>
 <div role="tabpanel">
   <br>
@@ -317,7 +336,7 @@ v-fc:BlankTemplateShort
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
-  individual._init();
+  individual.initBlank();
 
   var notify = new veda.Notify();
 
@@ -325,8 +344,10 @@ v-fc:BlankTemplateShort
     $(".action.save-blank", template).click(function () {
       var personalLabel = prompt( new veda.IndividualModel("v-fc:EnterLabel").toString(), individual.toString() );
       var personalBlank = individual.clone();
-      personalBlank.object = individual.object;
+      personalBlank["rdfs:isDefinedBy"] = [];
       personalBlank["rdfs:label"] = [ personalLabel ];
+      personalBlank.object = individual.object;
+      personalBlank.updateBlank();
       personalBlank.save();
       var aspect = veda.user.aspect;
       aspect.addValue("v-s:hasBlank", personalBlank);
@@ -337,60 +358,22 @@ v-fc:BlankTemplateShort
     $(".action.save-blank", template).remove();
   }
 
-  if (individual.rights.hasValue("v-s:canUpdate", true)) {
+  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
     $(".action.update-blank", template).click(function () {
-      individual.isSync(false);
-      template.trigger("save");
+      individual.updateBlank();
+      individual.save();
       notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").toString() });
     });
   } else {
     $(".action.update-blank", template).remove();
   }
-  if (individual.rights.hasValue("v-s:canDelete", true)) {
+  if ( individual.rights.hasValue("v-s:canDelete", true) ) {
     $(".action.delete-blank", template).click(function () {
       template.trigger("delete");
     });
   } else {
     $(".action.delete-blank", template).remove();
   }
-
-individual.on("beforeSave", updateBlank);
-
-var stopList = [
-  "@",
-  "rdf:type",
-  "v-s:author",
-  "v-s:publisher",
-  "v-s:creator",
-  "v-s:lastEditor",
-  "v-s:created",
-  "v-s:edited",
-  "v-s:updateCounter",
-  "v-s:deleted",
-  "rdfs:label",
-  "rdfs:isDefinedBy",
-  "v-fc:targetType"
-];
-
-function updateBlank() {
-  Object.getOwnPropertyNames(individual.object.properties).map( function (property_uri) {
-    if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( individual.object.hasValue(property_uri) && individual.object.get(property_uri)[0] instanceof veda.IndividualModel && individual.object.get(property_uri)[0].is("v-s:Embedded")) {
-      individual.set(property_uri, individual.object.get(property_uri).map(function (item) {
-        var blank = item.clone();
-        var types = blank["rdf:type"];
-        blank["v-fc:targetType"] = types;
-        blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-        blank["v-s:parent"] = [ individual ];
-        blank.save();
-        return blank;
-      }));
-    } else {
-      individual.set(property_uri, individual.object.get(property_uri).slice(0));
-    }
-  });
-}
-
 //# sourceURL=v-fc:BlankTemplateShort_pre
 </script>
 <div>

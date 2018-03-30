@@ -189,10 +189,7 @@ v-s:PersonalAspectTemplate
     </div>
     <div role="tabpanel" class="tab-pane" id="blanks">
       <ul rel="v-s:hasBlank" data-embedded="true">
-        <li>
-          <a href="#/@" about="@" property="rdfs:label"></a>
-          <span class="text-muted" about="@" property="rdfs:comment"></span>
-        </li>
+        <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
       </ul>
       <br/>
       <div class="actions">

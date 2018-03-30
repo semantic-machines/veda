@@ -273,7 +273,7 @@ v-s:OrganizationUnitContentTemplate
   v-ui:template """
 <script>
   var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
-  blank._init();
+  blank.initBlank();
   if ( !blank.object.hasValue("v-s:parentUnit", individual) ) {
     blank.object["v-s:parentUnit"] = [ individual ];
     var search = new veda.IndividualModel("v-s:ContactsInUnitSearch");
