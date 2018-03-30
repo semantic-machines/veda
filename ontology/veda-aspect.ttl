@@ -245,27 +245,27 @@ v-s:PersonalAspectTemplate
       <div about="@" rel="v-s:owner" data-template="v-s:PersonalInfoTemplate"></div>
     </div>
     <div role="tabpanel" class="tab-pane" id="registries">
-      <ul rel="v-s:hasRegistry">
+      <ol rel="v-s:hasRegistry">
         <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
-      </ul>
+      </ol>
       <br/>
       <div class="actions">
         <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
       </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="blanks">
-      <ul rel="v-s:hasBlank" data-embedded="true">
+      <ol rel="v-s:hasBlank" data-embedded="true">
         <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
-      </ul>
+      </ol>
       <br/>
       <div class="actions">
         <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
       </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="favorites">
-      <ul rel="v-s:hasFavorite">
+      <ol rel="v-s:hasFavorite">
         <li about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></li>
-      </ul>
+      </ol>
       <br/>
       <div class="actions">
         <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
