@@ -346,6 +346,20 @@ v-s:hasFormOfPowerOfAttorney
   rdfs:range v-s:FormOfPowerOfAttorney ;
   rdfs:domain v-s:PowerOfAttorney ;
 .
+v-s:issuedForAbsencePeriodOfEmployee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "На период отсутствия работника"@ru ;
+  rdfs:label "For the period of employee absence"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:isIssuedForAbsencePeriodOfEmployee
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оформляется на период отсутствия работника?"@ru ;
+  rdfs:label "Is issued for the period of absence of the employee?"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain mnd-s:PowerOfAttorney ;
+.
 #----------Причина_оформления_доверенности-----
 v-s:ReasonForPowerOfAttorney
   rdf:type owl:Class ;
