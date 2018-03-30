@@ -205,8 +205,9 @@ v-s:FavoritesIndicatorTemplate
     }
   }
   function getCurrent(hash) {
-    var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : undefined;
-    return current_uri ? new veda.IndividualModel(current_uri) : undefined;
+    var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
+    var re = new RegExp("^(\\w|-)+:.*?$");
+    return re.test(current_uri) ? new veda.IndividualModel(current_uri) : undefined;
   }
 //# sourceURL=v-s:FavoritesIndicatorTemplate_pre
 </script>
