@@ -105,6 +105,8 @@ veda.Module(function (veda) { "use strict";
           acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
           return acc;
         }, {} );
+        self.preferences.save();
+        veda.trigger("language:changed");
       });
 
     });
@@ -139,24 +141,10 @@ veda.Module(function (veda) { "use strict";
         self.aspect.save();
         self["v-s:hasAspect"] = [ self.aspect ];
       }
-      }
       self["v-s:hasAspect"] = [ self.aspect ];
       self.save();
-    }
-
-    self.preferences.on("v-ui:displayedElements", function (values) {
-      self.displayedElements = values[0];
-    });
-    self.preferences.on("v-ui:preferredLanguage", function (values) {
-      self.language = values.reduce( function (acc, lang) {
-        acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
-        return acc;
-      }, {} );
-      self.preferences.save();
-      veda.trigger("language:changed");
     });
 
-    return self;
   };
 
 });
