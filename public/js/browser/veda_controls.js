@@ -1628,9 +1628,17 @@
       if (isSingle) {
         header.hide();
       }
-      this.on("search", function (e) {
+
+      this.on("view edit search", function (e) {
         e.stopPropagation();
-        header.show();
+        if (e.type === "search") {
+          isSingle = false || $(this).data("single");
+          if (isSingle) {
+            header.hide();
+          } else {
+            header.show();
+          }
+        }
       });
 
       var keyupHandler = (function () {
@@ -1765,13 +1773,6 @@
       $(".input-group", control).toggleClass("input-group btn-group");
       $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
     }
-
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-      if (e.type === "search") {
-        isSingle = false || $(this).data("single");
-      }
-    });
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
