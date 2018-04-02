@@ -1376,56 +1376,65 @@ v-fs:AttributiveSearchTemplate
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
     $(".action.save-registry", template).click(function () {
       var personalLabel = prompt( new veda.IndividualModel("v-fs:EnterLabel").toString(), individual.toString() );
-      var personalRegistry = individual.clone();
-      personalRegistry["v-fs:searchResult"] = [];
-      personalRegistry["v-fs:authorized"] = [];
-      personalRegistry["v-fs:cursor"] = [];
-      personalRegistry["v-fs:estimated"] = [];
-      personalRegistry["v-fs:limit"] = [];
-      personalRegistry["v-fs:top"] = [];
-      personalRegistry["v-s:creator"] = [];
-      personalRegistry["v-s:created"] = [];
-      personalRegistry["rdfs:isDefinedBy"] = [];
-      personalRegistry["rdfs:label"] = [ personalLabel ];
-      var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
-      if (searchBlank && searchBlank.object) {
-        var personalRegistryBlank = searchBlank.clone();
+      individual.clone().load().then( function (personalRegistry) {
+        personalRegistry["v-fs:searchResult"] = [];
+        personalRegistry["v-fs:authorized"] = [];
+        personalRegistry["v-fs:cursor"] = [];
+        personalRegistry["v-fs:estimated"] = [];
+        personalRegistry["v-fs:limit"] = [];
+        personalRegistry["v-fs:top"] = [];
+        personalRegistry["v-s:creator"] = [];
+        personalRegistry["v-s:created"] = [];
         personalRegistry["rdfs:isDefinedBy"] = [];
-        personalRegistry["v-fs:searchBlank"] = [ personalRegistryBlank ];
-        personalRegistryBlank.object = searchBlank.object;
-        personalRegistryBlank.updateBlank();
-        personalRegistryBlank.save();
-      }
-      personalRegistry.save();
-      var aspect = veda.user.aspect;
-      aspect.addValue("v-s:hasRegistry", personalRegistry);
-      aspect.save();
-      notify("success", { message: new veda.IndividualModel("v-fs:RegistrySuccessfullySaved").toString() });
+        personalRegistry["rdfs:label"] = [ personalLabel ];
+        var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
+        if (searchBlank && searchBlank.object) {
+          searchBlank.clone().load().then(function (personalRegistryBlank) {
+            personalRegistry["rdfs:isDefinedBy"] = [];
+            personalRegistry["v-fs:searchBlank"] = [ personalRegistryBlank ];
+            personalRegistryBlank.object = searchBlank.object;
+            personalRegistryBlank.updateBlank();
+            personalRegistryBlank.save();
+          });
+        }
+        personalRegistry.save();
+        var aspect = veda.user.aspect;
+        aspect.addValue("v-s:hasRegistry", personalRegistry);
+        aspect.save().then(function () {
+          return new veda.IndividualModel("v-fs:RegistrySuccessfullySaved").load();
+        }).then(function (message) {
+          notify("success", { message: message });
+        }).catch(function (error) {
+          notify("danger", { message: error });
+        });
+      });
     });
   } else {
     $(".action.save-registry", template).remove();
   }
 
-  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
-    $(".action.update-registry", template).click(function () {
-      individual["v-fs:searchResult"] = [];
-      var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
-      if (searchBlank && searchBlank.object) {
-        searchBlank.updateBlank();
-        searchBlank.save();
-      }
-      notify("success", { message: new veda.IndividualModel("v-fs:RegistrySuccessfullyUpdated").toString() });
-    });
-  } else {
-    $(".action.update-registry", template).remove();
-  }
-  if ( individual.rights.hasValue("v-s:canDelete", true) ) {
-    $(".action.delete-registry", template).click(function () {
-      template.trigger("delete");
-    });
-  } else {
-    $(".action.delete-registry", template).remove();
-  }
+  individual.rights.then(function (rights) {
+    if ( rights.hasValue("v-s:canUpdate", true) ) {
+      $(".action.update-registry", template).click(function () {
+        individual["v-fs:searchResult"] = [];
+        var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
+        if (searchBlank && searchBlank.object) {
+          searchBlank.updateBlank();
+          searchBlank.save();
+        }
+        notify("success", { message: new veda.IndividualModel("v-fs:RegistrySuccessfullyUpdated").toString() });
+      });
+    } else {
+      $(".action.update-registry", template).remove();
+    }
+    if ( rights.hasValue("v-s:canDelete", true) ) {
+      $(".action.delete-registry", template).click(function () {
+        template.trigger("delete");
+      });
+    } else {
+      $(".action.delete-registry", template).remove();
+    }
+  });
 
 //# sourceURL=v-fs:AttributiveSearchTemplate_pre
 </script>
@@ -1882,7 +1891,7 @@ v-fs:AttributiveSearchInlineTemplate
       }
       function formHandler () {
         self.top = veda.user.displayedElements || 10;
-        search();
+        self.search().then(renderResult);
       }
     });
 

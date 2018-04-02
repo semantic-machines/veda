@@ -497,7 +497,6 @@ v-ft:ActorFilterTemplate
     individual[actor_property] = [veda.user];
   }
 
-  var actors_uris = [ veda.user.id ];
   return veda.Backend.query({
     ticket: veda.ticket,
     query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "')"
@@ -508,48 +507,50 @@ v-ft:ActorFilterTemplate
   })
   .then(function (appointments) {
 
-  var actors_uris = [ "v-ft:MyBundle" ];
+    var actors_uris = [ "v-ft:MyBundle" ];
 
-  var appointments = get_individuals(veda.ticket, appointments_uris);
-  appointments.forEach(function (appointment) {
-    if ( veda.appointment && veda.appointment.id && appointment["@"] === veda.appointment.id ) {
-      return;
-    } else if ( appointment["v-s:occupation"] && appointment["v-s:occupation"].length ) {
-      actors_uris.push( appointment["v-s:occupation"][0].data );
+    appointments.forEach(function (appointment) {
+      if ( veda.appointment && veda.appointment.id && appointment["@"] === veda.appointment.id ) {
+        return;
+      } else if ( appointment["v-s:occupation"] && appointment["v-s:occupation"].length ) {
+        actors_uris.push( appointment["v-s:occupation"][0].data );
+      }
+    });
+
+    actors_uris.map(function (actor_uri) {
+      //var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+      var actor_template =
+        "<li>" +
+          "<a href='#'>" +
+            "<span class='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
+            //"<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
+          "</a>" +
+        "</li>";
+      template.append(actor_template);
+    });
+
+    template.on("click", "li a", function (e) {
+      e.preventDefault();
+      var $this = $(this);
+      $this.parent().addClass("active").siblings().removeClass("active");
+      var actor_uri = $this.children(".actor").attr("about");
+      individual.actor = actor_uri;
+      if (actor_uri === "v-ft:MyBundle") {
+        individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
+        individual.trigger("search");
+      } else {
+        individual[actor_property] = [ new veda.IndividualModel(actor_uri) ];
+        individual.trigger("search");
+      }
+    });
+
+    if (!individual.actor) {
+      individual.actor = "v-ft:MyBundle";
     }
-  });
+    var actor = $("li > a > [about='" + individual.actor + "']", template);
+    actor.click();
 
-  actors_uris.map(function (actor_uri) {
-    //var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
-    var actor_template =
-      "<li>" +
-        "<a href='#'>" +
-          "<span class='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
-          //"<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
-        "</a>" +
-      "</li>";
-    template.append(actor_template);
   });
-
-  template.on("click", "li a", function (e) {
-    e.preventDefault();
-    var $this = $(this);
-    $this.parent().addClass("active").siblings().removeClass("active");
-    var actor_uri = $this.children(".actor").attr("about");
-    individual.actor = actor_uri;
-    if (actor_uri === "v-ft:MyBundle") {
-      individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
-      individual.trigger("search");
-    } else {
-      individual[actor_property] = [ new veda.IndividualModel(actor_uri) ];
-      individual.trigger("search");
-    }
-  });
-
-  if (!individual.actor) {
-    individual.actor = "v-ft:MyBundle";
-  }
-  $("li > a > [about='" + individual.actor + "']", template).click();
 
   // Update counter if counter & results count do not match
   /*individual.on("search:complete", checkCounter);

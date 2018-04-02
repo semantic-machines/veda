@@ -355,13 +355,6 @@ v-ui:LanguageSwitchTemplate
       } else {
         template.removeClass("active btn-success").addClass("btn-default");
       }
-    }
-    handler();
-    template.click(function (e) {
-      e.stopPropagation();
-      var langValue = individual["rdf:value"][0].toString();
-      veda.user.toggleLanguage(langValue);
-      handler();
     });
   }
   function toggleLanguage (e) {

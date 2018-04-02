@@ -1537,7 +1537,7 @@
               }
               newVal.present(cntr, tmpl, "edit");
               var template = cntr.children("[resource]");
-              template.on("internal-validated", function (e, validation) {	
+              template.on("internal-validated", function (e, validation) {
                 validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
               });
             } else {
@@ -1838,7 +1838,7 @@
     }
     var result = [];
 
-    return query({
+    return veda.Backend.query({
       ticket: veda.ticket,
       query: queryString,
       sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
