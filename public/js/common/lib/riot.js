@@ -107,14 +107,13 @@ riot.render = function(tmpl, data, escape_fn) {
   }
 
   /* Change the browser URL or listen to changes on the URL */
-  riot.route = function(to) {
+  riot.route = function(to, prevent) {
     // listen
     if (typeof to === "function") return pops.on("pop", to);
 
     // fire
     if (history.pushState) history.pushState(0, 0, to);
-    pop(to);
-
+    if (!prevent) pop(to);
   };
 })();
 if (typeof exports === 'object') {

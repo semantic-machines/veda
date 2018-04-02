@@ -556,6 +556,11 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         if (_task_result)
             task_result = new WorkItemResult(_task_result);
 
+        // print("[WORKFLOW][create_and_mapping_variables]: process=" + toJson (process));
+        // print("[WORKFLOW][create_and_mapping_variables]: task=" + toJson (task));
+        // print("[WORKFLOW][create_and_mapping_variables]: order=" + toJson (order));
+        // print("[WORKFLOW][create_and_mapping_variables]: task_result=" + toJson (task_result));
+
         for (var i = 0; i < mapping.length; i++)
         {
             var map = get_individual(ticket, mapping[i].data);

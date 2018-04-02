@@ -43,6 +43,8 @@ v-s:ContractorProfile
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Labeled;
+  v-s:labelPattern "{@.v-s:backwardTarget.v-s:shortLabel}"^^xsd:string;
   rdfs:label "Досье контрагента"@ru ;
   rdfs:label "Contractor profile"@en ;
   v-ui:hasTemplate mnd-s:ContractorProfileTemplate ;
@@ -542,7 +544,7 @@ v-s:ContractorTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
   """ ;
@@ -610,7 +612,7 @@ v-s:CurrencyExchangeRateTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
   """ ;

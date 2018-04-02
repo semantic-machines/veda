@@ -1140,7 +1140,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
     }
   }
 
-  var res = put_individual(ticket.id, new_membership);
+  var res = put_individual(ticket, new_membership, typeof _event_id !== "undefined" ? _event_id : undefined);
 
   return [new_membership, res];
 }
@@ -1155,7 +1155,7 @@ function removeFromGroup(ticket, group, resource)
     'v-s:resource': newUri(resource),
     'v-s:deleted': newBool(true)
   };
-  var res = put_individual(ticket.id, new_membership);
+  var res = put_individual(ticket, new_membership, typeof _event_id !== "undefined" ? _event_id : undefined);
 
   return [new_membership, res];
 }

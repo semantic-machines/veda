@@ -5,6 +5,10 @@ import veda.common.logger, veda.core.common.define, veda.common.type;
 import veda.core.common.know_predicates, veda.util.module_info;
 import veda.authorization.right_set, veda.storage.common, veda.authorization.cache;
 
+extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload);
+extern (C) char *get_trace(immutable(char) * _uri, immutable(char) * _user_uri, ubyte _request_access, ubyte trace_mode, bool _is_check_for_reload);
+
+
 string lstr = "                                                                           ";
 
 interface Authorization
@@ -15,51 +19,84 @@ interface Authorization
     public bool open();
     public void reopen();
     public void close();
+
+    public void set_use_ext_libauthorization(bool is_ext);
 }
+
+OutBuffer trace_acl;
+OutBuffer trace_group;
+OutBuffer trace_info;
+
+const     TRACE_ACL   = 0;
+const     TRACE_GROUP = 1;
+const     TRACE_INFO  = 2;
+
+char      *cstr_acl;
+char      *cstr_group;
+char      *cstr_info;
 
 abstract class ImplAuthorization : Authorization
 {
-    Logger    log;
-    string    filter_value;
-    ubyte     calc_right_res;
+    Logger   log;
+    string   filter_value;
+    ubyte    calc_right_res;
 
-    RightSet  subject_groups;
-    ubyte     request_access;
+    RightSet subject_groups;
+    ubyte    request_access;
     ubyte[ string ] checked_groups;
-    string    str;
-    int       rc;
-    int       str_num;
-    int       count_permissions = 0;
-    OutBuffer trace_acl;
-    OutBuffer trace_group;
-    OutBuffer trace_info;
+    string   str;
+    int      rc;
+    int      str_num;
+    int      count_permissions = 0;
 
-    bool      use_cache = false;
-    Cache     cache;
+    bool     use_cache = false;
+    Cache    cache;
+
+    bool     use_ext_libauthorization = false;
+
+    public void set_use_ext_libauthorization(bool is_ext)
+    {
+        use_ext_libauthorization = is_ext;
+    }
 
     ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                     OutBuffer _trace_info)
     {
-        if (use_cache)
-        {
-            if (cache is null)
-            {
-                cache = new Cache();
-            }
-            else
-            {
-                int res = cache.get(user_uri, _uri, _request_access);
-                if (res != -1)
-                {
-                    stderr.writefln("res=%s", access_to_pretty_string(cast(ubyte)res));
-                    return cast(ubyte)res;
-                }
-            }
-        }
-
         trace_acl   = _trace_acl;
         trace_group = _trace_group;
         trace_info  = _trace_info;
+
+        if (use_ext_libauthorization)
+        {
+            if (trace_acl !is null || trace_group !is null || trace_info !is null)
+            {
+                if (trace_acl !is null)
+                {
+                    cstr_acl = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_ACL, is_check_for_reload);
+                    string str = to!string(cstr_acl);
+                    _trace_acl.write(str);
+                }
+
+                if (trace_group !is null)
+                {
+                    cstr_group = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_GROUP, is_check_for_reload);
+                    string str = to!string(cstr_group);
+                    _trace_group.write(str);
+                }
+
+                if (trace_info !is null)
+                {
+                    cstr_info = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_INFO, is_check_for_reload);
+                    string str = to!string(cstr_info);
+                    _trace_info.write(str);
+                }
+                return 0;
+            }
+            else
+            {
+                return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, is_check_for_reload);
+            }
+        }
 
         // reset local vars
         checked_groups = (ubyte[ string ]).init;
@@ -98,7 +135,13 @@ abstract class ImplAuthorization : Authorization
                 filter_value = get_in_current_transaction(filter);
 
                 if (trace_info !is null)
+                {
                     trace_info.write(format("%d user_uri=%s\n", str_num++, user_uri));
+
+                    trace_info.write(format("%d filter=%s\n", str_num++, filter));
+                    if (filter_value !is null)
+                        trace_info.write(format("%d filter_value=%s\n", str_num++, filter_value));
+                }
 
                 // читаем группы subject (ticket.user_uri)
                 if (trace_info !is null)

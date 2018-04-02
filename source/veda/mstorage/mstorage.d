@@ -155,7 +155,7 @@ class VedaServer : WSClient
 void init(string node_id)
 {
     Context core_context;
-	Ticket    sticket;
+    Ticket  sticket;
 
     if (node_id is null || node_id.length < 2)
         node_id = "cfg:standart_node";
@@ -374,10 +374,10 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
 
 private Ticket authenticate(Context ctx, string login, string password)
 {
-    StopWatch sw; sw.start;
+    //StopWatch sw; sw.start;
 
-    Ticket    ticket;
-    Ticket    sticket = ctx.sys_ticket(true);
+    Ticket ticket;
+    Ticket sticket = ctx.sys_ticket(true);
 
     if (trace_msg[ T_API_70 ] == 1)
         log.trace("authenticate, login=[%s] password=[%s]", login, password);
@@ -390,9 +390,15 @@ private Ticket authenticate(Context ctx, string login, string password)
     login = replaceAll(login, regex(r"[-]", "g"), " +");
 
     Individual[] candidate_users;
-    string query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
-    
+    string       query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+
     ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    auto storage = ctx.get_storage();
+    if (storage is null)
+    {
+        log.trace("authenticate:fail authenticate, storage not ready");
+        return ticket;
+    }
 
     foreach (user; candidate_users)
     {
@@ -421,7 +427,7 @@ private Ticket authenticate(Context ctx, string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             OpResult op_res = add_to_transaction(
-                                                 l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
                                                  OptFreeze.NONE, OptAuthorize.YES,
                                                  OptTrace.NONE);
 
@@ -432,7 +438,7 @@ private Ticket authenticate(Context ctx, string login, string password)
             tnx.id            = -1;
             tnx.is_autocommit = true;
             op_res            = add_to_transaction(
-                                                   l_context.get_storage().get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "",
+                                                   storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &user, false, "",
                                                    OptFreeze.NONE,
                                                    OptAuthorize.YES,
                                                    OptTrace.NONE);
@@ -907,9 +913,19 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
                 if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
                 {
-                    // для обновляемого индивида проверим доступность бита Update
-                    if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
+                    if (indv.isExists("v-s:deleted", true))
                     {
+                        if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_delete, true, null, null, null) != Access.can_delete)
+                        {
+                            // для устаноки аттрибута v-s:deleted у индивида проверим доступность бита Delete
+                            log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can delete] [%s] ", ticket.user_uri, indv.uri);
+                            res.result = ResultCode.Not_Authorized;
+                            return res;
+                        }
+                    }
+                    else if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
+                    {
+                        // для обновляемого индивида проверим доступность бита Update
                         log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can update] [%s] ", ticket.user_uri, indv.uri);
                         res.result = ResultCode.Not_Authorized;
                         return res;
@@ -956,7 +972,8 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         if (rdfType.anyExists(owl_tags) == true)
             is_onto = true;
 
-        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
+            rdfType.anyExists(veda_schema__PermissionFilter) == true)
             is_acl_element = true;
 
         if (cmd == INDV_OP.REMOVE)
@@ -1056,7 +1073,8 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
 
     Tid        tid_acl;
 
-    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true)
+    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
+        rdfType.anyExists(veda_schema__PermissionFilter) == true)
     {
         tid_acl = getTid(P_MODULE.acl_preparer);
         if (tid_acl != Tid.init)

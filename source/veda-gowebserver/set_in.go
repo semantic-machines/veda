@@ -27,7 +27,7 @@ func setInIndividual(ctx *fasthttp.RequestCtx) {
 	}
 
 	ticketKey = jsonData["ticket"].(string)
-        assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
 	eventID = jsonData["event_id"].(string)
 
 	rc, ticket := getTicket(ticketKey)

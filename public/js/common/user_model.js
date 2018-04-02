@@ -139,19 +139,24 @@ veda.Module(function (veda) { "use strict";
         self.aspect.save();
         self["v-s:hasAspect"] = [ self.aspect ];
       }
-    });
-  };
+      }
+      self["v-s:hasAspect"] = [ self.aspect ];
+      self.save();
+    }
 
-  proto.toggleLanguage = function(language_val) {
-    var self = this;
-    if (language_val in self.language && Object.keys(self.language).length == 1) return;
-    language_val in self.language ? delete self.language[language_val] : self.language[language_val] = self.availableLanguages[language_val];
-    self.preferences["v-ui:preferredLanguage"] = Object.keys(self.language).map ( function (language_val) {
-      return self.language[language_val];
+    self.preferences.on("v-ui:displayedElements", function (values) {
+      self.displayedElements = values[0];
     });
-    self.preferences.save().then(function () {
+    self.preferences.on("v-ui:preferredLanguage", function (values) {
+      self.language = values.reduce( function (acc, lang) {
+        acc[lang["rdf:value"][0]] = self.availableLanguages[lang["rdf:value"][0]];
+        return acc;
+      }, {} );
+      self.preferences.save();
       veda.trigger("language:changed");
     });
+
+    return self;
   };
 
 });

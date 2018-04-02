@@ -1,21 +1,26 @@
 package main
 
+/*
+ #cgo CFLAGS: -I../authorization
+ #cgo LDFLAGS: -L../lib64 -lauthorization
+ #include <authorization.h>
+*/
+import "C"
+
 import (
 	"bytes"
 	"encoding/json"
 	"log"
 	"net"
 	//"os"
+	"bufio"
 	"strings"
 	"time"
-	//"github.com/bmatsuo/lmdb-go/lmdb"
+	//"fmt"
 	"github.com/itiu/lmdb-go/lmdb"
-	"bufio"
 	"gopkg.in/vmihailenco/msgpack.v2"
+	"unsafe"
 )
-
-var indivEnv *lmdb.Env
-var ticketEnv *lmdb.Env
 
 //Connector represents struct for connection to tarantool
 type Connector struct {
@@ -23,6 +28,11 @@ type Connector struct {
 	conn net.Conn
 	//Address of tarantool database
 	addr string
+
+	indivEnv  *lmdb.Env
+	ticketEnv *lmdb.Env
+
+	db_is_open bool
 }
 
 //RequestResponse represents structure for tarantool request response
@@ -58,37 +68,46 @@ const (
 	Remove = 51
 )
 
+func (conn *Connector) open_db() {
+	var err error
+	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+	if err != nil {
+		log.Fatal("Err: can not open lmdb individuals base: ", err)
+		conn.db_is_open = false
+		return
+	}
+
+	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+	if err != nil {
+		log.Fatal("Err: can not open tickets lmdb base: ", err)
+		conn.db_is_open = false
+		return
+	}
+
+	conn.db_is_open = true
+}
+
 //Connect tries to connect to socket in tarantool while connection is not established
 func (conn *Connector) Connect(addr string) {
 	var err error
-	indivEnv, err = lmdb.NewEnv()
+	conn.indivEnv, err = lmdb.NewEnv()
 	if err != nil {
 		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
 	}
 
-	err = indivEnv.SetMaxDBs(1)
+	err = conn.indivEnv.SetMaxDBs(1)
 	if err != nil {
 		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
 	}
 
-	err = indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly | lmdb.NoMetaSync | lmdb.NoSync | lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open lmdb individuals base: ", err)
-	}
-
-	ticketEnv, err = lmdb.NewEnv()
+	conn.ticketEnv, err = lmdb.NewEnv()
 	if err != nil {
 		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
 	}
 
-	err = ticketEnv.SetMaxDBs(1)
+	err = conn.ticketEnv.SetMaxDBs(1)
 	if err != nil {
 		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
-	}
-	
-	err = ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly | lmdb.NoMetaSync | lmdb.NoSync | lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open tickets lmdb base: ", err)
 	}
 
 	/*	var err error
@@ -257,6 +276,10 @@ func doRequest(needAuth bool, userUri string, data []string, trace, traceAuth bo
 func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, trace bool) RequestResponse {
 	var rr RequestResponse
 
+	if conn.db_is_open == false {
+		conn.open_db()
+	}
+
 	//If user uri is too shorth than return not authorized
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
@@ -275,7 +298,7 @@ func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, 
 			needAuth, userUri, individuals)
 	}
 
-	//Send request to tarantool
+	//Send request
 	rcRequest, response := doRequest(needAuth, userUri, individuals, trace, false, Put)
 	//If failed return fail code
 	if rcRequest != Ok {
@@ -312,6 +335,10 @@ func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, 
 func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool) RequestResponse {
 	var rr RequestResponse
 
+	if conn.db_is_open == false {
+		conn.open_db()
+	}
+
 	//If user uri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
@@ -325,47 +352,23 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		return rr
 	}
 
-	var rights []interface{}
-	if needAuth {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "r"})
-		}
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
-
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@GET ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@GET ERR RECIVING ACL RESPONSE")
-			return rr
-		}
-
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@ERR GET PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
-	}
-
 	rr.OpRC = make([]ResultCode, 0, len(uris))
 	rr.Data = make([]string, 0, len(uris))
-	err := indivEnv.View(func(txn *lmdb.Txn) (err error) {
+	err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
 		dbi, err := txn.OpenDBI("", 0)
 		if err != nil {
 			return err
 		}
 		for i := 0; i < len(uris); i++ {
 			if needAuth {
-				if !strings.Contains(rights[i].(string), "R") {
+
+				curi := C.CString(uris[i])
+				defer C.free(unsafe.Pointer(curi))
+
+				cuser_uri := C.CString(userUri)
+				defer C.free(unsafe.Pointer(cuser_uri))
+
+				if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
 					rr.OpRC = append(rr.OpRC, NotAuthorized)
 					continue
 				}
@@ -386,49 +389,13 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 
 	rr.CommonRC = Ok
 	if err != nil {
-		log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %s, keys=%s\n", err, uris)
-		rr.CommonRC = InternalServerError
+		if lmdb.IsErrno(err, lmdb.NotFound) == true {
+			rr.CommonRC = NotFound
+		} else {
+			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
+			rr.CommonRC = InternalServerError
+		}
 	}
-	/*	if trace {
-			log.Printf("@CONNECTOR GET: PACK GET REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
-				needAuth, userUri, uris)
-		}
-
-		//Send request to tarantool
-		rcRequest, response := doRequest(needAuth, userUri, uris, trace, false, Get)
-		if rcRequest != Ok {
-			rr.CommonRC = rcRequest
-			return rr
-		}
-
-		//Decoding request response
-		decoder := msgpack.NewDecoder(bytes.NewReader(response))
-		arrLen, _ := decoder.DecodeArrayLen()
-		rc, _ := decoder.DecodeUint()
-		//Decoding common response code for request
-		rr.CommonRC = ResultCode(rc)
-
-		if trace {
-			log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
-		}
-
-		//Decoding response, response represented with request code and string or nil
-		rr.Data = make([]string, 0)
-		rr.OpRC = make([]ResultCode, len(uris))
-		for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
-			rc, _ = decoder.DecodeUint()
-			rr.OpRC[j] = ResultCode(rc)
-			if trace {
-				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
-			}
-
-			if rr.OpRC[j] == Ok {
-				tmp, _ := decoder.DecodeString()
-				rr.Data = append(rr.Data, tmp)
-			} else {
-				decoder.DecodeNil()
-			}
-		}*/
 
 	return rr
 }
@@ -452,248 +419,152 @@ func strRightToByte(strRight string) uint8 {
 	return right
 }
 
-//Authorize sends authorize, get membership or get rights origin request to tarantool,
+func trace_acl(str *C.char) {
+
+}
+
+//Authorize sends authorize, get membership or get rights origin request,
 //it depends on parametr operation. Individuals uris passed as data here
-func (conn *Connector) Authorize(needAuth bool, userUri string, uris []string, operation uint,
+func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, operation uint,
 	trace, traceAuth bool) RequestResponse {
 	var rr RequestResponse
 
 	//If userUri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR AUTHORIZE: ", uris)
+		log.Println("@ERR CONNECTOR AUTHORIZE: ", uri)
 		return rr
 	}
 
 	//If no uris passed than NoContent returned to client.
-	if len(uris) == 0 {
+	if len(uri) == 0 {
 		rr.CommonRC = NoContent
 		return rr
 	}
 
 	if trace {
-		log.Printf("@CONNECTOR AUTHORIZE: PACK AUTHORIZE REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
-			needAuth, userUri, uris)
+		log.Printf("@CONNECTOR AUTHORIZE: PACK AUTHORIZE REQUEST need_auth=%v, user_uri=%v, uri=%v \n",
+			needAuth, userUri, uri)
 	}
 
-	var rights []interface{}
 	if operation == Authorize {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "crud"})
-		}
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
 
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR RECIVING ACL RESPONSE")
-			return rr
-		}
+		rr.Rights = make([]uint8, 1)
+		rr.OpRC = make([]ResultCode, 1)
 
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@AUTHORIZE PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
-		rr.Rights = make([]uint8, len(rights))
-		rr.OpRC = make([]ResultCode, len(rights))
-		for i := 0; i < len(rights); i++ {
-			right := strRightToByte(rights[i].(string))
-			rr.Rights[i] = right
-			rr.OpRC[i] = Ok
-		}
+		curi := C.CString(uri)
+		defer C.free(unsafe.Pointer(curi))
+
+		cuser_uri := C.CString(userUri)
+		defer C.free(unsafe.Pointer(cuser_uri))
+
+		right := C.authorize_r(curi, cuser_uri, 15, true)
+
+		rr.Rights[0] = uint8(right)
+		rr.OpRC[0] = Ok
+
 		rr.CommonRC = Ok
 	}
 
 	if operation == GetRightsOrigin {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "crud", "TRACE-ACL", "TRACE-INFO"})
-		}
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
 
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR RECIVING ACL RESPONSE")
-			return rr
-		}
+		curi := C.CString(uri)
+		defer C.free(unsafe.Pointer(curi))
 
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@AUTHORIZE PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
+		cuser_uri := C.CString(userUri)
+		defer C.free(unsafe.Pointer(cuser_uri))
 
-		rr.Rights = make([]uint8, len(rights))
-		rr.Data = make([]string, len(rights))
-		rr.OpRC = make([]ResultCode, len(rights))
-		for i := 0; i < len(rights); i += 3 {
-			rr.Rights[i] = strRightToByte(rights[i].(string))
-			statements := strings.Split(rights[i+1].(string), "\n")
-			data := make([]interface{}, 0)
-			for j := 0; j < len(statements)-1; j++ {
-				parts := strings.Split(statements[j], ";")
-				statementIndiv := map[string]interface{}{
-					"@": "_",
-					"rdf:type": []interface{}{
-						map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
-					},
-					"v-s:permissionSubject": []interface{}{
-						map[string]interface{}{"type": "Uri", "data": parts[1]},
-					},
-					"v-s:permissionObject": []interface{}{
-						map[string]interface{}{"type": "Uri", "data": parts[0]},
-					},
-					parts[2]: []interface{}{
-						map[string]interface{}{"type": "Boolean", "data": true},
-					},
-				}
-				data = append(data, statementIndiv)
-			}
+		rights_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_ACL, true))
+		//defer C.free(unsafe.Pointer(right))
 
-			commentIndiv := map[string]interface{}{
+		rr.Rights = make([]uint8, 1)
+		rr.Data = make([]string, 1)
+		rr.OpRC = make([]ResultCode, 1)
+
+		statements := strings.Split(rights_str, "\n")
+
+		data := make([]interface{}, 0)
+		for j := 0; j < len(statements)-1; j++ {
+
+			parts := strings.Split(statements[j], ";")
+			statementIndiv := map[string]interface{}{
 				"@": "_",
 				"rdf:type": []interface{}{
 					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
 				},
 				"v-s:permissionSubject": []interface{}{
-					map[string]interface{}{"type": "Uri", "data": "?"},
+					map[string]interface{}{"type": "Uri", "data": parts[1]},
 				},
-
-				"rdfs:comment": []interface{}{
-					map[string]interface{}{"type": "String", "lang": "NONE", "data": rights[i+2]},
+				"v-s:permissionObject": []interface{}{
+					map[string]interface{}{"type": "Uri", "data": parts[0]},
+				},
+				parts[2]: []interface{}{
+					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			data = append(data, commentIndiv)
-			jsonBytes, _ := json.Marshal(data)
-			rr.Data[i] = string(jsonBytes)
-			rr.OpRC[i] = Ok
+			data = append(data, statementIndiv)
 		}
+
+		//			commentIndiv := map[string]interface{}{
+		//				"@": "_",
+		//				"rdf:type": []interface{}{
+		//					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
+		//				},
+		//				"v-s:permissionSubject": []interface{}{
+		//					map[string]interface{}{"type": "Uri", "data": "?"},
+		//				},
+
+		//				"rdfs:comment": []interface{}{
+		//					map[string]interface{}{"type": "String", "lang": "NONE", "data": rights[i+2]},
+		//				},
+		//			}
+		//			data = append(data, commentIndiv)
+
+		jsonBytes, _ := json.Marshal(data)
+		rr.Data[0] = string(jsonBytes)
+		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
 	}
 
 	if operation == GetMembership {
-		aclRequest := make([]interface{}, 0, len(uris)+1)
-		aclRequest = append(aclRequest, userUri)
-		for _, uri := range uris {
-			aclRequest = append(aclRequest, []interface{}{uri, "crud", "TRACE-GROUP"})
+
+		curi := C.CString(uri)
+		defer C.free(unsafe.Pointer(curi))
+
+		cuser_uri := C.CString(userUri)
+		defer C.free(unsafe.Pointer(cuser_uri))
+
+		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
+
+		rr.Rights = make([]uint8, 1)
+		rr.Data = make([]string, 1)
+		rr.OpRC = make([]ResultCode, 1)
+
+		parts := strings.Split(info_str, "\n")
+
+		memberOf := make([]interface{}, len(parts)-1)
+		for k := 0; k < len(parts)-1; k++ {
+			memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
 		}
 
-		aclRequestBytes, _ := json.Marshal(aclRequest)
-		_, err := aclSocket.Send([]byte(string(aclRequestBytes)), 0)
-
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR SENDING ACL REQUEST")
-			return rr
-		}
-		aclResponseBytes, err := aclSocket.Recv(0)
-		if err != nil {
-			rr.CommonRC = InternalServerError
-			log.Println("@AUTHORIZE ERR RECIVING ACL RESPONSE")
-			return rr
+		membershipIndividual := map[string]interface{}{
+			"@": "_",
+			"rdf:type": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
+			},
+			"v-s:resource": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": uri},
+			},
+			"v-s:memberOf": memberOf,
 		}
 
-		aclResponseBytes = bytes.Trim(aclResponseBytes, "\x00")
-		err = json.Unmarshal([]byte(string(aclResponseBytes)), &rights)
-		if err != nil {
-			log.Println("@AUTHORIZE PARSING AUTH RESPONSE: ", err)
-			rr.CommonRC = InternalServerError
-			return rr
-		}
-
-		rr.Rights = make([]uint8, len(rights))
-		rr.Data = make([]string, len(rights))
-		rr.OpRC = make([]ResultCode, len(rights))
-
-		for i, j := 0, 0; i < len(rights); i, j = i+2, j+1 {
-			uri := uris[j]
-			parts := strings.Split(rights[i+1].(string), "\n")
-
-			memberOf := make([]interface{}, len(parts)-1)
-			for k := 0; k < len(parts)-1; k++ {
-				memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
-			}
-
-			membershipIndividual := map[string]interface{}{
-				"@": "_",
-				"rdf:type": []interface{}{
-					map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
-				},
-				"v-s:resource": []interface{}{
-					map[string]interface{}{"type": "Uri", "data": uri},
-				},
-				"v-s:memberOf": memberOf,
-			}
-
-			jsonBytes, _ := json.Marshal(membershipIndividual)
-			rr.Data[j] = string(jsonBytes)
-			rr.OpRC[j] = Ok
-		}
+		jsonBytes, _ := json.Marshal(membershipIndividual)
+		rr.Data[0] = string(jsonBytes)
+		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
 	}
-
-	//Send request to tarantool
-	/*	rcRequest, response := doRequest(needAuth, userUri, uris, trace, traceAuth, operation)
-		if rcRequest != Ok {
-			rr.CommonRC = rcRequest
-			return rr
-		}
-
-		//Decoding msgpack response
-		decoder := msgpack.NewDecoder(bytes.NewReader(response))
-		arrLen, _ := decoder.DecodeArrayLen()
-		//Decoding common request code
-		rc, _ := decoder.DecodeUint()
-		rr.CommonRC = ResultCode(rc)
-
-		if trace {
-			log.Println("@CONNECTOR AUTHORIZE: COMMON RC ", rr.CommonRC)
-		}
-
-		//Decoding response data, data represented by operation response code, access rights,
-		//nil for authorize and string data fro GetRightsOrigin and GetMembership.
-		rr.OpRC = make([]ResultCode, len(uris))
-		rr.Rights = make([]uint8, len(uris))
-		if operation == GetMembership || operation == GetRightsOrigin {
-			rr.Data = make([]string, len(uris))
-		}
-		for i, j := 1, 0; i < arrLen; i, j = i+3, j+1 {
-			rc, _ = decoder.DecodeUint()
-			rr.OpRC[j] = ResultCode(rc)
-			if trace {
-				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
-			}
-
-			rr.Rights[j], _ = decoder.DecodeUint8()
-			if operation == GetRightsOrigin || operation == GetMembership {
-				rr.Data[j], _ = decoder.DecodeString()
-			} else {
-				decoder.DecodeNil()
-			}
-		}*/
 
 	return rr
 }
@@ -701,6 +572,10 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uris []string, o
 //GetTicket sends get ticket request to tarantool, ticket ids here passes as data
 func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse {
 	var rr RequestResponse
+
+	if conn.db_is_open == false {
+		conn.open_db()
+	}
 
 	//If no ticket ids passed than NoContent returned to client.
 	if len(ticketIDs) == 0 {
@@ -710,7 +585,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
 	rr.Data = make([]string, 0, len(ticketIDs))
-	err := ticketEnv.View(func(txn *lmdb.Txn) (err error) {
+	err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {
 		dbi, err := txn.OpenDBI("", 0)
 		if err != nil {
 			return err
@@ -735,47 +610,6 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
 		rr.CommonRC = InternalServerError
 	}
-
-	/*	if trace {
-			log.Printf("@CONNECTOR GET TICKET: PACK GET REQUEST ticket_ids=%v\n", ticketIDs)
-		}
-
-		//Send request to tarantool
-		rcRequest, response := doRequest(false, "cfg:VedaSystem", ticketIDs, trace, false, GetTicket)
-		if rcRequest != Ok {
-			rr.CommonRC = rcRequest
-			return rr
-		}
-
-		//Decoding requset response
-		decoder := msgpack.NewDecoder(bytes.NewReader(response))
-		arrLen, _ := decoder.DecodeArrayLen()
-		//Decoding common request response code
-		rc, _ := decoder.DecodeUint()
-		rr.CommonRC = ResultCode(rc)
-
-		if trace {
-			log.Println("@CONNECTOR GET: COMMON RC ", rr.CommonRC)
-		}
-
-		//Decoding request response data, data here represented with operation result code,
-		//and ticket individual msgpack
-		rr.Data = make([]string, 0)
-		rr.OpRC = make([]ResultCode, len(ticketIDs))
-		for i, j := 1, 0; i < arrLen; i, j = i+2, j+1 {
-			rc, _ = decoder.DecodeUint()
-			rr.OpRC[j] = ResultCode(rc)
-			if trace {
-				log.Println("@CONNECTOR GET: OP CODE ", rr.OpRC[j])
-			}
-
-			if rr.OpRC[j] == Ok {
-				tmp, _ := decoder.DecodeString()
-				rr.Data = append(rr.Data, tmp)
-			} else {
-				decoder.DecodeNil()
-			}
-		}*/
 
 	return rr
 }

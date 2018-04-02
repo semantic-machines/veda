@@ -13,7 +13,7 @@ import (
 func addToIndividual(ctx *fasthttp.RequestCtx) {
 	timestamp := time.Now().Unix()
 
-        var assignedSubsystems uint64
+	var assignedSubsystems uint64
 	var ticketKey, eventID string
 	// var ticket ticket
 
@@ -27,7 +27,7 @@ func addToIndividual(ctx *fasthttp.RequestCtx) {
 	}
 
 	ticketKey = jsonData["ticket"].(string)
-        assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
 	eventID = jsonData["event_id"].(string)
 
 	//request ticket with the given key and check its validity

@@ -49,7 +49,10 @@ public class LmdbStorage : Storage
                 if (acl_service !is null)
                     acl_client = new ClientAuthorization(acl_service, this.log);
                 else
-                    acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", 0, this.log);
+                {
+                    string authorization_lib = properties.as!(string)("authorization_lib");
+                    acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", 0, authorization_lib == "external", this.log);
+                }
             }
             catch (Throwable ex)
             {

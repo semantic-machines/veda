@@ -70,7 +70,7 @@ v-s:UserScriptEvent
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -192,7 +192,7 @@ v-s:UserScriptTemplate
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <div class="actions view edit -search clearfix">
-    <div about="@" class="pull-left" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
     <div class="pull-right">
       <button type="button" class="action btn btn-warning view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
       <button type="button" class="action btn btn-default -view edit -search" id="clear" about="v-s:Clear" property="rdfs:label"/>
@@ -797,23 +797,21 @@ v-ui:ModulesResultTemplate
     height: 100%;
   }
 </style>
-<div>
-  <div class="result-container row">
-    <div class="col-md-4">
-      <div class="thumbnail">
-        <div class="hasImage" about="@" rel="v-s:hasImage" style="height:200px;" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
-        <div>
-          <span id="test" about="@" data-template="v-ui:IconModalTemplate"></span>
-          <span style="font-weight: bold;" property="@"></span>
-        </div>
-        <div>
-          <span style="font-weight: bold;" about="v-s:moduleVersion" property="rdfs:label"></span>
-          <span>:</span>
-          <span property="v-s:moduleVersion"></span>
-        </div>
-        <div class="actions">
-          <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete"></div>
-        </div>
+<div class="result-container row">
+  <div class="col-md-4">
+    <div class="thumbnail">
+      <div class="hasImage" about="@" rel="v-s:hasImage" style="height:200px;" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+      <div>
+        <span id="test" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span style="font-weight: bold;" property="@"></span>
+      </div>
+      <div>
+        <span style="font-weight: bold;" about="v-s:moduleVersion" property="rdfs:label"></span>
+        <span>:</span>
+        <span property="v-s:moduleVersion"></span>
+      </div>
+      <div class="actions">
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete"></span>
       </div>
     </div>
   </div>
@@ -903,7 +901,7 @@ v-ui:AdministrationAspectTemplate
   v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
 <div class="container sheet" style="position:relative;">
-  <h1 about="v-s:AdministrationAspect1" property="rdfs:label"></h1>
+  <h2 about="v-s:AdministrationAspect1" property="rdfs:label"></h2>
   <br>
   <ul id="admin-tabs" class="nav nav-pills" role="tablist">
     <li role="presentation"><a href="#Classes" aria-controls="Classes" role="tab" data-toggle="tab" about="v-s:ClassesBundle" property="rdfs:label"></a></li>
@@ -923,14 +921,14 @@ v-ui:AdministrationAspectTemplate
 
       <div class="row">
         <div class="col-md-6">
-          <h2 about="v-s:ClassesBundle" property="rdfs:label"></h2>
+          <h3 about="v-s:ClassesBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
             <div class="panel-heading"><span about="v-s:ClassRegistry" property="rdfs:label"></span><a href="#/v-s:ClassBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
             <div class="panel-body" about="v-s:ClassRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
         <div class="col-md-6">
-          <h2 about="v-s:PropertiesBundle" property="rdfs:label"></h2>
+          <h3 about="v-s:PropertiesBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
             <div class="panel-heading"><span about="v-s:PropertyRegistry" property="rdfs:label"></span><a href="#/v-s:PropertyBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
             <div class="panel-body" about="v-s:PropertyRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
@@ -939,7 +937,7 @@ v-ui:AdministrationAspectTemplate
       </div>
       <div class="row">
         <div class="col-md-6">
-          <h2 about="v-s:TemplatesBundle" property="rdfs:label"></h2>
+          <h3 about="v-s:TemplatesBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
             <div class="panel-heading"><span about="v-s:ClassTemplateRegistry" property="rdfs:label"></span><a href="#/v-s:ClassTemplateBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
             <div class="panel-body" about="v-s:ClassTemplateRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
@@ -949,7 +947,7 @@ v-ui:AdministrationAspectTemplate
     </div>
 
     <!--div role="tabpanel" class="tab-pane" id="Blanks">
-      <h2 about="v-s:BlanksBundle" property="rdfs:label"></h2>
+      <h3 about="v-s:BlanksBundle" property="rdfs:label"></h3>
       <div class="panel panel-default">
         <div class="panel-heading"><span about="v-s:BlankRegistry" property="rdfs:label"></span><a href="#/v-s:BlankBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
         <div class="panel-body" about="v-s:BlankRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
@@ -958,7 +956,7 @@ v-ui:AdministrationAspectTemplate
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Registries">
-      <h2 about="v-s:RegistriesBundle" property="rdfs:label"></h2>
+      <h3 about="v-s:RegistriesBundle" property="rdfs:label"></h3>
       <div class="panel panel-default">
         <div class="panel-heading"><span about="v-s:RegistryRegistry" property="rdfs:label"></span><a href="#/v-s:RegistryBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
         <div class="panel-body" about="v-s:RegistryRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
@@ -967,7 +965,7 @@ v-ui:AdministrationAspectTemplate
     </div-->
 
     <div role="tabpanel" class="tab-pane" id="Nets">
-      <h2 about="v-s:NetsBundle" property="rdfs:label"></h2>
+      <h3 about="v-s:NetsBundle" property="rdfs:label"></h3>
       <div class="panel panel-default">
         <div class="panel-heading">
           <span about="v-s:NetRegistry" property="rdfs:label"></span>
@@ -980,14 +978,14 @@ v-ui:AdministrationAspectTemplate
     <div role="tabpanel" class="tab-pane" id="Rights">
       <div class="row">
         <div class="col-md-6">
-          <h2 about="v-s:GroupsBundle" property="rdfs:label"></h2>
+          <h3 about="v-s:GroupsBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
             <div class="panel-heading"><span about="v-s:GroupRegistry" property="rdfs:label"></span><a href="#/v-s:GroupBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
             <div class="panel-body" about="v-s:GroupRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
         <div class="col-md-6">
-          <h2 about="v-s:UsersBundle" property="rdfs:label"></h2>
+          <h3 about="v-s:UsersBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
             <div class="panel-heading"><span about="v-s:PersonRegistry" property="rdfs:label"></span><a href="#/v-s:PersonBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
             <div class="panel-body" about="v-s:PersonRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
@@ -996,7 +994,7 @@ v-ui:AdministrationAspectTemplate
       </div>
       <!--div class="row">
         <div class="col-md-6">
-          <h2 about="v-s:PermissionStatementsBundle" property="rdfs:label"></h2>
+          <h3 about="v-s:PermissionStatementsBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
             <div class="panel-heading"><span about="v-s:PermissionStatementRegistry" property="rdfs:label"></span><a href="#/v-s:PermissionStatementBlank" about="v-s:Create" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
             <div class="panel-body" about="v-s:PermissionStatementRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
@@ -1016,7 +1014,7 @@ v-ui:AdministrationAspectTemplate
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Modules">
-      <h2 about="v-s:ModulesBundle" property="rdfs:label"></h2>
+      <h3 about="v-s:ModulesBundle" property="rdfs:label"></h3>
       <div class="panel panel-default">
         <div class="panel-heading">
           <div class="row">
@@ -1038,7 +1036,7 @@ v-ui:AdministrationAspectTemplate
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Issues">
-      <h2 about="v-s:BugReportsBundle" property="rdfs:label"></h2>
+      <h3 about="v-s:BugReportsBundle" property="rdfs:label"></h3>
       <div class="panel panel-default">
         <div class="panel-heading">
           <span about="v-s:BugReportRegistry" property="rdfs:label"></span>

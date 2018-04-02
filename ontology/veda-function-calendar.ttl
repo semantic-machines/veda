@@ -128,13 +128,15 @@ v-cal:FunctionCalendarTemplate
   <div id="fullcalendar"></div>
 </div>
 <script>
+  /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  var counter = new veda.IndividualModel(counter_uri);*/
   var fullCalendarOptions = {
     eventSources: [
       {
         events: function(start, end, timezone, callback) {
           individual.getEvents(start, end).then(function (events) {
             // Update counter if counter & events count do not match
-            var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+            /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
             var counter = new veda.IndividualModel(counter_uri);
             counter.load().then(function (counter) {
               if ( counter.isNew() ) {
@@ -144,7 +146,7 @@ v-cal:FunctionCalendarTemplate
                 counter["v-ft:inboxWeekCount"] = [events.length];
                 counter.save();
               }
-            });
+            });*/
             callback(events);
           });
         }
@@ -194,8 +196,8 @@ v-cal:FunctionCalendarIndicatorTemplate
   rdfs:label "v-cal:FunctionCalendar indicator template"@en ;
   v-ui:template """
 <script>
-  var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
-  $(".counter", template).attr("about", counter_uri);
+  /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  $(".label", template).attr("about", counter_uri);*/
   template.tooltip({
     container: template,
     title: individual["rdfs:label"].join(" ")
@@ -204,7 +206,7 @@ v-cal:FunctionCalendarIndicatorTemplate
 </script>
 <a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
   <span class="fa fa-calendar fa-lg"></span>
-  <span class="counter label label-danger" property="v-ft:inboxWeekCount"></span>
+  <!--span id="counter" class="label label-danger" property="v-ft:inboxWeekCount"></span-->
 </a>
   """ ;
 .

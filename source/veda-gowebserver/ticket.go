@@ -1,11 +1,10 @@
 package main
 
 import (
-	"cbor"
 	"encoding/json"
 	"log"
 	"strconv"
-	"strings"
+	//"strings"
 	"time"
 
 	"github.com/valyala/fasthttp"
@@ -51,61 +50,21 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return rr.OpRC[0], ticket
 		}
 
-		//Decode ticket individual from msgpack
-		/*decoder := msgpack.NewDecoder(bytes.NewReader([]byte(rr.Data[0])))
-		decoder.DecodeArrayLen()*/
+		individual := BinobjToMap(rr.Data[0])
+		if individual == nil {
+			log.Println("@ERR GET_TICKET0: DECODING TICKET")
+			return InternalServerError, ticket
+		}
 
 		var duration int64
 
-		/*ticket.Id, _ = decoder.DecodeString()
-		resMapI, _ := decoder.DecodeMap()
-		resMap := resMapI.(map[interface{}]interface{})
-
-		for mapKeyI, mapValI := range resMap {
-			mapKey := mapKeyI.(string)
-
-			switch mapKey {
-			case "ticket:accessor":
-				ticket.UserURI = mapValI.([]interface{})[0].([]interface{})[1].(string)
-
-			case "ticket:when":
-				tt := mapValI.([]interface{})[0].([]interface{})[1].(string)
-				mask := "2006-01-02T15:04:05.00000000"
-				startTime, _ := time.Parse(mask[0:len(tt)], tt)
-				ticket.StartTime = startTime.Unix()
-
-			case "ticket:duration":
-				duration, _ = strconv.ParseInt(mapValI.([]interface{})[0].([]interface{})[1].(string), 10, 64)
-			}
-		}
-		ticket.EndTime = ticket.StartTime + duration*/
-
-		ring := cbor.NewDecoder(strings.NewReader(rr.Data[0]))
-		var cborObject interface{}
-		err := ring.Decode(&cborObject)
-		if err != nil {
-			log.Println("@ERR DECODING CBOR TICKET")
-			return InternalServerError, ticket
-		}
-		resMap := cborObject.(map[interface{}]interface{})
-
-		for mapKeyI, mapValI := range resMap {
-			mapKey := mapKeyI.(string)
-
-			switch mapKey {
-			case "ticket:accessor":
-				ticket.UserURI = mapValI.(string)
-
-			case "ticket:when":
-				tt := mapValI.(string)
-				mask := "2006-01-02T15:04:05.00000000"
-				startTime, _ := time.Parse(mask[0:len(tt)], tt)
-				ticket.StartTime = startTime.Unix()
-
-			case "ticket:duration":
-				duration, _ = strconv.ParseInt(mapValI.(string), 10, 64)
-			}
-		}
+		ticket.UserURI, _ = getFirstString(individual, "ticket:accessor")
+		tt, _ := getFirstString(individual, "ticket:when")
+		mask := "2006-01-02T15:04:05.00000000"
+		startTime, _ := time.Parse(mask[0:len(tt)], tt)
+		ticket.StartTime = startTime.Unix()
+		dd, _ := getFirstString(individual, "ticket:duration")
+		duration, _ = strconv.ParseInt(dd, 10, 64)
 
 		ticket.Id = ticketKey
 		ticket.EndTime = ticket.StartTime + duration

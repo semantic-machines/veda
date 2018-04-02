@@ -1,0 +1,18 @@
+[package]
+name = "authorization"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>", "muller95 <muller95@yandex.ru>"]
+#build = "build.rs"
+
+[lib]
+name = "authorization"
+path = "src/authorization.rs"
+crate-type = ["staticlib", "cdylib"]
+    
+[dependencies]
+lazy_static = "1.0"
+lmdb-rs-m = "0.7.6"
+
+#[build-dependencies]
+#cbindgen = "0.1"
+

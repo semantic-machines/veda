@@ -22,6 +22,7 @@
             "../../veda/storage/lmdb"
 	],
         "sourceFiles":[
+            "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a", 
     	    "../../veda/util/properd.d",

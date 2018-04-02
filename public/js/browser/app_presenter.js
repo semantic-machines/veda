@@ -130,8 +130,12 @@ veda.Module(function AppPresenter(veda) { "use strict";
         if (uri === "drafts") {
           return veda.trigger("load:drafts");
         }
-        var individual = uri ? new veda.IndividualModel(uri) : welcome;
-        individual.present(container, template, mode, extra);
+        if (uri) {
+          var individual = new veda.IndividualModel(uri);
+          individual.present(container, template, mode, extra);
+        } else {
+          riot.route("#/" + welcome.id);
+        }
       });
       riot.route(location.hash);
     })

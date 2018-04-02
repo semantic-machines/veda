@@ -1729,6 +1729,24 @@ v-wf:read
   rdfs:range xsd:boolean ;
 .
 
+v-wf:hasChildTask
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Есть дочерняя задача"@ru ;
+  rdfs:label "Has child task"@en ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:range v-wf:StartForm ;
+.
+
+v-wf:hasParentTask
+  rdf:type owl:DatatypeProperty ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Есть родительская задача"@ru ;
+  rdfs:label "Has parent task"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:range v-wf:DecisionForm ;
+.
+
 # --------------------------- Start Form ---------------------------
 v-wf:StartForm
   rdf:type owl:Class ;
@@ -1738,6 +1756,27 @@ v-wf:StartForm
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Temporal ;
+.
+
+
+v-wf:StartForm_canEdit
+  rdf:type rdf:Property ;
+  rdfs:label "Разрешить редактировать"@ru ;
+  rdfs:label "Permission to edit"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:range xsd:boolean ;
+  rdfs:isDefinedBy v-wf: ;
+.
+
+v-wf:PsStartForm_canEdit
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-wf:StartForm ;
+  v-ui:forProperty v-wf:StartForm_canEdit ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:defaultValue "false"^^xsd:boolean ;
+  rdfs:label "Спецификация для свойства разрешения редактирования класса StartForm"@ru ;
+  rdfs:label "Permission to edit specification for StartForm class"@en ;
 .
 
 v-wf:permission_on_start_from
@@ -2052,7 +2091,7 @@ v-wf:event_df1
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -2078,7 +2117,7 @@ v-wf:event_df2
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -2107,7 +2146,7 @@ v-wf:event_df3
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -2136,7 +2175,7 @@ v-wf:event_df4
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -2165,7 +2204,7 @@ v-wf:event_df5
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -2175,7 +2214,7 @@ v-wf:event_df5
 var deleted = hasValue(document, 'v-s:deleted', {data: true, type: _Boolean});
 
 if ( !deleted ) {
-  prepare_decision_form (ticket, document);
+    prepare_decision_form (ticket, document, prev_state);
 }
 """ ;
   rdfs:label "Триггер обработки решения пользователя"@ru ;
@@ -2192,7 +2231,7 @@ v-wf:ProcessStopEvent
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -2434,30 +2473,21 @@ v-wf:TaskGivenTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskGiven ;
   v-ui:template """
-<script>
-  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
-  if (!individual.hasValue("rdfs:comment")) { $("#comment", template).remove(); }
-  //# sourceURL=v-ui:TaskGivenTemplate
-</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
-      <span rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <div id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>:
-        <b rel="v-wf:executor" data-template="v-ui:LabelTemplate"></b>
+      <strong about="@" property="rdfs:label"></strong>
+      <div>
+        <i about="@" property="rdfs:comment"></i>
       </div>
-      <div id="comment">
-        <span about="rdfs:comment" property="rdfs:label"></span>:
-        <b property="rdfs:comment"></b>
-      </div>
+      <span about="@" rel="v-wf:executor" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2470,48 +2500,31 @@ v-wf:TaskCompletedTemplate
   rdfs:label "Task event template"@en ;
   v-ui:forClass v-wf:TaskCompleted ;
   v-ui:template """
-<script>
-  if (!individual.hasValue("v-wf:executor")) { $("#executor", template).remove(); }
-  if (!individual.hasValue("v-wf:takenDecision")) { $("#decision", template).remove(); }
-  if (!individual.hasValue("v-wf:takenDecision") || !individual["v-wf:takenDecision"][0].hasValue("rdfs:comment")) { $("#comment", template).remove(); }
-  //# sourceURL=v-ui:TaskCompletedTemplate
-</script>
 <div class="journal-record">
   <hr class="margin-sm">
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
-      <span rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <span id="executor">
-        <span about="v-wf:executor" property="rdfs:label"></span>:
-        <em rel="v-wf:executor" data-template="v-ui:LabelTemplate"></em>
-      </span>
-      <div id="decision">
-        <div rel="v-wf:takenDecision">
-          <span>
-            <span about="v-s:creator" property="rdfs:label"></span>:
-            <strong rel="v-s:creator" data-template="v-ui:LabelTemplate"></strong>
-          </span>
-        </div>
-        <div id="decision">
-          <span about="v-wf:takenDecision" property="rdfs:label"></span>:
-          <span rel="v-wf:takenDecision">
-          <span>
-            <strong property="rdfs:label"></strong>
-            <span rel="v-wf:to"><span>(<span property="rdfs:label"></span>)</span></span>
-            <div id="comment">
-            <span about="rdfs:comment" property="rdfs:label"></span>:
-            <b property="rdfs:comment"></b>
-          </div>
+      <div id="decision" about="@" rel="v-wf:takenDecision">
+        <div>
+          <strong about="@" property="rdfs:label"></strong>
+          <span about="@" rel="v-wf:to">
+            <span>
+              <span>&rarr;</span>
+              <span about="@" data-template="v-ui:LabelTemplate"></span>
             </span>
           </span>
+          <div>
+            <i about="@" property="rdfs:comment"></i>
+          </div>
+          <div about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></div>
         </div>
       </div>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2541,7 +2554,7 @@ v-wf:ProcessEventTemplate
       </span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2564,7 +2577,6 @@ v-wf:WorkItemStartedEventTemplate
   v-ui:forClass v-wf:WorkItemStarted ;
   v-ui:template """
 <script>
-  if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:subJournal']", template).toggle();
@@ -2577,20 +2589,16 @@ v-wf:WorkItemStartedEventTemplate
   <div class="row">
     <div class="col-md-3 col-sm-3 event-type">
       <a id="exp" href="#"><span class="glyphicon glyphicon-chevron-down"></span></a>
-      <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-7 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <span id="initiator">
-          <span about="v-wf:initiator" property="rdfs:label"></span>:
-        <em rel="v-wf:initiator" data-template="v-ui:LabelTemplate"></em>
-      </span>
+      <span about="@" property="rdfs:label"></span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
-  <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
+  <div about="@" rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
   """ ;
 .
@@ -2633,7 +2641,7 @@ v-wf:DecisionFormStartedEventTemplate
       </span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
   <div rel="v-s:subJournal" data-template="v-ui:SubJournalTemplate"></div>
@@ -2659,7 +2667,7 @@ v-wf:TraceRecordTemplate
       <pre property="rdfs:comment"></pre>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
 </div>
@@ -2826,7 +2834,7 @@ v-wf:TaskTemplateAsModal
 <!-- BUTTONS -->
   <hr class="margin-sm">
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
   </div>
 </div>
 <script>
@@ -3021,7 +3029,7 @@ rdf:type v-ui:ClassTemplate ;
   </div>
   <hr style="margin: 10px 0px">
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
 """
@@ -3098,7 +3106,7 @@ v-wf:RuleTemplate
   </div>
   <hr style="margin: 10px 0px">
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
 <script>

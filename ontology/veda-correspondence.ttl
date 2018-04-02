@@ -157,7 +157,7 @@ v-s:LetterRegistrationRecordEnumerated
 v-s:LetterRegistrationRecordSender
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:RegistrationRecord ;  
+  rdfs:subClassOf v-s:RegistrationRecord ;
   rdfs:label "Регистрационная запись отправителя письма"@ru ;
   rdfs:label "Letter registration record sender"@en ;
   v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
@@ -167,7 +167,7 @@ v-s:LetterRegistrationRecordSender
 v-s:LetterRegistrationRecordRecipient
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:RegistrationRecord ;    
+  rdfs:subClassOf v-s:RegistrationRecord ;
   rdfs:label "Регистрационная запись получателя письма"@ru ;
   rdfs:label "Letter registration record recipient"@en ;
   v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
@@ -368,7 +368,7 @@ v-s:LetterTemplate
   <br>
   <br>
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal task"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal task"></span>
   </div>
 </div>
   """ ;
@@ -447,7 +447,7 @@ v-s:DeliveryTemplate
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
   </div>
 </div>
 

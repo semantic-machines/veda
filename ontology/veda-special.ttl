@@ -33,6 +33,13 @@ v-s:backwardProperty
   rdfs:label "backward property"@en ;
   rdfs:range owl:ObjectProperty ;
 .
+v-s:backwardReplace
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BackwardLink ;
+  rdfs:label "целевая замена"@ru ;
+  rdfs:label "backward replace"@en ;
+  rdfs:range owl:ObjectProperty ;
+.
 # ------------------------------------------------------------
 v-s:Exportable
   rdf:type owl:Class ;
@@ -41,46 +48,6 @@ v-s:Exportable
   rdfs:label "Exportable thing"@en ;
 .
 # ------------------------------------------------------------
-v-s:Deliverable
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Сущность подлежащая доставке"@ru ;
-  rdfs:label "Deliverable thing"@en ;
-.
-v-s:infoOfExecuting
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Deliverable ;
-  rdfs:label "Информация о выполнении" ;
-  rdfs:range xsd:string ;
-.
-v-s:isSuccess
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Deliverable ;
-  rdfs:label "Завершено успешно" ;
-  rdfs:range xsd:boolean ;
-.
-v-s:subject
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Subject" ;
-  rdfs:domain v-s:Deliverable ;
-  rdfs:range xsd:string ;
-.
-v-s:messageBody
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Message body" ;
-  rdfs:domain v-s:Deliverable ;
-  rdfs:range xsd:string ;
-.
-# ------------------------------------------------------------
-v-s:Email
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Deliverable ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Электронное письмо"@ru ;
-  rdfs:label "E-mail"@en ;
-.
-
-### ------------------------------------------------------
 v-s:ClassAuthorized
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;

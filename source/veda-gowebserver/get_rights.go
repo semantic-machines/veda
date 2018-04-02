@@ -53,7 +53,7 @@ func getRights(ctx *fasthttp.RequestCtx) {
 	}
 
 	//Send authorize request to tarantool
-	rr := conn.Authorize(true, ticket.UserURI, []string{uri}, Authorize, false, false)
+	rr := conn.Authorize(true, ticket.UserURI, uri, Authorize, false, false)
 
 	//If common response code is not Ok return fail to client
 	if rr.CommonRC != Ok {

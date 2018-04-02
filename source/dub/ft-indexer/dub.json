@@ -22,6 +22,7 @@
             "../../veda/core/common"
 	],
         "sourceFiles":[
+            "../../lib64/libauthorization.a",
     	    "../../veda/util/properd.d",
     	    "../../veda/authorization/right_set.d",
             "../../veda/authorization/cache.d",

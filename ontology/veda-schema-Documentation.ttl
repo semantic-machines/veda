@@ -332,8 +332,48 @@ v-s:grantee
   rdfs:range v-s:Correspondent ;
   rdfs:domain v-s:Deliverable2 ;
 .
-
-
+v-s:hasReasonForPowerOfAttorney
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Причина (справочник)"@ru ;
+  rdfs:label "Reason"@en ;
+  rdfs:range v-s:ReasonForPowerOfAttorney ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:hasFormOfPowerOfAttorney
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Форма доверенности"@ru ;
+  rdfs:label "Form of power of attorney"@en ;
+  rdfs:range v-s:FormOfPowerOfAttorney ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:issuedForAbsencePeriodOfEmployee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "На период отсутствия работника"@ru ;
+  rdfs:label "For the period of employee absence"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:isIssuedForAbsencePeriodOfEmployee
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оформляется на период отсутствия работника?"@ru ;
+  rdfs:label "Is issued for the period of absence of the employee?"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain mnd-s:PowerOfAttorney ;
+.
+#----------Причина_оформления_доверенности-----
+v-s:ReasonForPowerOfAttorney
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Причина оформления доверенности"@ru ;
+  rdfs:label "Reason for power of attorney"@en ;
+.
+#----------Форма_доверенности-----
+v-s:FormOfPowerOfAttorney
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Форма доверенности"@ru ;
+  rdfs:label "Form of power of attorney"@en ;
+.
 
 #----------------------------------КОМАНДИРОВКА-----------------------
 v-s:BusinessTrip
@@ -376,7 +416,6 @@ v-s:businessTripGoal
 .
 # v-s:supplier
 # v-s:duration
-
 
 ###----------------------------------РЕГ_ЗАПИСЬ_КОМАНДИРОВКИ---------------------
 v-s:BusinessTripRegistrationRecord
@@ -480,6 +519,15 @@ v-s:InternalDocument
 # v-s:hasLink
 # v-s:hasComment
 
+###----------------------------------Жизненный_Цикл_Изделия---------------------
+v-s:LifecycleStage
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Стадия жизненного цикла изделия"@ru ;
+  rdfs:label "Stage of lifecycle "@en ;
+.
+
+
 #---------------------------------------
 v-s:AddendumTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -524,7 +572,7 @@ v-s:AddendumTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
   </div>
 </div>
   """ ;

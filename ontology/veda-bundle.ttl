@@ -38,6 +38,11 @@ v-s:Add
   rdfs:label "Добавить"@ru ;
   rdfs:label "Add"@en ;
 .
+v-s:Ok
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ок"@ru ;
+  rdfs:label "Ok"@en ;
+.
 v-s:Forward
   rdf:type v-s:Bundle ;
   rdfs:label "Вперед"@ru ;
@@ -154,6 +159,11 @@ v-s:Save
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;
 .
+v-s:Update
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обновить"@ru ;
+  rdfs:label "Update"@en ;
+.
 v-s:Find
   rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;
@@ -188,6 +198,26 @@ v-s:DeleteAll
   rdf:type v-s:Bundle ;
   rdfs:label "Удалить все"@ru ;
   rdfs:label "Delete all"@en ;
+.
+v-s:SelectAll
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать все"@ru ;
+  rdfs:label "Select all"@en ;
+.
+v-s:CancelSelection
+  rdf:type v-s:Bundle ;
+  rdfs:label "Отменить выбор"@ru ;
+  rdfs:label "Cancel selection"@en ;
+.
+v-s:Close
+  rdf:type v-s:Bundle ;
+  rdfs:label "Закрыть"@ru ;
+  rdfs:label "Close"@en ;
+.
+v-s:InvertSelection
+  rdf:type v-s:Bundle ;
+  rdfs:label "Инвертировать"@ru ;
+  rdfs:label "Invert"@en ;
 .
 v-s:Clear
   rdf:type v-s:Bundle ;
@@ -231,8 +261,8 @@ v-s:Recover
 .
 v-s:Instruction
   rdf:type v-s:Bundle ;
-  rdfs:label "Поручение"@ru ;
-  rdfs:label "Instruction"@en ;
+  rdfs:label "Исполнить поручение"@ru ;
+  rdfs:label "Perform instruction"@en ;
 .
 v-s:VersionAlert
   rdf:type v-s:Bundle ;
@@ -246,22 +276,22 @@ v-s:Distribution
 .
 v-s:Question
   rdf:type v-s:Bundle ;
-  rdfs:label "Вопрос"@ru ;
-  rdfs:label "Question"@en ;
+  rdfs:label "Ответить на вопрос"@ru ;
+  rdfs:label "Answer question"@en ;
 .
 v-s:Introduction
   rdf:type v-s:Bundle ;
-  rdfs:label "На ознакомление"@ru ;
-  rdfs:label "Introduction"@en ;
+  rdfs:label "Ознакомиться"@ru ;
+  rdfs:label "Get informed"@en ;
 .
 v-s:Coordination
   rdf:type v-s:Bundle ;
-  rdfs:label "На согласование"@ru ;
-  rdfs:label "Coordination"@en ;
+  rdfs:label "Согласовать"@ru ;
+  rdfs:label "Coordinate"@en ;
 .
 v-s:Sign
   rdf:type v-s:Bundle ;
-  rdfs:label "Подписание"@ru ;
+  rdfs:label "Подписать"@ru ;
   rdfs:label "Sign"@en ;
 .
 

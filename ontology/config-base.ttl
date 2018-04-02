@@ -382,7 +382,7 @@ cfg:Event_1
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -417,7 +417,7 @@ cfg:Event_2
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -465,7 +465,7 @@ cfg:Event_3
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -594,7 +594,7 @@ cfg:Event_4
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -662,7 +662,7 @@ cfg:Event_5
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -737,7 +737,7 @@ cfg:Event_6
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -782,7 +782,7 @@ cfg:Event_7
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -821,7 +821,7 @@ cfg:Event_8
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -903,7 +903,7 @@ cfg:Event_9
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -961,7 +961,7 @@ cfg:Event_10
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -1003,7 +1003,7 @@ cfg:Event_11
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -1040,7 +1040,7 @@ cfg:Event_12
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -1076,7 +1076,7 @@ cfg:Event_13
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
@@ -1163,22 +1163,20 @@ cfg:Event_15
       put_individual(ticket, linkFrom, _event_id);
     }
   }
-  if (linkTo && linkFrom) {
+  if (linkDeleted) {
+    remove_individual(ticket, membershipToFromUri, _event_id);
+    print( "membershipToFrom removed", membershipToFrom["@"] );
+  } else {
+    put_individual(ticket, membershipToFrom, _event_id);
+    print( "membershipToFrom added", JSON.stringify(membershipToFrom) );
+  }
+  if (mutualMembership) {
     if (linkDeleted) {
-      remove_individual(ticket, membershipToFromUri, _event_id);
-      print( "membershipToFrom removed", membershipToFrom["@"] );
+      remove_individual(ticket, membershipFromToUri, _event_id);
+      print( "membershipFromTo removed", membershipFromTo["@"] );
     } else {
-      put_individual(ticket, membershipToFrom, _event_id);
-      print( "membershipToFrom added", JSON.stringify(membershipToFrom) );
-    }
-    if (mutualMembership) {
-      if (linkDeleted) {
-        remove_individual(ticket, membershipFromToUri, _event_id);
-        print( "membershipFromTo removed", membershipFromTo["@"] );
-      } else {
-        put_individual(ticket, membershipFromTo, _event_id);
-        print( "membershipFromTo added", JSON.stringify(membershipFromTo) );
-      }
+      put_individual(ticket, membershipFromTo, _event_id);
+      print( "membershipFromTo added", JSON.stringify(membershipFromTo) );
     }
   }
   """ ;
@@ -1195,6 +1193,7 @@ cfg:Event_16
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      backwardReplaceUris = getUris(document["v-s:backwardReplace"]),
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
@@ -1248,6 +1247,9 @@ cfg:Event_16
       backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
     }
   }
+  backwardReplaceUris.map(function (replaceUri) {
+    backwardTarget[replaceUri] = document[replaceUri];
+  });
   if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
     put_individual(ticket, backwardTarget, _event_id);
     //print( "BL target updated =", JSON.stringify(backwardTarget) );

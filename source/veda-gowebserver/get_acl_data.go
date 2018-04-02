@@ -37,7 +37,7 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 	}
 
 	//Perform authorize request to tarantool
-	rr := conn.Authorize(true, ticket.UserURI, []string{uri}, operation, false, traceAuth)
+	rr := conn.Authorize(true, ticket.UserURI, uri, operation, false, traceAuth)
 
 	//If common response code is not Ok return fail to client
 	if rr.CommonRC != Ok {
@@ -46,6 +46,8 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 		return
 	}
 
-	ctx.Write([]byte(rr.Data[0]))
+	if len(rr.Data) > 0 {
+		ctx.Write([]byte(rr.Data[0]))
+	}
 	ctx.Response.SetStatusCode(int(Ok))
 }

@@ -244,8 +244,10 @@ veda.Module(function (veda) { "use strict";
             var alert = arr[0]["rdfs:label"].join(" ");
             var recover = arr[1]["rdfs:label"].join(" ");
             var deletedAlert = $(
-              '<div id="deleted-alert" class="alert alert-warning no-margin clearfix" role="alert">\
-                <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
+              '<div id="deleted-alert" class="container sheet margin-lg">\
+                <div class="alert alert-warning no-margin clearfix" role="alert">\
+                  <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
+                </div>\
               </div>'
             );
             template.prepend(deletedAlert);
@@ -423,12 +425,6 @@ veda.Module(function (veda) { "use strict";
 
         var values = about.get(rel_uri);
 
-        propertyModifiedHandler(values);
-        about.on(rel_uri, propertyModifiedHandler);
-        template.one("remove", function () {
-          about.off(rel_uri, propertyModifiedHandler);
-        });
-
         if (isEmbedded) {
           embeddedHandler(values);
           about.on(rel_uri, embeddedHandler);
@@ -436,6 +432,12 @@ veda.Module(function (veda) { "use strict";
             about.off(rel_uri, embeddedHandler);
           });
         }
+
+        propertyModifiedHandler(values);
+        about.on(rel_uri, propertyModifiedHandler);
+        template.one("remove", function () {
+          about.off(rel_uri, propertyModifiedHandler);
+        });
 
         function propertyModifiedHandler (values) {
           relContainer.empty();
@@ -472,7 +474,7 @@ veda.Module(function (veda) { "use strict";
     });
 
     // About resource
-    $("[about]:not([rel]):not([property])", wrapper).map( function () {
+    $("[about]:not([rel] *):not([about] *):not([rel]):not([property])", wrapper).map( function () {
       var aboutContainer = $(this),
           about_template_uri = aboutContainer.attr("data-template"),
           about_inline_template = aboutContainer.html().trim(),
@@ -803,7 +805,6 @@ veda.Module(function (veda) { "use strict";
         if (mode === "view") { wrapper.hide(); }
 
         btnRemove.click(function (e) {
-          e.stopPropagation();
           e.preventDefault();
           valTemplate.remove();
           individual.set( rel_uri, individual.get(rel_uri).filter(function (item) { return item.id !== value.id; }) );

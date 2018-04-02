@@ -14,7 +14,7 @@ import (
 func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 	timestamp := time.Now().Unix()
 
-        var assignedSubsystems uint64
+	var assignedSubsystems uint64
 	var ticketKey, eventID string
 	// var ticket ticket
 
@@ -28,7 +28,11 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 	}
 
 	ticketKey = jsonData["ticket"].(string)
-        assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+
+	if jsonData["assigned_subsystems"] != nil {
+		assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	}
+
 	eventID = jsonData["event_id"].(string)
 
 	//Check if ticket is valid, if not then return fail code to client
@@ -51,7 +55,7 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 func removeIndividual(ctx *fasthttp.RequestCtx) {
 	timestamp := time.Now().Unix()
 
-        var assignedSubsystems uint64
+	var assignedSubsystems uint64
 	var ticketKey, eventID string
 	// var ticket ticket
 
@@ -65,7 +69,11 @@ func removeIndividual(ctx *fasthttp.RequestCtx) {
 	}
 
 	ticketKey = jsonData["ticket"].(string)
-        assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+
+	if jsonData["assigned_subsystems"] != nil {
+		assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	}
+
 	eventID = jsonData["event_id"].(string)
 
 	//Check if ticket is valid, if not then return fail code to client
@@ -77,10 +85,13 @@ func removeIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+	individual := make(map[string]interface{})
+	individual["@"] = jsonData["uri"]
+
 	//log.Println("@REMOVE ", jsonData["uri"])
 
 	//Send modify request to veda-server
-	rc = modifyIndividual("remove", &ticket, "uri", jsonData["uri"].(string),
+	rc = modifyIndividual("remove", &ticket, "individuals", []map[string]interface{}{individual},
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
 	trail(ticket.Id, ticket.UserURI, "remove_individual", jsonData, "", rc, timestamp)
 }

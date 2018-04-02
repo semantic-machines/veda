@@ -123,6 +123,7 @@ v-s:Organization
   rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:OrganizationTemplate ;
+  v-s:hasLinksTree v-s:OrganizationLinksTree ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
@@ -226,8 +227,8 @@ v-s:employee
 .
 v-s:occupation
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Занимает должность"@ru ;
-  rdfs:label "Occupation"@en ;
+  rdfs:label "Должность"@ru ;
+  rdfs:label "Position"@en ;
   rdfs:range v-s:Position ;
   rdfs:domain v-s:HRRecord ;
 .
@@ -262,12 +263,12 @@ v-s:Person
   rdfs:subClassOf v-s:Identification ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ManuallyVersioned ;
-#  rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:comment "A person." ;
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
-  v-ui:hasTemplate td:PersonTemplate1 ;
-#  v-s:labelPattern "{@.rdf:type.rdfs:label}: {@.v-s:firstName} {@.v-s:lastName}" ;
+  v-ui:hasTemplate v-s:PersonalInfoTemplate ;
+  v-s:labelPattern "{@.v-s:firstName} {@.v-s:lastName}" ;
 .
 
 v-s:tabNumber
@@ -501,7 +502,7 @@ v-s:OrganizationTemplate
       }
     }
     // Если значение поля v-s:hasClassifierCountry=d:Country_RUS и поле v-s:hasClassifierLegalForm=d:OKOPF_50102 то поле v-s:taxRegistrationCause должно быть обязательным.
-    if (individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && !individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50102") ) {
+    if (individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && !individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50102") && !individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50000") ) {
       result["v-s:taxRegistrationCause"] = {
         state: /^[0-9]{9}$/.test(individual["v-s:taxRegistrationCause"][0]),
         cause: ["v-ui:regexp"]
@@ -697,8 +698,11 @@ v-s:OrganizationTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
+  <br>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
+  <br>
 </div>
 <script>
   $("#add-profile", template).click(function () {
@@ -727,19 +731,23 @@ v-s:OrganizationTemplate
     });
   });
 
-   //перезапись лабел досье контрагента
-  function shortLabelFunction () {
-    if (individual.hasValue("v-s:shortLabel") && individual.hasValue("v-s:hasContractorProfile")){
-      individual["v-s:hasContractorProfile"][0]["rdfs:label"] = individual["v-s:shortLabel"];
-      individual["v-s:hasContractorProfile"][0].save();
+  //Генерация Uri
+  function makeUri () {
+    var shortLabel = individual["v-s:hasClassifierCountry"][0]["v-s:shortLabel"] ;
+    var taxId = individual["v-s:taxId"] ;
+    if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && individual.isNew() ){
+      individual.id = "d:org_"+ shortLabel + taxId ;
+    } else if ( individual.isNew() ) {
+      individual.id = "d:org_"+ taxId ;
     }
   }
-    individual.on("beforeSave", shortLabelFunction);
-    template.one("remove", function () {
-    individual.off("beforeSave", shortLabelFunction);
+
+  individual.on("beforeSave", makeUri);
+  template.one("remove", function () {
+    individual.off("beforeSave", makeUri);
   });
 
-    $("#add-subsidiary", template).click(function () {
+  $("#add-subsidiary", template).click(function () {
     var modal = $("#notification-modal-template").html();
     modal = $(modal);
     modal.modal({"show": false});
@@ -793,10 +801,10 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
   });
-
-
-
-
+  //ремувит кнопку редактировать, если объект физическое лицо
+  if ( individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0] == "000000000000" ) {
+    $(".action#edit", template).remove();
+  }
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
   """ ;
@@ -862,7 +870,7 @@ v-s:SubsidiaryTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
   """ ;
@@ -902,12 +910,12 @@ v-s:DepartmentTemplate
     <div class="row">
       <div class="col-sm-6">
         <em about="v-s:hasChief" property="rdfs:label"></em>
-        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
-        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
       </div>
     </div>
@@ -922,7 +930,7 @@ v-s:DepartmentTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
   </div>
 </div>
   """ ;

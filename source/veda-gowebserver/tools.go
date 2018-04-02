@@ -82,3 +82,37 @@ func CopyString(s string) string {
 	h.Cap = len(s)
 	return string(b)
 }
+
+func getFirstInt(indv map[string]interface{}, predicate string) (int, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return 0, false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case int64:
+		return int(_data.(int64)), true
+	case uint64:
+		return int(_data.(uint64)), true
+	default:
+		return 0, false
+	}
+}
+
+func getFirstString(indv map[string]interface{}, predicate string) (string, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return "", false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case string:
+		return _data.(string), true
+	default:
+		return "", false
+	}
+}

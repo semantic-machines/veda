@@ -15,110 +15,6 @@
   v-s:loadPriority 6 ;
 .
 
-### veda-function-search
-v-s:SavedSearch
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Сохраненный запрос"@ru ;
-  rdfs:label "Saved search"@en ;
-  v-ui:hasTemplate v-ui:SavedSearchTemplate ;
-.
-
-### veda-function-search
-v-s:Empty
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Пусто"@ru ;
-  rdfs:label "Empty"@en ;
-.
-
-### veda-function-search
-v-s:LastMonth
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлый месяц"@ru ;
-  rdfs:label "Last month"@en ;
-.
-
-### veda-function-search
-v-s:LastQuarter
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлый квартал"@ru ;
-  rdfs:label "Last quarter"@en ;
-.
-
-### veda-function-search
-v-s:LastWeek
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлая неделя"@ru ;
-  rdfs:label "Last week"@en ;
-.
-
-### veda-function-search
-v-s:LastYear
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Прошлый год"@ru ;
-  rdfs:label "Last year"@en ;
-.
-
-### veda-function-search
-v-s:NotEmpty
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Не пусто"@ru ;
-  rdfs:label "Not empty"@en ;
-.
-
-### veda-function-search
-v-s:SpecialSearchValues
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Логический оператор"@ru ;
-  rdfs:label "Logical operator"@en ;
-.
-
-### veda-function-search
-v-s:ThisMonth
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Этот месяц"@ru ;
-  rdfs:label "This month"@en ;
-.
-
-### veda-function-search
-v-s:ThisQuarter
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Этот квартал"@ru ;
-  rdfs:label "This quarter"@en ;
-.
-
-### veda-function-search
-v-s:ThisWeek
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Эта неделя"@ru ;
-  rdfs:label "This week"@en ;
-.
-
-### veda-function-search
-v-s:ThisYear
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Этот год"@ru ;
-  rdfs:label "This year"@en ;
-.
-
-### veda-function-search
-v-s:Today
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Сегодня"@ru ;
-  rdfs:label "Today"@en ;
-.
-
-### veda-function-search
-v-s:Yesterday
-  rdf:type v-s:SpecialSearchValues ;
-  rdfs:label "Вчера"@ru ;
-  rdfs:label "Yesterday"@en ;
-.
-
-
-### veda-ui
 # ------------------------------------------------------------
 v-s:File
   rdf:type owl:Class ;
@@ -166,35 +62,6 @@ v-s:Level
   rdfs:label "Level"@en ;
 .
 ### ------------------------------------------------------
-v-s:Link
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Exportable ;
-  rdfs:label "Связь"@ru ;
-  rdfs:label "Link"@en ;
-.
-v-s:from
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Link ;
-  rdfs:label "Источник"@ru ;
-  rdfs:label "Source"@en ;
-  rdfs:range v-s:Thing ;
-.
-v-s:to
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Link ;
-  rdfs:label "Цель"@ru ;
-  rdfs:label "Target"@en ;
-  rdfs:range v-s:Thing ;
-.
-v-s:mutualMembership
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Link ;
-  rdfs:label "Обоюдные права"@ru ;
-  rdfs:label "Mutual rights"@en ;
-  rdfs:range xsd:boolean ;
-.
-### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -221,16 +88,6 @@ v-s:DocumentKind
 # v-s:hasNormativeDocument
 
 ### veda-workflow
-
-
-### veda-function-search
-v-s:query
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:SavedSearch ;
-  rdfs:label "Запрос"@ru ;
-  rdfs:label "Query"@en ;
-  rdfs:range xsd:string ;
-.
 
 # veda-ui-reports (v-ui:)
 ################################ REPORTS START ####################################################
@@ -392,13 +249,14 @@ v-s:Journal_printBlank
 #  rdfs:label "pdf"@en ;
 #  rdfs:label "pdf"@ru ;
 .
-
+#---------
 v-s:JournalCoordination_printBlank_pdf
   rdf:type v-s:Report ;
   v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
   v-s:fileFormat "pdf";
   rdfs:label "Лист согласования (pdf)"@ru ;
   rdfs:label "Coordination list (pdf)"@en ;
+  v-s:deleted "true"^^xsd:boolean;
 .
 v-s:JournalCoordination_printBlank_xlsx
   rdf:type v-s:Report ;
@@ -406,6 +264,7 @@ v-s:JournalCoordination_printBlank_xlsx
   v-s:fileFormat "xlsx";
   rdfs:label "Лист согласования (xlsx)"@ru ;
   rdfs:label "Coordination list (xlsx)"@en ;
+  v-s:deleted "true"^^xsd:boolean;
 .
 v-s:JournalCoordination_printBlank_docx
   rdf:type v-s:Report ;
@@ -413,6 +272,7 @@ v-s:JournalCoordination_printBlank_docx
   v-s:fileFormat "docx";
   rdfs:label "Лист согласования (docx)"@ru ;
   rdfs:label "Coordination list (docx)"@en ;
+  v-s:deleted "true"^^xsd:boolean;
 .
 ####################################################################################
 
@@ -575,7 +435,7 @@ v-s:DocumentLinkRulesTemplate
     </div>
     <br><br>
     <div class="actions">
-      <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
     </div>
   </div>
 """ ;
@@ -677,7 +537,7 @@ v-s:DirectoryTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions view edit -search">
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
   </div>
 </div>
   """ ;
@@ -697,7 +557,7 @@ v-s:Directory_Event
  * ticket = superuser ticket
  * document = captured document
  * user_uri = user whose actions triggered event
- * prev_state = user whose actions triggered event
+ * prev_state = previous state of the captured document
  * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
  * parent_script_id = id of the parent script that triggered this event.
  * parent_document_id = id of the document that triggered this event.
