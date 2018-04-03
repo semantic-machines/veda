@@ -1632,21 +1632,28 @@
       });
 
       var header = $(".header", control);
-      header.find(".select-all")
-        .click(function () { suggestions.children(":not(.selected)").click(); })
-        .text( new veda.IndividualModel("v-s:SelectAll").toString() );
-      header.find(".cancel-selection")
-        .click(function () { suggestions.children(".selected").click(); })
-        .text( new veda.IndividualModel("v-s:CancelSelection").toString() );
-      header.find(".invert-selection")
-        .click(function () { suggestions.children().click(); })
-        .text( new veda.IndividualModel("v-s:InvertSelection").toString() );
-      header.find(".close-menu")
-        .click(function () {
-          fulltextMenu.hide();
-          individual.set(rel_uri, selected);
-        })
-        .text( new veda.IndividualModel("v-s:Ok").toString() );
+      Promise.all([
+        new veda.IndividualModel("v-s:SelectAll").load(),
+        new veda.IndividualModel("v-s:CancelSelection").load(),
+        new veda.IndividualModel("v-s:InvertSelection").load(),
+        new veda.IndividualModel("v-s:Ok").load()
+      ]).then(function (actions) {
+        header.find(".select-all")
+          .click(function () { suggestions.children(":not(.selected)").click(); })
+          .text( actions[0] );
+        header.find(".cancel-selection")
+          .click(function () { suggestions.children(".selected").click(); })
+          .text( actions[1] );
+        header.find(".invert-selection")
+          .click(function () { suggestions.children().click(); })
+          .text( actions[2] );
+        header.find(".close-menu")
+          .click(function () {
+            fulltextMenu.hide();
+            individual.set(rel_uri, selected);
+          })
+          .text( actions[3] );
+      });
       if (isSingle) {
         header.hide();
       }
@@ -1700,17 +1707,20 @@
         selected = individual.get(rel_uri);
         if (results.length) {
           var tmp = $("<div></div>");
-          var rendered = results.map(function (result) {
-            var tmpl = result.present(tmp, suggestionTmpl);
-            if (individual.hasValue(rel_uri, result)) {
-              tmpl.addClass("selected");
-            }
-            return tmpl;
+          var renderedPromises = results.map(function (result) {
+            return result.present(tmp, suggestionTmpl).then(function (tmpl) {
+              if (individual.hasValue(rel_uri, result)) {
+                tmpl.addClass("selected");
+              }
+              return tmpl;
+            });
           });
-          suggestions.empty().append(rendered);
-          fulltextMenu.show();
-          $(document).click(clickOutsideMenuHandler);
-          tmp.remove();
+          Promise.all(renderedPromises).then(function (rendered) {
+            suggestions.empty().append(rendered);
+            fulltextMenu.show();
+            $(document).click(clickOutsideMenuHandler);
+            tmp.remove();
+          });
         } else {
           suggestions.empty();
           fulltextMenu.hide();
@@ -1843,7 +1853,6 @@
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
     }
-    var result = [];
 
     return veda.Backend.query({
       ticket: veda.ticket,
@@ -1853,34 +1862,25 @@
       limit: 1000
     }).then(function (queryResult) {
 
-
-      var loaded = [];
-
-      var toLoad = result.filter( function (uri) {
+      var toLoad = [];
+      var resultIndividuals = queryResult.result.map(function (uri) {
         var individual = new veda.IndividualModel(uri);
-        if ( individual.isLoaded() ) {
-          loaded.push(individual);
-          return false;
-        } else {
-          return true;
+        if ( !individual.isLoaded() ) {
+          toLoad.push(uri);
         }
+        return individual;
       });
 
-      if (!toLoad.length) { return callback(loaded); }
+      if (!toLoad.length) { return resultIndividuals; }
 
-      veda.Backend.get_individuals({
+      return veda.Backend.get_individuals({
         ticket: veda.ticket,
         uris: toLoad
       }).then(function (individuals) {
-        return individuals.map( function (json) {
+        individuals.map( function (json) {
           return new veda.IndividualModel(json);
         });
-      }).then(function () {
-        return Promise.all(result.map(function (uri) {
-          return new veda.IndividualModel(uri).load();
-        }));
-      }).then(function (loaded) {
-        callback(loaded);
+        return resultIndividuals;
       });
     });
   }
