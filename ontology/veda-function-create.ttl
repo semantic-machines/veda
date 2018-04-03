@@ -371,22 +371,24 @@ v-fc:BlankTemplateShort
     $(".action.save-blank", template).remove();
   }
 
-  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
-    $(".action.update-blank", template).click(function () {
-      individual.updateBlank();
-      individual.save();
-      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").toString() });
-    });
-  } else {
-    $(".action.update-blank", template).remove();
-  }
-  if ( individual.rights.hasValue("v-s:canDelete", true) ) {
-    $(".action.delete-blank", template).click(function () {
-      template.trigger("delete");
-    });
-  } else {
-    $(".action.delete-blank", template).remove();
-  }
+  individual.rights.then(function (rights) {
+    if ( rights.hasValue("v-s:canUpdate", true) ) {
+      $(".action.update-blank", template).click(function () {
+        individual.updateBlank();
+        individual.save();
+        notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").toString() });
+      });
+    } else {
+      $(".action.update-blank", template).remove();
+    }
+    if ( rights.hasValue("v-s:canDelete", true) ) {
+      $(".action.delete-blank", template).click(function () {
+        template.trigger("delete");
+      });
+    } else {
+      $(".action.delete-blank", template).remove();
+    }
+  });
 //# sourceURL=v-fc:BlankTemplateShort_pre
 </script>
 <div>
