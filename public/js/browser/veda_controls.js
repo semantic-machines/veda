@@ -1632,7 +1632,7 @@
       this.on("view edit search", function (e) {
         e.stopPropagation();
         if (e.type === "search") {
-          isSingle = false || $(this).data("single");
+          var isSingle = false || $(this).data("single");
           if (isSingle) {
             header.hide();
           } else {
@@ -1773,6 +1773,13 @@
       $(".input-group", control).toggleClass("input-group btn-group");
       $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
     }
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+      if (e.type === "search") {
+        isSingle = false || $(this).data("single");
+      }
+    });
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
