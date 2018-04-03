@@ -37,7 +37,7 @@ veda.Module(function (veda) { "use strict";
         this.id = uri;
         cached = veda.cache[ this.id ];
       } else if (typeof uri === "object") {
-        this.id = uri["@"];
+        this.properties = uri;
         cached = veda.cache[ this.id ];
       } else if (typeof uri === "undefined") {
         this.id = veda.Util.genUri();
@@ -611,12 +611,12 @@ veda.Module(function (veda) { "use strict";
    * @return {veda.IndividualModel} clone of this individual with different id.
    */
   proto.clone = function () {
-    var individual = JSON.parse( JSON.stringify(this.properties) );
-    individual["@"] = veda.Util.genUri();
-    var clone = new veda.IndividualModel(individual);
+    var properties = JSON.parse( JSON.stringify(this.properties) );
+    properties["@"] = veda.Util.genUri();
+    var clone = new veda.IndividualModel(properties);
     clone.isNew(true);
     clone.isSync(false);
-    return clone;
+    return clone.init();
   };
 
   /**
