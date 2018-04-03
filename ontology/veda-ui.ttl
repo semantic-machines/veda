@@ -471,7 +471,7 @@ v-ui:StandardButtonsTemplate
     var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
     enabledButtons.forEach(function (id) {
       if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
-      if ( !canDelete && (id === "delete" || id === "destroy") { return; }
+      if ( !canDelete && (id === "delete" || id === "destroy") ) { return; }
       $("#" + id, template).removeClass("rm");
     });
     $(".rm", template).remove();
