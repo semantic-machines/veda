@@ -3,8 +3,7 @@
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
-GO_VER=go1.9.3
-TARANTOOL_VER=1.7.6
+GO_VER=go1.10.1
 MSGPUCK_VER=2.0
 
 # Get other dependencies
@@ -140,9 +139,9 @@ done
 
 ### TARANTOOL SERVER ###
 
-if ! tarantool -V | grep $TARANTOOL_VER; then
+if ! tarantool -V | grep 2.0; then
 
-curl http://download.tarantool.org/tarantool/1.7/gpgkey | sudo apt-key add -
+curl http://download.tarantool.org/tarantool/2.0/gpgkey | sudo apt-key add -
 release=`lsb_release -c -s`
 
 # install https download transport for APT
@@ -150,13 +149,15 @@ sudo apt-get -y install apt-transport-https
 
 # append two lines to a list of source repositories
 sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
-sudo tee /etc/apt/sources.list.d/tarantool_1_7.list <<- EOF
-deb http://download.tarantool.org/tarantool/1.7/ubuntu/ $release main
-deb-src http://download.tarantool.org/tarantool/1.7/ubuntu/ $release main
+sudo tee /etc/apt/sources.list.d/tarantool_2_0.list <<- EOF
+deb http://download.tarantool.org/tarantool/2.0/ubuntu/ $release main
+deb-src http://download.tarantool.org/tarantool/2.0/ubuntu/ $release main
 EOF
     
 # install
 sudo apt-get update
+sudo apt-get remove tarantool
+sudo apt-get remove tarantool-dev
 sudo apt-get -y install tarantool
 sudo apt-get -y install tarantool-dev
 
