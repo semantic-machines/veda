@@ -1,6 +1,5 @@
 // Pagination plugin
-"use strict";
-(function( $ ) {
+(function( $ ) { "use strict";
   $.fn.tableSortable = function (clicked) {
     return this.each(function() {
       var table = $(this);

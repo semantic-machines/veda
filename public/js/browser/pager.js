@@ -1,6 +1,5 @@
 // Pagination plugin
-"use strict";
-(function( $ ) {
+(function( $ ) { "use strict";
   $.fn.pager = function (options) {
     var opts = $.extend({
       pages: 10,
@@ -40,7 +39,7 @@
           update(page);
           opts.click(page);
         });
-      }
+      };
       update(opts.active);
     });
   };
@@ -84,7 +83,7 @@
           update(page);
           opts.click(page);
         });
-      }
+      };
       update(opts.active);
     });
   };

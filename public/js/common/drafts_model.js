@@ -9,7 +9,7 @@ veda.Module(function (veda) { "use strict";
         if (typeof self[key] !== "function") delete self[key];
       });
     }
-  }
+  };
 
   veda.DraftsModel = function () {
 
@@ -48,7 +48,7 @@ veda.Module(function (veda) { "use strict";
       }
     });
 
-    return veda.DraftsModel.prototype._singletonInstance = self;
+    return ( veda.DraftsModel.prototype._singletonInstance = self );
   };
 
   var proto = veda.DraftsModel.prototype;

@@ -258,7 +258,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(rr[field]);
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putFieldOfObject = (function()
@@ -275,7 +275,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(individual[field]);
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putUri = (function()
@@ -296,7 +296,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var setUri = function(name, value)
@@ -306,7 +306,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         data: value,
         type: _Uri
       }];
-    }
+    };
 
     var putString = (function()
     {
@@ -326,7 +326,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var setString = (function()
@@ -344,7 +344,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var setDatetime = (function()
@@ -362,7 +362,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putDatetime = (function()
@@ -383,7 +383,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putBoolean = (function()
@@ -404,7 +404,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var setBoolean = (function()
@@ -422,7 +422,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
 
@@ -442,7 +442,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var setInteger = (function()
@@ -460,7 +460,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         });
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putExecutor = (function()
@@ -483,7 +483,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           out_data0_el_arr.push(executor);
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putWorkOrder = (function()
@@ -506,7 +506,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           out_data0_el_arr.push(work_order);
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var putThisProcess = (function()
@@ -529,7 +529,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           out_data0_el_arr.push(process);
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     var removeThisProcess = (function()
@@ -554,7 +554,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         }
 
         out_data0_el[name] = out_data0_el_arr;
-      }
+      };
     })();
 
     /* PUT functions [END] */
@@ -581,7 +581,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             }
             return result;
           }
-        }
+        };
       })();
 
       var iteratedObject = Object.keys(individual);
@@ -621,7 +621,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             }
 
             out_data0_el[name] = out_data0_el_arr;
-          }
+          };
         })();
 
         var putValueFrom = (function()
@@ -654,7 +654,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
 
             out_data0_el[name] = out_data0_el_arr;
-          }
+          };
         })();
 
         var putFrontValue = (function()
@@ -687,7 +687,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
             }
 
             out_data0_el[name] = out_data0_el_arr;
-          }
+          };
         })();
 
         var putElement = (function()
@@ -715,7 +715,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               out_data0_el_arr.push(element);
 
             out_data0_el[name] = out_data0_el_arr;
-          }
+          };
         })();
 
         /* Segregate functions [BEGIN] */
@@ -724,7 +724,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           return function(name)
           {
             return iteratedObject[key2] == name;
-          }
+          };
         })();
 
         var elementContentStrValue = (function()
@@ -738,7 +738,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               return true;
             else
               return false;
-          }
+          };
         })();
         /* Segregate functions [END] */
 
@@ -747,7 +747,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           return function()
           {
             return element;
-          }
+          };
         })();
 
 
@@ -766,14 +766,14 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
 
           if (segregateObject)
           {
-            res = eval(segregateObject[0].data)
+            res = eval(segregateObject[0].data);
             if (res == false)
               continue;
           }
 
           if (segregateElement)
           {
-            res = eval(segregateElement[0].data)
+            res = eval(segregateElement[0].data);
             if (res == false)
               continue;
           }
@@ -1286,7 +1286,7 @@ function complexLabel(individual) {
           data: replaced,
           type: "String",
           lang: language
-        }
+        };
       });
       return acc.concat(result);
     }, []);
@@ -1299,7 +1299,7 @@ function complexLabel(individual) {
     var properties = [].slice.call(arguments, 2);
     var intermediate = get(uri);
     if (!intermediate) { return ""; }
-    for (var i = 0, property; property = properties[i]; i++) {
+    for (var i = 0, property; (property = properties[i]); i++) {
       var length = properties.length;
       if (i === length - 1) {
         if (!intermediate[property] || !intermediate[property].length) return "";

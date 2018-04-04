@@ -65,7 +65,7 @@ veda.Module(function DraftsPresenter(veda) { "use strict";
 
   veda.on("update:drafts", function (drafts) {
     $("#drafts-counter").text(drafts.length);
-    if (location.hash === "#/drafts" && veda.status === "started") { veda.trigger("load:drafts") }
+    if (location.hash === "#/drafts" && veda.status === "started") { veda.trigger("load:drafts"); }
   });
 
   // Включим позже

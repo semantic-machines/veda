@@ -24,7 +24,7 @@ veda.Module(function Util(veda) { "use strict";
       hash = hash & hash;
     }
     return hash;
-  }
+  };
 
   veda.Util.processQuery = function (q, sort, limit, delta, pause, fn) {
     if (typeof q === "object") {
@@ -129,11 +129,11 @@ veda.Module(function Util(veda) { "use strict";
       return [str_ru, str_en];
   };
 
-  function isInteger(n) { return n % 1 === 0; };
+  function isInteger(n) { return n % 1 === 0; }
 
   function zeroPref(n) {
     return n > 9 ? n : "0" + n;
-  };
+  }
 
   veda.Util.formatValue = function (value) {
     var formatted;
@@ -327,7 +327,7 @@ veda.Module(function Util(veda) { "use strict";
       }
     }
     return r;
-  }
+  };
 
   veda.Util.queryFromIndividual = function (individual) {
     var query;
@@ -337,7 +337,7 @@ veda.Module(function Util(veda) { "use strict";
     }
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
-        if (property_uri === "@" || property_uri === "v-s:isDraft") { return }
+        if (property_uri === "@" || property_uri === "v-s:isDraft") { return; }
         var values = flat[property_uri].sort(function compare(a, b) {
           return a.data < b.data ? - 1 : a.data === b.data ? 0 : 1;
         });
@@ -397,7 +397,7 @@ veda.Module(function Util(veda) { "use strict";
       .join(" && ");
     query = allProps ? "( " + allProps + " )" : undefined;
     return query;
-  }
+  };
 
   function flattenIndividual(object, prefix, union, visited) {
     var uri = object["@"];
@@ -439,7 +439,7 @@ veda.Module(function Util(veda) { "use strict";
     } else {
       riot.route("#/" + startForm.id + "///edit");
     }
-  }
+  };
 
   /**
    * Event `send` handler:
@@ -459,7 +459,7 @@ veda.Module(function Util(veda) { "use strict";
       var notify = veda.Notify ? new veda.Notify() : function () {};
       notify("success", {name: "Успешно отправлено / Successfully sent"});
     }
-  }
+  };
 
   /**
    * @returns veda.IndividualModel - start form
@@ -470,7 +470,7 @@ veda.Module(function Util(veda) { "use strict";
     startForm.isNew(true);
     startForm.isSync(false);
     return startForm;
-  }
+  };
 
   /**
    * Event `createReport` handler:
@@ -504,7 +504,7 @@ veda.Module(function Util(veda) { "use strict";
         }
       }
     }
-  }
+  };
 
   veda.Util.redirectToReport = function (individual, reportId) {
     var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress');
@@ -550,7 +550,7 @@ veda.Module(function Util(veda) { "use strict";
     window.open('', 'view');
 
     form.submit();
-  }
+  };
 
   /**
    * Event `showRights` handler:
@@ -579,7 +579,7 @@ veda.Module(function Util(veda) { "use strict";
       rightRecord.present(holder, "v-ui:PermissionStatementInlineTemplate");
       holder.appendTo(modalBody);
     });
-  }
+  };
 
   veda.Util.showModal = function (individual, template, mode) {
     var modal = $( $("#notification-modal-template").html() );
@@ -591,7 +591,7 @@ veda.Module(function Util(veda) { "use strict";
       modal.modal("hide").remove();
     });
     return modal;
-  }
+  };
 
   veda.Util.showMessage = function (message, cssClass, timeout, redirectIndividual, redirectIndividualMode) {
     var container = $($("#notification-modal-template").html());
@@ -622,7 +622,7 @@ veda.Module(function Util(veda) { "use strict";
         redirectIndividual.present(main, undefined, redirectIndividualMode);
       }
     }
-  }
+  };
 
   /**
    * Check that element inside root hierarchy.
@@ -644,5 +644,5 @@ veda.Module(function Util(veda) { "use strict";
       } else {
           return false; // Not a department
       }
-  }
+  };
 });

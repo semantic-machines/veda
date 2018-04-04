@@ -9,7 +9,7 @@ veda.Module(function AppPresenter(veda) { "use strict";
         if (typeof self[key] !== "function") delete self[key];
       });
     }
-  }
+  };
 
   // Route to resource ttl view on Ctrl + Alt + Click
   $("body").on("click", "[resource][typeof], [about]", function (e) {

@@ -115,7 +115,7 @@ veda.Module(function (veda) { "use strict";
   function parser(value) {
     if (value.type === "String" || value.type === 2) {
       var string = new String(value.data);
-      if (value.lang !== "NONE") { string.language = value.lang };
+      if (value.lang !== "NONE") { string.language = value.lang; }
       return string;
     } else if (value.type === "Uri" || value.type === 1) {
       return new veda.IndividualModel(value.data);
@@ -133,28 +133,28 @@ veda.Module(function (veda) { "use strict";
       return {
         type: isInteger(value) ? "Integer" : "Decimal",
         data: value
-      }
+      };
     } else if (typeof value === "boolean") {
       return {
         type: "Boolean",
         data: value
-      }
+      };
     } else if (typeof value === "string" || value instanceof String) {
       return {
         type: "String",
         data: value.valueOf(),
         lang: value.language || "NONE"
-      }
+      };
     } else if (value instanceof Date) {
       return {
         type: "Datetime",
         data: value.toISOString()
-      }
+      };
     } else if (value instanceof veda.IndividualModel) {
       return {
         type: "Uri",
         data: value.id
-      }
+      };
     } else {
       return value;
     }
