@@ -14,10 +14,10 @@ use std::thread;
 use std::time;
 use std::ptr;
 //use std::time::SystemTime;
-//use std::cell::Cell;
-//use std::sync::Mutex;
+use std::cell::RefCell;
+use std::sync::Mutex;
 
-use lmdb_rs_m::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
+use lmdb_rs_m::{DbFlags, /*DbHandle,*/ EnvBuilder, Environment, MdbError};
 use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
 
 const TRACE_ACL: u8 = 0;
@@ -87,18 +87,18 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
         trace_res = trace_info;
     }
 
-//	println! ("trace_res={}", trace_res);
+    //	println! ("trace_res={}", trace_res);
 
-//	let bytes = trace_res.into_bytes();
-	let cres = CString::new (trace_res.clone ()).unwrap();
+    //	let bytes = trace_res.into_bytes();
+    let cres = CString::new(trace_res.clone()).unwrap();
 
-	// http://jakegoulding.com/rust-ffi-omnibus/string_return/
-	//cres.into_raw()
+    // http://jakegoulding.com/rust-ffi-omnibus/string_return/
+    //cres.into_raw()
 
-	let p = cres.as_ptr();
+    let p = cres.as_ptr();
 
-	std::mem::forget (cres);
-	
+    std::mem::forget(cres);
+
     return p;
 }
 
@@ -203,9 +203,7 @@ pub struct AzContext<'a> {
 lazy_static! {
 
 #[derive(Debug)]
-    //static ref LAST_MODIFIED_INFO : Mutex<Cell<SystemTime>> = Mutex::new(Cell::new (SystemTime:: now()));
-
-    static ref ENV: Environment = {
+    static ref ENV : Mutex<RefCell<Environment>> = Mutex::new(RefCell::new ({
     let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
     let env1;
@@ -224,27 +222,7 @@ lazy_static! {
     }
     println! ("LIB_AZ: Opened environment ./data/acl-indexes");
     env1
-    };
-
-
-    static ref DB_HANDLE: DbHandle = {
-    let db_handle;
-    loop {
-        match ENV.get_default_db(DbFlags::empty()) {
-            Ok(db_handle_res) => {
-                db_handle = db_handle_res;
-                break;
-            },
-            Err(e) => {
-                println! ("ERR! Authorize: Err opening db handle: {:?}", e);
-                thread::sleep(time::Duration::from_secs(3));
-                println! ("Retry");
-            }
-        }
-    }
-    println! ("Opened default database");
-    db_handle
-    };
+    }));
 
 }
 
@@ -728,9 +706,28 @@ pub fn _authorize(
     //	    }
     //    }
 
-    match ENV.get_reader() {
+    let env = ENV.lock().unwrap().get_mut().clone();
+
+    let db_handle;
+    loop {
+        match env.get_default_db(DbFlags::empty()) {
+            Ok(db_handle_res) => {
+                db_handle = db_handle_res;
+                break;
+            }
+            Err(e) => {
+                println!("ERR! Authorize: Err opening db handle: {:?}", e);
+                thread::sleep(time::Duration::from_secs(3));
+                println!("Retry");
+            }
+        }
+    }
+
+    let res;
+
+    match env.get_reader() {
         Ok(txn) => {
-            let db = txn.bind(&DB_HANDLE);
+            let db = txn.bind(&db_handle);
 
             // 0. читаем фильтр прав у object (uri)
             let filter_value = get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db);
@@ -856,11 +853,36 @@ pub fn _authorize(
                 );
             }
 
-            return azc.calc_right_res;
+            res = azc.calc_right_res;
         }
         Err(e) => {
             println!("ERR! Authorize:ON CREATING GET TRANSACTION {:?}", e);
+            println!("reopen db");
+
+            let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
+
+            match env_builder.open(DB_PATH, 0o644) {
+                Ok(env_res) => {
+                    ENV.lock().unwrap().replace(env_res);
+                }
+                Err(e) => {
+                    println!("ERR! Authorize: Err opening environment: {:?}", e);                    
+                }
+            }
+
+            return _authorize(
+                uri,
+                user_uri,
+                _request_access,
+                _is_check_for_reload,
+                is_trace_acl,
+                _trace_acl,
+                is_trace_group,
+                _trace_group,
+                is_trace_info,
+                _trace_info,
+            );
         }
     }
-    return 0;
+    return res;
 }
