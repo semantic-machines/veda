@@ -481,23 +481,30 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.addValue = function (property_uri, value) {
-    if (typeof value !== "undefined" && value !== null) {
-      this.properties[property_uri] = this.properties[property_uri] || [];
-      var serialized;
-      if ( Array.isArray(value) ) {
-        serialized = value.map(serializer);
-        this.properties[property_uri] = this.properties[property_uri].concat(serialized);
-      } else {
-        serialized = serializer(value);
-        this.properties[property_uri].push(serialized);
-      }
-      this.isSync(false);
-      this.trigger("propertyModified", property_uri, this.get(property_uri));
-      this.trigger(property_uri, this.get(property_uri));
+  proto.addValue = function (property_uri, values) {
+    if (typeof values === "undefined" || values === null) {
+      return this;
     }
+    if ( Array.isArray(values) ) {
+      var that = this;
+      values.forEach(function (value) {
+        addSingleValue.call(that, property_uri, value);
+      });
+    } else {
+      addSingleValue.call(this, property_uri, values);
+    }
+    this.isSync(false);
+    values = this.get(property_uri);
+    this.trigger("propertyModified", property_uri, values);
+    this.trigger(property_uri, values);
     return this;
   };
+  function addSingleValue(property_uri, value) {
+    this.properties[property_uri] = this.properties[property_uri] || [];
+    var serialized = serializer(value);
+    this.properties[property_uri].push(serialized);
+  }
+
 
   /**
    * @method
@@ -505,22 +512,63 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.removeValue = function (property_uri, value) {
-    if (!this.properties[property_uri] || !this.properties[property_uri].length) {
+  proto.removeValue = function (property_uri, values) {
+    if (!this.properties[property_uri] || !this.properties[property_uri].length || typeof values === "undefined" || values === null) {
       return this;
     }
-    if (typeof value !== "undefined" && value !== null) {
-      var serialized = serializer(value);
-      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
-        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+    if ( Array.isArray(values) ) {
+      var that = this;
+      values.forEach(function (value) {
+        removeSingleValue.call(that, property_uri, value);
       });
-      var values = this.get(property_uri);
-      this.isSync(false);
-      this.trigger("propertyModified", property_uri, values);
-      this.trigger(property_uri, values);
+    } else {
+      removeSingleValue.call(this, property_uri, values);
     }
+    this.isSync(false);
+    values = this.get(property_uri);
+    this.trigger("propertyModified", property_uri, values);
+    this.trigger(property_uri, values);
     return this;
   };
+  function removeSingleValue (property_uri, value) {
+    var serialized = serializer(value);
+    this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
+      return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+    });
+  }
+
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @param {Any allowed type} value
+   * @return {this}
+   */
+  proto.toggleValue = function (property_uri, values) {
+    if (typeof values === "undefined" || values === null) {
+      return this;
+    }
+    if ( Array.isArray(values) ) {
+      var that = this;
+      values.forEach(function (value) {
+        toggleSingleValue.call(that, property_uri, value);
+      });
+    } else {
+      toggleSingleValue.call(this, property_uri, values);
+    }
+    this.isSync(false);
+    values = this.get(property_uri);
+    this.trigger("propertyModified", property_uri, values);
+    this.trigger(property_uri, values);
+    return this;
+  };
+  function toggleSingleValue (property_uri, value) {
+    if ( this.hasValue(property_uri, value) ) {
+      removeSingleValue.call(this, property_uri, value);
+    } else {
+      addSingleValue.call(this, property_uri, value);
+    }
+  }
 
   /**
    * @method
