@@ -870,15 +870,15 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         string      prev_state;
         Individual  prev_indv;
 
-        bool        is_new = false;
+//        bool        is_new = false;
 
-        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
-        {
-            is_new = true;
+//        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
+//        {
+//            is_new = true;
             //log.trace("INFO! %s is new, use UPSERT", indv.uri);
-        }
+//        }
 
-        if (is_new == false)
+//        if (is_new == false)
         {
             try
             {

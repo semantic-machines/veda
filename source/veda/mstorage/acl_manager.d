@@ -347,9 +347,14 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionFilter: [%s] op_id=%d", new_ind, op_id);
 
+    bool       is_deleted = new_ind.isExists("v-s:deleted", true);
+
     Resource   permissionObject = new_ind.getFirstResource(veda_schema__permissionObject);
 
-    ResultCode res = storage.put(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
+    if (is_deleted)
+        storage.remove(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri);
+    else
+        storage.put(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
 
     if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);
