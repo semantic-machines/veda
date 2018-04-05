@@ -143,6 +143,22 @@ function change_process_status(ticket, process, status, _event_id)
     }
 }
 
+function change_document_status(process, status)
+{
+    if (status) {
+        var doc_id = process.getInputVariable('docId');
+        if (doc_id) {
+            var set_in_document = {
+                '@': getUri(doc_id)
+            };
+            set_in_document['v-s:hasStatus'] = newUri(status);
+            print ("@JS set_in_document=", toJson(set_in_document));
+            set_in_individual(process.ticket, set_in_document, _event_id);
+        }
+    }
+    return [get_new_variable('status', newStr(status))];
+}
+
 function is_exists_net_executor(process)
 {
     try
