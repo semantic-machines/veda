@@ -2174,6 +2174,8 @@ QUnit.test(
                 '@': new_permission_filter_uri,
                 'rdf:type': newUri('v-s:PermissionFilter'),
                 'v-s:permissionObject': newUri(new_test_doc1_uri),
+                'v-s:resource': newUri(new_permission_filter_uri+'xxx'),
+                'v-s:canRead' : newBool (true)
             };
             var res = Backend.put_individual(ticket_user1.id, new_permission_filter);
 
@@ -2184,7 +2186,7 @@ QUnit.test(
             test_success_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
             test_success_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
 
-            var res1 = addRightWithFilter(ticket_admin.id, [can_update], ticket_user2.user_uri, new_test_doc1_uri, new_permission_filter_uri);
+            var res1 = addRightWithFilter(ticket_admin.id, [can_update], ticket_user2.user_uri, new_test_doc1_uri, new_permission_filter_uri+'xxx');
             var new_permission1 = res1[0];
             Backend.wait_module(m_acl, res1[1].op_id);
 

@@ -133,6 +133,19 @@ abstract class ImplAuthorization : Authorization
                 string filter       = filter_prefix ~ uri;
                 string filter_value = get_in_current_transaction(filter);
 
+                if (filter_value !is null)
+                {
+                    if (filter_value.length < 3)
+                        filter_value = null;
+                    else
+                    {
+                        Right *[] filters_set;
+                        rights_from_string(filter_value, filters_set);
+                        if (filters_set.length > 0)
+                            filter_value = filters_set[ 0 ].id;
+                    }
+                }
+
                 if (trace_info !is null)
                 {
                     trace_info.write(format("%d user_uri=%s\n", str_num++, user_uri));
