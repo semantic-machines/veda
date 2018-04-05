@@ -398,6 +398,26 @@ v-s:taxRegistrationCauseForOrganization
   v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
 .
 
+v-s:PsContractorProfileDateToFact
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:dateToFact ;
+
+  rdfs:label "Спецификация к свойству v-s:dateToFact для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Spec for property v-s:dateToFact for class v-s:ContractorProfile"@en ;
+  v-ui:placeholder "Дата ликвидации юр лица"@ru ;
+  v-ui:placeholder "Registered legal persons"@en ;
+.
+
+v-s:PsContractorProfileDateFromFact
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:dateFromFact ;
+  v-ui:placeholder "Дата регистрации юр лица"@ru ;
+  v-ui:placeholder "Registered legal persons"@en ;
+  rdfs:label "Спецификация к свойству v-s:dateFromFact для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Spec for property v-s:dateFromFact for class v-s:ContractorProfile"@en ;
+.
 # ------------------------------------------------------------ СТРОКИ --
 
 v-s:NonUniqueTaxId
@@ -407,7 +427,11 @@ v-s:NonUniqueTaxId
   rdfs:comment "Организация с таким ИНН уже существует"@ru ;
   rdfs:comment "Organization with this tax number already exists"@en ;
 .
-
+v-s:AddDateContractorProfile
+  rdf:type v-s:Bundle ;
+  rdfs:label "Период существования юридического лица"@ru ;
+  rdfs:label "Period of existence of the legal entity"@en ;
+.
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:AddProfile
@@ -573,6 +597,18 @@ v-s:OrganizationTemplate
   </div>
 
   <hr class="view -edit -search">
+
+  <em about="v-s:AddDateContractorProfile" property="rdfs:label"></em>
+  <div class="row">
+    <div class="col-md-4">
+      <div property="v-s:dateFromFact" class="view -edit -search"></div>
+      <veda-control property="v-s:dateFromFact" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <div property="v-s:dateToFact" class="view -edit -search"></div>
+      <veda-control property="v-s:dateToFact" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+  </div>
 
   <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
   <table class="table table-condensed table-bordered">
