@@ -351,10 +351,12 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
 
     Resource   permissionObject = new_ind.getFirstResource(veda_schema__permissionObject);
 
+	ResultCode res;
+
     if (is_deleted)
-        storage.remove(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri);
+        res = storage.remove(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri);
     else
-        storage.put(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
+        res = storage.put(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
 
     if (trace_msg[ 101 ] == 1)
         log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);
