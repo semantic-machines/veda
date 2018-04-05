@@ -2129,7 +2129,7 @@ v-ui:TreeTemplate
     e.stopPropagation();
     e.preventDefault();
     var that = $(this),
-      thatRow = that.parents("tr"),
+      thatRow = that.closest("tr"),
       thatLvl = parseInt( thatRow.attr("data-level") ),
       uri = thatRow.attr("resource"),
       self = new veda.IndividualModel(uri);
@@ -2141,8 +2141,8 @@ v-ui:TreeTemplate
       if ( nextLvl > thatLvl ) {
         thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
       } else {
-        getOut(self).map(render);
-        getIn(self).map(render);
+        getOut(self).forEach(render, thatRow);
+        getIn(self).forEach(render, thatRow);
         var newNextLvl = parseInt(thatRow.next().attr("data-level"));
         if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
           that.prev().css("width", 16 * (thatLvl + 1) - 2);
@@ -2157,27 +2157,29 @@ v-ui:TreeTemplate
         that.hide();
       });
     }
-
-    function render(item) {
-      var cont = $("<div>"),
-          tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
-      $(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
-      tmpl = item.present(cont, tmpl[0].outerHTML);
-
-      var hasValue = individual.hasValue(rel_uri, item);
-      $("input", tmpl).prop("checked", hasValue);
-
-      if (selectableFilter) {
-        if ( !selectableFilter.call(item) ) {
-          $("input", tmpl).remove();
-        }
-      } else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
-        $("input", tmpl).remove();
-      }
-      thatRow.after( tmpl );
-    }
     return false;
   });
+
+  function render(item) {
+    var parentRow = this;
+    var parentLvl = parseInt( parentRow.attr("data-level") );
+    var cont = $("<div>"),
+        tmpl = $("<tr>").attr("data-level", parentLvl + 1).append(rowTmpl);
+    $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+    tmpl = item.present(cont, tmpl[0].outerHTML);
+
+    var hasValue = individual.hasValue(rel_uri, item);
+    $("input", tmpl).prop("checked", hasValue);
+
+    if (selectableFilter) {
+      if ( !selectableFilter.call(item) ) {
+        $("input", tmpl).remove();
+      }
+    } else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
+      $("input", tmpl).remove();
+    }
+    parentRow.after( tmpl );
+  }
 
   if (rel_uri) {
 
@@ -2210,18 +2212,39 @@ v-ui:TreeTemplate
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
       if (isSingle) {
-        individual[rel_uri] = [ value ];
+        individual.toggleValue(rel_uri, value);
       } else {
-        var filtered = individual[rel_uri].filter(function (item) {
-          return item.id !== value.id;
-        });
-        if ( $(this).prop("checked") ) {
-          individual[rel_uri] = filtered.concat(value);
-        } else {
-          individual[rel_uri] = filtered;
-        }
+        var branch = getChildren([value], value);
+        individual.toggleValue(rel_uri, branch);
       }
     });
+
+  }
+
+  individual.on(rel_uri, propertyModifiedHandler);
+  template.one("remove", function () {
+    individual.off(rel_uri, propertyModifiedHandler);
+  });
+  function propertyModifiedHandler(values) {
+    template.find("td > input").each(function () {
+      var $this = $(this),
+          row = $this.parent().parent(),
+          uri = row.attr("resource"),
+          value = new veda.IndividualModel(uri);
+      if ( values.indexOf(value) >=0 ) {
+        $this.prop("checked", true);
+      } else {
+        $this.prop("checked", false);
+      }
+    });
+  }
+
+  function getChildren(acc, root) {
+    var outs = getOut(root);
+    var ins = getIn(root);
+    var resOuts = outs.reduce(getChildren, outs);
+    var resIns = ins.reduce(getChildren, ins);
+    return acc.concat(resOuts, resIns);
   }
 
   // Render tree
