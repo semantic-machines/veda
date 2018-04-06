@@ -548,6 +548,7 @@ veda.Module(function (veda) { "use strict";
     if (typeof values === "undefined" || values === null) {
       return this;
     }
+    this.properties[property_uri] = this.properties[property_uri] || [];
     if ( Array.isArray(values) ) {
       var that = this;
       values.forEach(function (value) {
