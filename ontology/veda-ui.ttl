@@ -2093,8 +2093,8 @@ v-ui:TreeTemplate
       headTmpl += "<th width='1px'></th>";
       rowTmpl += "<td><input type='radio' class='select-row' name='select-row' /></td>";
     } else {
-      headTmpl += "<th width='30px'></th>";
-      rowTmpl += "<td><div class='checkbox no-margin'><label><input type='checkbox' class='select-row' /> <a href='#' class='select-deep hidden glyphicon glyphicon-asterisk text-danger'></a></label></div></td>";
+      headTmpl += "<th width='50px'></th>";
+      rowTmpl += "<td><div class='checkbox no-margin'><label><input type='checkbox' class='select-row' /> <a href='#' class='select-deep hidden fa fa-sitemap'></a></label></div></td>";
     }
   }
 
@@ -2205,20 +2205,31 @@ v-ui:TreeTemplate
 
     template.on("click", ".select-row", function (e) {
       e.stopPropagation();
-      var row = $(this).parent().parent(),
+      var $this = $(this);
+      var row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
       if (isSingle) {
         individual.set(rel_uri, [value]);
       } else {
         individual.toggleValue(rel_uri, value);
-        /*var branch = getChildren([value], value);
-        if ( individual.hasValue(rel_uri, value) ) {
-          individual.removeValue(rel_uri, branch);
+        if ( $this.is(":checked") && value.children && value.children.length ) {
+          $(".select-deep", row).removeClass("hidden");
         } else {
-          individual.addValue(rel_uri, branch);
-        }*/
+          $(".select-deep", row).addClass("hidden");
+        }
       }
+    });
+
+    template.on("click", ".select-deep", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $this = $(this);
+      var row = $this.closest("tr"),
+          uri = row.attr("resource"),
+          value = new veda.IndividualModel(uri);
+      var branch = getChildren([], value);
+      individual.toggleValue(rel_uri, branch);
     });
 
   }
@@ -2230,7 +2241,7 @@ v-ui:TreeTemplate
   function propertyModifiedHandler(values) {
     $(".select-row", template).each(function () {
       var $this = $(this),
-          row = $this.parent().parent(),
+          row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
       if ( values.indexOf(value) >=0 ) {
