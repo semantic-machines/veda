@@ -2064,20 +2064,24 @@ v-ui:PermissionStatementInlineTemplate
   """ ;
 .
 
+v-ui:SelectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать"@ru ;
+  rdfs:label "Select"@en ;
+.
+v-ui:DeepSelectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать вглубь"@ru ;
+  rdfs:label "Deep select"@en ;
+.
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<div class="table-responsive">
-  <table class="table table-condensed table-striped">
-    <thead id="thead"></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
 <script>
-  var tbody = $("#tbody", template);
-  var thead = $("#thead", template);
+  var tbody = $(".tbody", template);
+  var thead = $(".thead", template);
 
   var rel_uri = individual.treeConfig.targetRel_uri;
   var isSingle = individual.treeConfig.isSingle;
@@ -2087,7 +2091,7 @@ v-ui:TreeTemplate
   if (rel_uri) {
     if (isSingle) {
       headTmpl += "<th width='1px'></th>";
-      rowTmpl += "<td><input type='radio' class='select-row' name='select-value' /></td>";
+      rowTmpl += "<td><input type='radio' class='select-row' name='select-row' /></td>";
     } else {
       headTmpl += "<th width='1px'></th>";
       rowTmpl += "<td><input type='checkbox' class='select-row' /></td>";
@@ -2103,7 +2107,7 @@ v-ui:TreeTemplate
   }) : [];
   var selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
-  individual.treeConfig.displayedProperty.map( function (property, index) {
+  individual.treeConfig.displayedProperty.forEach( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
     var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
     if ( index === 0 ) {
@@ -2205,10 +2209,14 @@ v-ui:TreeTemplate
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
       if (isSingle) {
-        individual.toggleValue(rel_uri, value);
+        individual.set(rel_uri, [value]);
       } else {
         var branch = getChildren([value], value);
-        individual.toggleValue(rel_uri, branch);
+        if ( individual.hasValue(rel_uri, value) ) {
+          individual.removeValue(rel_uri, branch);
+        } else {
+          individual.addValue(rel_uri, branch);
+        }
       }
     });
 
@@ -2232,14 +2240,13 @@ v-ui:TreeTemplate
     });
   }
 
-  /*function getChildren(acc, root) {
-    if (root.children) { return root.children; }
-    var outs = getOut(root);
-    var ins = getIn(root);
-    var resOuts = outs.reduce(getChildren, outs);
-    var resIns = ins.reduce(getChildren, ins);
-    return ( root.children = acc.concat(resOuts, resIns) );
-  }*/
+  // Render tree
+  individual.treeConfig.root.forEach( function (root, index, roots) {
+    renderRow(root);
+    if (roots.length === 1) {
+      tbody.find(".expand").click();
+    }
+  });
 
   function getChildren(acc, root, goDeeper) {
     if ( !root.children ) {
@@ -2247,23 +2254,21 @@ v-ui:TreeTemplate
       var ins = getIn(root);
       root.children = outs.concat(ins);
     }
-    if (goDeeper === false) {
-      return acc.concat(root.children);
-    }
-    return acc.concat( root.children.reduce(getChildren, []) );
+    root.children.forEach(function (child) {
+      acc.push(child);
+      if (goDeeper !== false) {
+        getChildren(acc, child, goDeeper);
+      }
+    });
+    return acc;
   }
 
-  // Render tree
-  individual.treeConfig.root.map( function (root, index, all) {
-    renderRow(root);
-  });
-
-  function getOut(self) {
+  function getOut(root) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.outProperty) {
       individual.treeConfig.outProperty.map(function (property) {
-        if (self.hasValue(property.id)) {
-          self[property.id].map(function (value) {
+        if (root.hasValue(property.id)) {
+          root[property.id].map(function (value) {
             if ( !allowedClassIds.length || allowedClassIds.indexOf(value["rdf:type"][0].id) > -1 ) {
               res.push(value);
             }
@@ -2274,11 +2279,11 @@ v-ui:TreeTemplate
     return res;
   }
 
-  function getIn(self) {
+  function getIn(root) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.inProperty) {
       var q = individual.treeConfig.inProperty.map(function (property) {
-          return "'" + property.id + "'=='" + self.id + "'";
+          return "'" + property.id + "'=='" + root.id + "'";
         }).join(" || ");
       if (individual.treeConfig.allowedClass) {
         q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
@@ -2295,6 +2300,12 @@ v-ui:TreeTemplate
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
+<div class="table-responsive">
+  <table class="table table-condensed table-striped">
+    <thead class="thead"></thead>
+    <tbody class="tbody"></tbody>
+  </table>
+</div>
   """ ;
 .
 
