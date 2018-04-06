@@ -2093,8 +2093,8 @@ v-ui:TreeTemplate
       headTmpl += "<th width='1px'></th>";
       rowTmpl += "<td><input type='radio' class='select-row' name='select-row' /></td>";
     } else {
-      headTmpl += "<th width='1px'></th>";
-      rowTmpl += "<td><input type='checkbox' class='select-row' /></td>";
+      headTmpl += "<th width='30px'></th>";
+      rowTmpl += "<td><div class='checkbox no-margin'><label><input type='checkbox' class='select-row' /> <a href='#' class='select-deep hidden glyphicon glyphicon-asterisk text-danger'></a></label></div></td>";
     }
   }
 
@@ -2211,12 +2211,13 @@ v-ui:TreeTemplate
       if (isSingle) {
         individual.set(rel_uri, [value]);
       } else {
-        var branch = getChildren([value], value);
+        individual.toggleValue(rel_uri, value);
+        /*var branch = getChildren([value], value);
         if ( individual.hasValue(rel_uri, value) ) {
           individual.removeValue(rel_uri, branch);
         } else {
           individual.addValue(rel_uri, branch);
-        }
+        }*/
       }
     });
 
