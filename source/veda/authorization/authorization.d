@@ -130,8 +130,9 @@ abstract class ImplAuthorization : Authorization
                 string skey;
 
                 // 0. читаем фильтр прав у object (uri)
-                string filter       = filter_prefix ~ uri;
-                string filter_value = get_in_current_transaction(filter);
+                string filter                       = filter_prefix ~ uri;
+                string filter_value                 = get_in_current_transaction(filter);
+                ubyte  filter_allow_access_to_other = 0;
 
                 if (filter_value !is null)
                 {
@@ -142,7 +143,10 @@ abstract class ImplAuthorization : Authorization
                         Right *[] filters_set;
                         rights_from_string(filter_value, filters_set);
                         if (filters_set.length > 0)
-                            filter_value = filters_set[ 0 ].id;
+                        {
+                            filter_value                 = filters_set[ 0 ].id;
+                            filter_allow_access_to_other = filters_set[ 0 ].access;
+                        }
                     }
                 }
 
@@ -175,7 +179,7 @@ abstract class ImplAuthorization : Authorization
                 ubyte request_access_t = request_access;
 
                 if (filter_value !is null)
-                    request_access_t = request_access & Access.can_read;
+                    request_access_t = request_access & filter_allow_access_to_other;
 
                 ubyte[ string ] walked_groups1;
 
