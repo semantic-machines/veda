@@ -1,0 +1,7 @@
+{
+  "name": "testcafe-example",
+  "scripts": {
+    "test": "testcafe chrome qa/testcafe/veda.js"
+  }
+}
+
