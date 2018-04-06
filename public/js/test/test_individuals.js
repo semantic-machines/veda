@@ -208,7 +208,7 @@ function test_fail_update(assert, ticket, ethalon_indv, reopen)
     try
     {
         Backend.put_individual(ticket.id, ethalon_indv, reopen);
-	assert.ok(fail);
+	assert.ok(false);
     }
     catch (e)
     {
@@ -2167,7 +2167,7 @@ QUnit.test(
             Backend.wait_module(m_acl, res[1].op_id);
 
             test_success_update(assert, ticket_user1, new_test_doc1);
-            test_fail_update(assert, ticket_user2, new_test_doc1);
+            test_success_update(assert, ticket_user2, new_test_doc1);
 
             var new_permission_filter_uri = "test31-pf:" + guid();
             var new_permission_filter = {
