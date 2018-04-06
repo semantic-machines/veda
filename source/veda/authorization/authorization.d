@@ -127,9 +127,7 @@ abstract class ImplAuthorization : Authorization
 
             try
             {
-                string skey;
-
-                // 0. читаем фильтр прав у object (uri)
+                // читаем фильтр прав на object (uri)
                 string filter                       = filter_prefix ~ uri;
                 string filter_value                 = get_in_current_transaction(filter);
                 ubyte  filter_allow_access_to_other = 0;
@@ -249,6 +247,43 @@ abstract class ImplAuthorization : Authorization
                         {
                             if (trace_info !is null)
                                 trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+                    }
+
+                    if (filter_value !is null)
+                    {
+                        if (authorize_obj_group(request_access, veda_schema__AllResourcesGroup, 15, filter_value) == true)
+                        {
+                            if (trace_info !is null)
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+
+                        if (authorize_obj_group(request_access, uri, 15, filter_value) == true)
+                        {
+                            if (trace_info !is null)
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+
+                        Right *[] groups11;
+                        if (get_resource_groups(uri, 15, groups11, walked_groups1, 0) == true)
+                        {
+                            if (trace_info !is null)
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+
+                        RightSet object_groups1 = new RightSet(groups11, log);
+
+                        if (trace_info !is null)
+                            trace_info.write(format("%d object_groups=%s\n", str_num++, object_groups));
+
+                        foreach (object_group; object_groups1.data)
+                        {
+                            if (authorize_obj_group(request_access, object_group.id,
+                                                    object_group.access, filter_value) == true)
+                            {
+                                if (trace_info !is null)
+                                    trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                            }
                         }
                     }
                 }

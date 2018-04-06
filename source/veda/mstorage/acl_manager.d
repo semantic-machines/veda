@@ -329,7 +329,7 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
 
         ResultCode res = storage.put(OptAuthorize.NO, null, key, new_record, op_id);
 
-        log.trace("[acl index] (%s) new right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
+        //log.trace("[acl index] (%s) new right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
     }
 }
 
