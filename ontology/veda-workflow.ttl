@@ -1778,6 +1778,25 @@ v-wf:PsStartForm_canEdit
   rdfs:label "Permission to edit specification for StartForm class"@en ;
 .
 
+v-wf:StartForm_setStatus
+  rdf:type rdf:Property ;
+  rdfs:label "Устанавливать статус"@ru ;
+  rdfs:label "Set status"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:range xsd:boolean ;
+  rdfs:isDefinedBy v-wf: ;
+.
+v-wf:PsStartForm_setStatus
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-wf:StartForm ;
+  v-ui:forProperty v-wf:StartForm_setStatus ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:defaultValue "false"^^xsd:boolean ;
+  rdfs:label "Спецификация для свойства v-wf:StartForm_setStatus"@ru ;
+  rdfs:label "Permission to edit specification for v-wf:StartForm_setStatus"@en ;
+.
+
 v-wf:permission_on_start_from
   rdf:type v-s:PermissionStatement ;
   v-s:canCreate "true"^^xsd:boolean ;
