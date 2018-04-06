@@ -74,10 +74,10 @@ veda.Module(function (veda) { "use strict";
     this.isSync(false);
     values = values.filter(function (i) { return i != undefined; });
     var serialized = values.map( serializer );
-    var uniq = unique(serialized);
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
-      uniq = serialized.concat( this.filtered[property_uri] );
+      serialized = serialized.concat( this.filtered[property_uri] );
     }
+    var uniq = unique(serialized);
     if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
       this.properties[property_uri] = uniq;
       this.trigger("propertyModified", property_uri, values);
@@ -485,6 +485,7 @@ veda.Module(function (veda) { "use strict";
     if (typeof values === "undefined" || values === null) {
       return this;
     }
+    this.properties[property_uri] = this.properties[property_uri] || [];
     if ( Array.isArray(values) ) {
       var that = this;
       values.forEach(function (value) {
@@ -500,7 +501,6 @@ veda.Module(function (veda) { "use strict";
     return this;
   };
   function addSingleValue(property_uri, value) {
-    this.properties[property_uri] = this.properties[property_uri] || [];
     var serialized = serializer(value);
     this.properties[property_uri].push(serialized);
   }
