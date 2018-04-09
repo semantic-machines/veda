@@ -2145,15 +2145,18 @@ v-ui:TreeTemplate
       if ( nextLvl > thatLvl ) {
         thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
       } else {
-        getChildren([], value, false).forEach(function (child) {
-          renderRow(child, thatRow);
+        getChildren([], value, false).then(function (children) {
+          children.forEach(function (childUri) {
+            var child = new veda.IndividualModel(childUri);
+            renderRow(child, thatRow);
+          });
+          var newNextLvl = parseInt(thatRow.next().attr("data-level"));
+          if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
+            that.prev().css("width", 16 * (thatLvl + 1) - 2);
+            that.remove();
+            thatRow.find(".select-deep").remove();
+          }
         });
-        var newNextLvl = parseInt(thatRow.next().attr("data-level"));
-        if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
-          that.prev().css("width", 16 * (thatLvl + 1) - 2);
-          that.remove();
-          thatRow.find(".select-deep").remove();
-        }
       }
     } else {
       thatRow.nextAll().each( function () {
@@ -2177,21 +2180,18 @@ v-ui:TreeTemplate
     $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
     tmpl = value.present(cont, tmpl[0].outerHTML);
 
-    // Pre-check children (expensive)
-    /*var children = getChildren([], value, false);
-    if (!children.length) {
-      tmpl.find(".expand").remove();
-    }*/
+    // Pre-check children
+    getChildren([], value, false).then(function (children) {
+      if (!children.length) {
+        tmpl.find(".expand").remove();
+        tmpl.find(".select-deep").remove();
+      }
+    });
     var selectRow = $(".select-row", tmpl);
     var selectDeep = $(".select-deep", tmpl);
     var hasValue = individual.hasValue(rel_uri, value);
     selectRow.prop("checked", hasValue);
 
-    /*if ( value.children && value.children.length ) {
-      selectDeep.removeClass("hidden");
-    } else {
-      selectDeep.addClass("hidden");
-    }*/
     if (value.deepSelected) {
       selectDeep.removeClass("text-muted").addClass("text-danger");
     } else {
@@ -2241,20 +2241,23 @@ v-ui:TreeTemplate
       var row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
-      var branch = getChildren([], value);
-      value.deepSelected = !value.deepSelected;
-      branch.forEach(function (item) {
-        item.deepSelected = value.deepSelected;
-      });
-      if (value.deepSelected) {
-        individual.addValue(rel_uri, branch);
-        $this.removeClass("text-muted").addClass("text-danger");
-      } else {
-        individual.removeValue(rel_uri, branch);
-        $this.addClass("text-muted").removeClass("text-danger");
-      }
-    });
 
+      getChildren([], value).then(function (branchUris) {
+        value.deepSelected = !value.deepSelected;
+        var branch = branchUris.map(function (branchUri) {
+          var item = new veda.IndividualModel(branchUri);
+          item.deepSelected = value.deepSelected;
+          return item;
+        });
+        if (value.deepSelected) {
+          individual.addValue(rel_uri, branch);
+          $this.removeClass("text-muted").addClass("text-danger");
+        } else {
+          individual.removeValue(rel_uri, branch);
+          $this.addClass("text-muted").removeClass("text-danger");
+        }
+      });
+    });
   }
 
   individual.on(rel_uri, propertyModifiedHandler);
@@ -2288,18 +2291,29 @@ v-ui:TreeTemplate
   });
 
   function getChildren(acc, root, goDeeper) {
-    if ( !root.children ) {
-      var outs = getOut(root);
-      var ins = getIn(root);
-      root.children = outs.concat(ins);
-    }
-    root.children.forEach(function (child) {
-      acc.push(child);
-      if (goDeeper !== false) {
-        getChildren(acc, child, goDeeper);
+    return new Promise(function (resolve, reject) {
+      if (root.children) {
+        resolve (root.children);
+      } else {
+        var outs = getOut(root);
+        getIn(root).then(function (ins) {
+          root.children = outs.concat(ins);
+          resolve (root.children);
+        });
       }
+    }).then(function (children) {
+      return Promise.all(
+        children.map(function (childUri) {
+          acc.push(childUri);
+          if (goDeeper !== false) {
+            var child = new veda.IndividualModel(childUri);
+            return getChildren(acc, child, goDeeper);
+          }
+        })
+      );
+    }).then(function () {
+      return acc;
     });
-    return acc;
   }
 
   function getOut(root) {
@@ -2307,8 +2321,8 @@ v-ui:TreeTemplate
     if (individual.treeConfig && individual.treeConfig.outProperty) {
       individual.treeConfig.outProperty.map(function (property) {
         if (root.hasValue(property.id)) {
-          root[property.id].map(function (value) {
-            res.push(value);
+          root.properties[property.id].map(function (value) {
+            res.push(value.data);
           });
         }
       });
@@ -2317,18 +2331,23 @@ v-ui:TreeTemplate
   }
 
   function getIn(root) {
-    var res = [];
-    if (individual.treeConfig && individual.treeConfig.inProperty) {
+    return new Promise(function (resolve, reject) {
+      if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+        resolve([]);
+      }
       var q = individual.treeConfig.inProperty.map(function (property) {
           return "'" + property.id + "'=='" + root.id + "'";
         }).join(" || ");
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
-      var result = query(veda.ticket, q, sort).result;
-      result.map( function (uri) {
-        res.push( new veda.IndividualModel(uri) );
+      query({
+        ticket: veda.ticket,
+        query: q,
+        sort: sort,
+        async: true
+      }).then(function (queryResult) {
+        resolve(queryResult.result);
       });
-    }
-    return res;
+    });
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
