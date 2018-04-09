@@ -1428,7 +1428,7 @@
   $.fn.veda_link = function( options ) {
     var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
       control = $(opts.template),
-      template = this.attr("data-template") || "{individual['rdfs:label'].join(', ')}",
+      template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
       individual = opts.individual,
       spec = opts.spec,
       placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" ") ),
@@ -1670,15 +1670,15 @@
           });
       }
 
-      var suggestionTmpl = '<div class="suggestion" about="@" property="rdfs:label"></div>';
       var selected = [];
 
       function renderResults(results) {
         selected = individual.get(rel_uri);
         if (results.length) {
-          var tmp = $("<div></div>");
           var rendered = results.map(function (result) {
-            var tmpl = result.present(tmp, suggestionTmpl);
+            var tmpl = $("<div class='suggestion'></div>")
+              .text( renderTemplate(result) )
+              .attr("resource", result.id);
             if (individual.hasValue(rel_uri, result)) {
               tmpl.addClass("selected");
             }
@@ -1687,7 +1687,6 @@
           suggestions.empty().append(rendered);
           fulltextMenu.show();
           $(document).click(clickOutsideMenuHandler);
-          tmp.remove();
         } else {
           suggestions.empty();
           fulltextMenu.hide();
