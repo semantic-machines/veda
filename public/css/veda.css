@@ -741,8 +741,6 @@ fieldset[disabled] .form-control {
 
 .link-control .suggestions {
   padding: 10px;
-  max-height: 400px;
-  overflow-y: auto;
 }
 
 .link-control .suggestion {
