@@ -2064,20 +2064,24 @@ v-ui:PermissionStatementInlineTemplate
   """ ;
 .
 
+v-ui:SelectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать"@ru ;
+  rdfs:label "Select"@en ;
+.
+v-ui:DeepSelectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать вглубь"@ru ;
+  rdfs:label "Deep select"@en ;
+.
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<div class="table-responsive">
-  <table class="table table-condensed table-striped">
-    <thead id="thead"></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
 <script>
-  var tbody = $("#tbody", template);
-  var thead = $("#thead", template);
+  var tbody = $(".tbody", template);
+  var thead = $(".thead", template);
 
   var rel_uri = individual.treeConfig.targetRel_uri;
   var isSingle = individual.treeConfig.isSingle;
@@ -2087,10 +2091,10 @@ v-ui:TreeTemplate
   if (rel_uri) {
     if (isSingle) {
       headTmpl += "<th width='1px'></th>";
-      rowTmpl += "<td><input type='radio' class='select-row' name='select-value' /></td>";
+      rowTmpl += "<td><input type='radio' class='select-row' name='select-row' /></td>";
     } else {
-      headTmpl += "<th width='1px'><input type='checkbox' id='select-col' /></th>";
-      rowTmpl += "<td><input type='checkbox' class='select-row' /></td>";
+      headTmpl += "<th width='48px'></th>";
+      rowTmpl += "<td><div class='checkbox no-margin'><label><input type='checkbox' class='select-row' /> <span style='cursor:pointer' class='select-deep fa fa-sitemap text-muted'></span></label></div></td>";
     }
   }
 
@@ -2103,7 +2107,7 @@ v-ui:TreeTemplate
   }) : [];
   var selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
-  individual.treeConfig.displayedProperty.map( function (property, index) {
+  individual.treeConfig.displayedProperty.forEach( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
     var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
     if ( index === 0 ) {
@@ -2129,10 +2133,10 @@ v-ui:TreeTemplate
     e.stopPropagation();
     e.preventDefault();
     var that = $(this),
-      thatRow = that.parents("tr"),
+      thatRow = that.closest("tr"),
       thatLvl = parseInt( thatRow.attr("data-level") ),
       uri = thatRow.attr("resource"),
-      self = new veda.IndividualModel(uri);
+      value = new veda.IndividualModel(uri);
 
     that.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
 
@@ -2141,13 +2145,18 @@ v-ui:TreeTemplate
       if ( nextLvl > thatLvl ) {
         thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
       } else {
-        getOut(self).map(render);
-        getIn(self).map(render);
-        var newNextLvl = parseInt(thatRow.next().attr("data-level"));
-        if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
-          that.prev().css("width", 16 * (thatLvl + 1) - 2);
-          that.remove();
-        }
+        getChildren([], value, false).then(function (children) {
+          children.forEach(function (childUri) {
+            var child = new veda.IndividualModel(childUri);
+            renderRow(child, thatRow);
+          });
+          var newNextLvl = parseInt(thatRow.next().attr("data-level"));
+          if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
+            that.prev().css("width", 16 * (thatLvl + 1) - 2);
+            that.remove();
+            thatRow.find(".select-deep").remove();
+          }
+        });
       }
     } else {
       thatRow.nextAll().each( function () {
@@ -2157,103 +2166,163 @@ v-ui:TreeTemplate
         that.hide();
       });
     }
-
-    function render(item) {
-      var cont = $("<div>"),
-          tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
-      $(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
-      tmpl = item.present(cont, tmpl[0].outerHTML);
-
-      var hasValue = individual.hasValue(rel_uri, item);
-      $("input", tmpl).prop("checked", hasValue);
-
-      if (selectableFilter) {
-        if ( !selectableFilter.call(item) ) {
-          $("input", tmpl).remove();
-        }
-      } else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
-        $("input", tmpl).remove();
-      }
-      thatRow.after( tmpl );
-    }
     return false;
   });
 
-  if (rel_uri) {
+  function renderRow(value, parentRow) {
+    var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1;
+    var cont = $("<div>"),
+        tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
 
-    template.on("click", "th > input", function (e) {
-      if ( $(this).is(":checked") ) {
-        var values = [];
-        $("table input", template).each(function () {
-          $(this).prop("checked", true);
-          var row = $(this).parent().parent(),
-              uri = row.attr("resource"),
-              value = new veda.IndividualModel(uri);
-          values.push(value);
-        });
-        individual[rel_uri] = values;
-      } else {
-        $("table input", template).prop("checked", false);
-        individual[rel_uri] = [];
+    if ( allowedClassIds.length && allowedClassIds.indexOf(value["rdf:type"][0].id) < 0 ) {
+      return;
+    }
+    $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+    tmpl = value.present(cont, tmpl[0].outerHTML);
+
+    // Pre-check children
+    getChildren([], value, false).then(function (children) {
+      if (!children.length) {
+        tmpl.find(".expand").remove();
+        tmpl.find(".select-deep").remove();
       }
     });
+    var selectRow = $(".select-row", tmpl);
+    var selectDeep = $(".select-deep", tmpl);
+    var hasValue = individual.hasValue(rel_uri, value);
+    selectRow.prop("checked", hasValue);
+
+    if (value.deepSelected) {
+      selectDeep.removeClass("text-muted").addClass("text-danger");
+    } else {
+      selectDeep.addClass("text-muted").removeClass("text-danger");
+    }
+
+    if (selectableFilter) {
+      if ( !selectableFilter.call(value) ) {
+        selectRow.remove();
+      }
+    } else if (selectableClassIds.length && selectableClassIds.indexOf(value["rdf:type"][0].id) < 0) {
+      selectRow.remove();
+    }
+    if ( parentRow ) {
+      parentRow.after( tmpl );
+    } else {
+      tbody.append(tmpl);
+    }
+    cont.remove();
+  }
+
+  if (rel_uri) {
 
     template.on("click", "td", function (e) {
       e.stopPropagation();
       var row = $(this).parent();
-      $("input", row).click();
+      $(".select-row", row).click();
     });
 
-    template.on("click", "td > input", function (e) {
+    template.on("click", ".select-row", function (e) {
       e.stopPropagation();
-      var row = $(this).parent().parent(),
+      var $this = $(this);
+      var row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
       if (isSingle) {
-        individual[rel_uri] = [ value ];
+        individual.set(rel_uri, [value]);
       } else {
-        var filtered = individual[rel_uri].filter(function (item) {
-          return item.id !== value.id;
+        individual.toggleValue(rel_uri, value);
+      }
+    });
+
+    template.on("click", ".select-deep", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $this = $(this);
+      var row = $this.closest("tr"),
+          uri = row.attr("resource"),
+          value = new veda.IndividualModel(uri);
+
+      getChildren([], value).then(function (branchUris) {
+        value.deepSelected = !value.deepSelected;
+        var branch = branchUris.map(function (branchUri) {
+          var item = new veda.IndividualModel(branchUri);
+          item.deepSelected = value.deepSelected;
+          return item;
         });
-        if ( $(this).prop("checked") ) {
-          individual[rel_uri] = filtered.concat(value);
+        if (value.deepSelected) {
+          individual.addValue(rel_uri, branch);
+          $this.removeClass("text-muted").addClass("text-danger");
         } else {
-          individual[rel_uri] = filtered;
+          individual.removeValue(rel_uri, branch);
+          $this.addClass("text-muted").removeClass("text-danger");
         }
+      });
+    });
+  }
+
+  individual.on(rel_uri, propertyModifiedHandler);
+  template.one("remove", function () {
+    individual.off(rel_uri, propertyModifiedHandler);
+  });
+  function propertyModifiedHandler(values) {
+    $(".value-row", template).each(function () {
+      var $this = $(this),
+          uri = $this.attr("resource"),
+          value = new veda.IndividualModel(uri);
+      if ( values.indexOf(value) >=0 ) {
+        $this.find(".select-row").prop("checked", true);
+      } else {
+        $this.find(".select-row").prop("checked", false);
+      }
+      if (value.deepSelected) {
+        $this.find(".select-deep").removeClass("text-muted").addClass("text-danger");
+      } else {
+        $this.find(".select-deep").addClass("text-muted").removeClass("text-danger");
       }
     });
   }
 
   // Render tree
-  individual.treeConfig.root.map( function (root, index, all) {
-    var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
-    tmpl = root.present(tbody, tmpl[0].outerHTML);
-
-    if (all.length === 1) {
-      $(".expand", tmpl).click();
-    }
-
-    var hasValue = individual.hasValue(rel_uri, root);
-    $("input", tmpl).prop("checked", hasValue);
-
-    if (selectableFilter) {
-      if ( !selectableFilter.call(root) ) {
-        $("input", tmpl).remove();
-      }
-    } else if (selectableClassIds.length && selectableClassIds.indexOf(root["rdf:type"][0].id) < 0) {
-      $("input", tmpl).remove();
+  individual.treeConfig.root.forEach( function (root, index, roots) {
+    renderRow(root);
+    if (roots.length === 1) {
+      tbody.find(".expand").click();
     }
   });
 
-  function getOut(self) {
+  function getChildren(acc, root, goDeeper) {
+    return new Promise(function (resolve, reject) {
+      if (root.children) {
+        resolve (root.children);
+      } else {
+        var outs = getOut(root);
+        getIn(root).then(function (ins) {
+          root.children = outs.concat(ins);
+          resolve (root.children);
+        });
+      }
+    }).then(function (children) {
+      return Promise.all(
+        children.map(function (childUri) {
+          acc.push(childUri);
+          if (goDeeper !== false) {
+            var child = new veda.IndividualModel(childUri);
+            return getChildren(acc, child, goDeeper);
+          }
+        })
+      );
+    }).then(function () {
+      return acc;
+    });
+  }
+
+  function getOut(root) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.outProperty) {
       individual.treeConfig.outProperty.map(function (property) {
-        if (self.hasValue(property.id)) {
-          self[property.id].map(function (value) {
-            if ( !allowedClassIds.length || allowedClassIds.indexOf(value["rdf:type"][0].id) > -1 ) {
-              res.push(value);
-            }
+        if (root.hasValue(property.id)) {
+          root.properties[property.id].map(function (value) {
+            res.push(value.data);
           });
         }
       });
@@ -2261,27 +2330,33 @@ v-ui:TreeTemplate
     return res;
   }
 
-  function getIn(self) {
-    var res = [];
-    if (individual.treeConfig && individual.treeConfig.inProperty) {
-      var q = individual.treeConfig.inProperty.map(function (property) {
-          return "'" + property.id + "'=='" + self.id + "'";
-        }).join(" || ");
-      if (individual.treeConfig.allowedClass) {
-        q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
-          return "'rdf:type'==='" + _class.id + "'";
-        }).join(" || ") + ")";
+  function getIn(root) {
+    return new Promise(function (resolve, reject) {
+      if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+        resolve([]);
       }
+      var q = individual.treeConfig.inProperty.map(function (property) {
+          return "'" + property.id + "'=='" + root.id + "'";
+        }).join(" || ");
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
-      var result = query(veda.ticket, q, sort).result;
-      result.map( function (uri) {
-        res.push( new veda.IndividualModel(uri) );
+      query({
+        ticket: veda.ticket,
+        query: q,
+        sort: sort,
+        async: true
+      }).then(function (queryResult) {
+        resolve(queryResult.result);
       });
-    }
-    return res;
+    });
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
+<div class="table-responsive">
+  <table class="table table-condensed table-striped">
+    <thead class="thead"></thead>
+    <tbody class="tbody"></tbody>
+  </table>
+</div>
   """ ;
 .
 
