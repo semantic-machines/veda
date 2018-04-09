@@ -6,6 +6,8 @@ DUB_VER=1.2.0
 GO_VER=go1.10.1
 MSGPUCK_VER=2.0
 
+INSTALL_PATH=$PWD
+
 # Get other dependencies
 LIB_NAME[1]="libevent-pthreads-2.0-5"
 LIB_NAME[3]="libevent-dev"
@@ -32,6 +34,8 @@ F_UL=0
 #cp ./../source/vibe-d/dub.json ~/.dub/packages/vibe-d-0.7.30/vibe-d
 #rm ~/.dub/packages/vibe-d-0.7.30/vibe-d/dub.sdl
 #cd ..
+
+sudo apt-get install build-essential
 
 ### RUST LANG ###
 
@@ -322,7 +326,7 @@ if ! ldconfig -p | grep libmdbx; then
     cd ..
 
 fi
-
+    cd $INSTALL_PATH
     cd source/authorization
     cargo build --release
     cd ..
