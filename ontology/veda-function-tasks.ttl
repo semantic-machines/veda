@@ -356,6 +356,7 @@ v-ft:Inbox
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc" ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
 .
 v-ft:InboxBlank
   rdf:type v-fc:Blank ;
@@ -373,6 +374,7 @@ v-ft:Outbox
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
 .
 v-ft:OutboxBlank
   rdf:type v-fc:Blank ;
@@ -390,6 +392,7 @@ v-ft:Completed
   v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
 .
 v-ft:CompletedBlank
   rdf:type v-fc:Blank ;
@@ -414,6 +417,25 @@ v-ft:DocumentBundle
   rdfs:label "Документ"@ru ;
   rdfs:label "Document"@en ;
 .
+
+v-ft:InboxTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка задачи"@ru ;
+  rdfs:label "Task blank template"@en ;
+  v-ui:template """
+<script>
+  if (individual.top) {
+    individual["v-fs:top"] = [ individual.top ];
+  }
+  template.one("remove", function () {
+    individual.top = individual["v-fs:cursor"][0];
+  });
+//# sourceURL=v-ft:InboxTemplate_pre
+</script>
+<div class="container sheet" about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+  """ ;
+.
+
 v-ft:TaskBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка задачи"@ru ;

@@ -1252,7 +1252,6 @@ v-fs:AttributiveSearchModel
       self["v-fs:cursor"] = [cursor];
     } else {
       self["v-fs:cursor"] = [0];
-      self["v-fs:top"] = [ veda.user.displayedElements || 10 ];
       self["v-fs:authorized"] = [0];
       self["v-fs:searchResult"] = [];
     }
@@ -1464,45 +1463,6 @@ v-fs:AttributiveSearchTemplate
     var searchActions = $(".search-actions", template);
     additionalActions.appendTo(searchActions);
   }, 0);
-
-  // Make position fixed for buttons bar that doesn't fit the window
-  function checkOffset(main, actions, actionsStaticHeight, placeholder) {
-    var mainTop = main.offset().top;
-    var mainHeight = main.height();
-    var windowHeight = window.innerHeight;
-    var windowTop = window.scrollY || window.pageYOffset;
-    var actionsStaticTop = placeholder.offset().top;
-    var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
-    var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
-    if ( !actions_inside_viewport && main_inside_viewport )  {
-      if ( !actions.hasClass("actions-fixed") ) {
-        placeholder.css("height", actionsStaticHeight);
-        actions.find("br").addClass("hidden");
-        actions.addClass("actions-fixed");
-      }
-    } else {
-      if ( actions.hasClass("actions-fixed") ) {
-        placeholder.css("height", 0);
-        actions.find("br").removeClass("hidden");
-        actions.removeClass("actions-fixed");
-      }
-    }
-  }
-  setTimeout(function () {
-    var main = template;
-    var actions = $(".search-actions", template);
-    if (!actions.length) { return; }
-    var actionsStaticHeight = actions.height();
-    var placeholder = $("<div></div>").insertBefore(actions);
-    checkOffset(main, actions, actionsStaticHeight, placeholder);
-    $(window).on("scroll", scrollHandler);
-    template.one("remove", function () {
-      $(window).off("scroll", scrollHandler);
-    });
-    function scrollHandler () {
-      checkOffset(main, actions, actionsStaticHeight, placeholder);
-    }
-  }, 500);
 
   // Export table to 'blob' or 'xls'
   var exportTable = (function () {
@@ -1731,7 +1691,7 @@ v-fs:AttributiveSearchInlineTemplate
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
       <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
       <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
-      <div class="pull-right btn-group dropup set-columns-wrapper">
+      <div class="pull-right btn-group dropup set-columns-wrapper" style="margin-left:3px;">
         <button type="button" class="btn btn-info dropdown-toggle set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-fs:SetColumns" property="rdfs:label"></span>
           <span class="caret"></span>
@@ -1771,6 +1731,45 @@ v-fs:AttributiveSearchInlineTemplate
   </div>
 </div>
 <script>
+  // Make position fixed for buttons bar that doesn't fit the window
+  function checkOffset(main, actions, actionsStaticHeight, placeholder) {
+    var mainTop = main.offset().top;
+    var mainHeight = main.height();
+    var windowHeight = window.innerHeight;
+    var windowTop = window.scrollY || window.pageYOffset;
+    var actionsStaticTop = placeholder.offset().top;
+    var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
+    var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
+    if ( !actions_inside_viewport && main_inside_viewport )  {
+      if ( !actions.hasClass("actions-fixed") ) {
+        placeholder.css("height", actionsStaticHeight);
+        actions.find("br").addClass("hidden");
+        actions.addClass("actions-fixed");
+      }
+    } else {
+      if ( actions.hasClass("actions-fixed") ) {
+        placeholder.css("height", 0);
+        actions.find("br").removeClass("hidden");
+        actions.removeClass("actions-fixed");
+      }
+    }
+  }
+  setTimeout(function () {
+    var main = template;
+    var actions = $(".search-actions", template);
+    if (!actions.length) { return; }
+    var actionsStaticHeight = actions.height();
+    var placeholder = $("<div></div>").insertBefore(actions);
+    checkOffset(main, actions, actionsStaticHeight, placeholder);
+    $(window).on("scroll", scrollHandler);
+    template.one("remove", function () {
+      $(window).off("scroll", scrollHandler);
+    });
+    function scrollHandler () {
+      checkOffset(main, actions, actionsStaticHeight, placeholder);
+    }
+  }, 500);
+
   var self = individual,
       searchBlankContainer = $(".search-form", template),
       searchResultContainer = $(".search-result", template),
@@ -1883,7 +1882,11 @@ v-fs:AttributiveSearchInlineTemplate
     $(".params", template).remove();
   }
   function formHandler () {
-    self.search().then(renderResult);
+    self.search()
+      .then(renderResult)
+      .then(function () {
+        scrollTo(self.scroll);
+      });
   }
 
   // Remember scroll position
@@ -1910,7 +1913,7 @@ v-fs:AttributiveSearchInlineTemplate
       .then(renderResult)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo( $(".results", template).offset().top );
+          scrollTo(self.scroll);
         }
       });
   }
@@ -1923,7 +1926,7 @@ v-fs:AttributiveSearchInlineTemplate
       .then(renderResult)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo( $(".results", template).offset().top );
+          scrollTo(self.scroll);
         }
         toggleSpin($this);
       })
@@ -1981,7 +1984,7 @@ v-fs:AttributiveSearchInlineTemplate
   $(".search-result", template).on("click", "table tbody tr", function () {
     var that = $(this);
     that.addClass("warning").siblings(".warning").removeClass("warning");
-    self.marked = that.attr("resource");
+    self.marked = that.find(".serial-number").text();
   });
 
   // Manage sort
@@ -2042,8 +2045,9 @@ v-fs:AttributiveSearchInlineTemplate
     }
     return resultDelta.map(function (result, i) {
       var tmpl = result.present(resultContainer, individual.resultTemplate);
-      $(".serial-number", tmpl).text(total - delta + i + 1);
-      if (result.id === self.marked) {
+      var serialNumber = total - delta + i + 1;
+      $(".serial-number", tmpl).text(serialNumber);
+      if (serialNumber == self.marked) {
         tmpl.addClass("warning");
       }
       setTimeout(function () {
