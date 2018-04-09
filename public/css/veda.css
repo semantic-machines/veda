@@ -747,7 +747,6 @@ fieldset[disabled] .form-control {
 
 .link-control .suggestion {
   padding: 5px;
-  white-space: nowrap;
 }
 
 .link-control .suggestion.selected {
