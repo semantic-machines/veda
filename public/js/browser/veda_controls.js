@@ -1557,22 +1557,21 @@
           displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
 
       if (root && (inProperty || outProperty)) {
-        var treeConfig = {
-          root: root,
-          inProperty: inProperty,
-          outProperty: outProperty,
-          sort: sort,
-          allowedClass: allowedClass,
-          selectableClass: selectableClass,
-          selectableFilter: selectableFilter,
-          displayedProperty: displayedProperty,
-          targetRel_uri: rel_uri,
-          isSingle: isSingle
-        };
         var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
         var modal = $("#individual-modal-template").html();
         tree.click(function () {
-          individual.treeConfig = treeConfig;
+          individual.treeConfig = {
+            root: root,
+            inProperty: inProperty,
+            outProperty: outProperty,
+            sort: sort,
+            allowedClass: allowedClass,
+            selectableClass: selectableClass,
+            selectableFilter: selectableFilter,
+            displayedProperty: displayedProperty,
+            targetRel_uri: rel_uri,
+            isSingle: isSingle
+          };
           var $modal = $(modal);
           var cntr = $(".modal-body", $modal);
           $modal.on('hidden.bs.modal', function (e) {
