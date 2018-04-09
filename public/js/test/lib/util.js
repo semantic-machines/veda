@@ -1160,6 +1160,10 @@ function removeFromGroup(ticket, group, resource)
   return [new_membership, res];
 }
 
+function addRightWithFilter(ticket, rights, subj_uri, obj_uri, filter) {
+    return addRight(ticket, rights, subj_uri, obj_uri, genUri() + "-rf", filter);
+}
+
 function addRight(ticket, rights, subj_uri, obj_uri, right_uri, filter) {
 
   if (subj_uri === undefined || obj_uri === undefined) {

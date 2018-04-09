@@ -38,28 +38,28 @@ char      *cstr_info;
 abstract class ImplAuthorization : Authorization
 {
     Logger   log;
-    string   filter_value;
+//    string   filter_value;
     ubyte    calc_right_res;
 
     RightSet subject_groups;
-    ubyte    request_access;
+//    ubyte    request_access;
     ubyte[ string ] checked_groups;
-    string   str;
-    int      rc;
-    int      str_num;
-    int      count_permissions = 0;
+    string str;
+    int    rc;
+    int    str_num;
+    int    count_permissions = 0;
 
-    bool     use_cache = false;
-    Cache    cache;
+    bool   use_cache = false;
+    Cache  cache;
 
-    bool     use_ext_libauthorization = false;
+    bool   use_ext_libauthorization = false;
 
     public void set_use_ext_libauthorization(bool is_ext)
     {
         use_ext_libauthorization = is_ext;
     }
 
-    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
+    ubyte authorize(string _uri, string user_uri, ubyte request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                     OutBuffer _trace_info)
     {
         trace_acl   = _trace_acl;
@@ -72,21 +72,21 @@ abstract class ImplAuthorization : Authorization
             {
                 if (trace_acl !is null)
                 {
-                    cstr_acl = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_ACL, is_check_for_reload);
+                    cstr_acl = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, TRACE_ACL, is_check_for_reload);
                     string str = to!string(cstr_acl);
                     _trace_acl.write(str);
                 }
 
                 if (trace_group !is null)
                 {
-                    cstr_group = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_GROUP, is_check_for_reload);
+                    cstr_group = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, TRACE_GROUP, is_check_for_reload);
                     string str = to!string(cstr_group);
                     _trace_group.write(str);
                 }
 
                 if (trace_info !is null)
                 {
-                    cstr_info = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, TRACE_INFO, is_check_for_reload);
+                    cstr_info = get_trace((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, TRACE_INFO, is_check_for_reload);
                     string str = to!string(cstr_info);
                     _trace_info.write(str);
                 }
@@ -94,7 +94,7 @@ abstract class ImplAuthorization : Authorization
             }
             else
             {
-                return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, _request_access, is_check_for_reload);
+                return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, is_check_for_reload);
             }
         }
 
@@ -102,7 +102,6 @@ abstract class ImplAuthorization : Authorization
         checked_groups = (ubyte[ string ]).init;
         calc_right_res = 0;
         str_num        = 0;
-        request_access = _request_access;
 
         string uri = _uri.idup;
 
@@ -128,11 +127,26 @@ abstract class ImplAuthorization : Authorization
 
             try
             {
-                string skey;
+                // читаем фильтр прав на object (uri)
+                string filter                       = filter_prefix ~ uri;
+                string filter_value                 = get_in_current_transaction(filter);
+                ubyte  filter_allow_access_to_other = 0;
 
-                // 0. читаем фильтр прав у object (uri)
-                string filter = filter_prefix ~ uri;
-                filter_value = get_in_current_transaction(filter);
+                if (filter_value !is null)
+                {
+                    if (filter_value.length < 3)
+                        filter_value = null;
+                    else
+                    {
+                        Right *[] filters_set;
+                        rights_from_string(filter_value, filters_set);
+                        if (filters_set.length > 0)
+                        {
+                            filter_value                 = filters_set[ 0 ].id;
+                            filter_allow_access_to_other = filters_set[ 0 ].access;
+                        }
+                    }
+                }
 
                 if (trace_info !is null)
                 {
@@ -160,29 +174,55 @@ abstract class ImplAuthorization : Authorization
                 if (trace_info !is null)
                     trace_info.write(format("\n%d PREPARE OBJECT GROUPS\n", str_num++));
 
+                ubyte request_access_t = request_access;
+
+                if (filter_value !is null)
+                    request_access_t = request_access & filter_allow_access_to_other;
+
                 ubyte[ string ] walked_groups1;
 
                 if (trace_info is null && trace_group is null && trace_acl is null)
                 {
-                    if (authorize_obj_group(veda_schema__AllResourcesGroup, 15) == true)
-                        return calc_right_res;
+                    if (authorize_obj_group(request_access_t, veda_schema__AllResourcesGroup, 15, null) == true)
+                    {
+                        if (filter_value is null || (filter_value !is null &&  request_access == calc_right_res))
+                            return calc_right_res;
+                    }
 
-                    if (authorize_obj_group(uri, 15) == true)
-                        return calc_right_res;
+                    if (authorize_obj_group(request_access_t, uri, 15, null) == true)
+                    {
+                        if (filter_value is null || (filter_value !is null &&  request_access == calc_right_res))
+                            return calc_right_res;
+                    }
 
-                    if (prepare_obj_group(uri, 15, walked_groups1, 0) == true)
-                        return calc_right_res;
+                    if (prepare_obj_group(request_access_t, uri, 15, walked_groups1, null, 0) == true)
+                    {
+                        if (filter_value is null || (filter_value !is null &&  request_access == calc_right_res))
+                            return calc_right_res;
+                    }
+
+                    if (filter_value !is null)
+                    {
+                        if (authorize_obj_group(request_access, veda_schema__AllResourcesGroup, 15, filter_value) == true)
+                            return calc_right_res;
+
+                        if (authorize_obj_group(request_access, uri, 15, filter_value) == true)
+                            return calc_right_res;
+
+                        if (prepare_obj_group(request_access, uri, 15, walked_groups1, filter_value, 0) == true)
+                            return calc_right_res;
+                    }
                 }
                 else
                 {
                     // IF NEED TRACE
-                    if (authorize_obj_group(veda_schema__AllResourcesGroup, 15) == true)
+                    if (authorize_obj_group(request_access_t, veda_schema__AllResourcesGroup, 15, null) == true)
                     {
                         if (trace_info !is null)
                             trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
                     }
 
-                    if (authorize_obj_group(uri, 15) == true)
+                    if (authorize_obj_group(request_access_t, uri, 15, null) == true)
                     {
                         if (trace_info !is null)
                             trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
@@ -202,11 +242,48 @@ abstract class ImplAuthorization : Authorization
 
                     foreach (object_group; object_groups.data)
                     {
-                        if (authorize_obj_group(object_group.id,
-                                                object_group.access) == true)
+                        if (authorize_obj_group(request_access_t, object_group.id,
+                                                object_group.access, null) == true)
                         {
                             if (trace_info !is null)
                                 trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+                    }
+
+                    if (filter_value !is null)
+                    {
+                        if (authorize_obj_group(request_access, veda_schema__AllResourcesGroup, 15, filter_value) == true)
+                        {
+                            if (trace_info !is null)
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+
+                        if (authorize_obj_group(request_access, uri, 15, filter_value) == true)
+                        {
+                            if (trace_info !is null)
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+
+                        Right *[] groups11;
+                        if (get_resource_groups(uri, 15, groups11, walked_groups1, 0) == true)
+                        {
+                            if (trace_info !is null)
+                                trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                        }
+
+                        RightSet object_groups1 = new RightSet(groups11, log);
+
+                        if (trace_info !is null)
+                            trace_info.write(format("%d object_groups=%s\n", str_num++, object_groups));
+
+                        foreach (object_group; object_groups1.data)
+                        {
+                            if (authorize_obj_group(request_access, object_group.id,
+                                                    object_group.access, filter_value) == true)
+                            {
+                                if (trace_info !is null)
+                                    trace_info.write(format("\n%d RETURN MY BE ASAP\n", str_num++));
+                            }
                         }
                     }
                 }
@@ -231,7 +308,7 @@ abstract class ImplAuthorization : Authorization
         }
     }
 
-    private bool authorize_obj_group(string object_group_id, ubyte object_group_access)
+    private bool authorize_obj_group(ubyte request_access, string object_group_id, ubyte object_group_access, string filter_value)
     {
         bool  is_authorized = false;
         ubyte calc_bits     = 0;
@@ -257,6 +334,7 @@ abstract class ImplAuthorization : Authorization
                 trace_group.write(object_group_id ~ "\n");
 
             string acl_key;
+
             if (filter_value !is null)
                 acl_key = permission_prefix ~ filter_value ~ object_group_id;
             else
@@ -479,7 +557,7 @@ abstract class ImplAuthorization : Authorization
         return false;
     }
 
-    private bool prepare_obj_group(string uri, ubyte access, ref ubyte[ string ] walked_groups, int level = 0)
+    private bool prepare_obj_group(ubyte request_access, string uri, ubyte access, ref ubyte[ string ] walked_groups, string filter_value, int level = 0)
     {
         if (level > 32)
         {
@@ -529,10 +607,10 @@ abstract class ImplAuthorization : Authorization
                     cache.add_group(uri, group.id);
                 }
 
-                if (authorize_obj_group(group.id, group.access) == true)
+                if (authorize_obj_group(request_access, group.id, group.access, filter_value) == true)
                     return true;
 
-                prepare_obj_group(group.id, new_access, walked_groups, level + 1);
+                prepare_obj_group(request_access, group.id, new_access, walked_groups, filter_value, level + 1);
             }
         }
         catch (Throwable ex)

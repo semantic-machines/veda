@@ -398,6 +398,26 @@ v-s:taxRegistrationCauseForOrganization
   v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
 .
 
+v-s:PsContractorProfileDateToFact
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:dateToFact ;
+
+  rdfs:label "Спецификация к свойству v-s:dateToFact для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Spec for property v-s:dateToFact for class v-s:ContractorProfile"@en ;
+  v-ui:placeholder "Дата ликвидации юр лица"@ru ;
+  v-ui:placeholder "Registered legal persons"@en ;
+.
+
+v-s:PsContractorProfileDateFromFact
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:dateFromFact ;
+  v-ui:placeholder "Дата регистрации юр лица"@ru ;
+  v-ui:placeholder "Registered legal persons"@en ;
+  rdfs:label "Спецификация к свойству v-s:dateFromFact для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Spec for property v-s:dateFromFact for class v-s:ContractorProfile"@en ;
+.
 # ------------------------------------------------------------ СТРОКИ --
 
 v-s:NonUniqueTaxId
@@ -407,7 +427,16 @@ v-s:NonUniqueTaxId
   rdfs:comment "Организация с таким ИНН уже существует"@ru ;
   rdfs:comment "Organization with this tax number already exists"@en ;
 .
-
+v-s:AddDateContractorProfile
+  rdf:type v-s:Bundle ;
+  rdfs:label "Период существования юридического лица"@ru ;
+  rdfs:label "Period of existence of the legal entity"@en ;
+.
+v-s:
+  rdf:type v-s:Bundle ;
+  rdfs:label ""@ru ;
+  rdfs:label ""@en ;
+.
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:AddProfile
@@ -574,6 +603,18 @@ v-s:OrganizationTemplate
 
   <hr class="view -edit -search">
 
+  <em about="v-s:AddDateContractorProfile" property="rdfs:label"></em>
+  <div class="row">
+    <div class="col-md-4">
+      <div property="v-s:dateFromFact" class="view -edit -search"></div>
+      <veda-control property="v-s:dateFromFact" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <div property="v-s:dateToFact" class="view -edit -search"></div>
+      <veda-control property="v-s:dateToFact" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+  </div>
+
   <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
   <table class="table table-condensed table-bordered">
     <thead>
@@ -647,6 +688,47 @@ v-s:OrganizationTemplate
   <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
       <hr class="view -edit -search">
 
+  <em about="v-s:hasScreeningResult" property="rdfs:label"></em>
+  <table class="table table-bordered">
+    <thead class="result-header">
+      <tr class="active">
+        <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+        <th about="mnd-s:contractorSecurityDepSummary" property="rdfs:label"></th>
+        <th about="v-s:created" property="rdfs:label"></th>
+        <th about="mnd-s:isContractorOkSecurityDepSummary" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasScreeningResult" >
+      <script>
+        if( individual.hasValue("mnd-s:isContractorOkSecurityDepSummary", true) ) {
+          template.closest("tr").addClass("success");
+        } else if ( individual.hasValue("mnd-s:isContractorOkSecurityDepSummary", false) ) {
+          template.closest("tr").addClass("danger");
+        } else {
+          template.closest("tr").addClass("warning");
+        }
+      </script>
+      <tr>
+        <td width="1%"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+        <td width="74%">
+          <div about="@" property="mnd-s:contractorSecurityDepSummary" class="view -edit -search"></div>
+        </td>
+        <td width="20%">
+          <div about="@" property="v-s:created" class="view -edit -search"></div>
+        </td>
+        <td width="5%">
+          <veda-control property="mnd-s:isContractorOkSecurityDepSummary" data-type="boolean"></veda-control>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="view -edit -search clearfix">
+    <button class="btn btn-success pull-right" id="add-screeningResult" >
+      <span class="glyphicon glyphicon-search"></span>
+      <span about="v-s:hasScreeningResult" property="rdfs:label"></span>
+    </button>
+  </div>
+
   <em about="mnd-s:hasContractorCreateChangeRequest" property="rdfs:label"></em>
   <table class="table table-condensed table-bordered">
     <thead>
@@ -687,7 +769,7 @@ v-s:OrganizationTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal"></span>
   </div>
   <br>
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
@@ -718,6 +800,56 @@ v-s:OrganizationTemplate
     profile.one("afterSave", function () {
       modal.modal("hide").remove();
     });
+  });
+
+  $("#add-screeningResult", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+    var cntr = $(".modal-body", modal),
+      _class = new veda.IndividualModel("mnd-s:ContractorCategoryDecisionSecurity"),
+      screening = new veda.IndividualModel(),
+      tmpl = "mnd-s:ContractorCategoryDecisionSecurityTemplate";
+    screening["rdf:type"] = [_class];
+    screening["v-s:backwardTarget"] = [individual];
+    screening["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasScreeningResult")];
+    screening["v-s:canRead"] = [ true ];
+    screening.present(cntr, tmpl, "edit");
+    screening.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    screening.one("afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  }); 
+
+  function processHandler() {
+    if (individual.hasValue("v-wf:isProcess")
+      && individual["v-wf:isProcess"][0].hasValue("v-wf:instanceOf")
+      && individual["v-wf:isProcess"][0]["v-wf:instanceOf"][0].id === "s-wf:net_complex_route"
+    ) {
+      $('#send.action', template).remove();
+      $('#delete.action', template).remove();
+    } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
+      $('#send.action', template).off("click");
+      $('#send.action', template).on('click', function () {
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+      });
+    } else {
+      $('#send.action', template).remove();
+      $('#delete.action', template).remove();
+    }
+  }
+  processHandler();
+
+  individual.on("afterReset", processHandler);
+  template.one("remove", function () {
+    individual.off("afterReset", processHandler);
   });
 
   //Генерация Uri

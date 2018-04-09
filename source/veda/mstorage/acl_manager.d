@@ -280,12 +280,12 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     }
 }
 
-private void update_right_set(ref Resources resource, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
+private void update_right_set(ref Resources resources, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
                               long op_id,
                               KeyValueDB storage)
 {
     // для каждого из ресурсов выполним операцию добавления/удаления
-    foreach (rs; resource)
+    foreach (rs; resources)
     {
         string key;
 
@@ -329,7 +329,7 @@ private void update_right_set(ref Resources resource, ref Resources in_set, bool
 
         ResultCode res = storage.put(OptAuthorize.NO, null, key, new_record, op_id);
 
-        //log.trace("[acl index] (%s) new right set: %s(%s) : [%s]", text(res), key, rs.uri, new_record);
+        //log.trace("[acl index] (%s) new right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
     }
 }
 
@@ -347,12 +347,7 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionFilter: [%s] op_id=%d", new_ind, op_id);
 
-    Resource   permissionObject = new_ind.getFirstResource(veda_schema__permissionObject);
-
-    ResultCode res = storage.put(OptAuthorize.NO, null, filter_prefix ~ permissionObject.uri, new_ind.uri, op_id);
-
-    if (trace_msg[ 101 ] == 1)
-        log.trace("[acl index] (%s) PermissionFilter: %s : %s", text(res), permissionObject.uri, new_ind.uri);
+    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__resource, filter_prefix, 0, op_id, storage);
 }
 
 void prepare_permission_statement(ref Individual prev_ind, ref Individual new_ind, long op_id, KeyValueDB storage)
