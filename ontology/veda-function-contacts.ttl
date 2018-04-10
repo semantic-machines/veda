@@ -246,12 +246,12 @@ v-s:OrganizationUnitTemplate
     <div class="row">
       <div class="col-sm-6">
         <em about="v-s:hasChief" property="rdfs:label"></em>
-        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
-        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:ImageAppointmentTemplate"></div>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
       </div>
     </div>
@@ -273,7 +273,7 @@ v-s:OrganizationUnitContentTemplate
   v-ui:template """
 <script>
   var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
-  blank._init();
+  blank.initBlank();
   if ( !blank.object.hasValue("v-s:parentUnit", individual) ) {
     blank.object["v-s:parentUnit"] = [ individual ];
     var search = new veda.IndividualModel("v-s:ContactsInUnitSearch");

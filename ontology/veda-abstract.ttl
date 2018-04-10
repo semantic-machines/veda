@@ -382,7 +382,7 @@ v-s:date
 .
 v-s:datePlan
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Плановая дата"@ru ;
+  rdfs:label "Дата плановая"@ru ;
   rdfs:label "Date plan"@en ;
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
@@ -761,6 +761,13 @@ v-s:taskDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Controlled ;
 .
+v-s:reportDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Описание отчета"@ru ;
+  rdfs:label "Report description"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Controlled ;
+.
 v-s:rationale
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Обоснование"@ru ;
@@ -1029,6 +1036,13 @@ v-s:productionCondition
   rdfs:label "Производственные условия"@ru ;
   rdfs:label "Production condition"@en ;
   rdfs:range xsd:string ;
+  rdfs:domain v-s:Maintained ;
+.
+v-s:hasLifecycleStage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Стадия жизненного цикла изделия"@ru ;
+  rdfs:label "Stage of Lifeсycle"@en ;
+  rdfs:range v-s:LifecycleStage ;
   rdfs:domain v-s:Maintained ;
 .
 

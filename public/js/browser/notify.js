@@ -11,7 +11,7 @@ veda.Module(function Notify(veda) { "use strict";
     var notificationContainer = $("#notification-container");
     var notificationTmpl = $("#notification-template").html();
     function notify(type, note) {
-      console.log ? console.log( (new Date()).toISOString(), type + ":", JSON.stringify(note) ) : null;
+      console.log( (new Date()).toISOString(), type + ":", JSON.stringify(note) );
       var notification = $(notificationTmpl).addClass("alert-" + type).prependTo(notificationContainer),
           durationFade = 200,
           durationShown = 5000,
@@ -36,9 +36,9 @@ veda.Module(function Notify(veda) { "use strict";
       notificationContainer
         .children()
         .slice(3)
-        .hide(durationFade, function () { $(this).remove() });
+        .hide(durationFade, function () { $(this).remove(); });
     }
-    return veda.Notify.prototype._singletonInstance = notify;
-  }
+    return (veda.Notify.prototype._singletonInstance = notify);
+  };
 
 });

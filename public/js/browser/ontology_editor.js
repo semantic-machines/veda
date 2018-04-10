@@ -43,7 +43,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 			ontology.present($a, tmp);
 			if (uri === chosen_ontology) { $a.click(); }
 		}
-		if (!chosen_ontology) { $ontologies_list.children().first().children().first().click() }
+		if (!chosen_ontology) { $ontologies_list.children().first().children().first().click(); }
 
 	});
 

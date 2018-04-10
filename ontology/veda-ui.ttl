@@ -30,11 +30,13 @@ v-ui:DefaultLanguage
 v-ui:EN
   rdf:type v-ui:Language ;
   rdfs:label "Eng"^^xsd:string ;
+  rdfs:comment "English"^^xsd:string ;
   rdf:value "EN" ;
 .
 v-ui:RU
   rdf:type v-ui:Language ;
   rdfs:label "Рус"^^xsd:string ;
+  rdfs:comment "Русский"^^xsd:string ;
   rdf:value "RU" ;
 .
 v-ui:preferredLanguage
@@ -298,6 +300,8 @@ v-ui:Preferences
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:owner.rdfs:label}" ;
   rdfs:label "Предпочтения"@ru ;
   rdfs:label "Preferences"@en ;
 .
@@ -314,6 +318,13 @@ v-ui:displayedElements
   rdfs:label "Отображать элементов"@ru ;
   rdfs:label "Display elements"@en ;
   rdfs:range xsd:nonNegativeInteger ;
+.
+v-ui:fullWidth
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:Preferences ;
+  rdfs:label "Во всю ширину"@ru ;
+  rdfs:label "Full width"@en ;
+  rdfs:range xsd:boolean ;
 .
 
 # --------------- System properties template ------------------
@@ -351,14 +362,7 @@ v-ui:LanguageSwitchTemplate
     veda.user.preferences.off("v-ui:preferredLanguage", langHandler);
   });
   langHandler();
-  template.on("click", function(e) {
-    e.stopPropagation();
-    var target = $(e.target);
-    var lang_uri = target.attr("resource");
-    var lang = new veda.IndividualModel(lang_uri);
-    var lang_name = lang["rdf:value"][0].toString();
-    veda.user.toggleLanguage(lang_name);
-  });
+  template.on("click", toggleLanguage);
   function langHandler() {
     var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
     switches.each(function () {
@@ -371,9 +375,65 @@ v-ui:LanguageSwitchTemplate
       }
     });
   }
+  function toggleLanguage (e) {
+    e.stopPropagation();
+    var target = $(e.target);
+    var lang_uri = target.attr("resource");
+    var lang = new veda.IndividualModel(lang_uri);
+    var lang_name = lang["rdf:value"][0].toString();
+    if (lang_name in veda.user.language && Object.keys(veda.user.language).length == 1) return;
+    lang_name in veda.user.language ? delete veda.user.language[lang_name] : veda.user.language[lang_name] = veda.user.availableLanguages[lang_name];
+    veda.user.preferences["v-ui:preferredLanguage"] = Object.keys(veda.user.language).map ( function (lang_name) {
+      return veda.user.language[lang_name];
+    });
+  };
   //# sourceURL=v-ui:LanguageSwitchTemplate
 </script>
 
+  """
+.
+v-ui:FullWidthSwitchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон переключения режима на всю ширину"@ru ;
+  rdfs:label "Full width switch template"@en ;
+  v-ui:template """
+<script>
+  template.click(function () {
+    try {
+      var value = veda.user.preferences["v-ui:fullWidth"][0];
+      veda.user.preferences["v-ui:fullWidth"] = [ !value ];
+      veda.user.preferences.save();
+    } catch (error) {
+      console.log("Full width switch error", error);
+    }
+  });
+  veda.user.preferences.on("v-ui:fullWidth", widthHandler);
+  template.one("remove", function () {
+    veda.user.preferences.off("v-ui:fullWidth", widthHandler);
+  });
+  widthHandler();
+  function widthHandler() {
+    var style = $("#full-width-style", template);
+    if (veda.user.preferences.hasValue("v-ui:fullWidth", true) ) {
+      style.attr("media", "all");
+      template.removeClass("btn-default").addClass("btn-success active");
+    } else {
+      style.attr("media", "not all");
+      template.addClass("btn-default").removeClass("btn-success active");
+    }
+  }
+  //# sourceURL=v-ui:FullWidthSwitchTemplate
+</script>
+<button class="btn btn-xs btn-default navbar-btn">
+  <span class="glyphicon glyphicon-fullscreen"></span>
+  <style id="full-width-style" media="not all">
+    .container {
+      width: 98%!important;
+      margin-left: 1%!important;
+      margin-right: 1%!important;
+    }
+  </style>
+</button>
   """
 .
 
@@ -428,7 +488,7 @@ v-ui:StandardButtonsTemplate
   var enabledButtons = (container.data("buttons") || defaultButtons).split(" ");
   enabledButtons.forEach(function (id) {
     if ( !canUpdate && (id === "save" || id === "edit" || id === "cancel") ) { return; }
-    if ( !canUpdate && (id === "delete") ) { return; }
+    if ( !canDelete && (id === "delete" || id === "destroy") ) { return; }
     $("#" + id, template).removeClass("rm");
   });
   $(".rm", template).remove();
@@ -469,20 +529,8 @@ v-ui:StandardButtonsTemplate
   // Standard tasks
   template.on("click", "ul#standard-tasks a", function (e) {
     e.preventDefault();
-    var task = $(this).attr("about");
-    if (task === "v-s:Question") {
-      veda.Util.send(individual, template, 'v-wf:questionRouteStartForm', true);
-    } else if (task === "v-s:Instruction") {
-      veda.Util.send(individual, template, 'v-wf:instructionRouteStartForm', true);
-    } else if (task === "v-s:Introduction") {
-      veda.Util.send(individual, template, 'v-wf:taskRouteStartForm', true);
-    } else if (task === "v-s:Distribution") {
-      veda.Util.send(individual, template, 'v-wf:distributionRouteStartForm', true);
-    } else if (task === "v-s:Coordination") {
-      veda.Util.send(individual, template, 'v-wf:coordinationRouteStartForm', true);
-    } else if (task === "v-s:Sign") {
-      veda.Util.send(individual, template, 'v-wf:signRouteStartForm', true);
-    }
+    var startFormTransform = $(this).attr("about");
+    veda.Util.send(individual, template, startFormTransform, true);
   });
 
   // Standart buttons labels change for drafts
@@ -523,17 +571,18 @@ v-ui:StandardButtonsTemplate
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" id="standard-tasks">
-      <li><a href="#" about="v-s:Question" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Instruction" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Introduction" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Distribution" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Coordination" property="rdfs:label"></a></li>
-      <li><a href="#" about="v-s:Sign" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:questionRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:instructionRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:taskRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:coordinationRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:signRouteStartForm" property="rdfs:label"></a></li>
+      <li><a href="#" about="v-wf:confirmationRouteStartForm" property="rdfs:label"></a></li>
+      <li class="divider"></li>
+      <li><a href="#" about="v-wf:distributionRouteStartForm" property="rdfs:label"></a></li>
     </ul>
   </div>
   <button type="button" class="btn btn-link view edit -search toggle-actions hidden">
     <span class="glyphicon glyphicon-chevron-left"></span>
-    <span class="description hidden" about="v-ui:StandardButtonsTemplate" property="rdfs:comment"></span>
   </button>
 </span>
 <script>
@@ -762,10 +811,12 @@ v-ui:IconPersonTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<a href="#/@">
-  <!--span class="glyphicon glyphicon-user"></span-->
-  <span about="@" property="rdfs:label"></span>
-</a>
+<script>
+  if (individual.hasValue("v-s:hasAspect")) {
+    template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
+  }
+</script>
+<a href="#/@" about="@" property="rdfs:label"></a>
 """ ;
 .
 
@@ -774,72 +825,102 @@ v-ui:ImageAppointmentTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<div class="panel panel-default" style="word-wrap:break-word;display:inline-block;margin:7px 7px 0 0;overflow:hidden; max-width:200px; height:125px">
-  <div class="panel-body" style="padding:7px;">
-    <div about="@" rel="v-s:employee">
-      <script>
-        individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-        //# sourceURL=v-ui:ImageAppointmentTemplate_pre
-      </script>
-      <div style="width:50px">
-        <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
-        <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
-      </div>
+<div class="horizontal-card horizontal-card-sm">
+  <div class="thumbnail" about="@" rel="v-s:employee">
+    <script>
+      if ( !individual.hasValue("v-s:hasImage") ) {
+        template.removeAttr("rel").empty().append('<span class="text-muted fa fa-user fa-4x"></span>');
+      }
+      //# sourceURL=v-ui:ImageAppointmentTemplate_pre
+    </script>
+    <div about="@" rel="v-s:hasImage">
+      <img src="/files/@"/>
     </div>
-    <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong><br>
+  </div>
+  <div class="description">
+    <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
+    <hr class="no-margin">
     <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
   </div>
 </div>
-""" ;
+  """ ;
 .
-
-v-ui:ImageAppointmentFixedTemplate
+v-ui:AppointmentPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны с иконкой фиксированного размера"@ru ;
-  rdfs:label "Person template with icon"@en ;
+  rdfs:label "Шаблон назначения с фотографией"@ru ;
+  rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
-<div class="panel panel-default" >
-  <div class="panel-body" style="padding:7px;">
-    <div class="row">
-      <div class="col-md-2">
-        <div about="@" rel="v-s:employee">
-          <script>
-            individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
-            //# sourceURL=v-ui:ImageAppointmentTemplate_pre
-          </script>
-          <div style="width:50px">
-            <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
-            <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
-          </div>
+<div class="media" style="margin-top:0px;">
+  <span class="close">&times;</span>
+  <div class="media-left" rel="v-s:employee">
+    <a href="#/@" rel="v-s:hasImage">
+      <img style="width:64px" class="media-object" src="/files/@">
+    </a>
+  </div>
+  <div class="media-body" style="width:auto;">
+    <strong class="media-heading" about="@" rel="v-s:employee">
+      <span about="@" property="rdfs:label"></span>
+    </strong>
+    <hr class="no-margin">
+    <div about="@" rel="v-s:occupation">
+      <div>
+        <small about="@" property="v-s:title"></small><br>
+        <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+      </div>
+    </div>
+    <div about="@" rel="v-s:employee">
+      <div about="@" rel="v-s:hasAccount">
+        <div>
+          <small about="@" property="v-s:mailbox"></small>
+          <small about="@" property="v-s:phone"></small>
         </div>
       </div>
-      <div class="col-md-10">
-        <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong><br>
-        <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
-      </div>
+      <small about="@" property="v-s:phone"></small>
     </div>
   </div>
 </div>
-""" ;
+  """ ;
 .
-
-v-ui:PersonAppointmentTemplate
+v-ui:PersonPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны с выбором назначения"@ru ;
-  rdfs:label "Person template with appointment select"@en ;
+  rdfs:label "Шаблон назначения с фотографией"@ru ;
+  rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
-  <div>
-    <veda-control data-type="link" rel="v-s:defaultAppointment" class="fulltext dropdown" data-template="{individual['v-s:occupation'][0]['rdfs:label'].join(', ')}"></veda-control>
+<div class="media" style="margin-top:0px;">
+  <span class="close">&times;</span>
+  <div class="media-left">
+    <a href="#" rel="v-s:hasImage">
+      <img style="width:64px" class="media-object" src="/files/@">
+    </a>
   </div>
-""" ;
+  <div class="media-body" style="width:auto">
+    <strong class="media-heading" about="@" property="rdfs:label"></strong>
+    <hr class="no-margin">
+    <div about="@" rel="v-s:hasAccount">
+      <div>
+        <small about="@" property="v-s:mailbox"></small>
+        <small about="@" property="v-s:phone"></small>
+      </div>
+    </div>
+    <small about="@" property="v-s:phone"></small>
+  </div>
+</div>
+  """ ;
 .
-v-ui:PS_PersonDefaultAppointment
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация назначения по-умолчанию для класса Персона"@ru ;
-  rdfs:label "Default appointment property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:defaultAppointment ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='{individual.id}' && 'v-s:official'=='true')"^^xsd:string ;
+v-ui:PositionPopoverTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон должности"@ru ;
+  rdfs:label "Position template"@en ;
+  v-ui:template """
+<div class="media" style="margin-top:0px;">
+  <span class="close">&times;</span>
+  <div class="media-body" style="width:auto">
+    <strong class="media-heading" about="@" property="rdfs:label"></strong>
+    <hr class="no-margin">
+    <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+  </div>
+</div>
+  """ ;
 .
 
 v-ui:ResourceTemplate
@@ -850,7 +931,10 @@ v-ui:ResourceTemplate
   v-ui:template """
 <div class="container sheet">
   <div class="clearfix">
-    <h2 class="pull-left"><span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span><small about="@" property="rdfs:label"></small></h2>
+    <h2 class="pull-left">
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <small about="@" property="rdfs:label"></small>
+    </h2>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
   </div>
 </div>
@@ -878,7 +962,34 @@ v-ui:LabelTemplate
   <span class="label-template" about="@" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-      template.text(individual.id);
+      template.children().first().text(individual.id);
+    }
+    if (individual.is("v-s:Appointment") || individual.is("v-s:Person") || individual.is("v-s:Position")) {
+      template.popover({
+        trigger: "hover click",
+        delay: { "show": 750, "hide": 100 },
+        placement: "auto top",
+        html: true,
+        container: "body",
+        content: function () {
+          var cntr = $("<div></div>");
+          var content;
+          if (individual.is("v-s:Appointment")) {
+            content = individual.present(cntr, "v-ui:AppointmentPopoverTemplate");
+          } else if (individual.is("v-s:Person")) {
+            content = individual.present(cntr, "v-ui:PersonPopoverTemplate");
+          } else {
+            content = individual.present(cntr, "v-ui:PositionPopoverTemplate");
+          }
+          return content.on("click", ".close", function (e) {
+            e.stopPropagation();
+            template.click();
+          });
+        }
+      });
+      template.one("remove", function () {
+        template.popover("destroy");
+      });
     }
     //# sourceURL=v-ui:LabelTemplate
   </script>
@@ -908,7 +1019,7 @@ v-ui:LabelLinkTemplate
   <a class="label-template" href="#/@"><span about="@" property="rdfs:label"></span></a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-      template.text(individual.id);
+      template.children().first().text(individual.id);
     }
     //# sourceURL=v-ui:LabelLinkTemplate
   </script>
@@ -1013,20 +1124,6 @@ v-ui:ClassNameLabelLinkTemplate
   </script>
   """ ;
 .
-v-ui:ClassNameLabelLinkEditTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон с именем класса и меткой"@ru ;
-  rdfs:label "Template with class name and label"@en ;
-  v-ui:template """
-  <a class="label-template" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
-  </script>
-  """ ;
-.
 v-ui:DraftLinkEditTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон черновика со ссылкой"@ru ;
@@ -1062,7 +1159,7 @@ v-ui:RabbitHole
   rdfs:label "Rabbit hole"@en ;
   v-ui:template """
 <script>
-  var defaultProperties = "v-s:parent v-s:backwardTarget";
+  var defaultProperties = "v-s:backwardTarget v-s:parent";
   var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
   var text = "<span>" + mkLabel(individual) + "</span>";
   var visited = [ individual.id ];
@@ -1109,24 +1206,6 @@ v-ui:ClassNameLabelTemplate
     }
     //# sourceURL=v-ui:ClassNameLabelTemplate
   </script>
-  """ ;
-.
-v-ui:SavedSearchTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Сохраненный запрос"@ru ;
-  rdfs:label "Template for Saved search class"@en ;
-  v-ui:forClass v-s:SavedSearch ;
-  v-ui:template """
-  <div>
-    <em about="rdfs:label" property="rdfs:label"></em>
-    <div property="rdfs:label"></div>
-    <em about="v-s:query" property="rdfs:label"></em>
-    <div property="v-s:query"></div>
-    <br/>
-    <div class="actions">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-    </div>
-  </div>
   """ ;
 .
 
@@ -1606,18 +1685,10 @@ v-ui:ImageTemplateTransparent
 </script>
   """ ;
 .
-v-ui:PsHasImage
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация изображения для класса Персона"@ru ;
-  rdfs:label "Has image property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:hasImage ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
-.
 v-ui:SimplifiedJournalTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Упрощенный журнал"@ru ;
-  rdfs:label "Simplified journal"@en ;
+  rdfs:label "Упрощенный"@ru ;
+  rdfs:label "Simplified"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <script>
@@ -1657,46 +1728,29 @@ v-ui:SimplifiedJournalTemplate
   $('.createReport0', template).on('click', function () {
     veda.Util.createReport(doc,'v-s:Journal_printBlank');
   });
-  $('#createReport',template).on('click', function (e) {
-    e.preventDefault();
-    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_pdf');
-  });
-  $('#createReport2', template).on('click', function (e) {
-    e.preventDefault();
-    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_xlsx');
-  });
-  $('#createReport3', template).on('click', function (e) {
-    e.preventDefault();
-    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_docx');
-  });
   //# sourceURL=v-ui:SimplifiedJournalTemplate_pre
 </script>
 <div class="container sheet">
-  <div class="row">
-    <div class="col-md-6">
-      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  <br>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 class="no-margin" about="v-s:Journal" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a></li>
+    <li role="presentation" class="active"><a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a></li>
+  </ul>
+  <br>
+  <div class="clearfix">
+    <div class="pull-left">
+      <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
     </div>
-    <div class="col-md-6 text-right">
-      <a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a>
+    <div class="pull-right">
       <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
-      <div class="btn-group dropdown">
-        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span about="v-s:CoordinationList" property="rdfs:label"> </span>
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
-          <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
-          <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
-        </ul>
-      </div>
     </div>
   </div>
-  <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
+  <br>
   <div id="tasks" class="table-responsive">
     <table class="table">
       <thead>
-        <tr class="active">
+        <tr>
           <th width="1%">#</th>
           <th width="15%" about="v-wf:from" property="rdfs:label"></th>
           <th width="15%" about="v-wf:to" property="rdfs:label"></th>
@@ -1708,15 +1762,22 @@ v-ui:SimplifiedJournalTemplate
       <tbody id="tbody">
         <tr>
           <td class="sequence-number"></td>
-          <td property="v-wf:from"></td>
-          <td property="v-wf:to"></td>
-          <td><a href="#/@" property="rdfs:label"></a><div property="v-s:description"></div></td>
-          <td property="v-s:created"></td>
-          <td rel="v-wf:takenDecision">
+          <td about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+          <td about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
+          <td><a href="#/@" about="@" property="rdfs:label"></a><div about="@" property="v-s:description"></div></td>
+          <td about="@" property="v-s:created"></td>
+          <td about="@" rel="v-wf:takenDecision">
             <div>
-              <div property="v-s:creator"></div>
-              <strong property="rdfs:label"></strong><i property="rdfs:comment"></i>
-              <div property="v-s:created"></div>
+              <strong about="@" property="rdfs:label"></strong>
+              <span about="@" rel="v-wf:to">
+                <span>
+                  <span>&rarr;</span>
+                  <span about="@" data-template="v-ui:LabelTemplate"></span>
+                </span>
+              </span>
+              <div><i about="@" property="rdfs:comment"></i></div>
+              <hr class="margin-sm">
+              <small about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></small> &middot; <small aboout="@" property="v-s:created"></small>
             </div>
           </td>
         </tr>
@@ -1734,8 +1795,8 @@ v-ui:SimplifiedJournalTemplate
 .
 v-ui:JournalTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Детальный журнал"@ru ;
-  rdfs:label "Detailed journal"@en ;
+  rdfs:label "Детальный"@ru ;
+  rdfs:label "Detailed"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
 <script>
@@ -1768,12 +1829,18 @@ v-ui:JournalTemplate
     .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
     .journal hr.margin-sm {margin: 10px 0px;}
   </style>
-  <div class="row">
-    <div class="col-md-6">
-      <h2 about="v-s:Journal" property="rdfs:label"></h2>
+  <br>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 class="no-margin" about="v-s:Journal" property="rdfs:label"></h2></li>
+    <li role="presentation" class="active"><a href="#/@//v-ui:JournalTemplate" class="btn btn-link"><span about="v-ui:JournalTemplate" property="rdfs:label"></span></a></li>
+    <li role="presentation"><a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a></li>
+  </ul>
+  <br>
+  <div class="clearfix">
+    <div class="pull-left">
+      <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
     </div>
-    <div class="col-md-6 text-right">
-      <a href="#/@//v-ui:SimplifiedJournalTemplate" class="btn btn-link"><span about="v-ui:SimplifiedJournalTemplate" property="rdfs:label"></span></a>
+    <div class="pull-right">
       <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
       <div class="btn-group dropdown">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1788,26 +1855,22 @@ v-ui:JournalTemplate
       </div>
     </div>
   </div>
-  <h4 id="on-document" data-template="v-ui:ClassNameLabelLinkTemplate"></h4>
   <div rel="v-wf:onProcess">
-    <div>
-      <h4>
-        <span about="rdf:type" property="rdfs:label"></span>:
-        <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
-      </h4>
-    </div>
+    <h4>
+      <span about="rdf:type" property="rdfs:label"></span>:
+      <span about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+    </h4>
   </div>
-  <div class="well well-sm">
-    <div class="row">
-      <div class="col-md-3 col-sm-3">
-        <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
-      </div>
-      <div class="col-md-7 col-sm-6">
-        <strong about="v-s:description" property="rdfs:label"></strong>
-      </div>
-      <div class="col-md-2 col-sm-3 text-right">
-        <strong about="v-s:created" property="rdfs:label"></strong>
-      </div>
+  <br>
+  <div class="row">
+    <div class="col-md-3 col-sm-3">
+      <strong about="v-s:JournalRecord" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-7 col-sm-6">
+      <strong about="v-s:description" property="rdfs:label"></strong>
+    </div>
+    <div class="col-md-2 col-sm-3 text-right">
+      <strong about="v-s:created" property="rdfs:label"></strong>
     </div>
   </div>
   <div id="records">
@@ -1833,11 +1896,7 @@ v-ui:DocumentEventTemplate
   v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
   v-ui:template """
 <script>
-  if (!individual.hasValue("v-wf:initiator")) $("#initiator", template).remove();
-  if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) {
-    //template.hide();
-    template.empty();
-  }
+  if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) { template.empty(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:processJournal']", template).toggle();
@@ -1855,12 +1914,9 @@ v-ui:DocumentEventTemplate
       $(".stop-process", template).show();
     }
     if (process.hasValue("v-wf:isStopped", true)) {
-      $(".start-process", template).addClass('text-danger');
-      $(".start-process > .glyphicon-minus-sign", template).show();
+      $(".process-id", template).addClass('text-danger');
+      $(".process-stopped", template).show();
     }
-  }
-  if (individual.hasValue("rdf:type", "v-wf:ProcessStopped")) {
-    $(".row", template).addClass('text-danger');
   }
   //# sourceURL=v-ui:DocumentEventTemplate_pre
 </script>
@@ -1870,22 +1926,13 @@ v-ui:DocumentEventTemplate
     <div class="col-md-3 col-sm-3 event-type">
       <span class="start-process" href="#" style="display:none">
         <a href="#" id="exp"><span class="glyphicon glyphicon-chevron-down"></span></a>
-        <strong rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
-        <span class="glyphicon glyphicon-minus-sign" style="display:none;"></span>
+        <strong about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></strong>
       </span>
-      <span class="non-start-process" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+      <span class="non-start-process" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
     </div>
-    <div class="col-md-3 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <span class="actor">
-        <span about="v-s:actor" property="rdfs:label"></span>:
-        <strong rel="v-s:actor" data-template="v-ui:LabelTemplate"></strong>
-      </span>
-    </div>
-    <div class="col-md-4 col-sm-6 event-desc">
-      <div property="rdfs:label"></div>
-      <div rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
-      <div rel="v-wf:onProcess">
+    <div class="col-md-7 col-sm-6 event-desc">
+      <div about="@" rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
+      <div about="@" rel="v-wf:onProcess">
         <script>
           var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
             return vrbl.hasValue("v-wf:variableName",  "startForm_id");
@@ -1897,28 +1944,31 @@ v-ui:DocumentEventTemplate
           }
         </script>
         <div>
-          <a href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
-          <button class="btn btn-xs btn-default btn-danger stop-process glyphicon glyphicon-remove" style="display:none"></button>
-          <div about="start-form">
-            <div>
-              <strong about="v-wf:StartForm" property="rdfs:label"></strong>: <a href="#/@" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>
-            </div>
-          </div>
+          <a about="@" class="process-id" href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
+          <a href="#" class="stop-process glyphicon glyphicon-remove text-danger" style="display:none;"></a>
+          <span class="process-stopped glyphicon glyphicon-minus-sign text-danger" style="display:none;"></span>
+          <span about="start-form">
+            <span>
+              &nbsp;&nbsp;(<a href="#/@" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>)
+            </span>
+          </span>
         </div>
       </div>
+      <span about="@" rel="v-s:actor" data-template="v-ui:LabelTemplate"></span>
     </div>
     <div class="col-md-2 col-sm-3 event-date text-right">
-      <span property="v-s:created"></span>
+      <span about="@" property="v-s:created"></span>
     </div>
   </div>
-  <div rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
+  <div about="@" rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
 <script>
   if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-s:ProcessStarted') {
     var process = individual['v-wf:onProcess'][0];
     if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
         (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
-      $(".stop-process", template).on("click", function() {
+      $(".stop-process", template).on("click", function (e) {
+        e.preventDefault();
         var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
         if ( confirm(warn) ) {
           process['v-wf:isStopped'] = [ true ];
@@ -2014,28 +2064,38 @@ v-ui:PermissionStatementInlineTemplate
   """ ;
 .
 
+v-ui:SelectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать"@ru ;
+  rdfs:label "Select"@en ;
+.
+v-ui:DeepSelectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выбрать вглубь"@ru ;
+  rdfs:label "Deep select"@en ;
+.
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<div class="table-responsive">
-  <table class="table table-condensed table-striped">
-    <thead id="thead"></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
 <script>
-  var tbody = $("#tbody", template);
-  var thead = $("#thead", template);
+  var tbody = $(".tbody", template);
+  var thead = $(".thead", template);
 
   var rel_uri = individual.treeConfig.targetRel_uri;
+  var isSingle = individual.treeConfig.isSingle;
   var headTmpl = "";
   var rowTmpl = "";
 
   if (rel_uri) {
-    headTmpl += "<th width='1px'><input type='checkbox' id='select-col' /></th>";
-    rowTmpl += "<td><input type='checkbox' class='select-row' /></td>";
+    if (isSingle) {
+      headTmpl += "<th width='1px'></th>";
+      rowTmpl += "<td><input type='radio' class='select-row' name='select-row' /></td>";
+    } else {
+      headTmpl += "<th width='48px'></th>";
+      rowTmpl += "<td><div class='checkbox no-margin'><label><input type='checkbox' class='select-row' /> <span style='cursor:pointer' class='select-deep fa fa-sitemap text-muted'></span></label></div></td>";
+    }
   }
 
   var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
@@ -2047,7 +2107,7 @@ v-ui:TreeTemplate
   }) : [];
   var selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
-  individual.treeConfig.displayedProperty.map( function (property, index) {
+  individual.treeConfig.displayedProperty.forEach( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
     var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
     if ( index === 0 ) {
@@ -2073,10 +2133,10 @@ v-ui:TreeTemplate
     e.stopPropagation();
     e.preventDefault();
     var that = $(this),
-      thatRow = that.parents("tr"),
+      thatRow = that.closest("tr"),
       thatLvl = parseInt( thatRow.attr("data-level") ),
       uri = thatRow.attr("resource"),
-      self = new veda.IndividualModel(uri);
+      value = new veda.IndividualModel(uri);
 
     that.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
 
@@ -2085,13 +2145,18 @@ v-ui:TreeTemplate
       if ( nextLvl > thatLvl ) {
         thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
       } else {
-        getOut(self).map(render);
-        getIn(self).map(render);
-        var newNextLvl = parseInt(thatRow.next().attr("data-level"));
-        if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
-          that.prev().css("width", 16 * (thatLvl + 1) - 2);
-          that.remove();
-        }
+        getChildren([], value, false).then(function (children) {
+          children.forEach(function (childUri) {
+            var child = new veda.IndividualModel(childUri);
+            renderRow(child, thatRow);
+          });
+          var newNextLvl = parseInt(thatRow.next().attr("data-level"));
+          if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
+            that.prev().css("width", 16 * (thatLvl + 1) - 2);
+            that.remove();
+            thatRow.find(".select-deep").remove();
+          }
+        });
       }
     } else {
       thatRow.nextAll().each( function () {
@@ -2101,100 +2166,163 @@ v-ui:TreeTemplate
         that.hide();
       });
     }
-
-    function render(item) {
-      var cont = $("<div>"),
-          tmpl = $("<tr>").attr("data-level", thatLvl + 1).append(rowTmpl);
-      $(".spacer", tmpl).css({"width": 16 * (thatLvl + 1) + "px", "display": "inline-block"});
-      tmpl = item.present(cont, tmpl[0].outerHTML);
-
-      var hasValue = individual.hasValue(rel_uri, item);
-      $("input", tmpl).prop("checked", hasValue);
-
-      if (selectableFilter) {
-        if ( !selectableFilter.call(item) ) {
-          $("input", tmpl).remove();
-        }
-      } else if (selectableClassIds.length && selectableClassIds.indexOf(item["rdf:type"][0].id) < 0) {
-        $("input", tmpl).remove();
-      }
-      thatRow.after( tmpl );
-    }
     return false;
   });
 
-  if (rel_uri) {
+  function renderRow(value, parentRow) {
+    var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1;
+    var cont = $("<div>"),
+        tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
 
-    template.on("click", "th > input", function (e) {
-      if ( $(this).is(":checked") ) {
-        var values = [];
-        $("table input", template).each(function () {
-          $(this).prop("checked", true);
-          var row = $(this).parent().parent(),
-              uri = row.attr("resource"),
-              value = new veda.IndividualModel(uri);
-          values.push(value);
-        });
-        individual[rel_uri] = values;
-      } else {
-        $("table input", template).prop("checked", false);
-        individual[rel_uri] = [];
+    if ( allowedClassIds.length && allowedClassIds.indexOf(value["rdf:type"][0].id) < 0 ) {
+      return;
+    }
+    $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+    tmpl = value.present(cont, tmpl[0].outerHTML);
+
+    // Pre-check children
+    getChildren([], value, false).then(function (children) {
+      if (!children.length) {
+        tmpl.find(".expand").remove();
+        tmpl.find(".select-deep").remove();
       }
     });
+    var selectRow = $(".select-row", tmpl);
+    var selectDeep = $(".select-deep", tmpl);
+    var hasValue = individual.hasValue(rel_uri, value);
+    selectRow.prop("checked", hasValue);
+
+    if (value.deepSelected) {
+      selectDeep.removeClass("text-muted").addClass("text-danger");
+    } else {
+      selectDeep.addClass("text-muted").removeClass("text-danger");
+    }
+
+    if (selectableFilter) {
+      if ( !selectableFilter.call(value) ) {
+        selectRow.remove();
+      }
+    } else if (selectableClassIds.length && selectableClassIds.indexOf(value["rdf:type"][0].id) < 0) {
+      selectRow.remove();
+    }
+    if ( parentRow ) {
+      parentRow.after( tmpl );
+    } else {
+      tbody.append(tmpl);
+    }
+    cont.remove();
+  }
+
+  if (rel_uri) {
 
     template.on("click", "td", function (e) {
       e.stopPropagation();
       var row = $(this).parent();
-      $("input", row).click();
+      $(".select-row", row).click();
     });
 
-    template.on("click", "td > input", function (e) {
+    template.on("click", ".select-row", function (e) {
       e.stopPropagation();
-      var row = $(this).parent().parent(),
+      var $this = $(this);
+      var row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
-      var filtered = individual[rel_uri].filter(function (item) {
-        return item.id !== value.id;
-      });
-      if ( $(this).prop("checked") ) {
-        individual[rel_uri] = filtered.concat(value);
+      if (isSingle) {
+        individual.set(rel_uri, [value]);
       } else {
-        individual[rel_uri] = filtered;
+        individual.toggleValue(rel_uri, value);
       }
     });
 
+    template.on("click", ".select-deep", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $this = $(this);
+      var row = $this.closest("tr"),
+          uri = row.attr("resource"),
+          value = new veda.IndividualModel(uri);
+
+      getChildren([], value).then(function (branchUris) {
+        value.deepSelected = !value.deepSelected;
+        var branch = branchUris.map(function (branchUri) {
+          var item = new veda.IndividualModel(branchUri);
+          item.deepSelected = value.deepSelected;
+          return item;
+        });
+        if (value.deepSelected) {
+          individual.addValue(rel_uri, branch);
+          $this.removeClass("text-muted").addClass("text-danger");
+        } else {
+          individual.removeValue(rel_uri, branch);
+          $this.addClass("text-muted").removeClass("text-danger");
+        }
+      });
+    });
+  }
+
+  individual.on(rel_uri, propertyModifiedHandler);
+  template.one("remove", function () {
+    individual.off(rel_uri, propertyModifiedHandler);
+  });
+  function propertyModifiedHandler(values) {
+    $(".value-row", template).each(function () {
+      var $this = $(this),
+          uri = $this.attr("resource"),
+          value = new veda.IndividualModel(uri);
+      if ( values.indexOf(value) >=0 ) {
+        $this.find(".select-row").prop("checked", true);
+      } else {
+        $this.find(".select-row").prop("checked", false);
+      }
+      if (value.deepSelected) {
+        $this.find(".select-deep").removeClass("text-muted").addClass("text-danger");
+      } else {
+        $this.find(".select-deep").addClass("text-muted").removeClass("text-danger");
+      }
+    });
   }
 
   // Render tree
-  individual.treeConfig.root.map( function (root, index, all) {
-    var tmpl = $("<tr>").attr("data-level", 0).append(rowTmpl);
-    tmpl = root.present(tbody, tmpl[0].outerHTML);
-
-    if (all.length === 1) {
-      $(".expand", tmpl).click();
-    }
-
-    var hasValue = individual.hasValue(rel_uri, root);
-    $("input", tmpl).prop("checked", hasValue);
-
-    if (selectableFilter) {
-      if ( !selectableFilter.call(root) ) {
-        $("input", tmpl).remove();
-      }
-    } else if (selectableClassIds.length && selectableClassIds.indexOf(root["rdf:type"][0].id) < 0) {
-      $("input", tmpl).remove();
+  individual.treeConfig.root.forEach( function (root, index, roots) {
+    renderRow(root);
+    if (roots.length === 1) {
+      tbody.find(".expand").click();
     }
   });
 
-  function getOut(self) {
+  function getChildren(acc, root, goDeeper) {
+    return new Promise(function (resolve, reject) {
+      if (root.children) {
+        resolve (root.children);
+      } else {
+        var outs = getOut(root);
+        getIn(root).then(function (ins) {
+          root.children = outs.concat(ins);
+          resolve (root.children);
+        });
+      }
+    }).then(function (children) {
+      return Promise.all(
+        children.map(function (childUri) {
+          acc.push(childUri);
+          if (goDeeper !== false) {
+            var child = new veda.IndividualModel(childUri);
+            return getChildren(acc, child, goDeeper);
+          }
+        })
+      );
+    }).then(function () {
+      return acc;
+    });
+  }
+
+  function getOut(root) {
     var res = [];
     if (individual.treeConfig && individual.treeConfig.outProperty) {
       individual.treeConfig.outProperty.map(function (property) {
-        if (self.hasValue(property.id)) {
-          self[property.id].map(function (value) {
-            if ( !allowedClassIds.length || allowedClassIds.indexOf(value["rdf:type"][0].id) > -1 ) {
-              res.push(value);
-            }
+        if (root.hasValue(property.id)) {
+          root.properties[property.id].map(function (value) {
+            res.push(value.data);
           });
         }
       });
@@ -2202,163 +2330,33 @@ v-ui:TreeTemplate
     return res;
   }
 
-  function getIn(self) {
-    var res = [];
-    if (individual.treeConfig && individual.treeConfig.inProperty) {
-      var q = individual.treeConfig.inProperty.map(function (property) {
-          return "'" + property.id + "'=='" + self.id + "'";
-        }).join(" || ");
-      if (individual.treeConfig.allowedClass) {
-        q = "(" + q + ") && (" + individual.treeConfig.allowedClass.map(function (_class) {
-          return "'rdf:type'==='" + _class.id + "'";
-        }).join(" || ") + ")";
+  function getIn(root) {
+    return new Promise(function (resolve, reject) {
+      if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+        resolve([]);
       }
+      var q = individual.treeConfig.inProperty.map(function (property) {
+          return "'" + property.id + "'=='" + root.id + "'";
+        }).join(" || ");
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
-      var result = query(veda.ticket, q, sort).result;
-      result.map( function (uri) {
-        res.push( new veda.IndividualModel(uri) );
+      query({
+        ticket: veda.ticket,
+        query: q,
+        sort: sort,
+        async: true
+      }).then(function (queryResult) {
+        resolve(queryResult.result);
       });
-    }
-    return res;
+    });
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
-  """ ;
-.
-
-td:PersonTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны"@ru ;
-  rdfs:label "Person template"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:template """
-<div>
-  <div class="container sheet">
-    <div class="text-right">
-      <a href="#/@"><span property="@">ID</span></a>
-      <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-    </div>
-    <div class="row">
-      <div class="col-md-2">
-        <div rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
-        <veda-control data-type="file" rel="v-s:hasImage" class="-view edit -search"></veda-control>
-      </div>
-      <div class="col-md-10">
-        <h3>
-          <span property="rdfs:label"></span>
-          <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-        </h3>
-        <div class="row">
-          <div class="col-md-3">
-            <em about="v-s:lastName" property="rdfs:label">Фамилия</em>
-            <div property="v-s:lastName"></div>
-            <veda-control property="v-s:lastName" data-type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <em about="v-s:firstName" property="rdfs:label">Имя</em>
-            <div property="v-s:firstName"></div>
-            <veda-control property="v-s:firstName" data-type="string" class="-view edit search"></veda-control>
-          </div>
-          <div class="col-md-3">
-            <em about="v-s:middleName" property="rdfs:label">Отчество</em>
-            <div property="v-s:middleName"></div>
-            <veda-control property="v-s:middleName" data-type="string" class="-view edit search"></veda-control>
-          </div>
-            <div class="col-md-3">
-            <em about="v-s:birthday" property="rdfs:label">День рождения</em>
-            <div property="v-s:birthday"></div>
-            <veda-control property="v-s:birthday" data-type="dateTime" class="-view edit search"></veda-control>
-          </div>
-        </div>
-      </div>
-    </div>
-    <hr />
-    <div class="row">
-      <div class="col-md-6">
-        <div about="@" rel="v-s:hasAccount" data-template="td:AccountTemplate1" data-embedded="true"></div>
-        <veda-control rel="v-s:hasAccount" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-      </div>
-      <div class="col-md-6">
-        <div about="@" rel="v-ui:hasPreferences" data-template="td:PreferencesTemplate1" data-embedded="true"></div>
-        <veda-control rel="v-ui:hasPreferences" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-        <br>
-        <div about="@" rel="v-s:hasAppointment" data-template="td:AppointmentTemplate1" data-embedded="true"></div>
-        <veda-control rel="v-s:hasAppointment" data-type="link" class="-view edit search fulltext dropdown create"></veda-control>
-      </div>
-    </div>
-    <br>
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-  </div>
-  <br>
-  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
-  <br>
-  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+<div class="table-responsive">
+  <table class="table table-condensed table-striped">
+    <thead class="thead"></thead>
+    <tbody class="tbody"></tbody>
+  </table>
 </div>
-""" ;
-.
-td:PsHasAppointmentPerson
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация назначения для класса Персона"@ru ;
-  rdfs:label "Appointment property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:hasAppointment ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
-.
-td:AppointmentTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон Назначения"@ru ;
-  rdfs:label "Appointment template"@en ;
-  v-ui:template """
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-6">
-        <span about="v-s:Appointment" property="rdfs:label">Имя класса</span>
-        </div>
-        <div class="col-md-6 text-right">
-          <a href="#/@"><span property="@">ID</span></a>
-      </div>
-    </div>
-    </div>
-    <div class="panel-body">
-      <h3 property="rdfs:label"></h3>
-      <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-      <div class="row">
-        <div class="col-md-6">
-          <em about="v-s:employee" property="rdfs:label"></em>
-          <div rel="v-s:employee" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:employee" data-type="link" class="-view edit search fulltext full"></veda-control>
-        </div>
-        <div class="col-md-6">
-          <em about="v-s:occupation" property="rdfs:label"></em>
-          <div rel="v-s:occupation" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:occupation" data-type="link" class="-view edit search fulltext"></veda-control>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <em about="v-s:parentUnit" property="rdfs:label"></em>
-          <div rel="v-s:parentUnit" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-          <veda-control rel="v-s:parentUnit" data-type="link" class="-view edit search fulltext"></veda-control>
-        </div>
-      </div>
-    </div>
-    <!--div class="actions panel-footer">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-    </div-->
-  </div>
-  """ ;
-.
-
-td:AppointmentTemplate2
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон Назначения 2"@ru ;
-  rdfs:label "Appointment template 2"@en ;
-  v-ui:template """
-  <div>
-    <span rel="v-s:employee" data-template="v-ui:LabelTemplate">Работник</span>,
-    <span rel="v-s:occupation" data-template="v-ui:LabelTemplate">Должность</span>
-  </div>
   """ ;
 .
 
@@ -2628,235 +2626,6 @@ v-ui:generic
   });
 </script>
   """ ;
-.
-
-td:AccountTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон Учетной записи"@ru ;
-  rdfs:label "Account template"@en ;
-  v-ui:forClass v-s:Account ;
-  v-ui:template """
-<script>
-  var _class = new veda.IndividualModel("v-s:Credential");
-  var canCreate = _class.rights.hasValue("v-s:canCreate", true);
-  if ( !canCreate ) {
-    $("[rel='v-s:usesCredential']", template).remove();
-  }
-  //# sourceURL=td:AccountTemplate1_pre
-</script>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <div class="row">
-      <div class="col-md-6">
-        <span about="v-s:Account" property="rdfs:label">Имя класса</span>
-      </div>
-      <div class="col-md-6 text-right">
-        <a href="#/@"><span property="@">ID</span></a>
-      </div>
-    </div>
-  </div>
-  <div class="panel-body">
-    <h3 property="rdfs:label"></h3>
-    <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
-    <em about="v-s:owner" property="rdfs:label">Владелец</em>
-    <div rel="v-s:owner" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-    <veda-control rel="v-s:owner" data-type="link" class="-view edit search fulltext"></veda-control>
-    <div class="row">
-      <div class="col-md-6">
-        <em about="v-s:mailbox" property="rdfs:label">E-mail</em>
-        <div property="v-s:mailbox" class="view -edit -search"></div>
-        <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
-      </div>
-      <div class="col-md-6">
-        <em about="v-s:login" property="rdfs:label">Логин</em>
-        <div property="v-s:login" class="view -edit -search"></div>
-        <veda-control property="v-s:login" data-type="string" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <div class="row" rel="v-s:usesCredential" data-embedded="true">
-      <div class="col-md-6">
-        <em about="v-s:password" property="rdfs:label"></em>
-        <veda-control property="v-s:password" data-type="password" class="-view edit search"></veda-control>
-      </div>
-    </div>
-  </div>
-</div>
-  """ ;
-.
-
-td:PreferencesTemplate1
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Предпочтения"@ru ;
-  rdfs:label "Template for Preferences class"@en ;
-  v-ui:template """
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div class="row">
-        <div class="col-md-4">
-        <span about="v-ui:Preferences" property="rdfs:label">Предпочтения</span>
-        </div>
-        <div class="col-md-8 text-right">
-        <a href="#/@"><span property="@">ID</span></a>
-        </div>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div>
-        <em about="v-ui:preferredLanguage" property="rdfs:label">Язык</em>
-        <ul rel="v-ui:preferredLanguage">
-          <li><div property="rdfs:label"></div></li>
-        </ul>
-        <veda-control rel="v-ui:preferredLanguage" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-        <em about="v-ui:displayedElements" property="rdfs:label"></em>
-        <div property="v-ui:displayedElements" class="view -edit -search"></div>
-        <veda-control property="v-ui:displayedElements" data-type="integer" class="-view edit search"></veda-control>
-      </div>
-    </div>
-    <!--div class="actions panel-footer">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-    </div-->
-  </div>
-  """ ;
-.
-td:PropertySpecification5
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация работника для класса Назначение"@ru ;
-  rdfs:label "Employee property specification for Appointment class"@en ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:employee ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:treeRoot d:org_RU1121003135 ;
-  v-ui:treeRoot d:org_RU1121003135 ;
-  v-ui:treeInProperty v-s:parentUnit ;
-  v-ui:treeDisplayedProperty rdfs:label ;
-.
-td:PropertySpecification6
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация работника для класса Назначение"@ru ;
-  rdfs:label "Employee property specification for Appointment class"@en ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:occupation ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-.
-td:PsParentUnitForAppointment
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация родительского подразделения для класса Назначение"@ru ;
-  rdfs:label "ParentUnit property specification for Appointment class"@en ;
-  v-ui:forClass v-s:Appointment ;
-  v-ui:forProperty v-s:parentUnit ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Department')"^^xsd:string ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-.
-td:PropertySpecification7
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация учетной записи для класса Персона"@ru ;
-  rdfs:label "Account property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:hasAccount ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Учетная запись."@ru ;
-  v-ui:tooltip "Required, single value. Link to instance of Account class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Account')"^^xsd:string ;
-  v-ui:placeholder "Учетная запись"@ru ;
-  v-ui:placeholder "Account"@en ;
-.
-td:PropertySpecification8
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация предпочтений для класса Персона"@ru ;
-  rdfs:label "Preferences property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-ui:hasPreferences ;
-#  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-#  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Ссылка на объект класса Предпочтения."@ru ;
-  v-ui:tooltip "Required, single value. Link to instance of Preferences class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='v-ui:Preferences')"^^xsd:string ;
-.
-td:PropertySpecification10
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
-  rdfs:label "Test property specification for Preferences class"@en ;
-  v-ui:forClass v-ui:Preferences ;
-  v-ui:forProperty v-ui:displayedElements ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное целочисленное значение."@ru ;
-  v-ui:tooltip "Required, single integer value."@en ;
-  v-ui:defaultValue "10"^^xsd:integer ;
-.
-td:PropertySpecification11
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация тестового свойства для класса Предпочтения"@ru ;
-  rdfs:label "Test property specification for Preferences class"@en ;
-  v-ui:forClass v-s:Account ;
-  v-ui:forProperty v-s:login, v-s:password ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное строковое значение."@ru ;
-  v-ui:tooltip "Required, single string value."@en ;
-.
-td:PropertySpecification1
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация даты рождения для класса персона"@ru ;
-  rdfs:label "Birthday property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:birthday ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение."@ru ;
-  v-ui:tooltip "Required, single value."@en ;
-  v-ui:placeholder "день рождения"@ru ;
-  v-ui:placeholder "birthday"@en ;
-.
-
-td:PropertySpecification2
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация имени для класса персона"@ru ;
-  rdfs:label "First name property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:firstName ;
-  v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
-  v-ui:minLength "2"^^xsd:integer ;
-  v-ui:maxLength "50"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
-  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
-  v-ui:placeholder "имя"@ru ;
-  v-ui:placeholder "first name"@en ;
-.
-td:PropertySpecification3
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация фамилии для класса персона"@ru ;
-  rdfs:label "Last name property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:lastName ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "2"^^xsd:nonNegativeInteger ;
-  v-ui:minLength "2"^^xsd:integer ;
-  v-ui:maxLength "20"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
-  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
-  v-ui:placeholder "фамилия"@ru ;
-  v-ui:placeholder "last name"@en ;
-.
-td:PropertySpecification4
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация отчества для класса персона"@ru ;
-  rdfs:label "Middle name property specification for Person class"@en ;
-  v-ui:forClass v-s:Person ;
-  v-ui:forProperty v-s:middleName ;
-  v-ui:minCardinality "0"^^xsd:nonNegativeInteger ;
-  v-ui:maxCardinality "1"^^xsd:nonNegativeInteger ;
-  v-ui:minLength "2"^^xsd:integer ;
-  v-ui:maxLength "20"^^xsd:integer ;
-  v-ui:tooltip "Обязательно к заполнению, единичное значение. Не менее 2 и не более 20 символов"@ru ;
-  v-ui:tooltip "Required, single value. More than 2 and less than 20 characters"@en ;
-  v-ui:placeholder "отчество"@ru ;
-  v-ui:placeholder "middle name"@en ;
 .
 
 v-ui:Graph

@@ -236,8 +236,8 @@ v-fs:MoreResults
 .
 v-fs:AllResults
   rdf:type v-s:Bundle ;
-  rdfs:label "Загрузить все результаты"@ru ;
-  rdfs:label "Load all results"@en ;
+  rdfs:label "Загрузить все"@ru ;
+  rdfs:label "Load all"@en ;
 .
 v-fs:NoMoreResults
   rdf:type v-s:Bundle ;
@@ -1252,14 +1252,13 @@ v-fs:AttributiveSearchModel
       self["v-fs:cursor"] = [cursor];
     } else {
       self["v-fs:cursor"] = [0];
-      self["v-fs:top"] = [ veda.user.displayedElements || 10 ];
       self["v-fs:authorized"] = [0];
       self["v-fs:searchResult"] = [];
     }
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
     var queryString = [];
     if ( self.hasValue("v-fs:searchBlank") ) {
-      self["v-fs:searchBlank"][0]._init();
+      self["v-fs:searchBlank"][0].initBlank();
       queryString.push( veda.Util.queryFromIndividual(self["v-fs:searchBlank"][0].object) );
     }
     if ( self.hasValue("v-fs:fulltextQuery") ) {
@@ -1271,8 +1270,8 @@ v-fs:AttributiveSearchModel
         ticket: veda.ticket,
         query: queryString,
         sort: self["v-fs:sortOrder"][0],
-        top: self["v-fs:top"][0],
-        limit: self["v-fs:limit"][0],
+        top: self["v-fs:top"][0] || veda.user.displayedElements || 10,
+        limit: self["v-fs:limit"][0] || 10000,
         from: self["v-fs:cursor"][0],
         async: true
       }).then(function (results) {
@@ -1317,7 +1316,7 @@ v-fs:AttributiveSearchModel
 
         // Notify search blank on search complete
         if ( self.hasValue("v-fs:searchBlank") ) {
-          self["v-fs:searchBlank"][0]._init();
+          self["v-fs:searchBlank"][0].initBlank();
           self["v-fs:searchBlank"][0].object.trigger("search:complete");
         }
 
@@ -1332,78 +1331,138 @@ v-fs:AttributiveSearchModel
   """ ;
 .
 
+
+v-fs:EnterLabel
+  rdf:type v-s:Bundle ;
+  rdfs:label "Введите название"@ru ;
+  rdfs:label "Enter label"@en ;
+.
+
+v-fs:SavePersonalRegistry
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сохранить личный реестр"@ru ;
+  rdfs:label "Save personal registry"@en ;
+.
+
+v-fs:UpdatePersonalRegistry
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обновить личный реестр"@ru ;
+  rdfs:label "Update personal registry"@en ;
+.
+
+v-fs:RegistrySuccessfullySaved
+  rdf:type v-s:Bundle ;
+  rdfs:label "Реестр успешно сохранен"@ru ;
+  rdfs:label "Registry successfully saved"@en ;
+.
+
+v-fs:RegistrySuccessfullyUpdated
+  rdf:type v-s:Bundle ;
+  rdfs:label "Реестр успешно обновлен"@ru ;
+  rdfs:label "Registry successfully updated"@en ;
+.
+
 v-fs:AttributiveSearchTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
-<div class="container sheet">
-  <style>
-    td.number {
-      mso-number-format:General;
-    }
-    td.date {
-      mso-number-format:"Short Date";
-    }
-  </style>
-  <div class="ribbon-wrapper top-left">
-    <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
+<script>
+  var notify = new veda.Notify();
+
+  if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
+    $(".action.save-registry", template).click(function () {
+      var personalLabel = prompt( new veda.IndividualModel("v-fs:EnterLabel").toString(), individual.toString() );
+      var personalRegistry = individual.clone();
+      personalRegistry["v-fs:searchResult"] = [];
+      personalRegistry["v-fs:authorized"] = [];
+      personalRegistry["v-fs:cursor"] = [];
+      personalRegistry["v-fs:estimated"] = [];
+      personalRegistry["v-fs:limit"] = [];
+      personalRegistry["v-fs:top"] = [];
+      personalRegistry["v-s:creator"] = [];
+      personalRegistry["v-s:created"] = [];
+      personalRegistry["rdfs:isDefinedBy"] = [];
+      personalRegistry["rdfs:label"] = [ personalLabel ];
+      var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
+      if (searchBlank && searchBlank.object) {
+        var personalRegistryBlank = searchBlank.clone();
+        personalRegistry["rdfs:isDefinedBy"] = [];
+        personalRegistry["v-fs:searchBlank"] = [ personalRegistryBlank ];
+        personalRegistryBlank.object = searchBlank.object;
+        personalRegistryBlank.updateBlank();
+        personalRegistryBlank.save();
+      }
+      personalRegistry.save();
+      var aspect = veda.user.aspect;
+      aspect.addValue("v-s:hasRegistry", personalRegistry);
+      aspect.save();
+      notify("success", { message: new veda.IndividualModel("v-fs:RegistrySuccessfullySaved").toString() });
+    });
+  } else {
+    $(".action.save-registry", template).remove();
+  }
+
+  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
+    $(".action.update-registry", template).click(function () {
+      individual["v-fs:searchResult"] = [];
+      var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
+      if (searchBlank && searchBlank.object) {
+        searchBlank.updateBlank();
+        searchBlank.save();
+      }
+      notify("success", { message: new veda.IndividualModel("v-fs:RegistrySuccessfullyUpdated").toString() });
+    });
+  } else {
+    $(".action.update-registry", template).remove();
+  }
+  if ( individual.rights.hasValue("v-s:canDelete", true) ) {
+    $(".action.delete-registry", template).click(function () {
+      template.trigger("delete");
+    });
+  } else {
+    $(".action.delete-registry", template).remove();
+  }
+
+//# sourceURL=v-fs:AttributiveSearchTemplate_pre
+</script>
+<div>
+  <div class="container sheet">
+    <div class="ribbon-wrapper top-left">
+      <div class="ribbon top-left primary" about="v-fs:SearchBundle" property="rdfs:label"></div>
+    </div>
+    <div class="actions text-right">
+      <button class="action save-registry btn btn-success" about="v-fs:SavePersonalRegistry" property="rdfs:label"></button>
+      <button class="action update-registry btn btn-success" about="v-fs:UpdatePersonalRegistry" property="rdfs:label"></button>
+      <button class="action delete-registry btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
+    </div>
   </div>
   <br>
-  <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
-  <div class="additional-actions hidden">
-    <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
-    <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
-    <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+  <div class="container sheet">
+    <style>
+      td.number {
+        mso-number-format:General;
+      }
+      td.date {
+        mso-number-format:"Short Date";
+      }
+    </style>
+    <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+    <span class="additional-actions">
+      <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
+      <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
+      <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+    </span>
   </div>
 </div>
 <script>
   // Append additional actions
   setTimeout(function () {
-    var additionalActions = $(".additional-actions", template).children();
+    var additionalActions = $(".additional-actions", template);
     var searchActions = $(".search-actions", template);
     additionalActions.appendTo(searchActions);
   }, 0);
-
-  // Make position fixed for buttons bar that doesn't fit the window
-  function checkOffset(main, actions, actionsStaticHeight, placeholder) {
-    var mainTop = main.offset().top;
-    var mainHeight = main.height();
-    var windowHeight = window.innerHeight;
-    var windowTop = window.scrollY || window.pageYOffset;
-    var actionsStaticTop = placeholder.offset().top;
-    var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
-    var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
-    if ( !actions_inside_viewport && main_inside_viewport )  {
-      if ( !actions.hasClass("actions-fixed") ) {
-        placeholder.css("height", actionsStaticHeight);
-        actions.find("br").addClass("hidden");
-        actions.addClass("actions-fixed");
-      }
-    } else {
-      if ( actions.hasClass("actions-fixed") ) {
-        placeholder.css("height", 0);
-        actions.find("br").removeClass("hidden");
-        actions.removeClass("actions-fixed");
-      }
-    }
-  }
-  setTimeout(function () {
-    var main = template;
-    var actions = $(".search-actions", template);
-    if (!actions.length) { return; }
-    var actionsStaticHeight = actions.height();
-    var placeholder = $("<div></div>").insertBefore(actions);
-    checkOffset(main, actions, actionsStaticHeight, placeholder);
-    $(window).on("scroll", scrollHandler);
-    template.one("remove", function () {
-      $(window).off("scroll", scrollHandler);
-    });
-    function scrollHandler () {
-      checkOffset(main, actions, actionsStaticHeight, placeholder);
-    }
-  }, 500);
 
   // Export table to 'blob' or 'xls'
   var exportTable = (function () {
@@ -1630,8 +1689,10 @@ v-fs:AttributiveSearchInlineTemplate
     <br>
     <div class="search-actions clearfix">
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-      <div class="dropup pull-right set-columns-wrapper">
-        <button type="button" class="btn btn-info set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
+      <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      <div class="pull-right btn-group dropup set-columns-wrapper" style="margin-left:3px;">
+        <button type="button" class="btn btn-info dropdown-toggle set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-fs:SetColumns" property="rdfs:label"></span>
           <span class="caret"></span>
         </button>
@@ -1667,13 +1728,48 @@ v-fs:AttributiveSearchInlineTemplate
     <div class="no-more-results alert alert-success hidden">
       <strong about="v-fs:NoMoreResults" property="rdfs:label"></strong>
     </div>
-    <div class="text-center">
-      <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
-      <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
-    </div>
   </div>
 </div>
 <script>
+  // Make position fixed for buttons bar that doesn't fit the window
+  function checkOffset(main, actions, actionsStaticHeight, placeholder) {
+    var mainTop = main.offset().top;
+    var mainHeight = main.height();
+    var windowHeight = window.innerHeight;
+    var windowTop = window.scrollY || window.pageYOffset;
+    var actionsStaticTop = placeholder.offset().top;
+    var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
+    var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
+    if ( !actions_inside_viewport && main_inside_viewport )  {
+      if ( !actions.hasClass("actions-fixed") ) {
+        placeholder.css("height", actionsStaticHeight);
+        actions.find("br").addClass("hidden");
+        actions.addClass("actions-fixed");
+      }
+    } else {
+      if ( actions.hasClass("actions-fixed") ) {
+        placeholder.css("height", 0);
+        actions.find("br").removeClass("hidden");
+        actions.removeClass("actions-fixed");
+      }
+    }
+  }
+  setTimeout(function () {
+    var main = template;
+    var actions = $(".search-actions", template);
+    if (!actions.length) { return; }
+    var actionsStaticHeight = actions.height();
+    var placeholder = $("<div></div>").insertBefore(actions);
+    checkOffset(main, actions, actionsStaticHeight, placeholder);
+    $(window).on("scroll", scrollHandler);
+    template.one("remove", function () {
+      $(window).off("scroll", scrollHandler);
+    });
+    function scrollHandler () {
+      checkOffset(main, actions, actionsStaticHeight, placeholder);
+    }
+  }, 500);
+
   var self = individual,
       searchBlankContainer = $(".search-form", template),
       searchResultContainer = $(".search-result", template),
@@ -1768,7 +1864,7 @@ v-fs:AttributiveSearchInlineTemplate
 
   // Render search form
   if ( searchBlank ) {
-    searchBlank._init();
+    searchBlank.initBlank();
     searchBlank.object.on("search", formHandler);
     template.one("remove", function () {
       searchBlank.object.off("search", formHandler);
@@ -1786,7 +1882,11 @@ v-fs:AttributiveSearchInlineTemplate
     $(".params", template).remove();
   }
   function formHandler () {
-    self.search().then(renderResult);
+    self.search()
+      .then(renderResult)
+      .then(function () {
+        scrollTo(self.scroll);
+      });
   }
 
   // Remember scroll position
@@ -1813,7 +1913,7 @@ v-fs:AttributiveSearchInlineTemplate
       .then(renderResult)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo( $(".results", template).offset().top );
+          scrollTo(self.scroll);
         }
       });
   }
@@ -1826,7 +1926,7 @@ v-fs:AttributiveSearchInlineTemplate
       .then(renderResult)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo( $(".results", template).offset().top );
+          scrollTo(self.scroll);
         }
         toggleSpin($this);
       })
@@ -1884,7 +1984,7 @@ v-fs:AttributiveSearchInlineTemplate
   $(".search-result", template).on("click", "table tbody tr", function () {
     var that = $(this);
     that.addClass("warning").siblings(".warning").removeClass("warning");
-    self.marked = that.attr("resource");
+    self.marked = that.find(".serial-number").text();
   });
 
   // Manage sort
@@ -1945,8 +2045,9 @@ v-fs:AttributiveSearchInlineTemplate
     }
     return resultDelta.map(function (result, i) {
       var tmpl = result.present(resultContainer, individual.resultTemplate);
-      $(".serial-number", tmpl).text(total - delta + i + 1);
-      if (result.id === self.marked) {
+      var serialNumber = total - delta + i + 1;
+      $(".serial-number", tmpl).text(serialNumber);
+      if (serialNumber == self.marked) {
         tmpl.addClass("warning");
       }
       setTimeout(function () {
@@ -2088,6 +2189,12 @@ v-fs:FulltextBlank
   v-fc:targetType v-s:UserThing ;
 .
 
+v-fs:AdvancedSearchBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Расширенный поиск"@ru ;
+  rdfs:label "Advanced search"@en ;
+.
+
 v-fs:FulltextBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
@@ -2108,6 +2215,14 @@ v-fs:FulltextBlankTemplate
         <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
       </span>
     </div>
+    <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
+    <div class="advanced-search hidden panel panel-default margin-md">
+      <div class="panel-body bg-default">
+        <em about="rdf:type" property="rdfs:label"></em>
+        <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
+        <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing' && '@'=='mnd-s:*'" class="fulltext dropdown"></veda-control>
+      </div>
+    </div>
   </div>
 </div>
 <script>
@@ -2123,6 +2238,18 @@ v-fs:FulltextBlankTemplate
       var value = this.value;
       individual.set("*", [value]);
       find.click();
+    }
+  });
+  if (individual.advanced) {
+    $(".advanced-search", template).removeClass("hidden");
+  }
+  $(".advanced-toggle", template).click(function (e) {
+    e.preventDefault();
+    individual.advanced = !individual.advanced;
+    if (individual.advanced) {
+      $(".advanced-search", template).removeClass("hidden");
+    } else {
+      $(".advanced-search", template).addClass("hidden");
     }
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
@@ -2201,4 +2328,14 @@ v-fs:MinimalSearchResultTemplate
   </tbody>
 </table>
   """ ;
+.
+
+# ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
+
+v-fs:AttributiveSearch_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-fs:AttributiveSearch ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;
 .

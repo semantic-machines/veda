@@ -19,7 +19,7 @@ class LmdbAuthorization : ImplAuthorization
     MDB_txn *txn_r;
     MDB_dbi dbi;
 
-    this(DBMode mode, string _parent_thread_name, long _cache_size, Logger _log)
+    this(DBMode mode, string _parent_thread_name, long _cache_size, bool _use_ext_libauthorization, Logger _log)
     {
         log    = _log;
         driver = new LmdbDriver(acl_indexes_db_path, mode, _parent_thread_name, log);
@@ -29,6 +29,8 @@ class LmdbAuthorization : ImplAuthorization
             use_cache = true;
             log.trace("USE CACHE");
         }
+
+        use_ext_libauthorization = _use_ext_libauthorization;
     }
 
     bool open()
@@ -68,7 +70,8 @@ class LmdbAuthorization : ImplAuthorization
             core.thread.Thread.sleep(dur!("msecs")(10));
 
             if (level > 10)
-                throw new Exception(cast(string)("get_in_current_transaction [" ~ in_key ~ ", rc=" ~ fromStringz(mdb_strerror(rc)) ~ ", level=" ~ text(level)));
+                throw new Exception(cast(string)("get_in_current_transaction [" ~ in_key ~ ", rc=" ~ fromStringz(mdb_strerror(rc)) ~ ", level=" ~
+                                                 text(level)));
 
             return get_in_current_transaction(in_key, level + 1);
         }

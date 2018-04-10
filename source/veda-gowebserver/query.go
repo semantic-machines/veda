@@ -23,6 +23,18 @@ func query(ctx *fasthttp.RequestCtx) {
 	limit, _ := ctx.QueryArgs().GetUint("limit")
 	from, _ := ctx.QueryArgs().GetUint("from")
 
+	if top < 0 {
+		top = 10000
+	}
+
+	if from < 0 {
+		from = 0
+	}
+
+	if limit < 0 {
+		limit = 10000
+	}
+
 	request[0] = ticketKey
 	request[1] = query
 	request[2] = sort

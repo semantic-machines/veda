@@ -71,7 +71,7 @@ veda.Module(function (veda) { "use strict";
       keys.map(function (key, index) {
         if ( callback(self[key], key, index) ) {
           result.push( self[key] );
-        };
+        }
       });
       return result;
     };

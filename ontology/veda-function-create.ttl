@@ -4,6 +4,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 <http://semantic-machines.com/veda/veda-function-create>
@@ -170,8 +171,7 @@ v-fc:BlankModel
   rdfs:label "v-fc:Blank class model"@en ;
   v-ui:forClass v-fc:Blank ;
   v-s:script """
-var self = this,
-  asp = veda.user.aspect;
+var self = this;
 
 var stopList = [
   "@",
@@ -189,7 +189,7 @@ var stopList = [
   "v-fc:targetType"
 ];
 
-this._init = function () {
+this.initBlank = function () {
   if (self.object) { return; }
   self.object = new veda.IndividualModel(),
   self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
@@ -199,7 +199,7 @@ this._init = function () {
       self.object.set(property_uri, self.get(property_uri).map(function (item) {
         // Embedded blanks are for v-s:Embedded objects only
         // Prevent mutual v-s:parent links
-        item._init();
+        item.initBlank();
         if ( item.object.is("v-s:Embedded") && property_uri !== "v-s:parent" ) {
           item.object["v-s:parent"] = [ self.object ];
         }
@@ -209,48 +209,30 @@ this._init = function () {
       self.object.set(property_uri, self.get(property_uri).slice(0));
     }
   });
-  self.object.one("afterSave", function () {
-    delete self.object;
-  });
-  self.object.one("afterReset", function () {
+  self.object.one("afterSave afterReset", function () {
     delete self.object;
   });
 }
 
-self.on("beforeSave", updateBlank);
-//self.on("afterSave", updateAspect);
-
-function updateBlank() {
-  Object.getOwnPropertyNames(self.object.properties).map( function (property_uri) {
+this.updateBlank = function () {
+  var blank = this;
+  Object.getOwnPropertyNames(blank.object.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( self.object.hasValue(property_uri) && self.object.get(property_uri)[0] instanceof veda.IndividualModel && self.object.get(property_uri)[0].is("v-s:Embedded")) {
-      self.set(property_uri, self.object.get(property_uri).map(function (item) {
-        var blank = item.clone();
-        var types = blank["rdf:type"];
-        blank["v-fc:targetType"] = types;
-        blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-        blank["v-s:parent"] = [ self ];
-        blank.save();
-        return blank;
+    if ( blank.object.hasValue(property_uri) && blank.object.get(property_uri)[0] instanceof veda.IndividualModel && blank.object.get(property_uri)[0].is("v-s:Embedded")) {
+      blank.set(property_uri, blank.object.get(property_uri).map(function (item) {
+        var embeddedBlank = item.clone();
+        var types = embeddedBlank["rdf:type"];
+        embeddedBlank["v-fc:targetType"] = types;
+        embeddedBlank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
+        embeddedBlank["v-s:parent"] = [ blank ];
+        embeddedBlank.save();
+        return embeddedBlank;
       }));
     } else {
-      self.set(property_uri, self.object.get(property_uri).slice(0));
+      blank.set(property_uri, blank.object.get(property_uri).slice(0));
     }
   });
 }
-function updateAspect() {
-  if (self["v-s:deleted"][0] == true) {
-    asp["v-s:hasBlank"] = asp["v-s:hasBlank"].filter( function (i) { return i.id !== self.id;});
-    asp.save();
-  } else if (
-    !asp["v-s:hasBlank"].filter( function (i) {return i.id === self.id;}).length
-    && !self.hasValue("v-s:parent") // Not embedded
-  ) {
-    asp["v-s:hasBlank"] = asp["v-s:hasBlank"].concat(self);
-    asp.save();
-  }
-}
-
 //# sourceURL=v-fc:BlankModel
   """
 .
@@ -262,7 +244,7 @@ v-fc:BlankTemplate
 #  v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
-  individual._init();
+  individual.initBlank();
 </script>
 <div role="tabpanel">
   <br>
@@ -318,6 +300,36 @@ v-fc:BlankTemplate
   """
 .
 
+v-fc:EnterLabel
+  rdf:type v-s:Bundle ;
+  rdfs:label "Введите название"@ru ;
+  rdfs:label "Enter label"@en ;
+.
+
+v-fc:SavePersonalBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сохранить личный бланк"@ru ;
+  rdfs:label "Save personal blank"@en ;
+.
+
+v-fc:UpdatePersonalBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Обновить личный бланк"@ru ;
+  rdfs:label "Update personal blank"@en ;
+.
+
+v-fc:BlankSuccessfullySaved
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланк успешно сохранен"@ru ;
+  rdfs:label "Blank successfully saved"@en ;
+.
+
+v-fc:BlankSuccessfullyUpdated
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланк успешно обновлен"@ru ;
+  rdfs:label "Blank successfully updated"@en ;
+.
+
 v-fc:BlankTemplateShort
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
@@ -325,13 +337,58 @@ v-fc:BlankTemplateShort
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
-  individual._init();
+  individual.initBlank();
+
+  var notify = new veda.Notify();
+
+  if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
+    $(".action.save-blank", template).click(function () {
+      var personalLabel = prompt( new veda.IndividualModel("v-fc:EnterLabel").toString(), individual.toString() );
+      var personalBlank = individual.clone();
+      personalBlank["rdfs:isDefinedBy"] = [];
+      personalBlank["rdfs:label"] = [ personalLabel ];
+      personalBlank.object = individual.object;
+      personalBlank.updateBlank();
+      personalBlank.save();
+      var aspect = veda.user.aspect;
+      aspect.addValue("v-s:hasBlank", personalBlank);
+      aspect.save();
+      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullySaved").toString() });
+    });
+  } else {
+    $(".action.save-blank", template).remove();
+  }
+
+  if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
+    $(".action.update-blank", template).click(function () {
+      individual.updateBlank();
+      individual.save();
+      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").toString() });
+    });
+  } else {
+    $(".action.update-blank", template).remove();
+  }
+  if ( individual.rights.hasValue("v-s:canDelete", true) ) {
+    $(".action.delete-blank", template).click(function () {
+      template.trigger("delete");
+    });
+  } else {
+    $(".action.delete-blank", template).remove();
+  }
+//# sourceURL=v-fc:BlankTemplateShort_pre
 </script>
-<div class="container sheet">
-  <br>
-  <div class="ribbon-wrapper top-left">
-    <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
+<div>
+  <div class="container sheet">
+    <div class="ribbon-wrapper top-left">
+      <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
+    </div>
+    <div class="actions text-right">
+      <button class="action save-blank btn btn-success" about="v-fc:SavePersonalBlank" property="rdfs:label"></button>
+      <button class="action update-blank btn btn-success" about="v-fc:UpdatePersonalBlank" property="rdfs:label"></button>
+      <button class="action delete-blank btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
+    </div>
   </div>
+  <br>
   <div id="object-container"></div>
   <div id="no-rights" class="alert alert-warning container hidden">
     <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
@@ -378,4 +435,14 @@ v-fc:CreateBlankTemplate
   <veda-control data-type="link" rel="v-fc:targetType" class="fulltext dropdown -view edit search"></veda-control>
 </div>
   """
+.
+
+# ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
+
+v-fc:Blank_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-fc:Blank ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс v-fc:Blank" ;
 .

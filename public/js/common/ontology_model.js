@@ -9,7 +9,7 @@ veda.Module(function (veda) { "use strict";
         if (typeof self[key] !== "function") delete self[key];
       });
     }
-  }
+  };
 
   veda.OntologyModel = function () {
 
@@ -204,7 +204,7 @@ veda.Module(function (veda) { "use strict";
 
     this.getClassProperties = function (_class_uri) {
       return veda.Util.unique( getProps(_class_uri) );
-    }
+    };
 
     function getProps (_class_uri) {
       var _class = classTree[_class_uri];
@@ -215,7 +215,7 @@ veda.Module(function (veda) { "use strict";
       } else {
         return getProps("rdfs:Resource");
       }
-    };
+    }
 
     this.getClassSpecifications = function getSpecs (_class_uri) {
       var _class = classTree[_class_uri];
@@ -236,7 +236,7 @@ veda.Module(function (veda) { "use strict";
       return specs;
     };
 
-    return veda.OntologyModel.prototype._singletonInstance = self;
+    return ( veda.OntologyModel.prototype._singletonInstance = self );
 
     // Get ontology from server
     function getOntology () {

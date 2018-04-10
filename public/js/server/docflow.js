@@ -12,28 +12,28 @@ function prepare_decision_form(ticket, document, prev_state)
         var f_prev_takenDecision = null;
 
         if (prev_state_decision_form)
-			f_prev_takenDecision = prev_state_decision_form['v-wf:takenDecision'];
+      f_prev_takenDecision = prev_state_decision_form['v-wf:takenDecision'];
 
         var f_takenDecision = decision_form['v-wf:takenDecision'];
 
         if (!f_takenDecision && !f_prev_takenDecision)
             return;
 
-		var enforce_processing = hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: _Boolean});
-		if (f_prev_takenDecision && !enforce_processing)
-		{
-			if (!f_takenDecision)
-			{
-				set_err_on_indv("attempt clear decision[" + getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
-	            set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);            				
-			}
-			else if (f_takenDecision.length != f_prev_takenDecision.length || getUri(f_takenDecision) != getUri(f_prev_takenDecision))
-			{
-				set_err_on_indv("attempt set another decision " + toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
-	            set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);            
-			}
-			return;
-		}
+    var enforce_processing = hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: _Boolean});
+    if (f_prev_takenDecision && !enforce_processing)
+    {
+      if (!f_takenDecision)
+      {
+        set_err_on_indv("attempt clear decision[" + getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
+              set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
+      }
+      else if (f_takenDecision.length != f_prev_takenDecision.length || getUri(f_takenDecision) != getUri(f_prev_takenDecision))
+      {
+        set_err_on_indv("attempt set another decision " + toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
+              set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
+      }
+      return;
+    }
 
         if (decision_form['v-wf:isCompleted'] && decision_form['v-wf:isCompleted'][0].data == true)
             return;
@@ -68,7 +68,7 @@ function prepare_decision_form(ticket, document, prev_state)
         {
             if (wi_isCompleted[0].data === true)
             {
-				set_err_on_indv("WorkItem[" + getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
+        set_err_on_indv("WorkItem[" + getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
                 return;
             }
         }
@@ -710,7 +710,7 @@ function prepare_work_item(ticket, document)
         {
             if (isCompleted[0].data === true)
             {
-        	    trace_journal_uri = get_trace_journal(document, _process)
+              trace_journal_uri = get_trace_journal(document, _process)
                 if (trace_journal_uri)
                     traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
 
@@ -1200,8 +1200,25 @@ function prepare_process(ticket, document)
  */
 function prepare_start_form(ticket, document)
 {
-    //print("@js prepare_start_form, doc_id=" + document['@']);
-    //print("@" + toJson(document));
+    // Если задача выдана из другой задачи, то заменить значение v-wf:processedDocument на значение v-wf:onDocument из исходной задачи
+    var processedDocumentId;
+    var processedDocumentValue;
+    if ( document['v-wf:processedDocument'] ) {
+      processedDocumentId = document['v-wf:processedDocument'][0].data;
+      processedDocumentValue = document['v-wf:processedDocument'];
+      var processedDocument = get_individual(ticket, processedDocumentId);
+      if ( hasValue(processedDocument, "rdf:type", { data: "v-wf:DecisionForm", type: _Uri } ) ) {
+        processedDocumentId = processedDocument["v-wf:onDocument"] ? processedDocument["v-wf:onDocument"][0].data : processedDocument['@'];
+        processedDocumentValue = processedDocument["v-wf:onDocument"] || [{ data: document['@'], type: _Uri }];
+        document['v-wf:processedDocument'] = processedDocumentValue;
+        document["v-wf:hasParentTask"] = [{ data: processedDocument['@'], type: _Uri }];
+        processedDocument["v-wf:hasChildTask"] = (processedDocument["v-wf:hasChildTask"] || []).concat( newUri(document['@']) );
+        put_individual(ticket, processedDocument, _event_id);
+      }
+    } else {
+      processedDocumentId = document['@'];
+      processedDocumentValue = [{ data: document['@'], type: _Uri }];
+    }
 
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && getFirstValue(isTrace) == true)
@@ -1227,7 +1244,10 @@ function prepare_start_form(ticket, document)
         return;
     }
 
-    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", document['@']);
+    // Include start form to processed document group
+    if ( hasValue(document, "v-wf:processedDocument") ) {
+      addToGroup(ticket, getUri(document["v-wf:processedDocument"]), document["@"], [can_read]);
+    }
 
     var new_process_uri = genUri() + "-prs";
 
@@ -1286,12 +1306,6 @@ function prepare_start_form(ticket, document)
 
     var trace_journal_uri;
 
-    var processedDocumentId = document['v-wf:processedDocument'] ? document['v-wf:processedDocument'][0].data : document['@'];
-    var processedDocument = document['v-wf:processedDocument'] ? document['v-wf:processedDocument'] : [
-    {
-        data: document['@'],
-        type: _Uri
-    }];
     if (isTrace)
     {
         trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label'], true);
@@ -1305,8 +1319,6 @@ function prepare_start_form(ticket, document)
 
     put_individual(ticket, new_process, _event_id);
 
-    document['v-wf:hasStatusWorkflow'] = newUri('v-wf:IsSent');
-
     create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
 
     var jrId = genUri() + "-psr";
@@ -1315,7 +1327,7 @@ function prepare_start_form(ticket, document)
         'rdf:type': newUri('v-s:ProcessStarted'),
         'v-s:processJournal': newUri(getJournalUri(new_process_uri)),
         'v-wf:onProcess': newUri(new_process_uri),
-        'v-s:onDocument': processedDocument,
+        'v-s:onDocument': processedDocumentValue,
         'v-s:created': [
         {
             data: new Date(),
@@ -1336,7 +1348,7 @@ function prepare_start_form(ticket, document)
         '@': genUri() + "-mbh",
         'rdf:type': newUri('v-s:Membership'),
         'v-s:resource': newUri(new_process_uri),
-        'v-s:memberOf': processedDocument,
+        'v-s:memberOf': processedDocumentValue,
         'rdfs:comment': newStr('Process is in document group')
     };
     put_individual(ticket, membership, _event_id);
@@ -1347,12 +1359,10 @@ function prepare_start_form(ticket, document)
         'v-s:childRecord': newUri(jrId)
     }, _event_id);
 
-    var add_to_document = {
-        '@': document['@'],
-        'v-wf:isProcess': newUri(new_process_uri)
-    };
 
-    add_to_individual(ticket, add_to_document, _event_id);
+    document['v-wf:hasStatusWorkflow'] = newUri('v-wf:IsSent');
+    document['v-wf:isProcess'] = (document['v-wf:isProcess'] || []).concat( newUri(new_process_uri) );
+    put_individual(ticket, document, _event_id);
 
     // возьмем автора формы и выдадим ему полные права на процесс
     if (author_uri)

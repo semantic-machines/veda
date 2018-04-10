@@ -1,5 +1,6 @@
-'use strict';
-module('Individuals',{});
+// QUnit veda server docflow stress test
+
+QUnit.module('Stress test docflow');
 
 function stress_test_docflow1()
 {
@@ -7,7 +8,7 @@ function stress_test_docflow1()
 
     for (var idx = 0; idx < 1000; idx++)
     {
-	var new_doc_id = 'td:ComplexRouteStartForm' + idx;
+        var new_doc_id = 'td:ComplexRouteStartForm' + idx;
         var new_test_doc1 = {
             '@': new_doc_id,
             'rdf:type': [

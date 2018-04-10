@@ -123,7 +123,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     renderedTemplate = processTemplate (individual, container, renderedTemplate, mode, extra, specs);
     container.append(renderedTemplate);
-    individual.trigger("individual:templateReady", renderedTemplate);
 
     // Timeout to wait all related individuals to render
     setTimeout(function () {
@@ -266,8 +265,10 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           var alert = new veda.IndividualModel("v-s:DeletedAlert")["rdfs:label"].join(" ");
           var recover = new veda.IndividualModel("v-s:Recover")["rdfs:label"].join(" ");
           var deletedAlert = $(
-            '<div id="deleted-alert" class="alert alert-warning no-margin clearfix" role="alert">\
-              <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
+            '<div id="deleted-alert" class="container sheet margin-lg">\
+              <div class="alert alert-warning no-margin clearfix" role="alert">\
+                <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
+              </div>\
             </div>'
           );
           template.prepend(deletedAlert);
@@ -322,9 +323,17 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       }
       // If individual is draft
       if ( individual.isDraft() && showLabel ) {
-        template.addClass("is-draft");
+        if ( template.children(".sheet").length ) {
+          template.children(".sheet").first().addClass("is-draft");
+        } else {
+          template.addClass("is-draft");
+        }
       } else {
-        template.removeClass("is-draft");
+        if ( template.children(".sheet").length ) {
+          template.children(".sheet").first().removeClass("is-draft");
+        } else {
+          template.removeClass("is-draft");
+        }
       }
     }
     individual.on("propertyModified afterSave afterReset", isDraftHandler);
@@ -418,6 +427,18 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       });
     }
 
+    // Max displayed values
+    template.on("click", ".more", function (e) {
+      e.stopPropagation();
+      var $this = $(this),
+          resource_uri = $this.closest("[resource]").attr("resource"),
+          resource = new veda.IndividualModel(resource_uri),
+          relContainer = $this.closest("[rel]"),
+          rel_uri = relContainer.attr("rel");
+      resource.trigger(rel_uri, resource.get(rel_uri), Infinity);
+      $this.remove();
+    });
+
     // Related resources & about resources
     rels.map( function () {
       //$("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
@@ -428,6 +449,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
           spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
+          limit = relContainer.attr("data-limit") || Infinity,
           relTemplate,
           isAbout;
 
@@ -494,12 +516,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
       var values = about.get(rel_uri), rendered = {}, counter = 0;
 
-      propertyModifiedHandler(values);
-      about.on(rel_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        about.off(rel_uri, propertyModifiedHandler);
-      });
-
       if (isEmbedded) {
         embeddedHandler(values);
         about.on(rel_uri, embeddedHandler);
@@ -508,21 +524,31 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         });
       }
 
+      propertyModifiedHandler(values, limit);
+      about.on(rel_uri, propertyModifiedHandler);
+      template.one("remove", function () {
+        about.off(rel_uri, propertyModifiedHandler);
+      });
+
       // Re-render link property if its' values were changed
-      function propertyModifiedHandler (values) {
+      function propertyModifiedHandler (values, limit_param) {
+        limit = limit_param || limit;
         ++counter;
         try {
           if (values.length) {
-            values.map(function (value) {
+            for (var i = 0, value; i < limit && i < values.length; i++) {
+              value = values[i];
               if (value.id in rendered) {
                 rendered[value.id].cnt = counter;
-                return;
+                continue;
               }
-              setTimeout (function () {
-                var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
-                rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-              }, 0);
-            });
+              var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
+              rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
+            }
+            relContainer.children(".more").remove();
+            if (limit < values.length) {
+              relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
+            }
           } else {
             relContainer.empty();
           }
@@ -557,7 +583,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     });
 
     // About resource
-    $("[about]:not([rel]):not([property])", wrapper).map( function () {
+    $("[about]:not([rel] *):not([about] *):not([rel]):not([property])", wrapper).map( function () {
       var aboutContainer = $(this),
           about_template_uri = aboutContainer.attr("data-template"),
           about_inline_template = aboutContainer.html().trim(),
@@ -897,7 +923,6 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       if (mode === "view") { wrapper.hide(); }
 
       btnRemove.click(function (e) {
-        e.stopPropagation();
         e.preventDefault();
         valTemplate.remove();
         individual.set( rel_uri, individual.get(rel_uri).filter(function (item) { return item.id !== value.id; }) );

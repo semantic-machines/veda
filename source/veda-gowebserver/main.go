@@ -71,10 +71,10 @@ var socket *nanomsg.Socket
 var endpoint *nanomsg.Endpoint
 
 //aclSocket is nanomsg socket connected to acl service
-var aclSocket *nanomsg.Socket
+//var aclSocket *nanomsg.Socket
 
 //aclEndpoint is nanomsg endpoint connected to acl service
-var aclEndpoint *nanomsg.Endpoint
+//var aclEndpoint *nanomsg.Endpoint
 
 //querySocket is nanomsg socket connected to query service
 var querySocket *nanomsg.Socket
@@ -89,7 +89,7 @@ var queryServiceURL = "tcp://127.0.0.1:23000"
 var tarantoolURL = "127.0.0.1:9999"
 var webserverPort = "8080"
 var webserverHTTPSPort = "8020"
-var aclServiceURL = "tcp://127.0.0.1:22000"
+//var aclServiceURL = "tcp://127.0.0.1:22000"
 var useHTTPS = false
 
 //attachmentsPath is path where files from request are stored
@@ -225,16 +225,16 @@ func main() {
 		time.Sleep(3000 * time.Millisecond)
 	}
 
-	aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-	if err != nil {
-		log.Fatal("@ERR ON CREATING ACL SOCKET")
-	}
+//	aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+//	if err != nil {
+//		log.Fatal("@ERR ON CREATING ACL SOCKET")
+//	}
 
-	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
-	for err != nil {
-		endpoint, err = aclSocket.Connect(aclServiceURL)
-		time.Sleep(3000 * time.Millisecond)
-	}
+//	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
+//	for err != nil {
+//		endpoint, err = aclSocket.Connect(aclServiceURL)
+//		time.Sleep(3000 * time.Millisecond)
+//	}
 
 	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
@@ -243,8 +243,8 @@ func main() {
 
 	queryEndpoint, err = querySocket.Connect(queryServiceURL)
 	for err != nil {
-		endpoint, err = aclSocket.Connect(aclServiceURL)
-		time.Sleep(3000 * time.Millisecond)
+//		endpoint, err = aclSocket.Connect(aclServiceURL)
+//		time.Sleep(3000 * time.Millisecond)
 	}
 
 	conn.Connect(tarantoolURL)

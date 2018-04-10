@@ -3,11 +3,19 @@ BUILD_PATH=$PWD
 #!/bin/sh
 rm *.log
 rm ./logs/*.log
+rm -r ./logs
+
 if [ ! -f ./ontology/config.ttl ]
 then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl
 fi
 ./update-version-ttl.sh
+
+    cd source/authorization
+    cargo build --release
+    cd $BUILD_PATH
+    sudo cp ./source/lib64/libauthorization.so /usr/local/lib
+    sudo ldconfig
 
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
@@ -78,20 +86,19 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
     ./build-component.sh veda-ft-query ft-query
 fi
 
-if [ -z $1 ] || [ $1 == "lmdb-server" ] || [ $1 == "veda-lmdb-server" ] ; then
-  cd source/lmdb-server
-  cargo build --release
-  cp ./target/release/veda-lmdb-server $BUILD_PATH/veda-lmdb-server      
-  cd $BUILD_PATH
-fi
+#if [ -z $1 ] || [ $1 == "lmdb-server" ] || [ $1 == "veda-lmdb-server" ] ; then
+#  cd source/lmdb-server
+#  cargo build --release
+#  cp ./target/release/veda-lmdb-server $BUILD_PATH/veda-lmdb-server      
+#  cd $BUILD_PATH
+#fi
 
-if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
-    cd source/veda-gowebserver
-    go build
-    cd ..
-    cd ..
-    cp source/veda-gowebserver/veda-gowebserver ./
-fi
+#if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
+#    cd source/veda-gowebserver
+#    go build
+#    cd $BUILD_PATH
+#    cp source/veda-gowebserver/veda-gowebserver ./veda-webserver
+#fi
 
 
 #if [ -z $1 ] || [ $1 == "db_handler" ] ; then

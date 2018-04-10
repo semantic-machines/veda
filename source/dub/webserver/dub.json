@@ -15,9 +15,10 @@
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
+            "../../lib64/libauthorization.a",
 	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a",
-        "../../veda/bind/nano.d",
+    	    "../../veda/bind/nano.d",
             "../../veda/bind/xapian_d_header.d",
             "../../veda/util/tests_tools.d",
             "../../veda/bind/libraptor_header.d",
