@@ -1270,8 +1270,8 @@ v-fs:AttributiveSearchModel
         ticket: veda.ticket,
         query: queryString,
         sort: self["v-fs:sortOrder"][0],
-        top: self["v-fs:top"][0],
-        limit: self["v-fs:limit"][0],
+        top: self["v-fs:top"][0] || veda.user.displayedElements || 10,
+        limit: self["v-fs:limit"][0] || 10000,
         from: self["v-fs:cursor"][0],
         async: true
       }).then(function (results) {
@@ -2328,4 +2328,14 @@ v-fs:MinimalSearchResultTemplate
   </tbody>
 </table>
   """ ;
+.
+
+# ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
+
+v-fs:AttributiveSearch_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-fs:AttributiveSearch ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;
 .
