@@ -1824,7 +1824,7 @@
       ticket: veda.ticket,
       query: queryString,
       sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
-      top: 100,
+      top: 10,
       limit: 1000,
       async: true
     }).then(function (results) {
