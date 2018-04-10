@@ -757,8 +757,12 @@ class XapianVQL
             {
                 if (err < 0)
                 {
-                    sr.result_code = ResultCode.Internal_Server_Error;
-                    log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%d), user_uri=%s", err, user_uri);
+                    if (err == -1)
+                        sr.result_code = ResultCode.DatabaseModifiedError;
+                    else
+                        sr.result_code = ResultCode.Internal_Server_Error;
+
+                    log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%d), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
                     sw.stop;
                     sr.total_time = sw.peek().msecs();
@@ -770,7 +774,11 @@ class XapianVQL
                 it.get_document_data(&data_str, &data_len, &err);
                 if (err < 0)
                 {
-                    sr.result_code = ResultCode.Internal_Server_Error;
+                    if (err == -1)
+                        sr.result_code = ResultCode.DatabaseModifiedError;
+                    else
+                        sr.result_code = ResultCode.Internal_Server_Error;
+
                     log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
                     sw.stop;
@@ -829,7 +837,7 @@ class XapianVQL
         sr.total_time     = sw.peek().msecs();
         sr.authorize_time = sw_az.peek().msecs();
         sr.query_time     = sr.total_time - sr.authorize_time;
-        
+
         return sr;
     }
 

@@ -232,9 +232,10 @@ class XapianReader : SearchReader
             if (state < 0)
             {
                 attempt_count++;
-                if (attempt_count > 3)
+                if (attempt_count > 2)
                 {
                     query = null;
+
                     break;
                 }
 
@@ -281,17 +282,17 @@ class XapianReader : SearchReader
             {
                 sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
                                                                   context, prepare_element_event, trace, op_auth);
-                
+
                 if (sr.total_time > 10_000)
                 {
-                    log.trace("WARN! [%s] xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);                	
+                    log.trace("WARN! [%s] xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
                 }
-                
-                if (sr.result_code != ResultCode.OK)
+
+                if (sr.result_code == ResultCode.DatabaseModifiedError)
                 {
                     add_out_element(null); // reset previous collected data
                     attempt_count++;
-                    if (attempt_count > 3)
+                    if (attempt_count > 2)
                         break;
 
                     reopen_db();
