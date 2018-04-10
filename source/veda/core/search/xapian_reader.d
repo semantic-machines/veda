@@ -187,7 +187,9 @@ class XapianReader : SearchReader
             db_names = [ "base" ];
 
         if (trace)
-            log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query, user_uri, str_query, str_sort, _db_names, from, top, limit);
+            log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query, user_uri, str_query,
+                      str_sort, _db_names, from, top,
+                      limit);
 
         if (trace)
             log.trace("[Q:%X] TTA [%s]", cast(void *)str_query, tta.toString());
@@ -279,6 +281,12 @@ class XapianReader : SearchReader
             {
                 sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
                                                                   context, prepare_element_event, trace, op_auth);
+                
+                if (sr.total_time > 10_000)
+                {
+                    log.trace("WARN! [%s] xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);                	
+                }
+                
                 if (sr.result_code != ResultCode.OK)
                 {
                     add_out_element(null); // reset previous collected data

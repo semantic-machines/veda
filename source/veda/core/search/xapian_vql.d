@@ -698,6 +698,10 @@ class XapianVQL
                                                               void delegate(string uri) prepare_element_event, bool trace, OptAuthorize op_auth
                                                               )
     {
+        StopWatch sw;
+
+        sw.start;
+
         SearchResult sr;
 
         if (top == 0)
@@ -707,17 +711,17 @@ class XapianVQL
             limit = 10000;
 
         int       read_count = 0;
-        StopWatch sw;
 
-        if (trace)
-            sw.start;
+        StopWatch sw_az;
 
-        byte err;
+        byte      err;
 
         if (user_uri is null)
         {
             log.trace("exec_xapian_query_and_queue_authorize:user_uri is null");
             sr.result_code = ResultCode.Ticket_not_found;
+            sw.stop;
+            sr.total_time = sw.peek().msecs();
             return sr;
         }
 
@@ -731,6 +735,8 @@ class XapianVQL
             log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
             sr.result_code = ResultCode.Internal_Server_Error;
 //            sr.err         = err;
+            sw.stop;
+            sr.total_time = sw.peek().msecs();
             return sr;
         }
 
@@ -754,6 +760,8 @@ class XapianVQL
                     sr.result_code = ResultCode.Internal_Server_Error;
                     log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%d), user_uri=%s", err, user_uri);
 //                    sr.err = err;
+                    sw.stop;
+                    sr.total_time = sw.peek().msecs();
                     return sr;
                 }
 
@@ -763,8 +771,10 @@ class XapianVQL
                 if (err < 0)
                 {
                     sr.result_code = ResultCode.Internal_Server_Error;
-                    log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg (err), user_uri);
+                    log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
+                    sw.stop;
+                    sr.total_time = sw.peek().msecs();
                     return sr;
                 }
 
@@ -778,7 +788,16 @@ class XapianVQL
                 if (trace)
                     log.trace("found subject_id:[%s]", subject_id);
 
-                if (op_auth == OptAuthorize.NO || context.get_storage().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen))
+                bool is_passed = true;
+
+                if (op_auth == OptAuthorize.YES)
+                {
+                    sw_az.start;
+                    is_passed = context.get_storage().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen);
+                    sw_az.stop;
+                }
+
+                if (is_passed)
                 {
                     //log.trace("found subject_id:[%s] authorized", subject_id);
 
@@ -789,20 +808,13 @@ class XapianVQL
                 }
                 else
                 {
-	                if (trace)
-	                    log.trace("subject_id:[%s] not authorized, user_uri=[%s]", subject_id, user_uri);
+                    if (trace)
+                        log.trace("subject_id:[%s] not authorized, user_uri=[%s]", subject_id, user_uri);
                 }
 
                 acl_db_reopen = false;
 
                 it.next(&err);
-            }
-
-            if (trace)
-            {
-                sw.stop();
-                long t = cast(long)sw.peek().usecs;
-                log.trace("authorized:%d, total time execute query: %s µs", read_count, text(t));
             }
 
             destroy_MSetIterator(it);
@@ -813,7 +825,11 @@ class XapianVQL
         sr.count       = read_count;
         sr.result_code = ResultCode.OK;
         sr.cursor      = from + processed;
-
+        sw.stop;
+        sr.total_time     = sw.peek().msecs();
+        sr.authorize_time = sw_az.peek().msecs();
+        sr.query_time     = sr.total_time - sr.authorize_time;
+        
         return sr;
     }
 
