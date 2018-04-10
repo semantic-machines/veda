@@ -1267,12 +1267,18 @@
   };
 
   // FILE UPLOAD CONTROL
-  function uploadFile(file, acceptedFileType, success, progress) {
+  function uploadFile(params) {
+    var file     = params.file,
+        content  = params.content,
+        accept   = params.accept,
+        success  = params.success,
+        progress = params.progress;
+
     var notify = new veda.Notify();
-    if (file instanceof File) {
+    if (file) {
       var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
-      if (acceptedFileType && acceptedFileType.split(",").indexOf(ext) < 0) {
-        return notify("danger", {message: "Тип файла не разрешен (" + acceptedFileType + ")"});
+      if (accept && accept.split(",").indexOf(ext) < 0) {
+        return notify("danger", {message: "Тип файла не разрешен (" + accept + ")"});
       }
     }
     var url = "/files",
@@ -1297,10 +1303,10 @@
     };
     fd.append("path", path);
     fd.append("uri", uri);
-    if (file instanceof File) {
+    if (file && !content) {
       fd.append("file", file);
     } else {
-      fd.append("content", file);
+      fd.append("content", content);
     }
     xhr.send(fd);
   }
@@ -1333,23 +1339,24 @@
 
   $.fn.veda_file = function( options ) {
     var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
-      control = $(opts.template),
-      spec = opts.spec,
-      individual = opts.individual,
-      rel_uri = opts.rel_uri,
-      rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
-      range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
-      acceptedFileType = this.attr("accept");
-
-    var fileInput = $(".file", control);
-    if (!isSingle) fileInput.attr("multiple", "multiple");
-    var btn = $(".btn", control),
+        control = $(opts.template),
+        spec = opts.spec,
+        individual = opts.individual,
+        rel_uri = opts.rel_uri,
+        rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
+        range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
+        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
+        accept = this.attr("accept"),
+        fileInput = $("[type='file']", control),
+        browseButton = $(".browse", control),
         indicatorPercentage = $(".indicator-percentage", control),
         indicatorSpinner = $(".indicator-spinner", control);
-    btn.click(function (e) {
+
+    if (!isSingle) fileInput.attr("multiple", "multiple");
+    browseButton.click(function (e) {
       fileInput.click();
     });
+
     var files = [], n;
     var uploaded = function (file, path, uri) {
       var f = new veda.IndividualModel();
@@ -1362,33 +1369,36 @@
       f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
       if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
         resize(file, 256, function (thumbnail) {
-          uploadFile(thumbnail, undefined, function (_, path, uri) {
-            var t = new veda.IndividualModel();
-            t["rdf:type"] = range;
-            t["v-s:fileName"] = [ "thumbnail-" + file.name ];
-            t["rdfs:label"] = [ "thumbnail-" + file.name ];
-            t["v-s:fileUri"] = [ uri ];
-            t["v-s:filePath"] = [ path ];
-            t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
-            t.save();
-            f["v-s:thumbnail"] = [ t ];
-            f.save();
-            files.push(f);
-            if (files.length === n) {
-              if (isSingle) {
-                individual.set(rel_uri, files);
-              } else {
-                individual.set(rel_uri, individual.get(rel_uri).concat(files));
+          uploadFile({
+            content: thumbnail,
+            success: function (_, path, uri) {
+              var t = new veda.IndividualModel();
+              t["rdf:type"] = range;
+              t["v-s:fileName"] = [ "thumbnail-" + file.name ];
+              t["rdfs:label"] = [ "thumbnail-" + file.name ];
+              t["v-s:fileUri"] = [ uri ];
+              t["v-s:filePath"] = [ path ];
+              t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
+              t.save();
+              f["v-s:thumbnail"] = [ t ];
+              f.save();
+              files.push(f);
+              if (files.length === n || !n) {
+                if (isSingle) {
+                  individual.set(rel_uri, files);
+                } else {
+                  individual.set(rel_uri, individual.get(rel_uri).concat(files));
+                }
               }
+              indicatorSpinner.empty().hide();
+              indicatorPercentage.empty().hide();
             }
-            indicatorSpinner.empty().hide();
-            indicatorPercentage.empty().hide();
           });
         });
       } else {
         f.save();
         files.push(f);
-        if (files.length === n) {
+        if (files.length === n || !n) {
           if (isSingle) {
             individual.set(rel_uri, files);
           } else {
@@ -1411,9 +1421,15 @@
       files = [];
       n = this.files.length;
       for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-        uploadFile(file, acceptedFileType, uploaded, progress);
+        uploadFile({
+          file: file,
+          accept: accept,
+          success: uploaded,
+          progress: progress
+        });
       }
     });
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
