@@ -16,7 +16,8 @@ protected byte err;
 interface SearchReader
 {
     public SearchResult get(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event, bool trace);
+                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
+                            bool trace);
 
     public void reopen_db();
 }
@@ -131,7 +132,8 @@ class XapianReader : SearchReader
     }
 
     public SearchResult get(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event, bool trace)
+                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
+                            bool trace)
     {
         SearchResult sr;
 
@@ -187,7 +189,8 @@ class XapianReader : SearchReader
             db_names = [ "base" ];
 
         if (trace)
-            log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query, user_uri, str_query,
+            log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query,
+                      user_uri, str_query,
                       str_sort, _db_names, from, top,
                       limit);
 
@@ -278,36 +281,22 @@ class XapianReader : SearchReader
             if (prepare_element_event !is null)
                 prepare_element_event("");
 
-            while (sr.result_code != ResultCode.OK)
-            {
-                sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
-                                                                  context, prepare_element_event, trace, op_auth);
-
-                if (sr.total_time > 10_000)
-                {
-                    log.trace("WARN! [%s] xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
-                }
-
-                if (sr.result_code == ResultCode.DatabaseModifiedError)
-                {
-                    add_out_element(null); // reset previous collected data
-                    attempt_count++;
-                    if (attempt_count > 2)
-                        break;
-
-                    reopen_db();
-                    log.trace("WARN! [%s] exec_xapian_query_and_queue_authorize, res=%d, attempt=%d",
-                              str_query, state, attempt_count);
-                }
-            }
-
-            if (sr.result_code != ResultCode.OK)
-                log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, attempt=%d, query=[%s]",
-                          cast(void *)str_query, attempt_count, str_query);
+            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
+                                                              context, prepare_element_event, trace, op_auth);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);
             destroy_MultiValueKeyMaker(sorter);
+
+            if (sr.total_time > 10_000)
+            {
+                log.trace("WARN! [%s] xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
+            }
+
+            if (sr.result_code == ResultCode.DatabaseModifiedError)
+                reopen_db();
+            else
+                log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query, sr.result_code);
         }
         else
         {

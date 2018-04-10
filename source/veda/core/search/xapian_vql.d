@@ -439,7 +439,8 @@ class XapianVQL
                                                                           cast(string)("parse_query2.1('x'=*) query='" ~ query_str ~ "', xtr='" ~ xtr
                                                                                        ~ "'"));
 
-                                                log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str, get_query_description(query));
+                                                log.trace("_transform_vql_to_xapian: query_str=[%s], query=|%s|", query_str,
+                                                          get_query_description(query));
                                             }
                                         }
                                         else
