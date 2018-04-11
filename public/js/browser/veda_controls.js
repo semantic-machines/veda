@@ -1268,74 +1268,80 @@
 
   // FILE UPLOAD CONTROL
   function uploadFile(params) {
-    var file     = params.file,
-        accept   = params.accept,
-        success  = params.success,
-        progress = params.progress;
-
-    var notify = new veda.Notify();
-    if (file instanceof File) {
-      var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
-      if (accept && accept.split(",").indexOf(ext) < 0) {
-        return notify("danger", {message: "Тип файла не разрешен (" + accept + ")"});
-      }
-    }
-    var url = "/files",
-        xhr = new XMLHttpRequest(),
-        d = new Date(),
-        path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/"),
-        uri = veda.Util.guid(),
-        fd = new FormData();
-    xhr.open("POST", url, true);
-    xhr.upload.onprogress = progress;
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          success(file, path, uri);
-        } else {
-          notify("danger", {code: xhr.status, message: "File upload error"});
+    return new Promise(function (resolve, reject) {
+      var file     = params.file,
+          path     = params.path,
+          uri      = params.uri,
+          progress = params.progress,
+          url = "/files",
+          xhr = new XMLHttpRequest(),
+          fd = new FormData();
+      xhr.open("POST", url, true);
+      xhr.upload.onprogress = progress;
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resolve(params);
+          } else {
+            reject( new Error("File upload error") );
+          }
         }
+      };
+      xhr.onerror = function() {
+        reject( new Error("File upload error") );
+      };
+      fd.append("path", path);
+      fd.append("uri", uri);
+      if (file instanceof File) {
+        fd.append("file", file);
+      } else if (file instanceof Image) {
+        fd.append("content", file.src);
       }
-    };
-    xhr.onerror = function() {
-      notify("danger", {message: "File upload error"});
-    };
-    fd.append("path", path);
-    fd.append("uri", uri);
-    if (file instanceof File) {
-      fd.append("file", file);
-    } else if (file instanceof Image) {
-      fd.append("content", file.src);
-    }
-    xhr.send(fd);
+      xhr.send(fd);
+    });
   }
 
-  function resizeImageFile (imageFile, maxWidth, success) {
-    var cnvs1 = document.createElement("canvas"),
-        ctx1 = cnvs1.getContext("2d"),
-        cnvs2 = document.createElement("canvas"),
-        ctx2 = cnvs2.getContext("2d"),
-        reader = new FileReader();
-    reader.onload = function(e) {
-      var image = new Image();
-      image.onload = function() {
-        var ratio = maxWidth / image.width;
-        var width = image.width * ratio >> 0;
-        var height = image.height * ratio >> 0;
-        cnvs1.width = width;
-        cnvs1.height = height;
-        cnvs2.width = image.width * 2;
-        cnvs2.height = image.height * 2;
-        ctx2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
-        ctx1.drawImage(cnvs2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-        var thumbnailSrc = cnvs1.toDataURL("image/jpeg");
-        var thumbnail = new Image();
-        thumbnail.src = thumbnailSrc;
-        success(image, thumbnail);
+  function loadImage(imageFile) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var image = new Image();
+        image.onload = function() {
+          resolve(image);
+        };
+        image.onerror = function () {
+          reject( new Error("Image load error") );
+        };
+        image.src = e.target.result;
       };
-      image.src = e.target.result;
-    };
-    reader.readAsDataURL(imageFile);
+      reader.onerror = function () {
+        reject( new Error("File reader error") );
+      };
+      reader.readAsDataURL(imageFile);
+    });
+  }
+
+  function resizeImage (image, maxWidth) {
+    if (image.width < maxWidth) {
+      return image;
+    }
+    var canvas1 = document.createElement("canvas"),
+        context1 = canvas1.getContext("2d"),
+        canvas2 = document.createElement("canvas"),
+        context2 = canvas2.getContext("2d"),
+        ratio = maxWidth / image.width,
+        width = image.width * ratio >> 0,
+        height = image.height * ratio >> 0;
+    canvas1.width = width;
+    canvas1.height = height;
+    canvas2.width = image.width * 2;
+    canvas2.height = image.height * 2;
+    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
+    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
+    var resizedSrc = canvas1.toDataURL("image/jpeg");
+    var resized = new Image();
+    resized.src = resizedSrc;
+    return resized;
   }
 
   $.fn.veda_file = function( options ) {
@@ -1354,22 +1360,29 @@
         indicatorSpinner = $(".indicator-spinner", control);
 
     if (!isSingle) { fileInput.attr("multiple", "multiple"); }
+    if (accept) { fileInput.attr("accept", accept); }
 
     browseButton.click(function (e) {
       fileInput.click();
     });
 
-    var files = [], n;
+    var notify = new veda.Notify();
 
-    fileInput.change(function () {
-      files = [];
-      n = this.files.length;
-      for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-        uploadFile({
-          file: file,
-          accept: accept,
-          success: uploaded,
-          progress: progress
+    fileInput.change(function (e) {
+      var that = this;
+      var fileIndividualPromises = [];
+      for (var i = 0, n = this.files.length, file; (file = this.files && this.files[i]); i++) {
+        var fileIndividualPromise = createFileIndividual(file, undefined, individual);
+        fileIndividualPromises.push(fileIndividualPromise);
+        Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
+          that.value = "";
+          indicatorSpinner.empty().hide();
+          indicatorPercentage.empty().hide();
+          if (isSingle) {
+            individual.set(rel_uri, fileIndividuals);
+          } else {
+            individual.addValue(rel_uri, fileIndividuals);
+          }
         });
       }
     });
@@ -1383,59 +1396,51 @@
       }
     };
 
-    function uploaded (file, path, uri) {
-      var f = new veda.IndividualModel();
-      f["rdf:type"] = range;
-      f["v-s:fileName"] = [ file.name ];
-      f["rdfs:label"] = [ file.name ];
-      f["v-s:fileSize"] = [ file.size ];
-      f["v-s:fileUri"] = [ uri ];
-      f["v-s:filePath"] = [ path ];
-      f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
-      if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        resizeImageFile(file, 256, function (image, thumbnail) {
-          f.image = image;
-          uploadFile({
-            file: thumbnail,
-            success: function (thumbnail, path, uri) {
-              var t = new veda.IndividualModel();
-              t["rdf:type"] = range;
-              t["v-s:fileName"] = [ "thumbnail-" + file.name ];
-              t["rdfs:label"] = [ "thumbnail-" + file.name ];
-              t["v-s:fileUri"] = [ uri ];
-              t["v-s:filePath"] = [ path ];
-              t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
-              t.image = thumbnail;
-              t.save();
-              f["v-s:thumbnail"] = [ t ];
-              f.save();
-              files.push(f);
-              if (files.length === n || !n) {
-                if (isSingle) {
-                  individual.set(rel_uri, files);
-                } else {
-                  individual.set(rel_uri, individual.get(rel_uri).concat(files));
-                }
-              }
-              indicatorSpinner.empty().hide();
-              indicatorPercentage.empty().hide();
-            }
+    function createFileIndividual (file, name, parent) {
+      var fileName = file.name || name;
+      var uri = veda.Util.guid();
+      var path = "/" + new Date().toISOString().substring(0, 10).split("-").join("/");
+      var fileIndividual = new veda.IndividualModel();
+      fileIndividual["rdf:type"] = range;
+      fileIndividual["v-s:fileName"] = [ fileName ];
+      fileIndividual["rdfs:label"] = [ fileName ];
+      fileIndividual["v-s:fileSize"] = [ file.size ];
+      fileIndividual["v-s:fileUri"] = [ uri ];
+      fileIndividual["v-s:filePath"] = [ path ];
+      fileIndividual["v-s:parent"] = [ parent ];
+      // If file is image && !thumbnail
+      if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
+        return loadImage(file)
+        .then(function (image) {
+          var resized = resizeImage(image, 2048);
+          fileIndividual.image = resized;
+          var thumbnail = resizeImage(image, 256);
+          return createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
+          .then(function (thumbnailIndividual) {
+            thumbnailIndividual.image = thumbnail;
+            fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
+            return uploadFile({
+              file: resized,
+              path: path,
+              uri: uri,
+              progress: progress
+            })
+            .then(function () {
+              return fileIndividual.save();
+            });
           });
         });
       } else {
-        f.save();
-        files.push(f);
-        if (files.length === n || !n) {
-          if (isSingle) {
-            individual.set(rel_uri, files);
-          } else {
-            individual.set(rel_uri, individual.get(rel_uri).concat(files));
-          }
-        }
-        indicatorSpinner.empty().hide();
-        indicatorPercentage.empty().hide();
+        return uploadFile({
+          file: file,
+          path: path,
+          uri: uri,
+          progress: progress
+        }).then(function () {
+          return fileIndividual.save();
+        });
       }
-    };
+    }
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
