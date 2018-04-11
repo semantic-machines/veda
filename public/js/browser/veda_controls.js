@@ -1269,13 +1269,12 @@
   // FILE UPLOAD CONTROL
   function uploadFile(params) {
     var file     = params.file,
-        content  = params.content,
         accept   = params.accept,
         success  = params.success,
         progress = params.progress;
 
     var notify = new veda.Notify();
-    if (file) {
+    if (file instanceof File) {
       var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
       if (accept && accept.split(",").indexOf(ext) < 0) {
         return notify("danger", {message: "Тип файла не разрешен (" + accept + ")"});
@@ -1303,40 +1302,40 @@
     };
     fd.append("path", path);
     fd.append("uri", uri);
-    if (file && !content) {
+    if (file instanceof File) {
       fd.append("file", file);
-    } else {
-      fd.append("content", content);
+    } else if (file instanceof Image) {
+      fd.append("content", file.src);
     }
     xhr.send(fd);
   }
 
-  function resize (image, maxWidth, success) {
+  function resizeImageFile (imageFile, maxWidth, success) {
     var cnvs1 = document.createElement("canvas"),
         ctx1 = cnvs1.getContext("2d"),
         cnvs2 = document.createElement("canvas"),
         ctx2 = cnvs2.getContext("2d"),
         reader = new FileReader();
-    reader.onload = function(event) {
-      var img = new Image();
-      img.onload = function() {
-        var ratio = maxWidth / img.width;
-        var width = img.width * ratio >> 0;
-        var height = img.height * ratio >> 0;
+    reader.onload = function(e) {
+      var image = new Image();
+      image.onload = function() {
+        var ratio = maxWidth / image.width;
+        var width = image.width * ratio >> 0;
+        var height = image.height * ratio >> 0;
         cnvs1.width = width;
         cnvs1.height = height;
-        cnvs2.width = img.width * 2;
-        cnvs2.height = img.height * 2;
-        ctx2.drawImage(img, 0, 0, img.width, img.height, 0, 0, width * 2, height * 2);
+        cnvs2.width = image.width * 2;
+        cnvs2.height = image.height * 2;
+        ctx2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
         ctx1.drawImage(cnvs2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-        var thumbnailData = cnvs1.toDataURL("image/jpeg");
+        var thumbnailSrc = cnvs1.toDataURL("image/jpeg");
         var thumbnail = new Image();
-        thumbnail.src = thumbnailData;
-        success(img, thumbnail);
+        thumbnail.src = thumbnailSrc;
+        success(image, thumbnail);
       };
-      img.src = event.target.result;
+      image.src = e.target.result;
     };
-    reader.readAsDataURL(image);
+    reader.readAsDataURL(imageFile);
   }
 
   $.fn.veda_file = function( options ) {
@@ -1371,11 +1370,11 @@
       f["v-s:filePath"] = [ path ];
       f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
       if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        resize(file, 256, function (image, thumbnail) {
+        resizeImageFile(file, 256, function (image, thumbnail) {
           f.image = image;
           uploadFile({
-            content: thumbnail.src,
-            success: function (_, path, uri) {
+            file: thumbnail,
+            success: function (thumbnail, path, uri) {
               var t = new veda.IndividualModel();
               t["rdf:type"] = range;
               t["v-s:fileName"] = [ "thumbnail-" + file.name ];
