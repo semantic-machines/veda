@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture `testPerson`
-    .page `http://live.semantic-machines.com/`;
+    .page `http://localhost:8080/`;
 test('testPerson', async t => {
     const user = 'Стивен Эдвин Кинг';
     const user1 = 'Говард Филлипс Лавкрафт';

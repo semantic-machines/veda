@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe';
   fixture `test comment`
-    .page `http://live.semantic-machines.com/`
+    .page `http://localhost:8080/`
 
   test('testComment', async t => {
 //    basic.login('karpovrt', '123');

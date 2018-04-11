@@ -2,6 +2,8 @@
   "name": "testcafe-example",
   "scripts": {
     "test": "testcafe chrome qa/testcafe/veda.js"
+  },
+  "devDependencies": {
+    "testcafe": "^0.19.1"
   }
 }
-

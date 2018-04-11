@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture `testAttributiveSearchPerson`
-    .page `http://live.semantic-machines.com/`;
+    .page `http://localhost:8080/`;
 test('testAttributiveSearchPerson', async t => {
     const first =  'xGIo5f';
     const last = 'GhiOJe';

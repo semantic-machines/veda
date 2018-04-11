@@ -2,7 +2,7 @@ import Basic from './basic'
 import { Selector } from 'testcafe';
 
 fixture `testSimpleNet`
-    .page `http://live.semantic-machines.com/`;
+    .page `http://localhost:8080/`;
 
 test('testSimpleNet', async t => {
     //basic.login('karpovrt', '123');

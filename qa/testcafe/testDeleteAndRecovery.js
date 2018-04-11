@@ -3,7 +3,7 @@ import { Selector } from 'testcafe';
 const query = "'rdfs:label' == '12345' && 'v-s:deleted' == 'true'" ;
 
 fixture `test Delete And Recovery`
-    .page `http://live.semantic-machines.com/`;
+    .page `http://localhost:8080/`;
 
 test('test Delete And Recovery', async t => {
     await t

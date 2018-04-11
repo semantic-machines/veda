@@ -2,7 +2,6 @@ import Basic from './basic'
 import { Selector } from 'testcafe';
 
 fixture `testAttachment`
-    //.page `http://live.semantic-machines.com/`;
     .page `http://localhost:8080/#/v-fc:Create`;
 
 test('testAttachment', async t => {
