@@ -1834,18 +1834,11 @@
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
     }
+
     var result = [];
 
-    return query({
-      ticket: veda.ticket,
-      query: queryString,
-      sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
-      top: 10,
-      limit: 1000,
-      async: true
-    }).then(function (results) {
-
-      var getList = results.result.filter( function (uri, index) {
+    return incrementalSearch(0, 100, []).then(function (results) {
+      var getList = results.filter( function (uri, index) {
         if ( veda.cache[uri] ) {
           result.push(veda.cache[uri]);
           return false;
@@ -1863,15 +1856,33 @@
       } else {
         return [];
       }
-
     }).then(function (individuals) {
-
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });
       return result;
-
     });
+
+    function incrementalSearch(cursor, limit, results) {
+      return query({
+        ticket: veda.ticket,
+        query: queryString,
+        sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
+        from: cursor,
+        top: 10,
+        limit: 1000,
+        async: true
+      }).then(function (queryResult) {
+        results = results.concat(queryResult.result);
+        var cursor = queryResult.cursor;
+        var estimated = queryResult.estimated;
+        if (results.length >= limit || cursor >= estimated) {
+          return results;
+        } else {
+          return incrementalSearch(cursor, limit, results);
+        }
+      });
+    }
   }
 
 })( jQuery );
