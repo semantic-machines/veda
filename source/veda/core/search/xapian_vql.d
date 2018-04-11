@@ -733,9 +733,14 @@ class XapianVQL
         XapianMSet matches = xapian_enquire.get_mset(from, limit, &err);
         if (err < 0)
         {
-            log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", err);
-            sr.result_code = ResultCode.Internal_Server_Error;
-//            sr.err         = err;
+            log.trace("exec_xapian_query_and_queue_authorize:get_mset, err=(%d)", get_xapian_err_msg(err));
+
+            if (err == -1)
+                sr.result_code = ResultCode.DatabaseModifiedError;
+            else
+                sr.result_code = ResultCode.Internal_Server_Error;
+
+            //            sr.err         = err;
             sw.stop;
             sr.total_time = sw.peek().msecs();
             return sr;
