@@ -1345,7 +1345,7 @@
         individual = opts.individual,
         rel_uri = opts.rel_uri,
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
-        range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
+        range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
         accept = this.attr("accept"),
         fileInput = $("[type='file']", control),
@@ -1360,7 +1360,30 @@
     });
 
     var files = [], n;
-    var uploaded = function (file, path, uri) {
+
+    fileInput.change(function () {
+      files = [];
+      n = this.files.length;
+      for (var i = 0, file; (file = this.files && this.files[i]); i++) {
+        uploadFile({
+          file: file,
+          accept: accept,
+          success: uploaded,
+          progress: progress
+        });
+      }
+    });
+
+    function progress (progressEvent) {
+      if (progressEvent.lengthComputable) {
+        var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
+        indicatorPercentage.text(percentComplete + "%").show();
+      } else {
+        indicatorSpinner.show();
+      }
+    };
+
+    function uploaded (file, path, uri) {
       var f = new veda.IndividualModel();
       f["rdf:type"] = range;
       f["v-s:fileName"] = [ file.name ];
@@ -1413,26 +1436,6 @@
         indicatorPercentage.empty().hide();
       }
     };
-    var progress = function (progressEvent) {
-      if (progressEvent.lengthComputable) {
-        var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
-        indicatorPercentage.text(percentComplete + "%").show();
-      } else {
-        indicatorSpinner.show();
-      }
-    };
-    fileInput.change(function () {
-      files = [];
-      n = this.files.length;
-      for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-        uploadFile({
-          file: file,
-          accept: accept,
-          success: uploaded,
-          progress: progress
-        });
-      }
-    });
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
