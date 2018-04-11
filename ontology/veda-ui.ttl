@@ -820,31 +820,6 @@ v-ui:IconPersonTemplate
 """ ;
 .
 
-v-ui:ImageAppointmentTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон персоны с иконкой"@ru ;
-  rdfs:label "Person template with icon"@en ;
-  v-ui:template """
-<div class="horizontal-card horizontal-card-sm">
-  <div class="thumbnail" about="@" rel="v-s:employee">
-    <script>
-      if ( !individual.hasValue("v-s:hasImage") ) {
-        template.removeAttr("rel").empty().append('<span class="text-muted fa fa-user fa-4x"></span>');
-      }
-      //# sourceURL=v-ui:ImageAppointmentTemplate_pre
-    </script>
-    <div about="@" rel="v-s:hasImage">
-      <img src="/files/@"/>
-    </div>
-  </div>
-  <div class="description">
-    <strong rel="v-s:employee" data-template="v-ui:LabelTemplate"></strong>
-    <hr class="no-margin">
-    <small rel="v-s:occupation" data-template="v-ui:LabelTemplate"></small>
-  </div>
-</div>
-  """ ;
-.
 v-ui:AppointmentPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон назначения с фотографией"@ru ;
@@ -1511,9 +1486,7 @@ v-ui:FileTemplateWithComment
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div class="horizontal-card">
-  <div class="thumbnail" about="@" rel="v-s:thumbnail">
-    <img src="/files/@">
-  </div>
+  <div class="thumbnail" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
   <div class="description">
     <strong about="rdfs:comment" property="rdfs:label" class="-view edit search"></strong>
     <veda-control data-type="string" property="rdfs:comment" class="-view edit search margin-sm"></veda-control>
@@ -1595,13 +1568,15 @@ v-ui:ImageTemplate
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<div>
-  <a href="/files/@"><img class="img-thumbnail"></a>
-</div>
 <script>
-   $("img", template).attr("src", "/files/" + individual.id);
-  //# sourceURL=v-ui:ImageTemplate
+  if (individual.image) {
+    template.attr("src", individual.image.src);
+  } else {
+    template.attr("src", "/files/" + individual.id);
+  }
+//# sourceURL=v-ui:ImageTemplate
 </script>
+<img width="100%">
   """ ;
 .
 v-ui:ModalImageTemplate
@@ -1630,58 +1605,6 @@ v-ui:ModalImageTemplate
     modal.modal("show");
   });
   //# sourceURL=v-ui:ModalImageTemplate
-</script>
-  """ ;
-.
-v-ui:ImageSimpleTemplateWithoutBorder
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для изображения"@ru ;
-  rdfs:label "Image template"@en ;
-  v-ui:template """
-<img width="100%">
-<script>
-  template.attr("src", "/files/" + individual.id);
-  //# sourceURL=v-ui:ImageSimpleTemplateWithoutBorder
-</script>
-  """ ;
-.
-v-ui:ImageSimpleTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для изображения без ссылки"@ru ;
-  rdfs:label "Image template without link"@en ;
-  v-ui:template """
-<div>
-  <img class="img-thumbnail">
-</div>
-<script>
-  $("img", template).attr("src", "/files/" + individual.id);
-  //# sourceURL=v-ui:ImageSimpleTemplate
-</script>
-  """ ;
-.
-v-ui:ImageSimpleTemplateTransparent
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для изображения без ссылки прозрачный фон"@ru ;
-  rdfs:label "Image template without link transparent"@en ;
-  v-ui:template """
-<img width="100%">
-<script>
-  template.attr("src", "/files/" + individual.id);
-  //# sourceURL=v-ui:ImageSimpleTemplateTransparent
-</script>
-  """ ;
-.
-v-ui:ImageTemplateTransparent
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для изображения со ссылкой прозрачный фон"@ru ;
-  rdfs:label "Image template with link transparent"@en ;
-  v-ui:template """
-<div>
-  <a href="/files/@"><img width="100%"></a>
-</div>
-<script>
-  $("img", template).attr("src", "/files/" + individual.id);
-  //# sourceURL=v-ui:ImageTemplateTransparent
 </script>
   """ ;
 .

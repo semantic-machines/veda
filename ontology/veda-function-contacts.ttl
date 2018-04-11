@@ -340,9 +340,7 @@ v-s:AppointmentContactTemplate
   v-ui:forClass v-s:Person ;
   v-ui:template """
 <div class="horizontal-card horizontal-card-sm">
-  <div class="thumbnail" about="@" rel="v-s:hasImage">
-    <img src="/files/@">
-  </div>
+  <div class="thumbnail" about="@" rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
   <div class="description">
     <div about="@" rel="v-s:employee" class="header">
       <strong><span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:lastName"></span></strong>
@@ -360,9 +358,7 @@ v-s:PositionContactTemplate
   v-ui:forClass v-s:Person ;
   v-ui:template """
 <div class="horizontal-card horizontal-card-sm">
-  <div class="thumbnail" about="@" rel="v-s:hasImage">
-    <img src="/files/@">
-  </div>
+  <div class="thumbnail" about="@" rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
   <div class="description">
     <div class="header">
       <strong about="@" property="rdfs:label"></strong>

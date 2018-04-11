@@ -204,7 +204,7 @@ v-s:RecursiveCommentTemplate
         individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
       </script>
       <div style="width:50px;">
-        <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+        <div class="has-image" about="@" rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
         <div class="no-image"><span class="text-muted fa fa-user fa-4x"></span></div>
       </div>
     </div>

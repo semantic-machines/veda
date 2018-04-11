@@ -800,7 +800,7 @@ v-ui:ModulesResultTemplate
 <div class="result-container row">
   <div class="col-md-4">
     <div class="thumbnail">
-      <div class="hasImage" about="@" rel="v-s:hasImage" style="height:200px;" data-template="v-ui:ImageSimpleTemplateWithoutBorder"></div>
+      <div class="hasImage" about="@" rel="v-s:hasImage" style="height:200px;" data-template="v-ui:ImageTemplate"></div>
       <div>
         <span id="test" about="@" data-template="v-ui:IconModalTemplate"></span>
         <span style="font-weight: bold;" property="@"></span>

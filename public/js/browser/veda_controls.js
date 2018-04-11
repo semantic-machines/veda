@@ -1329,8 +1329,10 @@
         cnvs2.height = img.height * 2;
         ctx2.drawImage(img, 0, 0, img.width, img.height, 0, 0, width * 2, height * 2);
         ctx1.drawImage(cnvs2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-        var thumbnail = cnvs1.toDataURL("image/jpeg");
-        success(thumbnail);
+        var thumbnailData = cnvs1.toDataURL("image/jpeg");
+        var thumbnail = new Image();
+        thumbnail.src = thumbnailData;
+        success(img, thumbnail);
       };
       img.src = event.target.result;
     };
@@ -1352,7 +1354,8 @@
         indicatorPercentage = $(".indicator-percentage", control),
         indicatorSpinner = $(".indicator-spinner", control);
 
-    if (!isSingle) fileInput.attr("multiple", "multiple");
+    if (!isSingle) { fileInput.attr("multiple", "multiple"); }
+
     browseButton.click(function (e) {
       fileInput.click();
     });
@@ -1368,9 +1371,10 @@
       f["v-s:filePath"] = [ path ];
       f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
       if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        resize(file, 256, function (thumbnail) {
+        resize(file, 256, function (image, thumbnail) {
+          f.image = image;
           uploadFile({
-            content: thumbnail,
+            content: thumbnail.src,
             success: function (_, path, uri) {
               var t = new veda.IndividualModel();
               t["rdf:type"] = range;
@@ -1379,6 +1383,7 @@
               t["v-s:fileUri"] = [ uri ];
               t["v-s:filePath"] = [ path ];
               t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
+              t.image = thumbnail;
               t.save();
               f["v-s:thumbnail"] = [ t ];
               f.save();
