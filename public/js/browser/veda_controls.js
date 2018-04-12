@@ -1408,38 +1408,34 @@
       fileIndividual["v-s:fileUri"] = [ uri ];
       fileIndividual["v-s:filePath"] = [ path ];
       fileIndividual["v-s:parent"] = [ parent ];
-      // If file is image && !thumbnail
-      if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        return loadImage(file)
-        .then(function (image) {
-          var resized = resizeImage(image, 2048);
-          fileIndividual.image = resized;
-          var thumbnail = resizeImage(image, 256);
-          return createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
-          .then(function (thumbnailIndividual) {
-            thumbnailIndividual.image = thumbnail;
-            fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
-            return uploadFile({
-              file: resized,
-              path: path,
-              uri: uri,
-              progress: progress
-            })
-            .then(function () {
-              return fileIndividual.save();
+      return new Promise(function (resolve, reject) {
+        // If file is image && !thumbnail
+        if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
+          loadImage(file)
+          .then(function (image) {
+            var resized = resizeImage(image, 2048);
+            var thumbnail = resizeImage(image, 256);
+            fileIndividual.image = resized;
+            createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
+            .then(function (thumbnailIndividual) {
+              thumbnailIndividual.image = thumbnail;
+              fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
+              resolve(fileIndividual);
             });
           });
-        });
-      } else {
+        } else {
+          resolve(fileIndividual);
+        }
+      }).then(function () {
         return uploadFile({
           file: file,
           path: path,
           uri: uri,
           progress: progress
-        }).then(function () {
-          return fileIndividual.save();
         });
-      }
+      }).then(function () {
+        return fileIndividual.save();
+      });
     }
 
     this.on("view edit search", function (e) {
