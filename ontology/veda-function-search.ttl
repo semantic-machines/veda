@@ -1984,7 +1984,7 @@ v-fs:AttributiveSearchInlineTemplate
   $(".search-result", template).on("click", "table tbody tr", function () {
     var that = $(this);
     that.addClass("warning").siblings(".warning").removeClass("warning");
-    self.marked = that.find(".serial-number").text();
+    self.marked = that.index();
   });
 
   // Manage sort
@@ -2047,7 +2047,7 @@ v-fs:AttributiveSearchInlineTemplate
       var tmpl = result.present(resultContainer, individual.resultTemplate);
       var serialNumber = total - delta + i + 1;
       $(".serial-number", tmpl).text(serialNumber);
-      if (serialNumber == self.marked) {
+      if (serialNumber === self.marked + 1) {
         tmpl.addClass("warning");
       }
       setTimeout(function () {
