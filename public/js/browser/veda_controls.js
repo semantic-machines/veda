@@ -1685,7 +1685,7 @@
         .on("keyup", keyupHandler)
         .on("triggerSearch", performSearch);
 
-      function performSearch (e, value) {
+      var performSearch = function (e, value) {
         ftQuery(queryPrefix, value, sort)
           .then(renderResults)
           .catch(function (error) {
@@ -1695,7 +1695,7 @@
 
       var selected = [];
 
-      function renderResults(results) {
+      var renderResults = function (results) {
         selected = individual.get(rel_uri);
         if (results.length) {
           var rendered = results.map(function (result) {
@@ -1745,7 +1745,7 @@
         }
       });
 
-      function clickOutsideMenuHandler(event) {
+      var clickOutsideMenuHandler = function (event) {
         if( !$(event.target).closest(fulltextMenu).length ) {
           if( fulltextMenu.is(":visible") ) {
             fulltextMenu.hide();
@@ -1753,20 +1753,22 @@
           }
         }
       }
-      function removeClickOutsideMenuHandler() {
+
+      var removeClickOutsideMenuHandler = function () {
         if (control.is(":visible")) {
           individual.set(rel_uri, selected);
         }
         $(document).off("click", clickOutsideMenuHandler);
       }
 
-      function propertyModifiedHandler () {
+      var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
           fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
         } else if ( isSingle ) {
           fulltext.val("");
         }
       }
+
       individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
         individual.off(rel_uri, propertyModifiedHandler);
