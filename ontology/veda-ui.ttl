@@ -827,9 +827,9 @@ v-ui:AppointmentPopoverTemplate
   v-ui:template """
 <div class="media" style="margin-top:0px;">
   <span class="close">&times;</span>
-  <div class="media-left" rel="v-s:employee">
+  <div class="media-left" rel="v-s:employee" style="width:128px">
     <a href="#/@" rel="v-s:hasImage">
-      <img style="width:64px" class="media-object" src="/files/@">
+      <div rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
     </a>
   </div>
   <div class="media-body" style="width:auto;">
@@ -863,9 +863,9 @@ v-ui:PersonPopoverTemplate
   v-ui:template """
 <div class="media" style="margin-top:0px;">
   <span class="close">&times;</span>
-  <div class="media-left">
-    <a href="#" rel="v-s:hasImage">
-      <img style="width:64px" class="media-object" src="/files/@">
+  <div class="media-left" style="width:128px">
+    <a href="#/@" rel="v-s:hasImage">
+      <div rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
     </a>
   </div>
   <div class="media-body" style="width:auto">
@@ -1478,7 +1478,6 @@ v-ui:FileMinTemplate
 </div>
   """ ;
 .
-
 v-ui:FileTemplateWithComment
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для файла"@ru ;
@@ -1486,7 +1485,7 @@ v-ui:FileTemplateWithComment
   v-ui:forClass v-s:File ;
   v-ui:template """
 <div class="horizontal-card">
-  <div class="thumbnail" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
+  <div class="thumbnail" about="@" data-template="v-ui:ModalImageTemplate"></div>
   <div class="description">
     <strong about="rdfs:comment" property="rdfs:label" class="-view edit search"></strong>
     <veda-control data-type="string" property="rdfs:comment" class="-view edit search margin-sm"></veda-control>
@@ -1544,13 +1543,11 @@ v-ui:FileTemplateWithComment2
       <small rel="v-s:creator" data-template="v-ui:LabelTemplate"></small><small property="v-s:created"></small>
     </div>
   </div>
-
   <!--Remove-->
   <div class="actions panel-footer">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save"></span>
   </div>
   <!--/Remove-->
-
 </div>
 <script>
   var fn = individual["v-s:fileName"][0];
@@ -1570,13 +1567,13 @@ v-ui:ImageTemplate
   v-ui:template """
 <script>
   if (individual.image) {
-    template.attr("src", individual.image.src);
+    template.children().attr("src", individual.image.src);
   } else {
-    template.attr("src", "/files/" + individual.id);
+    template.children().attr("src", "/files/" + individual.id);
   }
 //# sourceURL=v-ui:ImageTemplate
 </script>
-<img width="100%">
+<div><img width="100%"></div>
   """ ;
 .
 v-ui:ModalImageTemplate
@@ -1584,25 +1581,20 @@ v-ui:ModalImageTemplate
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<div>
-  <a id="link" href="#"><img class="img-thumbnail"></a>
-  <div class="modal" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
-          <img width="100%">
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<a class="show-modal" href="#" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></a>
 <script>
-  $("img", template).attr("src", "/files/" + individual.id);
-  var modal;
-  $("#link", template).click(function (e) {
+  if ( !individual.hasValue("v-s:thumbnail") ) {
+    template.remove();
+  }
+  template.click(function (e) {
     e.preventDefault();
-    if (!modal) modal = $("#modal", template).modal();
+    var modal = $( $("#minimal-modal-template").html() ).modal({keyboard: true, show: false}).appendTo("body");
+    var modalBody = modal.find(".modal-body");
+    individual.present(modalBody, "v-ui:ImageTemplate");
     modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
   });
   //# sourceURL=v-ui:ModalImageTemplate
 </script>
