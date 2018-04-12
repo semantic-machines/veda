@@ -1374,17 +1374,17 @@
       for (var i = 0, n = this.files.length, file; (file = this.files && this.files[i]); i++) {
         var fileIndividualPromise = createFileIndividual(file, undefined, individual);
         fileIndividualPromises.push(fileIndividualPromise);
-        Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
-          that.value = "";
-          indicatorSpinner.empty().hide();
-          indicatorPercentage.empty().hide();
-          if (isSingle) {
-            individual.set(rel_uri, fileIndividuals);
-          } else {
-            individual.addValue(rel_uri, fileIndividuals);
-          }
-        });
       }
+      Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
+        that.value = "";
+        indicatorSpinner.empty().hide();
+        indicatorPercentage.empty().hide();
+        if (isSingle) {
+          individual.set(rel_uri, fileIndividuals);
+        } else {
+          individual.addValue(rel_uri, fileIndividuals);
+        }
+      });
     });
 
     function progress (progressEvent) {
