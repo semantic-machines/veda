@@ -1,8 +1,7 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
   fixture `test Rights`
-    .page `http://live.semantic-machines.com`
-    //.page `http://localhost:8080/`
+    .page `http://localhost:8080/`
   const user = 'Стивен Эдвин Кинг';
   const user1 = 'Говард Филлипс Лавкрафт';
   const basic = new Basic();
