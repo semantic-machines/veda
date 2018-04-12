@@ -1,8 +1,7 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
   fixture `test Versioned Document`
-    .page `http://live.semantic-machines.com`
-    //.page `http://localhost:8080/`
+    .page `http://localhost:8080/`
   const basic = new Basic();
   test('testVersionedDocument', async t => {
     basic.login('karpovrt', '123');
