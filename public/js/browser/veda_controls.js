@@ -1681,10 +1681,6 @@
         };
       }());
 
-      fulltext
-        .on("keyup", keyupHandler)
-        .on("triggerSearch", performSearch);
-
       var performSearch = function (e, value) {
         ftQuery(queryPrefix, value, sort)
           .then(renderResults)
@@ -1692,6 +1688,10 @@
             console.log("Fulltext query error", error);
           });
       }
+
+      fulltext
+        .on("keyup", keyupHandler)
+        .on("triggerSearch", performSearch);
 
       var selected = [];
 
