@@ -756,6 +756,10 @@
 
     populate();
 
+    select.focus(function () {
+      populate();
+    });
+
     select.change(function () {
       var value = $("option:selected", select).data("value");
       if (isSingle) {
