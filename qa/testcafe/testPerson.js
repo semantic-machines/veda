@@ -1,3 +1,4 @@
+import basic from './basic'
 import { Selector } from 'testcafe';
 
 fixture `testPerson`
@@ -12,7 +13,7 @@ test('testPerson', async t => {
 		.expect(Selector('#user-info').innerText).eql(' Администратор2\n')
 		.click('#menu')
 		.click('li[id="menu"] li[resource="v-l:Create"]')
-		.typeText('input.fulltext.tt-input', 'Персона')
-		.click('veda-control.fulltext div.tt-suggestion>p')
+		.typeText('veda-control[rel="v-fc:targetType"] textarea', 'Персона')
+		.click(Selector('veda-control[rel="v-fc:targetType"] .suggestions .suggestion').withText('Персона'))
 		.wait(2000);
 });
