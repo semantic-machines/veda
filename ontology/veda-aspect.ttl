@@ -291,7 +291,9 @@ v-s:PersonalInfoTemplate
 <div class="container sheet">
   <div class="row">
     <div class="col-md-3">
-      <div class="img-thumbnail" rel="v-s:hasImage" data-template="v-ui:ModalImageTemplate"></div>
+      <div rel="v-s:hasImage">
+        <div class="img-thumbnail" about="@" data-template="v-ui:ModalImageTemplate"></div>
+      </div>
       <br class="-view edit search"/>
       <veda-control rel="v-s:hasImage" data-type="file" class="-view edit search"></veda-control>
     </div>
