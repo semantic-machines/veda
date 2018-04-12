@@ -1,15 +1,14 @@
-import { Selector } from 'testcafe';
-
-fixture `testPerson`
-    .page `http://localhost:8080/`;
-test('testPerson', async t => {
-    const user = 'Стивен Эдвин Кинг';
-    const user1 = 'Говард Филлипс Лавкрафт';
+import Basic from './basic'
+import { Selector, t } from 'testcafe';
+  fixture `test Rights`
+    .page `http://live.semantic-machines.com`
+    //.page `http://localhost:8080/`
+  const user = 'Стивен Эдвин Кинг';
+  const user1 = 'Говард Филлипс Лавкрафт';
+  const basic = new Basic();
+  test('testRights', async t => {
+    basic.login('karpovrt', '123');
     await t
-    .typeText('#login', 'karpovrt')
-    .typeText('#password', '123')
-    .click('#submit')
-    .expect(Selector('#user-info').innerText).eql('Администратор2\n')
     .click('#menu')
     .click('li[id="menu"] li[resource="v-l:Create"]')
     .typeText('veda-control.fulltext.dropdown', 'Персона')
@@ -18,7 +17,7 @@ test('testPerson', async t => {
     .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'Кинг')
     .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', 'Стивен')
     .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', 'Эдвин')
-    .typeText('veda-control.-view.edit.search[property="rdfs:label"]', user)
+    //.typeText('veda-control.-view.edit.search[property="rdfs:label"]', user)
     .wait(1000)
     .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
     .click('#menu')
@@ -48,7 +47,7 @@ test('testPerson', async t => {
     .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'Лавкрафт')
     .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', 'Говард')
     .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', 'Филлипс')
-    .typeText('veda-control.-view.edit.search[property="rdfs:label"]', user1)
+    //.typeText('veda-control.-view.edit.search[property="rdfs:label"]', user1)
     .wait(1000)
     .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
     .click('#menu')
@@ -61,6 +60,9 @@ test('testPerson', async t => {
     .click('ul.nav.navbar-nav.navbar-right li[about="v-fs:FulltextSearch"]')
     .typeText('div.input-group input[name="v_s_userthing_*"]', user1)
     .click('span.input-group-btn button[about="v-fs:Find"]')
+    .wait(2000)
     .click('tbody.result-container a.glyphicon.glyphicon-search')
-    .expect(Selector('h3 span[property="rdfs:label"] span.value-holder').innerText).eql('Говард Филлипс Лавкрафт')
-});
+    .expect(Selector('div.col-md-9 h3 span[property="v-s:lastName"]').innerText).eql('Лавкрафт')
+    .expect(Selector('div.col-md-9 h3 span[property="v-s:firstName"]').innerText).eql('Говард')
+    .expect(Selector('div.col-md-9 h3 span[property="v-s:middleName"]').innerText).eql('Филлипс')
+  });
