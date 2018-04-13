@@ -501,10 +501,11 @@ veda.Module(function (veda) { "use strict";
     return this;
   };
   function addSingleValue(property_uri, value) {
-    var serialized = serializer(value);
-    this.properties[property_uri].push(serialized);
+    if (value != undefined) {
+      var serialized = serializer(value);
+      this.properties[property_uri].push(serialized);
+    }
   }
-
 
   /**
    * @method
@@ -531,12 +532,13 @@ veda.Module(function (veda) { "use strict";
     return this;
   };
   function removeSingleValue (property_uri, value) {
-    var serialized = serializer(value);
-    this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
-      return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
-    });
+    if (value != undefined) {
+      var serialized = serializer(value);
+      this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
+        return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
+      });
+    }
   }
-
 
   /**
    * @method
@@ -564,10 +566,12 @@ veda.Module(function (veda) { "use strict";
     return this;
   };
   function toggleSingleValue (property_uri, value) {
-    if ( this.hasValue(property_uri, value) ) {
-      removeSingleValue.call(this, property_uri, value);
-    } else {
-      addSingleValue.call(this, property_uri, value);
+    if (value != undefined) {
+      if ( this.hasValue(property_uri, value) ) {
+        removeSingleValue.call(this, property_uri, value);
+      } else {
+        addSingleValue.call(this, property_uri, value);
+      }
     }
   }
 
