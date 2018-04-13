@@ -267,6 +267,13 @@ v-ui:treeAllowedClass
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
+v-ui:treeAllowedFilter
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:label "Фильтр отображаемых субъектов"@ru ;
+  rdfs:label "Allowed filter"@en ;
+  rdfs:range xsd:string ;
+.
 v-ui:treeSelectableClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
@@ -2013,14 +2020,37 @@ v-ui:TreeTemplate
     }
   }
 
+  var allowedFilter = (function () {
+    if (individual.treeConfig.allowedFilter) {
+      return new Function( individual.treeConfig.allowedFilter[0].toString() );
+    } else if (individual.treeConfig.allowedClass) {
+      return function () {
+        var that = this;
+        return individual.treeConfig.allowedClass.reduce(function (acc, allowed) {
+          return acc || that.hasValue("rdf:type", allowed);
+        }, false);
+      }
+    } else {
+      return function () { return true; };
+    }
+  })();
+
+  var selectableFilter = (function () {
+    if (individual.treeConfig.selectableFilter) {
+      return new Function( individual.treeConfig.selectableFilter[0].toString() );
+    } else if (individual.treeConfig.selectableClass) {
+      return function () {
+        var that = this;
+        return individual.treeConfig.selectableClass.reduce(function (acc, selectable) {
+          return acc || that.hasValue("rdf:type", selectable);
+        }, false);
+      }
+    } else {
+      return function () { return true; };
+    }
+  })();
+
   var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
-  var allowedClassIds = individual.treeConfig.allowedClass ? individual.treeConfig.allowedClass.map(function (_class) {
-    return _class.id;
-  }) : [];
-  var selectableClassIds = individual.treeConfig.selectableClass ? individual.treeConfig.selectableClass.map(function (_class) {
-    return _class.id;
-  }) : [];
-  var selectableFilter = individual.treeConfig.selectableFilter ? new Function( individual.treeConfig.selectableFilter[0].toString() ) : undefined;
 
   individual.treeConfig.displayedProperty.forEach( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
@@ -2089,13 +2119,8 @@ v-ui:TreeTemplate
     var cont = $("<div>"),
         tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
 
-    if (allowedClassIds.length) {
-      var isAllowed = allowedClassIds.reduce(function (acc, allowedClassId) {
-        return acc || value.hasValue("rdf:type", allowedClassId);
-      }, false);
-      if (!isAllowed) {
-        return;
-      }
+    if ( !allowedFilter.call(value) ) {
+      return;
     }
 
     $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
@@ -2119,17 +2144,8 @@ v-ui:TreeTemplate
       selectDeep.addClass("text-muted").removeClass("text-danger");
     }
 
-    if (selectableFilter) {
-      if ( !selectableFilter.call(value) ) {
-        selectRow.remove();
-      }
-    } else if (selectableClassIds.length) {
-      var isSelectable = selectableClassIds.reduce(function (acc, selectableClassId) {
-        return acc || value.hasValue("rdf:type", selectableClassId);
-      }, false);
-      if (!isSelectable) {
-        selectRow.remove();
-      }
+    if ( !selectableFilter.call(value) ) {
+      selectRow.remove();
     }
 
     if ( parentRow ) {
@@ -2174,7 +2190,7 @@ v-ui:TreeTemplate
         var branch = branchUris.map(function (branchUri) {
           var item = new veda.IndividualModel(branchUri);
           item.deepSelected = value.deepSelected;
-          return item;
+          return allowedFilter.call(item) && selectableFilter.call(item) ? item : undefined;
         });
         if (value.deepSelected) {
           individual.addValue(rel_uri, branch);
@@ -2265,9 +2281,9 @@ v-ui:TreeTemplate
       var q = individual.treeConfig.inProperty.map(function (property) {
           return "'" + property.id + "'=='" + root.id + "'";
         }).join(" || ");
-      if ( allowedClassIds.length ) {
-        var allowed = allowedClassIds.map(function (allowedClassId) {
-          return "'rdf:type'=='" + allowedClassId + "'";
+      if ( individual.treeConfig.allowedClass ) {
+        var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
+          return "'rdf:type'=='" + allowedClass.id + "'";
         }).join(" || ");
         q = "(" + q + ") && (" + allowed + ")";
       }

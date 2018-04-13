@@ -1580,6 +1580,7 @@
           inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
           outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
           allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
+          allowedFilter = spec && spec.hasValue("v-ui:treeAllowedFilter") ? spec["v-ui:treeAllowedFilter"] : undefined,
           selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
           selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
           displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
@@ -1594,6 +1595,7 @@
             outProperty: outProperty,
             sort: sort,
             allowedClass: allowedClass,
+            allowedFilter: allowedFilter,
             selectableClass: selectableClass,
             selectableFilter: selectableFilter,
             displayedProperty: displayedProperty,
