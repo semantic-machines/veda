@@ -1,7 +1,7 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
   fixture `test Journal`
-    .page `http://localhost:8080/`
+    .page `http://localhost:8080/`;
   const basic = new Basic();
   test('testJournal', async t => {
     basic.login('karpovrt', '123');
