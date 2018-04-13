@@ -366,7 +366,6 @@ v-s:PersonalInfoTemplate
       </div>
     </div>
   </div>
-  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
   """;
 .
