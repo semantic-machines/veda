@@ -2089,9 +2089,15 @@ v-ui:TreeTemplate
     var cont = $("<div>"),
         tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
 
-    if ( allowedClassIds.length && allowedClassIds.indexOf(value["rdf:type"][0].id) < 0 ) {
-      return;
+    if (allowedClassIds.length) {
+      var isAllowed = allowedClassIds.reduce(function (acc, allowedClassId) {
+        return acc || value.hasValue("rdf:type", allowedClassId);
+      }, false);
+      if (!isAllowed) {
+        return;
+      }
     }
+
     $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
     tmpl = value.present(cont, tmpl[0].outerHTML);
 
@@ -2117,9 +2123,15 @@ v-ui:TreeTemplate
       if ( !selectableFilter.call(value) ) {
         selectRow.remove();
       }
-    } else if (selectableClassIds.length && selectableClassIds.indexOf(value["rdf:type"][0].id) < 0) {
-      selectRow.remove();
+    } else if (selectableClassIds.length) {
+      var isSelectable = selectableClassIds.reduce(function (acc, selectableClassId) {
+        return acc || value.hasValue("rdf:type", selectableClassId);
+      }, false);
+      if (!isSelectable) {
+        selectRow.remove();
+      }
     }
+
     if ( parentRow ) {
       parentRow.after( tmpl );
     } else {
