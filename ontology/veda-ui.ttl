@@ -2496,64 +2496,67 @@ v-ui:generic
   );
   //# sourceURL=v-ui:generic
 </script>
-<div class="container sheet">
-  <div class="row">
-    <div class="col-md-4 col-xs-5 text-right">
-      <h2 class="text-muted className"></h2>
-    </div>
-    <div class="col-md-8 col-xs-7">
-      <h2 about="@" property="rdfs:label"></h2>
-    </div>
-  </div>
-  <hr style="margin: 10px 0px"/>
-  <div class="row">
-    <div class="col-md-4 col-xs-5 text-right">
-      <strong class="text-muted">@</strong>
-    </div>
-    <div class="col-md-8 col-xs-7">
-      <a href="#/@"><span property="@"></span></a>
-      <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
-    </div>
-  </div>
-  <hr style="margin: 10px 0px"/>
-  <div class="row">
-    <div class="col-md-4 col-xs-5 text-right">
-      <strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
-    </div>
-    <div class="col-md-8 col-xs-7">
-      <div rel="rdf:type" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-      <veda-control rel="rdf:type" data-type="link" data-template="{individual['rdf:type'][0]['rdfs:label'].join(' ')+': '+individual['rdfs:label'].join(' ')}" class='-view edit search fulltext dropdown'></veda-control>
-    </div>
-  </div>
-  <hr style="margin: 10px 0px"/>
-  <div class="row">
-    <div class="col-md-4 col-xs-5 text-right">
-      <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
-    </div>
-    <div class="col-md-8 col-xs-7">
-      <div property="rdfs:label"></div>
-      <veda-control property="rdfs:label" data-type="multilingualString" class='-view edit search'></veda-control>
-    </div>
-  </div>
-  <hr style="margin: 10px 0px"/>
-  <div id="properties">
+<div>
+  <div class="container sheet">
     <div class="row">
-      <div class="col-md-4 col-xs-5 text-right name"></div>
-      <div class="col-md-8 col-xs-7 value"></div>
+      <div class="col-md-4 col-xs-5 text-right">
+        <h2 class="text-muted className"></h2>
+      </div>
+      <div class="col-md-8 col-xs-7">
+        <h2 about="@" property="rdfs:label"></h2>
+      </div>
+    </div>
+    <hr style="margin: 10px 0px"/>
+    <div class="row">
+      <div class="col-md-4 col-xs-5 text-right">
+        <strong class="text-muted">@</strong>
+      </div>
+      <div class="col-md-8 col-xs-7">
+        <a href="#/@"><span property="@"></span></a>
+        <a href="#/@//v-ui:Graph"><span class="glyphicon glyphicon-link"></span></a>
+      </div>
+    </div>
+    <hr style="margin: 10px 0px"/>
+    <div class="row">
+      <div class="col-md-4 col-xs-5 text-right">
+        <strong about="rdf:type" property="rdfs:label" class="text-muted"></strong>
+      </div>
+      <div class="col-md-8 col-xs-7">
+        <div rel="rdf:type" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+        <veda-control rel="rdf:type" data-type="link" data-template="{individual['rdf:type'][0]['rdfs:label'].join(' ')+': '+individual['rdfs:label'].join(' ')}" class='-view edit search fulltext dropdown'></veda-control>
+      </div>
+    </div>
+    <hr style="margin: 10px 0px"/>
+    <div class="row">
+      <div class="col-md-4 col-xs-5 text-right">
+        <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
+      </div>
+      <div class="col-md-8 col-xs-7">
+        <div property="rdfs:label"></div>
+        <veda-control property="rdfs:label" data-type="multilingualString" class='-view edit search'></veda-control>
+      </div>
+    </div>
+    <hr style="margin: 10px 0px"/>
+    <div id="properties">
+      <div class="row">
+        <div class="col-md-4 col-xs-5 text-right name"></div>
+        <div class="col-md-8 col-xs-7 value"></div>
+      </div>
+    </div>
+    <br>
+    <br>
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></span>
+      <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+      <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
+      <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
+      <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
+      <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
     </div>
   </div>
   <br>
-  <br>
-  <div class="actions">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></span>
-    <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
-    <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
-    <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
-    <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
-    <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
-  </div>
-</div><br>
-<div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+</div>
 <script>
   $("#rightsOrigin.action").on("click", function () {
     veda.Util.showRights(individual);
