@@ -2546,7 +2546,8 @@ v-ui:generic
     <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
     <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
-</div>
+</div><br>
+<div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 <script>
   $("#rightsOrigin.action").on("click", function () {
     veda.Util.showRights(individual);
