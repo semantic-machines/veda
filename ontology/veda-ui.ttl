@@ -1712,8 +1712,6 @@ v-ui:SimplifiedJournalTemplate
             template.children().first().addClass("success");
             $(".docflow-button", template).remove();
           } else {
-            console.log(individual["v-wf:from"][0]["v-s:hasAppointment"][0].id);
-            console.log(veda.appointment.id);
             if (individual["v-wf:from"][0]["v-s:hasAppointment"][0].id != veda.appointment.id) {
               $(".docflow-button", template).remove();
               return;
