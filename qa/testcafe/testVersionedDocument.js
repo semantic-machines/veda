@@ -31,7 +31,6 @@ import { Selector, t } from 'testcafe';
       .pressKey('backspace')
       .typeText('input.form-control[lang="RU"]', '3')
       .click('#save')
-      //.click('button.btn.btn-link.view.edit.-search.toggle-actions')
       .wait(2000)
       .hover('div[rel="v-s:responsible"]')
       .click('div.col-md-8.col-xs-7.value div.ui-sortable.ui-sortable-disabled[rel="v-s:previousVersion"] a[typeof="v-s:Action v-s:Version"]')
