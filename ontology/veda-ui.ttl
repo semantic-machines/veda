@@ -2265,6 +2265,12 @@ v-ui:TreeTemplate
       var q = individual.treeConfig.inProperty.map(function (property) {
           return "'" + property.id + "'=='" + root.id + "'";
         }).join(" || ");
+      if ( allowedClassIds.length ) {
+        var allowed = allowedClassIds.map(function (allowedClassId) {
+          return "'rdf:type'=='" + allowedClassId + "'";
+        }).join(" || ");
+        q = "(" + q + ") && (" + allowed + ")";
+      }
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
       query({
         ticket: veda.ticket,
