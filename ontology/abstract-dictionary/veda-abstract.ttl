@@ -189,6 +189,8 @@ v-s:attachment
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
 .
+
+# Найти упоминания удалить
 v-s:scanAttachment
   rdf:type owl:ObjectProperty ;
   rdfs:label "Сканированный вариант документа"@ru ;
@@ -204,13 +206,6 @@ v-s:companionAttachment
   rdfs:range v-s:File ;
   rdfs:domain v-s:Thing ;
   rdfs:subPropertyOf v-s:attachment ;
-.
-v-s:hasClassifiedAttachment
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Классифицированное вложение"@ru ;
-  rdfs:label "Classified attachment"@en ;
-  rdfs:range v-s:ClassifiedAttachment ;
-  rdfs:domain v-s:Thing ;
 .
 v-s:hasLink
   rdf:type owl:ObjectProperty ;
