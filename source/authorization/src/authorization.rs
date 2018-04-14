@@ -790,20 +790,20 @@ pub fn _authorize(
             } else {
                 // IF NEED TRACE
 
-                if authorize_obj_group(&mut azc, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) == true {
+                if authorize_obj_group(&mut azc, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) == true {
                     if azc.is_trace_info {
                         print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
                     }
                 }
 
-                if authorize_obj_group(&mut azc, request_access, uri, 15, &filter_value, &db) == true {
+                if authorize_obj_group(&mut azc, request_access_t, uri, 15, &empty_filter_value, &db) == true {
                     if azc.is_trace_info {
                         print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
                     }
                 }
 
                 let mut o_groups = &mut HashMap::new();
-                get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, &filter_value, 0, &db);
+                get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, &empty_filter_value, 0, &db);
 
                 if azc.is_trace_info {
                     let str = format!("object_groups={:?}\n", o_groups);
@@ -811,9 +811,39 @@ pub fn _authorize(
                 }
 
                 for object_group in o_groups.values() {
-                    if authorize_obj_group(&mut azc, request_access, &object_group.id, object_group.access, &filter_value, &db) == true {
+                    if authorize_obj_group(&mut azc, request_access_t, &object_group.id, object_group.access, &empty_filter_value, &db) == true {
                         if azc.is_trace_info {
                             print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
+                        }
+                    }
+                }
+
+                if filter_value.is_empty() == false {
+                    if authorize_obj_group(&mut azc, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) == true {
+                        if azc.is_trace_info {
+                            print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
+                        }
+                    }
+
+                    if authorize_obj_group(&mut azc, request_access, uri, 15, &filter_value, &db) == true {
+                        if azc.is_trace_info {
+                            print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
+                        }
+                    }
+
+                    let mut o_groups = &mut HashMap::new();
+                    get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, &filter_value, 0, &db);
+
+                    if azc.is_trace_info {
+                        let str = format!("object_groups={:?}\n", o_groups);
+                        print_to_trace_info(&mut azc, str);
+                    }
+
+                    for object_group in o_groups.values() {
+                        if authorize_obj_group(&mut azc, request_access, &object_group.id, object_group.access, &filter_value, &db) == true {
+                            if azc.is_trace_info {
+                                print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
+                            }
                         }
                     }
                 }
