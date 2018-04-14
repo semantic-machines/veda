@@ -1,0 +1,45 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+
+<http://semantic-machines.com/veda/veda-schema-Action/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Задача"@ru ;
+  rdfs:label "Veda system ontology. Action"@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:Action
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Spatial ;
+  rdfs:label "Мероприятие"@ru ;
+  rdfs:label "Action"@en ;
+.
+v-s:hasTerm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Срок"@ru ;
+  rdfs:label "Term"@en ;
+  rdfs:range v-s:Term ;
+  rdfs:domain v-s:Action ;
+.
+
+#---------------------------------------------------------
+v-s:Term
+  rdf:type owl:Class ;
+  rdfs:label "Срок"@ru ;
+  rdfs:label "Term"@en ;
+  rdfs:subClassOf v-s:UserThing ;
+.
