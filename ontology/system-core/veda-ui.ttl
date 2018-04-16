@@ -1143,7 +1143,8 @@ v-ui:RabbitHole
 <script>
   var defaultProperties = "v-s:backwardTarget v-s:parent";
   var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
-  var text = "<span>" + mkLabel(individual) + "</span>";
+  var name = mkName(individual);
+  var text = "<span title='" + name.title + "'>" + name.label + "</span>";
   var visited = [ individual.id ];
 
   for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
@@ -1160,7 +1161,8 @@ v-ui:RabbitHole
     } else {
       visited.push(individual.id);
     }
-    text = "<a href='#/" + individual.id + "'>" + mkLabel(individual) + "</a>" + " / " + text;
+    var name = mkName(individual);
+    text = "<a href='#/" + individual.id + "' title='" + name.title + "'>" + name.label + "</a>" + " / " + text;
     for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
       if ( individual.hasValue(property) ) {
         travel( individual[property][0] );
@@ -1168,9 +1170,21 @@ v-ui:RabbitHole
       }
     }
   }
-  function mkLabel(individual) {
-    return individual["rdf:type"][0]["rdfs:label"].join(" ") + ": " + ( individual.hasValue("rdfs:label") ? individual["rdfs:label"].join(" ") : individual.id )
+  function mkName(individual) {
+    var label = individual["rdf:type"][0].toString() + ": " + individual.toString();
+    var title = label;
+    var re = new RegExp(".*?:");
+    if (label.length > 70) {
+      label = label.replace(re, function (typeName) {
+        return typeName.split(" ").reduce(function (abbr, word) {
+          return abbr += word.charAt(0);
+        }, "").toUpperCase() + ":";
+      });
+      label = label.substring(0, 70) + "...";
+    }
+    return {title: title, label: label};
   }
+  //# sourceURL=v-ui:RabbitHole_post
 </script>
 <h5><small></small></h5>
   """ ;
