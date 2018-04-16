@@ -527,7 +527,7 @@ v-ui:StandardButtonsTemplate
     }
   });
   $("#send", template).on("click", function () {
-    template.parent().closest("[resource]").trigger("save");
+    //template.parent().closest("[resource]").trigger("save");
     veda.Util.send(individual, template);
   });
   $("#createReport", template).on("click", function () { veda.Util.createReport(individual); });
