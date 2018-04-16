@@ -296,7 +296,10 @@ class XapianReader : SearchReader
             if (sr.result_code == ResultCode.DatabaseModifiedError)
                 reopen_db();
             else
-                log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query, sr.result_code);
+            {
+                if (sr.result_code != ResultCode.OK)
+                    log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query, sr.result_code);
+            }
         }
         else
         {
