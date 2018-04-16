@@ -82,67 +82,17 @@ class PThreadContext : Context
             }
         }
 
-        private OpResult[] reqrep_binobj_2_main_module(string req)
-        {
-            OpResult[] ress;
-
-            int        sock = get_sock_2_main_module();
-
-            if (sock >= 0)
-            {
-                char *buf = cast(char *)0;
-                int  bytes;
-
-                bytes = nn_send(sock, cast(char *)req, req.length, 0);
-                //log.trace("N_CHANNEL BINOBJ send [%d](%s)", req.length, req);
-                bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                if (bytes > 0)
-                {
-                    string rep = to!string(buf);
-                    //log.trace("N_CHANNEL BINOBJ recv (%s)", rep);
-
-                    JSONValue jres = parseJSON(rep);
-
-                    if (jres[ "type" ].str == "OpResult")
-                    {
-                        JSONValue data = jres[ "data" ];
-                        if (data !is JSONValue.init)
-                        {
-                            foreach (ii; data.array)
-                            {
-                                OpResult res;
-
-
-                                res.op_id  = ii[ "op_id" ].integer;
-                                res.result = cast(ResultCode)ii[ "result" ].integer;
-                                ress ~= res;
-                            }
-                        }
-                        else
-                        {
-                            OpResult res;
-                            res.op_id  = jres[ "op_id" ].integer;
-                            res.result = cast(ResultCode)jres[ "result" ].integer;
-                            ress ~= res;
-                        }
-                    }
-
-                    nn_freemsg(buf);
-                }
-            }
-            else
-            {
-                log.trace("ERR! N_CHANNEL: invalid socket");
-            }
-
-            return ress;
-        }
-
-
         private OpResult[] reqrep_json_2_main_module(ref JSONValue jreq)
         {
-            string     req = jreq.toString();
+            string req = jreq.toString();
+
+            return reqrep_binobj_2_main_module(req);
+        }
+
+        private OpResult[] reqrep_binobj_2_main_module(string req)
+        {
             string     rep;
+            int        res;
 
             OpResult[] ress;
 
@@ -153,13 +103,36 @@ class PThreadContext : Context
                 if (sock >= 0)
                 {
                     char *buf = cast(char *)0;
-                    int  bytes;
 
-                    bytes = nn_send(sock, cast(char *)req, req.length, 0);
-                    //log.trace("N_CHANNEL send (%s)", req);
-                    bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                    if (bytes > 0)
+                    res = nn_send(sock, cast(char *)req, req.length, 0);
+
+                    if (res < 0)
                     {
+                        log.trace("ERR! N_CHANNEL: send: err=%s", fromStringz(nn_strerror(nn_errno())));
+                        log.trace("N_CHANNEL send (%s)", req);
+                    }
+
+
+                    for (int attempt = 0; attempt < 10; attempt++)
+                    {
+                        res = nn_recv(sock, &buf, NN_MSG, 0);
+
+                        if (res < 0)
+                        {
+                            log.trace("ERR! N_CHANNEL: recv: err=%s", fromStringz(nn_strerror(nn_errno())));
+                        }
+
+                        if (res > 0 || res == -1 && nn_errno() != 4)
+                            break;
+
+                        log.trace("ERR! N_CHANNEL: repeat recv, attempt=%d", attempt+1);
+                    }
+
+
+                    if (res >= 0)
+                    {
+                        int bytes = res;
+
                         rep = to!string(buf);
                         //log.trace("N_CHANNEL recv (%s)", rep);
 
@@ -174,20 +147,20 @@ class PThreadContext : Context
                                 {
                                     foreach (ii; data.array)
                                     {
-                                        OpResult res;
+                                        OpResult ores;
 
-                                        res.op_id  = ii[ "op_id" ].integer;
-                                        res.result = cast(ResultCode)ii[ "result" ].integer;
-                                        ress ~= res;
+                                        ores.op_id  = ii[ "op_id" ].integer;
+                                        ores.result = cast(ResultCode)ii[ "result" ].integer;
+                                        ress ~= ores;
                                     }
                                 }
                             }
                             else
                             {
-                                OpResult res;
-                                res.op_id  = jres[ "op_id" ].integer;
-                                res.result = cast(ResultCode)jres[ "result" ].integer;
-                                ress ~= res;
+                                OpResult ores;
+                                ores.op_id  = jres[ "op_id" ].integer;
+                                ores.result = cast(ResultCode)jres[ "result" ].integer;
+                                ress ~= ores;
                             }
                         }
 
@@ -201,13 +174,13 @@ class PThreadContext : Context
 
                 if (ress.length == 0)
                 {
-                    log.trace("ERR! reqrep_json_2_main_module, empty result");
-                    log.trace("req: %s", req);
-                    log.trace("rep: %s", rep);
-                    OpResult res;
-                    res.op_id  = -1;
-                    res.result = ResultCode.Internal_Server_Error;
-                    return [ res ];
+                    log.trace("ERR! reqrep_json_2_main_module, empty result, sock=%d", sock);
+                    log.trace("req: (%s)", req);
+                    log.trace("rep: (%s)", rep);
+                    OpResult ores;
+                    ores.op_id  = -1;
+                    ores.result = ResultCode.Internal_Server_Error;
+                    return [ ores ];
                 }
 
                 return ress;
@@ -220,10 +193,10 @@ class PThreadContext : Context
 
                 if (ress.length == 0)
                 {
-                    OpResult res;
-                    res.op_id  = -1;
-                    res.result = ResultCode.Internal_Server_Error;
-                    return [ res ];
+                    OpResult ores;
+                    ores.op_id  = -1;
+                    ores.result = ResultCode.Internal_Server_Error;
+                    return [ ores ];
                 }
 
                 return ress;
@@ -569,7 +542,7 @@ class PThreadContext : Context
 
         //StopWatch sw; sw.start;
 
-        OpResult  res = OpResult(ResultCode.Fail_Store, -1);
+        OpResult res = OpResult(ResultCode.Fail_Store, -1);
 
         try
         {
