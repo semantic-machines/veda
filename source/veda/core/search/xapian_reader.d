@@ -155,6 +155,23 @@ class XapianReader : SearchReader
             return sr;
         }
 
+        if (tta.L !is null && tta.L.op == "emulateError" && tta.R !is null && tta.R.op !is null)
+        {
+            try
+            {
+                int errcode = to!int (tta.R.op);
+
+                sr.result_code = cast(ResultCode)errcode;
+                sr.
+                log.trace("WARN! request emulate error code = [%s]", sr.result_code);
+
+                return sr;
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+
         string[] db_names;
 
         if (_db_names is null || _db_names.length == 0)
@@ -298,7 +315,8 @@ class XapianReader : SearchReader
             else
             {
                 if (sr.result_code != ResultCode.OK)
-                    log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query, sr.result_code);
+                    log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query,
+                              sr.result_code);
             }
         }
         else
