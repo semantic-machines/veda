@@ -704,6 +704,8 @@ class VedaStorageRest : VedaStorageRest_API
 
             sr = context.get_individuals_ids_via_query(ticket.user_uri, _query, sort, databases, from, top, limit, null, OptAuthorize.YES, trace); //&prepare_element);
 
+			rc = sr.result_code;
+
             return sr;
         }
         finally
