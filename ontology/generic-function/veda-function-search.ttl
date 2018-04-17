@@ -1277,10 +1277,6 @@ v-fs:AttributiveSearchModel
       }).then(function (results) {
         self["v-fs:estimated"] = [ results.estimated ];
         self["v-fs:cursor"] = [ results.cursor ];
-        if (results.cursor === results.estimated) {
-          // Set top to results length to allow sorting of the whole list
-          self["v-fs:top"] = self["v-fs:estimated"];
-        }
         return results.result;
       }).then(function (resultDelta) {
 
