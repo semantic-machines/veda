@@ -1725,7 +1725,8 @@ v-ui:SimplifiedJournalTemplate
           if ( this.hasValue("v-wf:isCompleted", true) ) {
             template.children().first().addClass("success");
             $(".docflow-button", template).remove();
-          } else {
+          };
+          if ( this.hasValue("v-wf:isCompleted", false) ) {
             if (individual["v-wf:from"][0]["v-s:hasAppointment"][0].id != veda.appointment.id) {
               $(".docflow-button", template).remove();
               return;
@@ -1757,11 +1758,10 @@ v-ui:SimplifiedJournalTemplate
               decision.one("afterSave", function () {
                 modal.modal("hide").remove();
               });
-            }
-
+            };
             $("#redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect"));
             $("#revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask"));
-          }
+          };
         </script>
       </tbody>
     </table>
