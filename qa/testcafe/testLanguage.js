@@ -1,6 +1,6 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
-  fixture `test comment`
+  fixture `test language`
   .page `http://localhost:8080/`
   const basic = new Basic();
   test('testLanguage', async t => {

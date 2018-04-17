@@ -1,9 +1,9 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
-  fixture `test Login With Comment`
+  fixture `test Comment`
     .page `http://localhost:8080/#/td:RomanKarpov//v-ui:generic`;
   const basic = new Basic();
-  test('testLoginWithComment', async t => {
+  test('testComment', async t => {
     basic.login('karpovrt', '123');
     await t
       .click('#add-comment')
