@@ -9,7 +9,7 @@ import { Selector, t } from 'testcafe';
       .click('#menu')
       .click('li[id="menu"] li[resource="v-l:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Сеть')
-      .click('div.suggestion[about="v-wf:Net"]')
+      .click('div.suggestion[resource="v-wf:Net"]')
       .setNativeDialogHandler(() => true)
       .click('.create-task')
       .click('.state-task')

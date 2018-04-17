@@ -16,7 +16,7 @@ import { Selector, t } from 'testcafe';
       .click('#menu')
       .click('li[id="menu"] li[resource="v-l:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Персона')
-      .click('div.suggestion[about="v-s:Person"]')
+      .click('div.suggestion[resource="v-s:Person"]')
 
       .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'Range')
       .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', 'Of')

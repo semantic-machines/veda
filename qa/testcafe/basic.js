@@ -2,10 +2,10 @@ import { Selector, t } from 'testcafe';
 
 export default class basic {
   async login(login, password) {
-      await t
-          .typeText('#login', login)
-          .typeText('#password', password)
-          .click('#submit');
+    await t
+      .typeText('#login', login)
+      .typeText('#password', password)
+      .click('#submit');
   }
 
   async logout() {
