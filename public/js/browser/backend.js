@@ -55,6 +55,7 @@ veda.Module(function Backend(veda) { "use strict";
        501: "Not implemented",
        503: "Service unavailable",
        904: "Invalid identifier",
+       999: "Database modified error",
       1021: "Disk full",
       1022: "Duplicate key",
       1118: "Size too large",
@@ -298,12 +299,15 @@ veda.Module(function Backend(veda) { "use strict";
   };
 
   window.query = function (ticket, query, sort, databases, reopen, top, limit, from) {
-    var arg = arguments[0];
+    var that = this;
+    var args = arguments;
+    var arg = args[0];
     var isObj = typeof arg === "object";
+    var async = isObj ? arg.async : false;
     var params = {
       type: "GET",
       url: "query",
-      async: isObj ? arg.async : false,
+      async: async,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : query,
@@ -315,7 +319,23 @@ veda.Module(function Backend(veda) { "use strict";
         "from"  : (isObj ? arg.from : from) || 0
       }
     };
-    return call_server(params);
+    if (async) {
+      return call_server(params).catch(handleError);
+    } else {
+      try {
+        return call_server(params);
+      } catch (backendError) {
+        handleError(backendError);
+      }
+    }
+    function handleError(backendError) {
+      if (backendError.code === 999) {
+        console.log("DB modified during query. Retry.");
+        return window.query.apply(that, args);
+      } else {
+        throw backendError;
+      }
+    }
   };
 
   window.get_individual = function (ticket, uri, reopen) {
