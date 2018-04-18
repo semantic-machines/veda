@@ -29,7 +29,6 @@ install:
 #  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
   - go version
-
   - dmd --version    
   - rustc -V          
   - ./build.sh
