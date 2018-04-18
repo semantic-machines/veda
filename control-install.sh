@@ -43,7 +43,7 @@ sudo apt-get install build-essential
 if ! rustc -V; then
     echo "--- INSTALL RUST ---"
     curl https://sh.rustup.rs -sSf | sh -s -- -y
-    $HOME/.cargo/env
+    source $HOME/.cargo/env
 else
     echo "--- UPDATE RUST ---"
     rustup update stable
