@@ -433,13 +433,6 @@ v-s:AddDateContractorProfile
   rdfs:label "Период существования юридического лица"@ru ;
   rdfs:label "Period of existence of the legal entity"@en ;
 .
-v-s:
-  rdf:type v-s:Bundle ;
-  rdfs:label ""@ru ;
-  rdfs:label ""@en ;
-.
-# ------------------------------------------------------------ ШАБЛОНЫ --
-
 v-s:AddProfile
   rdf:type v-s:Bundle ;
   rdfs:label "Создать досье"@ru ;
@@ -450,6 +443,8 @@ v-s:AddSubsidiary
   rdfs:label "Добавить филиал"@ru ;
   rdfs:label "Add subsidiary"@en ;
 .
+
+# ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -687,85 +682,8 @@ v-s:OrganizationTemplate
   <em about="v-s:HeadOrganization" property="rdfs:label"></em>
   <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
-      <hr class="view -edit -search">
+  <hr class="view -edit -search">
 
-  <em about="v-s:hasScreeningResult" property="rdfs:label"></em>
-  <table class="table table-bordered">
-    <thead class="result-header">
-      <tr class="active">
-        <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-        <th about="mnd-s:contractorSecurityDepSummary" property="rdfs:label"></th>
-        <th about="v-s:created" property="rdfs:label"></th>
-        <th about="mnd-s:isContractorOkSecurityDepSummary" property="rdfs:label"></th>
-      </tr>
-    </thead>
-    <tbody rel="v-s:hasScreeningResult" >
-      <script>
-        if( individual.hasValue("mnd-s:isContractorOkSecurityDepSummary", true) ) {
-          template.closest("tr").addClass("success");
-        } else if ( individual.hasValue("mnd-s:isContractorOkSecurityDepSummary", false) ) {
-          template.closest("tr").addClass("danger");
-        } else {
-          template.closest("tr").addClass("warning");
-        }
-      </script>
-      <tr>
-        <td width="1%"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-        <td width="74%">
-          <div about="@" property="mnd-s:contractorSecurityDepSummary" class="view -edit -search"></div>
-        </td>
-        <td width="20%">
-          <div about="@" property="v-s:created" class="view -edit -search"></div>
-        </td>
-        <td width="5%">
-          <veda-control property="mnd-s:isContractorOkSecurityDepSummary" data-type="boolean"></veda-control>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="view -edit -search clearfix">
-    <button class="btn btn-success pull-right" id="add-screeningResult" >
-      <span class="glyphicon glyphicon-search"></span>
-      <span about="v-s:hasScreeningResult" property="rdfs:label"></span>
-    </button>
-  </div>
-
-  <em about="mnd-s:hasContractorCreateChangeRequest" property="rdfs:label"></em>
-  <table class="table table-condensed table-bordered">
-    <thead>
-      <tr class="view edit -search active">
-        <th width="1%"><span class="glyphicon glyphicon-search"></th>
-        <th about="mnd-s:hasThemeOfContractorCreateChangeRequest" property="rdfs:label"></th>
-        <th about="v-s:hasContractor" property="rdfs:label"></th>
-        <th about="v-s:description" property="rdfs:label"></th>
-      </tr>
-    </thead>
-    <tbody rel="mnd-s:hasContractorCreateChangeRequest" data-embedded="true">
-      <tr>
-        <td about="@" data-template="v-ui:IconModalTemplate"></td>
-        <td>
-          <div rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-          <veda-control rel="mnd-s:hasThemeOfContractorCreateChangeRequest" data-type="link" class="-view edit search fulltext"></div>
-        </td>
-        <td>
-          <div rel="v-s:hasContractor" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
-          <veda-control rel="v-s:hasContractor" data-type="link" class="-view edit search fulltext"></div>
-        </td>
-        <td>
-          <div property="v-s:description" class="view -edit -search"></div>
-          <veda-control property="v-s:description"  data-type="string" class="-view edit search"></div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="view -edit -search clearfix">
-    <button class="btn btn-success pull-left" id="add-ContractorCreateChangeRequest">
-      <span class="glyphicon glyphicon-zoom-in"></span>
-      <span about="mnd-s:ContractorCreateChangeRequest" property="rdfs:label"></span>
-    </button>
-  </div>
-
-  <hr>
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
   <!-- BUTTONS -->
@@ -827,7 +745,7 @@ v-s:OrganizationTemplate
     screening.one("afterSave", function () {
       modal.modal("hide").remove();
     });
-  }); 
+  });
 
   function processHandler() {
     if (individual.hasValue("v-wf:isProcess")
