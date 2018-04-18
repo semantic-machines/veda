@@ -43,7 +43,17 @@ before_script:
 
 script:
   - travis_wait 20 grunt test --stack --verbose
-  - testcafe chromium qa/testcafe
+  - testcafe chromium qa/testcafe/testLogin.js
+  - testcafe chromium qa/testcafe/testLanguage.js
+  - testcafe chromium qa/testcafe/testAttributiveSearchPerson.js
+  - testcafe chromium qa/testcafe/testComment.js
+  - testcafe chromium qa/testcafe/testCreatingNetInterface.js
+  - testcafe chromium qa/testcafe/testDeleteAndRecovery.js
+  - testcafe chromium qa/testcafe/testJournal.js
+  - testcafe chromium qa/testcafe/testPerson.js
+  - testcafe chromium qa/testcafe/testRights.js
+  - testcafe chromium qa/testcafe/testSearchRangeOfDates.js
+  - testcafe chromium qa/testcafe/testVersionedDocument.js
 
 after_script:
   - ./control-stop.sh
