@@ -7,8 +7,8 @@ node_js: "stable"
 before_install:
 #  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - stty cols 80
-  - sudo apt-get install curl
   - sudo apt-get install nodejs-legacy
+  - sudo apt-get install curl
   - ./control-install.sh 
 #&>install.log    
   - dub -v fetch vibe-d --version=0.7.30
