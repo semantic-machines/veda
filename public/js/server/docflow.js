@@ -971,17 +971,32 @@ function prepare_work_item(ticket, document)
 
         } // end [Task]
         else if (is_exist(netElement, 'rdf:type', 'v-wf:InputCondition') || is_exist(netElement, 'rdf:type', 'v-wf:Condition'))
-        {
+        {   
+            if (netElement['@'] == 's-wf:InterlayerNet_ic') {
+                var set_in_document = {
+                    '@': _process['v-wf:executor'][0].data
+                };
+                set_in_document['v-wf:hasStatusWorkflow'] = newUri('v-wf:IsSent');
+                set_in_individual(ticket, set_in_document, _event_id);
+            };
             is_goto_to_next_task = true;
         } // end [InputCondition]
         else if (is_exist(netElement, 'rdf:type', 'v-wf:OutputCondition'))
-        {
+        {   
             if (trace_journal_uri)
                 traceToJournal(ticket, trace_journal_uri, "Is output condition ", "");
 
             //var process = new Context(_process, ticket);
             //process.print_variables('v-wf:inVars');
             //process.print_variables('v-wf:outVars');
+
+            if (netElement['@'] == 's-wf:InterlayerNet_oc') {
+                var set_in_document = {
+                    '@': _process['v-wf:executor'][0].data
+                };
+                set_in_document['v-wf:hasStatusWorkflow'] = newUri('v-wf:Completed');
+                set_in_individual(ticket, set_in_document, _event_id);
+            };
 
             var f_parent_work_order = _process['v-wf:parentWorkOrder'];
             if (f_parent_work_order)

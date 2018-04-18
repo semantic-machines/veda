@@ -157,7 +157,7 @@ function change_document_status(process, status)
                 };
                 set_in_document['v-s:hasStatus'] = newUri(status);
                 if (status == 'v-s:StatusExecuted') {
-                    set_in_document['v-s:dateFact'] = newDate(Date.now());    
+                    set_in_document['v-s:dateFact'] = newDate(Date.now());
                 }
                 //print ("@JS set_in_document=", toJson(set_in_document));
                 set_in_individual(process.ticket, set_in_document, _event_id);

@@ -2712,30 +2712,35 @@ v-wf:ToBeSent
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Ожидает отправки"@ru ;
   rdfs:label "To be sent"@en ;
+  v-s:tag "warning";
 .
 
 v-wf:IsSent
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Отправлено"@ru ;
   rdfs:label "Is sent"@en ;
+  v-s:tag "info";
 .
 
 v-wf:Interrupted
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Прервано"@ru ;
   rdfs:label "Is interrupted"@en ;
+  v-s:tag "danger";
 .
 
 v-wf:Completed
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Выполнено"@ru ;
   rdfs:label "Was completed"@en ;
+  v-s:tag "success";
 .
 
 v-wf:DoNotSend
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Не отправлять"@ru ;
   rdfs:label "Do Not Send"@en ;
+  v-s:tag "info";
 .
 
 v-wf:TaskTemplateAsModal
