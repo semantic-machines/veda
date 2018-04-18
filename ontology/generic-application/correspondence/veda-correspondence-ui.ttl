@@ -7,6 +7,7 @@
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 <http://semantic-machines.com/veda/veda-correspondence-ui>
   rdf:type owl:Ontology ;
@@ -179,7 +180,7 @@ v-s:LetterTemplate
   </div>
   <hr>
   <em about="v-s:hasDelivery" property="rdfs:label"></em>
-  <div rel="v-s:hasDelivery" class="view edit search" data-template="v-s:DeliveryTemplate" data-embedded="true"></div>
+  <div rel="v-s:hasDelivery" class="view edit search" data-template="v-s:DeliveryEmbeddedTemplate" data-embedded="true"></div>
   <veda-control data-type="link" rel="v-s:hasDelivery" class="-view edit search create margin-md"></veda-control>
   <hr>
   <em about="v-s:description" property="rdfs:label"></em>
@@ -268,7 +269,6 @@ v-s:DeliveryTemplate
       <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
     </div>
   </div>
-
   <hr>
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
@@ -280,10 +280,10 @@ v-s:DeliveryTemplate
   """ ;
 .
 
-v-s:DeliveryEmbededTemplate
+v-s:DeliveryEmbeddedTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Вложенный шаблон доставки"@ru ;
-  rdfs:label "Delivery template"@en ;
+  rdfs:label "Delivery embedded template"@en ;
   v-ui:template """
 <div class="panel panel-default">
   <div class="panel-heading">
@@ -291,7 +291,6 @@ v-s:DeliveryEmbededTemplate
       <span about="@" data-template="v-ui:IconModalTemplate"></span>
       <span about="v-s:Delivery" property="rdfs:label"></span>
     </h3>
-
   </div>
   <div class="panel-body">
     <div class="row">
