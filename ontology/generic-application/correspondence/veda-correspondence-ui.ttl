@@ -9,186 +9,15 @@
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 
-<http://semantic-machines.com/veda/veda-correspondence>
+<http://semantic-machines.com/veda/veda-correspondence-ui>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Корреспонденция"@ru ;
-  rdfs:label "Veda system ontology. Correspondence"@en ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Интерфейс."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. UI."@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
 
-# ------------------------------------------------------------ КЛАССЫ --
-v-s:Correspondent
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Корреспондент"@ru ;
-  rdfs:label "Correspondent"@en ;
-.
-v-s:correspondentOrganization
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Организация"@ru ;
-  rdfs:label "Organization"@en ;
-  rdfs:range v-s:Organization ;
-  rdfs:domain v-s:Correspondent ;
-.
-v-s:correspondentOrganizationDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Организация отправитель (текст)"@ru ;
-  rdfs:label "Sender organization (text)"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Correspondent ;
-.
-v-s:correspondentDepartment
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Подразделение"@ru ;
-  rdfs:label "Department"@en ;
-  rdfs:range v-s:Department ;
-  rdfs:domain v-s:Correspondent ;
-.
-v-s:correspondentDepartmentDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Подразделение (текст)"@ru ;
-  rdfs:label "Department (text)"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Correspondent ;
-.
-v-s:correspondentPerson
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Персона"@ru ;
-  rdfs:label "Person"@en ;
-  rdfs:range v-s:Appointment ;
-  rdfs:domain v-s:Correspondent ;
-.
-v-s:correspondentPersonDescription
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Персона (текст)"@ru ;
-  rdfs:label "Person (text)"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:Correspondent ;
-.
-
-### -------------------------------------------------------
-v-s:Letter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Deliverable2 ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Письмо"@ru ;
-  rdfs:label "Letter"@en ;
-  v-ui:hasTemplate v-s:LetterTemplate ;
-.
-v-s:hasLetterRegistrationRecordSender
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Letter ;
-  rdfs:range v-s:LetterRegistrationRecordSender ;
-  rdfs:label "Регистрационная запись отправителя"@ru ;
-  rdfs:label "Registration record sender"@en ;
-.
-v-s:hasLetterRegistrationRecordRecipient
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Letter ;
-  rdfs:range v-s:LetterRegistrationRecordRecipient ;
-  rdfs:label "Регистрационная запись получателя"@ru ;
-  rdfs:label "Registration record recipient"@en ;
-.
-v-s:hasRelatedLetter
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Letter ;
-  rdfs:range v-s:Letter ;
-  rdfs:label "Связанные письма"@ru ;
-  rdfs:label "Related letter"@en ;
-.
-
-# rdfs:label
-# v-s:hasRegistrationRecord
-# v-s:sender
-# v-s:recipient
-
-# v-s:hasDocumentKind
-# v-s:deliverBy
-# v-s:desription
-# v-s:sheetsCount
-# v-s:dueDate
-# rdfs:comment
-# v-s:attachment
-
-### -------------------------------------------------------
-v-s:Delivery
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:Deliverable2 ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Доставка"@ru ;
-  rdfs:label "Delivery"@en ;
-  v-ui:hasTemplate v-s:DeliveryTemplate;
-.
-
-### -------------------------------------------------------
-v-s:DeliveryMethod
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Метод доставки"@ru ;
-  rdfs:label "Delivery method"@en ;
-.
-
-### -------------------------------------------------------
-v-s:RegistrationRecord
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Регистрационная запись"@ru ;
-  rdfs:label "Registration record"@en ;
-.
-### -------------------------------------------------------
-v-s:LetterRegistrationRecordEnumerated
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Enumerated ;
-  rdfs:label "Регистрационная запись письма автонумеруемая"@ru ;
-  rdfs:label "Letter registration record enumerated"@en ;
-.
-
-### -------------------------------------------------------
-v-s:LetterRegistrationRecordSender
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:RegistrationRecord ;
-  rdfs:label "Регистрационная запись отправителя письма"@ru ;
-  rdfs:label "Letter registration record sender"@en ;
-  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
-.
-
-### -------------------------------------------------------
-v-s:LetterRegistrationRecordRecipient
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:RegistrationRecord ;
-  rdfs:label "Регистрационная запись получателя письма"@ru ;
-  rdfs:label "Letter registration record recipient"@en ;
-  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
-.
-
-# v-s:registrationNumber
-# v-s:registrationDate
-
-
-# ------------------------------------------------------------
-v-s:ThirdPartyParticipant
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Correspondent ;
-  rdfs:label "Сторонние участники"@ru ;
-  rdfs:label "Third-party participant"@en ;
-  v-ui:hasTemplate mnd-s:ThirdPartyParticipantTemplate ;
-.
-# v-s:correspondentOrganization
-# v-s:correspondentPersonDescription
-
-# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+# СПЕЦИФИКАЦИИ ---------------------------------------------------------
 
 v-s:PsHasDocumentKindForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -263,7 +92,7 @@ v-s:PsDeliveryMethodForDelivery
 
 
 
-# ------------------------------------------------------------ СТРОКИ --
+# СТРОКИ ---------------------------------------------------------------
 
 v-s:AutomaticallyBundle
   rdf:type v-s:Bundle ;
@@ -277,9 +106,7 @@ v-s:ManuallyBundle
   rdfs:label "Manually"@en ;
 .
 
-# ------------------------------------------------------------ УПРАВЛЕНИЕ_ПРАВАМИ --
-
-# ------------------------------------------------------------ ШАБЛОНЫ --
+# ШАБЛОНЫ --------------------------------------------------------------
 
 v-s:LetterTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -544,167 +371,5 @@ v-s:LetterRegistrationRecordTemplate
   }
   //# sourceURL=v-s:LetterRegistrationRecordTemplate_post
 </script>
-  """ ;
-.
-
-# ------------- Letter index ------------------
-
-# Index registration record in letter
-
-v-s:LetterRegistrationRecordSenderIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:hasLetterRegistrationRecordSender ;
-  vdi:inherited_index v-s:RegistrationRecordIndex ;
-.
-v-s:LetterRegistrationRecordRecipientIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:hasLetterRegistrationRecordRecipient ;
-  vdi:inherited_index v-s:RegistrationRecordIndex ;
-.
-v-s:RegistrationRecordIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:RegistrationRecord ;
-  vdi:indexed_field rdf:type ;
-  vdi:indexed_field v-s:registrationNumber ;
-  vdi:indexed_field v-s:registrationDate ;
-.
-
-# Index delivery in letter
-
-v-s:LetterDeliveryIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:hasDelivery ;
-  vdi:inherited_index v-s:DeliveryIndex ;
-.
-v-s:DeliveryIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Delivery ;
-  vdi:indexed_field rdf:type ;
-  vdi:indexed_field v-s:date ;
-  vdi:indexed_field v-s:deliverBy ;
-  vdi:indexed_field rdfs:comment ;
-.
-
-# Index correspondent in letter
-
-v-s:LetterSenderIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:sender ;
-  vdi:inherited_index v-s:CorrespondentIndex ;
-.
-v-s:LetterRecipientIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:recipient ;
-  vdi:inherited_index v-s:CorrespondentIndex ;
-.
-v-s:CorrespondentIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:indexed_field rdf:type ;
-  vdi:indexed_field v-s:correspondentOrganization ;
-  vdi:indexed_field v-s:correspondentOrganizationDescription ;
-  vdi:indexed_field v-s:correspondentDepartment ;
-  vdi:indexed_field v-s:correspondentDepartmentDescription ;
-  vdi:indexed_field v-s:correspondentPerson ;
-  vdi:indexed_field v-s:correspondentPersonDescription ;
-.
-
-# ------------- Letter registry templates ---------------
-
-v-s:LetterRegistryResultTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон результатов реестра Локальный нормативный документ"@ru ;
-  rdfs:label "Local regulatory document registry result template"@en ;
-  v-ui:template """
-<table class="table table-bordered">
-  <thead class="result-header">
-    <tr>
-      <th colspan="3" about="v-s:Letter" property="rdfs:label"></th>
-      <th colspan="3" about="v-s:sender" property="rdfs:label"></th>
-      <th colspan="3" about="v-s:recipient" property="rdfs:label"></th>
-      <th colspan="10" about="v-s:Letter" property="rdfs:label"></th>
-    </tr>
-    <tr class="active">
-      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="10%" class="orderby" data-orderby="rdf:type"><span about="rdf:type" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
-<!--Отправитель //v-s:sender -->
-      <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordSender" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentOrganization"><span about="v-s:correspondentOrganization" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:sender.v-s:correspondentPerson"><span about="v-s:correspondentPerson" property="rdfs:label"></span></th>
-<!--Получатель //v-s:recipient-->
-      <th width="10%" class="orderby" data-orderby="v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber"><span about="v-s:hasLetterRegistrationRecordRecipient" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentOrganization"><span about="v-s:correspondentOrganization" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:recipient.v-s:correspondentPerson"><span about="v-s:correspondentPerson" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:hasDocumentKind"><span about="v-s:hasDocumentKind" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:deliverBy"><span about="v-s:deliverBy" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:dueDate"><span about="v-s:dueDate" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:sheetsCount"><span about="v-s:sheetsCount" property="rdfs:label"></span></th>
-<!--Доставка //v-s:hasDelivery-->
-      <th width="10%" class="orderby" data-orderby="v-s:hasDelivery"><span about="v-s:hasDelivery" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:description"><span about="v-s:description" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:attachment"><span about="v-s:attachment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:hasRelatedLetter"><span about="v-s:hasRelatedLetter" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
-    </tr>
-  </thead>
-  <tbody class="result-container">
-    <tr>
-      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-      <td rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
-      <td property="v-s:created"></td>
-<!--Отправитель //v-s:sender -->
-      <td rel="v-s:hasLetterRegistrationRecordSender">
-        <span property="v-s:registrationNumber"></span>
-        <span property="v-s:registrationDate"></span>
-      </td>
-      <td rel="v-s:sender">
-        <span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"></span>
-      </td>
-      <td rel="v-s:sender">
-        <div>
-          <span rel="v-s:correspondentPerson" data-template="v-ui:LabelTemplate"></span>
-          <span property="v-s:correspondentPersonDescription"></span>
-        </div>
-      </td>
-<!--Получатель //v-s:recipient-->
-      <td rel="v-s:hasLetterRegistrationRecordRecipient">
-        <span property="v-s:registrationNumber"></span>
-        <span property="v-s:registrationDate"></span>
-      </td>
-      <td rel="v-s:recipient">
-       <span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"></span>
-      </td>
-      <td rel="v-s:recipient">
-        <div>
-          <span rel="v-s:correspondentPerson" data-template="v-ui:LabelTemplate"></span>
-          <span property="v-s:correspondentPersonDescription"></span>
-        </div>
-      </td>
-      <td rel="v-s:hasDocumentKind" data-template="v-ui:LabelTemplate"></td>
-      <td rel="v-s:deliverBy" data-template="v-ui:LabelTemplate"></td>
-      <td property="v-s:dueDate"></td>
-      <td property="v-s:sheetsCount"></td>
-      <td rel="v-s:hasDelivery">
-        <div>
-          <span property="v-s:date"></span>
-          <span property="v-s:deliverBy"></span>
-          <span property="rdfs:comment"></span> ;
-        </div>
-      </td>
-      <td property="v-s:description"></td>
-      <td property="rdfs:comment"></td>
-      <td rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
-      <td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td>
-      <td rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
-    </tr>
-  </tbody>
-</table>
   """ ;
 .

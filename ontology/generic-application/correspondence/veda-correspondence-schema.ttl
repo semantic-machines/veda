@@ -1,0 +1,190 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+
+<http://semantic-machines.com/veda/veda-correspondence-schema>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Схема."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Schema."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# КЛАССЫ ---------------------------------------------------------------
+
+v-s:Correspondent
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Корреспондент"@ru ;
+  rdfs:label "Correspondent"@en ;
+.
+v-s:correspondentOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Correspondent ;
+.
+v-s:correspondentOrganizationDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Организация отправитель (текст)"@ru ;
+  rdfs:label "Sender organization (text)"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Correspondent ;
+.
+v-s:correspondentDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Подразделение"@ru ;
+  rdfs:label "Department"@en ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Correspondent ;
+.
+v-s:correspondentDepartmentDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Подразделение (текст)"@ru ;
+  rdfs:label "Department (text)"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Correspondent ;
+.
+v-s:correspondentPerson
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Персона"@ru ;
+  rdfs:label "Person"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Correspondent ;
+.
+v-s:correspondentPersonDescription
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Персона (текст)"@ru ;
+  rdfs:label "Person (text)"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Correspondent ;
+.
+
+# ----------------------------------------------------------------------
+v-s:Letter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Письмо"@ru ;
+  rdfs:label "Letter"@en ;
+  v-ui:hasTemplate v-s:LetterTemplate ;
+.
+v-s:hasLetterRegistrationRecordSender
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:LetterRegistrationRecordSender ;
+  rdfs:label "Регистрационная запись отправителя"@ru ;
+  rdfs:label "Registration record sender"@en ;
+.
+v-s:hasLetterRegistrationRecordRecipient
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:LetterRegistrationRecordRecipient ;
+  rdfs:label "Регистрационная запись получателя"@ru ;
+  rdfs:label "Registration record recipient"@en ;
+.
+v-s:hasRelatedLetter
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Letter ;
+  rdfs:range v-s:Letter ;
+  rdfs:label "Связанные письма"@ru ;
+  rdfs:label "Related letter"@en ;
+.
+
+# rdfs:label
+# v-s:hasRegistrationRecord
+# v-s:sender
+# v-s:recipient
+
+# v-s:hasDocumentKind
+# v-s:deliverBy
+# v-s:desription
+# v-s:sheetsCount
+# v-s:dueDate
+# rdfs:comment
+# v-s:attachment
+
+# ----------------------------------------------------------------------
+v-s:Delivery
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Доставка"@ru ;
+  rdfs:label "Delivery"@en ;
+  v-ui:hasTemplate v-s:DeliveryTemplate;
+.
+
+# ----------------------------------------------------------------------
+v-s:DeliveryMethod
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Метод доставки"@ru ;
+  rdfs:label "Delivery method"@en ;
+.
+
+# ----------------------------------------------------------------------
+v-s:RegistrationRecord
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Регистрационная запись"@ru ;
+  rdfs:label "Registration record"@en ;
+.
+# ----------------------------------------------------------------------
+v-s:LetterRegistrationRecordEnumerated
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:label "Регистрационная запись письма автонумеруемая"@ru ;
+  rdfs:label "Letter registration record enumerated"@en ;
+.
+
+# ----------------------------------------------------------------------
+v-s:LetterRegistrationRecordSender
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:label "Регистрационная запись отправителя письма"@ru ;
+  rdfs:label "Letter registration record sender"@en ;
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
+.
+
+# ----------------------------------------------------------------------
+v-s:LetterRegistrationRecordRecipient
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:label "Регистрационная запись получателя письма"@ru ;
+  rdfs:label "Letter registration record recipient"@en ;
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
+.
+
+# v-s:registrationNumber
+# v-s:registrationDate
+
+
+# ----------------------------------------------------------------------
+v-s:ThirdPartyParticipant
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Correspondent ;
+  rdfs:label "Сторонние участники"@ru ;
+  rdfs:label "Third-party participant"@en ;
+  v-ui:hasTemplate mnd-s:ThirdPartyParticipantTemplate ;
+.
+# v-s:correspondentOrganization
+# v-s:correspondentPersonDescription
