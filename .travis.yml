@@ -8,7 +8,6 @@ before_install:
   - stty cols 80
   - sudo apt-get install nodejs-legacy
   - sudo apt-get install curl
-  - dub -v fetch vibe-d --version=0.7.30
 
 addons:
 #  firefox: latest
@@ -25,6 +24,7 @@ addons:
 install:
   - ./control-install.sh 
 #&>install.log    
+  - dub -v fetch vibe-d --version=0.7.30
 #  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
   - go version
