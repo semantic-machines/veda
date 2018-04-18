@@ -38,6 +38,10 @@ before_script:
   - fluxbox >/dev/null 2>&1 &
   - ./control-start.sh
 
+script:
+  - travis_wait 20 grunt test --stack --verbose
+  - testcafe chromium qa/testcafe
+
 after_script:
   - ./control-stop.sh
 
