@@ -7,7 +7,6 @@ node_js: "stable"
 before_install:
 #  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"
   - stty cols 80
-  - sudo apt-get install cargo
   - sudo apt-get install curl
   - sudo apt-get install nodejs-legacy
   - ./control-install.sh&>install.log    
@@ -29,6 +28,8 @@ install:
 #  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
   - go version
+  - dmd --version    
+  - rustc -V          
   - ./build.sh
 
 before_script:
