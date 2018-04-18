@@ -24,7 +24,7 @@
 pzhs:DocumentationManagementAspect
   rdf:type v-s:Aspect ;
   rdfs:label "Управление документами"@ru ;
-  rdfs:label "Documentation"@en ;
+  rdfs:label "Document management"@en ;
   rdfs:comment "Еще один шаг, приближающий к цели."@ru ;
   rdfs:comment "Another step making things happen."@en ;
   v-s:shortLabel "Документы"@ru ;
