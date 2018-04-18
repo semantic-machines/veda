@@ -38,8 +38,8 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - fluxbox >/dev/null 2>&1 &
-  - sleep 180
   - ./control-start.sh
+  - sleep 180
 
 script:
   - travis_wait 20 grunt test --stack --verbose
