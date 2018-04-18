@@ -1734,7 +1734,7 @@ v-ui:SimplifiedJournalTemplate
             $("[rel='v-wf:takenDecision']", template).remove();
             $(".docflow-button", template).show();
 
-            function takeDecision(takenDecision) {
+            function takeDecision(takenDecision, label) {
               var modal = $("#notification-modal-template").html();
               modal = $(modal);
               modal.modal({"show": false});
@@ -1748,6 +1748,7 @@ v-ui:SimplifiedJournalTemplate
               var decision = new veda.IndividualModel();
               decision["rdf:type"] = [ decisionClass ];
               decision["v-s:backwardTarget"] = [ individual ];
+              decision["rdfs:label"] = [label];
               decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
               decision["v-s:canRead"] = [ true ];
               decision.present(cntr, undefined, "edit");
@@ -1759,8 +1760,8 @@ v-ui:SimplifiedJournalTemplate
                 modal.modal("hide").remove();
               });
             };
-            $("#redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect"));
-            $("#revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask"));
+            $("#redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect", "Перенаправлено"));
+            $("#revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask", "Задача отозвана"));
           };
         </script>
       </tbody>
