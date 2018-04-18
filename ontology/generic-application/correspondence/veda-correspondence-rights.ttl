@@ -7,7 +7,6 @@
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 
 <http://semantic-machines.com/veda/veda-correspondence-rights>
   rdf:type owl:Ontology ;

@@ -7,7 +7,6 @@
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 
 <http://semantic-machines.com/veda/veda-correspondence-schema>
   rdf:type owl:Ontology ;
@@ -176,15 +175,3 @@ v-s:LetterRegistrationRecordRecipient
 
 # v-s:registrationNumber
 # v-s:registrationDate
-
-
-# ----------------------------------------------------------------------
-v-s:ThirdPartyParticipant
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Correspondent ;
-  rdfs:label "Сторонние участники"@ru ;
-  rdfs:label "Third-party participant"@en ;
-  v-ui:hasTemplate mnd-s:ThirdPartyParticipantTemplate ;
-.
-# v-s:correspondentOrganization
-# v-s:correspondentPersonDescription
