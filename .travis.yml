@@ -23,11 +23,13 @@ addons:
 # Build
 install:
   - ./control-install.sh 
+  - export PATH=$PATH:$HOME/.cargo
 #&>install.log    
   - dub -v fetch vibe-d --version=0.7.30
 #  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
   - go version
+
   - dmd --version    
   - rustc -V          
   - ./build.sh

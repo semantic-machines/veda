@@ -48,7 +48,7 @@ else
     rustup update stable
 fi
 
-
+whereis rustc
 rustc -V
 cargo -V
 
