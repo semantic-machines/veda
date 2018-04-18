@@ -1414,7 +1414,7 @@
       fileIndividual["v-s:parent"] = [ parent ];
       return new Promise(function (resolve, reject) {
         // If file is image && !thumbnail
-        if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
+        if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp|svg)$/i).test(file.name) ) {
           loadImage(file)
           .then(function (image) {
             var resized = resizeImage(image, 2048);
