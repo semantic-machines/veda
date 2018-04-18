@@ -1727,10 +1727,11 @@ v-ui:SimplifiedJournalTemplate
             $(".docflow-button", template).remove();
           };
           if ( this.hasValue("v-wf:isCompleted", false) ) {
-            if (individual["v-wf:from"][0]["v-s:hasAppointment"][0].id != veda.appointment.id) {
+            if ( (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) && 
+              (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]) ) {
               $(".docflow-button", template).remove();
               return;
-            }
+            };
             $("[rel='v-wf:takenDecision']", template).remove();
             $(".docflow-button", template).show();
 
