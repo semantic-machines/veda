@@ -1,0 +1,258 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+@prefix s-wf: <http://semantic-machines.com/veda/simple-workflow-base/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix pzhs: <http://semantic-machines.com/veda/pzhs-layout/> .
+
+<http://semantic-machines.com/veda/pzhs-layout>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология разметки Промжилсервис"@ru ;
+  rdfs:label "Promzhilservis layout ontology"@en ;
+  #owl:versionInfo "0.2" ;
+  v-s:loadPriority 10 ;
+.
+
+# MAIN PAGE ------------------------------------------------------------
+
+pzhs:Main
+  rdf:type rdfs:Resource ;
+  rdfs:label "ПРОМЖИЛСЕРВИС"@ru ;
+  rdfs:label "PROMZHILSERVIS"@en ;
+  rdfs:comment "Дружная управляющая компания"@ru ;
+  rdfs:comment "Friendly managing company"@en ;
+  v-ui:hasTemplate pzhs:MainTemplate ;
+.
+
+pzhs:MainTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Главной страницы"@ru ;
+  rdfs:label "Main page template"@en ;
+  v-ui:template """
+<div class="page">
+  <nav role="navigation" class="navbar navbar-veda">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="btn btn-default navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+          <span class="glyphicon glyphicon-menu-hamburger"></span>
+        </button>
+        <a class="navbar-brand" style="margin-top:-15px;width:85px;" href="#/pzhs:Welcome" about="pzhs:Logo" data-template="v-ui:ImageTemplate"></a>
+        <a class="navbar-brand" style="margin-top:-10px;" href="#/pzhs:Welcome">
+          <span about="@" property="rdfs:label"></span><br>
+          <small about="@" property="rdfs:comment"></small>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li about="v-s:Favorites" data-template="v-s:FavoritesIndicatorTemplate" style="border-right:1px solid #eee;"></li>
+          <li about="v-s:Contacts">
+            <script>
+              template.tooltip({
+                container: template,
+                placement: "bottom",
+                title: individual["rdfs:label"].join(" ")
+              });
+            </script>
+            <a href="#/@"><span class="fa fa-lg fa-user-o"></span></a>
+          </li>
+          <li about="v-fs:FulltextSearch">
+            <script>
+              template.tooltip({
+                container: template,
+                placement: "bottom",
+                title: individual["rdfs:label"].join(" ")
+              });
+            </script>
+            <a href="#/@"><span class="fa fa-lg fa-search"></span></a>
+          </li>
+          <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
+          <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
+          <li about="v-s:Drafts" data-template="v-ui:DraftsIndicatorTemplate"></li>
+          <li id="user-info"></li>
+          <li id="menu" class="dropdown" about="pzhs:MainMenu" data-template="v-l:MenuTemplate"></li>
+          <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
+          <li style="padding-left:10px; margin-left:10px; border-left:1px solid #eee;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div id="main"></div>
+
+  <nav id="copyright" class="navbar-fixed-bottom container clearfix hidden-print">
+    <div class="pull-left">
+      <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
+    </div>
+    <div class="pull-right text-muted" about="v-s:vedaInfo">
+      <a href="http://www.semantic-machines.com">
+        © <span about="v-l:SemanticMachines" property="rdfs:label"></span>.
+      </a>
+      <span about="v-l:License" property="rdfs:label"></span>
+      <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
+        GPLv3.
+      </a>
+    </div>
+  </nav>
+</div>
+<script>
+  // Render user
+  var userInfo = $("#user-info", template);
+  var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
+  userInfo.empty();
+  veda.user.present(userInfo, userInfoTmpl);
+
+  template.on("click", ".table-sortable > thead > tr:last-child th", function (e) {
+    $(this).closest("table").tableSortable(this);
+  });
+
+  //# sourceURL=pzhs:MainPageTemplate
+</script>
+  """ ;
+.
+
+# ASPECT ---------------------------------------------------------------
+
+pzhs:Welcome
+  rdf:type v-s:Aspect ;
+  rdfs:label "Добро пожаловать"@ru ;
+  rdfs:label "Welcome"@en ;
+  v-s:hasBusinessAspect pzhs:DocumentationManagementAspect ;
+  v-ui:hasTemplate pzhs:WelcomeTemplate ;
+.
+
+pzhs:WelcomeTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон приветственного аспекта"@ru ;
+  rdfs:label "Welcome aspect template"@en ;
+  v-ui:template """
+<div>
+  <style>
+  </style>
+  <div id="aspect-slider" class="carousel slide" data-ride="carousel" data-interval="false" style="margin-top:-15px">
+    <!-- Indicators -->
+    <div class="container">
+      <ol class="carousel-indicators" about="@" rel="v-s:hasBusinessAspect">
+        <li data-target="#aspect-slider" about="@" property="v-s:shortLabel"></li>
+      </ol>
+    </div>
+    <div class="carousel-inner" role="listbox" about="@" rel="v-s:hasBusinessAspect">
+      <div class="item">
+        <div about="@" rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
+        <div class="container">
+          <div class="carousel-caption">
+            <div class="header">
+              <h2><span property="rdfs:label"></span> <small property="rdfs:comment"></small></h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Controls -->
+    <a class="left carousel-control" href="#aspect-slider" role="button" data-slide="prev">
+      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#aspect-slider" role="button" data-slide="next">
+      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+  <div id="aspect-container"></div>
+</div>
+<script>
+  if ( extra && extra.slideTo ) {
+    individual.slideTo = extra.slideTo[0];
+  } else {
+    individual.slideTo = 0;
+  }
+  $(".carousel-indicators > li", template).each(function (index) {
+    var $this = $(this);
+    $this.attr("data-slide-to", index);
+    if (index === (individual.slideTo || 0) ) {
+      $this.addClass("active");
+    }
+  });
+  $(".carousel-indicators > li", template).click(function (e) {
+    var $this = $(this);
+    var index = $this.attr("data-slide-to");
+    individual.slideTo = index;
+    var hash = location.hash.indexOf("slideTo=") > 0 ? location.hash.replace(/slideTo=.*/, "slideTo=" + individual.slideTo) : location.hash + "////slideTo=" + individual.slideTo;
+    riot.route(hash, true);
+  });
+  $(".carousel-inner > .item", template).each(function (index) {
+    $(this).attr("data-index", index);
+  });
+  var slider = $("#aspect-slider", template);
+  slider.on("slide.bs.carousel", showSlide);
+  $("body").css({
+    "overflow-y": "scroll",
+    "overflow-x": "hidden"
+  });
+  template.one("remove", function () {
+    $("body").css({
+      "overflow-y": "auto",
+      "overflow-x": "auto"
+    });
+  });
+  showSlide();
+
+  function showSlide(e) {
+    var uri, aspect, slide,
+        cntr = $("#aspect-container", template).empty().hide();
+    slide = e ? $(e.relatedTarget) : $("#aspect-slider .item", template).eq(individual.slideTo || 0).addClass("active");
+    individual.slideTo = slide.data("index");
+    uri = slide.attr("resource");
+    aspect = new veda.IndividualModel(uri);
+    aspect.present(cntr);
+    setTimeout(function () {
+      if (e) {
+        cntr.show( "slide", {direction: e.direction === "right" ? "left" : "right"}, 600);
+      } else {
+        cntr.show();
+      }
+    }, 0);
+  }
+  //# sourceURL=pzhs:WelcomeAspectTemplate
+</script>
+  """ ;
+.
+
+# IMAGES ---------------------------------------------------------------
+
+pzhs:Logo
+  a v-s:File;
+  v-s:fileUri "pzhs-logo.svg"^^xsd:string ;
+  v-s:fileName "pzhs-logo.svg"^^xsd:string;
+  v-s:filePath "/pzhs"^^xsd:string ;
+.
+pzhs:LogoBig
+  a v-s:File;
+  v-s:fileUri "pzhs-logo-big.png"^^xsd:string ;
+  v-s:fileName "pzhs-logo-big.png"^^xsd:string;
+  v-s:filePath "/pzhs"^^xsd:string ;
+.
+
+# MAIN MENU ------------------------------------------------------------
+
+pzhs:MainMenu
+  rdf:type v-l:Menu ;
+  rdfs:label "Главное меню"@ru ;
+  rdfs:label "Main menu"@en ;
+  v-l:menuItem v-l:Inbox ;
+  v-l:menuItem v-l:Outbox ;
+  v-l:menuItem v-l:Completed ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Administration ;
+  v-l:menuItem v-l:Clear ;
+  v-l:menuItem v-l:Divider ;
+  v-l:menuItem v-l:Exit ;
+.
