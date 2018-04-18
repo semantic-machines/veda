@@ -19,6 +19,7 @@ LIB_NAME[8]="pkg-config"
 LIB_NAME[9]="build-essential"
 LIB_NAME[10]="autoconf"
 LIB_NAME[11]="automake"
+LIB_NAME[12]="curl"
 
 LIB_OK="Status: install ok installed"
 F_UL=0
