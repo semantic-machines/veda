@@ -1,0 +1,171 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+
+<http://semantic-machines.com/veda/veda-correspondence-reports>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Отчеты."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Reports."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# REPORTS --------------------------------------------------------------
+
+v-s:blankCreateCountOfUsersTasks_report
+  a v-fc:Blank;
+  rdfs:label "Количество задач"@ru ;
+  rdfs:label "Number of tasks"@en ;
+  v-fc:targetType pzhs:CountOfUsersTasks_report_Parameters ;
+.
+
+v-s:blankCreateCompletedTasksCount_Report
+  a v-fc:Blank;
+  rdfs:label "Количество выполненных задач"@ru ;
+  rdfs:label "Number of competed tasks"@en ;
+  v-fc:targetType pzhs:CompletedTasksCount_Report_Parameters ;
+.
+
+v-s:CountOfUsersTasks_Report
+  rdf:type v-s:Report ;
+  v-s:filePath "/reports/Documents/CountOfUsersTasks_Report" ;
+  v-s:fileFormat "pdf";
+  rdfs:label "Количество задач"@ru ;
+  rdfs:label "Number of tasks"@en ;
+.
+
+v-s:CompletedTasksCount_Report
+  rdf:type v-s:Report ;
+  v-s:filePath "/reports/Documents/CompletedTasksCount_Report" ;
+  v-s:fileFormat "pdf";
+  rdfs:label "Количество выполненных задач"@ru ;
+  rdfs:label "Number of competed tasks"@en ;
+.
+
+v-s:CountOfUsersTasks_report_Parameters
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Параметры отчета по количеству задач "@ru ;
+  rdfs:label "Parameters for number of tasks report"@en ;
+  v-ui:hasTemplate v-s:CountOfUsersTasks_report_ParametersTemplate ;
+.
+
+v-s:CompletedTasksCount_Report_Parameters
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Параметры отчета по количеству выполненных задач "@ru ;
+  rdfs:label "Parameters for number of completed tasks report"@en ;
+  v-ui:hasTemplate v-s:CompletedTasksCount_Report_ParametersTemplate ;
+.
+
+# TEMPLATES ------------------------------------------------------------
+
+v-s:CountOfUsersTasks_report_ParametersTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Параметров отчета по количеству задач"@ru ;
+  rdfs:label "NumberOfTasks_ReportParameters template"@en ;
+  v-ui:forClass v-s:CountOfUsersTasks_report_Parameters ;
+  v-ui:template
+  """
+<div class="container sheet">
+  <h3 about="v-s:CountOfUsersTasks_report_Parameters" property="rdfs:label"></h3>
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-s:dateFrom" property="rdfs:label"></em>
+      <div property="v-s:dateFrom" class="view -edit -search"></div>
+      <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-s:dateTo" property="rdfs:label"></em>
+      <div property="v-s:dateTo" class="view -edit -search"></div>
+      <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:checkedDepartment" property="rdfs:label"></em>
+      <div rel="v-s:checkedDepartment" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:checkedDepartment" data-type="link" class="-view edit search fulltext"></veda-control>
+    </div>
+  </div>
+  <br><br>
+  <div class="actions">
+    <button type="button" class="action btn btn-success -view edit -search" id="createReport" about="v-s:CreateReport" property="rdfs:label"/>
+  </div>
+</div>
+<script>
+  $('#createReport', template).on('click', function () {
+    veda.Util.createReport(individual, 'v-s:CountOfUsersTasks_Report');
+  });
+  //# sourceURL=v-s:CountOfUsersTasks_report_ParametersTemplate
+</script>
+""" ;
+.
+
+v-s:CompletedTasksCount_Report_ParametersTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Параметров отчета по количеству выполненных задач"@ru ;
+  rdfs:label "NumberOfCompletedTasks_ReportParameters template"@en ;
+  v-ui:forClass v-s:CompletedTasksCount_Report_Parameters ;
+  v-ui:template
+  """
+<div class="container sheet">
+  <h3 about="v-s:CompletedTasksCount_Report_Parameters" property="rdfs:label"></h3>
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-s:dateFrom" property="rdfs:label"></em>
+      <div property="v-s:dateFrom" class="view -edit -search"></div>
+      <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-s:dateTo" property="rdfs:label"></em>
+      <div property="v-s:dateTo" class="view -edit -search"></div>
+      <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:checkedDepartment" property="rdfs:label"></em>
+      <div rel="v-s:checkedDepartment" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+      <veda-control rel="v-s:checkedDepartment" data-type="link" class="-view edit search fulltext"></veda-control>
+    </div>
+  </div>
+  <br><br>
+  <div class="actions">
+    <button type="button" class="action btn btn-success -view edit -search" id="createReport" about="v-s:CreateReport" property="rdfs:label"/>
+  </div>
+</div>
+<script>
+  $('#createReport', template).on('click', function () {
+    veda.Util.createReport(individual, 'v-s:CompletedTasksCount_Report');
+  });
+  //# sourceURL=v-s:CompletedTasksCount_Report_ParametersTemplate
+</script>
+""" ;
+.
+
+# RIGHTS ---------------------------------------------------------------
+
+v-s:CountOfUsersTasks_report_Parameters_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:CountOfUsersTasks_report_Parameters ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "Отдел Количество задач. Отчет v-s:CountOfUsersTasks_Report" ;
+.
+
+v-s:CompletedTasksCount_Report_Parameters_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:CompletedTasksCount_Report_Parameters ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "Отдел Количество выполненных задач. Отчет v-s:CompletedTasksCount_Reportы" ;
+.

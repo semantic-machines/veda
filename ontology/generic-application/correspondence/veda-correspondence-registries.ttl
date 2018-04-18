@@ -8,117 +8,24 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 
-<http://semantic-machines.com/veda/veda-correspondence-index>
+<http://semantic-machines.com/veda/veda-correspondence-blanks>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Корреспонденция. Индекс."@ru ;
-  rdfs:label "Veda system ontology. Correspondence. Index."@en ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Бланки."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Blanks."@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
 
-# Letter index ---------------------------------------------------------
-
-# Index registration record in letter
-
-v-s:LetterRegistrationRecordSenderIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:hasLetterRegistrationRecordSender ;
-  vdi:inherited_index v-s:RegistrationRecordIndex ;
-.
-v-s:LetterRegistrationRecordRecipientIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:hasLetterRegistrationRecordRecipient ;
-  vdi:inherited_index v-s:RegistrationRecordIndex ;
-.
-v-s:RegistrationRecordIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:RegistrationRecord ;
-  vdi:indexed_field rdf:type ;
-  vdi:indexed_field v-s:registrationNumber ;
-  vdi:indexed_field v-s:registrationDate ;
-.
-
-# Index delivery in letter
-
-v-s:LetterDeliveryIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:hasDelivery ;
-  vdi:inherited_index v-s:DeliveryIndex ;
-.
-v-s:DeliveryIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Delivery ;
-  vdi:indexed_field rdf:type ;
-  vdi:indexed_field v-s:date ;
-  vdi:indexed_field v-s:deliverBy ;
-  vdi:indexed_field rdfs:comment ;
-.
-
-# Index correspondent in letter
-
-v-s:LetterSenderIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:forProperty v-s:sender ;
-  vdi:forProperty v-s:recipient ;
-  vdi:inherited_index v-s:CorrespondentIndex ;
-.
-v-s:CorrespondentIndex
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Letter ;
-  vdi:indexed_field rdf:type ;
-  vdi:indexed_field v-s:correspondentOrganization ;
-  vdi:indexed_field v-s:correspondentOrganizationDescription ;
-  vdi:indexed_field v-s:correspondentDepartment ;
-  vdi:indexed_field v-s:correspondentDepartmentDescription ;
-  vdi:indexed_field v-s:correspondentPerson ;
-  vdi:indexed_field v-s:correspondentPersonDescription ;
-.
-
-# Letter registry ------------------------------------------------------
+# Letter registries ----------------------------------------------------
 
 v-s:LetterRegistry
   a v-fs:AttributiveSearch;
   rdfs:label "Письма"@ru ;
   rdfs:label "Letters"@en ;
-  v-fs:searchBlank v-s:LetterRegistryBlank ;
+  v-fs:searchBlank v-s:LetterBlank ;
   v-fs:searchBlankTemplate v-s:LetterTemplate ;
   v-fs:searchResultTemplate v-s:LetterRegistryResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc" ;
-.
-
-v-s:LetterRegistryBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Письмо"@ru ;
-  rdfs:label "Letter"@en ;
-  v-fc:targetType v-s:Letter ;
-  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlank ;
-  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlank ;
-  v-s:recipient v-s:CorrespondentBlank ;
-.
-
-v-s:CorrespondentBlank
-  a v-fc:Blank ;
-  rdfs:label "Корреспондент"@ru ;
-  rdfs:label "Correspondent"@en ;
-  v-fc:targetType v-s:Correspondent ;
-.
-
-v-s:LetterRegistrationRecordSenderBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Бланк регистрационной записи отправителя"@ru ;
-  rdfs:label "Registration record sender blank"@en ;
-  v-fc:targetType v-s:LetterRegistrationRecordSender ;
-.
-
-v-s:LetterRegistrationRecordRecipientBlank
-  rdf:type v-fc:Blank ;
-  rdfs:label "Бланк регистрационной записи получателя"@ru ;
-  rdfs:label "Registration record recipient blank"@en ;
-  v-fc:targetType v-s:LetterRegistrationRecordRecipient ;
 .
 
 # Letter registry templates --------------------------------------------
