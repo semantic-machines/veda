@@ -75,6 +75,8 @@ v-s:Letter
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
   rdfs:label "Письмо"@ru ;
   rdfs:label "Letter"@en ;
   v-ui:hasTemplate v-s:LetterTemplate ;
@@ -83,7 +85,7 @@ v-s:IncomingLetter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Letter ;
   rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
+  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
   rdfs:label "Входящее письмо"@ru ;
   rdfs:label "Incoming letter"@en ;
   v-ui:hasTemplate v-s:LetterTemplate ;
@@ -92,7 +94,7 @@ v-s:OutgoingLetter
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Letter ;
   rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
+  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
   rdfs:label "Исходящее письмо"@ru ;
   rdfs:label "Outgoing letter"@en ;
   v-ui:hasTemplate v-s:LetterTemplate ;
