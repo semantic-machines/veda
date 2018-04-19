@@ -28,7 +28,7 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control.fulltext.dropdown', 'Стартовая форма')
       .click('div.suggestion[resource="v-wf:StartForm"]')
       .typeText('veda-control[rel="v-wf:forNet"]', timeStamp)
-      .click('div.suggestions div.suggestion[typeof="v-wf:Net"]')
+      .click(Selector('div.suggestions div.suggestion').withText(timeStamp))
       .typeText('veda-control[rel="v-wf:hasStatusWorkflow"]', 'Ожидает отправки')
       .wait(2000)
       .click('div.suggestion[resource="v-wf:ToBeSent"]')

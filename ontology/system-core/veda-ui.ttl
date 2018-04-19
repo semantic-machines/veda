@@ -1732,6 +1732,10 @@ v-ui:SimplifiedJournalTemplate
               $(".docflow-button", template).remove();
               return;
             };
+            if (individual["v-wf:onWorkOrder"][0]["v-wf:forWorkItem"][0]["v-wf:forNetElement"][0].id == "s-wf:cr_rework") {
+              $(".docflow-button", template).remove();
+              return;
+            };
             $("[rel='v-wf:takenDecision']", template).remove();
             $(".docflow-button", template).show();
 

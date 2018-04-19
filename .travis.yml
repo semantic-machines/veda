@@ -54,6 +54,9 @@ script:
   - testcafe chromium qa/testcafe/testRights.js
   - testcafe chromium qa/testcafe/testSearchRangeOfDates.js
   - testcafe chromium qa/testcafe/testVersionedDocument.js
+  - testcafe chromium qa/testcafe/testSimpleNet.js
+  - testcafe chromium qa/testcafe/testSimpleNet2.js  
+  - testcafe chromium qa/testcafe/testSimpleNet3.js  
 
 after_script:
   - ./control-stop.sh
