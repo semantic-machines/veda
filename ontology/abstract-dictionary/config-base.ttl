@@ -19,6 +19,28 @@
 .
 
 ### -------------------------------------------------------
+cfg:org_Veda
+  a v-s:Organization;
+  v-s:origin "admin"^^xsd:string;
+  rdfs:label "Veda"^^xsd:string;
+.
+cfg:User_department 
+  a v-s:Department;
+  rdfs:label "Подразделение"@ru;
+  rdfs:label "Department"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit cfg:org_Veda;
+.
+cfg:User_position
+  a v-s:Position;
+  v-s:updateCounter "1"^^xsd:integer;
+  v-s:origin "manual"^^xsd:string;
+  rdfs:label "Должность"@ru;
+  rdfs:label "Position"@en;
+  v-s:parentUnit cfg:User_department;
+.
+
+### -------------------------------------------------------
 cfg:Guest
   rdf:type v-s:Person ;
   v-s:author cfg:VedaSystem ;
@@ -39,6 +61,7 @@ cfg:GuestAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:Guest ;
+  v-s:occupation cfg:User_position;    
   rdfs:label "Guest. Назначение"@ru ;
   rdfs:label "Guest. Appointment"@en ;
 .
@@ -131,6 +154,7 @@ cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
+  v-s:occupation cfg:User_position;    
   rdfs:label "Система Optiflow"@ru ;
   rdfs:label "System Optiflow"@en ;
 .
@@ -160,16 +184,9 @@ cfg:AdministratorAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:Administrator ;
+  v-s:occupation cfg:User_position;  
   rdfs:label "Administrator. Назначение"@ru ;
   rdfs:label "Administrator. Appointment"@en ;
-.
-### -------------------------------------------------------
-cfg:User_position
-  a v-s:Position;
-  v-s:updateCounter "1"^^xsd:integer;
-  v-s:origin "manual"^^xsd:string;
-  rdfs:label "Пользователь"@ru;
-  rdfs:label "User"@en;
 .
 
 ### -------------------------------------------------------
