@@ -22,7 +22,7 @@
 cfg:org_Veda
   a v-s:Organization;
   v-s:origin "admin"^^xsd:string;
-  rdfs:label "Veda"^^xsd:string;
+  rdfs:label "Веда"^^xsd:string;
   v-s:shortLabel "Veda"^^xsd:string;
 .
 cfg:User_department
@@ -64,8 +64,8 @@ cfg:GuestAppointment
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:Guest ;
   v-s:occupation cfg:User_position;
-  rdfs:label "Guest. Назначение"@ru ;
-  rdfs:label "Guest. Appointment"@en ;
+  rdfs:label "Гость"@ru ;
+  rdfs:label "Guest"@en ;
 .
 
 ### -------------------------------------------------------
@@ -94,8 +94,8 @@ cfg:ImportDMSToVedaAppointment
   v-s:employee cfg:ImportDMSToVeda ;
   v-s:occupation cfg:User_position;
   v-s:official "false"^^xsd:boolean;
-  rdfs:label "ImportDMSToVeda. Назначение"@ru ;
-  rdfs:label "ImportDMSToVeda. Appointment"@en ;
+  rdfs:label "Утилита DMS to Veda"@ru ;
+  rdfs:label "Import DMS to Veda"@en ;
 .
 ### -------------------------------------------------------
 
@@ -126,8 +126,8 @@ cfg:VedaNTLMFilterAppointment
   v-s:employee cfg:VedaNTLMFilter ;
   v-s:occupation cfg:User_position;
   v-s:official "false"^^xsd:boolean;
-  rdfs:label "VedaNTLMFilter. Назначение"@ru ;
-  rdfs:label "VedaNTLMFilter. Appointment"@en ;
+  rdfs:label "Veda NTLM Фильтр"@ru ;
+  rdfs:label "Veda NTLM Filter"@en ;
 .
 
 ### -------------------------------------------------------
@@ -160,8 +160,8 @@ cfg:VedaSystemAppointment
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
   v-s:occupation cfg:User_position;
-  rdfs:label "Система Optiflow"@ru ;
-  rdfs:label "System Optiflow"@en ;
+  rdfs:label "Система Веда"@ru ;
+  rdfs:label "Veda System"@en ;
 .
 
 ### -------------------------------------------------------
@@ -183,7 +183,7 @@ cfg:AdministratorAccount
   v-s:login "admin" ;
   v-s:password "4d1af0e10dab5fe07ae8d23bad5650b46804fb110cfb92f119213bc86aa03d34" ;
   v-s:owner cfg:Administrator ;
-  rdfs:label "Administrator. Учетная запись"@ru ;
+  rdfs:label "Администратор. Учетная запись"@ru ;
   rdfs:label "Administrator. Account"@en ;
 .
 cfg:AdministratorAppointment
@@ -191,8 +191,8 @@ cfg:AdministratorAppointment
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:Administrator ;
   v-s:occupation cfg:User_position;
-  rdfs:label "Administrator. Назначение"@ru ;
-  rdfs:label "Administrator. Appointment"@en ;
+  rdfs:label "Администратор"@ru ;
+  rdfs:label "Administrator"@en ;
   v-s:origin "Internal" ;
 .
 
