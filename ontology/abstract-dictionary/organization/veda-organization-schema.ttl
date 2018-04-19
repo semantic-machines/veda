@@ -16,7 +16,7 @@
   v-s:loadPriority 6 ;
 .
 
-# ------------------------------------------------------------ КЛАССЫ --
+# КЛАССЫ ---------------------------------------------------------------
 
 v-s:OrganizationUnit
   rdf:type owl:Class ;
@@ -252,13 +252,6 @@ v-s:official
 # v-s:valid
 
 # ------------------------------------------------------------
-v-s:Absence
-  rdf:type owl:Class ;
-  rdfs:label "Отсутствие"@ru ;
-  rdfs:label "Absence"@en ;
-  rdfs:subClassOf v-s:HRRecord ;
-.
-# ------------------------------------------------------------
 v-s:Person
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Identification ;
@@ -271,7 +264,6 @@ v-s:Person
   v-ui:hasTemplate v-s:PersonalInfoTemplate ;
   v-s:labelPattern "{@.v-s:firstName} {@.v-s:lastName}" ;
 .
-
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;
   rdfs:comment "Табельный номер"@ru ;
@@ -419,7 +411,7 @@ v-s:PsContractorProfileDateFromFact
   rdfs:label "Спецификация к свойству v-s:dateFromFact для класса v-s:ContractorProfile"@ru ;
   rdfs:label "Spec for property v-s:dateFromFact for class v-s:ContractorProfile"@en ;
 .
-# ------------------------------------------------------------ СТРОКИ --
+# СТРОКИ ---------------------------------------------------------------
 
 v-s:NonUniqueTaxId
   rdf:type v-s:Bundle ;
@@ -444,7 +436,7 @@ v-s:AddSubsidiary
   rdfs:label "Add subsidiary"@en ;
 .
 
-# ------------------------------------------------------------ ШАБЛОНЫ --
+# ШАБЛОНЫ --------------------------------------------------------------
 
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -453,20 +445,6 @@ v-s:OrganizationTemplate
   rdfs:label "Template for v-s:Organization class"@en ;
   v-ui:template """
 <script>
-  var _class = new veda.IndividualModel("v-s:ContractorProfile");
-  var hasRights = _class.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
-
-  function handler() {
-    if (individual.hasValue("v-s:hasContractorProfile") || !hasRights) {
-      $("#add-profile", template).remove();
-    }
-  }
-  individual.on("v-s:hasContractorProfile", handler);
-  template.one("remove", function () {
-    individual.off("v-s:hasContractorProfile", handler);
-  });
-  handler();
-
   var _class = new veda.IndividualModel("v-s:Subsidiary");
   if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
     $("#add-subsidiary", template).remove();
@@ -646,39 +624,6 @@ v-s:OrganizationTemplate
     </button>
   </div>
 
-  <em about="v-s:hasContractor" property="rdfs:label"></em>
-   <table class="table table-condensed table-bordered">
-    <thead>
-      <tr class="active">
-        <th width="1%"><span class="glyphicon glyphicon-search"></th>
-        <th about="v-s:registrationNumber" property="rdfs:label"></th>
-        <th about="v-s:shortLabel" property="rdfs:label"></th>
-        <th about="v-s:taxId" property="rdfs:label"></th>
-        <th about="v-s:legalAddress" property="rdfs:label"></th>
-      </tr>
-    </thead>
-    <tbody rel="v-s:hasContractor">
-      <tr>
-        <td about="@" data-template="v-ui:IconModalTemplate"></td>
-        <td about="@" property="v-s:registrationNumber" class="view edit -search"></td>
-        <td about="@" property="v-s:shortLabel" class="view edit -search"></td>
-        <td about="@" property="v-s:taxId" class="view edit -search"></td>
-        <td about="@"  property="v-s:legalAddress" class="view edit -search"></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext" data-template="{individual['v-s:registrationNumber'] + ' | ' + individual['v-s:shortLabel'][0] + ' | ' + individual['v-s:taxId'][0]}"></veda-control>
-
-  <em about="v-s:hasContractorProfile" class="view -edit -search" property="rdfs:label"></em>
-  <div rel="v-s:hasContractorProfile" class="view -edit -search" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-  <div class="view -edit -search">
-    <button class="btn btn-success" id="add-profile">
-      <span class="glyphicon glyphicon-zoom-in"></span>
-      <span  about="v-s:AddProfile" property="rdfs:label"> </span>
-    </button>
-  </div>
-
   <em about="v-s:HeadOrganization" property="rdfs:label"></em>
   <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
   <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
@@ -695,58 +640,6 @@ v-s:OrganizationTemplate
   <br>
 </div>
 <script>
-  $("#add-profile", template).click(function () {
-    var modal = $("#notification-modal-template").html();
-    modal = $(modal);
-    modal.modal({"show": false});
-    $("body").append(modal);
-    modal.modal("show");
-    template.one("remove", function () {
-      modal.modal("hide").remove();
-    });
-    var cntr = $(".modal-body", modal),
-        _class = new veda.IndividualModel("v-s:ContractorProfile"),
-        profile = new veda.IndividualModel(),
-        tmpl = new veda.IndividualModel("mnd-s:ContractorProfileTemplate");
-    profile["rdf:type"] = [_class];
-    profile["v-s:backwardTarget"] = [individual];
-    profile["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorProfile")];
-    profile["rdfs:label"] = individual["v-s:shortLabel"] ;
-    profile.present(cntr, tmpl, "edit");
-    profile.one("beforeReset", function () {
-      modal.modal("hide").remove();
-    });
-    profile.one("afterSave", function () {
-      modal.modal("hide").remove();
-    });
-  });
-
-  $("#add-screeningResult", template).click(function () {
-    var modal = $("#notification-modal-template").html();
-    modal = $(modal);
-    modal.modal({"show": false});
-    $("body").append(modal);
-    modal.modal("show");
-    template.one("remove", function () {
-      modal.modal("hide").remove();
-    });
-    var cntr = $(".modal-body", modal),
-      _class = new veda.IndividualModel("mnd-s:ContractorCategoryDecisionSecurity"),
-      screening = new veda.IndividualModel(),
-      tmpl = "mnd-s:ContractorCategoryDecisionSecurityTemplate";
-    screening["rdf:type"] = [_class];
-    screening["v-s:backwardTarget"] = [individual];
-    screening["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasScreeningResult")];
-    screening["v-s:canRead"] = [ true ];
-    screening.present(cntr, tmpl, "edit");
-    screening.one("beforeReset", function () {
-      modal.modal("hide").remove();
-    });
-    screening.one("afterSave", function () {
-      modal.modal("hide").remove();
-    });
-  });
-
   function processHandler() {
     if (individual.hasValue("v-wf:isProcess")
       && individual["v-wf:isProcess"][0].hasValue("v-wf:instanceOf")
@@ -812,39 +705,6 @@ v-s:OrganizationTemplate
       modal.modal("hide").remove();
     });
   });
-
-  $("#add-ContractorCreateChangeRequest", template).click(function () {
-    var modal = $("#notification-modal-template").html();
-    modal = $(modal);
-    modal.modal({"show": false});
-    $("body").append(modal);
-    modal.modal("show");
-    template.one("remove", function () {
-      modal.modal("hide").remove();
-    });
-    var cntr = $(".modal-body", modal),
-        _class = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequest"),
-        request = new veda.IndividualModel(),
-        tmpl = new veda.IndividualModel("mnd-s:ContractorCreateChangeRequestTemplate");
-    request["rdf:type"] = [_class];
-    request.present(cntr, tmpl, "edit");
-    request["rdfs:label"] = individual["rdfs:label"];
-    request["v-s:backwardTarget"] = [individual];
-    request["v-s:backwardProperty"] = [new veda.IndividualModel("mnd-s:hasContractorCreateChangeRequest")];
-    request["v-s:canRead"] = [ true ];
-    request["mnd-s:additionalContractorProfile"] = [ individual["rdfs:label"].join(" ") + " " + veda.Util.formatDate(new Date()) ];
-    request["v-s:hasContractor"]= individual["v-s:hasContractor"];
-    request.one("beforeReset", function () {
-      modal.modal("hide").remove();
-    });
-    request.one("afterSave", function () {
-      modal.modal("hide").remove();
-    });
-  });
-  //ремувит кнопку редактировать, если объект физическое лицо
-  if ( individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0] == "000000000000" ) {
-    $(".action#edit", template).remove();
-  }
   //# sourceURL=v-s:OrganizationTemplate_post
 </script>
   """ ;
