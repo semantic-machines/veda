@@ -1,12 +1,12 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 <http://semantic-machines.com/veda/veda-correspondence-schema>
@@ -75,8 +75,24 @@ v-s:Letter
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
   rdfs:label "Письмо"@ru ;
   rdfs:label "Letter"@en ;
+  v-ui:hasTemplate v-s:LetterTemplate ;
+.
+v-s:IncomingLetter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Letter ;
+  rdfs:label "Входящее письмо"@ru ;
+  rdfs:label "Incoming letter"@en ;
+  v-ui:hasTemplate v-s:LetterTemplate ;
+.
+v-s:OutgoingLetter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Letter ;
+  rdfs:label "Исходящее письмо"@ru ;
+  rdfs:label "Outgoing letter"@en ;
   v-ui:hasTemplate v-s:LetterTemplate ;
 .
 v-s:hasLetterRegistrationRecordSender

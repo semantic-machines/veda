@@ -358,7 +358,7 @@ v-s:isIssuedForAbsencePeriodOfEmployee
   rdfs:label "Оформляется на период отсутствия работника?"@ru ;
   rdfs:label "Is issued for the period of absence of the employee?"@en ;
   rdfs:range xsd:boolean ;
-  rdfs:domain mnd-s:PowerOfAttorney ;
+  rdfs:domain v-s:PowerOfAttorney ;
 .
 #----------Причина_оформления_доверенности-----
 v-s:ReasonForPowerOfAttorney

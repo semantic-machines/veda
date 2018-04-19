@@ -12,12 +12,12 @@
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix s-wf: <http://semantic-machines.com/veda/simple-workflow-base/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
-@prefix pzhs: <http://semantic-machines.com/veda/pzhs-layout/> .
+@prefix pzhs: <http://semantic-machines.com/veda/pzhs/> .
 
 <http://semantic-machines.com/veda/pzhs-layout>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология разметки Промжилсервис"@ru ;
-  rdfs:label "Promzhilservis layout ontology"@en ;
+  rdfs:label "Онтология Промжилсервис. Разметка."@ru ;
+  rdfs:label "Promzhilservis ontology. Layout."@en ;
   #owl:versionInfo "0.2" ;
   v-s:loadPriority 10 ;
 .
@@ -115,113 +115,6 @@ pzhs:MainTemplate
   });
 
   //# sourceURL=pzhs:MainPageTemplate
-</script>
-  """ ;
-.
-
-# ASPECT ---------------------------------------------------------------
-
-pzhs:Welcome
-  rdf:type v-s:Aspect ;
-  rdfs:label "Добро пожаловать"@ru ;
-  rdfs:label "Welcome"@en ;
-  v-s:hasBusinessAspect pzhs:DocumentationManagementAspect ;
-  v-ui:hasTemplate pzhs:WelcomeTemplate ;
-.
-
-pzhs:WelcomeTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон приветственного аспекта"@ru ;
-  rdfs:label "Welcome aspect template"@en ;
-  v-ui:template """
-<div>
-  <style>
-  </style>
-  <div id="aspect-slider" class="carousel slide" data-ride="carousel" data-interval="false" style="margin-top:-15px">
-    <!-- Indicators -->
-    <div class="container">
-      <ol class="carousel-indicators" about="@" rel="v-s:hasBusinessAspect">
-        <li data-target="#aspect-slider" about="@" property="v-s:shortLabel"></li>
-      </ol>
-    </div>
-    <div class="carousel-inner" role="listbox" about="@" rel="v-s:hasBusinessAspect">
-      <div class="item">
-        <div about="@" rel="v-s:hasImage" data-template="v-ui:ImageTemplate"></div>
-        <div class="container">
-          <div class="carousel-caption">
-            <div class="header">
-              <h2><span property="rdfs:label"></span> <small property="rdfs:comment"></small></h2>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Controls -->
-    <a class="left carousel-control" href="#aspect-slider" role="button" data-slide="prev">
-      <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="right carousel-control" href="#aspect-slider" role="button" data-slide="next">
-      <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-  </div>
-  <div id="aspect-container"></div>
-</div>
-<script>
-  if ( extra && extra.slideTo ) {
-    individual.slideTo = extra.slideTo[0];
-  } else {
-    individual.slideTo = 0;
-  }
-  $(".carousel-indicators > li", template).each(function (index) {
-    var $this = $(this);
-    $this.attr("data-slide-to", index);
-    if (index === (individual.slideTo || 0) ) {
-      $this.addClass("active");
-    }
-  });
-  $(".carousel-indicators > li", template).click(function (e) {
-    var $this = $(this);
-    var index = $this.attr("data-slide-to");
-    individual.slideTo = index;
-    var hash = location.hash.indexOf("slideTo=") > 0 ? location.hash.replace(/slideTo=.*/, "slideTo=" + individual.slideTo) : location.hash + "////slideTo=" + individual.slideTo;
-    riot.route(hash, true);
-  });
-  $(".carousel-inner > .item", template).each(function (index) {
-    $(this).attr("data-index", index);
-  });
-  var slider = $("#aspect-slider", template);
-  slider.on("slide.bs.carousel", showSlide);
-  $("body").css({
-    "overflow-y": "scroll",
-    "overflow-x": "hidden"
-  });
-  template.one("remove", function () {
-    $("body").css({
-      "overflow-y": "auto",
-      "overflow-x": "auto"
-    });
-  });
-  showSlide();
-
-  function showSlide(e) {
-    var uri, aspect, slide,
-        cntr = $("#aspect-container", template).empty().hide();
-    slide = e ? $(e.relatedTarget) : $("#aspect-slider .item", template).eq(individual.slideTo || 0).addClass("active");
-    individual.slideTo = slide.data("index");
-    uri = slide.attr("resource");
-    aspect = new veda.IndividualModel(uri);
-    aspect.present(cntr);
-    setTimeout(function () {
-      if (e) {
-        cntr.show( "slide", {direction: e.direction === "right" ? "left" : "right"}, 600);
-      } else {
-        cntr.show();
-      }
-    }, 0);
-  }
-  //# sourceURL=pzhs:WelcomeAspectTemplate
 </script>
   """ ;
 .

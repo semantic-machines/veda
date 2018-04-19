@@ -11,9 +11,9 @@
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix s-wf: <http://semantic-machines.com/veda/simple-workflow-base/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
-@prefix pzhs: <http://semantic-machines.com/veda/pzhs-layout/> .
+@prefix pzhs: <http://semantic-machines.com/veda/pzhs/> .
 
-<http://semantic-machines.com/veda/pzhs-aspect-documentation>
+<http://semantic-machines.com/veda/pzhs-documentation-aspect>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология Промжилсервис. Управление документами. Аспект"@ru ;
   rdfs:label "Promzhilservis ontology. Documentation aspect"@en ;
@@ -31,10 +31,12 @@ pzhs:DocumentationManagementAspect
   v-s:shortLabel "Documentation"@en ;
   v-s:hasImage pzhs:DocumentationManagementImage ;
 
-  v-s:hasBlank v-s:LetterBlank ;
+  v-s:hasBlank v-s:IncomingLetterBlank ;
+  v-s:hasBlank v-s:OutgoingLetterBlank ;
   v-s:hasBlank v-s:OrganizationBlank ;
 
-  v-s:hasRegistry v-s:LetterRegistry ;
+  v-s:hasRegistry v-s:IncomingLetterRegistry ;
+  v-s:hasRegistry v-s:OutgoingLetterRegistry ;
   v-s:hasRegistry v-s:OrganizationRegistry ;
 
   v-s:hasReport v-s:blankCreateCountOfUsersTasks_report ;
