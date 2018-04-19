@@ -363,10 +363,10 @@ v-s:CorrespondentTemplate
   rdfs:label "Correspondent template"@en ;
   v-ui:template """
 <script>
-  if ( (mode === "edit" || template.data("mode") === "edit" || mode === "search" || template.data("mode") === "search") && !this.hasValue("v-s:correspondentOrganization") ) {
+  /*if ( (mode === "edit" || template.data("mode") === "edit" || mode === "search" || template.data("mode") === "search") && !this.hasValue("v-s:correspondentOrganization") ) {
     var userOrganization = veda.appointment.getOrganization();
     this["v-s:correspondentOrganization"] = [ userOrganization ];
-  }
+  }*/
 </script>
 <div class="panel">
   <div class="panel-body">

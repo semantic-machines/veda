@@ -24,16 +24,16 @@ v-s:IncomingLetterBlank
   rdfs:label "Входящее письмо"@ru ;
   rdfs:label "Incoming letter"@en ;
   v-fc:targetType v-s:IncomingLetter ;
-  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlank ;
   v-s:recipient v-s:CorrespondentBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlank ;
 .
 v-s:OutgoingLetterBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Исходящее письмо"@ru ;
   rdfs:label "Outgoing letter"@en ;
   v-fc:targetType v-s:OutgoingLetter ;
-  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlank ;
   v-s:sender v-s:CorrespondentBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlank ;
 .
 v-s:CorrespondentBlank
   a v-fc:Blank ;
