@@ -76,10 +76,3 @@ v-s:Organization_Environment_membership
   v-s:resource v-s:Subsidiary_group ;
   rdfs:label "Члены группы Окружение Organization - схема и индивиды" ;
 .
-
-v-s:Organization_ReadUser_membership
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-s:Organization_ReadUser ;
-  v-s:resource cfg:AllUsersGroup ;
-  rdfs:label "Все пользователи входят в группу Organization_ReadUser" ;
-.
