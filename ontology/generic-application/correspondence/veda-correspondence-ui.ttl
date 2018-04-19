@@ -104,6 +104,12 @@ v-s:ManuallyBundle
   rdfs:label "Manually"@en ;
 .
 
+v-s:OutgoingLetterPrintBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Исходящее письмо"@ru ;
+  rdfs:label "Outgoing letter"@en ;
+.
+
 # ШАБЛОНЫ --------------------------------------------------------------
 
 v-s:LetterTemplate
@@ -230,6 +236,17 @@ v-s:LetterTemplate
     <div class="actions view edit -search">
       <button type="button" class="action btn btn-success -view edit -search" id="save2" about="v-s:Save" property="rdfs:label" style="margin-right:3px;"></button>
       <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit cancel delete journal task"></span>
+      <button type="button" class="action btn btn-info view -edit -search" id="incoming-print-blank" about="v-s:IncomingLetterPrintBlank" property="rdfs:label"/>
+      <div class="btn-group dropup" id="outgoing-print-blank">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <span about="mnd-s:OutgoingLetterPrintBlank" property="rdfs:label"> </span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#" id="createReport" about="mnd-s:OutgoingLetterPrintBlank_pdf" property="rdfs:label"></a></li>
+          <li><a href="#" id="createReport1" about="mnd-s:OutgoingLetterPrintBlank_rtf" property="rdfs:label"></a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <br>
@@ -291,6 +308,27 @@ v-s:LetterTemplate
       individual.save();
     }
   });
+
+  // Печатные бланки
+  if( this.hasValue("rdf:type", "v-s:IncomingLetter") ) {
+    $("#outgoing-print-blank", template).remove();
+    $('#incoming-print-blank', template).on('click', function (e) {
+      e.preventDefault();
+      veda.Util.createReport(individual, 'v-s:IncomingLetterPrintBlank');
+    });
+  } else {
+    $("#incoming-print-blank", template).remove();
+    $('#createReport', template).off('click');
+    $('#createReport', template).on('click', function (e) {
+      e.preventDefault();
+      veda.Util.createReport(individual, 'v-s:OutgoingLetterPrintBlank_pdf');
+    });
+    $('#createReport1', template).off('click');
+    $('#createReport1', template).on('click', function (e) {
+      e.preventDefault();
+      veda.Util.createReport(individual, 'v-s:OutgoingLetterPrintBlank_rtf');
+    });
+  }
 
   //# sourceURL=v-s:LetterTemplate_post
 </script>
