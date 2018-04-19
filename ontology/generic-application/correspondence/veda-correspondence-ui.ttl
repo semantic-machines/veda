@@ -106,8 +106,8 @@ v-s:ManuallyBundle
 
 v-s:OutgoingLetterPrintBlank
   rdf:type v-s:Bundle ;
-  rdfs:label "Исходящее письмо"@ru ;
-  rdfs:label "Outgoing letter"@en ;
+  rdfs:label "Печатная форма"@ru ;
+  rdfs:label "Print form"@en ;
 .
 
 # ШАБЛОНЫ --------------------------------------------------------------
