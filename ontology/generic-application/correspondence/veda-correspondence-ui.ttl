@@ -239,12 +239,12 @@ v-s:LetterTemplate
       <button type="button" class="action btn btn-info view -edit -search" id="incoming-print-blank" about="v-s:IncomingLetterPrintBlank" property="rdfs:label"/>
       <div class="btn-group dropup" id="outgoing-print-blank">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-         <span about="mnd-s:OutgoingLetterPrintBlank" property="rdfs:label"> </span>
+         <span about="v-s:OutgoingLetterPrintBlank" property="rdfs:label"> </span>
           <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-          <li><a href="#" id="createReport" about="mnd-s:OutgoingLetterPrintBlank_pdf" property="rdfs:label"></a></li>
-          <li><a href="#" id="createReport1" about="mnd-s:OutgoingLetterPrintBlank_rtf" property="rdfs:label"></a></li>
+          <li><a href="#" id="createReport" about="v-s:OutgoingLetterPrintBlank_pdf" property="rdfs:label"></a></li>
+          <li><a href="#" id="createReport1" about="v-s:OutgoingLetterPrintBlank_rtf" property="rdfs:label"></a></li>
         </ul>
       </div>
     </div>
