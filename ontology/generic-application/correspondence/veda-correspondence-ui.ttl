@@ -90,8 +90,6 @@ v-s:PsDeliveryMethodForDelivery
   rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
 .
 
-
-
 # СТРОКИ ---------------------------------------------------------------
 
 v-s:AutomaticallyBundle
