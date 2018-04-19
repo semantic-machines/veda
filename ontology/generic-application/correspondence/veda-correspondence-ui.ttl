@@ -201,7 +201,7 @@ v-s:LetterTemplate
     <div class="row">
       <div class="col-sm-6">
         <em about="v-s:hasDocumentKind" property="rdfs:label"></em>
-        <div rel="v-s:hasDocumentKind" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <div rel="v-s:hasDocumentKind" class="view edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasDocumentKind" class="-view edit search fulltext"></veda-control>
       </div>
       <div class="col-sm-3">
