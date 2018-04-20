@@ -430,13 +430,16 @@ pub fn prepare_obj_group(azc: &mut AzContext, request_access: u8, uri: &str, acc
         let new_access = group.access & access;
         group.access = new_access;
 
-        if azc.walked_groups_o.contains_key(&group.id) {
-            let preur_access = azc.walked_groups_o[&group.id];
-            if preur_access == new_access {
+		let mut key = group.id.clone();
+		let mut preur_access = 0;
+
+        if azc.walked_groups_o.contains_key(&key) {
+            preur_access = azc.walked_groups_o[&key];
+            if (preur_access & new_access) == new_access{
                 continue;
             }
         }
-        azc.walked_groups_o.insert(group.id.clone(), new_access);
+        azc.walked_groups_o.insert(key, new_access | preur_access);
 
         if uri == group.id {
             continue;
@@ -481,9 +484,10 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
         group.access = new_access;
 
         if p_role == ROLE_SUBJECT {
+        	let mut preur_access = 0;
             if azc.walked_groups_s.contains_key(&group.id) {
-                let preur_access = azc.walked_groups_s[&group.id];
-                if preur_access == new_access {
+                preur_access = azc.walked_groups_s[&group.id];
+                if (preur_access & new_access) == new_access {
                     if azc.is_trace_info {
                         print_to_trace_info(
                             azc,
@@ -500,11 +504,12 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
                     continue;
                 }
             }
-            azc.walked_groups_s.insert(group.id.clone(), new_access);
+            azc.walked_groups_s.insert(group.id.clone(), new_access | preur_access);
         } else {
+        	let mut preur_access = 0;
             if azc.walked_groups_o.contains_key(&group.id) {
-                let preur_access = azc.walked_groups_o[&group.id];
-                if preur_access == new_access {
+                preur_access = azc.walked_groups_o[&group.id];
+                if (preur_access & new_access) == new_access {
                     if azc.is_trace_info {
                         print_to_trace_info(
                             azc,
@@ -521,7 +526,7 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
                     continue;
                 }
             }
-            azc.walked_groups_o.insert(group.id.clone(), new_access);
+            azc.walked_groups_o.insert(group.id.clone(), new_access | preur_access);
         }
 
         if azc.is_trace_info {
