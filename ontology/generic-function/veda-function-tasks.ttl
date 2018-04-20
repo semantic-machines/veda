@@ -473,7 +473,7 @@ v-ft:TaskBlankTemplate
     </div>
     <div class="col-md-3">
       <em about="v-ft:DocumentTypeBundle" property="rdfs:label"></em>
-      <veda-control rel="v-wf:onDocument.rdf:type" data-type="link" class="dropdown fulltext" data-single="true" data-placeholder=" " data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing' && '@'=='mnd-s:*'"></veda-control>
+      <veda-control rel="v-wf:onDocument.rdf:type" data-type="link" class="dropdown fulltext" data-single="true" data-placeholder=" " data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'"></veda-control>
     </div>
     <div class="col-md-3">
       <em about="v-ft:DocumentBundle" property="rdfs:label"></em>

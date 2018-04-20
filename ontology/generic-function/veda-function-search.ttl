@@ -2216,7 +2216,7 @@ v-fs:FulltextBlankTemplate
       <div class="panel-body bg-default">
         <em about="rdf:type" property="rdfs:label"></em>
         <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
-        <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing' && '@'=='mnd-s:*'" class="fulltext dropdown"></veda-control>
+        <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'" class="fulltext dropdown"></veda-control>
       </div>
     </div>
   </div>
