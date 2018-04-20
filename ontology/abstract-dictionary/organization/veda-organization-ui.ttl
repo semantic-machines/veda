@@ -80,7 +80,7 @@ v-s:OrganizationUnitModel
     }
 
     return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || self.getOrganization.call(item, depth + 1);
+      return state || item.getOrganization(depth + 1);
     }, undefined);
   };
 
@@ -402,37 +402,13 @@ v-s:OrganizationTemplate
   <br>
   <!-- BUTTONS -->
   <div class="actions">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal"></span>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
   </div>
   <br>
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <br>
 </div>
 <script>
-  function processHandler() {
-    if (individual.hasValue("v-wf:isProcess")
-      && individual["v-wf:isProcess"][0].hasValue("v-wf:instanceOf")
-      && individual["v-wf:isProcess"][0]["v-wf:instanceOf"][0].id === "s-wf:net_complex_route"
-    ) {
-      $('#send.action', template).remove();
-      $('#delete.action', template).remove();
-    } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
-      $('#send.action', template).off("click");
-      $('#send.action', template).on('click', function () {
-        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
-      });
-    } else {
-      $('#send.action', template).remove();
-      $('#delete.action', template).remove();
-    }
-  }
-  processHandler();
-
-  individual.on("afterReset", processHandler);
-  template.one("remove", function () {
-    individual.off("afterReset", processHandler);
-  });
-
   //Генерация Uri
   function makeUri () {
     var shortLabel = individual["v-s:hasClassifierCountry"][0]["v-s:shortLabel"] ;
