@@ -793,147 +793,112 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
  *      v-s:templateBody   - шаблон для тела
  */
 
-function mapToMessage(map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment)
-{
-    try
-    {
-        if (journal_uri && map_container)
-        {
-            var process_uri = _process['@'];
+function mapToMessage(map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment) {
+  try {
+    if (journal_uri && map_container) {
+      var process_uri = _process['@'];
 
-            //* выполнить маппинг для сообщения
-            var messageVars = [];
+      //* выполнить маппинг для сообщения
+      var messageVars = [];
+      messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
 
-            messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
-            if (messageVars)
-            {
-                var new_message_uri = genUri() + "-msg";
-                var new_message = {
-                    '@': new_message_uri,
-            'v-s:created': [
-            {
+      if (messageVars) {
+
+        var new_message_uri = genUri() + "-msg";
+        var new_message = {
+          '@': new_message_uri,
+          'v-s:created': [{
             data: new Date(),
             type: _Datetime
-            }]
-                };
-                var template;
+          }]
+        };
 
-                for (var idx = 0; idx < messageVars.length; idx++)
-                {
-                    var jvar = messageVars[idx];
-                    var name = getFirstValue(jvar['v-wf:variableName']);
-                    var value = jvar['v-wf:variableValue'];
+        var template;
 
-                    if (name == '$template')
-                        template = get_individual(ticket, getUri(value));
+        for (var idx = 0; idx < messageVars.length; idx++) {
+          var jvar = messageVars[idx];
+          var name = getFirstValue(jvar['v-wf:variableName']);
+          var value = jvar['v-wf:variableValue'];
 
-                    if (name.indexOf(':') > 0)
-                        new_message[name] = value;
-                }
-                if (template)
-                {
-                    var lang = template['v-s:templateLanguage'];
-                    var subject = getFirstValue(template['v-s:templateSubject']);
-                    var body = getFirstValue(template['v-s:templateBody']);
+          if (name == '$template') {
+            template = get_individual(ticket, getUri(value));
+          }
 
-                    if (lang)
-        {
-                        var lang_indv = get_individual(ticket, lang);
-
-      if (lang_indv && lang_indv['rdf:value'])
-      {
-          lang = getFirstValue(lang_indv['rdf:value']).toLowerCase ();
-      }
-      else
-      {
-                          lang = 'RU';
-      }
-
-        }
-        else
-        {
-                        lang = 'RU';
+          if (name.indexOf(':') > 0) {
+            new_message[name] = value;
+          }
         }
 
-                    var view = {};
+        if (template) {
+          var lang = template['v-s:templateLanguage'];
+          var subject = getFirstValue(template['v-s:templateSubject']);
+          var body = getFirstValue(template['v-s:templateBody']);
 
-                    for (var idx = 0; idx < messageVars.length; idx++)
-                    {
-                        var jvar = messageVars[idx];
-                        var name = getFirstValue(jvar['v-wf:variableName']);
+          if (lang) {
+            var lang_indv = get_individual(ticket, lang);
 
-                        if (name == '$template' || name.indexOf(':') > 0)
-                            continue;
-
-                        var values = jvar['v-wf:variableValue'];
-
-                        var araa = [];
-
-                        for (var val_idx in values)
-                        {
-                            var value = values[val_idx];
-
-                            if (value.type == _Uri)
-                            {
-                                var inner_indv = get_individual(ticket, value.data);
-
-        if (inner_indv == undefined)
-        {
-                                  araa.push('ERR! individual [' + value.data + '] not found, var.name=' + name);
-            continue;
-        }
-
-        if (inner_indv['rdfs:label'] == undefined)
-        {
-                                  araa.push('ERR! individual [' + value.data + '] not contains rdfs:label, var.name=' + name);
-            continue;
-        }
-
-                                //print("@@@43 inner_indv=", toJson (inner_indv), ", lang=", lang);
-                                value = getFirstValueUseLang(inner_indv['rdfs:label'], lang);
-
-                                if (!value)
-                                    value = getFirstValue(inner_indv['rdfs:label']);
-
-                                araa.push(value);
-                            }
-                            else
-                            {
-                                var aa = "";
-
-                                if (value.lang == lang || value.lang == "" || value.lang == undefined || value.lang == "NONE")
-                                {
-                                    aa = value.data;
-                                    araa.push(aa);
-                                }
-                            }
-                        }
-
-                        view[name] = araa;
-                    }
-
-                    //print("@@@50 view=", toJson(view));
-
-                    var output_subject = Mustache.render(subject, view).replace (/&#x2F;/g, '/');
-                    var output_body = Mustache.render(body, view).replace (/&#x2F;/g, '/');
-
-                    new_message['v-s:subject'] = newStr (output_subject, lang);
-                    new_message['v-s:messageBody'] = newStr (output_body, lang);
-                    new_message['v-wf:onWorkOrder'] = newUri (_order['@']);
-
-                    put_individual(ticket, new_message, _event_id);
-                }
-
-
-                //print("@@@ mapToMessage=" + toJson(new_message));
+            if (lang_indv && lang_indv['rdf:value']) {
+              lang = getFirstValue(lang_indv['rdf:value']).toLowerCase ();
+            } else {
+              lang = 'RU';
             }
-        }
-    }
-    catch (e)
-    {
-        print(e.stack);
-    }
+          } else {
+            lang = 'RU';
+          }
+          var view = {};
 
+          for (var idx = 0; idx < messageVars.length; idx++) {
+            var jvar = messageVars[idx];
+            var name = getFirstValue(jvar['v-wf:variableName']);
+            if (name == '$template' || name.indexOf(':') > 0) {
+              continue;
+            }
+            var values = jvar['v-wf:variableValue'];
+            var araa = [];
+
+            for (var val_idx in values) {
+              var value = values[val_idx];
+              if (value.type == _Uri) {
+                var inner_indv = get_individual(ticket, value.data);
+                if (inner_indv == undefined) {
+                  araa.push('ERR! individual [' + value.data + '] not found, var.name=' + name);
+                  continue;
+                }
+                if (inner_indv['rdfs:label'] == undefined) {
+                  araa.push('ERR! individual [' + value.data + '] not contains rdfs:label, var.name=' + name);
+                  continue;
+                }
+                //print("@@@43 inner_indv=", toJson (inner_indv), ", lang=", lang);
+                value = getFirstValueUseLang(inner_indv['rdfs:label'], lang);
+
+                if (!value) {
+                  value = getFirstValue(inner_indv['rdfs:label']);
+                }
+                araa.push(value);
+              } else {
+                var aa = "";
+                if (value.lang == lang || value.lang == "" || value.lang == undefined || value.lang == "NONE") {
+                  aa = value.data;
+                  araa.push(aa);
+                }
+              }
+            }
+            view[name] = araa;
+          }
+          //print("@@@50 view=", toJson(view));
+          var output_subject = Mustache.render(subject, view).replace (/&#x2F;/g, '/');
+          var output_body = Mustache.render(body, view).replace (/&#x2F;/g, '/');
+          new_message['v-s:subject'] = newStr (output_subject, lang);
+          new_message['v-s:messageBody'] = newStr (output_body, lang);
+          new_message['v-wf:onWorkOrder'] = newUri (_order['@']);
+          put_individual(ticket, new_message, _event_id);
+        }
+        //print("@@@ mapToMessage=" + toJson(new_message));
+      }
+    }
+  } catch (e) {
+    print(e.stack);
+  }
 }
 
 
