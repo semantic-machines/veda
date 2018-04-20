@@ -531,7 +531,6 @@ veda.Module(function Util(veda) { "use strict";
             item
           );
         });
-        console.log(key, value);
         hiddenField.setAttribute("value", value);
         form.appendChild(hiddenField);
       }
