@@ -430,6 +430,22 @@ textarea {
   margin-top: 15px;
   margin-bottom: 15px;
 }
+.margin-xs-h {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+.margin-sm-h {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.margin-md-h {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.margin-lg-h {
+  margin-left: 15px;
+  margin-right: 15px;
+}
 .no-padding {
   padding: 0px;
 }
