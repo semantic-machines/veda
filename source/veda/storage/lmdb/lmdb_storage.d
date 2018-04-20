@@ -5,7 +5,7 @@ module veda.storage.lmdb.lmdb_storage;
 
 import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
 import veda.common.type, veda.storage.common, veda.storage.storage;
-import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_acl, veda.authorization.authorization;
+import veda.storage.lmdb.lmdb_driver, veda.authorization.authorization;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
@@ -50,8 +50,7 @@ public class LmdbStorage : Storage
                     acl_client = new ClientAuthorization(acl_service, this.log);
                 else
                 {
-                    string authorization_lib = properties.as!(string)("authorization_lib");
-                    acl_client = new LmdbAuthorization(DBMode.R, name ~ ":acl", 0, authorization_lib == "external", this.log);
+                    acl_client = new AuthorizationUseLib(this.log);
                 }
             }
             catch (Throwable ex)
