@@ -25,7 +25,7 @@ v-s:IncomingLetterBlank
   rdfs:label "Incoming letter"@en ;
   v-fc:targetType v-s:IncomingLetter ;
   v-s:recipient v-s:CorrespondentBlank ;
-  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlankAuto ;
 .
 v-s:OutgoingLetterBlank
   rdf:type v-fc:Blank ;
@@ -33,7 +33,7 @@ v-s:OutgoingLetterBlank
   rdfs:label "Outgoing letter"@en ;
   v-fc:targetType v-s:OutgoingLetter ;
   v-s:sender v-s:CorrespondentBlank ;
-  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlankAuto ;
 .
 v-s:CorrespondentBlank
   a v-fc:Blank ;
@@ -52,4 +52,18 @@ v-s:LetterRegistrationRecordRecipientBlank
   rdfs:label "Бланк регистрационной записи получателя"@ru ;
   rdfs:label "Registration record recipient blank"@en ;
   v-fc:targetType v-s:LetterRegistrationRecordRecipient ;
+.
+v-s:LetterRegistrationRecordSenderBlankAuto
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи отправителя"@ru ;
+  rdfs:label "Registration record sender blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordSender ;
+  v-fc:targetType v-s:LetterRegistrationRecordEnumerated ;
+.
+v-s:LetterRegistrationRecordRecipientBlankAuto
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи получателя"@ru ;
+  rdfs:label "Registration record recipient blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordRecipient ;
+  v-fc:targetType v-s:LetterRegistrationRecordEnumerated ;
 .
