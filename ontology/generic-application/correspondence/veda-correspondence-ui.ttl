@@ -362,12 +362,6 @@ v-s:CorrespondentTemplate
   rdfs:label "Шаблон корреспондента"@ru ;
   rdfs:label "Correspondent template"@en ;
   v-ui:template """
-<script>
-  /*if ( (mode === "edit" || template.data("mode") === "edit" || mode === "search" || template.data("mode") === "search") && !this.hasValue("v-s:correspondentOrganization") ) {
-    var userOrganization = veda.appointment.getOrganization();
-    this["v-s:correspondentOrganization"] = [ userOrganization ];
-  }*/
-</script>
 <div class="panel">
   <div class="panel-body">
     <em about="v-s:correspondentOrganization" property="rdfs:label"></em>
@@ -377,7 +371,8 @@ v-s:CorrespondentTemplate
         <span about="@" property="v-s:postalAddress"></span>
       </a>
     </div>
-    <veda-control data-type="link" rel="v-s:correspondentOrganization" class="-view edit search fulltext create create-modal" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:postalAddress'].join(' ')}"></veda-control>
+    <veda-control data-type="link" rel="v-s:correspondentOrganization" class="-view edit -search fulltext create create-modal" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:postalAddress'].join(' ')}"></veda-control>
+    <veda-control data-type="link" rel="v-s:correspondentOrganization" class="-view -edit search fulltext" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:postalAddress'].join(' ')}"></veda-control>
     <div class="user-organization">
       <hr class="margin-md">
       <em about="v-s:correspondentDepartment" property="rdfs:label"></em>
