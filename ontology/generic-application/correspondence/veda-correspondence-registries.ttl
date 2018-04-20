@@ -23,7 +23,7 @@ v-s:IncomingLetterRegistry
   a v-fs:AttributiveSearch;
   rdfs:label "Входящие письма"@ru ;
   rdfs:label "Incoming letters"@en ;
-  v-fs:searchBlank v-s:IncomingLetterBlank ;
+  v-fs:searchBlank v-s:IncomingLetterRegistryBlank ;
   v-fs:searchBlankTemplate v-s:LetterTemplate ;
   v-fs:searchResultTemplate v-s:LetterRegistryResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc" ;
@@ -32,10 +32,57 @@ v-s:OutgoingLetterRegistry
   a v-fs:AttributiveSearch;
   rdfs:label "Исходящие письма"@ru ;
   rdfs:label "Outgoing letters"@en ;
-  v-fs:searchBlank v-s:OutgoingLetterBlank ;
+  v-fs:searchBlank v-s:OutgoingLetterRegistryBlank ;
   v-fs:searchBlankTemplate v-s:LetterTemplate ;
   v-fs:searchResultTemplate v-s:LetterRegistryResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc" ;
+.
+
+# Letter registries blanks ---------------------------------------------
+
+v-s:IncomingLetterRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Входящее письмо"@ru ;
+  rdfs:label "Incoming letter"@en ;
+  v-fc:targetType v-s:IncomingLetter ;
+  v-s:sender v-s:SenderCorrespondentRegistryBlank ;
+  v-s:recipient v-s:RecipientCorrespondentRegistryBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderRegistryBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientRegistryBlank ;
+.
+v-s:OutgoingLetterRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Исходящее письмо"@ru ;
+  rdfs:label "Outgoing letter"@en ;
+  v-fc:targetType v-s:OutgoingLetter ;
+  v-s:sender v-s:SenderCorrespondentRegistryBlank ;
+  v-s:recipient v-s:RecipientCorrespondentRegistryBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderRegistryBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientRegistryBlank ;
+.
+v-s:SenderCorrespondentRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Корреспондент"@ru ;
+  rdfs:label "Correspondent"@en ;
+  v-fc:targetType v-s:Correspondent ;
+.
+v-s:RecipientCorrespondentRegistryBlank
+  a v-fc:Blank ;
+  rdfs:label "Корреспондент"@ru ;
+  rdfs:label "Correspondent"@en ;
+  v-fc:targetType v-s:Correspondent ;
+.
+v-s:LetterRegistrationRecordSenderRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи отправителя"@ru ;
+  rdfs:label "Registration record sender blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordSender ;
+.
+v-s:LetterRegistrationRecordRecipientRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи получателя"@ru ;
+  rdfs:label "Registration record recipient blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordRecipient ;
 .
 
 # Letter registry templates --------------------------------------------
