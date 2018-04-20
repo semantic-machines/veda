@@ -157,11 +157,12 @@ cfg:VedaSystemAccount
 .
 cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
+  rdfs:label "Система Веда"@ru ;
+  rdfs:label "Veda System"@en ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
   v-s:occupation cfg:User_position;
-  rdfs:label "Система Веда"@ru ;
-  rdfs:label "Veda System"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 
 ### -------------------------------------------------------
