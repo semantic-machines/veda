@@ -347,7 +347,7 @@ veda.Module(function (veda) { "use strict";
       });
     });
 
-        // Max displayed values
+    // Max displayed values
     template.on("click", ".more", function (e) {
       e.stopPropagation();
       var $this = $(this),
@@ -358,7 +358,7 @@ veda.Module(function (veda) { "use strict";
       resource.trigger(rel_uri, resource.get(rel_uri), Infinity);
       $this.remove();
     });
-    
+
     // Related resources & about resources
     $("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
       var relContainer = $(this),
@@ -453,17 +453,16 @@ veda.Module(function (veda) { "use strict";
         });
 
         function propertyModifiedHandler (values, limit_param) {
+          limit = limit_param || limit;
           relContainer.empty();
-          var rendered = {};
-          var renderedTemplates = values.map(function (value, index) {
-            return renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode)
-              .then(function (renderedTemplate) {
-                rendered[index] = renderedTemplate;
-              });
-          });
-          Promise.all(renderedTemplates).then(function () {
-            for (var i in rendered) {
-              relContainer.append(rendered[i]);
+          var templatesPromises = [];
+          for (var i = 0; i < limit && i < values.length; i++) {
+            templatesPromises.push( renderRelationValue(about, rel_uri, values[i], relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) );
+          }
+          Promise.all(templatesPromises).then(function (renderedTemplates) {
+            relContainer.append(renderedTemplates);
+            if (limit < values.length) {
+              relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
             }
           });
         }

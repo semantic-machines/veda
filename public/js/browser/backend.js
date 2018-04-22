@@ -289,8 +289,6 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   };
 
-  }
-
   veda.Backend.query = function query(ticket, query, sort, databases, reopen, top, limit, from) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";

@@ -1893,10 +1893,9 @@
       });
 
       if (getList.length) {
-        return get_individuals({
+        return veda.Backend.get_individuals({
           ticket: veda.ticket,
-          uris: getList,
-          async: true
+          uris: getList
         });
       } else {
         return [];
@@ -1909,14 +1908,13 @@
     });
 
     function incrementalSearch(cursor, limit, results) {
-      return query({
+      return veda.Backend.query({
         ticket: veda.ticket,
         query: queryString,
         sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
         from: cursor,
         top: 10,
-        limit: 1000,
-        async: true
+        limit: 1000
       }).then(function (queryResult) {
         results = results.concat(queryResult.result);
         var cursor = queryResult.cursor;
