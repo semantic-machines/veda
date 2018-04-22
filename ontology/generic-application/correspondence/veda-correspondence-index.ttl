@@ -1,0 +1,80 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-correspondence-index>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Индекс."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Index."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# Letter index ---------------------------------------------------------
+
+# Index registration record in letter
+
+v-s:LetterRegistrationRecordSenderIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Letter ;
+  vdi:forProperty v-s:hasLetterRegistrationRecordSender ;
+  vdi:inherited_index v-s:RegistrationRecordIndex ;
+.
+v-s:LetterRegistrationRecordRecipientIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Letter ;
+  vdi:forProperty v-s:hasLetterRegistrationRecordRecipient ;
+  vdi:inherited_index v-s:RegistrationRecordIndex ;
+.
+v-s:RegistrationRecordIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:RegistrationRecord ;
+  vdi:indexed_field rdf:type ;
+  vdi:indexed_field v-s:registrationNumber ;
+  vdi:indexed_field v-s:registrationDate ;
+.
+
+# Index delivery in letter
+
+v-s:LetterDeliveryIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Letter ;
+  vdi:forProperty v-s:hasDelivery ;
+  vdi:inherited_index v-s:DeliveryIndex ;
+.
+v-s:DeliveryIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Delivery ;
+  vdi:indexed_field rdf:type ;
+  vdi:indexed_field v-s:date ;
+  vdi:indexed_field v-s:deliverBy ;
+  vdi:indexed_field rdfs:comment ;
+.
+
+# Index correspondent in letter
+
+v-s:LetterSenderIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Letter ;
+  vdi:forProperty v-s:sender ;
+  vdi:forProperty v-s:recipient ;
+  vdi:inherited_index v-s:CorrespondentIndex ;
+.
+v-s:CorrespondentIndex
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Letter ;
+  vdi:indexed_field rdf:type ;
+  vdi:indexed_field v-s:correspondentOrganization ;
+  vdi:indexed_field v-s:correspondentOrganizationDescription ;
+  vdi:indexed_field v-s:correspondentDepartment ;
+  vdi:indexed_field v-s:correspondentDepartmentDescription ;
+  vdi:indexed_field v-s:correspondentPerson ;
+  vdi:indexed_field v-s:correspondentPersonDescription ;
+.

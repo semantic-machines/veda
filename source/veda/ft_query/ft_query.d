@@ -68,6 +68,7 @@ private nothrow string req_prepare(string request, Context context)
                     catch (Throwable tr)
                     {
                         context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
+                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
                     }
                 }
                 else

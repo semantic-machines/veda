@@ -1,6 +1,5 @@
 // Veda controls implemented as JQuery plugins
-"use strict";
-;(function( $ ) {
+;(function( $ ) { "use strict";
 
   var defaultDelay = 750;
 
@@ -89,7 +88,7 @@
     this.val = function (value) {
       if (!value) return input.val();
       return input.val( veda.Util.formatValue(value) );
-    }
+    };
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
@@ -246,7 +245,7 @@
       mainInput.val(count);
       summaryText.text(count);
       mainInput.change();
-    };
+    }
     function feelPseudoInput(summaryTime){
       var days=0, hours=0, minutes=0;
       summaryText.text(+summaryTime);
@@ -258,13 +257,13 @@
           summaryTime=summaryTime-hours*60;
           if (summaryTime!=0){
             minutes=summaryTime;
-          };
-        };
-      };
+          }
+        }
+      }
       pseudoInputs[0].value=days;
       pseudoInputs[1].value=hours;
       pseudoInputs[2].value=minutes;
-    };
+    }
     this.append(control);
     return this;
   };
@@ -321,7 +320,7 @@
       } else {
         input.val("");
       }
-    }
+    };
 
     if (isSingle) {
       change = function (value) {
@@ -338,7 +337,7 @@
       change = function (value) {
         individual.set(property_uri, individual.get(property_uri).concat(value));
         input.val("");
-      }
+      };
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
@@ -383,14 +382,14 @@
         change = function (value) {
           individual.set(property_uri, individual.get(property_uri).concat(value));
           input.val("");
-        }
+        };
       }
     });
 
     this.val = function (value) {
       if (!value) return input.val();
       return input.val(value);
-    }
+    };
 
     this.on("remove", function () {
       control.data("DateTimePicker").destroy();
@@ -585,7 +584,7 @@
           this.value = value.toString();
         }
       });
-    }
+    };
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
@@ -710,7 +709,7 @@
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        input.attr("disabled", "disabled")
+        input.attr("disabled", "disabled");
         control.parents("label").tooltip("destroy");
       } else {
         if ( input.closest(".checkbox.disabled").length ) {
@@ -749,13 +748,17 @@
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
+      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [];
 
     populate();
+
+    select.focus(function () {
+      populate();
+    });
 
     select.change(function () {
       var value = $("option:selected", select).data("value");
@@ -797,7 +800,7 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return options = eval(match);
+          return ( options = eval(match) );
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
@@ -849,17 +852,17 @@
     this.val = function (value) {
       if (!value) return $("select", this).val();
       return $("select", this).val( renderValue(value) );
-    }
+    };
     this.populate = function () {
       populate();
       return this;
-    }
+    };
     this.append(control);
     return this;
   };
   $.fn.veda_select.defaults = {
     template: $("#select-control-template").html(),
-  }
+  };
 
   // CHECKBOX GROUP CONTROL
 
@@ -873,7 +876,7 @@
       holder = $(".checkbox", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
+      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [];
@@ -908,7 +911,7 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return options = eval(match);
+          return ( options = eval(match) );
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
@@ -971,20 +974,20 @@
       }
     });
     this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value });
+      if (!value) return $("input", this).map(function () { return this.value; });
       populate();
       return this;
-    }
+    };
     this.populate = function () {
       populate();
       return this;
-    }
+    };
     this.append(control);
     return this;
   };
   $.fn.veda_checkbox.defaults = {
     template: $("#checkbox-control-template").html(),
-  }
+  };
 
   // RADIO GROUP CONTROL
 
@@ -998,7 +1001,7 @@
       holder = $(".radio", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) {return "'rdf:type'==='" + item.id + "'"}).join(" && "),
+      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [];
@@ -1033,7 +1036,7 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return options = eval(match);
+          return ( options = eval(match) );
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
@@ -1096,20 +1099,20 @@
       }
     });
     this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value });
+      if (!value) return $("input", this).map(function () { return this.value; });
       populate();
       return this;
-    }
+    };
     this.populate = function () {
       populate();
       return this;
-    }
+    };
     this.append(control);
     return this;
   };
   $.fn.veda_radio.defaults = {
     template: $("#radio-control-template").html(),
-  }
+  };
 
   // Numeration control
   $.fn.veda_numeration = function( options ) {
@@ -1172,7 +1175,7 @@
     this.val = function (value) {
       if (!value) return input.val();
       return input.val(value);
-    }
+    };
 
     button.on("click", function () {
       var prop = new veda.IndividualModel(property_uri);
@@ -1212,7 +1215,7 @@
     opts.value = individual.hasValue(property_uri) ? individual.get(property_uri)[0].toString() : "";
     opts.change = function (value) {
       individual.set(property_uri, [value]);
-    }
+    };
     if (typeof self.attr('data-mode') !== "undefined") opts.sourceMode = self.attr('data-mode');
     if (property_uri === "v-s:script") opts.sourceMode = "javascript";
     if (property_uri === "v-ui:template") opts.sourceMode = "htmlmixed";
@@ -1271,7 +1274,7 @@
 
     this.append(control);
     return this;
-  }
+  };
   $.fn.veda_source.defaults = {
     value: "",
     template: $("#source-control-template").html(),
@@ -1283,139 +1286,127 @@
   };
 
   // FILE UPLOAD CONTROL
-  function uploadFile(file, acceptedFileType, success, progress) {
-    var notify = new veda.Notify();
-    if (file instanceof File) {
-      var ext = file.name.match(/\.\w+$/); ext = ( ext ? ext[0] : ext );
-      if (acceptedFileType && acceptedFileType.split(",").indexOf(ext) < 0) {
-        return notify("danger", {message: "Тип файла не разрешен (" + acceptedFileType + ")"});
-      }
-    }
-    var url = "/files",
-        xhr = new XMLHttpRequest(),
-        d = new Date(),
-        path = ["", d.getFullYear(), d.getMonth() + 1, d.getDate()].join("/"),
-        uri = veda.Util.guid(),
-        fd = new FormData();
-    xhr.open("POST", url, true);
-    xhr.upload.onprogress = progress;
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          success(file, path, uri);
-        } else {
-          notify("danger", {code: xhr.status, message: "File upload error"});
+  function uploadFile(params) {
+    return new Promise(function (resolve, reject) {
+      var file     = params.file,
+          path     = params.path,
+          uri      = params.uri,
+          progress = params.progress,
+          url = "/files",
+          xhr = new XMLHttpRequest(),
+          fd = new FormData();
+      xhr.open("POST", url, true);
+      xhr.upload.onprogress = progress;
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            resolve(params);
+          } else {
+            reject( new Error("File upload error") );
+          }
         }
+      };
+      xhr.onerror = function() {
+        reject( new Error("File upload error") );
+      };
+      fd.append("path", path);
+      fd.append("uri", uri);
+      if (file instanceof File) {
+        fd.append("file", file);
+      } else if (file instanceof Image) {
+        fd.append("content", file.src);
       }
-    };
-    xhr.onerror = function() {
-      notify("danger", {message: "File upload error"});
-    };
-    fd.append("path", path);
-    fd.append("uri", uri);
-    if (file instanceof File) {
-      fd.append("file", file);
-    } else {
-      fd.append("content", file);
-    }
-    xhr.send(fd);
+      xhr.send(fd);
+    });
   }
 
-  function resize (image, maxWidth, success) {
-    var cnvs1 = document.createElement("canvas"),
-        ctx1 = cnvs1.getContext("2d"),
-        cnvs2 = document.createElement("canvas"),
-        ctx2 = cnvs2.getContext("2d"),
-        reader = new FileReader();
-    reader.onload = function(event) {
-      var img = new Image();
-      img.onload = function() {
-        var ratio = maxWidth / img.width;
-        var width = img.width * ratio >> 0;
-        var height = img.height * ratio >> 0;
-        cnvs1.width = width;
-        cnvs1.height = height;
-        cnvs2.width = img.width * 2;
-        cnvs2.height = img.height * 2;
-        ctx2.drawImage(img, 0, 0, img.width, img.height, 0, 0, width * 2, height * 2);
-        ctx1.drawImage(cnvs2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-        var thumbnail = cnvs1.toDataURL("image/jpeg");
-        success(thumbnail);
+  function loadImage(imageFile) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var image = new Image();
+        image.onload = function() {
+          resolve(image);
+        };
+        image.onerror = function () {
+          reject( new Error("Image load error") );
+        };
+        image.src = e.target.result;
       };
-      img.src = event.target.result;
-    };
-    reader.readAsDataURL(image);
+      reader.onerror = function () {
+        reject( new Error("File reader error") );
+      };
+      reader.readAsDataURL(imageFile);
+    });
+  }
+
+  function resizeImage (image, maxWidth) {
+    if (image.width < maxWidth) {
+      return image;
+    }
+    var canvas1 = document.createElement("canvas"),
+        context1 = canvas1.getContext("2d"),
+        canvas2 = document.createElement("canvas"),
+        context2 = canvas2.getContext("2d"),
+        ratio = maxWidth / image.width,
+        width = image.width * ratio >> 0,
+        height = image.height * ratio >> 0;
+    canvas1.width = width;
+    canvas1.height = height;
+    canvas2.width = image.width * 2;
+    canvas2.height = image.height * 2;
+    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
+    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
+    var resizedSrc = canvas1.toDataURL("image/jpeg");
+    var resized = new Image();
+    resized.src = resizedSrc;
+    return resized;
   }
 
   $.fn.veda_file = function( options ) {
     var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
-      control = $(opts.template),
-      spec = opts.spec,
-      individual = opts.individual,
-      rel_uri = opts.rel_uri,
-      rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
-      range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"],
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
-      acceptedFileType = this.attr("accept");
-
-    var fileInput = $(".file", control);
-    if (!isSingle) fileInput.attr("multiple", "multiple");
-    var btn = $(".btn", control),
+        control = $(opts.template),
+        spec = opts.spec,
+        individual = opts.individual,
+        rel_uri = opts.rel_uri,
+        rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
+        range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
+        isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
+        accept = this.attr("accept"),
+        fileInput = $("[type='file']", control),
+        browseButton = $(".browse", control),
         indicatorPercentage = $(".indicator-percentage", control),
         indicatorSpinner = $(".indicator-spinner", control);
-    btn.click(function (e) {
+
+    if (!isSingle) { fileInput.attr("multiple", "multiple"); }
+    if (accept) { fileInput.attr("accept", accept); }
+
+    browseButton.click(function (e) {
       fileInput.click();
     });
-    var files = [], n;
-    var uploaded = function (file, path, uri) {
-      var f = new veda.IndividualModel();
-      f["rdf:type"] = range;
-      f["v-s:fileName"] = [ file.name ];
-      f["rdfs:label"] = [ file.name ];
-      f["v-s:fileSize"] = [ file.size ];
-      f["v-s:fileUri"] = [ uri ];
-      f["v-s:filePath"] = [ path ];
-      f["v-s:parent"] = [ individual ]; // v-s:File is subClassOf v-s:Embedded
-      if ( (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp)$/i).test(file.name) ) {
-        resize(file, 256, function (thumbnail) {
-          uploadFile(thumbnail, undefined, function (_, path, uri) {
-            var t = new veda.IndividualModel();
-            t["rdf:type"] = range;
-            t["v-s:fileName"] = [ "thumbnail-" + file.name ];
-            t["rdfs:label"] = [ "thumbnail-" + file.name ];
-            t["v-s:fileUri"] = [ uri ];
-            t["v-s:filePath"] = [ path ];
-            t["v-s:parent"] = [ f ]; // v-s:File is subClassOf v-s:Embedded
-            t.save();
-            f["v-s:thumbnail"] = [ t ];
-            f.save();
-            files.push(f);
-            if (files.length === n) {
-              if (isSingle) {
-                individual.set(rel_uri, files);
-              } else {
-                individual.set(rel_uri, individual.get(rel_uri).concat(files));
-              }
-            }
-            indicatorSpinner.empty().hide();
-            indicatorPercentage.empty().hide();
-          });
-        });
-      } else {
-        f.save();
-        files.push(f);
-        if (files.length === n) {
-          if (isSingle) {
-            individual.set(rel_uri, files);
-          } else {
-            individual.set(rel_uri, individual.get(rel_uri).concat(files));
-          }
-        }
+
+    var notify = new veda.Notify();
+
+    fileInput.change(function (e) {
+      var that = this;
+      var fileIndividualPromises = [];
+      for (var i = 0, n = this.files.length, file; (file = this.files && this.files[i]); i++) {
+        var fileIndividualPromise = createFileIndividual(file, undefined, individual);
+        fileIndividualPromises.push(fileIndividualPromise);
+      }
+      Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
+        that.value = "";
         indicatorSpinner.empty().hide();
         indicatorPercentage.empty().hide();
-      }
-    };
-    var progress = function (progressEvent) {
+        if (isSingle) {
+          individual.set(rel_uri, fileIndividuals);
+        } else {
+          individual.addValue(rel_uri, fileIndividuals);
+        }
+      });
+    });
+
+    function progress (progressEvent) {
       if (progressEvent.lengthComputable) {
         var percentComplete = Math.round(progressEvent.loaded / progressEvent.total * 100);
         indicatorPercentage.text(percentComplete + "%").show();
@@ -1423,19 +1414,55 @@
         indicatorSpinner.show();
       }
     };
-    fileInput.change(function () {
-      files = [];
-      n = this.files.length;
-      for (var i = 0, file; (file = this.files && this.files[i]); i++) {
-        uploadFile(file, acceptedFileType, uploaded, progress);
-      }
-    });
+
+    function createFileIndividual (file, name, parent) {
+      var fileName = file.name || name;
+      var uri = veda.Util.guid();
+      var path = "/" + new Date().toISOString().substring(0, 10).split("-").join("/");
+      var fileIndividual = new veda.IndividualModel();
+      fileIndividual["rdf:type"] = range;
+      fileIndividual["v-s:fileName"] = [ fileName ];
+      fileIndividual["rdfs:label"] = [ fileName ];
+      fileIndividual["v-s:fileSize"] = [ file.size ];
+      fileIndividual["v-s:fileUri"] = [ uri ];
+      fileIndividual["v-s:filePath"] = [ path ];
+      fileIndividual["v-s:parent"] = [ parent ];
+      return new Promise(function (resolve, reject) {
+        // If file is image && !thumbnail
+        if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp|svg)$/i).test(file.name) ) {
+          loadImage(file)
+          .then(function (image) {
+            var resized = resizeImage(image, 2048);
+            var thumbnail = resizeImage(image, 256);
+            fileIndividual.image = resized;
+            createFileIndividual(thumbnail, "thumbnail-" + fileName, fileIndividual)
+            .then(function (thumbnailIndividual) {
+              thumbnailIndividual.image = thumbnail;
+              fileIndividual["v-s:thumbnail"] = [ thumbnailIndividual ];
+              resolve(fileIndividual);
+            });
+          });
+        } else {
+          resolve(fileIndividual);
+        }
+      }).then(function () {
+        return uploadFile({
+          file: file,
+          path: path,
+          uri: uri,
+          progress: progress
+        });
+      }).then(function () {
+        return fileIndividual.save();
+      });
+    }
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
     this.append(control);
     return this;
-  }
+  };
   $.fn.veda_file.defaults = {
     template: $("#file-control-template").html()
   };
@@ -1444,7 +1471,7 @@
   $.fn.veda_link = function( options ) {
     var opts = $.extend( {}, $.fn.veda_link.defaults, options ),
       control = $(opts.template),
-      template = this.attr("data-template") || "{individual['rdfs:label'].join(', ')}",
+      template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
       individual = opts.individual,
       spec = opts.spec,
       placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" ") ),
@@ -1464,7 +1491,7 @@
     } else {
       var relRange = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"];
       if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
-        var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'";})
+        var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'"; });
         queryPrefix = "(" + types.join(" || ") + ")";
       }
     }
@@ -1575,27 +1602,28 @@
           inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
           outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
           allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
+          allowedFilter = spec && spec.hasValue("v-ui:treeAllowedFilter") ? spec["v-ui:treeAllowedFilter"] : undefined,
           selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
           selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
           displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
 
       if (root && (inProperty || outProperty)) {
-        var treeConfig = {
-          root: root,
-          inProperty: inProperty,
-          outProperty: outProperty,
-          sort: sort,
-          allowedClass: allowedClass,
-          selectableClass: selectableClass,
-          selectableFilter: selectableFilter,
-          displayedProperty: displayedProperty,
-          targetRel_uri: rel_uri,
-          isSingle: isSingle
-        };
         var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
         var modal = $("#individual-modal-template").html();
         tree.click(function () {
-          individual.treeConfig = treeConfig;
+          individual.treeConfig = {
+            root: root,
+            inProperty: inProperty,
+            outProperty: outProperty,
+            sort: sort,
+            allowedClass: allowedClass,
+            allowedFilter: allowedFilter,
+            selectableClass: selectableClass,
+            selectableFilter: selectableFilter,
+            displayedProperty: displayedProperty,
+            targetRel_uri: rel_uri,
+            isSingle: isSingle
+          };
           var $modal = $(modal);
           var cntr = $(".modal-body", $modal);
           $modal.on('hidden.bs.modal', function (e) {
@@ -1685,14 +1713,10 @@
             suggestions.empty();
             fulltextMenu.hide();
           }
-        }
+        };
       }());
 
-      fulltext
-        .on("keyup", keyupHandler)
-        .on("triggerSearch", performSearch);
-
-      function performSearch (e, value) {
+      var performSearch = function (e, value) {
         ftQuery(queryPrefix, value, sort)
           .then(renderResults)
           .catch(function (error) {
@@ -1700,27 +1724,27 @@
           });
       }
 
-      var suggestionTmpl = '<div class="suggestion" about="@" property="rdfs:label"></div>';
+      fulltext
+        .on("keyup", keyupHandler)
+        .on("triggerSearch", performSearch);
+
       var selected = [];
 
-      function renderResults(results) {
+      var renderResults = function (results) {
         selected = individual.get(rel_uri);
         if (results.length) {
-          var tmp = $("<div></div>");
-          var renderedPromises = results.map(function (result) {
-            return result.present(tmp, suggestionTmpl).then(function (tmpl) {
-              if (individual.hasValue(rel_uri, result)) {
-                tmpl.addClass("selected");
-              }
-              return tmpl;
-            });
+          var rendered = results.map(function (result) {
+            var tmpl = $("<div class='suggestion'></div>")
+              .text( renderTemplate(result) )
+              .attr("resource", result.id);
+            if (individual.hasValue(rel_uri, result)) {
+              tmpl.addClass("selected");
+            }
+            return tmpl;
           });
-          Promise.all(renderedPromises).then(function (rendered) {
-            suggestions.empty().append(rendered);
-            fulltextMenu.show();
-            $(document).click(clickOutsideMenuHandler);
-            tmp.remove();
-          });
+          suggestions.empty().append(rendered);
+          fulltextMenu.show();
+          $(document).click(clickOutsideMenuHandler);
         } else {
           suggestions.empty();
           fulltextMenu.hide();
@@ -1756,7 +1780,7 @@
         }
       });
 
-      function clickOutsideMenuHandler(event) {
+      var clickOutsideMenuHandler = function (event) {
         if( !$(event.target).closest(fulltextMenu).length ) {
           if( fulltextMenu.is(":visible") ) {
             fulltextMenu.hide();
@@ -1764,20 +1788,22 @@
           }
         }
       }
-      function removeClickOutsideMenuHandler() {
+
+      var removeClickOutsideMenuHandler = function () {
         if (control.is(":visible")) {
           individual.set(rel_uri, selected);
         }
         $(document).off("click", clickOutsideMenuHandler);
       }
 
-      function propertyModifiedHandler () {
+      var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
           fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
         } else if ( isSingle ) {
           fulltext.val("");
         }
       }
+
       individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
         individual.off(rel_uri, propertyModifiedHandler);
@@ -1846,7 +1872,7 @@
       var lines = input.split("\n");
       var lineQueries = lines.map(function (line) {
         var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-        return words.map(function (word) { return "'*' == '" + word + "*'" }).join(" && ");
+        return words.map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
       });
       queryString = lineQueries.join(" || ");
     }
@@ -1854,35 +1880,54 @@
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
     }
 
-    return veda.Backend.query({
-      ticket: veda.ticket,
-      query: queryString,
-      sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
-      top: 100,
-      limit: 1000
-    }).then(function (queryResult) {
+    var result = [];
 
-      var toLoad = [];
-      var resultIndividuals = queryResult.result.map(function (uri) {
-        var individual = new veda.IndividualModel(uri);
-        if ( !individual.isLoaded() ) {
-          toLoad.push(uri);
+    return incrementalSearch(0, 100, []).then(function (results) {
+      var getList = results.filter( function (uri, index) {
+        if ( veda.cache[uri] ) {
+          result.push(veda.cache[uri]);
+          return false;
+        } else {
+          return true;
         }
-        return individual;
       });
 
-      if (!toLoad.length) { return resultIndividuals; }
-
-      return veda.Backend.get_individuals({
-        ticket: veda.ticket,
-        uris: toLoad
-      }).then(function (individuals) {
-        individuals.map( function (json) {
-          return new veda.IndividualModel(json);
+      if (getList.length) {
+        return get_individuals({
+          ticket: veda.ticket,
+          uris: getList,
+          async: true
         });
-        return resultIndividuals;
+      } else {
+        return [];
+      }
+    }).then(function (individuals) {
+      individuals.map( function (json) {
+        result.push( new veda.IndividualModel(json) );
       });
+      return result;
     });
+
+    function incrementalSearch(cursor, limit, results) {
+      return query({
+        ticket: veda.ticket,
+        query: queryString,
+        sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
+        from: cursor,
+        top: 10,
+        limit: 1000,
+        async: true
+      }).then(function (queryResult) {
+        results = results.concat(queryResult.result);
+        var cursor = queryResult.cursor;
+        var estimated = queryResult.estimated;
+        if (results.length >= limit || cursor >= estimated) {
+          return results;
+        } else {
+          return incrementalSearch(cursor, limit, results);
+        }
+      });
+    }
   }
 
 })( jQuery );

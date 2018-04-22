@@ -93,10 +93,10 @@ veda.Module(function (veda) { "use strict";
     this.isSync(false);
     values = values.filter(function (i) { return i != undefined; });
     var serialized = values.map( serializer );
-    var uniq = unique(serialized);
     if (this.filtered[property_uri] && this.filtered[property_uri].length) {
-      uniq = serialized.concat( this.filtered[property_uri] );
+      serialized = serialized.concat( this.filtered[property_uri] );
     }
+    var uniq = unique(serialized);
     if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
       this.properties[property_uri] = uniq;
       this.trigger("propertyModified", property_uri, values);
@@ -134,7 +134,7 @@ veda.Module(function (veda) { "use strict";
   function parser(value) {
     if (value.type === "String") {
       var string = new String(value.data);
-      if (value.lang !== "NONE") { string.language = value.lang };
+      if (value.lang !== "NONE") { string.language = value.lang; }
       return string;
     } else if (value.type === "Uri") {
       return new veda.IndividualModel(value.data);
@@ -152,28 +152,28 @@ veda.Module(function (veda) { "use strict";
       return {
         type: isInteger(value) ? "Integer" : "Decimal",
         data: value
-      }
+      };
     } else if (typeof value === "boolean") {
       return {
         type: "Boolean",
         data: value
-      }
+      };
     } else if (typeof value === "string" || value instanceof String) {
       return {
         type: "String",
         data: value.valueOf(),
         lang: value.language || "NONE"
-      }
+      };
     } else if (value instanceof Date) {
       return {
         type: "Datetime",
         data: value.toISOString()
-      }
+      };
     } else if (value instanceof veda.IndividualModel) {
       return {
         type: "Uri",
         data: value.id
-      }
+      };
     } else {
       return value;
     }
@@ -463,23 +463,31 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.addValue = function (property_uri, value) {
-    if (typeof value !== "undefined" && value !== null) {
-      this.properties[property_uri] = this.properties[property_uri] || [];
-      var serialized;
-      if ( Array.isArray(value) ) {
-        serialized = value.map(serializer);
-        this.properties[property_uri] = this.properties[property_uri].concat(serialized);
-      } else {
-        serialized = serializer(value);
-        this.properties[property_uri].push(serialized);
-      }
-      this.isSync(false);
-      this.trigger("propertyModified", property_uri, this.get(property_uri));
-      this.trigger(property_uri, this.get(property_uri));
+  proto.addValue = function (property_uri, values) {
+    if (typeof values === "undefined" || values === null) {
+      return this;
     }
+    this.properties[property_uri] = this.properties[property_uri] || [];
+    if ( Array.isArray(values) ) {
+      var that = this;
+      values.forEach(function (value) {
+        addSingleValue.call(that, property_uri, value);
+      });
+    } else {
+      addSingleValue.call(this, property_uri, values);
+    }
+    this.isSync(false);
+    values = this.get(property_uri);
+    this.trigger("propertyModified", property_uri, values);
+    this.trigger(property_uri, values);
     return this;
   };
+  function addSingleValue(property_uri, value) {
+    if (value != undefined) {
+      var serialized = serializer(value);
+      this.properties[property_uri].push(serialized);
+    }
+  }
 
   /**
    * @method
@@ -487,22 +495,67 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.removeValue = function (property_uri, value) {
-    if (!this.properties[property_uri] || !this.properties[property_uri].length) {
+  proto.removeValue = function (property_uri, values) {
+    if (!this.properties[property_uri] || !this.properties[property_uri].length || typeof values === "undefined" || values === null) {
       return this;
     }
-    if (typeof value !== "undefined" && value !== null) {
+    if ( Array.isArray(values) ) {
+      var that = this;
+      values.forEach(function (value) {
+        removeSingleValue.call(that, property_uri, value);
+      });
+    } else {
+      removeSingleValue.call(this, property_uri, values);
+    }
+    this.isSync(false);
+    values = this.get(property_uri);
+    this.trigger("propertyModified", property_uri, values);
+    this.trigger(property_uri, values);
+    return this;
+  };
+  function removeSingleValue (property_uri, value) {
+    if (value != undefined) {
       var serialized = serializer(value);
       this.properties[property_uri] = (this.properties[property_uri] || []).filter(function (item) {
         return !( item.data == serialized.data && (item.lang && serialized.lang ? item.lang === serialized.lang : true) );
       });
-      var values = this.get(property_uri);
-      this.isSync(false);
-      this.trigger("propertyModified", property_uri, values);
-      this.trigger(property_uri, values);
     }
+  }
+
+  /**
+   * @method
+   * @param {String} property_uri property name
+   * @param {Any allowed type} value
+   * @return {this}
+   */
+  proto.toggleValue = function (property_uri, values) {
+    if (typeof values === "undefined" || values === null) {
+      return this;
+    }
+    this.properties[property_uri] = this.properties[property_uri] || [];
+    if ( Array.isArray(values) ) {
+      var that = this;
+      values.forEach(function (value) {
+        toggleSingleValue.call(that, property_uri, value);
+      });
+    } else {
+      toggleSingleValue.call(this, property_uri, values);
+    }
+    this.isSync(false);
+    values = this.get(property_uri);
+    this.trigger("propertyModified", property_uri, values);
+    this.trigger(property_uri, values);
     return this;
   };
+  function toggleSingleValue (property_uri, value) {
+    if (value != undefined) {
+      if ( this.hasValue(property_uri, value) ) {
+        removeSingleValue.call(this, property_uri, value);
+      } else {
+        addSingleValue.call(this, property_uri, value);
+      }
+    }
+  }
 
   /**
    * @method

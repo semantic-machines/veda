@@ -162,18 +162,19 @@ jsWorkflow.ready = jsPlumb.ready;
             }).on("click", function(event) {
               if (!event.shiftKey) {
                 instance.defocus();
+                var holder;
                 if (mode === "view") {
-            var holder = $("<div>");
-            propsHead.text(net["rdfs:label"].join(", "));
-            process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
-            props.empty().append(holder);
-          }
+                  holder = $("<div>");
+                  propsHead.text(net["rdfs:label"].join(", "));
+                  process.present(holder, new veda.IndividualModel("v-wf:ProcessPropsTemplate"));
+                  props.empty().append(holder);
+                }
                 if (mode === "edit") {
-            var holder = $("<div>");
-            propsHead.text(net["rdfs:label"].join(", "));
-            net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"), 'edit');
-            props.empty().append(holder);
-          }
+                  holder = $("<div>");
+                  propsHead.text(net["rdfs:label"].join(", "));
+                  net.present(holder, new veda.IndividualModel("v-wf:SimpleNetTemplate"), 'edit');
+                  props.empty().append(holder);
+                }
               }
             });
 
@@ -215,7 +216,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 veda["workflow"+elementId+"-offsetY"] = newTop;
                 net['offsetX'] = newLeft;
                 net['offsetY'] = newTop;
-            }
+            };
             if (net['offsetX']!=null && net['offsetX']!=0) {
               instance.moveCanvas(net['offsetX'], net['offsetY']);
             } else {
@@ -274,24 +275,23 @@ jsWorkflow.ready = jsPlumb.ready;
 
             // Handle creating new flow event
             instance.bind("connection", function(info) {
-              if (info.connection.id.indexOf('con')==-1) {
+              if ( info.connection.id.indexOf('con') == -1 ) {
                 var flow = new veda.IndividualModel(info.connection.id);
-                  flow["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
+                flow["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
                 return; // Don't use logic when we work with flows that already exists
               }
-                var individual = new veda.IndividualModel(); // create individual (Task / Condition)
+              var individual = new veda.IndividualModel(); // create individual (Task / Condition)
 
-                individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Flow") ];
-                individual["rdfs:label"] = [new String('')];
+              individual["rdf:type"] = [ new veda.IndividualModel("v-wf:Flow") ];
 
-                net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
+              net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individual]); // <- Add new Flow to Net
 
-                var source = new veda.IndividualModel(info.sourceId);
-                source['v-wf:hasFlow'] = source['v-wf:hasFlow'].concat([individual]);
+              var source = new veda.IndividualModel(info.sourceId);
+              source['v-wf:hasFlow'] = source['v-wf:hasFlow'].concat([individual]);
 
-                individual["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
+              individual["v-wf:flowsInto"] = [new veda.IndividualModel(info.targetId)]; // setup Flow target
 
-                info.connection.id = individual.id;
+              info.connection.id = individual.id;
             });
 
             subNetViewButton = function(state, $state) {
@@ -376,7 +376,7 @@ jsWorkflow.ready = jsPlumb.ready;
                   state[mapping] = state[mapping].concat([individualM]); // <- Add new Mapping to State
                   net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individualM]);
                 });
-            }
+            };
 
             instance.addToDragList = function(element) {
               dragList.push(element);
@@ -548,18 +548,18 @@ jsWorkflow.ready = jsPlumb.ready;
 
                 if (mode=='edit') {
                   windows.bind("dblclick", function() {
-                      var _this = this;
-                      veda.Util.showModal(new veda.IndividualModel($(_this).attr('id')), new veda.IndividualModel('v-wf:TaskTemplateAsModal'), 'edit');
+                    var _this = this;
+                    veda.Util.showModal(new veda.IndividualModel($(_this).attr('id')), new veda.IndividualModel('v-wf:TaskTemplateAsModal'), 'edit');
                   });
 
                   instance.draggable(windows, {
                     drag: function (event) { //gets called on every drag
                       $("#workflow-context-menu").hide();
                       var target = new veda.IndividualModel(event.el.id);
-                        target['v-wf:locationX'] = [Math.round(event.pos[0]-canvasSizePx/2)];
-                        target['v-wf:locationY'] = [Math.round(event.pos[1]-canvasSizePx/2)];
+                      target['v-wf:locationX'] = [Math.round(event.pos[0]-canvasSizePx/2)];
+                      target['v-wf:locationY'] = [Math.round(event.pos[1]-canvasSizePx/2)];
                     }
-                });
+                  });
                 }
 
                 // Initialize all State elements as Connection sources.
@@ -744,8 +744,7 @@ jsWorkflow.ready = jsPlumb.ready;
               net['v-wf:consistsOf'].forEach(function(state) {
                if (state.hasValue('v-wf:hasFlow')) {
                  state['v-wf:hasFlow'].forEach(function(flow) {
-                   if (flow.hasValue("v-wf:flowsInto")
-                   && flow["v-wf:flowsInto"][0].id == element.id) {
+                   if (flow.hasValue("v-wf:flowsInto") && flow["v-wf:flowsInto"][0].id == element.id) {
                     instance.deleteFlow(flow, state);
                    }
                  });
@@ -771,9 +770,8 @@ jsWorkflow.ready = jsPlumb.ready;
               instance.detach(flow, {fireEvent:false, forceDetach: true});
               net['v-wf:consistsOf'] = veda.Util.removeSubIndividual(net, 'v-wf:consistsOf', flow.id);
               var source = new veda.IndividualModel(source.id);
-            source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', flow.id);
-            }
-
+              source['v-wf:hasFlow'] = veda.Util.removeSubIndividual(source, 'v-wf:hasFlow', flow.id);
+            };
 
             instance.createEmptyNetElement = function(type) {
             var individual = new veda.IndividualModel();
@@ -798,7 +796,7 @@ jsWorkflow.ready = jsPlumb.ready;
                 }
                 net['v-wf:consistsOf'] = (net['v-wf:consistsOf'] === undefined)?[individual]:net['v-wf:consistsOf'].concat([individual]);
                 return individual;
-            }
+            };
 
             /**
              *Create workflow Net by given Object (v-wf:Net individual).
@@ -900,7 +898,7 @@ jsWorkflow.ready = jsPlumb.ready;
                         e.setPaintStyle({strokeStyle: "#666666"});
                         e.removeOverlay('connLabel');
                   });
-                };
+                }
                 selectedElementId = null;
                 selectedElementType = null;
                 selectedElementSourceId = null;
@@ -913,7 +911,7 @@ jsWorkflow.ready = jsPlumb.ready;
                   instance.loadProcessWorkItems(wi, wis, usecache);
                 });
               }
-            }
+            };
 
             instance.createProcessView = function(process, reload) {
               // Apply WorkItems to Net
@@ -1105,13 +1103,19 @@ jsWorkflow.ready = jsPlumb.ready;
             });
 
             $('#'+workflowData).bind('mousewheel', function(e){
-              if(e.originalEvent.wheelDelta > 0) {
-                if (net['currentScale']<1) { return instance.changeScale(net['currentScale'] + 0.1); }
-                  else if (net['currentScale']<2) return instance.changeScale(net['currentScale'] + 0.25);
-                } else {
-                    if (net['currentScale']>1) { return instance.changeScale(net['currentScale'] - 0.25) }
-                      else if (net['currentScale']>0.2) return instance.changeScale(net['currentScale'] - 0.1);
+              if( e.originalEvent.wheelDelta > 0 ) {
+                if ( net['currentScale'] < 1 ) {
+                  return instance.changeScale(net['currentScale'] + 0.1); 
+                } else if ( net['currentScale'] < 2 ) {
+                  return instance.changeScale(net['currentScale'] + 0.25);
                 }
+              } else {
+                if ( net['currentScale'] > 1 ) { 
+                  return instance.changeScale(net['currentScale'] - 0.25); 
+                } else if ( net['currentScale'] > 0.2 ) { 
+                  return instance.changeScale(net['currentScale'] - 0.1); 
+                }
+              }
             });
 
             $('.zoom-default').on('click', function() {
@@ -1132,25 +1136,25 @@ jsWorkflow.ready = jsPlumb.ready;
 
 function collectEntities(element, list) {
   var props = Object.getOwnPropertyNames(element);
-    for (var key = 0; key < props.length; key++)
-    {
-      var prop = props[key];
-      if (element[prop] && Array.isArray(element[prop])) {
-        element[prop].forEach(function(subelement) {
-          if (typeof subelement.hasValue === 'function' && subelement.hasValue('rdf:type'))
-          {
-            subelement['rdf:type'].forEach(function (subRdfType) {
-              if (subRdfType.id == 'v-wf:VarDefine' || subRdfType.id == 'v-wf:Transform' || subRdfType.id == 'v-wf:Mapping') {
-                list.push(subelement);
-              }
-              if (subRdfType.id == 'v-wf:Mapping') {
-                list.push(subelement['v-wf:mapToVariable'][0]);
-              }
-            });
-          }
-        });
-      }
+  for (var key = 0; key < props.length; key++)
+  {
+    var prop = props[key];
+    if (element[prop] && Array.isArray(element[prop])) {
+      element[prop].forEach(function(subelement) {
+        if (typeof subelement.hasValue === 'function' && subelement.hasValue('rdf:type'))
+        {
+          subelement['rdf:type'].forEach(function (subRdfType) {
+            if (subRdfType.id == 'v-wf:VarDefine' || subRdfType.id == 'v-wf:Transform' || subRdfType.id == 'v-wf:Mapping') {
+              list.add(subelement);
+            }
+            if (subRdfType.id == 'v-wf:Mapping') {
+              list.add(subelement['v-wf:mapToVariable'][0]);
+            }
+          });
+        }
+      });
     }
+  }
 }
 
 //[END] Block of net editor

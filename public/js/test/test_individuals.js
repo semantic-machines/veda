@@ -183,6 +183,39 @@ function test_fail_read(assert, ticket, read_indv_uri, ethalon_indv, reopen)
     return res == false;
 }
 
+
+function test_success_update(assert, ticket, ethalon_indv, reopen)
+{
+    if (!reopen)
+        reopen = false;
+
+    try
+    {
+        Backend.put_individual(ticket.id, ethalon_indv, reopen);
+	assert.ok(true);
+    }
+    catch (e)
+    {
+	assert.ok(false);
+    }
+}
+
+function test_fail_update(assert, ticket, ethalon_indv, reopen)
+{
+    if (!reopen)
+        reopen = false;
+
+    try
+    {
+        Backend.put_individual(ticket.id, ethalon_indv, reopen);
+	assert.ok(false);
+    }
+    catch (e)
+    {
+	assert.ok(true);
+    }
+}
+
 function check_rights_success(assert, ticket, uri, expected_rights)
 {
     var res = check_rights(ticket, uri, expected_rights);
@@ -985,15 +1018,23 @@ for (i = 0; i < 1; i++)
             //#5
             assert.ok(compare(data.length, 2));
 
-            data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + "'", undefined, undefined, true).result;
+	    try
+	    {
+        	data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + "'", undefined, undefined, true).result;
+	    } 
+	    catch (e)
+	    {
+        	assert.ok(true);
+	    }
 
-            //#6
-            assert.ok(compare(data.length, 0));
-
-            data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + " t1'", undefined, undefined, true).result;
-
-            //#7
-            assert.ok(compare(data.length, 0));
+	    try
+	    {
+        	data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + " t1'", undefined, undefined, true).result;
+	    } 
+	    catch (e)
+	    {
+        	assert.ok(true);
+	    }
 
             data = Backend.query(ticket_user1.id, "'v-s:test_field' === '" + test_data_uid + "' || 'v-s:test_field' === 'AAA" + test_data_uid + "'", undefined, undefined, true).result;
 
@@ -2129,31 +2170,48 @@ QUnit.test(
             test_success_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
             test_fail_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
 
-            var res = addRight(ticket_user1.id, [can_read], ticket_user2.user_uri, new_test_doc1_uri);
+            var res = addRight(ticket_user1.id, [can_read, can_update], ticket_user2.user_uri, new_test_doc1_uri);
             var new_permission = res[0];
             Backend.wait_module(m_acl, res[1].op_id);
 
-            test_success_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
-            test_success_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+            test_success_update(assert, ticket_user1, new_test_doc1);
+            test_success_update(assert, ticket_user2, new_test_doc1);
 
             var new_permission_filter_uri = "test31-pf:" + guid();
             var new_permission_filter = {
                 '@': new_permission_filter_uri,
                 'rdf:type': newUri('v-s:PermissionFilter'),
                 'v-s:permissionObject': newUri(new_test_doc1_uri),
+                'v-s:resource': newUri(new_permission_filter_uri+'xxx'),
+                'v-s:canRead' : newBool (true)
             };
             var res = Backend.put_individual(ticket_user1.id, new_permission_filter);
 
             Backend.wait_module(m_acl, res.op_id);
 
-            test_fail_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
-            test_fail_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+            test_fail_update(assert, ticket_user1, new_test_doc1);
+            test_fail_update(assert, ticket_user2, new_test_doc1);
+            test_success_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
+            test_success_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
 
-            var res1 = addRight(ticket_admin.id, [can_read], ticket_user2.user_uri, new_test_doc1_uri, undefined, new_permission_filter_uri);
+            var res1 = addRightWithFilter(ticket_admin.id, [can_update], ticket_user2.user_uri, new_test_doc1_uri, new_permission_filter_uri+'xxx');
+            var new_permission1 = res1[0];
             Backend.wait_module(m_acl, res1[1].op_id);
 
-            test_fail_read(assert, ticket_user1, new_test_doc1['@'], new_test_doc1);
-            test_success_read(assert, ticket_user2, new_test_doc1['@'], new_test_doc1);
+            test_fail_update(assert, ticket_user1, new_test_doc1);
+            test_success_update(assert, ticket_user2, new_test_doc1);
+
+	    // disable permission with filter 
+	    new_permission1['v-s:deleted'] = newBool (true);
+            Backend.put_individual(ticket_admin.id, new_permission1);
+
+            test_fail_update(assert, ticket_user2, new_test_doc1);
+
+	    // disable filter 
+	    new_permission_filter['v-s:deleted'] = newBool (true);
+            Backend.put_individual(ticket_admin.id, new_permission_filter);
+
+            test_success_update(assert, ticket_user2, new_test_doc1);
         });
 
 /*

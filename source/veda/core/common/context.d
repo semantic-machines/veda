@@ -22,6 +22,9 @@ public struct SearchResult
     int        estimated;
     int        processed;
     long       cursor;
+    long 	   total_time;
+    long	   query_time;
+    long	   authorize_time;			
     ResultCode result_code = ResultCode.Not_Ready;
 }
 

@@ -1,0 +1,79 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-correspondence-blanks>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Бланки."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Blanks."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# Letter blanks --------------------------------------------------------
+
+v-s:IncomingLetterBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Входящее письмо"@ru ;
+  rdfs:label "Incoming letter"@en ;
+  v-fc:targetType v-s:IncomingLetter ;
+  v-s:sender v-s:SenderCorrespondentBlank ;
+  v-s:recipient v-s:RecipientCorrespondentBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlankAuto ;
+.
+v-s:OutgoingLetterBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Исходящее письмо"@ru ;
+  rdfs:label "Outgoing letter"@en ;
+  v-fc:targetType v-s:OutgoingLetter ;
+  v-s:sender v-s:SenderCorrespondentBlank ;
+  v-s:recipient v-s:RecipientCorrespondentBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlankAuto ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlank ;
+.
+v-s:SenderCorrespondentBlank
+  a v-fc:Blank ;
+  rdfs:label "Корреспондент"@ru ;
+  rdfs:label "Correspondent"@en ;
+  v-fc:targetType v-s:Correspondent ;
+.
+v-s:RecipientCorrespondentBlank
+  a v-fc:Blank ;
+  rdfs:label "Корреспондент"@ru ;
+  rdfs:label "Correspondent"@en ;
+  v-fc:targetType v-s:Correspondent ;
+.
+v-s:LetterRegistrationRecordSenderBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи отправителя"@ru ;
+  rdfs:label "Registration record sender blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordSender ;
+.
+v-s:LetterRegistrationRecordRecipientBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи получателя"@ru ;
+  rdfs:label "Registration record recipient blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordRecipient ;
+.
+v-s:LetterRegistrationRecordSenderBlankAuto
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи отправителя"@ru ;
+  rdfs:label "Registration record sender blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordSender ;
+  v-fc:targetType v-s:LetterRegistrationRecordEnumerated ;
+.
+v-s:LetterRegistrationRecordRecipientBlankAuto
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк регистрационной записи получателя"@ru ;
+  rdfs:label "Registration record recipient blank"@en ;
+  v-fc:targetType v-s:LetterRegistrationRecordRecipient ;
+  v-fc:targetType v-s:LetterRegistrationRecordEnumerated ;
+.

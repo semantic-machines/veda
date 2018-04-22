@@ -229,7 +229,7 @@ bool start_http_listener(Context context, ushort http_port)
 
         settings.port           = http_port;
         settings.maxRequestSize = 1024 * 1024 * 1000;
-        //settings.bindAddresses = ["127.0.0.1"];
+        settings.bindAddresses = ["::"];
         settings.errorPageHandler = toDelegate(&view_error);
         //settings.options = HTTPServerOption.parseURL|HTTPServerOption.distribute;
 

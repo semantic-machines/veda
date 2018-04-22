@@ -98,6 +98,19 @@
 
     <!-- MODALS -->
 
+    <!-- Minimal modal -->
+    <script type="html/template" id="minimal-modal-template">
+      <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-body">
+               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+
     <!-- Individual modal -->
     <script type="html/template" id="individual-modal-template">
       <div class="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static">
@@ -322,8 +335,8 @@
     <!-- File control template -->
     <script type="html/template" id="file-control-template">
       <div>
-        <input class="file" type="file" style="display:none"/>
-        <button class="btn btn-default">
+        <input type="file" style="display:none"/>
+        <button class="browse btn btn-default">
           Browse...<strong class="indicator-percentage"></strong><span class="indicator-spinner fa fa-spinner fa-pulse fa-lg fa-fw text-info" style="display:none"></span>
         </button>
       </div>

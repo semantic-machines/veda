@@ -1,0 +1,583 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-correspondence-ui>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Интерфейс."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. UI."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# СПЕЦИФИКАЦИИ ---------------------------------------------------------
+
+v-s:PsHasDocumentKindForLetter
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Letter ;
+  v-ui:forProperty v-s:hasDocumentKind ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация v-s:hasDocumentKind для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasDocumentKind specification for v-s:Letter class"@en ;
+.
+v-s:PsHasDeliveryKindForLetter
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Letter ;
+  v-ui:forProperty v-s:hasDelivery ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 10 ;
+  rdfs:label "Спецификация v-s:hasDelivery для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasDelivery specification for v-s:Letter class"@en ;
+.
+v-s:PsSenderRecipientForLetter
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Letter ;
+  v-ui:forProperty v-s:sender ;
+  v-ui:forProperty v-s:recipient ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 50 ;
+  rdfs:label "Спецификация v-s:sender, v-s:recipient для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:sender, v-s:recipient specification for v-s:Letter class"@en ;
+.
+v-s:PsRegistrationRecordForLetter
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Letter ;
+  v-ui:forProperty v-s:hasLetterRegistrationRecordSender ;
+  v-ui:forProperty v-s:hasLetterRegistrationRecordRecipient ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient для класса v-s:Letter"@ru ;
+  rdfs:label "v-s:hasLetterRegistrationRecordSender, v-s:hasLetterRegistrationRecordRecipient specification for v-s:Letter class"@en ;
+.
+v-s:PsOrganizationForCorrespondent
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Correspondent ;
+  v-ui:forProperty v-s:correspondentOrganization ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Organization') || ('rdf:type'=='v-s:Subsidiary')"^^xsd:string ;
+  rdfs:label "Спецификация v-s:correspondentOrganization для класса v-s:Correspondent"@ru ;
+  rdfs:label "v-s:correspondentOrganization specification for v-s:Correspondent class"@en ;
+.
+
+v-s:PsDepartmentForCorrespondent
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Correspondent ;
+  v-ui:forProperty v-s:correspondentDepartment ;
+  v-ui:forProperty v-s:correspondentPerson ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация v-s:correspondentDepartment для класса v-s:Correspondent"@ru ;
+  rdfs:label "v-s:correspondentDepartment specification for v-s:Correspondent class"@en ;
+.
+
+v-s:PsDeliveryMethodForDelivery
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Delivery ;
+  v-ui:forProperty v-s:deliverBy ;
+  v-ui:forProperty v-s:date ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация v-s:deliverBy, v-s:date  для класса v-s:Delivery"@ru ;
+  rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
+.
+
+# СТРОКИ ---------------------------------------------------------------
+
+v-s:AutomaticallyBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Автоматически"@ru ;
+  rdfs:label "Automatically"@en ;
+.
+
+v-s:ManuallyBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Вручную"@ru ;
+  rdfs:label "Manually"@en ;
+.
+
+v-s:OutgoingLetterPrintBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Печатная форма"@ru ;
+  rdfs:label "Print form"@en ;
+.
+
+# ШАБЛОНЫ --------------------------------------------------------------
+
+v-s:LetterTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Letter ;
+  rdfs:label "Шаблон для класса v-s:Letter"@ru ;
+  rdfs:label "Template for v-s:Letter class"@en ;
+  v-ui:template """
+<script>
+
+  individual.on("v-s:hasLetterRegistrationRecordSender", senderRecordHandler);
+  individual.on("v-s:hasLetterRegistrationRecordRecipient", recipientRecordHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasLetterRegistrationRecordSender", senderRecordHandler);
+    individual.off("v-s:hasLetterRegistrationRecordRecipient", recipientRecordHandler);
+  });
+
+  // Make registration record autonumerated if sender == user's organization
+  function senderRecordHandler () {
+    var userOrganization = veda.appointment.getOrganization();
+    var enumerated = new veda.IndividualModel("v-s:LetterRegistrationRecordEnumerated");
+    if (
+      (mode === "edit" || template.data("mode") === "edit")
+      && this.hasValue("v-s:sender")
+      && this["v-s:sender"][0].hasValue("v-s:correspondentOrganization", userOrganization)
+      && this.hasValue("v-s:hasLetterRegistrationRecordSender")
+    ) {
+      var regRecord = this["v-s:hasLetterRegistrationRecordSender"][0];
+      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordSender"), enumerated ];
+      this["v-s:hasLetterRegistrationRecordSender"] = [ regRecord ];
+    }
+  }
+
+  // Make registration record autonumerated if recipient == user's organization
+  function recipientRecordHandler () {
+    var userOrganization = veda.appointment.getOrganization();
+    var enumerated = new veda.IndividualModel("v-s:LetterRegistrationRecordEnumerated");
+    if (
+      (mode === "edit" || template.data("mode") === "edit")
+      && this.hasValue("v-s:recipient")
+      && this["v-s:recipient"][0].hasValue("v-s:correspondentOrganization", userOrganization)
+      && this.hasValue("v-s:hasLetterRegistrationRecordRecipient")
+    ) {
+      var regRecord = this["v-s:hasLetterRegistrationRecordRecipient"][0];
+      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordRecipient"), enumerated ];
+      this["v-s:hasLetterRegistrationRecordRecipient"] = [ regRecord ];
+    }
+  }
+
+  if ( (mode === "edit" || template.data("mode") === "edit") && !this.hasValue("v-s:hasLetterRegistrationRecordSender") ) {
+    var regRecord = new veda.IndividualModel();
+    regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordSender") ];
+    this["v-s:hasLetterRegistrationRecordSender"] = [ regRecord ];
+  }
+  if ( (mode === "edit" || template.data("mode") === "edit") && !this.hasValue("v-s:hasLetterRegistrationRecordRecipient") ) {
+    var regRecord = new veda.IndividualModel();
+    regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordRecipient") ];
+    this["v-s:hasLetterRegistrationRecordRecipient"] = [ regRecord ];
+  }
+  //# sourceURL=v-s:LetterTemplate_pre
+</script>
+<div>
+  <div class="container sheet">
+    <h2>
+      <span about="@" property="rdf:type"></span>
+      <small about="@" property="rdfs:label"></small>
+    </h2>
+    <hr>
+    <div class="row">
+      <div class="col-sm-6">
+        <h3 about="v-s:sender" property="rdfs:label"></h3>
+        <div rel="v-s:sender" class="view edit search" data-template="v-s:CorrespondentTemplate" data-embedded="true"></div>
+        <veda-control data-type="link" rel="v-s:sender" class="-view edit search create"></veda-control>
+        <hr>
+        <em about="v-s:RegistrationRecord" property="rdfs:label"></em>
+        <div rel="v-s:hasLetterRegistrationRecordSender" class="view edit search" data-template="v-s:LetterRegistrationRecordTemplate" data-embedded="true"></div>
+        <veda-control data-type="link" rel="v-s:hasLetterRegistrationRecordSender" class="-view edit search create"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <h3 about="v-s:recipient" property="rdfs:label"></h3>
+        <div rel="v-s:recipient" class="view edit search" data-template="v-s:CorrespondentTemplate" data-embedded="true"></div>
+        <veda-control data-type="link" rel="v-s:recipient" class="-view edit search create"></veda-control>
+        <hr>
+        <em about="v-s:RegistrationRecord" property="rdfs:label"></em>
+        <div rel="v-s:hasLetterRegistrationRecordRecipient" class="view edit search" data-template="v-s:LetterRegistrationRecordTemplate" data-embedded="true"></div>
+        <veda-control data-type="link" rel="v-s:hasLetterRegistrationRecordRecipient" class="-view edit search create"></veda-control>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasDocumentKind" property="rdfs:label"></em>
+        <div rel="v-s:hasDocumentKind" class="view edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasDocumentKind" class="-view edit search fulltext"></veda-control>
+      </div>
+      <div class="col-sm-3">
+        <em about="v-s:dueDate" property="rdfs:label"></em>
+        <div property="v-s:dueDate" class="view -edit search"></div>
+        <veda-control property="v-s:dueDate" data-type="date" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-3">
+        <em about="v-s:sheetsCount" property="rdfs:label"></em>
+        <div property="v-s:sheetsCount" class="view -edit search"></div>
+        <veda-control property="v-s:sheetsCount" data-type="integer" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <hr>
+    <em about="v-s:hasDelivery" property="rdfs:label"></em>
+    <div rel="v-s:hasDelivery" class="view edit search" data-template="v-s:DeliveryEmbeddedTemplate" data-embedded="true"></div>
+    <veda-control data-type="link" rel="v-s:hasDelivery" class="-view edit search create margin-md"></veda-control>
+    <hr>
+    <em about="v-s:description" property="rdfs:label"></em>
+    <div property="v-s:description" class="view -edit -search"></div>
+    <veda-control property="v-s:description" data-type="text" rows="2" class="-view edit search"></veda-control>
+    <em about="rdfs:comment" property="rdfs:label"></em>
+    <div property="rdfs:comment" class="view -edit -search"></div>
+    <veda-control property="rdfs:comment" data-type="text" rows="2" class="-view edit search"></veda-control>
+    <em about="v-s:attachment" property="rdfs:label"></em>
+    <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+    <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search create"></veda-control>
+
+    <hr>
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <div class="actions view edit -search">
+      <button type="button" class="action btn btn-success -view edit -search" id="save2" about="v-s:Save" property="rdfs:label" style="margin-right:3px;"></button>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit cancel delete journal task"></span>
+      <button type="button" class="action btn btn-info view -edit -search" id="incoming-print-blank" about="v-s:IncomingLetterPrintBlank" property="rdfs:label"/>
+      <div class="btn-group dropup" id="outgoing-print-blank">
+        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <span about="v-s:OutgoingLetterPrintBlank" property="rdfs:label"> </span>
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#" id="createReport" about="v-s:OutgoingLetterPrintBlank_pdf" property="rdfs:label"></a></li>
+          <li><a href="#" id="createReport1" about="v-s:OutgoingLetterPrintBlank_rtf" property="rdfs:label"></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
+  <br>
+  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+</div>
+<script>
+
+  // Частная валидация для кнопки сохранить
+  template.on("internal-validated", function (e, validation) {
+    if (validation.state) {
+      $(".action#save2", template).removeAttr("disabled");
+    } else {
+      $(".action#save2", template).attr("disabled", "disabled");
+    }
+  });
+
+  // Альтернативное сохранение для номера и лабела, что формируется на сервере
+  $("#save2", template).click(function () {
+    var that = this;
+    individual.save();
+    template.trigger("view");
+
+    if ( individual.hasValue("v-s:recipient") ) {
+      for (var i = 0; i < individual["v-s:recipient"].length; i++) {
+        individual["v-s:recipient"][i].save();
+      }
+    }
+    if ( individual.hasValue("v-s:sender") ) {
+      for (var i = 0; i < individual["v-s:sender"].length; i++) {
+        individual["v-s:sender"][i].save();
+      }
+    }
+    if ( individual.hasValue("v-s:hasDelivery") ) {
+      for (var i = 0; i < individual["v-s:hasDelivery"].length; i++) {
+        individual["v-s:hasDelivery"][i].save();
+      }
+    }
+    if ( individual.hasValue("v-s:hasLetterRegistrationRecordRecipient") ) {
+      var regRecRec = individual["v-s:hasLetterRegistrationRecordRecipient"][0] ;
+      regRecRec.on("afterReset", save);
+      template.one("remove", function () {
+        regRecRec.off("afterReset", save);
+      });
+      regRecRec.save();
+    }
+    if ( individual.hasValue("v-s:hasLetterRegistrationRecordSender") ) {
+      var regRecSen = individual["v-s:hasLetterRegistrationRecordSender"][0] ;
+      regRecSen.on("afterReset", save);
+      template.one("remove", function () {
+        regRecSen.off("afterReset", save);
+      });
+      regRecSen.save();
+    }
+
+    function save () {
+      individual.isSync(false);
+      individual.save();
+    }
+  });
+
+  // Печатные бланки
+  if( this.hasValue("rdf:type", "v-s:IncomingLetter") ) {
+    $("#outgoing-print-blank", template).remove();
+    $('#incoming-print-blank', template).on('click', function (e) {
+      e.preventDefault();
+      veda.Util.createReport(individual, 'v-s:IncomingLetterPrintBlank');
+    });
+  } else {
+    $("#incoming-print-blank", template).remove();
+    $('#createReport', template).off('click');
+    $('#createReport', template).on('click', function (e) {
+      e.preventDefault();
+      veda.Util.createReport(individual, 'v-s:OutgoingLetterPrintBlank_pdf');
+    });
+    $('#createReport1', template).off('click');
+    $('#createReport1', template).on('click', function (e) {
+      e.preventDefault();
+      veda.Util.createReport(individual, 'v-s:OutgoingLetterPrintBlank_rtf');
+    });
+  }
+
+  // Процессная часть
+  function processHandler() {
+    if (individual.hasValue("v-wf:isProcess")
+      && individual["v-wf:isProcess"][0].hasValue("v-wf:instanceOf")
+      && individual["v-wf:isProcess"][0]["v-wf:instanceOf"][0].id === "s-wf:net_complex_route"
+    ) {
+      $('#delete.action', template).remove();
+    } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
+      $('#send.action', template).off("click");
+      $('#send.action', template).on('click', function () {
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+      });
+    } else {
+      $('#delete.action', template).remove();
+    }
+  }
+  individual.on("afterUpdate", processHandler);
+  processHandler();
+  template.one("remove", function () {
+    individual.off("afterUpdate", processHandler);
+  });
+
+  //# sourceURL=v-s:LetterTemplate_post
+</script>
+  """ ;
+.
+
+v-s:CorrespondentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон корреспондента"@ru ;
+  rdfs:label "Correspondent template"@en ;
+  v-ui:template """
+<div class="panel">
+  <div class="panel-body">
+    <em about="v-s:correspondentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:correspondentOrganization" class="view -edit search">
+      <a class="label-template" href="#/@">
+        <strong about="@" property="rdfs:label"></strong>,
+        <span about="@" property="v-s:postalAddress"></span>
+      </a>
+    </div>
+    <veda-control data-type="link" rel="v-s:correspondentOrganization" class="-view edit -search fulltext create create-modal" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:postalAddress'].join(' ')}"></veda-control>
+    <veda-control data-type="link" rel="v-s:correspondentOrganization" class="-view -edit search fulltext" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:postalAddress'].join(' ')}"></veda-control>
+    <div class="user-organization">
+      <hr class="margin-md">
+      <em about="v-s:correspondentDepartment" property="rdfs:label"></em>
+      <span rel="v-s:correspondentDepartment" class="view edit search" data-template="v-ui:LabelTemplate"></span>
+      <veda-control data-type="link" rel="v-s:correspondentDepartment" class="-view edit search fulltext margin-md"></veda-control>
+      <hr class="margin-md">
+      <em about="v-s:correspondentPerson" property="rdfs:label"></em>
+      <span rel="v-s:correspondentPerson" class="view edit search" data-template="v-ui:LabelTemplate"></span>
+      <veda-control data-type="link" rel="v-s:correspondentPerson" class="-view edit search fulltext margin-md"></veda-control>
+    </div>
+    <div class="other-organization">
+      <hr class="margin-md">
+      <em about="v-s:correspondentDepartmentDescription" property="rdfs:label"></em>
+      <span property="v-s:correspondentDepartmentDescription" class="view -edit -search"></span>
+      <veda-control data-type="text" property="v-s:correspondentDepartmentDescription" class="-view edit search margin-md"></veda-control>
+      <hr class="margin-md">
+      <em about="v-s:correspondentPersonDescription" property="rdfs:label"></em>
+      <span property="v-s:correspondentPersonDescription" class="view -edit -search"></span>
+      <veda-control data-type="text" property="v-s:correspondentPersonDescription" class="-view edit search margin-md"></veda-control>
+    </div>
+  </div>
+</div>
+<script>
+  var self = this;
+  correspondentOrganizationHandler.call(this);
+  this.on("v-s:correspondentOrganization", correspondentOrganizationHandler);
+  template.one("remove", function () {
+    self.off("v-s:correspondentOrganization", correspondentOrganizationHandler);
+  });
+  function correspondentOrganizationHandler () {
+    var userOrganization = veda.appointment.getOrganization();
+    if ( this.hasValue("v-s:correspondentOrganization", userOrganization) ) {
+      $(".user-organization", template).show();
+      $(".other-organization", template).hide();
+    } else {
+      $(".user-organization", template).hide();
+      $(".other-organization", template).show();
+    }
+  }
+
+  if ( template.parent().attr("rel") === "v-s:sender" ) {
+    template.addClass("panel-info");
+    template.children(":first").addClass("bg-info");
+  } else if ( template.parent().attr("rel") === "v-s:recipient" ) {
+    template.addClass("panel-success");
+    template.children(":first").addClass("bg-success");
+  }
+
+  $(".create .create", template).off("click");
+
+  $(".create .create", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:Organization"),
+        Organization = new veda.IndividualModel();
+    Organization["rdf:type"] = [_class];
+
+    Organization.present(cntr, undefined, "edit");
+    Organization.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    Organization.one("afterSave", function () {
+      modal.modal("hide").remove();
+      individual["v-s:correspondentOrganization"] = [ Organization ];
+    });
+  });
+  //# sourceURL=v-s:CorrespondentTemplate_post
+</script>
+  """ ;
+.
+
+v-s:DeliveryTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон доставки"@ru ;
+  rdfs:label "Delivery template"@en ;
+  v-ui:template """
+<div>
+  <h3>
+    <span about="v-s:Delivery" property="rdfs:label"></span>
+  </h3>
+  <hr>
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-s:date" property="rdfs:label"></em>
+      <div property="v-s:date" class="view -edit search"></div>
+      <veda-control property="v-s:date" data-type="date" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:deliverBy" property="rdfs:label"></em>
+      <div rel="v-s:deliverBy" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+      <veda-control data-type="link" rel="v-s:deliverBy" class="-view edit search fulltext dropdown"></veda-control>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <em about="rdfs:comment" property="rdfs:label"></em>
+      <div property="rdfs:comment" class="view -edit -search"></div>
+      <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
+  </div>
+</div>
+
+  """ ;
+.
+
+v-s:DeliveryEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Вложенный шаблон доставки"@ru ;
+  rdfs:label "Delivery embedded template"@en ;
+  v-ui:template """
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <span about="@" data-template="v-ui:IconModalTemplate"></span>
+      <span about="v-s:Delivery" property="rdfs:label"></span>
+    </h3>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-s:date" property="rdfs:label"></em>
+        <div property="v-s:date" class="view -edit search"></div>
+        <veda-control property="v-s:date" data-type="date" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="v-s:deliverBy" property="rdfs:label"></em>
+        <div rel="v-s:deliverBy" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:deliverBy" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-md-6">
+        <em about="rdfs:comment" property="rdfs:label"></em>
+        <div property="rdfs:comment" class="view -edit -search"></div>
+        <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+      </div>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:LetterRegistrationRecordTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон регистрационной записи для письма"@ru ;
+  rdfs:label "Letter registration record template"@en ;
+  v-ui:template """
+<div class="panel">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:registrationNumber" property="rdfs:label"></em>
+        <div property="v-s:registrationNumber" class="view -edit search"></div>
+        <veda-control property="v-s:registrationNumber" data-type="string" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:registrationDate" property="rdfs:label"></em>
+        <div property="v-s:registrationDate" class="view -edit search"></div>
+        <veda-control property="v-s:registrationDate" data-type="date" class="-view edit search"></veda-control>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var self = this;
+  function date() {
+    if ( this.is("v-s:LetterRegistrationRecordEnumerated") && !this.hasValue("v-s:registrationNumber") ) {
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+      this["v-s:registrationDate"] = [ today ];
+    }
+  }
+  this.on("beforeSave", date);
+  template.one("remove", function () {
+    self.off("beforeSave", date);
+  });
+
+  if ( mode === "edit" ) {
+    if ( this.is("v-s:LetterRegistrationRecordEnumerated") ) {
+      $("input", template).attr("placeholder", (new veda.IndividualModel("v-s:AutomaticallyBundle"))["rdfs:label"].join(" "));
+    } else {
+      $("input", template).attr("placeholder", (new veda.IndividualModel("v-s:ManuallyBundle"))["rdfs:label"].join(" "));
+    }
+  }
+
+  if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
+    template.addClass("panel-info");
+    template.children(":first").addClass("bg-info");
+  } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
+    template.addClass("panel-success");
+    template.children(":first").addClass("bg-success");
+  }
+  //# sourceURL=v-s:LetterRegistrationRecordTemplate_post
+</script>
+  """ ;
+.

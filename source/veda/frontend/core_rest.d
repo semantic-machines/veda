@@ -600,7 +600,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     void flush(int module_id, long wait_op_id)
     {
-        ulong    timestamp = Clock.currTime().stdTime() / 10;
+        ulong    timestamp = Clock.currTime().stdTime();
 
         Json     jreq = Json.emptyObject;
         OpResult op_res;
@@ -632,7 +632,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     long count_individuals()
     {
-        ulong    timestamp = Clock.currTime().stdTime() / 10;
+        ulong    timestamp = Clock.currTime().stdTime();
         long     res;
 
         OpResult op_res;
@@ -646,7 +646,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     bool is_ticket_valid(string ticket_id)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong      timestamp = Clock.currTime().stdTime();
         bool       res;
         Ticket     *ticket;
         ResultCode rc;
@@ -676,7 +676,7 @@ class VedaStorageRest : VedaStorageRest_API
     SearchResult query(string _ticket, string _query, string sort = null, string databases = null, bool reopen = false, int from = 0, int top = 10000,
                        int limit = 10000, bool trace = false)
     {
-        ulong        timestamp = Clock.currTime().stdTime() / 10;
+        ulong        timestamp = Clock.currTime().stdTime();
 
         SearchResult sr;
         Ticket       *ticket;
@@ -704,6 +704,8 @@ class VedaStorageRest : VedaStorageRest_API
 
             sr = context.get_individuals_ids_via_query(ticket.user_uri, _query, sort, databases, from, top, limit, null, OptAuthorize.YES, trace); //&prepare_element);
 
+			rc = sr.result_code;
+
             return sr;
         }
         finally
@@ -726,7 +728,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     Json[] get_individuals(string _ticket, string[] uris)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong      timestamp = Clock.currTime().stdTime();
 
         Json[]     res;
         ResultCode rc;
@@ -792,7 +794,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     Json get_individual(string _ticket, string uri, bool reopen = false)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong      timestamp = Clock.currTime().stdTime();
 
         Json       res = Json.emptyObject;
         ResultCode rc  = ResultCode.Internal_Server_Error;
@@ -911,7 +913,7 @@ class VedaStorageRest : VedaStorageRest_API
     {
         try
         {
-            ulong      timestamp = Clock.currTime().stdTime() / 10;
+            ulong      timestamp = Clock.currTime().stdTime();
 
             Ticket     *ticket;
             ResultCode rc = ResultCode.Internal_Server_Error;
@@ -955,7 +957,7 @@ class VedaStorageRest : VedaStorageRest_API
     {
         try
         {
-            ulong      timestamp = Clock.currTime().stdTime() / 10;
+            ulong      timestamp = Clock.currTime().stdTime();
 
             Ticket     *ticket;
             ResultCode rc = ResultCode.Internal_Server_Error;
@@ -997,7 +999,7 @@ class VedaStorageRest : VedaStorageRest_API
         {
             OpResult[] res;
 
-            ulong      timestamp = Clock.currTime().stdTime() / 10;
+            ulong      timestamp = Clock.currTime().stdTime();
 
             Ticket     *ticket;
             ResultCode rc = ResultCode.Internal_Server_Error;
@@ -1025,7 +1027,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult add_to_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong      timestamp = Clock.currTime().stdTime();
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -1052,7 +1054,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult set_in_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong      timestamp = Clock.currTime().stdTime();
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -1079,7 +1081,7 @@ class VedaStorageRest : VedaStorageRest_API
 
     OpResult remove_from_individual(string _ticket, Json individual_json, string event_id, long assigned_subsystems = 0)
     {
-        ulong      timestamp = Clock.currTime().stdTime() / 10;
+        ulong      timestamp = Clock.currTime().stdTime();
         Ticket     *ticket;
         ResultCode rc = ResultCode.Internal_Server_Error;
 
@@ -1176,8 +1178,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
 
     try
     {
-        ulong timestamp = Clock.currTime().stdTime() / 10;
-
+        ulong timestamp = Clock.currTime().stdTime();
+/*
         if (tdb_cons is null)
         {
             //try
@@ -1207,8 +1209,8 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
             //    log.trace("merge is ok");
             //}
         }
-
-        RawUuid  uuid = randomUUID().data;
+*/
+        //RawUuid  uuid = randomUUID().data;
 
         string[] vals;
 
@@ -1218,22 +1220,26 @@ void trail(string ticket_id, string user_id, string action, Json args, string re
         vals ~= text(args);
         vals ~= result;
         vals ~= text(result_code);
-        vals ~= text(timestamp - start_time);
-
-        tdb_cons.add(uuid, timestamp / 1000, vals);
+        
+        long duration = convert!("hnsecs", "msecs") (timestamp - start_time);
+		if (((action == "put" || action == "get") && duration > 1000) || (action == "query" && duration > 10_000))
+		{                        
+	        vals ~= text(duration);
+	        log.trace("SLOWLY OPERATION: %s", vals);        
+		}
         count_trails++;
 
         //log.trace("REST:%s", vals);
 
-        if (count_trails > 1000)
-        {
-            log.trace("flush trail db");
-            tdb_cons.finalize();
-            delete tdb_cons;
+        //if (count_trails > 1000)
+        //{
+        //    log.trace("flush trail db");
+        //    tdb_cons.finalize();
+        //    delete tdb_cons;
 //            exist_trail.close ();
-            tdb_cons     = null;
-            count_trails = 0;
-        }
+        //    tdb_cons     = null;
+        //    count_trails = 0;
+        //}
     }
     catch (Throwable tr)
     {

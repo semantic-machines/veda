@@ -93,12 +93,12 @@ fi
 #  cd $BUILD_PATH
 #fi
 
-#if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
-#    cd source/veda-gowebserver
-#    go build
-#    cd $BUILD_PATH
-#    cp source/veda-gowebserver/veda-gowebserver ./veda-webserver
-#fi
+if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
+    cd source/veda-gowebserver
+    go build
+    cd $BUILD_PATH
+    cp source/veda-gowebserver/veda-gowebserver ./veda-gowebserver
+fi
 
 
 #if [ -z $1 ] || [ $1 == "db_handler" ] ; then

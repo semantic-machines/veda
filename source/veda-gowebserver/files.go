@@ -77,7 +77,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 	//If uri len is more then 3 and icket is valid than continue downloading
 	if utf8.RuneCountInString(uri) > 3 && ticketKey != "" {
-		log.Println("@DOWNLOAD")
+		//log.Println("@DOWNLOAD")
 
 		//Check if ticket is valid, return fail code if ticket is not valid
 		rc, ticket := getTicket(ticketKey)
@@ -91,7 +91,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 		//If common  request code of operation code are not Ok then return fail code
 		if rr.CommonRC != Ok {
-			log.Println("@ERR COMMON FILES: GET INDIVIDUAL")
+			log.Println("@ERR COMMON FILES: GET INDIVIDUAL user=", ticket.UserURI, ", uri=", uri)
 			ctx.Response.SetStatusCode(int(rr.CommonRC))
 			return
 		} else if rr.OpRC[0] != Ok {
@@ -101,7 +101,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 		//Decode individual with file info and read file info
 		fileInfo := BinobjToMap(rr.Data[0])
-		log.Println(fileInfo)
+		//log.Println(fileInfo)
 		filePath := fileInfo["v-s:filePath"].([]interface{})[0].(map[string]interface{})
 		fileURI := fileInfo["v-s:fileUri"].([]interface{})[0].(map[string]interface{})
 		fileName := fileInfo["v-s:fileName"].([]interface{})[0].(map[string]interface{})

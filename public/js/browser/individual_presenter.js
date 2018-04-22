@@ -347,6 +347,18 @@ veda.Module(function (veda) { "use strict";
       });
     });
 
+        // Max displayed values
+    template.on("click", ".more", function (e) {
+      e.stopPropagation();
+      var $this = $(this),
+          resource_uri = $this.closest("[resource]").attr("resource"),
+          resource = new veda.IndividualModel(resource_uri),
+          relContainer = $this.closest("[rel]"),
+          rel_uri = relContainer.attr("rel");
+      resource.trigger(rel_uri, resource.get(rel_uri), Infinity);
+      $this.remove();
+    });
+    
     // Related resources & about resources
     $("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
       var relContainer = $(this),
@@ -356,6 +368,7 @@ veda.Module(function (veda) { "use strict";
           spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
+          limit = relContainer.attr("data-limit") || Infinity,
           relTemplate,
           isAbout;
 
@@ -433,13 +446,13 @@ veda.Module(function (veda) { "use strict";
           });
         }
 
-        propertyModifiedHandler(values);
+        propertyModifiedHandler(values, limit);
         about.on(rel_uri, propertyModifiedHandler);
         template.one("remove", function () {
           about.off(rel_uri, propertyModifiedHandler);
         });
 
-        function propertyModifiedHandler (values) {
+        function propertyModifiedHandler (values, limit_param) {
           relContainer.empty();
           var rendered = {};
           var renderedTemplates = values.map(function (value, index) {

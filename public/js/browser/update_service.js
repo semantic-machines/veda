@@ -35,7 +35,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     this.list = function () {
       return list;
-    }
+    };
 
     this.synchronize = function() {
       if (msgTimeout) {
@@ -47,10 +47,10 @@ veda.Module(function UpdateService(veda) { "use strict";
         socket.send("=");
         //console.log("client -> server: =");
       }
-    }
+    };
 
     this.subscribe = function(uri) {
-      if (!uri) { return }
+      if (!uri) { return; }
       if (list[uri]) {
         ++list[uri].subscribeCounter;
         return;
@@ -68,7 +68,7 @@ veda.Module(function UpdateService(veda) { "use strict";
       if (!msgTimeout) {
         msgTimeout = setTimeout(pushDelta, msgDelay);
       }
-    }
+    };
 
     this.unsubscribe = function (uri) {
       if (uri === "*" || !uri) {
@@ -97,7 +97,7 @@ veda.Module(function UpdateService(veda) { "use strict";
           return;
         }
       }
-    }
+    };
 
     function pushDelta() {
       var subscribe = [],
@@ -155,7 +155,7 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     function closedHandler(event) {
       var delay = initialDelay + connectDelay * connectTries;
-      if (delay < maxConnectDelay) { connectTries++ }
+      if (delay < maxConnectDelay) { connectTries++; }
       //notify("danger", {name: "WS: Соединение прервано"});
       console.log("client: websocket closed,", "re-connect in", Math.round( delay / 1000 ), "secs" );
       connectTimeout = setTimeout(function () {
@@ -198,12 +198,12 @@ veda.Module(function UpdateService(veda) { "use strict";
             list[uri].updateCounter = updateCounter;
           }
           individual.reset(); // Reset to DB
-        } catch (e) {
-          console.log("error: individual update service failed for id =", uri, e);
+        } catch (error) {
+          console.log("error: individual update service failed", error);
         }
       }
     }
 
-  }
+  };
 
 });

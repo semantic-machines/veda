@@ -1,0 +1,28 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+
+<http://semantic-machines.com/veda/veda-organization-individuals>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология Веда. Организации. Индивиды"@ru ;
+  rdfs:label "Veda ontology. Organization. Individuals"@en ;
+  v-s:loadPriority 10 ;
+.
+
+d:org_RU000000000000 a v-s:Organization;
+  rdfs:label "Физическое лицо"^^xsd:string;
+  v-s:created "2014-10-17T07:12:03Z"^^xsd:dateTime;
+  v-s:creator cfg:AdministratorAppointment;
+  v-s:hasClassifierCountry d:Country_RUS;
+  v-s:hasClassifierLegalForm d:OKOPF_50000;
+  v-s:legalAddress " "^^xsd:string;
+  v-s:postalAddress " "^^xsd:string;
+  v-s:shortLabel "Физическое лицо"^^xsd:string;
+  v-s:taxId "0000000000"^^xsd:string;
+  v-s:updateCounter "1"^^xsd:integer;
+.

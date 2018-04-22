@@ -50,6 +50,7 @@ veda.Module(function Backend(veda) { "use strict";
        501: "Not implemented",
        503: "Service unavailable",
        904: "Invalid identifier",
+       999: "Database modified error",
       1021: "Disk full",
       1022: "Duplicate key",
       1118: "Size too large",
@@ -124,7 +125,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.get_rights = function get_rights(ticket, uri) {
     var arg = arguments[0];
@@ -138,7 +139,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.get_rights_origin = function get_rights_origin(ticket, uri) {
     var arg = arguments[0];
@@ -152,7 +153,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.get_membership = function get_membership(ticket, uri) {
     var arg = arguments[0];
@@ -166,7 +167,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.authenticate = function authenticate(login, password) {
     if (login == "VedaNTLMFilter")
@@ -182,7 +183,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.get_ticket_trusted = function get_ticket_trusted(ticket, login) {
     var arg = arguments[0];
@@ -196,7 +197,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.is_ticket_valid = function is_ticket_valid(ticket) {
     var arg = arguments[0];
@@ -209,7 +210,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.get_operation_state = function get_operation_state(module_id, wait_op_id) {
     var arg = arguments[0];
@@ -223,7 +224,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.wait_module = function wait_module(module_id, in_op_id) {
     var timeout = 1;
@@ -235,7 +236,7 @@ veda.Module(function Backend(veda) { "use strict";
       while (new Date().getTime() < endtime);
       timeout += 2;
     }
-  }
+  };
 
   veda.Backend.restart = function restart(ticket) {
     var arg = arguments[0];
@@ -248,7 +249,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.backup = function backup(to_binlog) {
     var arg = arguments[0];
@@ -261,7 +262,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.count_individuals = function count_individuals() {
     var arg = arguments[0];
@@ -272,7 +273,7 @@ veda.Module(function Backend(veda) { "use strict";
       data: {}
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.set_trace = function set_trace(idx, state) {
     var arg = arguments[0];
@@ -286,6 +287,8 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
+  };
+
   }
 
   veda.Backend.query = function query(ticket, query, sort, databases, reopen, top, limit, from) {
@@ -305,7 +308,13 @@ veda.Module(function Backend(veda) { "use strict";
         "from"  : isObj ? arg.from : from
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 999) {
+        return veda.Backend.query(ticket, query, sort, databases, reopen, top, limit, from);
+      } else {
+        throw backendError;
+      }
+    });
   }
 
   veda.Backend.get_individual = function get_individual(ticket, uri, reopen) {
@@ -321,7 +330,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.get_individuals = function get_individuals(ticket, uris) {
     var arg = arguments[0];
@@ -335,7 +344,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
 //////////////////////////
 
@@ -355,7 +364,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.put_individual = function put_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
@@ -373,7 +382,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.add_to_individual = function add_to_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
@@ -391,7 +400,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.set_in_individual = function set_in_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
@@ -409,7 +418,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.remove_from_individual = function remove_from_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
@@ -427,7 +436,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.put_individuals = function put_individuals(ticket, individuals, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
@@ -445,7 +454,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
 /////////////////////////////////////////
 
@@ -462,7 +471,7 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
   veda.Backend.execute_script = function execute_script(script) {
     var arg = arguments[0];
@@ -475,6 +484,6 @@ veda.Module(function Backend(veda) { "use strict";
       }
     };
     return call_server(params);
-  }
+  };
 
 });

@@ -209,6 +209,9 @@ public enum ResultCode
 
     Invalid_Identifier    = 904,
 
+    /// 999
+    DatabaseModifiedError = 999,
+
     /// 1021
     Disk_Full             = 1021,
 

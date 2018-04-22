@@ -1,0 +1,740 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+<http://semantic-machines.com/veda/veda-function-tasks>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология функции 'Задачи' системы Веда"@ru ;
+  rdfs:label "Veda system function 'Tasks' ontology"@en ;
+#  owl:versionInfo "0.1" ;
+  v-s:loadPriority 9 ;
+.
+
+########## TASKS INDEX ###########
+
+v-ft:UserTaskFormIndex_1
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-wf:DecisionForm ;
+  vdi:forProperty v-wf:to ;
+  vdi:forProperty v-wf:from ;
+  vdi:forProperty v-wf:onDocument ;
+  vdi:inherited_index v-ft:UserTaskFormIndex_1_1 ;
+.
+v-ft:UserTaskFormIndex_1_1
+  rdf:type vdi:ClassIndex ;
+  vdi:indexed_field rdf:type ;
+  vdi:indexed_field rdfs:label ;
+  vdi:indexed_field v-s:occupation ;
+  vdi:indexed_field v-s:employee ;
+.
+
+########## TASKS COUNTERS ###########
+
+v-ft:TaskCounter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Счетчик задач "@ru ;
+  rdfs:label "Task counter"@en ;
+  v-ui:hasModel v-ft:TaskCounterModel;
+  v-ui:hasTemplate v-ft:TaskCounterTemplate;
+.
+v-ft:forceUpdate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:boolean ;
+  rdfs:label "обновить принудительно"@ru ;
+  rdfs:label "force update"@en ;
+.
+v-ft:inboxCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество входящих"@ru ;
+  rdfs:label "inbox сount"@en ;
+.
+v-ft:inboxWeekCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество входящих на текущую неделю"@ru ;
+  rdfs:label "inbox сount for current week"@en ;
+.
+v-ft:outboxCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество исходящих"@ru ;
+  rdfs:label "outbox сount"@en ;
+.
+v-ft:completedCount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ft:TaskCounter ;
+  rdfs:range xsd:integer ;
+  rdfs:label "количество выполненных"@ru ;
+  rdfs:label "completed сount"@en ;
+.
+
+v-ft:Event_UpdateTaskCounter
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обновления счетчиков задач" ;
+  v-s:triggerByType v-wf:DecisionForm ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:deleted true ;
+  v-s:disabled true ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+// Update task counter on task
+var task = document,
+    task_uri = document["@"],
+    to_uris = task["v-wf:to"] && task["v-wf:to"].map(function (to) {return to.data}),
+    from_uris = task["v-wf:from"] && task["v-wf:from"].map(function (from) {return from.data}),
+    isNew = !prev_state,
+    isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: _Boolean, data: true}) && hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
+    isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: _Boolean, data: true}) && hasValue(task, "v-s:deleted", {type: _Boolean, data: true});
+
+// print("************************** START **************************");
+
+if ( !isNew && !isDeleted && !isCompleted ) { return; }
+
+var today = new Date(),
+    monday = getMonday(today),
+    sunday = getSunday(today);
+var isThisWeekTask = hasValue(task, "v-wf:dateGiven") && (monday < task["v-wf:dateGiven"][0].data && task["v-wf:dateGiven"][0].data < sunday);
+
+// print("task =", task_uri, "| from =", from_uris, "| to =", to_uris, "| isNew =", isNew, "| isDeleted =", isDeleted, "| isCompleted =", isCompleted, "| isThisWeekTask =", isThisWeekTask);
+
+to_uris && to_uris.map(function (to_uri) {
+  // get or create task counter
+  var toCounter_uri = "d:taskCounter_" + to_uri.split(':').join('_');
+  var toCounter = get_individual(ticket, toCounter_uri) || createTaskCounter(to_uri);
+
+  if ( hasValue(toCounter, "rdf:type", { type: _Uri, data: "rdfs:Resource"} ) ) {
+    toCounter["rdf:type"] = [{ type: _Uri, data: "v-ft:TaskCounter" }];
+  }
+
+  var toInboxCount = toCounter["v-ft:inboxCount"] ? toCounter["v-ft:inboxCount"][0] : toCounter["v-ft:inboxCount"] = [{ type: _Integer, data: 0 }],
+      toInboxWeekCount = toCounter["v-ft:inboxWeekCount"] ? toCounter["v-ft:inboxWeekCount"][0] : toCounter["v-ft:inboxWeekCount"] = [{ type: _Integer, data: 0 }],
+      toOutboxCount = toCounter["v-ft:outboxCount"] ? toCounter["v-ft:outboxCount"][0] : toCounter["v-ft:outboxCount"] = [{ type: _Integer, data: 0 }],
+      toCompletedCount = toCounter["v-ft:completedCount"] ? toCounter["v-ft:completedCount"][0] : toCounter["v-ft:completedCount"] = [{ type: _Integer, data: 0 }];
+
+  switch (true) {
+    case isNew:
+      toInboxCount.data++;
+      if (isThisWeekTask) {
+        toInboxWeekCount.data++;
+      }
+      break;
+    case isCompleted:
+      toInboxCount.data--;
+      toCompletedCount.data++;
+      if (isThisWeekTask) {
+        toInboxWeekCount.data--;
+      }
+      break;
+    case isDeleted:
+      toInboxCount.data--;
+      if (isThisWeekTask) {
+        toInboxWeekCount.data--;
+      }
+      break;
+  }
+  put_individual(ticket, toCounter, _event_id);
+//  print("toCounter updated =", JSON.stringify(toCounter));
+});
+
+from_uris && from_uris.map(function (from_uri) {
+  // get or create task counter
+  var fromCounter_uri = "d:taskCounter_" + from_uri.split(':').join('_');
+  var fromCounter = get_individual(ticket, fromCounter_uri) || createTaskCounter(from_uri);
+
+  if ( hasValue(fromCounter, "rdf:type", { type: _Uri, data: "rdfs:Resource"} ) ) {
+    fromCounter["rdf:type"] = [{ type: _Uri, data: "v-ft:TaskCounter" }];
+  }
+
+  var fromInboxCount = fromCounter["v-ft:inboxCount"] ? fromCounter["v-ft:inboxCount"][0] : fromCounter["v-ft:inboxCount"] = [{ type: _Integer, data: 0 }],
+      fromOutboxCount = fromCounter["v-ft:outboxCount"] ? fromCounter["v-ft:outboxCount"][0] : fromCounter["v-ft:outboxCount"] = [{ type: _Integer, data: 0 }],
+      fromCompletedCount = fromCounter["v-ft:completedCount"] ? fromCounter["v-ft:completedCount"][0] : fromCounter["v-ft:completedCount"] = [{ type: _Integer, data: 0 }];
+
+  switch (true) {
+    case isNew:
+      fromOutboxCount.data++;
+      break;
+    case isCompleted:
+      fromOutboxCount.data--;
+      break;
+    case isDeleted:
+      fromOutboxCount.data--;
+      break;
+  }
+  put_individual(ticket, fromCounter, _event_id);
+//  print("fromCounter updated =", JSON.stringify(fromCounter));
+});
+
+//print("************************** END **************************");
+
+function getMonday(date) {
+  var monday = new Date(date);
+  var day = monday.getDay();
+  var diff = monday.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  monday.setDate(diff); monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+  return monday;
+}
+function getSunday(date) {
+  var monday = getMonday(date);
+  return new Date(monday.valueOf() + 604799999);
+}
+
+function createTaskCounter(owner) {
+  var uri = "d:taskCounter_" + owner.split(':').join('_'),
+      inbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "')"),
+      inboxCount = inbox[0] ? inbox.length : 0,
+      outbox = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:from' == '" + owner + "')"),
+      outboxCount = outbox[0] ? outbox.length : 0,
+      completed = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == true && 'v-wf:to' == '" + owner + "')"),
+      completedCount = completed[0] ? completed.length : 0;
+
+  var today = new Date(),
+      monday = getMonday(today),
+      sunday = getSunday(today);
+
+  var inboxWeek = query(ticket, "('rdf:type' == 'v-wf:DecisionForm' && 'v-wf:isCompleted' == false && 'v-wf:to' == '" + owner + "' && 'v-wf:dateGiven' == [" + monday.toISOString() +  "," + sunday.toISOString() + "])"),
+      inboxWeekCount = inboxWeek[0] ? inboxWeek.length : 0;
+
+  var taskCounter = {
+    "@": uri,
+    "rdf:type": newUri("v-ft:TaskCounter"),
+    "v-s:owner": newUri(owner),
+    "v-s:created": newDate(today),
+    "v-ft:inboxCount": newInt(inboxCount),
+    "v-ft:inboxWeekCount": newInt(inboxWeekCount),
+    "v-ft:outboxCount": newInt(outboxCount),
+    "v-ft:completedCount": newInt(completedCount),
+    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateTaskCounter")
+  };
+  /*if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
+    print(
+      "Created counter:", uri,
+      "| inboxCount =", inboxCount,
+      "| outboxCount =", outboxCount,
+      "| completedCount =", completedCount,
+      "| inboxWeekCount =", inboxWeekCount
+    );
+  }*/
+  put_individual(ticket, taskCounter, _event_id);
+  return taskCounter;
+}
+  """ ;
+.
+
+v-ft:FunctionTasksIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
+  rdfs:label "V-ft:FunctionInbox indicator template"@en ;
+  v-ui:template """
+<script>
+  /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
+  $("#counter", template).attr("about", counter_uri);*/
+  template.tooltip({
+    container: template,
+    title: individual["rdfs:label"].join(" ")
+  });
+  //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre
+</script>
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-envelope-o fa-lg"></span>
+  <!--span id="counter" class="label label-danger" property="v-ft:inboxCount"></span-->
+</a>
+  """ ;
+.
+v-ft:TaskCounterTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
+  rdfs:label "V-ft:FunctionInbox indicator template"@en ;
+  v-ui:forClass v-ft:TaskCounter;
+  v-ui:template """
+<div class="container sheet">
+  <h2 about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
+  <em about="v-s:owner" property="rdfs:label"></em>
+  <div rel="v-s:owner" data-template="v-ui:LabelLinkTemplate"></div>
+  <table class="table table-condensed table-bordered table-striped">
+    <thead>
+      <tr>
+        <th about="v-ft:inboxCount" property="rdfs:label"></th>
+        <th about="v-ft:completedCount" property="rdfs:label"></th>
+        <th about="v-ft:outboxCount" property="rdfs:label"></th>
+        <th about="v-ft:inboxWeekCount" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td property="v-ft:inboxCount"></td>
+        <td property="v-ft:completedCount"></td>
+        <td property="v-ft:outboxCount"></td>
+        <td property="v-ft:inboxWeekCount"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+  """ ;
+.
+
+v-ft:TaskCounterModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель v-ft:TaskCounter"@ru ;
+  rdfs:label "v-ft:TaskCounter model"@en ;
+  v-s:script """
+// Force update outdated counter
+/*function getMonday(date) {
+  var monday = new Date(date);
+  var day = monday.getDay();
+  var diff = monday.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  monday.setDate(diff); monday.setHours(0); monday.setMinutes(0); monday.setSeconds(0); monday.setMilliseconds(0);
+  return monday;
+}
+var monday = getMonday(new Date());
+var created = this["v-s:created"] && this["v-s:created"][0];
+var forceUpdate = !created || created < monday;
+if ( forceUpdate ) {
+  this["v-ft:forceUpdate"] = [true];
+  this.save();
+}*/
+//# sourceURL=v-ft:TaskCounterModel
+  """ ;
+.
+
+########## TASKS AS ATTRIBUTIVE SEARCH IMPELMENTATION ###########
+
+v-ft:PSfrom_to_DecisionForm
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойств v-wf:to v-wf:from для класса v-wf:DecisionForm"@ru ;
+  rdfs:label "v-wf:to v-wf:from properties specification for v-wf:DecisionForm class"@en ;
+  v-ui:forClass v-wf:DecisionForm ;
+  v-ui:forProperty v-wf:to ;
+  v-ui:forProperty v-wf:from ;
+  v-ui:rangeRestriction v-s:Position ;
+  v-ui:maxCardinality 1 ;
+.
+
+v-ft:Inbox
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Входящие задачи"@ru ;
+  rdfs:label "Inbox tasks"@en ;
+  v-fs:searchBlank v-ft:InboxBlank ;
+  v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:sortOrder "'v-s:created' desc" ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
+.
+v-ft:InboxBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк входящих задач"@ru ;
+  rdfs:label "Blank inbox task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted false ;
+.
+
+v-ft:Outbox
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Исходящие задачи"@ru ;
+  rdfs:label "Outbox tasks"@en ;
+  v-fs:searchBlank v-ft:OutboxBlank ;
+  v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
+.
+v-ft:OutboxBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк исходящих задач"@ru ;
+  rdfs:label "Blank outbox task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted false ;
+.
+
+v-ft:Completed
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Выполненные задачи"@ru ;
+  rdfs:label "Completed tasks"@en ;
+  v-fs:searchBlank v-ft:CompletedBlank ;
+  v-fs:searchBlankTemplate v-ft:TaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
+.
+v-ft:CompletedBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк выполненных задач"@ru ;
+  rdfs:label "Blank completed task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted true ;
+.
+
+v-ft:MyBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Мои"@ru ;
+  rdfs:label "My"@en ;
+.
+v-ft:DocumentTypeBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Тип документа"@ru ;
+  rdfs:label "Document type"@en ;
+.
+v-ft:DocumentBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Документ"@ru ;
+  rdfs:label "Document"@en ;
+.
+
+v-ft:InboxTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка задачи"@ru ;
+  rdfs:label "Task blank template"@en ;
+  v-ui:template """
+<script>
+  if (individual.top) {
+    individual["v-fs:top"] = [ individual.top ];
+  }
+  template.one("remove", function () {
+    individual.top = individual["v-fs:cursor"][0];
+  });
+//# sourceURL=v-ft:InboxTemplate_pre
+</script>
+<div class="container sheet" about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+  """ ;
+.
+
+v-ft:TaskBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка задачи"@ru ;
+  rdfs:label "Task blank template"@en ;
+  v-ui:template """
+<script>
+  var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+  $("#folder", template).attr("about", folder);
+  $("#box-tabs", template)
+    .find("a")
+    .filter(function () { return this.hash.substr(2) === folder; })
+    .parent()
+    .addClass("active");
+
+  //# sourceURL=v-ft:TaskBlankTemplate_pre
+</script>
+<div>
+  <br>
+  <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
+    <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#/v-ft:Completed" about="v-ft:Completed" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Outbox" about="v-ft:Outbox" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#/v-ft:Inbox" about="v-ft:Inbox" property="rdfs:label"></a></li>
+  </ul>
+  <br>
+  <div about="@" data-template="v-ft:ActorFilterTemplate"></div>
+  <div class="row">
+    <div class="col-md-3">
+      <em about="v-wf:from" property="rdfs:label"></em>
+      <veda-control property="v-wf:from.rdfs:label" data-type="string"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-wf:to" property="rdfs:label"></em>
+      <veda-control property="v-wf:to.rdfs:label" data-type="string"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-ft:DocumentTypeBundle" property="rdfs:label"></em>
+      <veda-control rel="v-wf:onDocument.rdf:type" data-type="link" class="dropdown fulltext" data-single="true" data-placeholder=" " data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-ft:DocumentBundle" property="rdfs:label"></em>
+      <veda-control property="v-wf:onDocument.rdfs:label" data-type="string"></veda-control>
+    </div>
+  </div>
+  <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
+  <div class="advanced-search row hidden">
+    <div class="col-md-3">
+      <em about="v-s:description" property="rdfs:label"></em>
+      <veda-control property="rdfs:label" data-type="string"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <em about="v-s:created" property="rdfs:label"></em>
+      <veda-control property="v-s:created" data-type="date"></veda-control>
+      <div property="v-s:created"></div>
+    </div>
+    <div class="col-md-3">
+      <em about="v-wf:dateGiven" property="rdfs:label"></em>
+      <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
+      <div property="v-wf:dateGiven"></div>
+    </div>
+  </div>
+</div>
+<script>
+  if (individual.advanced) {
+    $(".advanced-search", template).removeClass("hidden");
+  }
+  $(".advanced-toggle", template).click(function (e) {
+    e.preventDefault();
+    individual.advanced = !individual.advanced;
+    if (individual.advanced) {
+      $(".advanced-search", template).removeClass("hidden");
+    } else {
+      $(".advanced-search", template).addClass("hidden");
+    }
+  });
+  //# sourceURL=v-ft:TaskBlankTemplate_post
+</script>
+  """ ;
+.
+
+v-ft:ActorFilterTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон фильтра актора"@ru ;
+  rdfs:label "Actor filter template"@en ;
+  v-ui:template """
+<script>
+  var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+  var actor_property = folder === "v-ft:Outbox" ? "v-wf:from" : "v-wf:to";
+  var counter_prop = folder === "v-ft:Inbox" ? "v-ft:inboxCount" :
+                     folder === "v-ft:Outbox" ? "v-ft:outboxCount" :
+                     folder === "v-ft:Completed" ? "v-ft:completedCount" : "";
+
+  if (!individual.hasValue(actor_property)) {
+    individual[actor_property] = [veda.user];
+  }
+
+  return veda.Backend.query({
+    ticket: veda.ticket,
+    query: "('rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + veda.user.id + "')"
+  })
+  .then(function (queryResult) {
+    var appointments_uris = queryResult.result;
+    return veda.Backend.get_individuals(veda.ticket, appointments_uris);
+  })
+  .then(function (appointments) {
+
+    var actors_uris = [ "v-ft:MyBundle" ];
+
+    appointments.forEach(function (appointment) {
+      if ( veda.appointment && veda.appointment.id && appointment["@"] === veda.appointment.id ) {
+        return;
+      } else if ( appointment["v-s:occupation"] && appointment["v-s:occupation"].length ) {
+        actors_uris.push( appointment["v-s:occupation"][0].data );
+      }
+    });
+
+    actors_uris.map(function (actor_uri) {
+      //var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+      var actor_template =
+        "<li>" +
+          "<a href='#'>" +
+            "<span class='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
+            //"<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
+          "</a>" +
+        "</li>";
+      template.append(actor_template);
+    });
+
+    template.on("click", "li a", function (e) {
+      e.preventDefault();
+      var $this = $(this);
+      $this.parent().addClass("active").siblings().removeClass("active");
+      var actor_uri = $this.children(".actor").attr("about");
+      individual.actor = actor_uri;
+      if (actor_uri === "v-ft:MyBundle") {
+        individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
+        individual.trigger("search");
+      } else {
+        individual[actor_property] = [ new veda.IndividualModel(actor_uri) ];
+        individual.trigger("search");
+      }
+    });
+
+    if (!individual.actor) {
+      individual.actor = "v-ft:MyBundle";
+    }
+    var actor = $("li > a > [about='" + individual.actor + "']", template);
+    actor.click();
+
+  });
+
+  // Update counter if counter & results count do not match
+  /*individual.on("search:complete", checkCounter);
+  template.one("remove", function () {
+    individual.off(checkCounter);
+  });
+  function checkCounter(results) {
+    try {
+      var actor_uri = individual[actor_property][0].id;
+      var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
+      var counter = new veda.IndividualModel(counter_uri);
+      counter.load().then(function (counter) {
+        if ( counter.isNew() ) {
+          counter["rdf:type"] = [ new veda.IndividualModel("v-ft:TaskCounter") ];
+        }
+        var counter_val = counter[counter_prop][0];
+        if ( counter_val !== results.estimated ) {
+          counter[counter_prop] = [ results.estimated ];
+          counter.save();
+        }
+      });
+    }
+  }*/
+
+  //# sourceURL=v-ft:ActorFilterTemplate_pre
+</script>
+<ul class="nav nav-pills" role="tablist"></ul>
+  """ ;
+.
+
+v-ft:TaskResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-ft:FunctionInbox"@ru ;
+  rdfs:label "V-ft:FunctionInbox class template"@en ;
+  v-ui:template """
+<table class="table table-condensed table-bordered table-striped">
+  <thead>
+    <tr>
+      <th width="20px">#</th>
+      <th width="20px"><span class="glyphicon glyphicon-info-sign"></span></th>
+      <th width="20px"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:from"><span about="v-wf:from" property="rdfs:label"></span></th>
+      <th width="15%" class="orderby" data-orderby="v-wf:to"><span about="v-wf:to" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-wf:onDocument"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td class="serial-number"></td>
+      <td><span class="child-task"></span></td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td>
+        <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
+        <div about="@" rel="v-wf:redirect_from_task">
+          <div>
+            <hr class="no-margin">
+            <strong><small about="v-s:TaskIsRedirectedFrom" property="rdfs:label"></small></strong>
+            <small about="@" property="v-wf:to"></small>
+          </div>
+        </div>
+      </td>
+      <td about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
+      <td>
+        <a href="#/@" about="@" property="rdfs:label"></a><br/>
+        <i about="@" property="v-s:description"></i>
+      </td>
+      <td about="@" rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
+      <td about="@" property="v-s:created"></td>
+      <td about="@" property="v-wf:dateGiven" class="date-given"></td>
+    </tr>
+    <script>
+      // Read indicator
+      if ( !individual.hasValue("v-wf:read", true) ) {
+        template.css("font-weight", "bold");
+      }
+      individual.on("v-wf:isCompleted", removeCompleted);
+      template.one("remove", function () {
+        individual.off("v-wf:isCompleted", removeCompleted);
+      });
+      var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+      var remove = (folder !== "v-ft:Completed");
+      removeCompleted.call(this);
+      function removeCompleted() {
+        if (remove && this.hasValue("v-wf:isCompleted", true)) {
+          template.remove();
+        }
+      }
+
+      // Child task indicator
+      if ( individual.hasValue("v-wf:hasChildTask") ) {
+        template.find(".child-task").addClass("glyphicon glyphicon-info-sign");
+      }
+
+      // Due date indicator
+      var dateGivenCell = $(".date-given", template);
+      var now = new Date();
+      var yesterday = new Date().setHours(0,0,0,1);
+      var tomorrow = new Date().setHours(23,59,59,999);
+      var dateGiven = individual["v-wf:dateGiven"][0];
+      var dateGivenYesterday = new Date(dateGiven).setHours(0,0,0,1);
+      var dateGivenTomorrow = new Date(dateGiven).setHours(23,59,59,999);
+      var dateDone = individual.hasValue("v-wf:takenDecision") && individual["v-wf:takenDecision"][0]["v-s:created"][0];
+      if ( individual.hasValue("v-wf:isCompleted", false) ) {
+        if (dateGiven < yesterday) {
+          dateGivenCell.toggleClass("bg-danger");
+        } else if (yesterday < dateGiven && dateGiven <= tomorrow) {
+          dateGivenCell.toggleClass("bg-warning");
+        } else if (tomorrow < dateGiven) {
+          dateGivenCell.toggleClass("bg-success");
+        }
+      } else {
+        if (dateGivenYesterday < dateDone && dateDone <= dateGivenTomorrow) {
+          dateGivenCell.toggleClass("bg-warning");
+        } else if (dateDone < dateGiven) {
+          dateGivenCell.toggleClass("bg-success");
+        } else if (dateGiven < dateDone ) {
+          dateGivenCell.toggleClass("bg-danger");
+        }
+      }
+    </script>
+  </tbody>
+</table>
+  """ ;
+.
+
+# Related tasks for document
+
+v-ft:RelatedTasks
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Связанные задачи"@ru ;
+  rdfs:label "Related tasks"@en ;
+  v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
+  v-fs:sortOrder "'v-wf:from' desc,'v-s:created' desc" ;
+  v-fs:searchOnLoad true ;
+.
+
+v-ft:TaskRelatedTasksTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон связанных задач для задачи"@ru ;
+  rdfs:label "Related tasks template for task"@en ;
+  v-ui:template """
+<script>
+  var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
+  return relatedTasks.load().then(function (relatedTasks) {
+    var taskId = individual.id;
+    var docId = individual.hasValue("v-wf:onDocument") && individual["v-wf:onDocument"][0].id;
+    var queryStr = [
+      "'@' != '" + taskId + "'",
+      "'v-wf:onDocument' == '" + docId + "'",
+      "'rdf:type'==='v-wf:DecisionForm'",
+      "'v-wf:isCompleted'== false "
+    ].join(" && ");
+    relatedTasks["v-fs:fulltextQuery"] = [ queryStr ];
+  });
+  //# sourceURL=v-ft:TaskRelatedTasksTemplate_pre
+</script>
+<div>
+  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
+  <div about="v-ft:RelatedTasks" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+</div>
+  """
+.

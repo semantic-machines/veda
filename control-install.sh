@@ -1,10 +1,12 @@
 #!/bin/bash
-# устанавливает среду для последующей компиляции, берет новые исходники зависимостей из github, но не собирает
+# скрипт устанавливает среду для последующей компиляции, берет исходники зависимостей из github, но не собирает
 
 DMD_VER=2.073.2
 DUB_VER=1.2.0
 GO_VER=go1.10.1
 MSGPUCK_VER=2.0
+
+INSTALL_PATH=$PWD
 
 # Get other dependencies
 LIB_NAME[1]="libevent-pthreads-2.0-5"
@@ -17,6 +19,7 @@ LIB_NAME[8]="pkg-config"
 LIB_NAME[9]="build-essential"
 LIB_NAME[10]="autoconf"
 LIB_NAME[11]="automake"
+LIB_NAME[12]="curl"
 
 LIB_OK="Status: install ok installed"
 F_UL=0
@@ -33,17 +36,20 @@ F_UL=0
 #rm ~/.dub/packages/vibe-d-0.7.30/vibe-d/dub.sdl
 #cd ..
 
+sudo apt-get install build-essential
+
 ### RUST LANG ###
 
 if ! rustc -V; then
     echo "--- INSTALL RUST ---"
     curl https://sh.rustup.rs -sSf | sh -s -- -y
+    source $HOME/.cargo/env
 else
     echo "--- UPDATE RUST ---"
     rustup update stable
 fi
 
-
+whereis rustc
 rustc -V
 cargo -V
 
@@ -322,7 +328,7 @@ if ! ldconfig -p | grep libmdbx; then
     cd ..
 
 fi
-
+    cd $INSTALL_PATH
     cd source/authorization
     cargo build --release
     cd ..
