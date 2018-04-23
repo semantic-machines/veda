@@ -11,13 +11,13 @@ export default class basic {
   async logout() {
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Exit"]');
+      .click('li[id="menu"] li[resource="v-s:Exit"]');
   }
 
   async openCreateDocumentForm(name) {
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', name);
   }
 
@@ -29,7 +29,7 @@ export default class basic {
   async openFulltextSearchDocumentForm(name) {
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Find"]')
+      .click('li[id="menu"] li[resource="v-s:Find"]')
       .typeText('div[typeof="v-fs:FulltextRequest"] input.fulltext.tt-input', name)
 
   }

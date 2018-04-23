@@ -11,7 +11,7 @@ import { Selector, t } from 'testcafe';
     const timeStamp = ''+Math.round(+new Date()/1000);
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Мероприятие')
       .click('div.suggestion[resource="v-s:Action"]')
       .typeText('veda-control[property="rdfs:label"] input.form-control[lang="RU"]', timeStamp)

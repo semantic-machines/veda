@@ -14,7 +14,7 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Персона')
       .click('div.suggestion[resource="v-s:Person"]')
 
@@ -28,7 +28,7 @@ import { Selector, t } from 'testcafe';
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
 
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'Range')
       .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', 'Of')
       .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', 'DatesO')
@@ -39,7 +39,7 @@ import { Selector, t } from 'testcafe';
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
 
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'Range')
       .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', 'Of')
       .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', 'DatesO')
@@ -50,7 +50,7 @@ import { Selector, t } from 'testcafe';
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
 
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'Range')
       .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', 'Of')
       .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', 'DatesO')
