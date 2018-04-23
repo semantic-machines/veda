@@ -139,11 +139,6 @@ v-s:Blanks
   rdfs:label "Бланки"@ru ;
   rdfs:label "Blanks"@en ;
 .
-v-s:Favorites
-  rdf:type v-s:Bundle ;
-  rdfs:label "Избранное"@ru ;
-  rdfs:label "Favorites"@en ;
-.
 v-s:AddToFavorites
   rdf:type v-s:Bundle ;
   rdfs:label "Добавить избранное"@ru ;
@@ -219,6 +214,8 @@ v-s:PersonalAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Персональный аспект"@ru ;
   rdfs:label "Template for Personal aspect class"@en ;
+  rdfs:comment "Моя страница"@ru ;
+  rdfs:comment "My page"@en ;
   v-ui:forClass v-s:PersonalAspect ;
   v-ui:template """
 <script>
@@ -233,7 +230,7 @@ v-s:PersonalAspectTemplate
 <div class="container sheet">
   <br/>
   <ul id="personal-tabs" class="nav nav-tabs nav-right" role="tablist">
-    <li class="pull-left"><h2 class="no-margin" about="v-s:MyPage" property="rdfs:label"></h2></li>
+    <li class="pull-left"><h2 class="no-margin" about="v-s:PersonalAspectTemplate" property="rdfs:comment"></h2></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#settings" about="v-s:Settings" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#registries" about="v-s:Registries" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#blanks" about="v-s:Blanks" property="rdfs:label"></a></li>

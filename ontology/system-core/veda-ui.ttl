@@ -448,9 +448,11 @@ v-ui:SystemPropertiesTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон с набором системных свойств"@ru ;
   rdfs:label "Template with system properties"@en ;
+  rdfs:comment "Системные свойства"@ru ;
+  rdfs:comment "System properties"@en ;
   v-ui:template """
 <div>
-  <h3 about="v-s:SystemProperties" property="rdfs:label"></h3>
+  <h3 about="v-ui:SystemPropertiesTemplate" property="rdfs:comment"></h3>
   <div class="row">
     <div class="col-md-3 col-xs-6">
       <em about="v-s:creator" property="rdfs:label"></em>
@@ -744,9 +746,11 @@ v-ui:VersionedTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для отображения версий объекта"@ru ;
   rdfs:label "Template for versions display"@en ;
+  rdfs:comment "Версии"@ru ;
+  rdfs:comment "Versions"@en ;
   v-ui:template """
 <div>
-  <h3 about="v-s:Versions" property="rdfs:label"></h3>
+  <h3 about="v-ui:VersionedTemplate" property="rdfs:comment"></h3>
   <div class="panel panel-default">
     <table class="table table-condensed">
       <thead>
@@ -1727,7 +1731,7 @@ v-ui:SimplifiedJournalTemplate
             $(".docflow-button", template).remove();
           };
           if ( this.hasValue("v-wf:isCompleted", false) ) {
-            if ( (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) && 
+            if ( (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) &&
               (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]) ) {
               $(".docflow-button", template).remove();
               return;
