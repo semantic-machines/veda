@@ -180,11 +180,6 @@ v-s:DeleteDraft
   rdfs:label "Удалить черновик"@ru ;
   rdfs:label "Delete draft"@en ;
 .
-v-s:Clear
-  rdf:type v-s:Bundle ;
-  rdfs:label "Очистить"@ru ;
-  rdfs:label "Clear"@en ;
-.
 v-s:Create
   rdf:type v-s:Bundle ;
   rdfs:label "Создать"@ru ;
