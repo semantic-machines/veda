@@ -1652,7 +1652,7 @@
           fulltextMenu.hide();
           individual.set(rel_uri, selected);
         })
-        .text( new veda.IndividualModel("v-s:Ok").toString() );
+        .text("Ok");
       if (isSingle) {
         header.hide();
       }
