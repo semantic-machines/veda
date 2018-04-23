@@ -89,6 +89,13 @@ v-s:hasSubsidiary
   rdfs:range v-s:Department ;
   rdfs:domain v-s:Organization ;
 .
+v-s:isOwnOrganization
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Собственная организация?"@ru ;
+  rdfs:label "Own organization?"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Organization ;
+.
 
 # Перенести в управление контрагентами
 
