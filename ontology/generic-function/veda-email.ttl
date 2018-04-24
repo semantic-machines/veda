@@ -95,37 +95,36 @@ v-s:EmailTemplate
   rdfs:label "Шаблон отправки email"@ru ;
   rdfs:label "Email send template"@en ;
   v-ui:template """
-<div>
-  <div class="container sheet">
-    <h2>
-      <span about="v-s:sendEmailBundle" property="rdfs:label"></span><br>
-      <small about="@" property="rdfs:label"></small>
-    </h2>
-    <hr class="view edit -search">
-    <div class="row">
-      <div class="col-sm-6">
-        <em about="v-s:senderMailbox" property="rdfs:label" ></em>
-        <div about="@" property="v-s:senderMailbox" class="-view edit -search"></div>
-        <div property="v-s:senderMailbox" class="view -edit search"></div>
-        <veda-control data-type="string" property="v-s:senderMailbox" class="-view -edit search"></veda-control>
-        <em about="v-s:recipientMailbox" property="rdfs:label"></em>
-        <div property="v-s:recipientMailbox" class="view edit -search"></div>
-        <veda-control data-type="generic" property="v-s:recipientMailbox" class="-view edit search"></veda-control>
-        <em about="v-s:themeEmailBundle" property="rdfs:label"></em>
-        <div property="v-s:subject" class="view -edit -search"></div>
-        <veda-control data-type="string" property="v-s:subject" class="-view edit search"></veda-control>
-        <em about="v-s:textEmailBundle" property="rdfs:label"></em>
-        <div property="v-s:messageBody" class="view -edit -search"></div>
-        <veda-control property="v-s:messageBody" data-type="text" rows="4" class="-view edit search"></veda-control>
-        <em about="v-s:attachment" property="rdfs:label"></em>
-        <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
-        <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search create"></veda-control>
-        <br>
-      </div>
+<div class="container sheet">
+  <h2>
+    <span about="v-s:sendEmailBundle" property="rdfs:label"></span><br>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr class="view edit -search">
+  <div class="row">
+    <div class="col-sm-6">
+      <em about="v-s:senderMailbox" property="rdfs:label" ></em>
+      <div about="@" property="v-s:senderMailbox" class="-view edit -search"></div>
+      <div property="v-s:senderMailbox" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:senderMailbox" class="-view -edit search"></veda-control>
+      <em about="v-s:recipientMailbox" property="rdfs:label"></em>
+      <div property="v-s:recipientMailbox" class="view edit -search"></div>
+      <veda-control data-type="generic" property="v-s:recipientMailbox" class="-view edit search"></veda-control>
+      <em about="v-s:themeEmailBundle" property="rdfs:label"></em>
+      <div property="v-s:subject" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:subject" class="-view edit search"></veda-control>
+      <em about="v-s:textEmailBundle" property="rdfs:label"></em>
+      <div property="v-s:messageBody" class="view -edit -search"></div>
+      <veda-control property="v-s:messageBody" data-type="text" rows="4" class="-view edit search"></veda-control>
+      <em about="v-s:attachment" property="rdfs:label"></em>
+      <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+      <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search create"></veda-control>
+      <br>
     </div>
   </div>
-  <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete"></span>
-  <!--button type="submit" class="action btn btn-warning view edit -search" id="send1" about="v-s:Send" property="rdfs:label"></button-->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete"></span>
+  </div>
 </div>
   """ ;
 .
