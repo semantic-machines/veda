@@ -743,7 +743,6 @@
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       select = $("select", control),
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
@@ -752,7 +751,9 @@
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
-      options = [];
+      options = [],
+      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
+      withDeleted = false || this.data("deleted");
 
     populate();
 
@@ -799,7 +800,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix).then(renderOptions);
+        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -843,6 +844,10 @@
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
+      if (e.type === "search") {
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
+      }
     });
     this.val = function (value) {
       if (!value) return $("select", this).val();
@@ -874,7 +879,8 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
-      options = [];
+      options = [],
+      withDeleted = false || this.data("deleted");
 
     populate();
 
@@ -905,7 +911,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix).then(renderOptions);
+        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -962,6 +968,10 @@
         $("div.checkbox", control).removeClass("disabled");
         $("input", control).removeAttr("disabled");
       }
+      if (e.type === "search") {
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
+      }
     });
     this.val = function (value) {
       if (!value) return $("input", this).map(function () { return this.value; });
@@ -994,7 +1004,8 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
-      options = [];
+      options = [],
+      withDeleted = false || this.data("deleted");
 
     populate();
 
@@ -1025,7 +1036,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix).then(renderOptions);
+        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -1081,6 +1092,10 @@
       } else {
         $("div.radio", control).removeClass("disabled");
         $("input", control).removeAttr("disabled");
+      }
+      if (e.type === "search") {
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
     this.val = function (value) {
@@ -1464,7 +1479,8 @@
       sort = this.data("sort") || spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       rel_uri = opts.rel_uri,
-      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single");
+      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
+      withDeleted = false || this.data("deleted");
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
@@ -1600,7 +1616,8 @@
             selectableFilter: selectableFilter,
             displayedProperty: displayedProperty,
             targetRel_uri: rel_uri,
-            isSingle: isSingle
+            isSingle: isSingle,
+            withDeleted: withDeleted
           };
           var $modal = $(modal);
           var cntr = $(".modal-body", $modal);
@@ -1652,7 +1669,7 @@
           fulltextMenu.hide();
           individual.set(rel_uri, selected);
         })
-        .text( new veda.IndividualModel("v-s:Ok").toString() );
+        .text("Ok");
       if (isSingle) {
         header.hide();
       }
@@ -1688,7 +1705,7 @@
       }());
 
       var performSearch = function (e, value) {
-        ftQuery(queryPrefix, value, sort)
+        ftQuery(queryPrefix, value, sort, withDeleted)
           .then(renderResults)
           .catch(function (error) {
             console.log("Fulltext query error", error);
@@ -1807,6 +1824,8 @@
       e.stopPropagation();
       if (e.type === "search") {
         isSingle = false || $(this).data("single");
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
 
@@ -1837,7 +1856,7 @@
 
 /* UTILS */
 
-  function ftQuery(prefix, input, sort) {
+  function ftQuery(prefix, input, sort, withDeleted) {
     var queryString = "";
     if ( input ) {
       var lines = input.split("\n");
@@ -1849,6 +1868,9 @@
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
+    }
+    if (withDeleted) {
+      queryString = "(" + queryString + ") || (" + queryString + " && 'v-s:deleted'== true )";
     }
 
     var result = [];
@@ -1862,7 +1884,6 @@
           return true;
         }
       });
-
       if (getList.length) {
         return get_individuals({
           ticket: veda.ticket,

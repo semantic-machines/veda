@@ -68,7 +68,7 @@ const (
 	Remove = 51
 )
 
-func (conn *Connector) open_db() {
+func (conn *Connector) open_dbs() {
 	var err error
 	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 	if err != nil {
@@ -85,6 +85,30 @@ func (conn *Connector) open_db() {
 	}
 
 	conn.db_is_open = true
+}
+
+func (conn *Connector) reopen_individual_db() {
+	conn.indivEnv.Close()
+
+	var err error
+	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+	if err != nil {
+		log.Fatal("Err: can not open lmdb individuals base: ", err)
+		conn.db_is_open = false
+		return
+	}
+}
+
+func (conn *Connector) reopen_ticket_db() {
+	conn.ticketEnv.Close()
+
+	var err error
+	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+	if err != nil {
+		log.Fatal("Err: can not open tickets lmdb base: ", err)
+		conn.db_is_open = false
+		return
+	}
 }
 
 //Connect tries to connect to socket in tarantool while connection is not established
@@ -277,7 +301,7 @@ func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, 
 	var rr RequestResponse
 
 	if conn.db_is_open == false {
-		conn.open_db()
+		conn.open_dbs()
 	}
 
 	//If user uri is too shorth than return not authorized
@@ -336,7 +360,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	var rr RequestResponse
 
 	if conn.db_is_open == false {
-		conn.open_db()
+		conn.open_dbs()
 	}
 
 	//If user uri is too short return NotAuthorized to client
@@ -392,6 +416,13 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		if lmdb.IsErrno(err, lmdb.NotFound) == true {
 			rr.CommonRC = NotFound
 		} else {
+			if lmdb.IsErrno(err, lmdb.MapResized) == true {
+				conn.reopen_individual_db()
+				return conn.Get(needAuth, userUri, uris, trace)
+			} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
+				return conn.Get(needAuth, userUri, uris, trace)
+			}
+
 			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
 			rr.CommonRC = InternalServerError
 		}
@@ -574,7 +605,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	var rr RequestResponse
 
 	if conn.db_is_open == false {
-		conn.open_db()
+		conn.open_dbs()
 	}
 
 	//If no ticket ids passed than NoContent returned to client.
@@ -607,6 +638,12 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	rr.CommonRC = Ok
 	if err != nil {
+		if lmdb.IsErrno(err, lmdb.MapResized) == true {
+			conn.reopen_ticket_db()
+			return conn.GetTicket(ticketIDs, trace)
+		} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
+			return conn.GetTicket(ticketIDs, trace)
+		}
 		log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
 		rr.CommonRC = InternalServerError
 	}

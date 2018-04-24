@@ -58,7 +58,7 @@ cargo -V
 # Get right version of DMD
 if ! dmd --version | grep $DMD_VER ; then    
     echo "--- INSTALL DMD ---"
-    wget http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
+    wget -w 10 http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
     sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
     rm dmd_$DMD_VER-0_amd64.deb
     rm -r ~/.dub

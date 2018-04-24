@@ -11,7 +11,7 @@ import { Selector, t } from 'testcafe';
     const green = Selector('div#workflow-canvas').find('div.state-task[colored-to="green"]').count;
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Сеть')
       .click('div.suggestion[resource="v-wf:Net"]')
       .click('div#schema')
@@ -22,7 +22,7 @@ import { Selector, t } from 'testcafe';
       .dragToElement('.state-task .ep', '.glyphicon-stop')
       .click('button#workflow-save-button')
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .click('veda-control.fulltext.dropdown')
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Стартовая форма')

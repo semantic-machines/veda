@@ -144,6 +144,11 @@ v-s:RunBundle
   rdfs:label "Запустить"@ru ;
   rdfs:label "Run"@en ;
 .
+v-s:ClearBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Очистить"@ru ;
+  rdfs:label "Clear"@en ;
+.
 
 v-s:UserScriptTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -195,7 +200,7 @@ v-s:UserScriptTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
     <div class="pull-right">
       <button type="button" class="action btn btn-warning view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
-      <button type="button" class="action btn btn-default -view edit -search" id="clear" about="v-s:Clear" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="clear" about="v-s:ClearBundle" property="rdfs:label"/>
     </div>
   </div>
 

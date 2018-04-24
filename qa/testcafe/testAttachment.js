@@ -1,4 +1,4 @@
-import Basic from './basic' 
+import Basic from './basic'
 import { Selector } from 'testcafe';
 
 fixture `testAttachment`
@@ -20,18 +20,18 @@ test('testAttachment', async t => {
         .typeText('#password', '123')
         .click('#submit')
         //.click('#menu')
-        //.click('li[id="menu"] li[resource="v-l:Find"]')
+        //.click('li[id="menu"] li[resource="v-s:Find"]')
         //.typeText('veda-control[property="v-fs:fulltextQuery"] input.form-control', 'Персона')
         //.click('span.input-group-btn button#submit')
         //.click('p[resource="cfg:Guest"] a[about="cfg:Guest"]')
         //.click('div.text-right span.glyphicon.glyphicon-link')
         //.click('button#export-ttl.btn.btn-primary')
         //.click('#menu')
-        //.click('li[id="menu"] li[resource="v-l:Create"]')
+        //.click('li[id="menu"] li[resource="v-s:Create"]')
         //.typeText('input.fulltext.tt-input', 'Отчет')
         //.click('veda-control.fulltext div.tt-suggestion[about="v-s:Report"]>p')
-        
-        //следующие 2 строчки работают с обновлённым контролом 
+
+        //следующие 2 строчки работают с обновлённым контролом
         .typeText('veda-control.fulltext.dropdown', 'Отчет')
         .click('div.suggestion[about="v-s:Report"]')
         .typeText('input.form-control[lang="RU"]', 'Мероприятие')
@@ -44,12 +44,12 @@ test('testAttachment', async t => {
         .wait(480000)
         //.click('#save')
         //.click('veda-control[rel="v-s:attachment"]');
-        
+
         //.typeText('input.form-control[lang="RU"]', 'Мероприятие')
         //.typeText('input[name="v_s_action_v_s_responsible"]', 'Администратор2')
         //.click('veda-control.fulltext div.tt-suggestion>p')
         //.click('#save')
-        
+
         //.wait(2000)
-        
+
 });

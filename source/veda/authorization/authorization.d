@@ -121,3 +121,27 @@ ubyte access_from_pretty_string(const string access)
     }
     return res;
 }
+
+string access_to_string(const ubyte src)
+{
+    char[] res = new char[ 4 ];
+
+    if (src & Access.can_create)
+        res[ 0 ] = 'C';
+    else
+        res[ 0 ] = '-';
+    if (src & Access.can_read)
+        res[ 1 ] = 'R';
+    else
+        res[ 1 ] = '-';
+    if (src & Access.can_update)
+        res[ 2 ] = 'U';
+    else
+        res[ 2 ] = '-';
+    if (src & Access.can_delete)
+        res[ 3 ] = 'D';
+    else
+        res[ 3 ] = '-';
+
+    return cast(string)res;
+}

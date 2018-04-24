@@ -8,7 +8,7 @@ import { Selector, t } from 'testcafe';
     const timeStamp = ''+Math.round(+new Date()/1000);
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Персона')
       .click('div.suggestion[resource="v-s:Person"]')
       .click('div.input-group.date input.form-control[name="v_s_person_v_s_birthday"]')
@@ -17,7 +17,7 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', timeStamp)
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Find"]')
+      .click('li[id="menu"] li[resource="v-s:Find"]')
       .click('ul#req-tabs a[about="v-fs:AttributiveBundle"]')
       .typeText('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]', 'Персона')
       .click('div.suggestion[resource="v-s:Person"]')

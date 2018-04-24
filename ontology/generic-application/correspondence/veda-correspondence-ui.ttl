@@ -403,11 +403,19 @@ v-s:CorrespondentTemplate
     self.off("v-s:correspondentOrganization", correspondentOrganizationHandler);
   });
   function correspondentOrganizationHandler () {
-    var userOrganization = veda.appointment.getOrganization();
-    if ( this.hasValue("v-s:correspondentOrganization", userOrganization) ) {
+    if (
+      this.hasValue("v-s:correspondentOrganization") && this["v-s:correspondentOrganization"][0].hasValue("v-s:isOwnOrganization", true) ||
+      this.hasValue("v-s:correspondentOrganization", veda.appointment.getOrganization())
+    ) {
+      this
+        .clearValue("v-s:correspondentDepartmentDescription")
+        .clearValue("v-s:correspondentPersonDescription");
       $(".user-organization", template).show();
       $(".other-organization", template).hide();
     } else {
+      this
+        .clearValue("v-s:correspondentDepartment")
+        .clearValue("v-s:correspondentPerson");
       $(".user-organization", template).hide();
       $(".other-organization", template).show();
     }

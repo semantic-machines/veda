@@ -11,7 +11,7 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Персона')
       .click('div.suggestion[resource="v-s:Person"]')
       .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', 'a'+last)
@@ -24,7 +24,7 @@ import { Selector, t } from 'testcafe';
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
 
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .click('veda-control.fulltext.dropdown')
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Персона')
@@ -39,7 +39,7 @@ import { Selector, t } from 'testcafe';
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
 
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Find"]')
+      .click('li[id="menu"] li[resource="v-s:Find"]')
       .click('ul#req-tabs a[about="v-fs:AttributiveBundle"]')
       .typeText('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]', 'Персона')
       .click('div.suggestion[resource="v-s:Person"]')
