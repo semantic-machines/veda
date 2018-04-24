@@ -793,6 +793,12 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
  *      v-s:templateBody   - шаблон для тела
  */
 
+function getAppName() {
+  var appInfo = get_individual(ticket, "v-s:vedaInfo");
+  var appName = appInfo ? getFirstValue(appInfo["rdfs:label"]) : "";
+  return appName;
+}
+
 function mapToMessage(map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment) {
   try {
     if (journal_uri && map_container) {
@@ -845,7 +851,9 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
           } else {
             lang = 'RU';
           }
-          var view = {};
+          var view = {
+            "app_name": getAppName
+          };
 
           for (var idx = 0; idx < messageVars.length; idx++) {
             var jvar = messageVars[idx];

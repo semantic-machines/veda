@@ -95,6 +95,8 @@ v-s:MainPageTemplate
   </nav>
 </div>
 <script>
+  document.title = new veda.IndividualModel("v-s:vedaInfo").toString();
+
   // Render user
   var userInfo = $("#user-info", template);
   var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
