@@ -71,12 +71,5 @@ export default class basic {
       .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql(eql)
   }
 
-  async openFulltextSearchDocumentForm(name) {
-    await t
-      .click('#menu')
-      .click('li[id="menu"] li[resource="v-s:Find"]')
-      .typeText('div[typeof="v-fs:FulltextRequest"] input.fulltext.tt-input', name)
-
-  }
 }
 
