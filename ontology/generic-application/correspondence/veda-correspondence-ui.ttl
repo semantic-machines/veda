@@ -407,9 +407,15 @@ v-s:CorrespondentTemplate
       this.hasValue("v-s:correspondentOrganization") && this["v-s:correspondentOrganization"][0].hasValue("v-s:isOwnOrganization", true) ||
       this.hasValue("v-s:correspondentOrganization", veda.appointment.getOrganization())
     ) {
+      this
+        .clearValue("v-s:correspondentDepartmentDescription")
+        .clearValue("v-s:correspondentPersonDescription");
       $(".user-organization", template).show();
       $(".other-organization", template).hide();
     } else {
+      this
+        .clearValue("v-s:correspondentDepartment")
+        .clearValue("v-s:correspondentPerson");
       $(".user-organization", template).hide();
       $(".other-organization", template).show();
     }
