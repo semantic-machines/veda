@@ -88,9 +88,20 @@ func (conn *Connector) open_dbs() {
 }
 
 func (conn *Connector) reopen_individual_db() {
+	var err error
+
 	conn.indivEnv.Close()
 
-	var err error
+	conn.indivEnv, err = lmdb.NewEnv()
+	if err != nil {
+		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
+	}
+
+	err = conn.indivEnv.SetMaxDBs(1)
+	if err != nil {
+		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
+	}
+
 	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 	if err != nil {
 		log.Fatal("Err: can not open lmdb individuals base: ", err)
@@ -100,9 +111,20 @@ func (conn *Connector) reopen_individual_db() {
 }
 
 func (conn *Connector) reopen_ticket_db() {
+	var err error
+
 	conn.ticketEnv.Close()
 
-	var err error
+	conn.ticketEnv, err = lmdb.NewEnv()
+	if err != nil {
+		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
+	}
+
+	err = conn.ticketEnv.SetMaxDBs(1)
+	if err != nil {
+		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
+	}
+
 	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 	if err != nil {
 		log.Fatal("Err: can not open tickets lmdb base: ", err)
