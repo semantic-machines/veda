@@ -775,7 +775,7 @@ public class IndexerContext
                 doc.set_data(indv.uri.ptr, indv.uri.length, &err);
 
                 if (is_restored)
-                    indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                    indexer_deleted_db.delete_document(uuid.ptr, uuid.length, &err);
 
                 if (is_deleted)
                 {
