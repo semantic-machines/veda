@@ -2072,6 +2072,7 @@ v-ui:TreeTemplate
 
   var rel_uri = individual.treeConfig.targetRel_uri;
   var isSingle = individual.treeConfig.isSingle;
+  var withDeleted = individual.treeConfig.withDeleted;
   var headTmpl = "";
   var rowTmpl = "";
 
@@ -2353,6 +2354,9 @@ v-ui:TreeTemplate
         q = "(" + q + ") && (" + allowed + ")";
       }
       var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+      if (withDeleted) {
+        q = "(" + q + ") || (" + q + " && 'v-s:deleted'== true )";
+      }
       query({
         ticket: veda.ticket,
         query: q,
