@@ -58,7 +58,6 @@ v-s:Organization
   rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:OrganizationTemplate ;
-  v-s:hasLinksTree v-s:OrganizationLinksTree ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
