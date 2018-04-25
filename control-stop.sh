@@ -32,3 +32,5 @@ rm .veda-pid
 rm data/module-info/*.lock
 rm data/queue/*.lock
 rm data/uris/*.lock
+
+exit 0
