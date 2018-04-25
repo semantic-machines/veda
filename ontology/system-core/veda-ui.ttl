@@ -2363,7 +2363,8 @@ v-ui:TreeTemplate
         sort: sort,
         async: true
       }).then(function (queryResult) {
-        resolve(queryResult.result);
+        var unique = veda.Util.unique( queryResult.result );
+        resolve(unique);
       });
     });
   }

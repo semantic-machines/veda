@@ -813,6 +813,9 @@
         if (index >= 100) { return; }
         var opt = first_opt.clone().appendTo(select);
         opt.text( renderValue(value) ).data("value", value);
+        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+          opt.addClass("deleted");
+        }
         if ( isSingle && individual.hasValue(property_uri, value) ) {
           opt.prop("selected", true);
         }
@@ -924,6 +927,9 @@
         var hld = holder.clone().appendTo(control);
         var lbl = $("label", hld).append( renderValue(value) );
         var chk = $("input", lbl).data("value", value);
+        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+          hld.addClass("deleted");
+        }
         var hasValue = individual.hasValue(property_uri, value);
         chk.prop("checked", hasValue);
         chk.change(function () {
@@ -1049,6 +1055,9 @@
         var hld = holder.clone().appendTo(control);
         var lbl = $("label", hld).append( renderValue(value) );
         var rad = $("input", lbl).data("value", value);
+        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+          hld.addClass("deleted");
+        }
         var hasValue = individual.hasValue(property_uri, value);
         rad.prop("checked", hasValue);
         rad.change(function () {
@@ -1728,6 +1737,9 @@
             if (individual.hasValue(rel_uri, result)) {
               tmpl.addClass("selected");
             }
+            if (result.hasValue("v-s:deleted", true)) {
+              tmpl.addClass("deleted");
+            }
             return tmpl;
           });
           suggestions.empty().append(rendered);
@@ -1876,6 +1888,7 @@
     var result = [];
 
     return incrementalSearch(0, 100, []).then(function (results) {
+      results = veda.Util.unique( results );
       var getList = results.filter( function (uri, index) {
         if ( veda.cache[uri] ) {
           result.push(veda.cache[uri]);
