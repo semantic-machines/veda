@@ -424,11 +424,10 @@ v-ft:InboxTemplate
   rdfs:label "Task blank template"@en ;
   v-ui:template """
 <script>
-  if (individual.top) {
-    individual["v-fs:top"] = [ individual.top ];
-  }
   template.one("remove", function () {
-    individual.top = individual["v-fs:cursor"][0];
+    if ( individual["v-fs:cursor"][0] >= individual["v-fs:top"][0] ) {
+      individual["v-fs:top"] = individual["v-fs:cursor"];
+    }
   });
 //# sourceURL=v-ft:InboxTemplate_pre
 </script>
