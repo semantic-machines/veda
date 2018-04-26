@@ -496,7 +496,6 @@ v-s:DeliveryTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
   </div>
 </div>
-
   """ ;
 .
 
