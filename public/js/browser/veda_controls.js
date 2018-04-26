@@ -934,11 +934,9 @@
         chk.prop("checked", hasValue);
         chk.change(function () {
           if ( chk.is(":checked") ) {
-            individual.set(property_uri, individual.get(property_uri).concat( chk.data("value") ));
+            individual.addValue(property_uri, value);
           } else {
-            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
-              return i.valueOf() !== chk.data("value").valueOf();
-            }));
+            individual.removeValue(property_uri, value);
           }
         });
       });
