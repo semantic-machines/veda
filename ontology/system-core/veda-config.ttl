@@ -163,11 +163,3 @@ v-s:queue
   rdfs:label "Queue" ;
   rdfs:range xsd:string ;
 .
-
-v-s:useTemplate
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:Connection ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Использовать шаблон" ;
-  rdfs:range v-s:TemplateForText ;
-.
