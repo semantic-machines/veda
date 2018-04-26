@@ -618,6 +618,7 @@ v-ft:TaskResultTemplate
       <th width="15%" data-orderby="v-wf:from.rdfs:label"><span about="v-wf:from" property="rdfs:label"></span></th>
       <th width="15%" data-orderby="v-wf:to.rdfs:label"><span about="v-wf:to" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
+      <th width="20px"></th>
       <th data-orderby="v-wf:onDocument.rdfs:label"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-wf:dateGiven"><span about="v-wf:dateGiven" property="rdfs:label"></span></th>
@@ -643,18 +644,45 @@ v-ft:TaskResultTemplate
         <a href="#/@" about="@" property="rdfs:label"></a><br/>
         <i about="@" property="v-s:description"></i>
       </td>
+      <td>
+        <button class="btn btn-xs btn-primary toggle-read">
+          <span class="glyphicon glyphicon-eye-close"></span>
+        </button>
+      </td>
       <td about="@" rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
       <td about="@" property="v-wf:dateGiven" class="date-given"></td>
     </tr>
     <script>
-      // Read indicator
-      if ( !individual.hasValue("v-wf:read", true) ) {
-        template.css("font-weight", "bold");
-      }
+      $(".toggle-read", template).click(function(){
+        var isRead = individual["v-wf:read"][0];
+        set_in_individual({
+          ticket: veda.ticket,
+          individual: {
+            "@": individual.id,
+            "v-wf:read": [{
+              data: !isRead,
+              type: "Boolean"
+            }]
+          },
+          async: true
+        });
+      });
+      function readHandler(){
+        if(individual.hasValue("v-wf:read", true)){
+          template.css("font-weight", "normal");
+          $(".toggle-read span", template).removeClass("glyphicon-eye-open").addClass("glyphicon-eye-close");
+        } else {
+          template.css("font-weight", "bold");
+          $(".toggle-read span", template).removeClass("glyphicon-eye-close").addClass("glyphicon-eye-open");
+        }
+      };
+      readHandler();
+      individual.on("v-wf:read", readHandler);
       individual.on("v-wf:isCompleted", removeCompleted);
       template.one("remove", function () {
         individual.off("v-wf:isCompleted", removeCompleted);
+        individual.off("v-wf:read", readHandler);
       });
       var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
       var remove = (folder !== "v-ft:Completed");

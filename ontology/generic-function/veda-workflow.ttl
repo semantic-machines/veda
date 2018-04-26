@@ -1602,7 +1602,7 @@ v-wf:DecisionFormTemplate
 <div class="hidden"></div>
 <script>
   var timeout = setTimeout(function () {
-    if ( !individual.hasValue("v-wf:read") && individual.rights.hasValue("v-s:canUpdate", true) ) {
+    if ( ( !individual.hasValue("v-wf:read") || !individual["v-wf:read"][0] ) && individual.rights.hasValue("v-s:canUpdate", true) ) {
       set_in_individual({
         ticket: veda.ticket,
         individual: {
