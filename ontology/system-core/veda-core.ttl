@@ -280,35 +280,6 @@ v-s:Container
 .
 
 # ------------------------------------------------------------
-v-s:TemplateForText
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Шаблон для текста"@ru ;
-.
-v-s:templateBody
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Тело шаблона" ;
-  rdfs:range v-s:TemplateForText ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:TemplateForText ;
-.
-v-s:templateSubject
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Тема шаблона" ;
-  rdfs:range v-s:TemplateForText ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:TemplateForText ;
-.
-v-s:templateLanguage
-  rdf:type owl:ObjectProperty ;
-  rdfs:range v-s:TemplateForText ;
-  rdfs:label "Язык используемый в шаблоне"@ru ;
-  rdfs:label "Template language"@en ;
-  rdfs:range v-ui:Language ;
-  rdfs:domain v-s:TemplateForText ;
-.
-
-# ------------------------------------------------------------
 v-s:Event
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;

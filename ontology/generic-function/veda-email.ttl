@@ -15,9 +15,7 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
-### --------------------Спецификация----------------------
 
-### ------------------------------------------------------
 v-s:Email
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Deliverable ;
@@ -26,7 +24,7 @@ v-s:Email
   rdfs:label "E-mail"@en ;
   v-ui:hasTemplate v-s:EmailTemplate ;
 .
-### ---------------Bundle---------------------------------
+
 v-s:Deliverable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
@@ -73,22 +71,9 @@ v-s:recipientMailbox
   rdfs:domain v-s:Deliverable ;
   rdfs:range xsd:string ;
 .
-v-s:sendEmailBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Отправить Email"@ru ;
-  rdfs:label "Send Email"@en ;
-.
-v-s:textEmailBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Текст письма"@ru ;
-  rdfs:label "Email text"@en ;
-.
-v-s:themeEmailBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Тема письма"@ru ;
-  rdfs:label "Theme text"@en ;
-.
+
 ### ------------------------------------------------------
+
 v-s:EmailTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Email ;
@@ -97,7 +82,7 @@ v-s:EmailTemplate
   v-ui:template """
 <div class="container sheet">
   <h2>
-    <span about="v-s:sendEmailBundle" property="rdfs:label"></span><br>
+    <span about="v-s:Email" property="rdfs:label"></span><br>
     <small about="@" property="rdfs:label"></small>
   </h2>
   <hr class="view edit -search">
@@ -110,10 +95,10 @@ v-s:EmailTemplate
       <em about="v-s:recipientMailbox" property="rdfs:label"></em>
       <div property="v-s:recipientMailbox" class="view edit -search"></div>
       <veda-control data-type="generic" property="v-s:recipientMailbox" class="-view edit search"></veda-control>
-      <em about="v-s:themeEmailBundle" property="rdfs:label"></em>
+      <em about="v-s:subject" property="rdfs:label"></em>
       <div property="v-s:subject" class="view -edit -search"></div>
       <veda-control data-type="string" property="v-s:subject" class="-view edit search"></veda-control>
-      <em about="v-s:textEmailBundle" property="rdfs:label"></em>
+      <em about="v-s:messageBody" property="rdfs:label"></em>
       <div property="v-s:messageBody" class="view -edit -search"></div>
       <veda-control property="v-s:messageBody" data-type="text" rows="4" class="-view edit search"></veda-control>
       <em about="v-s:attachment" property="rdfs:label"></em>
@@ -127,4 +112,73 @@ v-s:EmailTemplate
   </div>
 </div>
   """ ;
+.
+v-s:Notification
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Уведомление"@ru ;
+  rdfs:label "Notification"@en ;
+.
+v-s:notificationBody
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тело шаблона" ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Notification ;
+.
+v-s:notificationSubject
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Тема шаблона" ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Notification ;
+.
+v-s:notificationLanguage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Язык используемый в шаблоне"@ru ;
+  rdfs:label "Template language"@en ;
+  rdfs:range v-ui:Language ;
+  rdfs:domain v-s:Notification ;
+.
+v-s:hasMessageType
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Тип сообщения"@ru ;
+  rdfs:label "Notification type"@en ;
+  rdfs:range v-s:MessageType ;
+  rdfs:domain v-s:Notification ;
+  rdfs:domain v-s:Email ;
+.
+v-s:MessageType
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Тип уведомления"@ru ;
+  rdfs:label "Notification type"@en ;
+.
+v-s:ProcessStartNotification
+  rdf:type v-s:MessageType ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Уведомление о начале процесса"@ru ;
+  rdfs:label "Process start notification"@en ;
+.
+v-s:ProcessFinishNotification
+  rdf:type v-s:MessageType ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Уведомление о завершении процесса"@ru ;
+  rdfs:label "Process finish notification"@en ;
+.
+v-s:TaskReceivedNotification
+  rdf:type v-s:MessageType ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Уведомление о получении задачи"@ru ;
+  rdfs:label "Task received notification"@en ;
+.
+v-s:PermissionsGrantedNotification
+  rdf:type v-s:MessageType ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Уведомление о получении прав"@ru ;
+  rdfs:label "Permissions granted notification"@en ;
+.
+v-s:OtherNotification
+  rdf:type v-s:MessageType ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Прочие уведомления"@ru ;
+  rdfs:label "Other notifications"@en ;
 .
