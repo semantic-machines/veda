@@ -242,7 +242,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	for i := 0; i < len(urisToGet); i++ {
 		rr := conn.Get(true, ticket.UserURI, []string{urisToGet[i]}, false)
 		if rr.CommonRC != Ok {
-			log.Println("@ERR GET_INDIVIDUALS: GET COMMON ", rr.CommonRC)
+			log.Println("@ERR GET_INDIVIDUALS: GET COMMON ", rr.CommonRC, ", user=", ticket.UserURI, ", uri=", urisToGet[i])
 			ctx.Response.SetStatusCode(int(rr.CommonRC))
 			trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", rr.CommonRC, timestamp)
 			continue
