@@ -119,6 +119,9 @@ body {
 .ribbon.warning { background: #f0ad4e; }
 .ribbon.danger { background: #d9534f; }
 
+.pointer {
+  cursor: pointer;
+}
 
 /* Sheets */
 .sheet {
@@ -393,9 +396,6 @@ footer {
 }
 .navbar-collapse.collapse.in li , .navbar-collapse.collapsing li {
   display: inline-block!important;
-}
-.text-muted {
-  color: #707070;
 }
 .text-black {
   color: #000;
