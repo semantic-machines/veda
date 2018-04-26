@@ -661,26 +661,28 @@ v-ft:TaskResultTemplate
       <script>
         $(".toggle-read", template)
           .prop("title", new veda.IndividualModel("v-ft:ReadUnreadBundle").toString())
-          .click(function (e) {
-            e.stopPropagation();
-            var isRead = individual.hasValue("v-wf:read", true);
-            toggleRead(!isRead);
-            set_in_individual({
-              ticket: veda.ticket,
-              individual: {
-                "@": individual.id,
-                "v-wf:read": [{
-                  data: !isRead,
-                  type: "Boolean"
-                }]
-              },
-              async: true
-            });
+          .click(toggleReadClickHandler);
+
+        function toggleReadClickHandler(e) {
+          e.stopPropagation();
+          var isRead = individual.hasValue("v-wf:read", true);
+          toggleRead(!isRead);
+          set_in_individual({
+            ticket: veda.ticket,
+            individual: {
+              "@": individual.id,
+              "v-wf:read": [{
+                data: !isRead,
+                type: "Boolean"
+              }]
+            },
+            async: true
           });
+        }
         function readHandler () {
           var isRead = individual.hasValue("v-wf:read", true);
           toggleRead(isRead);
-        };
+        }
         function toggleRead (isRead) {
           if ( isRead ) {
             template.css("font-weight", "normal");
