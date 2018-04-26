@@ -635,7 +635,7 @@ v-ft:TaskResultTemplate
       <tr>
         <td class="serial-number"></td>
         <td>
-          <span class="toggle-read glyphicon glyphicon-exclamation-sign pointer"></span>
+          <span class="toggle-read glyphicon glyphicon-exclamation-sign"></span>
           <span class="child-task text-muted"></span>
         </td>
         <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
@@ -659,10 +659,26 @@ v-ft:TaskResultTemplate
         <td about="@" property="v-wf:dateGiven" class="date-given"></td>
       </tr>
       <script>
-        $(".toggle-read", template)
-          .prop("title", new veda.IndividualModel("v-ft:ReadUnreadBundle").toString())
-          .click(toggleReadClickHandler);
+        // Remove completed tasks from inbox & outbox
+        var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
+        var remove = (folder !== "v-ft:Completed");
+        removeCompleted.call(this);
+        function removeCompleted() {
+          if (remove && this.hasValue("v-wf:isCompleted", true)) {
+            template.remove();
+          }
+        }
+        individual.on("v-wf:isCompleted", removeCompleted);
+        template.one("remove", function () {
+          individual.off("v-wf:isCompleted", removeCompleted);
+        });
 
+        // Toggle read/unread
+        var toggler = $(".toggle-read", template);
+        toggler.prop("title", new veda.IndividualModel("v-ft:ReadUnreadBundle").toString());
+        if (folder === "v-ft:Inbox") {
+          toggler.addClass("pointer").click(toggleReadClickHandler);
+        }
         function toggleReadClickHandler(e) {
           e.stopPropagation();
           var isRead = individual.hasValue("v-wf:read", true);
@@ -686,27 +702,17 @@ v-ft:TaskResultTemplate
         function toggleRead (isRead) {
           if ( isRead ) {
             template.css("font-weight", "normal");
-            $(".toggle-read", template).removeClass("text-primary").addClass("text-muted");
+            toggler.removeClass("text-primary").addClass("text-muted");
           } else {
             template.css("font-weight", "bold");
-            $(".toggle-read", template).removeClass("text-muted").addClass("text-primary");
+            toggler.removeClass("text-muted").addClass("text-primary");
           }
         };
         readHandler();
         individual.on("v-wf:read", readHandler);
-        individual.on("v-wf:isCompleted", removeCompleted);
         template.one("remove", function () {
-          individual.off("v-wf:isCompleted", removeCompleted);
           individual.off("v-wf:read", readHandler);
         });
-        var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
-        var remove = (folder !== "v-ft:Completed");
-        removeCompleted.call(this);
-        function removeCompleted() {
-          if (remove && this.hasValue("v-wf:isCompleted", true)) {
-            template.remove();
-          }
-        }
 
         // Child task indicator
         if ( individual.hasValue("v-wf:hasChildTask") ) {
