@@ -407,16 +407,28 @@ v-s:PersonSpecification3
   v-ui:placeholder "Middle name"@en ;
 .
 
-v-s:UISettings
+v-s:UISettingsBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Настройки интерфейса"@ru ;
   rdfs:label "Interface settings"@en ;
 .
 
-v-s:NotificationSettings
+v-s:MessageSettingsBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Настройки уведомлений"@ru ;
-  rdfs:label "Notification settings"@en ;
+  rdfs:label "Настройки сообщений"@ru ;
+  rdfs:label "Message settings"@en ;
+.
+
+v-s:RejectBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Отказаться"@ru ;
+  rdfs:label "Reject"@en ;
+.
+
+v-s:TheseMessagesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "от этих сообщений:"@ru ;
+  rdfs:label "these messages:"@en ;
 .
 
 v-s:PersonalPreferencesTemplate
@@ -425,7 +437,7 @@ v-s:PersonalPreferencesTemplate
   rdfs:label "Personal preferences template"@en ;
   v-ui:template """
   <div class="container sheet">
-    <h3 about="v-s:UISettings" property="rdfs:label"></h3>
+    <h3 about="v-s:UISettingsBundle" property="rdfs:label"></h3>
     <br/>
     <div class="form-inline">
       <div class="form-group">
@@ -449,7 +461,9 @@ v-s:PersonalPreferencesTemplate
       </label>
     </div>
     <hr/>
-    <h3 about="v-s:NotificationSettings" property="rdfs:label"></h3>
+    <h3 about="v-s:MessageSettingsBundle" property="rdfs:label"></h3>
+    <strong style="padding:0px 3px; border-bottom:1px dotted black; background-color: yellow;" about="v-s:RejectBundle" property="rdfs:label"></strong> <strong about="v-s:TheseMessagesBundle" property="rdfs:label"></strong>
+    <veda-control rel="v-ui:rejectMessageType" data-type="checkbox"></veda-control>
     <br/>
     <div class="actions">
       <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
