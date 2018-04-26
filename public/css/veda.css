@@ -158,16 +158,19 @@ body {
     -webkit-columns: 2;
     -moz-columns: 2;
     columns: 2;
+    column-gap: 3em;
   }
   .columns-3 {
     -webkit-columns: 3;
     -moz-columns: 3;
     columns: 3;
+    column-gap: 3em;
   }
   .columns-4 {
     -webkit-columns: 4;
     -moz-columns: 4;
     columns: 4;
+    column-gap: 3em;
   }
 }
 
