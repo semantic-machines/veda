@@ -433,7 +433,7 @@ veda.Module(function (veda) { "use strict";
     this.trigger("beforeRemove");
     if ( !this.isNew() ) {
       try {
-        self.undraft();
+        this.undraft();
         remove_individual(veda.ticket, this.id);
         if ( this._.cache && veda.cache && veda.cache[this.id] ) {
           delete veda.cache[this.id];
