@@ -354,7 +354,7 @@ class VedaModule : VedaModuleBasic
                         break;
                     }
 
-                    Individual indv = context.get_individual(&sticket, data);
+                    Individual indv = context.get_individual(&sticket, data, OptAuthorize.NO);
 
                     ResultCode rc = ResultCode.Internal_Server_Error;
 

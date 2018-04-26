@@ -469,7 +469,7 @@ public class IndexerContext
                             try
                             {
                                 // 1. считать индивид по ссылке
-                                Individual inner_indv = context.get_individual(ticket, rs.uri);
+                                Individual inner_indv = context.get_individual(ticket, rs.uri, OptAuthorize.NO);
 
                                 //string tab; for (int i = 0; i < level; i++)
                                 //    tab ~= "	";

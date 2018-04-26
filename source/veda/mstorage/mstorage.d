@@ -193,7 +193,7 @@ void init(string node_id)
         {
             core_context.reopen_ro_individuals_storage_db();
             core_context.reopen_ro_acl_storage_db();
-            node = core_context.get_individual(&sticket, node_id);
+            node = core_context.get_individual(&sticket, node_id, OptAuthorize.NO);
 
             log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }

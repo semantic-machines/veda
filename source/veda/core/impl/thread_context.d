@@ -435,7 +435,7 @@ class PThreadContext : Context
         return sr;
     }
 
-    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES)
+    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize)
     {
         Individual individual = Individual.init;
 

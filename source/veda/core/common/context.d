@@ -101,7 +101,7 @@ interface Context
        Returns:
                 авторизованный экземпляр onto.Individual
      */
-    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize = OptAuthorize.YES);
+    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize);
 
     /**
        Вернуть список индивидуалов по списку uri

@@ -117,7 +117,7 @@ class FanoutProcess : VedaModule
         if (p_uri is null)
             return null;
 
-        Individual p = context.get_individual(&sticket, p_uri);
+        Individual p = context.get_individual(&sticket, p_uri, OptAuthorize.NO);
         if (p.getStatus() != ResultCode.OK)
             return null;
 
@@ -125,7 +125,7 @@ class FanoutProcess : VedaModule
         if (ac_uri is null)
             return null;
 
-        Individual ac = context.get_individual(&sticket, ac_uri);
+        Individual ac = context.get_individual(&sticket, ac_uri, OptAuthorize.NO);
         if (ac.getStatus() != ResultCode.OK)
             return null;
 
@@ -139,7 +139,7 @@ class FanoutProcess : VedaModule
 
         Resources  res;
 
-        Individual indv = context.get_individual(&sticket, ap_uri);
+        Individual indv = context.get_individual(&sticket, ap_uri, OptAuthorize.NO);
 
         if (indv.getStatus() != ResultCode.OK)
             return null;
@@ -330,7 +330,7 @@ class FanoutProcess : VedaModule
                             try
                             {
                                 //writeln("@1 attachment_id=", attachment_ids);
-                                Individual file_info = context.get_individual(&sticket, attachment_id);
+                                Individual file_info = context.get_individual(&sticket, attachment_id, OptAuthorize.NO);
                                 if (file_info !is Individual.init)
                                 {
                                     string path     = file_info.getFirstResource("v-s:filePath").get!string;
@@ -362,7 +362,7 @@ class FanoutProcess : VedaModule
                             try
                             {
                                 //writeln("@1 attachment_id=", attachment_ids);
-                                Individual file_info = context.get_individual(&sticket, attachment_id);
+                                Individual file_info = context.get_individual(&sticket, attachment_id, OptAuthorize.NO);
                                 if (file_info !is Individual.init)
                                 {
                                     string path     = file_info.getFirstResource("v-s:filePath").get!string;
@@ -445,7 +445,7 @@ class FanoutProcess : VedaModule
             //log.trace("connect_to_smtp:found gates: %s", gates);
             foreach (gate; gates)
             {
-                Individual connection = context.get_individual(&sticket, gate.uri);
+                Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
                 subscribe_on_prefetch(gate.uri);
                 Resource   transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)
