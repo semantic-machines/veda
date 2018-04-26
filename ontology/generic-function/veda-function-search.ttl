@@ -1989,7 +1989,7 @@ v-fs:AttributiveSearchInlineTemplate
   sortBy = tmp[0]; dir = tmp[1];
   $(".orderby", template).each( function () {
     var header = $(this);
-    var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
+    var a = $("<a href='#' class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
     header.prepend(a, " ");
     var property_uri = header.attr("data-orderby");
     if (sortBy.indexOf(property_uri) >= 0) {
