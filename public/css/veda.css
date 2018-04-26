@@ -132,7 +132,7 @@ body {
 .sheet .sheet {
   border: none!important;
   padding: 0!important;
-  position: static!important;
+  /*position: static!important;*/
 }
 
 .modal .sheet {
