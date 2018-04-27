@@ -6,16 +6,16 @@ extern crate lazy_static;
 extern crate lmdb_rs_m;
 
 use core::fmt;
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::os::raw::c_char;
 use std::ptr;
+use std::sync::Mutex;
 use std::thread;
 use std::time;
-//use std::time::SystemTime;
-use std::cell::RefCell;
-use std::sync::Mutex;
+use std::time::SystemTime;
 
 use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
 use lmdb_rs_m::{DbFlags, /*DbHandle,*/ EnvBuilder, Environment, MdbError};
@@ -133,7 +133,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
+const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
 const DB_PATH: &str = "./data/acl-indexes/";
 
 const PERMISSION_PREFIX: &str = "P";
@@ -180,6 +180,8 @@ pub struct AzContext<'a> {
 lazy_static! {
 
 #[derive(Debug)]
+    static ref LAST_MODIFIED_INFO : Mutex<RefCell<SystemTime>> = Mutex::new(RefCell::new (SystemTime:: now()));
+
     static ref ENV : Mutex<RefCell<Environment>> = Mutex::new(RefCell::new ({
     let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
@@ -430,12 +432,12 @@ pub fn prepare_obj_group(azc: &mut AzContext, request_access: u8, uri: &str, acc
         let new_access = group.access & access;
         group.access = new_access;
 
-		let mut key = group.id.clone();
-		let mut preur_access = 0;
+        let mut key = group.id.clone();
+        let mut preur_access = 0;
 
         if azc.walked_groups_o.contains_key(&key) {
             preur_access = azc.walked_groups_o[&key];
-            if (preur_access & new_access) == new_access{
+            if (preur_access & new_access) == new_access {
                 continue;
             }
         }
@@ -484,7 +486,7 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
         group.access = new_access;
 
         if p_role == ROLE_SUBJECT {
-        	let mut preur_access = 0;
+            let mut preur_access = 0;
             if azc.walked_groups_s.contains_key(&group.id) {
                 preur_access = azc.walked_groups_s[&group.id];
                 if (preur_access & new_access) == new_access {
@@ -506,7 +508,7 @@ pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u
             }
             azc.walked_groups_s.insert(group.id.clone(), new_access | preur_access);
         } else {
-        	let mut preur_access = 0;
+            let mut preur_access = 0;
             if azc.walked_groups_o.contains_key(&group.id) {
                 preur_access = azc.walked_groups_o[&group.id];
                 if (preur_access & new_access) == new_access {
@@ -626,33 +628,41 @@ pub fn _authorize(
     uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, is_trace_acl: bool, _trace_acl: &mut String, is_trace_group: bool, _trace_group: &mut String,
     is_trace_info: bool, _trace_info: &mut String,
 ) -> u8 {
-    //    fn check_for_reload() -> std::io::Result<bool> {
-    //
-    //        use std::fs::File;
-    //        let f = File::open(MODULE_INFO_PATH)?;
-    //
-    //        let metadata = f.metadata()?;
-    //
-    //        if let Ok(new_time) = metadata.modified() {
-    //            let prev_time = LAST_MODIFIED_INFO.lock().unwrap().get();
-    //
-    //            if new_time != prev_time {
-    //                LAST_MODIFIED_INFO.lock().unwrap().set(new_time);
-    //                println!("LAST_MODIFIED_INFO={:?}", new_time);
-    //                return Ok ((true));
-    //            }
-    //        }
-    //
-    //        Ok(false)
-    //    }
-    //
-    //    if _is_check_for_reload == true {
-    //	    if let Ok (need_reload) = check_for_reload() {
-    //		    if (need_reload == true) {
-    //		    	ENV.sync (true);
-    //		    }
-    //	    }
-    //    }
+    fn check_for_reload() -> std::io::Result<bool> {
+        use std::fs::File;
+        let f = File::open(MODULE_INFO_PATH)?;
+
+        let metadata = f.metadata()?;
+
+        if let Ok(new_time) = metadata.modified() {
+            let prev_time = LAST_MODIFIED_INFO.lock().unwrap().get_mut().clone();
+
+            if new_time != prev_time {
+                LAST_MODIFIED_INFO.lock().unwrap().replace(new_time);
+                println!("LAST_MODIFIED_INFO={:?}", new_time);
+                return Ok(true);
+            }
+        }
+
+        Ok(false)
+    }
+
+    if _is_check_for_reload == true {
+        if let Ok(true) = check_for_reload() {
+            println!("reopen db");
+
+            let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
+
+            match env_builder.open(DB_PATH, 0o644) {
+                Ok(env_res) => {
+                    ENV.lock().unwrap().replace(env_res);
+                }
+                Err(e) => {
+                    println!("ERR! Authorize: Err opening environment: {:?}", e);
+                }
+            }
+        }
+    }
 
     let env = ENV.lock().unwrap().get_mut().clone();
 
