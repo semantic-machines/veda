@@ -786,8 +786,9 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket.id, new_test_doc2);
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
 
-            read_individual = Backend.get_individual(ticket.id, new_test_doc2_uri);
+            read_individual = Backend.get_individual(ticket.id, new_test_doc2_uri, true);
 
             //#3
             assert.ok(compare(new_test_doc2, read_individual));
@@ -806,6 +807,7 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket.id, new_test_doc3);
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
 
             read_individual = Backend.get_individual(ticket.id, new_test_doc3_uri);
 

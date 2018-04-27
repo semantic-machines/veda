@@ -128,7 +128,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
     let trace_group = &mut String::new();
     let trace_info = &mut String::new();
 
-    return _authorize(uri, user_uri, request_access, is_check_for_reload, false, trace_acl, false, trace_group, false, trace_info); //qq.as_mut_str()
+    return _authorize(uri, user_uri, request_access, false, false, trace_acl, false, trace_group, false, trace_info); //qq.as_mut_str()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -639,7 +639,7 @@ pub fn _authorize(
 
             if new_time != prev_time {
                 LAST_MODIFIED_INFO.lock().unwrap().replace(new_time);
-                println!("LAST_MODIFIED_INFO={:?}", new_time);
+                //println!("LAST_MODIFIED_INFO={:?}", new_time);
                 return Ok(true);
             }
         }
@@ -649,7 +649,7 @@ pub fn _authorize(
 
     if _is_check_for_reload == true {
         if let Ok(true) = check_for_reload() {
-            println!("reopen db");
+            //println!("INFO: Authorize: reopen db");
 
             let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
