@@ -266,7 +266,11 @@ func main() {
 
 	go monitorIndividualChanges()
 	go func() {
-		err = fasthttp.ListenAndServe("0.0.0.0:"+webserverPort, requestHandler)
+		h := fasthttp.Server{
+			Handler:            requestHandler,
+			MaxRequestBodySize: 10 * 1024 * 1024 * 1024,
+		}
+		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {
 			log.Fatal("@ERR ON STARTUP HTTP WEBSERVER ", err)
 		}
