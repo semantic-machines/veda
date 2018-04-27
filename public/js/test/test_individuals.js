@@ -768,7 +768,7 @@ for (i = 0; i < 1; i++)
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
 
-            var read_individual = Backend.get_individual(ticket.id, new_test_doc1_uri);
+            var read_individual = Backend.get_individual(ticket.id, new_test_doc1_uri, true);
 
             //#1
             assert.ok(compare(new_test_doc1, read_individual));
