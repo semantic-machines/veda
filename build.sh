@@ -97,7 +97,7 @@ if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
     cd source/veda-gowebserver
     go build
     cd $BUILD_PATH
-    cp source/veda-gowebserver/veda-gowebserver ./veda-gowebserver
+    cp source/veda-gowebserver/veda-gowebserver ./veda-webserver
 fi
 
 
