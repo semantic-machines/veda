@@ -47,7 +47,7 @@ func query(ctx *fasthttp.RequestCtx) {
 	//Marshal request and send to socket
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR QUERY INDIVIDUAL: ENCODE JSON REQUEST: %v\n", err)
+		log.Printf("@ERR QUERY INDIVIDUAL: ENCODE JSON REQUEST: %s %v\n", request, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -55,5 +55,26 @@ func query(ctx *fasthttp.RequestCtx) {
 
 	responseBuf, _ := querySocket.Recv(0)
 	ctx.Write(responseBuf)
-	ctx.Response.SetStatusCode(int(Ok))
+
+	var jsonResponce map[string]interface{}
+	err = json.Unmarshal(responseBuf, &jsonResponce)
+	if err != nil {
+		log.Printf("@ERR QUERY INDIVIDUAL: ENCODE JSON RESPONCE: %s %v\n", responseBuf, err)
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		return
+	}
+
+	rc := jsonResponce["result_code"]
+
+	var result_code = int(InternalServerError)
+	if rc != nil {
+
+		switch rc.(type) {
+
+		case float64:
+			result_code = int(rc.(float64))
+		}
+
+		ctx.Response.SetStatusCode(result_code)
+	}
 }

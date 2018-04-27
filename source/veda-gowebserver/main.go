@@ -241,6 +241,7 @@ func main() {
 		log.Fatal("@ERR ON CREATING QUERY SOCKET")
 	}
 
+	log.Println("use query service url: ", queryServiceURL)
 	queryEndpoint, err = querySocket.Connect(queryServiceURL)
 	for err != nil {
 //		endpoint, err = aclSocket.Connect(aclServiceURL)

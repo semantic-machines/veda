@@ -406,6 +406,14 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 			return err
 		}
 		for i := 0; i < len(uris); i++ {
+			val, err := txn.Get(dbi, []byte(uris[i]))
+			if err == lmdb.NotFound {
+				rr.OpRC = append(rr.OpRC, NotFound)
+				continue
+			} else if err != nil {
+				return err
+			}
+
 			if needAuth {
 
 				curi := C.CString(uris[i])
@@ -418,13 +426,6 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 					rr.OpRC = append(rr.OpRC, NotAuthorized)
 					continue
 				}
-			}
-			val, err := txn.Get(dbi, []byte(uris[i]))
-			if err == lmdb.NotFound {
-				rr.OpRC = append(rr.OpRC, NotFound)
-				continue
-			} else if err != nil {
-				return err
 			}
 
 			rr.OpRC = append(rr.OpRC, Ok)

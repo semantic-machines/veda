@@ -23,12 +23,17 @@ var ontologyRdfType = map[string]bool{
 //then it is stored to cache with individual's uri used as key
 func tryStoreInOntologyCache(individual map[string]interface{}) {
 	uri := individual["@"].(string)
-	rdfType := individual["rdf:type"].([]interface{})
-	for i := 0; i < len(rdfType); i++ {
-		if ontologyRdfType[rdfType[i].(map[string]interface{})["data"].(string)] {
-			ontologyCache[uri] = individual
-			break
+	rType := individual["rdf:type"]
+	if rType != nil {
+		rdfType := rType.([]interface{})
+		for i := 0; i < len(rdfType); i++ {
+			if ontologyRdfType[rdfType[i].(map[string]interface{})["data"].(string)] {
+				ontologyCache[uri] = individual
+				break
+			}
 		}
+	} else {
+		log.Println("WARN! individual not content type, uri=", uri)
 	}
 }
 
