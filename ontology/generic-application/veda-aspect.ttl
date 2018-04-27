@@ -296,7 +296,7 @@ v-s:PersonalInfoTemplate
     </div>
     <div class="col-md-9">
       <h3><span about="@" property="v-s:lastName"></span> <span about="@" property="v-s:firstName"></span> <span about="@" property="v-s:middleName"></span></h3>
-      <!--div class="row">
+      <div class="row">
         <div class="col-md-4">
           <veda-control property="v-s:lastName" data-type="multilingualString" class="-view edit search"></veda-control>
         </div>
@@ -306,7 +306,7 @@ v-s:PersonalInfoTemplate
         <div class="col-md-4">
           <veda-control property="v-s:middleName" data-type="multilingualString" class="-view edit search"></veda-control>
         </div>
-      </div-->
+      </div>
       <br/>
       <div class="form-inline">
         <div class="form-group">
