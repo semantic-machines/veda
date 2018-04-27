@@ -41,23 +41,27 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 
 	defer destFile.Close()
 	//Open frime form
-	srcFile, err := form.File["file"][0].Open()
-	if err != nil {
-		log.Println("@ERR OPENING FORM FILE ON UPLOAD: ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
-		return
-	}
-	defer srcFile.Close()
 
-	//Copy srce file from form to destination
-	_, err = io.Copy(destFile, srcFile)
-	if err != nil {
-		log.Println("@ERR ON COPYING FILE ON UPLOAD: ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
-		return
-	}
+	if len(form.File["file"]) > 0 {
+		srcFile, err := form.File["file"][0].Open()
+		if err != nil {
+			log.Println("@ERR OPENING FORM FILE ON UPLOAD: ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
 
-	ctx.Response.SetStatusCode(int(Ok))
+		defer srcFile.Close()
+
+		//Copy srce file from form to destination
+		_, err = io.Copy(destFile, srcFile)
+		if err != nil {
+			log.Println("@ERR ON COPYING FILE ON UPLOAD: ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
+		ctx.Response.SetStatusCode(int(Ok))
+	}
 }
 
 //files is handler for this rest request, routeParts is parts of request path separated by slash
@@ -122,6 +126,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 		//Return file to client
 		ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+fileName["data"].(string))
-		ctx.SendFile(filePathStr)
+		//ctx.SendFile(filePathStr)
+		fasthttp.ServeFileUncompressed(ctx, filePathStr)
 	}
 }
