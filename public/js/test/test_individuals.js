@@ -2205,7 +2205,7 @@ QUnit.test(
 	    new_permission1['v-s:deleted'] = newBool (true);
             res1 = Backend.put_individual(ticket_admin.id, new_permission1);
 
-            Backend.wait_module(m_acl, res1[1].op_id);
+            Backend.wait_module(m_acl, res1.op_id);
             test_fail_update(assert, ticket_user2, new_test_doc1);
 
 	    // disable filter 
