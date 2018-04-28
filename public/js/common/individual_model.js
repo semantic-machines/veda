@@ -257,7 +257,7 @@ veda.Module(function (veda) { "use strict";
         this.isSync(true);
         this.properties = get_individual(veda.ticket, uri);
       } catch (e) {
-        if (e.code === 422) {
+        if (e.code === 422 || e.code === 404) {
           this.isNew(true);
           this.isSync(false);
           this.properties = {
