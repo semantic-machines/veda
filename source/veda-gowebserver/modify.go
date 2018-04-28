@@ -27,7 +27,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	//Marshal request and send to socket
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR MODIFY INDIVIDUAL CMD %v: ENCODE JSON REQUEST: %v\n", cmd, err)
+		log.Printf("@ERR MODIFY INDIVIDUAL CMD %v: ENCODE JSON REQUEST: %v, [%s]\n", cmd, err, request)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return InternalServerError
 	}
@@ -37,7 +37,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
-		log.Printf("@ERR MODIFY INDIVIDUAL CMD %v: DECODE JSON RESPONSE: %v\n", cmd, err)
+		log.Printf("@ERR MODIFY INDIVIDUAL CMD %v: DECODE JSON RESPONSE: %v, [%s]\n", cmd, err, responseBuf)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
 		return InternalServerError
