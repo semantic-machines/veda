@@ -1910,7 +1910,8 @@
       } else {
         return [];
       }
-    }).then(function (individuals) {
+    })
+    .then(function (individuals) {
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });
