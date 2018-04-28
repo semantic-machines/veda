@@ -1717,7 +1717,7 @@ for (i = 0; i < 1; i++)
     {
         var ticket_admin = get_admin_ticket();
 
-        var res = Backend.get_rights_origin(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var res = Backend.get_rights_origin(ticket_admin.id, "td:RomanKarpov_pref")
         var result_rights = 0;
         res.forEach(function(item, i) {
             if (res[i]["v-s:canCreate"]) {
@@ -1731,7 +1731,7 @@ for (i = 0; i < 1; i++)
             }
         });
 
-        var res = Backend.get_rights(ticket_admin.id, "td:Preferences_RomanKarpov");
+        var res = Backend.get_rights(ticket_admin.id, "td:RomanKarpov_pref");
         var expected_rights = 0;
         if (res["v-s:canCreate"]) {
             expected_rights |= 1;
@@ -1752,16 +1752,16 @@ for (i = 0; i < 1; i++)
 
     QUnit.test("#024 test get_membership", function(assert)
     {
-    //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
+    //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:RomanKarpov_pref"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
 
         var ticket_admin = get_admin_ticket();
 
-        var res = Backend.get_membership(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var res = Backend.get_membership(ticket_admin.id, "td:RomanKarpov_pref")
         var check = true;
         var found = 0;
         res["v-s:memberOf"].forEach(function(item, i) {
             switch (res["v-s:memberOf"][i]["data"]) {
-                case "td:Preferences_RomanKarpov":
+                case "td:RomanKarpov_pref":
                 case "v-s:AllResourcesGroup":
                 case "cfg:TTLResourcesGroup":
                     found++
