@@ -300,7 +300,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     function destroyHandler (e, parent) {
       if (parent !== individual.id) {
-        individual.remove();
+        try {
+          individual.remove();
+          var notify = veda.Notify ? new veda.Notify() : function () {};
+          notify("success", {name: "Success", message: "Object removed"});
+        } catch (error) {
+          var notify = veda.Notify ? new veda.Notify() : function () {};
+          notify("danger", {message: error});
+        }
       }
       e.stopPropagation();
     }
