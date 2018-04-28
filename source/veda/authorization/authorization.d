@@ -72,6 +72,7 @@ public class AuthorizationUseLib : Authorization
         }
         else
         {
+	    is_check_for_reload = false;
             return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, is_check_for_reload);
         }
     }

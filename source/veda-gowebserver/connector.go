@@ -422,7 +422,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				cuser_uri := C.CString(userUri)
 				defer C.free(unsafe.Pointer(cuser_uri))
 
-				if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+				if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
 					rr.OpRC = append(rr.OpRC, NotAuthorized)
 					continue
 				}
@@ -512,7 +512,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		cuser_uri := C.CString(userUri)
 		defer C.free(unsafe.Pointer(cuser_uri))
 
-		right := C.authorize_r(curi, cuser_uri, 15, true)
+		right := C.authorize_r(curi, cuser_uri, 15, false)
 
 		rr.Rights[0] = uint8(right)
 		rr.OpRC[0] = Ok

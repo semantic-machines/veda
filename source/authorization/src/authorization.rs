@@ -128,7 +128,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
     let trace_group = &mut String::new();
     let trace_info = &mut String::new();
 
-    return _authorize(uri, user_uri, request_access, false, false, trace_acl, false, trace_group, false, trace_info); //qq.as_mut_str()
+    return _authorize(uri, user_uri, request_access, is_check_for_reload, false, trace_acl, false, trace_group, false, trace_info);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

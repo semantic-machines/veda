@@ -14,7 +14,8 @@ fi
     cd source/authorization
     cargo build --release
     cd $BUILD_PATH
-    sudo cp ./source/lib64/libauthorization.so /usr/local/lib
+    sudo cp ./source/lib64/libauthorization.so $PWD
+    sudo cp $PWD /usr/local/lib
     sudo ldconfig
 
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
