@@ -1877,15 +1877,21 @@
       queryString = lineQueries.join(" || ");
     }
     if (prefix) {
-      queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
-    }
-    if (withDeleted) {
-      queryString = "(" + queryString + ") || (" + queryString + " && 'v-s:deleted'== true )";
+      queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;
     }
 
     var result = [];
 
-    return incrementalSearch(0, 100, []).then(function (results) {
+    return incrementalSearch(0, 100, [])
+    .then(function (results) {
+      if (withDeleted) {
+        queryString = queryString + " && ('v-s:deleted' == true )";
+        return incrementalSearch(0, 100, results);
+      } else {
+        return results;
+      }
+    })
+    .then(function (results) {
       results = veda.Util.unique( results );
       var getList = results.filter( function (uri, index) {
         if ( veda.cache[uri] ) {
