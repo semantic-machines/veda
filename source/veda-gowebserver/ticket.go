@@ -5,9 +5,8 @@ import (
 	"log"
 	"strconv"
 	//"strings"
-	"time"
-
 	"github.com/valyala/fasthttp"
+	"time"
 )
 
 //getTicket handles get_ticket request
@@ -26,12 +25,19 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 	}
 
 	//Look for ticket in cache
-	if ticketCache[ticketKey].Id != "" {
+	ticketCacheMutex.RLock()
+	tk := ticketCache[ticketKey]
+	ticketCacheMutex.RUnlock()
+
+	if tk.Id != "" {
 		//If found check expiration time
-		ticket = ticketCache[ticketKey]
+		ticket = tk
 		if time.Now().Unix() > ticket.EndTime {
 			//If expired, delete and return
+			ticketCacheMutex.Lock()
 			delete(ticketCache, ticketKey)
+			ticketCacheMutex.Unlock()
+
 			log.Printf("@TICKET %v FROM USER %v EXPIRED: START %v END %v NOW %v\n", ticket.Id, ticket.UserURI,
 				ticket.StartTime, ticket.EndTime, time.Now().Unix())
 			return TicketExpired, ticket
@@ -70,7 +76,9 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		ticket.EndTime = ticket.StartTime + duration
 
 		//Save ticket in the cache
+		ticketCacheMutex.Lock()
 		ticketCache[ticketKey] = ticket
+		ticketCacheMutex.Unlock()
 	}
 
 	if areExternalUsers {

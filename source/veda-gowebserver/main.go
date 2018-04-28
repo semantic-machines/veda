@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 	"time"
+	"sync"
 
 	//	"github.com/muller95/traildb-go"
 
@@ -54,6 +55,7 @@ const (
 
 //ticketCache is map to cache requested earlier tickets
 var ticketCache map[string]ticket
+var ticketCacheMutex = sync.RWMutex{}
 
 //ontologyCache is map to cache requested earlier individuals from ontology
 var ontologyCache map[string]map[string]interface{}
