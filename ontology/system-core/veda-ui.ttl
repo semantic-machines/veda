@@ -333,11 +333,11 @@ v-ui:fullWidth
   rdfs:label "Full width"@en ;
   rdfs:range xsd:boolean ;
 .
-v-ui:rejectMessageType
-  rdf:type owl:DatatypeProperty ;
+v-ui:receiveMessageType
+  rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:Preferences ;
-  rdfs:label "Отказаться от этих сообщений"@ru ;
-  rdfs:label "Reject these messages"@en ;
+  rdfs:label "Принимать эти сообщения"@ru ;
+  rdfs:label "Receive these messages"@en ;
   rdfs:range v-s:MessageType ;
 .
 
