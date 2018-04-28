@@ -300,14 +300,14 @@ td:Permission_3
   rdfs:label "Permissions record_3"@en ;
 .
 
-td:Preferences_AndreyBychin
+td:AndreyBychin_pref
   rdf:type v-ui:Preferences ;
   v-s:owner td:AndreyBychin ;
   v-ui:preferredLanguage v-ui:RU ;
   rdfs:label "Предпочтения (Администратор4)"@ru ;
   rdfs:label "Preferences (Administrator4)"@en ;
 .
-td:Preferences_RomanKarpov
+td:RomanKarpov_pref
   rdf:type v-ui:Preferences ;
   v-s:owner td:RomanKarpov ;
   v-ui:preferredLanguage v-ui:RU ;
@@ -315,7 +315,7 @@ td:Preferences_RomanKarpov
   rdfs:label "Предпочтения (Администратор2)"@ru ;
   rdfs:label "Preferences (Administrator2)"@en ;
 .
-td:Preferences_AleksandraKhvostikova
+td:AleksandraKhvostikova_pref
   rdf:type v-ui:Preferences ;
   v-s:owner td:AleksandraKhvostikova ;
   v-ui:preferredLanguage v-ui:RU ;
@@ -323,7 +323,7 @@ td:Preferences_AleksandraKhvostikova
   rdfs:label "Предпочтения (Администратор1)"@ru ;
   rdfs:label "Preferences (Administrator1)"@en ;
 .
-td:Preferences_ValeriyBushenev
+td:ValeriyBushenev_pref
   rdf:type v-ui:Preferences ;
   v-s:author td:ValeriyBushenev-Programmer1 ;
   v-s:owner td:ValeriyBushenev ;
@@ -339,7 +339,7 @@ td:AndreyBychin
   v-s:hasAccount td:BychinAT ;
   v-s:lastName "Администратор4"@ru ;
   v-s:lastName "Administrator4"@en ;
-  v-ui:hasPreferences td:Preferences_AndreyBychin ;
+  v-ui:hasPreferences td:AndreyBychin_pref ;
   v-s:hasAppointment td:AndreyBychin-Analyst2 ;
   rdfs:label "Администратор4"@ru ;
   rdfs:label "Administrator4"@en ;
@@ -367,7 +367,7 @@ td:RomanKarpov
   v-s:hasAccount td:KarpovRT ;
   v-s:lastName "Администратор2"@ru ;
   v-s:lastName "Administrator2"@en ;
-  v-ui:hasPreferences td:Preferences_RomanKarpov ;
+  v-ui:hasPreferences td:RomanKarpov_pref ;
   rdfs:label "Администратор2"@ru ;
   rdfs:label "Administrator2"@en ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
@@ -412,7 +412,7 @@ td:AleksandraKhvostikova
   v-s:hasAccount td:KhvostiAT ;
   v-s:lastName "Администратор1"@ru ;
   v-s:lastName "Administrator1"@en ;
-  v-ui:hasPreferences td:Preferences_AleksandraKhvostikova ;
+  v-ui:hasPreferences td:AleksandraKhvostikova_pref ;
   rdfs:label "Администратор1"@ru ;
   rdfs:label "Administrator1"@en ;
   v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
@@ -442,7 +442,7 @@ td:ValeriyBushenev
   v-s:lastName "Администратор3"@ru ;
   v-s:lastName "Administrator3"@en ;
   v-s:hasAccount td:BushenevV ;
-  v-ui:hasPreferences td:Preferences_ValeriyBushenev ;
+  v-ui:hasPreferences td:ValeriyBushenev_pref ;
   rdfs:label "Администратор3"@ru ;
   rdfs:label "Administrator3"@en ;
   v-s:owner td:ValeriyBushenev ;
