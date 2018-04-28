@@ -156,7 +156,7 @@ v-s:UserScriptTemplate
   rdfs:label "Шаблон для класса v-s:UserScript"@ru ;
   rdfs:label "Template for v-s:UserScript class"@en ;
   v-ui:template """
-<div class="container-fluid sheet">
+<div class="container sheet">
   <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
   <div class="row">
     <div class="col-md-2 view -edit -search">
