@@ -1233,7 +1233,8 @@ v-ui:StatusTemplate
 
 v-ui:TestUIClass
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Класс для тестирования интерфейса"@ru ;
   rdfs:label "Test UI class"@en ;
   v-ui:hasTemplate v-ui:TestUITemplate ;
@@ -1447,9 +1448,9 @@ v-ui:TestUITemplate
   <div rel="v-ui:testFile" data-template="v-ui:FileTemplate" class="view edit -search"></div>
   <br>
   <veda-control rel="v-ui:testFile" data-type="file" class="-view edit -search"></veda-control>
-
+  <br>
   <div class="actions">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal task"></span>
   </div>
 </div>
   """ ;
