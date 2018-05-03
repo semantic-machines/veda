@@ -45,6 +45,31 @@ export default class basic {
       .expect(Selector('small.stats-top.pull-right span.badge[property="v-fs:authorized"]').innerText).eql(eql)
   }
 
+  async createTestUI(label, timeStamp) {
+    const number = Selector('veda-control[property="v-ui:testInteger"] div select.form-control').find('option').withText('2');
+    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
+    await t
+      .click('#menu')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
+      .click('veda-control.fulltext.dropdown')
+      .pressKey('ctrl+a delete')
+      .typeText('veda-control.fulltext.dropdown', 'Класс для тестирования интерфейса')
+      .click('div.suggestion[resource="v-ui:TestUIClass"]')
+      .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-left')
+      .typeText('veda-control.-view.edit.search[property="rdfs:label"]', label)
+      .wait(1000)
+      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', timeStamp)
+      .wait(1000)
+      .hover('em[about="v-ui:testFile"]')
+      .typeText('veda-control[property="v-ui:testString"]', 'Предопределенное значение 1')
+      .wait(1000)
+      .click('veda-control[data-type="select"][property="v-ui:testInteger"]')
+      .click(number)
+      .click(checkbox)
+      .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
+      .click('button#save')
+  }
+
   async attributiveSearch(last, first, middle, birthDate, eql) {
     await t
       .click('#menu')
