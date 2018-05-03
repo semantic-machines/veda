@@ -46,45 +46,47 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
         }
     }
 
-    let trace_acl = &mut String::new();
-    let mut is_trace_acl = false;
+    let _trace_acl = &mut String::new();
+    let mut is_acl = false;
     if trace_mode == TRACE_ACL {
-        is_trace_acl = true;
+        is_acl = true;
     }
 
-    let trace_group = &mut String::new();
-    let mut is_trace_group = false;
+    let _trace_group = &mut String::new();
+    let mut is_group = false;
     if trace_mode == TRACE_GROUP {
-        is_trace_group = true;
+        is_group = true;
     }
 
-    let trace_info = &mut String::new();
-    let mut is_trace_info = false;
+    let _trace_info = &mut String::new();
+    let mut is_info = false;
     if trace_mode == TRACE_INFO {
-        is_trace_info = true;
+        is_info = true;
     }
 
-    _authorize(
-        &uri,
-        &user_uri,
-        _request_access,
-        _is_check_for_reload,
-        is_trace_acl,
-        trace_acl,
-        is_trace_group,
-        trace_group,
-        is_trace_info,
-        trace_info,
-    );
+    let mut trace = Trace {
+        acl: _trace_acl,
+        is_acl: is_acl,
+        group: _trace_group,
+        is_group: is_group,
+        info: _trace_info,
+        is_info: is_info,
+        str_num: 0,
+    };
+
+    match _authorize(&uri, &user_uri, _request_access, _is_check_for_reload, &mut trace) {
+        Ok(_) => {}
+        Err(_) => {}
+    }
 
     let mut trace_res = &mut String::new();
 
     if trace_mode == TRACE_ACL {
-        trace_res = trace_acl;
+        trace_res = trace.acl;
     } else if trace_mode == TRACE_GROUP {
-        trace_res = trace_group;
+        trace_res = trace.group;
     } else if trace_mode == TRACE_INFO {
-        trace_res = trace_info;
+        trace_res = trace.info;
     }
 
     //	println! ("trace_res={}", trace_res);
@@ -124,11 +126,23 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
         }
     }
 
-    let trace_acl = &mut String::new();
-    let trace_group = &mut String::new();
-    let trace_info = &mut String::new();
+    let mut trace = Trace {
+        acl: &mut String::new(),
+        is_acl: false,
+        group: &mut String::new(),
+        is_group: false,
+        info: &mut String::new(),
+        is_info: false,
+        str_num: 0,
+    };
 
-    return _authorize(uri, user_uri, request_access, is_check_for_reload, false, trace_acl, false, trace_group, false, trace_info);
+    for attempt in 0..10 {
+        match _authorize(uri, user_uri, request_access, is_check_for_reload, &mut trace) {
+            Ok(res) => return res,
+            Err(_e) => println!("ERR! AZ: attempt {:?}", attempt),
+        }
+    }
+    return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,23 +172,25 @@ impl fmt::Debug for Right {
     }
 }
 
+pub struct Trace<'a> {
+    acl: &'a mut String,
+    is_acl: bool,
+
+    group: &'a mut String,
+    is_group: bool,
+
+    info: &'a mut String,
+    is_info: bool,
+
+    str_num: u32,
+}
+
 pub struct AzContext<'a> {
     calc_right_res: u8,
     walked_groups_s: &'a mut HashMap<String, u8>,
     walked_groups_o: &'a mut HashMap<String, u8>,
     subject_groups: &'a mut HashMap<String, Right>,
     checked_groups: &'a mut HashMap<String, u8>,
-    //
-    trace_acl: &'a mut String,
-    is_trace_acl: bool,
-
-    trace_group: &'a mut String,
-    is_trace_group: bool,
-
-    trace_info: &'a mut String,
-    is_trace_info: bool,
-    //
-    str_num: u32,
 }
 
 lazy_static! {
@@ -205,25 +221,25 @@ lazy_static! {
 
 }
 
-pub fn get_from_db(key: &str, db: &Database) -> String {
+fn get_from_db(key: &str, db: &Database) -> Result<String, i64> {
     match db.get::<String>(&key) {
         Ok(val) => {
-            return val;
+            return Ok(val);
         }
         Err(e) => match e {
             MdbError::NotFound => {
-                return String::new();
+                return Err(0);
             }
 
             _ => {
                 println!("ERR! Authorize ON GET TRANSACTION {:?}, {}", e, key);
-                return String::new();
+                return Err(-1);
             }
         },
     }
 }
 
-pub fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
+fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
     if src.is_empty() {
         return false;
     }
@@ -269,21 +285,23 @@ pub fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
     return true;
 }
 
-pub fn authorize_obj_group(azc: &mut AzContext, request_access: u8, object_group_id: &str, object_group_access: u8, filter_value: &str, db: &Database) -> bool {
+fn authorize_obj_group(
+    azc: &mut AzContext, trace: &mut Trace, request_access: u8, object_group_id: &str, object_group_access: u8, filter_value: &str, db: &Database,
+) -> Result<bool, i64> {
     let mut is_authorized = false;
     let mut calc_bits;
 
-    if azc.is_trace_info == false && azc.is_trace_group == false && azc.is_trace_acl == false {
+    if trace.is_info == false && trace.is_group == false && trace.is_acl == false {
         let left_to_check = (azc.calc_right_res ^ request_access) & request_access;
 
         if left_to_check & object_group_access == 0 {
-            return is_authorized;
+            return Ok(is_authorized);
         }
 
         match azc.checked_groups.get(object_group_id) {
             Some(v) => {
                 if *v == object_group_access {
-                    return is_authorized;
+                    return Ok(is_authorized);
                 }
             }
             None => (),
@@ -292,8 +310,8 @@ pub fn authorize_obj_group(azc: &mut AzContext, request_access: u8, object_group
         azc.checked_groups.insert(object_group_id.to_string(), object_group_access);
     }
 
-    if azc.is_trace_group == true {
-        print_to_trace_group(azc, format!("{}\n", object_group_id));
+    if trace.is_group == true {
+        print_to_trace_group(trace, format!("{}\n", object_group_id));
     }
 
     let acl_key;
@@ -303,287 +321,334 @@ pub fn authorize_obj_group(azc: &mut AzContext, request_access: u8, object_group
         acl_key = PERMISSION_PREFIX.to_owned() + &object_group_id;
     }
 
-    if azc.is_trace_info {
-        print_to_trace_info(azc, format!("look acl_key: [{}]\n", acl_key));
+    if trace.is_info {
+        print_to_trace_info(trace, format!("look acl_key: [{}]\n", acl_key));
     }
 
-    let str = get_from_db(&acl_key, &db);
-    if !str.is_empty() {
-        let permissions: &mut Vec<Right> = &mut Vec::new();
+    match get_from_db(&acl_key, &db) {
+        Ok(str) => {
+            let permissions: &mut Vec<Right> = &mut Vec::new();
 
-        rights_vec_from_str(&str, permissions);
+            rights_vec_from_str(&str, permissions);
 
-        for permission in permissions {
-            if azc.is_trace_info {
-                let req_acs = request_access;
-                print_to_trace_info(
-                    azc,
-                    format!(
-                        "restriction={} {}, permission={:?}, request={}\n",
-                        object_group_id,
-                        access_to_pretty_string(object_group_access),
-                        permission,
-                        access_to_pretty_string(req_acs)
-                    ),
-                );
-            }
-
-            let subj_id = &permission.id;
-            if azc.subject_groups.contains_key(subj_id) {
-                let restriction_access = object_group_access;
-                let mut permission_access;
-
-                if permission.access > 15 {
-                    permission_access = (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access;
-                } else {
-                    permission_access = permission.access;
+            for permission in permissions {
+                if trace.is_info {
+                    let req_acs = request_access;
+                    print_to_trace_info(
+                        trace,
+                        format!(
+                            "restriction={} {}, permission={:?}, request={}\n",
+                            object_group_id,
+                            access_to_pretty_string(object_group_access),
+                            permission,
+                            access_to_pretty_string(req_acs)
+                        ),
+                    );
                 }
 
-                for i_access in ACCESS_LIST.iter() {
-                    let access = i_access;
-                    if (request_access & access & restriction_access) != 0 {
-                        calc_bits = access & permission_access;
+                let subj_id = &permission.id;
+                if azc.subject_groups.contains_key(subj_id) {
+                    let restriction_access = object_group_access;
+                    let mut permission_access;
 
-                        if calc_bits > 0 {
-                            azc.calc_right_res = azc.calc_right_res | calc_bits;
+                    if permission.access > 15 {
+                        permission_access = (((permission.access & 0xF0) >> 4) ^ 0x0F) & permission.access;
+                    } else {
+                        permission_access = permission.access;
+                    }
 
-                            if (azc.calc_right_res & request_access) == request_access {
-                                if azc.is_trace_info {
-                                    let req_acs = request_access;
+                    for i_access in ACCESS_LIST.iter() {
+                        let access = i_access;
+                        if (request_access & access & restriction_access) != 0 {
+                            calc_bits = access & permission_access;
+
+                            if calc_bits > 0 {
+                                azc.calc_right_res = azc.calc_right_res | calc_bits;
+
+                                if (azc.calc_right_res & request_access) == request_access {
+                                    if trace.is_info {
+                                        let req_acs = request_access;
+                                        let crr_acs = azc.calc_right_res;
+                                        print_to_trace_info(
+                                            trace,
+                                            format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
+                                        );
+                                    } else if trace.is_group == false && trace.is_acl == false {
+                                        is_authorized = true;
+                                        return Ok(is_authorized);
+                                    }
+                                }
+
+                                if trace.is_info {
                                     let crr_acs = azc.calc_right_res;
                                     print_to_trace_info(
-                                        azc,
-                                        format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
+                                        trace,
+                                        format!("calc_bits={}, res={}\n", access_to_pretty_string(calc_bits), access_to_pretty_string(crr_acs)),
                                     );
-                                } else if azc.is_trace_group == false && azc.is_trace_acl == false {
-                                    is_authorized = true;
-                                    return is_authorized;
                                 }
-                            }
 
-                            if azc.is_trace_info {
-                                let crr_acs = azc.calc_right_res;
-                                print_to_trace_info(azc, format!("calc_bits={}, res={}\n", access_to_pretty_string(calc_bits), access_to_pretty_string(crr_acs)));
-                            }
-
-                            if azc.is_trace_acl {
-                                print_to_trace_acl(azc, format!("{};{};{}\n", object_group_id, subj_id, ACCESS_LIST_PREDICATES[*i_access as usize]));
+                                if trace.is_acl {
+                                    print_to_trace_acl(trace, format!("{};{};{}\n", object_group_id, subj_id, ACCESS_LIST_PREDICATES[*i_access as usize]));
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        Err(e) => if e < 0 {
+            return Err(e);
+        },
+    }
 
-        if azc.is_trace_info {
-            let str = get_from_db(&acl_key, &db);
-            let permissions: &mut Vec<Right> = &mut Vec::new();
-            rights_vec_from_str(&str, permissions);
-            print_to_trace_info(azc, format!("for [{}] found {:?}\n", acl_key, permissions));
+    if trace.is_info {
+        match get_from_db(&acl_key, &db) {
+            Ok(str) => {
+                let permissions: &mut Vec<Right> = &mut Vec::new();
+                rights_vec_from_str(&str, permissions);
+                print_to_trace_info(trace, format!("for [{}] found {:?}\n", acl_key, permissions));
+            }
+            Err(e) => if e < 0 {
+                return Err(e);
+            },
         }
     }
 
     if (azc.calc_right_res & request_access) == request_access {
-        if azc.is_trace_info {
+        if trace.is_info {
             let req_acs = request_access;
             let crr_acs = azc.calc_right_res;
             print_to_trace_info(
-                azc,
+                trace,
                 format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
             );
         }
 
-        if azc.is_trace_info == false && azc.is_trace_group == false && azc.is_trace_acl == false {
+        if trace.is_info == false && trace.is_group == false && trace.is_acl == false {
             is_authorized = true;
-            return is_authorized;
+            return Ok(is_authorized);
         }
     }
 
-    return false;
+    return Ok(false);
 }
 
-pub fn prepare_obj_group(azc: &mut AzContext, request_access: u8, uri: &str, access: u8, filter_value: &str, level: u8, db: &Database) -> bool {
+fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8, uri: &str, access: u8, filter_value: &str, level: u8, db: &Database) -> Result<bool, i64> {
     if level > 32 {
-        if azc.is_trace_info {
-            print_to_trace_info(azc, format!("ERR! level down > 32, uri={}\n", uri));
+        if trace.is_info {
+            print_to_trace_info(trace, format!("ERR! level down > 32, uri={}\n", uri));
         }
 
-        return false;
+        return Ok(false);
     }
 
-    let groups_str = get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db);
+    match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
+        Ok(groups_str) => {
+            let groups_set: &mut Vec<Right> = &mut Vec::new();
+            rights_vec_from_str(&groups_str, groups_set);
 
-    if groups_str.is_empty() {
-        return false;
-    }
+            for idx in 0..groups_set.len() {
+                let mut group = &mut groups_set[idx];
 
-    let groups_set: &mut Vec<Right> = &mut Vec::new();
-    rights_vec_from_str(&groups_str, groups_set);
+                if group.id.is_empty() {
+                    println!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
+                    continue;
+                }
 
-    for idx in 0..groups_set.len() {
-        let mut group = &mut groups_set[idx];
+                //let orig_access = group.access;
+                let new_access = group.access & access;
+                group.access = new_access;
 
-        if group.id.is_empty() {
-            println!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
-            continue;
+                let mut key = group.id.clone();
+                let mut preur_access = 0;
+
+                if azc.walked_groups_o.contains_key(&key) {
+                    preur_access = azc.walked_groups_o[&key];
+                    if (preur_access & new_access) == new_access {
+                        continue;
+                    }
+                }
+                azc.walked_groups_o.insert(key, new_access | preur_access);
+
+                if uri == group.id {
+                    continue;
+                }
+
+                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, &db) {
+                    Ok(res) => if res == true {
+                        return Ok(true);
+                    },
+                    Err(e) => {
+                        if e < 0 {
+                            return Err(e);
+                        }
+                    }
+                }
+
+                match prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db) {
+                    Ok(_res) => {}
+                    Err(e) => {
+                        return Err(e);
+                    }
+                }
+            }
+            return Ok(false);
         }
-
-        //let orig_access = group.access;
-        let new_access = group.access & access;
-        group.access = new_access;
-
-        let mut key = group.id.clone();
-        let mut preur_access = 0;
-
-        if azc.walked_groups_o.contains_key(&key) {
-            preur_access = azc.walked_groups_o[&key];
-            if (preur_access & new_access) == new_access {
-                continue;
+        Err(e) => {
+            if e < 0 {
+                return Err(e);
+            } else {
+                return Ok(false);
             }
         }
-        azc.walked_groups_o.insert(key, new_access | preur_access);
-
-        if uri == group.id {
-            continue;
-        }
-
-        if authorize_obj_group(azc, request_access, &group.id, group.access, filter_value, &db) == true {
-            return true;
-        }
-
-        prepare_obj_group(azc, request_access, &group.id, new_access, filter_value, level + 1, &db);
     }
-    return false;
 }
 
-pub fn get_resource_groups(p_role: u8, azc: &mut AzContext, uri: &str, access: u8, results: &mut HashMap<String, Right>, filter_value: &str, level: u8, db: &Database) {
+fn get_resource_groups(
+    p_role: u8, azc: &mut AzContext, trace: &mut Trace, uri: &str, access: u8, results: &mut HashMap<String, Right>, filter_value: &str, level: u8, db: &Database,
+) -> Result<bool, i64> {
     if level > 32 {
-        if azc.is_trace_info {
-            print_to_trace_info(azc, format!("ERR! level down > 32, uri={}\n", uri));
+        if trace.is_info {
+            print_to_trace_info(trace, format!("ERR! level down > 32, uri={}\n", uri));
         }
-        return;
+        return Ok(true);
     }
 
-    let groups_str = get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db);
+    match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
+        Ok(groups_str) => {
+            let groups_set: &mut Vec<Right> = &mut Vec::new();
+            rights_vec_from_str(&groups_str, groups_set);
 
-    if groups_str.is_empty() {
-        return;
-    }
+            for idx in 0..groups_set.len() {
+                let mut group = &mut groups_set[idx];
 
-    let groups_set: &mut Vec<Right> = &mut Vec::new();
-    rights_vec_from_str(&groups_str, groups_set);
+                if group.id.is_empty() {
+                    println!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
+                    continue;
+                }
 
-    for idx in 0..groups_set.len() {
-        let mut group = &mut groups_set[idx];
+                let new_access = group.access & access;
+                let orig_access = group.access;
+                group.access = new_access;
 
-        if group.id.is_empty() {
-            println!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
-            continue;
-        }
+                if p_role == ROLE_SUBJECT {
+                    let mut preur_access = 0;
+                    if azc.walked_groups_s.contains_key(&group.id) {
+                        preur_access = azc.walked_groups_s[&group.id];
+                        if (preur_access & new_access) == new_access {
+                            if trace.is_info {
+                                print_to_trace_info(
+                                    trace,
+                                    format!(
+                                        "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
+                                        level * 2,
+                                        level as usize,
+                                        group.id,
+                                        access_to_pretty_string(preur_access)
+                                    ),
+                                );
+                            }
 
-        let new_access = group.access & access;
-        let orig_access = group.access;
-        group.access = new_access;
+                            continue;
+                        }
+                    }
+                    azc.walked_groups_s.insert(group.id.clone(), new_access | preur_access);
+                } else {
+                    let mut preur_access = 0;
+                    if azc.walked_groups_o.contains_key(&group.id) {
+                        preur_access = azc.walked_groups_o[&group.id];
+                        if (preur_access & new_access) == new_access {
+                            if trace.is_info {
+                                print_to_trace_info(
+                                    trace,
+                                    format!(
+                                        "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
+                                        level * 2,
+                                        level as usize,
+                                        group.id,
+                                        access_to_pretty_string(preur_access)
+                                    ),
+                                );
+                            }
 
-        if p_role == ROLE_SUBJECT {
-            let mut preur_access = 0;
-            if azc.walked_groups_s.contains_key(&group.id) {
-                preur_access = azc.walked_groups_s[&group.id];
-                if (preur_access & new_access) == new_access {
-                    if azc.is_trace_info {
+                            continue;
+                        }
+                    }
+                    azc.walked_groups_o.insert(group.id.clone(), new_access | preur_access);
+                }
+
+                if trace.is_info {
+                    print_to_trace_info(
+                        trace,
+                        format!(
+                            "{:1$} ({})GROUP [{}] {}-> {}\n",
+                            level * 2,
+                            level as usize,
+                            group.id,
+                            access_to_pretty_string(orig_access),
+                            access_to_pretty_string(new_access)
+                        ),
+                    );
+                }
+
+                if uri == group.id {
+                    if trace.is_info {
                         print_to_trace_info(
-                            azc,
+                            trace,
                             format!(
-                                "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
+                                "{:1$} ({})GROUP [{}].access={} SKIP, uri == group_key\n",
                                 level * 2,
                                 level as usize,
                                 group.id,
-                                access_to_pretty_string(preur_access)
+                                access_to_pretty_string(orig_access)
                             ),
                         );
                     }
-
                     continue;
                 }
-            }
-            azc.walked_groups_s.insert(group.id.clone(), new_access | preur_access);
-        } else {
-            let mut preur_access = 0;
-            if azc.walked_groups_o.contains_key(&group.id) {
-                preur_access = azc.walked_groups_o[&group.id];
-                if (preur_access & new_access) == new_access {
-                    if azc.is_trace_info {
-                        print_to_trace_info(
-                            azc,
-                            format!(
-                                "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
-                                level * 2,
-                                level as usize,
-                                group.id,
-                                access_to_pretty_string(preur_access)
-                            ),
-                        );
+
+                match get_resource_groups(p_role, azc, trace, &group.id, 15, results, filter_value, level + 1, &db) {
+                    Ok(_res) => {}
+                    Err(e) => {
+                        if e < 0 {
+                            return Err(e);
+                        }
                     }
-
-                    continue;
                 }
-            }
-            azc.walked_groups_o.insert(group.id.clone(), new_access | preur_access);
-        }
 
-        if azc.is_trace_info {
-            print_to_trace_info(
-                azc,
-                format!(
-                    "{:1$} ({})GROUP [{}] {}-> {}\n",
-                    level * 2,
-                    level as usize,
-                    group.id,
-                    access_to_pretty_string(orig_access),
-                    access_to_pretty_string(new_access)
-                ),
-            );
-        }
-
-        if uri == group.id {
-            if azc.is_trace_info {
-                print_to_trace_info(
-                    azc,
-                    format!(
-                        "{:1$} ({})GROUP [{}].access={} SKIP, uri == group_key\n",
-                        level * 2,
-                        level as usize,
-                        group.id,
-                        access_to_pretty_string(orig_access)
-                    ),
+                results.insert(
+                    group.id.clone(),
+                    Right {
+                        id: group.id.clone(),
+                        access: group.access,
+                        is_deleted: group.is_deleted,
+                    },
                 );
             }
-            continue;
         }
-
-        get_resource_groups(p_role, azc, &group.id, 15, results, filter_value, level + 1, &db);
-        results.insert(
-            group.id.clone(),
-            Right {
-                id: group.id.clone(),
-                access: group.access,
-                is_deleted: group.is_deleted,
-            },
-        );
+        Err(e) => {
+            if e < 0 {
+                return Err(e);
+            } else {
+                return Ok(false);
+            }
+        }
     }
+
+    return Ok(false);
 }
 
-fn print_to_trace_acl(azc: &mut AzContext, text: String) {
-    azc.trace_acl.push_str(&text);
+fn print_to_trace_acl(trace: &mut Trace, text: String) {
+    trace.acl.push_str(&text);
 }
 
-fn print_to_trace_group(azc: &mut AzContext, text: String) {
-    azc.trace_group.push_str(&text);
+fn print_to_trace_group(trace: &mut Trace, text: String) {
+    trace.group.push_str(&text);
 }
 
-fn print_to_trace_info(azc: &mut AzContext, text: String) {
-    azc.str_num = azc.str_num + 1;
-    azc.trace_info.push_str(&(azc.str_num.to_string() + " " + &text));
+fn print_to_trace_info(trace: &mut Trace, text: String) {
+    trace.str_num = trace.str_num + 1;
+    trace.info.push_str(&(trace.str_num.to_string() + " " + &text));
 }
 
 fn access_to_pretty_string(src: u8) -> String {
@@ -624,10 +689,21 @@ fn access_to_pretty_string(src: u8) -> String {
     return res;
 }
 
-pub fn _authorize(
-    uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, is_trace_acl: bool, _trace_acl: &mut String, is_trace_group: bool, _trace_group: &mut String,
-    is_trace_info: bool, _trace_info: &mut String,
-) -> u8 {
+fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
+    let walked_groups_s = &mut HashMap::new();
+    let walked_groups_o = &mut HashMap::new();
+    let subject_groups = &mut HashMap::new();
+    let s_groups = &mut HashMap::new();
+    let checked_groups = &mut HashMap::new();
+
+    let mut azc = AzContext {
+        calc_right_res: 0,
+        walked_groups_s: walked_groups_s,
+        walked_groups_o: walked_groups_o,
+        subject_groups: subject_groups,
+        checked_groups: checked_groups,
+    };
+
     fn check_for_reload() -> std::io::Result<bool> {
         use std::fs::File;
         let f = File::open(MODULE_INFO_PATH)?;
@@ -683,201 +759,10 @@ pub fn _authorize(
 
     let res;
 
+    let txn;
     match env.get_reader() {
-        Ok(txn) => {
-            let mut walked_groups_s = &mut HashMap::new();
-            let mut walked_groups_o = &mut HashMap::new();
-            let mut subject_groups = &mut HashMap::new();
-            let mut s_groups = &mut HashMap::new();
-            let mut checked_groups = &mut HashMap::new();
-
-            let mut azc = AzContext {
-                calc_right_res: 0,
-                walked_groups_s: walked_groups_s,
-                walked_groups_o: walked_groups_o,
-                subject_groups: subject_groups,
-                checked_groups: checked_groups,
-                trace_acl: _trace_acl,
-                is_trace_acl: is_trace_acl,
-                trace_group: _trace_group,
-                is_trace_group: is_trace_group,
-                trace_info: _trace_info,
-                is_trace_info: is_trace_info,
-                str_num: 0,
-            };
-
-            let db = txn.bind(&db_handle);
-
-            // 0. читаем фильтр прав у object (uri)
-            let mut filter_value = get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db);
-            //println!("Authorize:filter_value=[{}]", filter_value);
-            let mut filter_allow_access_to_other = 0;
-
-            if filter_value.is_empty() == false {
-                if filter_value.len() < 3 {
-                    filter_value.clear();
-                } else {
-                    let filters_set: &mut Vec<Right> = &mut Vec::new();
-                    rights_vec_from_str(&filter_value, filters_set);
-
-                    if filters_set.len() > 0 {
-                        let mut el = &mut filters_set[0];
-
-                        filter_value = el.id.clone();
-                        filter_allow_access_to_other = el.access;
-                    }
-                }
-            }
-
-            // читаем группы subject (ticket.user_uri)
-            if azc.is_trace_info {
-                print_to_trace_info(
-                    &mut azc,
-                    format!("authorize uri={}, user={}, request_access={}\n", uri, user_uri, access_to_pretty_string(request_access)),
-                );
-            }
-
-            if azc.is_trace_info {
-                print_to_trace_info(&mut azc, "READ SUBJECT GROUPS\n".to_string());
-            }
-
-            get_resource_groups(ROLE_SUBJECT, &mut azc, user_uri, 15, s_groups, &filter_value, 0, &db);
-
-            azc.subject_groups = s_groups;
-
-            azc.subject_groups.insert(
-                user_uri.to_string(),
-                Right {
-                    id: user_uri.to_string(),
-                    access: 15,
-                    is_deleted: false,
-                },
-            );
-
-            if azc.is_trace_info {
-                let str = format!("subject_groups={:?}\n", azc.subject_groups);
-                print_to_trace_info(&mut azc, str);
-            }
-
-            if azc.is_trace_info {
-                print_to_trace_info(&mut azc, format!("PREPARE OBJECT GROUPS\n"));
-            }
-
-            let mut request_access_t = request_access;
-            let empty_filter_value = String::new();
-
-            if filter_value.is_empty() == false {
-                request_access_t = request_access & filter_allow_access_to_other;
-            }
-
-            if is_trace_info == false && is_trace_group == false && is_trace_acl == false {
-                if authorize_obj_group(&mut azc, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) == true {
-                    if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        return azc.calc_right_res;
-                    }
-                }
-
-                if authorize_obj_group(&mut azc, request_access_t, uri, 15, &empty_filter_value, &db) == true {
-                    if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        return azc.calc_right_res;
-                    }
-                }
-
-                if prepare_obj_group(&mut azc, request_access_t, uri, 15, &empty_filter_value, 0, &db) == true {
-                    if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        return azc.calc_right_res;
-                    }
-                }
-
-                if filter_value.is_empty() == false {
-                    if authorize_obj_group(&mut azc, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) == true {
-                        return azc.calc_right_res;
-                    }
-
-                    if authorize_obj_group(&mut azc, request_access, uri, 15, &filter_value, &db) == true {
-                        return azc.calc_right_res;
-                    }
-
-                    if prepare_obj_group(&mut azc, request_access, uri, 15, &filter_value, 0, &db) == true {
-                        return azc.calc_right_res;
-                    }
-                }
-            } else {
-                // IF NEED TRACE
-
-                if authorize_obj_group(&mut azc, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) == true {
-                    if azc.is_trace_info {
-                        print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                    }
-                }
-
-                if authorize_obj_group(&mut azc, request_access_t, uri, 15, &empty_filter_value, &db) == true {
-                    if azc.is_trace_info {
-                        print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                    }
-                }
-
-                let mut o_groups = &mut HashMap::new();
-                get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, &empty_filter_value, 0, &db);
-
-                if azc.is_trace_info {
-                    let str = format!("object_groups={:?}\n", o_groups);
-                    print_to_trace_info(&mut azc, str);
-                }
-
-                for object_group in o_groups.values() {
-                    if authorize_obj_group(&mut azc, request_access_t, &object_group.id, object_group.access, &empty_filter_value, &db) == true {
-                        if azc.is_trace_info {
-                            print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                        }
-                    }
-                }
-
-                if filter_value.is_empty() == false {
-                    if authorize_obj_group(&mut azc, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) == true {
-                        if azc.is_trace_info {
-                            print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                        }
-                    }
-
-                    if authorize_obj_group(&mut azc, request_access, uri, 15, &filter_value, &db) == true {
-                        if azc.is_trace_info {
-                            print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                        }
-                    }
-
-                    let mut o_groups = &mut HashMap::new();
-                    get_resource_groups(ROLE_OBJECT, &mut azc, uri, 15, o_groups, &filter_value, 0, &db);
-
-                    if azc.is_trace_info {
-                        let str = format!("object_groups={:?}\n", o_groups);
-                        print_to_trace_info(&mut azc, str);
-                    }
-
-                    for object_group in o_groups.values() {
-                        if authorize_obj_group(&mut azc, request_access, &object_group.id, object_group.access, &filter_value, &db) == true {
-                            if azc.is_trace_info {
-                                print_to_trace_info(&mut azc, format!("RETURN MY BE ASAP\n"));
-                            }
-                        }
-                    }
-                }
-            }
-
-            if azc.is_trace_info {
-                let calc_right_res = azc.calc_right_res;
-                print_to_trace_info(
-                    &mut azc,
-                    format!(
-                        "authorize {}, request={}, answer=[{}]\n\n",
-                        uri,
-                        access_to_pretty_string(request_access),
-                        access_to_pretty_string(calc_right_res)
-                    ),
-                );
-            }
-
-            res = azc.calc_right_res;
+        Ok(txn1) => {
+            txn = txn1;
         }
         Err(e) => {
             println!("ERR! Authorize:ON CREATING GET TRANSACTION {:?}", e);
@@ -894,19 +779,236 @@ pub fn _authorize(
                 }
             }
 
-            return _authorize(
-                uri,
-                user_uri,
-                request_access,
-                _is_check_for_reload,
-                is_trace_acl,
-                _trace_acl,
-                is_trace_group,
-                _trace_group,
-                is_trace_info,
-                _trace_info,
-            );
+            return _authorize(uri, user_uri, request_access, _is_check_for_reload, trace);
         }
     }
-    return res;
+
+    let db = txn.bind(&db_handle);
+
+    // 0. читаем фильтр прав у object (uri)
+    let mut filter_value;
+    //println!("Authorize:filter_value=[{}]", filter_value);
+    let mut filter_allow_access_to_other = 0;
+    match get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db) {
+        Ok(data) => {
+            filter_value = data;
+            if filter_value.len() < 3 {
+                filter_value.clear();
+            } else {
+                let filters_set: &mut Vec<Right> = &mut Vec::new();
+                rights_vec_from_str(&filter_value, filters_set);
+
+                if filters_set.len() > 0 {
+                    let mut el = &mut filters_set[0];
+
+                    filter_value = el.id.clone();
+                    filter_allow_access_to_other = el.access;
+                }
+            }
+        }
+        Err(e) => {
+            if e == 0 {
+                filter_value = String::new();
+            } else {
+                return Err(e);
+            }
+        }
+    }
+
+    // читаем группы subject (ticket.user_uri)
+    if trace.is_info {
+        print_to_trace_info(
+            trace,
+            format!("authorize uri={}, user={}, request_access={}\n", uri, user_uri, access_to_pretty_string(request_access)),
+        );
+    }
+
+    if trace.is_info {
+        print_to_trace_info(trace, "READ SUBJECT GROUPS\n".to_string());
+    }
+
+    match get_resource_groups(ROLE_SUBJECT, &mut azc, trace, user_uri, 15, s_groups, &filter_value, 0, &db) {
+        Ok(_res) => {}
+        Err(e) => return Err(e),
+    }
+
+    azc.subject_groups = s_groups;
+
+    azc.subject_groups.insert(
+        user_uri.to_string(),
+        Right {
+            id: user_uri.to_string(),
+            access: 15,
+            is_deleted: false,
+        },
+    );
+
+    if trace.is_info {
+        let str = format!("subject_groups={:?}\n", azc.subject_groups);
+        print_to_trace_info(trace, str);
+    }
+
+    if trace.is_info {
+        print_to_trace_info(trace, format!("PREPARE OBJECT GROUPS\n"));
+    }
+
+    let mut request_access_t = request_access;
+    let empty_filter_value = String::new();
+
+    if filter_value.is_empty() == false {
+        request_access_t = request_access & filter_allow_access_to_other;
+    }
+
+    if trace.is_info == false && trace.is_group == false && trace.is_acl == false {
+        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) {
+            Ok(res) => if res == true {
+                if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
+                    return Ok(azc.calc_right_res);
+                }
+            },
+            Err(e) => return Err(e),
+        }
+
+        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, &db) {
+            Ok(res) => if res == true {
+                if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
+                    return Ok(azc.calc_right_res);
+                }
+            },
+            Err(e) => return Err(e),
+        }
+
+        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, &db) {
+            Ok(res) => if res == true {
+                if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
+                    return Ok(azc.calc_right_res);
+                }
+            },
+            Err(e) => return Err(e),
+        }
+
+        if filter_value.is_empty() == false {
+            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
+                Ok(res) => if res == true {
+                    return Ok(azc.calc_right_res);
+                },
+                Err(e) => return Err(e),
+            }
+
+            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, &db) {
+                Ok(res) => if res == true {
+                    return Ok(azc.calc_right_res);
+                },
+                Err(e) => return Err(e),
+            }
+
+            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, &db) {
+                Ok(res) => if res == true {
+                    return Ok(azc.calc_right_res);
+                },
+                Err(e) => return Err(e),
+            }
+        }
+    } else {
+        // IF NEED TRACE
+
+        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) {
+            Ok(res) => if res == true {
+                if trace.is_info {
+                    print_to_trace_info(trace, format!("RETURN MY BE ASAP\n"));
+                }
+            },
+            Err(e) => return Err(e),
+        }
+
+        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, &db) {
+            Ok(res) => if res == true {
+                if trace.is_info {
+                    print_to_trace_info(trace, format!("RETURN MY BE ASAP\n"));
+                }
+            },
+            Err(e) => return Err(e),
+        }
+
+        let o_groups = &mut HashMap::new();
+        match get_resource_groups(ROLE_OBJECT, &mut azc, trace, uri, 15, o_groups, &empty_filter_value, 0, &db) {
+            Ok(_) => {}
+            Err(e) => return Err(e),
+        }
+
+        if trace.is_info {
+            let str = format!("object_groups={:?}\n", o_groups);
+            print_to_trace_info(trace, str);
+        }
+
+        for object_group in o_groups.values() {
+            match authorize_obj_group(&mut azc, trace, request_access_t, &object_group.id, object_group.access, &empty_filter_value, &db) {
+                Ok(res) => if res == true {
+                    if trace.is_info {
+                        print_to_trace_info(trace, format!("RETURN MY BE ASAP\n"));
+                    }
+                },
+                Err(e) => return Err(e),
+            }
+        }
+
+        if filter_value.is_empty() == false {
+            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
+                Ok(res) => if res == true {
+                    if trace.is_info {
+                        print_to_trace_info(trace, format!("RETURN MY BE ASAP\n"));
+                    }
+                },
+                Err(e) => return Err(e),
+            }
+
+            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, &db) {
+                Ok(res) => if res == true {
+                    if trace.is_info {
+                        print_to_trace_info(trace, format!("RETURN MY BE ASAP\n"));
+                    }
+                },
+                Err(e) => return Err(e),
+            }
+
+            let o_groups = &mut HashMap::new();
+            match get_resource_groups(ROLE_OBJECT, &mut azc, trace, uri, 15, o_groups, &filter_value, 0, &db) {
+                Ok(_) => {}
+                Err(e) => return Err(e),
+            }
+
+            if trace.is_info {
+                let str = format!("object_groups={:?}\n", o_groups);
+                print_to_trace_info(trace, str);
+            }
+
+            for object_group in o_groups.values() {
+                match authorize_obj_group(&mut azc, trace, request_access, &object_group.id, object_group.access, &filter_value, &db) {
+                    Ok(res) => if res == true {
+                        if trace.is_info {
+                            print_to_trace_info(trace, format!("RETURN MY BE ASAP\n"));
+                        }
+                    },
+                    Err(e) => return Err(e),
+                }
+            }
+        }
+    }
+
+    if trace.is_info {
+        let calc_right_res = azc.calc_right_res;
+        print_to_trace_info(
+            trace,
+            format!(
+                "authorize {}, request={}, answer=[{}]\n\n",
+                uri,
+                access_to_pretty_string(request_access),
+                access_to_pretty_string(calc_right_res)
+            ),
+        );
+    }
+
+    res = azc.calc_right_res;
+
+    return Ok(res);
 }
