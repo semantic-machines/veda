@@ -189,10 +189,10 @@ v-s:NonUniqueTaxId
   rdfs:comment "Организация с таким ИНН уже существует"@ru ;
   rdfs:comment "Organization with this tax number already exists"@en ;
 .
-v-s:AddDateContractorProfile
+v-s:LegalEntityExistencePeriodBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Период существования юридического лица"@ru ;
-  rdfs:label "Period of existence of the legal entity"@en ;
+  rdfs:label "Legal entity existence period"@en ;
 .
 v-s:AddProfile
   rdf:type v-s:Bundle ;
@@ -347,15 +347,15 @@ v-s:OrganizationTemplate
 
     <hr class="view -edit -search">
 
-    <em about="v-s:AddDateContractorProfile" property="rdfs:label"></em>
+    <em about="v-s:LegalEntityExistencePeriodBundle" property="rdfs:label"></em>
     <div class="row">
       <div class="col-md-4">
         <div property="v-s:dateFromFact" class="view -edit -search"></div>
-        <veda-control property="v-s:dateFromFact" data-type="dateTime" class="-view edit search"></veda-control>
+        <veda-control property="v-s:dateFromFact" data-type="date" class="-view edit search"></veda-control>
       </div>
       <div class="col-md-4">
         <div property="v-s:dateToFact" class="view -edit -search"></div>
-        <veda-control property="v-s:dateToFact" data-type="dateTime" class="-view edit search"></veda-control>
+        <veda-control property="v-s:dateToFact" data-type="date" class="-view edit search"></veda-control>
       </div>
     </div>
 
