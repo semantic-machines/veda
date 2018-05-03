@@ -1602,6 +1602,7 @@ v-fs:AttributiveSearchInlineTemplate
   }
 
   if ( !searchBlankTemplate ) {
+    $(".results-load-buttons", template).detach().appendTo(template);
     $(".params", template).remove();
   }
   if ( this.hasValue("v-fs:loadAll", true) ) {
@@ -1685,8 +1686,10 @@ v-fs:AttributiveSearchInlineTemplate
     <br>
     <div class="search-actions clearfix">
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-      <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
-      <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      <span class="results-load-buttons">
+        <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
+        <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      </span>
       <div class="pull-right btn-group dropup set-columns-wrapper" style="margin-left:3px;">
         <button type="button" class="btn btn-info dropdown-toggle set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-fs:SetColumns" property="rdfs:label"></span>
