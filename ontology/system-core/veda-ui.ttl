@@ -2275,12 +2275,13 @@ v-ui:TreeTemplate
         }
       });
     });
+
+    individual.on(rel_uri, propertyModifiedHandler);
+    template.one("remove", function () {
+      individual.off(rel_uri, propertyModifiedHandler);
+    });
   }
 
-  individual.on(rel_uri, propertyModifiedHandler);
-  template.one("remove", function () {
-    individual.off(rel_uri, propertyModifiedHandler);
-  });
   function propertyModifiedHandler(values) {
     $(".value-row", template).each(function () {
       var $this = $(this),
