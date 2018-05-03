@@ -639,7 +639,7 @@ v-ft:TaskResultTemplate
           <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
           <div about="@" rel="v-wf:redirect_from_task">
             <script>
-              if (individual.id === "s-wf:EmptyTask") {
+              if ( !individual.hasValue("v-wf:to") ) {
                 template.empty();
               }
             </script>
