@@ -638,6 +638,11 @@ v-ft:TaskResultTemplate
         <td>
           <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
           <div about="@" rel="v-wf:redirect_from_task">
+            <script>
+              if ( !individual.hasValue("v-wf:to") ) {
+                template.empty();
+              }
+            </script>
             <div>
               <hr class="no-margin">
               <strong><small about="v-s:TaskIsRedirectedFrom" property="rdfs:label"></small></strong>
