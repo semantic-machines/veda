@@ -1200,67 +1200,71 @@ cfg:Event_16
   v-s:script """
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
-      backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      backwardTargetUris = getUris(document["v-s:backwardTarget"]),
       backwardReplaceUris = getUris(document["v-s:backwardReplace"]),
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
-      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
-      backwardTarget = get_individual(ticket, backwardTargetUri),
-      backwardTarget_original = JSON.stringify(backwardTarget);
+      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
 
-  if (!backwardTarget) { return; }
+  //expected equil backwardPropery and backwardReplaceUris for all backwardTargets
+  for (var i = 0; i < backwardTargetUris.length; i++) {
+    var backwardTargetUri = backwardTargetUris[i],
+        backwardTarget = get_individual(ticket, backwardTargetUri),
+        backwardTarget_original = JSON.stringify(backwardTarget);
+    if (!backwardTarget) { return; }
 
-  if (canRead || canUpdate || canDelete) {
-    var membershipUri = "d:backward_membership_" + backwardLinkUri.split(":").join('_') + '_' + backwardTargetUri.split(':').join('_');
+    if (canRead || canUpdate || canDelete) {
+      var membershipUri = "d:backward_membership_" + backwardLinkUri.split(":").join('_') + '_' + backwardTargetUri.split(':').join('_');
+
+      if (isDeleted) {
+        remove_individual(ticket, membershipUri, _event_id);
+      } else {
+        var membership = {
+          '@' : membershipUri,
+          'rdf:type'     : newUri('v-s:Membership'),
+          'v-s:memberOf' : newUri(backwardTargetUri),
+          'v-s:resource' : newUri(backwardLinkUri),
+          'rdfs:comment' : newStr('создано cfg:Event_16')
+        };
+        if (canRead) {
+          membership["v-s:canRead"] = canRead;
+        }
+        if (canUpdate) {
+          membership["v-s:canUpdate"] = canUpdate;
+        }
+        if (canDelete) {
+          membership["v-s:canDelete"] = canDelete;
+        }
+        if (isDeleted) {
+          membership['v-s:deleted'] = newBool(true);
+        }
+        put_individual(ticket, membership, _event_id);
+      }
+    }
 
     if (isDeleted) {
-      remove_individual(ticket, membershipUri, _event_id);
-    } else {
-      var membership = {
-        '@' : membershipUri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(backwardTargetUri),
-        'v-s:resource' : newUri(backwardLinkUri),
-        'rdfs:comment' : newStr('создано cfg:Event_16')
-      };
-      if (canRead) {
-        membership["v-s:canRead"] = canRead;
+      for (var property_uri in backwardTarget) {
+        if (property_uri === "@") { continue; }
+        backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (value) {
+          return (value.data !== backwardLinkUri);
+        });
       }
-      if (canUpdate) {
-        membership["v-s:canUpdate"] = canUpdate;
+    } else if (backwardPropertyUri) {
+      var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
+      //print( "BL already there =", alreadyThere );
+      if ( !alreadyThere ) {
+        backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
+        backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
       }
-      if (canDelete) {
-        membership["v-s:canDelete"] = canDelete;
-      }
-      if (isDeleted) {
-        membership['v-s:deleted'] = newBool(true);
-      }
-      put_individual(ticket, membership, _event_id);
     }
-  }
-
-  if (isDeleted) {
-    for (var property_uri in backwardTarget) {
-      if (property_uri === "@") { continue; }
-      backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (value) {
-        return (value.data !== backwardLinkUri);
-      });
+    backwardReplaceUris.map(function (replaceUri) {
+      backwardTarget[replaceUri] = document[replaceUri];
+    });
+    if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
+      put_individual(ticket, backwardTarget, _event_id);
+      //print( "BL target updated =", JSON.stringify(backwardTarget) );
     }
-  } else if (backwardPropertyUri) {
-    var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
-    //print( "BL already there =", alreadyThere );
-    if ( !alreadyThere ) {
-      backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
-      backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
-    }
-  }
-  backwardReplaceUris.map(function (replaceUri) {
-    backwardTarget[replaceUri] = document[replaceUri];
-  });
-  if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
-    put_individual(ticket, backwardTarget, _event_id);
-    //print( "BL target updated =", JSON.stringify(backwardTarget) );
   }
   """ ;
 .
