@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
-	"time"
 	"sync"
+	"time"
 
 	//	"github.com/muller95/traildb-go"
 
@@ -221,9 +222,36 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
 }
 
 func main() {
+
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	var err error
 
 	configWebServer()
+
+	args := os.Args[1:]
+
+	opt_external_users_http_port := ""
+
+	for _, arg := range args {
+		cuts := strings.Split(arg, "=")
+		if len(cuts) == 2 {
+			name := cuts[0]
+			val := cuts[1]
+
+			if name == "--http_port" {
+				webserverPort = val
+				fmt.Println("use command line param http_port=", webserverPort)
+			} else if name == "--ext_usr_http_port" {
+				opt_external_users_http_port = val
+			}
+		}
+	}
+
+	if opt_external_users_http_port != "" && opt_external_users_http_port == webserverPort {
+		fmt.Println("use external user mode")
+		areExternalUsers = true
+	}
 
 	socket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
