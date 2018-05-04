@@ -65,6 +65,7 @@ cfg:GuestAppointment
   v-s:occupation cfg:User_position;
   rdfs:label "Гость"@ru ;
   rdfs:label "Guest"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 
 ### -------------------------------------------------------
@@ -95,6 +96,7 @@ cfg:ImportDMSToVedaAppointment
   v-s:official "false"^^xsd:boolean;
   rdfs:label "Утилита DMS to Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 ### -------------------------------------------------------
 
@@ -127,6 +129,7 @@ cfg:VedaNTLMFilterAppointment
   v-s:official "false"^^xsd:boolean;
   rdfs:label "Veda NTLM Фильтр"@ru ;
   rdfs:label "Veda NTLM Filter"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 
 ### -------------------------------------------------------
@@ -194,6 +197,7 @@ cfg:AdministratorAppointment
   rdfs:label "Администратор"@ru ;
   rdfs:label "Administrator"@en ;
   v-s:origin "Internal" ;
+  v-s:parentUnit cfg:User_department;
 .
 
 ### -------------------------------------------------------
