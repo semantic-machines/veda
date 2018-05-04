@@ -163,7 +163,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 
 	if err != nil {
-		log.Println("@ERR GET_INDIVIDUALS: DECODING JSON REQUEST ", err)
+		log.Println("ERR! get individuals: DECODING JSON REQUEST ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		trail(ticket.Id, ticket.UserURI, "get_individuals", make(map[string]interface{}), "{}", BadRequest, timestamp)
 		return
@@ -242,7 +242,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	for i := 0; i < len(urisToGet); i++ {
 		rr := conn.Get(true, ticket.UserURI, []string{urisToGet[i]}, false)
 		if rr.CommonRC != Ok {
-			log.Println("@ERR GET_INDIVIDUALS: GET COMMON ", rr.CommonRC, ", user=", ticket.UserURI, ", uri=", urisToGet[i])
+			log.Println("ERR! get individuals: err=", rr.CommonRC, ", user=", ticket.UserURI, ", uri=", urisToGet[i])
 			ctx.Response.SetStatusCode(int(rr.CommonRC))
 			trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", rr.CommonRC, timestamp)
 			continue
@@ -251,7 +251,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		if rr.OpRC[0] == Ok {
 			individual := BinobjToMap(rr.Data[0])
 			if individual == nil {
-				log.Println("@ERR GET_INDIVIDUALS: DECODING INDIVIDUAL")
+				log.Println("ERR! get individuals: DECODING INDIVIDUAL")
 				ctx.Response.SetStatusCode(int(InternalServerError))
 				trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", InternalServerError, timestamp)
 				return
@@ -262,7 +262,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		}
 
 		if err != nil {
-			log.Println("@ERR ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("ERR! get individuals: ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", InternalServerError, timestamp)
 			return
@@ -270,7 +270,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	}
 	individualsJSON, err := json.Marshal(individuals)
 	if err != nil {
-		log.Println("@ERR GET_INDIVIDUALS: ENCODING INDIVIDUALS JSON ", err)
+		log.Println("ERR! get individuals: ENCODING INDIVIDUALS JSON ", err)
 	}
 
 	trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, string(individualsJSON), BadRequest, timestamp)

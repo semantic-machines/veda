@@ -27,42 +27,49 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	//Marshal request and send to socket
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("ERR! modify individual uri=%v, cmd %v: ENCODE JSON REQUEST: %v, [%s]\n", dataJSON, cmd, err, request)
+		log.Printf("ERR! modify individual: ENCODE JSON REQUEST, cmd=%v: request=%v, err=%v\n", cmd, request, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return InternalServerError
 	}
 	socket.Send(jsonRequest, 0)
 
-	responseBuf, _ := socket.Recv(0)
 	responseJSON := make(map[string]interface{})
-	err = json.Unmarshal(responseBuf, &responseJSON)
+
+	responseBuf, err := socket.Recv(0)
 	if err != nil {
-		log.Printf("ERR! modify individual uri=%v, cmd %v: DECODE JSON RESPONSE: %v, [%s]\n", dataJSON, cmd, err, responseBuf)
+		log.Printf("ERR! modify individual: recieve, cmd=%v: request=%v, err=%v\n", cmd, request, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
 		return InternalServerError
-	}
-
-	//Unmarshal response data and gives response to client
-	data := responseJSON["data"]
-
-	if data != nil {
-		responseData := data.([]interface{})[0].(map[string]interface{})
-		ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
-		responseDataJSON, _ := json.Marshal(responseData)
-		//log.Println(string(responseDataJSON))
-		ctx.Write(responseDataJSON)
-		trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
-			ResultCode(responseData["result"].(float64)), timestamp)
-		return ResultCode(responseData["result"].(float64))
 	} else {
-		ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
-		responseDataJSON, _ := json.Marshal(responseJSON)
-		log.Println(string(responseDataJSON))
-		ctx.Write(responseDataJSON)
-		trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
-			ResultCode(responseJSON["result"].(float64)), timestamp)
-		return ResultCode(responseJSON["result"].(float64))
-	}
+		err = json.Unmarshal(responseBuf, &responseJSON)
+		if err != nil {
+			log.Printf("ERR! modify individual: DECODE JSON RESPONCE, cmd=%v: request=%v, responce=%v, err=%v\n", cmd, request, responseBuf, err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
+			return InternalServerError
+		}
 
+		//Unmarshal response data and gives response to client
+		data := responseJSON["data"]
+
+		if data != nil {
+			responseData := data.([]interface{})[0].(map[string]interface{})
+			ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
+			responseDataJSON, _ := json.Marshal(responseData)
+			//log.Println(string(responseDataJSON))
+			ctx.Write(responseDataJSON)
+			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
+				ResultCode(responseData["result"].(float64)), timestamp)
+			return ResultCode(responseData["result"].(float64))
+		} else {
+			ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
+			responseDataJSON, _ := json.Marshal(responseJSON)
+			log.Println(string(responseDataJSON))
+			ctx.Write(responseDataJSON)
+			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
+				ResultCode(responseJSON["result"].(float64)), timestamp)
+			return ResultCode(responseJSON["result"].(float64))
+		}
+	}
 }
