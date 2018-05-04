@@ -137,16 +137,16 @@ v-s:ContactsTemplate
           });
           if (individual.selected) {
             $("tr[resource='" + individual.selected + "']", template).click();
+          } else {
+            $("tr", template).first().click();
           }
           //# sourceURL=v-s:ContactsTemplate_inline_post
         </script>
       </div>
     </div>
-
     <div role="tabpanel" class="tab-pane" id="search">
       <div about="v-s:ContactsSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
     </div>
-
   </div>
 </div>
   """
@@ -306,8 +306,8 @@ v-s:ContactsInUnitSearchRegistryBlank
   rdfs:label "Contacts search blank"@en ;
   v-fc:targetType v-s:Appointment ;
 #  v-fc:targetType v-s:Position ;
-#  v-fc:targetType v-s:Department ;
-#  v-fc:targetType v-s:OrgGroup ;
+  v-fc:targetType v-s:Department ;
+  v-fc:targetType v-s:OrgGroup ;
 .
 
 v-s:ContactsInUnitSearchResultTemplate
