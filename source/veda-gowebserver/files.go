@@ -1,15 +1,14 @@
 package main
 
 import (
-	"io"
-	"log"
-	"unicode/utf8"
-
-	"strings"
-
-	"os"
-
+	"encoding/base64"
 	"github.com/valyala/fasthttp"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
+	"unicode/utf8"
 )
 
 //uploadFile handles file uploading from request context
@@ -30,19 +29,47 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 		attachmentsPathCurr += "/" + pathParts[i]
 		os.Mkdir(attachmentsPathCurr, os.ModePerm)
 	}
+	path := attachmentsPathCurr + "/" + form.Value["uri"][0]
 
-	//Create file in destination directory
-	destFile, err := os.OpenFile(attachmentsPathCurr+"/"+form.Value["uri"][0], os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		log.Println("@ERR CREATING DESTIONTION FILE ON UPLOAD: ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
-		return
+	if len(form.Value["content"]) > 0 {
+		content := form.Value["content"][0]
+
+		if len(content) > 0 {
+
+			pos := strings.Index(content, "base64")
+			if pos > 0 {
+				//header := content[0:pos]
+				cntstr := content[pos+6+1 : len(content)]
+				decoded, err := base64.StdEncoding.DecodeString(cntstr)
+
+				if err != nil {
+					log.Println("ERR! Upload file: decode base64:", err)
+					ctx.Response.SetStatusCode(int(InternalServerError))
+					return
+				}
+				err = ioutil.WriteFile(path, decoded, 0644)
+				if err != nil {
+					log.Println("ERR! Upload file: write file:", err)
+					ctx.Response.SetStatusCode(int(InternalServerError))
+					return
+				}
+			}
+		}
 	}
 
-	defer destFile.Close()
-	//Open frime form
-
 	if len(form.File["file"]) > 0 {
+
+		//Create file in destination directory
+		destFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			log.Println("@ERR CREATING DESTIONTION FILE ON UPLOAD: ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
+		defer destFile.Close()
+		//Open frime form
+
 		srcFile, err := form.File["file"][0].Open()
 		if err != nil {
 			log.Println("@ERR OPENING FORM FILE ON UPLOAD: ", err)
