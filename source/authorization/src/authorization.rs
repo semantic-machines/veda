@@ -136,10 +136,15 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
         str_num: 0,
     };
 
-    for attempt in 0..10 {
+    for attempt in 1..10 {
+    	
+    	if attempt > 1 {
+    		println!("ERR! AZ: attempt {:?}", attempt)
+    	}
+    	
         match _authorize(uri, user_uri, request_access, is_check_for_reload, &mut trace) {
             Ok(res) => return res,
-            Err(_e) => println!("ERR! AZ: attempt {:?}", attempt),
+            Err(_e) => {}
         }
     }
     return 0;
@@ -225,14 +230,13 @@ fn get_from_db(key: &str, db: &Database) -> Result<String, i64> {
     match db.get::<String>(&key) {
         Ok(val) => {
             return Ok(val);
-        }
+        },
         Err(e) => match e {
             MdbError::NotFound => {
                 return Err(0);
-            }
-
+            },
             _ => {
-                println!("ERR! Authorize ON GET TRANSACTION {:?}, {}", e, key);
+                println!("ERR! Authorize: db.get {:?}, {}", e, key);
                 return Err(-1);
             }
         },
@@ -395,8 +399,9 @@ fn authorize_obj_group(
                     }
                 }
             }
-        }
+        },
         Err(e) => if e < 0 {
+        	println!("ERR! Authorize: authorize_obj_group:main, object_group_id={:?}", object_group_id);
             return Err(e);
         },
     }
@@ -407,8 +412,9 @@ fn authorize_obj_group(
                 let permissions: &mut Vec<Right> = &mut Vec::new();
                 rights_vec_from_str(&str, permissions);
                 print_to_trace_info(trace, format!("for [{}] found {:?}\n", acl_key, permissions));
-            }
+            },
             Err(e) => if e < 0 {
+	        	println!("ERR! Authorize: authorize_obj_group:trace, object_group_id={:?}", object_group_id);
                 return Err(e);
             },
         }
@@ -485,17 +491,13 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                     }
                 }
 
-                match prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db) {
-                    Ok(_res) => {}
-                    Err(e) => {
-                        return Err(e);
-                    }
-                }
+                try! (prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db));
             }
             return Ok(false);
-        }
+        },
         Err(e) => {
             if e < 0 {
+	        	println!("ERR! Authorize: prepare_obj_group {:?}", uri);
                 return Err(e);
             } else {
                 return Ok(false);
@@ -625,9 +627,10 @@ fn get_resource_groups(
                     },
                 );
             }
-        }
+        },
         Err(e) => {
             if e < 0 {
+                println!("ERR! Authorize: get_resource_groups {:?}", uri);
                 return Err(e);
             } else {
                 return Ok(false);
@@ -763,9 +766,9 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     match env.get_reader() {
         Ok(txn1) => {
             txn = txn1;
-        }
+        },
         Err(e) => {
-            println!("ERR! Authorize:ON CREATING GET TRANSACTION {:?}", e);
+            println!("ERR! Authorize:CREATING TRANSACTION {:?}", e);
             println!("reopen db");
 
             let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
@@ -805,11 +808,12 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                     filter_allow_access_to_other = el.access;
                 }
             }
-        }
+        },
         Err(e) => {
             if e == 0 {
                 filter_value = String::new();
             } else {
+				println!("ERR! Authorize: _authorize {:?}", uri);
                 return Err(e);
             }
         }
@@ -828,7 +832,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     }
 
     match get_resource_groups(ROLE_SUBJECT, &mut azc, trace, user_uri, 15, s_groups, &filter_value, 0, &db) {
-        Ok(_res) => {}
+        Ok(_res) => {},
         Err(e) => return Err(e),
     }
 
@@ -931,10 +935,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
 
         let o_groups = &mut HashMap::new();
-        match get_resource_groups(ROLE_OBJECT, &mut azc, trace, uri, 15, o_groups, &empty_filter_value, 0, &db) {
-            Ok(_) => {}
-            Err(e) => return Err(e),
-        }
+        try!(get_resource_groups(ROLE_OBJECT, &mut azc, trace, uri, 15, o_groups, &empty_filter_value, 0, &db));
 
         if trace.is_info {
             let str = format!("object_groups={:?}\n", o_groups);
@@ -972,10 +973,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             }
 
             let o_groups = &mut HashMap::new();
-            match get_resource_groups(ROLE_OBJECT, &mut azc, trace, uri, 15, o_groups, &filter_value, 0, &db) {
-                Ok(_) => {}
-                Err(e) => return Err(e),
-            }
+            try! (get_resource_groups(ROLE_OBJECT, &mut azc, trace, uri, 15, o_groups, &filter_value, 0, &db));
 
             if trace.is_info {
                 let str = format!("object_groups={:?}\n", o_groups);
