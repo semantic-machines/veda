@@ -54,7 +54,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		//loging about external user authentication checl
 		log.Printf("authenticate:check external user (%v)\n", authResponse["user_uri"])
 		//sending get request to tarantool
-		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false)
+		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
 		//decoding msgpack to individual map
 		user := BinobjToMap(rr.Data[0])
 		data, ok := user["v-s:origin"]

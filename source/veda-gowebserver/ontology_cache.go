@@ -75,7 +75,7 @@ func monitorIndividualChanges() {
 			resourceCache := individualCache["v-s:updateCounter"].([]interface{})[0]
 			updateCounterCache := resourceCache.(map[string]interface{})["data"].(uint64)
 			if updateCounter > updateCounterCache {
-				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false)
+				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false, false)
 				if rr.CommonRC != Ok {
 					log.Println("@ERR ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH COMMON CODE: ",
 						rr.CommonRC)

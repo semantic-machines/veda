@@ -88,7 +88,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		_, ok := externalUsersTicketId[ticket.Id]
 		if !ok {
 			//If ticket not found then get user from tarantool and decode it
-			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false)
+			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
 			user := BinobjToMap(rr.Data[0])
 			//Check its field v-s:origin
 			data, ok := user["v-s:origin"]

@@ -118,7 +118,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		}
 
 		//Get individual of requested file from tarantool
-		rr := conn.Get(true, ticket.UserURI, []string{uri}, false)
+		rr := conn.Get(true, ticket.UserURI, []string{uri}, false, false)
 
 		//If common  request code of operation code are not Ok then return fail code
 		if rr.CommonRC != Ok {

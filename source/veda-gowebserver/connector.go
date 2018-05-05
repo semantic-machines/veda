@@ -90,6 +90,8 @@ func (conn *Connector) open_dbs() {
 func (conn *Connector) reopen_individual_db() {
 	var err error
 
+	log.Println("INFO! reopen individual db")
+
 	conn.indivEnv.Close()
 
 	conn.indivEnv, err = lmdb.NewEnv()
@@ -378,11 +380,13 @@ func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, 
 }
 
 //Get sends get request to tarantool, individuals uris passed as data here
-func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool) RequestResponse {
+func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool, reopen bool) RequestResponse {
 	var rr RequestResponse
 
 	if conn.db_is_open == false {
 		conn.open_dbs()
+	} else if reopen == true {
+		conn.reopen_individual_db()
 	}
 
 	//If user uri is too short return NotAuthorized to client
@@ -441,9 +445,9 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		} else {
 			if lmdb.IsErrno(err, lmdb.MapResized) == true {
 				conn.reopen_individual_db()
-				return conn.Get(needAuth, userUri, uris, trace)
+				return conn.Get(needAuth, userUri, uris, trace, reopen)
 			} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
-				return conn.Get(needAuth, userUri, uris, trace)
+				return conn.Get(needAuth, userUri, uris, trace, reopen)
 			}
 
 			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
