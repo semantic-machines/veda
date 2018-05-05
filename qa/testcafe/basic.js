@@ -9,7 +9,8 @@ export default class basic {
       .click('#password')
       .pressKey('ctrl+a delete')
       .typeText('#password', password)
-      .click('#submit');
+      .click('#submit')
+      .wait(1000);
   }
 
   async logout() {
