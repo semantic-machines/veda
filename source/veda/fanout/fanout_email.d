@@ -110,18 +110,37 @@ class FanoutProcess : VedaModule
 
 
 ///////////////////////////////////////// SMTP FANOUT ///////////////////////////////////////////////////////////////////
-    private Resources get_email_from_appointment(ref Ticket sticket, ref Individual ap)
+    private Resources get_email_from_appointment(ref Ticket sticket, string hasMessageType, ref Individual ap)
     {
         string p_uri = ap.getFirstLiteral("v-s:employee");
 
         if (p_uri is null)
             return null;
 
-        Individual p = context.get_individual(&sticket, p_uri, OptAuthorize.NO);
-        if (p.getStatus() != ResultCode.OK)
+        Individual prs = context.get_individual(&sticket, p_uri, OptAuthorize.NO);
+        if (prs.getStatus() != ResultCode.OK)
             return null;
 
-        string ac_uri = p.getFirstLiteral("v-s:hasAccount");
+        string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
+        if (preference_uri !is null)
+        {
+            Individual preference = context.get_individual(&sticket, preference_uri, OptAuthorize.NO);
+            if (preference.getStatus() == ResultCode.OK)
+            {
+                string receiveMessageType = prs.getFirstLiteral("v-ui:receiveMessageType");
+
+                if (receiveMessageType !is null)
+                {
+                    if ((hasMessageType !is null && receiveMessageType == hasMessageType) == false)
+                        return null;
+
+                    if ((hasMessageType is null && receiveMessageType == "v-s:OtherNotification") == false)
+                        return null;
+                }
+            }
+        }
+
+        string ac_uri = prs.getFirstLiteral("v-s:hasAccount");
         if (ac_uri is null)
             return null;
 
@@ -132,7 +151,7 @@ class FanoutProcess : VedaModule
         return ac.getResources("v-s:mailbox");
     }
 
-    private Resources extract_email(ref Ticket sticket, string ap_uri, out string label)
+    private Resources extract_email(ref Ticket sticket, string hasMessageType, string ap_uri, out string label)
     {
         if (ap_uri is null || ap_uri.length < 1)
             return null;
@@ -148,7 +167,7 @@ class FanoutProcess : VedaModule
 
         if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Appointment")))
         {
-            res = get_email_from_appointment(sticket, indv);
+            res = get_email_from_appointment(sticket, hasMessageType, indv);
         }
         else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Position")))
         {
@@ -159,7 +178,7 @@ class FanoutProcess : VedaModule
 
             foreach (individual; l_individuals)
             {
-                Resources tmp_res = get_email_from_appointment(sticket, individual);
+                Resources tmp_res = get_email_from_appointment(sticket, hasMessageType, individual);
 
                 foreach (rr; tmp_res)
                     res ~= rr;
@@ -269,6 +288,8 @@ class FanoutProcess : VedaModule
                 delete smtp_conn;
                 connect_to_smtp(context);
 
+                string    hasMessageType = new_indv.getFirstLiteral("v-s:hasMessageType");
+
                 string    from         = new_indv.getFirstLiteral("v-wf:from");
                 Resources to           = new_indv.getResources("v-wf:to");
                 string    subject      = new_indv.getFirstLiteral("v-s:subject");
@@ -285,7 +306,7 @@ class FanoutProcess : VedaModule
                     string email_from;
 
                     if (senderMailbox is null)
-                        email_from = extract_email(sticket, from, from_label).getFirstString();
+                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
                     else
                         email_from = senderMailbox;
 
@@ -297,7 +318,7 @@ class FanoutProcess : VedaModule
 
                     foreach (Resource elt; to)
                     {
-                        foreach (Resource el; extract_email(sticket, elt.uri(), label))
+                        foreach (Resource el; extract_email(sticket, hasMessageType, elt.uri(), label))
                             rr_email_to ~= Recipient(el.data(), label);
                     }
 
@@ -307,7 +328,7 @@ class FanoutProcess : VedaModule
                     string str_email_reply_to = "";
                     foreach (Resource elt; reply_to)
                     {
-                        foreach (Resource el; extract_email(sticket, elt.uri(), label))
+                        foreach (Resource el; extract_email(sticket, hasMessageType, elt.uri(), label))
                             str_email_reply_to ~= el.data() ~ ";";
                     }
 
