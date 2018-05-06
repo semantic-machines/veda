@@ -1,4 +1,4 @@
-import std.stdio;
+import std.stdio, core.stdc.stdlib;
 import veda.storage.tarantool.tarantool_driver, veda.storage.common, veda.common.type, veda.onto.individual;
 import veda.util.properd;
 import veda.common.logger;
@@ -13,6 +13,17 @@ Logger log()
 
 void main(string[] args)
 {
+    if (args.length < 3)
+    {
+        writefln("need command line argument: [dest db name] [path to lmdb dump file]");
+        exit(-1);
+        return;
+    }
+
+    string file_name    = args[ 2 ];
+    string dest_db_name = args[ 1 ];
+
+
     KeyValueDB storage;
 
     string[ string ] properties;
@@ -21,10 +32,12 @@ void main(string[] args)
 
     if (tarantool_url !is null)
     {
-        storage = new TarantoolDriver(log, "lmdb-individuals", 512);
+        if (dest_db_name == "individuals")
+            storage = new TarantoolDriver(log, dest_db_name, 512);
+        else if (dest_db_name == "tickets")
+            storage = new TarantoolDriver(log, dest_db_name, 513);
     }
 
-    string file_name = args[ 1 ];
     writefln("read file [%s]", file_name);
     auto   file = File(file_name, "r");
 
@@ -37,6 +50,7 @@ void main(string[] args)
     {
         if (line == " summ_hash_this_db\n")
             is_prepare = false;
+
         if (is_prepare)
         {
             counter++;
