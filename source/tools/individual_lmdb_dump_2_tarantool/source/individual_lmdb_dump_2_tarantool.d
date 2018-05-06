@@ -1,5 +1,5 @@
 import std.stdio;
-import veda.storage.tarantool.tarantool_driver, veda.storage.common, veda.common.type;
+import veda.storage.tarantool.tarantool_driver, veda.storage.common, veda.common.type, veda.onto.individual;
 import veda.util.properd;
 import veda.common.logger;
 
@@ -31,7 +31,7 @@ void main(string[] args)
     bool   is_prepare = false;
     string line;
 
-    long counter = 0;
+    long   counter = 0;
 
     while ((line = file.readln()) !is null)
     {
@@ -39,17 +39,26 @@ void main(string[] args)
             is_prepare = false;
         if (is_prepare)
         {
-	    counter++;
+            counter++;
             string key   = line;
             string value = file.readln();
-            
-            key = key[ 1..$ - 1 ];
+
+            key   = key[ 1..$ - 1 ];
             value = value[ 1..$ - 1 ];
-            
-            writefln("%d KEY=[%s]", counter, key);
+
+            Individual indv;
+            if (indv.deserialize(value) < 0)
+            {
+                writefln("ERR! %d KEY=[%s]", counter, key);
+            }
+            else
+            {
+                string new_bin = indv.serialize();
+                storage.put(OptAuthorize.NO, null, key, new_bin, -1);
+                writefln("OK, %d KEY=[%s]", counter, key);
+            }
+
             //writefln("VALUE=[%s]", value);
-            
-            storage.put (OptAuthorize.NO, null, key, value, -1);
         }
         if (line == "HEADER=END\n")
             is_prepare = true;
