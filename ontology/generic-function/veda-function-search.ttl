@@ -1586,7 +1586,7 @@ v-fs:AttributiveSearchInlineTemplate
       searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0]["v-ui:template"][0].toString() : undefined,
       searchResultContainer = $(".search-result", template);
   if ( searchResultTemplate ) {
-    searchResultContainer.append( $(searchResultTemplate) );
+    searchResultContainer.append( searchResultTemplate );
     var resultContainer = $(".result-container", template);
     var resultTemplate = resultContainer.html();
     individual.resultTemplate = resultTemplate;
@@ -1594,7 +1594,7 @@ v-fs:AttributiveSearchInlineTemplate
   } else {
     $(".stats-top, .stats-bottom, .result-heading", template).remove();
     searchResultTemplate = (new veda.IndividualModel("v-fs:MinimalSearchResultTemplate"))["v-ui:template"][0].toString();
-    searchResultContainer.append( $(searchResultTemplate) );
+    searchResultContainer.append( searchResultTemplate );
     var resultContainer = $(".result-container", template);
     var resultTemplate = resultContainer.html();
     individual.resultTemplate = resultTemplate;
