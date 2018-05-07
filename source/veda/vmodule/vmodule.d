@@ -180,7 +180,7 @@ class VedaModule : VedaModuleBasic
 
         // attempt open [prepareall] queue
         open_perapare_batch_queue(true);
-        load_systicket();
+        //load_systicket();
 
         try
         {
@@ -498,7 +498,7 @@ class VedaModule : VedaModuleBasic
         //if (count_readed != count_success_prepared)
         //    log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
     }
-
+/*
     void load_systicket()
     {
         sticket = *context.get_storage().get_systicket_from_storage();
@@ -540,7 +540,7 @@ class VedaModule : VedaModuleBasic
         set_global_systicket(sticket);
         log.trace("load_systicket: systicket=%s", text(sticket));
     }
-
+*/
     void ev_CALLBACK_GET_THREAD_ID()
     {
         //g_child_process.thread_id();

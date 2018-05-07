@@ -45,7 +45,6 @@ public class LmdbDriver : KeyValueDB
             core_thread.getThis().name = "core" ~ text(randomUUID().toHash())[ 0..5 ];
         }
 
-        create_folder_struct();
         open();
 //        reopen_db();
     }

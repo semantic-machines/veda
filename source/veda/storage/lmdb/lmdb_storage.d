@@ -27,6 +27,8 @@ public class LmdbStorage : Storage
     {
         log  = _log;
         name = _name;
+
+        create_folder_struct();
     }
 
     ~this()

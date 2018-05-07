@@ -13,12 +13,13 @@ public class TarantoolStorage : Storage
     private Authorization acl_client;
     private KeyValueDB    tickets_storage_r;
     private KeyValueDB    inividuals_storage_r;
-    private string        tarantool_url;
 
     this(string _name, Logger _log)
     {
         log  = _log;
         name = _name;
+
+        create_folder_struct();
     }
 
     ~this()
@@ -63,7 +64,7 @@ public class TarantoolStorage : Storage
     override KeyValueDB get_inividuals_storage_r()
     {
         if (inividuals_storage_r is null)
-            tickets_storage_r = new TarantoolDriver(log, "individuals", 512);
+            inividuals_storage_r = new TarantoolDriver(log, "individuals", 512);
 
         return inividuals_storage_r;
     }
