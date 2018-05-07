@@ -181,7 +181,7 @@ v-s:Request
 v-s:RegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Распорядительный документ"@ru ;
+  rdfs:label "Нормативный документ"@ru ;
   rdfs:label "Regulatory document"@en ;
 .
 
