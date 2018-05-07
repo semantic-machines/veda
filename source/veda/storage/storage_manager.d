@@ -148,7 +148,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     core.thread.Thread.getThis().name = thread_name;
 
     KeyValueDB                   storage = null;
-    string                       db_path;
+    string                       db_name;
 
     string[ string ] properties = readProperties("./veda.properties");
     string tarantool_url = properties.as!(string)("tarantool_url");
@@ -158,10 +158,12 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
         if (_storage_id == P_MODULE.subject_manager)
         {
             storage = new TarantoolDriver(log, "individuals", 512);
+            db_name = individuals_db_path;
         }
         else if (_storage_id == P_MODULE.ticket_manager)
         {
             storage = new TarantoolDriver(log, "tickets", 513);
+            db_name = tickets_db_path;
         }
     }
     else
@@ -169,14 +171,16 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
         if (_storage_id == P_MODULE.subject_manager)
         {
             storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
-            db_path = individuals_db_path;
+            db_name = individuals_db_path;
         }
         else if (_storage_id == P_MODULE.ticket_manager)
         {
             storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
-            db_path = tickets_db_path;
+            db_name = tickets_db_path;
         }
     }
+
+    create_folder_struct();
 
     long count = storage.count_entries();
 
@@ -184,7 +188,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
     int            size_bin_log         = 0;
     int            max_size_bin_log     = 10_000_000;
-    string         bin_log_name         = get_new_binlog_name(db_path);
+    string         bin_log_name         = get_new_binlog_name(db_name);
     long           last_reopen_rw_op_id = 0;
     int            max_count_updates    = 10_000;
 
@@ -395,7 +399,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                         BigInt msg_hash = "0x" ~ toHexString(hash);
                                         new_hash = toHex(msg_hash);
 
-                                        bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
+                                        bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_name);
 
                                         if (storage_id == P_MODULE.subject_manager)
                                         {

@@ -10,8 +10,7 @@
 		"urld": "2.0.1"
 	},
 	"versions": ["VibeDefaultMain", "WebServer"],	
-        "libs": ["raptor2", "nanomsg", "tarantool"]
-        ],
+        "libs": ["raptor2", "nanomsg", "tarantool"],
         "license": "LGPL v3",
 	"sourceFiles":[
             "../../lib64/libauthorization.a",

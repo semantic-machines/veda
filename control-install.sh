@@ -117,7 +117,7 @@ go get -v github.com/op/go-nanomsg
 
 #traildb-go
 go get github.com/traildb/traildb-go
-
+go get github.com/tarantool/go-tarantool
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
 go get -v gopkg.in/vmihailenco/msgpack.v2
