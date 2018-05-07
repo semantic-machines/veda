@@ -10,8 +10,7 @@
 		"urld": "2.0.1"
 	},
 	"versions": ["VibeDefaultMain", "WebServer"],	
-        "libs": [
-                "raptor2", "nanomsg"
+        "libs": ["raptor2", "nanomsg", "tarantool"]
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
@@ -39,6 +38,7 @@
 	    "../../veda/core/impl", 
 	    "../../veda/core/search", 
             "../../veda/storage/lmdb",
+            "../../veda/storage/tarantool",
 	    "../../veda/core/util"
 	],
 	"configurations": [

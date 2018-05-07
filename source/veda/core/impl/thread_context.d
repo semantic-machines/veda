@@ -6,14 +6,17 @@ module veda.core.impl.thread_context;
 
 private
 {
-    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
+    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.file, std.path,
            std.json, std.regex;
+    import veda.util.properd;
     import veda.bind.xapian_d_header;
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
-    import veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger, veda.storage.lmdb.lmdb_storage;
+    import veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
+    import veda.storage.lmdb.lmdb_storage;
+    import veda.storage.tarantool.tarantool_storage;
 
     version (isMStorage)
     {
@@ -33,7 +36,7 @@ class PThreadContext : Context
 
     private VQL         _vql;
 
-    private LmdbStorage storage;
+    private Storage storage;
 
     private long        local_last_update_time;
     private Individual  node = Individual.init;
@@ -221,7 +224,17 @@ class PThreadContext : Context
         ctx.main_module_url = _main_module_url;
         ctx.node_id         = _node_id;
 
+    string[ string ] properties = readProperties("./veda.properties");
+    string tarantool_url = properties.as!(string)("tarantool_url");
+
+    if (tarantool_url !is null)
+    {
+        ctx.storage = new TarantoolStorage(context_name, ctx.log);
+    }
+    else
+    {
         ctx.storage = new LmdbStorage(context_name, ctx.log);
+    }
 
         ctx.name = context_name;
 

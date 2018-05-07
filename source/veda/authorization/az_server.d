@@ -6,7 +6,7 @@ module veda.authorization.az_server;
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string, std.datetime;
 import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.define;
-import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type, veda.util.queue;
+import veda.common.logger, veda.authorization.authorization, veda.common.type, veda.util.queue;
 
 extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload,
                              void function(immutable(char) *_trace_acl), void function(immutable(char) *_trace_group), void function(
