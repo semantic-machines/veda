@@ -542,12 +542,8 @@ veda.Module(function Util(veda) { "use strict";
     tzField.setAttribute("name", "timezone");
     tzField.setAttribute("value", tz);
     form.appendChild(tzField);
-    console.log("timezone", tz);
-
     document.body.appendChild(form);
-
     window.open('', 'view');
-
     form.submit();
   };
 
