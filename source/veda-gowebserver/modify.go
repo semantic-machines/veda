@@ -31,13 +31,16 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return InternalServerError
 	}
-	socket.Send(jsonRequest, 0)
 
 	responseJSON := make(map[string]interface{})
-
-	responseBuf, err := socket.Recv(0)
+	
+	mstorage_ch_Mutex.RLock()	
+	mstorage_ch.Send(jsonRequest, 0)
+	responseBuf, err := mstorage_ch.Recv(0)
+	mstorage_ch_Mutex.RUnlock()
+	
 	if err != nil {
-		log.Printf("ERR! modify individual: recieve, cmd=%v: request=%v, err=%v\n", cmd, request, err)
+		log.Printf("ERR! modify individual: recieve, cmd=%v: err=%v, request=%v\n", cmd, err, request)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
 		return InternalServerError

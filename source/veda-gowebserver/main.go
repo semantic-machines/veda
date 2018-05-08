@@ -8,7 +8,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
 	//	"github.com/muller95/traildb-go"
 
 	"github.com/op/go-nanomsg"
@@ -68,7 +67,8 @@ var mifCache map[int]*ModuleInfoFile
 var conn Connector
 
 //socket is nanomsg socket connected to server
-var socket *nanomsg.Socket
+var mstorage_ch *nanomsg.Socket
+var mstorage_ch_Mutex = sync.RWMutex{}
 
 //endpoint is nanomsg endpoint connected to server
 var endpoint *nanomsg.Endpoint
@@ -253,14 +253,15 @@ func main() {
 		areExternalUsers = true
 	}
 
-	socket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
 		log.Fatal("@ERR ON CREATING SOCKET")
 	}
 
-	endpoint, err = socket.Connect(mainModuleURL)
+
+	endpoint, err = mstorage_ch.Connect(mainModuleURL)
 	for err != nil {
-		endpoint, err = socket.Connect(mainModuleURL)
+		endpoint, err = mstorage_ch.Connect(mainModuleURL)
 		time.Sleep(3000 * time.Millisecond)
 	}
 
