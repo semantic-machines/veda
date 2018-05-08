@@ -1375,6 +1375,14 @@ v-ui:TestUI
   v-ui:testDecimal  "3.1415926"^^xsd:decimal ;
 .
 
+v-ui:TestUIClass_permission
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-ui:TestUIClass ;
+  v-s:permissionSubject td:AndreyBychin ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "Права на создание тестового шаблона" ;
+.
+
 v-ui:TestUITemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Тестовый шаблон"@ru ;
