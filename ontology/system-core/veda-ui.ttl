@@ -1170,7 +1170,7 @@ v-ui:RabbitHole
       break;
     }
   }
-  
+
 
   function travel(individual) {
     if ( visited.indexOf(individual.id) >= 0 ) {
@@ -1430,7 +1430,8 @@ v-ui:TestUITemplate
   <hr>
 
   <em about="v-ui:testDatetime" property="rdfs:label"></em>
-  <div property="v-ui:testDatetime" class="view -edit -search"></div>
+  <div property="v-ui:testDatetime" class="view edit -search"></div>
+  <veda-control property="v-ui:testDatetime" data-type="date" class="-view edit search" id="date"></veda-control>
   <veda-control property="v-ui:testDatetime" data-type="dateTime" class="-view edit search"></veda-control>
   <veda-control property="v-ui:testDatetime" data-type="select" class="-view edit search"></veda-control>
   <veda-control property="v-ui:testDatetime" data-type="checkbox" class="-view edit search"></veda-control>
