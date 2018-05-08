@@ -446,12 +446,12 @@ veda.Module(function Util(veda) { "use strict";
    *  - Find transformation to start form or use transformation specified by `transformId` parameter
    *  - Apply transformation and redirect to start form.
    */
-  veda.Util.send = function (individual, template, transformId, modal) {
+  veda.Util.send = function (individual, template, transformId, modal, startFormId) {
     if ( transformId ) {
       template.trigger("save");
       var transform = new veda.IndividualModel(transformId);
       var startForm = veda.Util.buildStartFormByTransformation(individual, transform);
-      veda.Util.showModal(startForm, undefined, "edit");
+      veda.Util.showModal(startForm, startFormId, "edit");
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
       template.trigger("save");
