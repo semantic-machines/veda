@@ -36,8 +36,8 @@ func sendToModule(ctx *fasthttp.RequestCtx) {
 	}
 
 	log.Println(string(jsonRequest))
-	mstorage_ch.Send(jsonRequest, 0)
-	responseBuf, _ := mstorage_ch.Recv(0)
+	g_mstorage_ch.Send(jsonRequest, 0)
+	responseBuf, _ := g_mstorage_ch.Recv(0)
 
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)

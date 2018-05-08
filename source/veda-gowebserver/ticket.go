@@ -156,8 +156,8 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	}
 
 	//Send request to veda server and read response
-	mstorage_ch.Send(jsonRequest, 0)
-	responseBuf, _ := mstorage_ch.Recv(0)
+	g_mstorage_ch.Send(jsonRequest, 0)
+	responseBuf, _ := g_mstorage_ch.Recv(0)
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {

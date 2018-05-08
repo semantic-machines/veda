@@ -67,11 +67,11 @@ var mifCache map[int]*ModuleInfoFile
 var conn Connector
 
 //socket is nanomsg socket connected to server
-var mstorage_ch *nanomsg.Socket
-var mstorage_ch_Mutex = sync.RWMutex{}
+var g_mstorage_ch *nanomsg.Socket
+//var mstorage_ch_Mutex = sync.RWMutex{}
 
 //endpoint is nanomsg endpoint connected to server
-var endpoint *nanomsg.Endpoint
+//var endpoint *nanomsg.Endpoint
 
 //aclSocket is nanomsg socket connected to acl service
 //var aclSocket *nanomsg.Socket
@@ -80,10 +80,10 @@ var endpoint *nanomsg.Endpoint
 //var aclEndpoint *nanomsg.Endpoint
 
 //querySocket is nanomsg socket connected to query service
-var querySocket *nanomsg.Socket
+//var querySocket *nanomsg.Socket
 
 //aclEndpoint is nanomsg endpoint connected to acl service
-var queryEndpoint *nanomsg.Endpoint
+//var queryEndpoint *nanomsg.Endpoint
 
 //mainModuleURL is tcp address of veda server
 var mainModuleURL = "tcp://127.0.0.1:9112"
@@ -253,15 +253,15 @@ func main() {
 		areExternalUsers = true
 	}
 
-	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	g_mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
 		log.Fatal("@ERR ON CREATING SOCKET")
 	}
 
 
-	endpoint, err = mstorage_ch.Connect(mainModuleURL)
+	_, err = g_mstorage_ch.Connect(mainModuleURL)
 	for err != nil {
-		endpoint, err = mstorage_ch.Connect(mainModuleURL)
+		_, err = g_mstorage_ch.Connect(mainModuleURL)
 		time.Sleep(3000 * time.Millisecond)
 	}
 
@@ -275,7 +275,7 @@ func main() {
 	//		endpoint, err = aclSocket.Connect(aclServiceURL)
 	//		time.Sleep(3000 * time.Millisecond)
 	//	}
-
+/*
 	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
 		log.Fatal("@ERR ON CREATING QUERY SOCKET")
@@ -287,7 +287,8 @@ func main() {
 		//		endpoint, err = aclSocket.Connect(aclServiceURL)
 		//		time.Sleep(3000 * time.Millisecond)
 	}
-
+*/
+	
 	conn.Connect(tarantoolURL)
 
 	ticketCache = make(map[string]ticket)

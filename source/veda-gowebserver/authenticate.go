@@ -25,8 +25,8 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	}
 
 	//send request via nanomsg socket and reading response
-	mstorage_ch.Send(jsonRequest, 0)
-	responseBuf, _ := mstorage_ch.Recv(0)
+	g_mstorage_ch.Send(jsonRequest, 0)
+	responseBuf, _ := g_mstorage_ch.Recv(0)
 	//decoding authenticate response json
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
