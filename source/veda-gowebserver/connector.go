@@ -9,21 +9,19 @@ import "C"
 
 import (
 	"encoding/json"
+	"github.com/itiu/lmdb-go/lmdb"
+	"github.com/tarantool/go-tarantool"
 	"log"
 	"strings"
-	"github.com/itiu/lmdb-go/lmdb"
 	"unsafe"
-	"github.com/tarantool/go-tarantool"
+	"time"
 )
 
 //Connector represents struct for connection to tarantool
 type Connector struct {
-	//Tcp connection to mstorage
-	//conn net.Conn
-	
-	tarantool_con tarantool.Connection
 	//Address of tarantool database
-	addr string
+	tt_addr string
+	tt_conn *tarantool.Connection
 
 	indivEnv  *lmdb.Env
 	ticketEnv *lmdb.Env
@@ -132,26 +130,46 @@ func (conn *Connector) reopen_ticket_db() {
 }
 
 //Connect tries to connect to socket in tarantool while connection is not established
-func (conn *Connector) Connect(addr string) {
+func (conn *Connector) Connect(tt_addr string) {
 	var err error
-	conn.indivEnv, err = lmdb.NewEnv()
-	if err != nil {
-		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
-	}
 
-	err = conn.indivEnv.SetMaxDBs(1)
-	if err != nil {
-		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
-	}
+	if tt_addr != "" {
+		opts := tarantool.Opts{User: "guest"}
+		
+		conn.tt_addr = tt_addr
+		tt_conn, err := tarantool.Connect(tt_addr, opts)
 
-	conn.ticketEnv, err = lmdb.NewEnv()
-	if err != nil {
-		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
-	}
+		for err != nil {
+			log.Println("ERR! Creating tarantool connection: err=", err)
+			log.Println("INFO: sleep")
+			time.Sleep(3000 * time.Millisecond)
+			tt_conn, err = tarantool.Connect(tt_addr, opts)
+			log.Println("INFO: retry connect")
+		}
 
-	err = conn.ticketEnv.SetMaxDBs(1)
-	if err != nil {
-		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
+		log.Fatal("INFO! tarantool connect is ok")
+		conn.tt_conn = tt_conn
+
+	} else {
+		conn.indivEnv, err = lmdb.NewEnv()
+		if err != nil {
+			log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
+		}
+
+		err = conn.indivEnv.SetMaxDBs(1)
+		if err != nil {
+			log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
+		}
+
+		conn.ticketEnv, err = lmdb.NewEnv()
+		if err != nil {
+			log.Fatal("@ERR CREATING LMDB TICKETS ENV")
+		}
+
+		err = conn.ticketEnv.SetMaxDBs(1)
+		if err != nil {
+			log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
+		}
 	}
 
 	/*	var err error
@@ -164,7 +182,6 @@ func (conn *Connector) Connect(addr string) {
 			log.Println("@TRY CONNECT")
 		}*/
 }
-
 
 //Get sends get request to tarantool, individuals uris passed as data here
 func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool, reopen bool) RequestResponse {
@@ -224,7 +241,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 						continue
 					}
 				}
-				
+
 			}
 
 			rr.OpRC = append(rr.OpRC, Ok)
