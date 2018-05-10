@@ -13,8 +13,8 @@ import (
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"strings"
-	"unsafe"
 	"time"
+	"unsafe"
 )
 
 //Connector represents struct for connection to tarantool
@@ -64,68 +64,82 @@ const (
 
 func (conn *Connector) open_dbs() {
 	var err error
-	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open lmdb individuals base: ", err)
-		conn.db_is_open = false
-		return
-	}
 
-	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open tickets lmdb base: ", err)
-		conn.db_is_open = false
-		return
-	}
+	if conn.tt_conn != nil {
 
-	conn.db_is_open = true
+	} else {
+
+		err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+		if err != nil {
+			log.Fatal("Err: can not open lmdb individuals base: ", err)
+			conn.db_is_open = false
+			return
+		}
+
+		err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+		if err != nil {
+			log.Fatal("Err: can not open tickets lmdb base: ", err)
+			conn.db_is_open = false
+			return
+		}
+
+		conn.db_is_open = true
+	}
 }
 
 func (conn *Connector) reopen_individual_db() {
 	var err error
+	if conn.tt_conn != nil {
 
-	log.Println("INFO! reopen individual db")
+	} else {
 
-	conn.indivEnv.Close()
+		log.Println("INFO! reopen individual db")
 
-	conn.indivEnv, err = lmdb.NewEnv()
-	if err != nil {
-		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
-	}
+		conn.indivEnv.Close()
 
-	err = conn.indivEnv.SetMaxDBs(1)
-	if err != nil {
-		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
-	}
+		conn.indivEnv, err = lmdb.NewEnv()
+		if err != nil {
+			log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
+		}
 
-	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open lmdb individuals base: ", err)
-		conn.db_is_open = false
-		return
+		err = conn.indivEnv.SetMaxDBs(1)
+		if err != nil {
+			log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
+		}
+
+		err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+		if err != nil {
+			log.Fatal("Err: can not open lmdb individuals base: ", err)
+			conn.db_is_open = false
+			return
+		}
 	}
 }
 
 func (conn *Connector) reopen_ticket_db() {
 	var err error
 
-	conn.ticketEnv.Close()
+	if conn.tt_conn != nil {
 
-	conn.ticketEnv, err = lmdb.NewEnv()
-	if err != nil {
-		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
-	}
+	} else {
+		conn.ticketEnv.Close()
 
-	err = conn.ticketEnv.SetMaxDBs(1)
-	if err != nil {
-		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
-	}
+		conn.ticketEnv, err = lmdb.NewEnv()
+		if err != nil {
+			log.Fatal("@ERR CREATING LMDB TICKETS ENV")
+		}
 
-	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open tickets lmdb base: ", err)
-		conn.db_is_open = false
-		return
+		err = conn.ticketEnv.SetMaxDBs(1)
+		if err != nil {
+			log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
+		}
+
+		err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
+		if err != nil {
+			log.Fatal("Err: can not open tickets lmdb base: ", err)
+			conn.db_is_open = false
+			return
+		}
 	}
 }
 
@@ -135,7 +149,7 @@ func (conn *Connector) Connect(tt_addr string) {
 
 	if tt_addr != "" {
 		opts := tarantool.Opts{User: "guest"}
-		
+
 		conn.tt_addr = tt_addr
 		tt_conn, err := tarantool.Connect(tt_addr, opts)
 
@@ -149,7 +163,7 @@ func (conn *Connector) Connect(tt_addr string) {
 
 		log.Fatal("INFO! tarantool connect is ok")
 		conn.tt_conn = tt_conn
-
+		conn.db_is_open = true
 	} else {
 		conn.indivEnv, err = lmdb.NewEnv()
 		if err != nil {
@@ -171,16 +185,6 @@ func (conn *Connector) Connect(tt_addr string) {
 			log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
 		}
 	}
-
-	/*	var err error
-		conn.addr = addr
-		conn.conn, err = net.Dial("tcp", addr)
-
-		for err != nil {
-			time.Sleep(3000 * time.Millisecond)
-			conn.conn, err = net.Dial("tcp", addr)
-			log.Println("@TRY CONNECT")
-		}*/
 }
 
 //Get sends get request to tarantool, individuals uris passed as data here
@@ -208,62 +212,66 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
 	rr.Data = make([]string, 0, len(uris))
-	err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
-		dbi, err := txn.OpenDBI("", 0)
-		if err != nil {
-			return err
-		}
-		for i := 0; i < len(uris); i++ {
-			val, err := txn.Get(dbi, []byte(uris[i]))
-			if err == lmdb.NotFound {
-				rr.OpRC = append(rr.OpRC, NotFound)
-				continue
-			} else if err != nil {
+
+	if conn.tt_conn != nil {
+
+	} else {
+		err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
+			dbi, err := txn.OpenDBI("", 0)
+			if err != nil {
 				return err
 			}
-
-			if needAuth {
-
-				curi := C.CString(uris[i])
-				defer C.free(unsafe.Pointer(curi))
-
-				cuser_uri := C.CString(userUri)
-				defer C.free(unsafe.Pointer(cuser_uri))
-
-				if reopen == true {
-					if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
-						rr.OpRC = append(rr.OpRC, NotAuthorized)
-						continue
-					}
-				} else {
-					if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
-						rr.OpRC = append(rr.OpRC, NotAuthorized)
-						continue
-					}
+			for i := 0; i < len(uris); i++ {
+				val, err := txn.Get(dbi, []byte(uris[i]))
+				if err == lmdb.NotFound {
+					rr.OpRC = append(rr.OpRC, NotFound)
+					continue
+				} else if err != nil {
+					return err
 				}
 
+				if needAuth {
+
+					curi := C.CString(uris[i])
+					defer C.free(unsafe.Pointer(curi))
+
+					cuser_uri := C.CString(userUri)
+					defer C.free(unsafe.Pointer(cuser_uri))
+
+					if reopen == true {
+						if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+							rr.OpRC = append(rr.OpRC, NotAuthorized)
+							continue
+						}
+					} else {
+						if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+							rr.OpRC = append(rr.OpRC, NotAuthorized)
+							continue
+						}
+					}
+
+				}
+
+				rr.OpRC = append(rr.OpRC, Ok)
+				rr.Data = append(rr.Data, string(val))
 			}
+			return nil
+		})
+		rr.CommonRC = Ok
+		if err != nil {
+			if lmdb.IsErrno(err, lmdb.NotFound) == true {
+				rr.CommonRC = NotFound
+			} else {
+				if lmdb.IsErrno(err, lmdb.MapResized) == true {
+					conn.reopen_individual_db()
+					return conn.Get(needAuth, userUri, uris, trace, reopen)
+				} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
+					return conn.Get(needAuth, userUri, uris, trace, reopen)
+				}
 
-			rr.OpRC = append(rr.OpRC, Ok)
-			rr.Data = append(rr.Data, string(val))
-		}
-		return nil
-	})
-
-	rr.CommonRC = Ok
-	if err != nil {
-		if lmdb.IsErrno(err, lmdb.NotFound) == true {
-			rr.CommonRC = NotFound
-		} else {
-			if lmdb.IsErrno(err, lmdb.MapResized) == true {
-				conn.reopen_individual_db()
-				return conn.Get(needAuth, userUri, uris, trace, reopen)
-			} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
-				return conn.Get(needAuth, userUri, uris, trace, reopen)
+				log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
+				rr.CommonRC = InternalServerError
 			}
-
-			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
-			rr.CommonRC = InternalServerError
 		}
 	}
 
@@ -455,36 +463,40 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
 	rr.Data = make([]string, 0, len(ticketIDs))
-	err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {
-		dbi, err := txn.OpenDBI("", 0)
-		if err != nil {
-			return err
-		}
-		for _, id := range ticketIDs {
-			val, err := txn.Get(dbi, []byte(id))
-			if err == lmdb.NotFound {
-				rr.OpRC = append(rr.OpRC, NotFound)
-				continue
-			} else if err != nil {
+
+	if conn.tt_conn != nil {
+
+	} else {
+		err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {
+			dbi, err := txn.OpenDBI("", 0)
+			if err != nil {
 				return err
 			}
+			for _, id := range ticketIDs {
+				val, err := txn.Get(dbi, []byte(id))
+				if err == lmdb.NotFound {
+					rr.OpRC = append(rr.OpRC, NotFound)
+					continue
+				} else if err != nil {
+					return err
+				}
 
-			rr.OpRC = append(rr.OpRC, Ok)
-			rr.Data = append(rr.Data, string(val))
+				rr.OpRC = append(rr.OpRC, Ok)
+				rr.Data = append(rr.Data, string(val))
+			}
+			return nil
+		})
+		rr.CommonRC = Ok
+		if err != nil {
+			if lmdb.IsErrno(err, lmdb.MapResized) == true {
+				conn.reopen_ticket_db()
+				return conn.GetTicket(ticketIDs, trace)
+			} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
+				return conn.GetTicket(ticketIDs, trace)
+			}
+			log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
+			rr.CommonRC = InternalServerError
 		}
-		return nil
-	})
-
-	rr.CommonRC = Ok
-	if err != nil {
-		if lmdb.IsErrno(err, lmdb.MapResized) == true {
-			conn.reopen_ticket_db()
-			return conn.GetTicket(ticketIDs, trace)
-		} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
-			return conn.GetTicket(ticketIDs, trace)
-		}
-		log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
-		rr.CommonRC = InternalServerError
 	}
 
 	return rr
