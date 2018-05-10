@@ -20,8 +20,8 @@ import (
 //Connector represents struct for connection to tarantool
 type Connector struct {
 	//Address of tarantool database
-	tt_addr string
-	tt_conn *tarantool.Connection
+	tt_addr   string
+	tt_client *tarantool.Connection
 
 	indivEnv  *lmdb.Env
 	ticketEnv *lmdb.Env
@@ -64,8 +64,17 @@ const (
 
 func (conn *Connector) open_dbs() {
 	var err error
+	if conn.tt_client != nil {
+		resp, err := conn.tt_client.Ping()
 
-	if conn.tt_conn != nil {
+		if err != nil {
+			conn.db_is_open = false
+			log.Fatal(err)
+		} else {
+			conn.db_is_open = true
+			log.Println(resp.Code)
+			log.Println(resp.Data)
+		}
 
 	} else {
 
@@ -89,7 +98,7 @@ func (conn *Connector) open_dbs() {
 
 func (conn *Connector) reopen_individual_db() {
 	var err error
-	if conn.tt_conn != nil {
+	if conn.tt_client != nil {
 
 	} else {
 
@@ -119,7 +128,7 @@ func (conn *Connector) reopen_individual_db() {
 func (conn *Connector) reopen_ticket_db() {
 	var err error
 
-	if conn.tt_conn != nil {
+	if conn.tt_client != nil {
 
 	} else {
 		conn.ticketEnv.Close()
@@ -151,19 +160,18 @@ func (conn *Connector) Connect(tt_addr string) {
 		opts := tarantool.Opts{User: "guest"}
 
 		conn.tt_addr = tt_addr
-		tt_conn, err := tarantool.Connect(tt_addr, opts)
+		tt_client, err := tarantool.Connect(tt_addr, opts)
 
 		for err != nil {
 			log.Println("ERR! Creating tarantool connection: err=", err)
-			log.Println("INFO: sleep")
+			log.Println("INFO! sleep")
 			time.Sleep(3000 * time.Millisecond)
-			tt_conn, err = tarantool.Connect(tt_addr, opts)
-			log.Println("INFO: retry connect")
+			log.Println("INFO! retry connect")
+			tt_client, err = tarantool.Connect(tt_addr, opts)
 		}
 
-		log.Fatal("INFO! tarantool connect is ok")
-		conn.tt_conn = tt_conn
-		conn.db_is_open = true
+		log.Println("INFO! tarantool connect is ok")
+		conn.tt_client = tt_client
 	} else {
 		conn.indivEnv, err = lmdb.NewEnv()
 		if err != nil {
@@ -213,7 +221,47 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	rr.OpRC = make([]ResultCode, 0, len(uris))
 	rr.Data = make([]string, 0, len(uris))
 
-	if conn.tt_conn != nil {
+	if conn.tt_client != nil {
+
+		for i := 0; i < len(uris); i++ {
+			resp, err := conn.tt_client.Select("individuals", "primary", 0, 1, tarantool.IterEq, []interface{}{uris[i]})
+			if err != nil {
+				log.Println("Error", err)
+			} else {
+				if len(resp.Data) == 0 {
+					rr.OpRC = append(rr.OpRC, NotFound)
+					continue
+				}
+				if tpl, ok := resp.Data[0].([]interface{}); !ok {
+					log.Println("Unexpected body of Insert")
+					rr.CommonRC = InternalServerError
+				} else {
+					if len(tpl) == 2 {
+						if needAuth {
+							curi := C.CString(uris[i])
+							defer C.free(unsafe.Pointer(curi))
+							cuser_uri := C.CString(userUri)
+							defer C.free(unsafe.Pointer(cuser_uri))
+							if reopen == true {
+								if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
+							} else {
+								if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
+							}
+						}
+						rr.OpRC = append(rr.OpRC, Ok)
+						rr.Data = append(rr.Data, tpl[1].(string))
+					}
+				}
+
+			}
+		}
+		rr.CommonRC = Ok
 
 	} else {
 		err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
@@ -231,13 +279,10 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				}
 
 				if needAuth {
-
 					curi := C.CString(uris[i])
 					defer C.free(unsafe.Pointer(curi))
-
 					cuser_uri := C.CString(userUri)
 					defer C.free(unsafe.Pointer(cuser_uri))
-
 					if reopen == true {
 						if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
 							rr.OpRC = append(rr.OpRC, NotAuthorized)
@@ -249,7 +294,6 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 							continue
 						}
 					}
-
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
@@ -464,7 +508,21 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
 	rr.Data = make([]string, 0, len(ticketIDs))
 
-	if conn.tt_conn != nil {
+	if conn.tt_client != nil {
+
+		resp, err := conn.tt_client.Select("tickets", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
+		if err != nil {
+			log.Println("Error", err)
+		} else {
+			if tpl, ok := resp.Data[0].([]interface{}); !ok {
+				log.Println("Unexpected body of Insert")
+				rr.CommonRC = InternalServerError
+			} else {
+				rr.OpRC = append(rr.OpRC, Ok)
+				rr.Data = append(rr.Data, tpl[1].(string))
+				rr.CommonRC = Ok
+			}
+		}
 
 	} else {
 		err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {

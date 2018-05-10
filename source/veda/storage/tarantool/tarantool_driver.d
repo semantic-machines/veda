@@ -5,7 +5,7 @@ module veda.storage.tarantool.tarantool_driver;
 
 import core.thread, std.conv, std.stdio, std.string, std.conv, std.datetime;
 import veda.bind.tarantool.tnt_stream, veda.bind.tarantool.tnt_net, veda.bind.tarantool.tnt_opt, veda.bind.tarantool.tnt_ping;
-import veda.bind.tarantool.tnt_reply, veda.bind.tarantool.tnt_insert, veda.bind.tarantool.tnt_object, veda.bind.tarantool.tnt_select;
+import veda.bind.tarantool.tnt_reply, veda.bind.tarantool.tnt_insert, veda.bind.tarantool.tnt_delete, veda.bind.tarantool.tnt_object, veda.bind.tarantool.tnt_select;
 import veda.util.properd, veda.bind.msgpuck;
 import veda.common.logger, veda.common.type;
 import veda.storage.common;
@@ -143,7 +143,34 @@ public class TarantoolDriver : KeyValueDB
 
     public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
     {
-        return ResultCode.Not_Implemented;
+        if (db_is_opened != true)
+        {
+            open();
+            if (db_is_opened != true)
+                return ResultCode.Connect_Error;
+        }
+
+        tnt_stream *tuple = tnt_object(null);
+        tnt_object_add_array(tuple, 1);
+
+        tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
+
+        tnt_delete(tnt, space_id, 0, tuple);
+        tnt_flush(tnt);
+        tnt_stream_free(tuple);
+
+        tnt_reply_ reply;
+        tnt_reply_init(&reply);
+        tnt.read_reply(tnt, &reply);
+        if (reply.code != 0)
+        {
+            log.trace("Remove failed [%s] errcode=%s msg=%s", in_key, reply.code, to!string(reply.error));
+            tnt_reply_free(&reply);
+            return ResultCode.Internal_Server_Error;
+        }
+
+        tnt_reply_free(&reply);
+        return ResultCode.OK;
     }
 
     public long get_last_op_id()
