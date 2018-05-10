@@ -1,11 +1,15 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
   fixture `test Comment`
-    .page `http://localhost:8080/#/td:RomanKarpov//v-ui:generic`;
+    .page `http://localhost:8080/`;
   const basic = new Basic();
+  const timeStamp = ''+Math.round(+new Date()/1000);
   test('testComment', async t => {
     basic.login('karpovrt', '123');
+    basic.createTestUI('Тест комментария', timeStamp);
+    basic.attributiveSearchTestUi(timeStamp);
     await t
+      .click('table#results-tbl tbody#results-body tr[typeof="v-ui:TestUIClass"] span.glyphicon.glyphicon-search')
       .click('#add-comment')
       .typeText('div[typeof="v-s:Comment"] textarea[class="form-control"]', '12345')  //type comment
       .click('div[typeof="v-s:Comment"] button[id="save"]')

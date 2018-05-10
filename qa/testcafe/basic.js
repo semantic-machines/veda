@@ -124,6 +124,17 @@ export default class basic {
       .click('button#find')
       .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql(eql)
   }
+  async attributiveSearchTestUi(timeStamp) {
+    await t
+      .click('#menu')
+      .click('li[id="menu"] li[resource="v-s:Find"]')
+      .click('ul#req-tabs a[about="v-fs:AttributiveBundle"]')
+      .typeText('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]', 'Класс для тестирования интерфейса')
+      .click('div.suggestion[resource="v-ui:TestUIClass"]')
+      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', timeStamp)
+      .wait(1000)
+      .click('button#find')
+  }
 
 }
 
