@@ -2212,7 +2212,7 @@ QUnit.test(
 	    // disable filter 
 	    new_permission_filter['v-s:deleted'] = newBool (true);
             var res2 = Backend.put_individual(ticket_admin.id, new_permission_filter);
-            Backend.wait_module(m_acl, res2[1].op_id);
+            Backend.wait_module(m_acl, res2.op_id);
 
             test_success_update(assert, ticket_user2, new_test_doc1);
         });
