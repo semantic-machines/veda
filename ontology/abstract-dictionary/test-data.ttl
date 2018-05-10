@@ -477,7 +477,13 @@ td:ValeriyBushenev-TechnicalDirector
   v-s:official "true"^^xsd:boolean ;
   v-s:origin "Internal User" ;
 .
-
+td:ApplicationDevelopmentGroup
+  a v-s:Department;
+  rdfs:label "Подразделение (Тест)"@ru;
+  rdfs:label "Department (Test)"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit cfg:org_Veda;
+.
 
 ######################## сеть, пример 1 #######################
 
