@@ -767,6 +767,7 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket.id, new_test_doc1);
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
 
             var read_individual = Backend.get_individual(ticket.id, new_test_doc1_uri, true);
 
