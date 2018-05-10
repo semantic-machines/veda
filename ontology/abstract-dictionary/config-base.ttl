@@ -144,7 +144,7 @@ cfg:VedaSystem
   v-s:hasAppointment cfg:VedaSystemAppointment ;
   v-s:lastName "Система"@ru ;
   v-s:lastName "System"@en ;
-  rdfs:label "Система Веда"@ru ;
+  rdfs:label "Система"@ru ;
   rdfs:label "Veda System"@en ;
 .
 cfg:VedaSystemAccount
@@ -159,7 +159,7 @@ cfg:VedaSystemAccount
 .
 cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
-  rdfs:label "Система Веда"@ru ;
+  rdfs:label "Система"@ru ;
   rdfs:label "Veda System"@en ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
