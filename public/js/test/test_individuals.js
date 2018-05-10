@@ -2198,7 +2198,6 @@ QUnit.test(
 
             var res1 = addRightWithFilter(ticket_admin.id, [can_update], ticket_user2.user_uri, new_test_doc1_uri, new_permission_filter_uri+'xxx');
             var new_permission1 = res1[0];
-            Backend.wait_module(m_acl, res1[1].op_id);
 
             test_fail_update(assert, ticket_user1, new_test_doc1);
             test_success_update(assert, ticket_user2, new_test_doc1);
@@ -2212,7 +2211,8 @@ QUnit.test(
 
 	    // disable filter 
 	    new_permission_filter['v-s:deleted'] = newBool (true);
-            Backend.put_individual(ticket_admin.id, new_permission_filter);
+            var res2 = Backend.put_individual(ticket_admin.id, new_permission_filter);
+            Backend.wait_module(m_acl, res2[1].op_id);
 
             test_success_update(assert, ticket_user2, new_test_doc1);
         });
