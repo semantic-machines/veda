@@ -17,13 +17,6 @@ Logger log()
 
 void main(string[] args)
 {
-    if (args.length < 3)
-    {
-        writefln("need command line argument: [dest db name] [path to lmdb dump file]");
-        exit(-1);
-        return;
-    }
-
     KeyValueDB individual_tt_storage;
     KeyValueDB ticket_tt_storage;
 
@@ -31,22 +24,20 @@ void main(string[] args)
     properties = readProperties("./veda.properties");
     string tarantool_url = properties.as!(string)("tarantool_url");
 
+	log.trace ("connect to tarantool");
     if (tarantool_url !is null)
     {
         individual_tt_storage = new TarantoolDriver(log, "individuals", 512);
         ticket_tt_storage     = new TarantoolDriver(log, "tickets", 513);
     }
+    
+	log.trace ("connect to lmdb");
 
     const string individuals_db_path = "./data/lmdb-individuals";
     const string tickets_db_path     = "./data/lmdb-tickets";
 
+	log.trace ("migrate individuals");
     LmdbDriver   individual_lmdb_driver = new LmdbDriver(individuals_db_path, DBMode.R, "cnv", log);
-
-
-
-    bool is_prepare = false;
-
-    long counter = 0;
 
     convert(individual_lmdb_driver, individual_tt_storage);
 }
@@ -145,13 +136,13 @@ public long convert(LmdbDriver src, KeyValueDB dest)
                 Individual indv;
                 if (indv.deserialize(value) < 0)
                 {
-                    writefln("ERR! %d KEY=[%s]", count, key);
+                    log.trace("ERR! %d KEY=[%s]", count, key);
                 }
                 else
                 {
                     string new_bin = indv.serialize();
                     dest.put(OptAuthorize.NO, null, str_key, new_bin, -1);
-                    writefln("OK, %d KEY=[%s]", count, str_key);
+                    log.trace("OK, %d KEY=[%s]", count, str_key);
                 }
 
                 count++;
