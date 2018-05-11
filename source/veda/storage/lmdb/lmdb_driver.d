@@ -21,7 +21,7 @@ public class LmdbDriver : KeyValueDB
     public const string summ_hash_this_db_id;
     private BigInt      summ_hash_this_db;
     protected DBMode    mode;
-    private string      _path;
+    public string      _path;
     string              db_name;
     string              parent_thread_name;
     private long        last_op_id;
