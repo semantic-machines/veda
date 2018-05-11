@@ -77,17 +77,16 @@ func (conn *Connector) open_dbs() {
 		}
 
 	} else {
-
 		err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 		if err != nil {
-			log.Fatal("Err: can not open lmdb individuals base: ", err)
+			log.Fatal("ERR! can not open lmdb individuals base: ", err)
 			conn.db_is_open = false
 			return
 		}
 
 		err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 		if err != nil {
-			log.Fatal("Err: can not open tickets lmdb base: ", err)
+			log.Fatal("ERR! can not open tickets lmdb base: ", err)
 			conn.db_is_open = false
 			return
 		}
@@ -118,7 +117,7 @@ func (conn *Connector) reopen_individual_db() {
 
 		err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 		if err != nil {
-			log.Fatal("Err: can not open lmdb individuals base: ", err)
+			log.Fatal("ERR! can not open lmdb individuals base: ", err)
 			conn.db_is_open = false
 			return
 		}
@@ -145,7 +144,7 @@ func (conn *Connector) reopen_ticket_db() {
 
 		err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
 		if err != nil {
-			log.Fatal("Err: can not open tickets lmdb base: ", err)
+			log.Fatal("ERR! can not open tickets lmdb base: ", err)
 			conn.db_is_open = false
 			return
 		}
