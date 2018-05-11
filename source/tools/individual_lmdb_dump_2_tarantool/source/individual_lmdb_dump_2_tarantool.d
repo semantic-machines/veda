@@ -1,4 +1,5 @@
 import std.stdio, core.stdc.stdlib;
+import veda.storage.lmdb.lmdb_driver;
 import veda.storage.tarantool.tarantool_driver, veda.storage.common, veda.common.type, veda.onto.individual;
 import veda.util.properd;
 import veda.common.logger;

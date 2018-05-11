@@ -12,8 +12,10 @@
 	"sourcePaths":[
 	    "source",
 	    "source/tarantool",
-	    "source/onto",
-	    "source/container"
+	    "source/onto"
+	],
+        "sourceFiles":[
+            "../../lib64/liblmdb.a"
 	],
 	"configurations": [
 	{
