@@ -1,0 +1,85 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-currencyExchangeRate-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Курс обмена валюты. Схема."@ru ;
+  rdfs:label "Veda system ontology. Currency exchange rate. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:CurrencyExchangeRate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Курс обмена валюты"@ru ;
+  rdfs:label "Currency exchange rate"@en ;
+  v-ui:hasTemplate v-s:CurrencyExchangeRateTemplate ;
+.
+v-s:hasCurrencySource
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Исходная валюта"@ru ;
+  rdfs:label "Source currency"@en ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:CurrencyExchangeRate ;
+.
+v-s:hasCurrencyTarget
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Целевая валюта"@ru ;
+  rdfs:label "Target currency"@en ;
+  rdfs:range v-s:Currency ;
+  rdfs:domain v-s:CurrencyExchangeRate ;
+.
+v-s:hasCurrencyExchangeRatePurpose
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Назначение курса валюты"@ru ;
+  rdfs:label "Currency exchange purpose"@en ;
+  rdfs:range v-s:CurrencyExchangeRatePurpose ;
+  rdfs:domain  v-s:CurrencyExchangeRate;
+.
+
+#---------------------------------------------------------
+v-s:PsHasCurrency_CurrencyExchangeRate
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:hasCurrencySource ;
+  v-ui:forProperty v-s:hasCurrencyTarget ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
+  v-ui:placeholder "Выберите валюту"@ru ;
+  v-ui:placeholder "Select currency"@en ;
+  rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
+.
+v-s:PsRate_CurrencyExchangeRate
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:rate ;
+  v-ui:forProperty v-s:date ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
+.
+v-s:PsRate_CurrencyExchangeRate
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:CurrencyExchangeRate ;
+  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
+.
+
+
+
+
