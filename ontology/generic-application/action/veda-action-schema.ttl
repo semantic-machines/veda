@@ -28,7 +28,7 @@ v-s:Action
   rdfs:label "Мероприятие"@ru ;
   rdfs:label "Action"@en ;
 .
-
+# --- В связи с вводом класса возникает предикат v-s:hasAction. Он описан в классе v-s:Activity
 
 
 
