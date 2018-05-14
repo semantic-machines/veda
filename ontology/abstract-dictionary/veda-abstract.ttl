@@ -459,6 +459,13 @@ v-s:hasWorkMode
   rdfs:range v-s:WorkMode ;
   rdfs:domain v-s:Temporal ;
 .
+v-s:hasTerm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Срок"@ru ;
+  rdfs:label "Term"@en ;
+  rdfs:range v-s:Term ;
+  rdfs:domain v-s:Temporal ;
+.
 ### -------------------------------------------------------
 v-s:Spatial
   rdf:type owl:Class ;
