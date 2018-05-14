@@ -15,49 +15,7 @@
 .
 #-- Классы --
 #---------------------------------------------------------
-v-s:NormativeDocument
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Нормативный документ"@ru ;
-  rdfs:label "Normative document"@en ;
-.
-v-s:hasNormativeDocumentRequirement
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Требование"@ru ;
-  rdfs:label "Requirement"@en ;
-  rdfs:range v-s:NormativeDocumentRequirement ;
-  rdfs:domain v-s:NormativeDocument ;
-.
-#---------------------------------------------------------
-v-s:NormativeDocumentRequirement
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:subClassOf v-s:NormativeDocument ;
-  rdfs:label "Нормативный документ"@ru ;
-  rdfs:label "Normative document requirement"@en ;
-.
-v-s:checkQuestion
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Контрольный вопрос"@ru ;
-  rdfs:label "Check question"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:NormativeDocumentRequirement ;
-.
-v-s:hasNormativeDocument
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Нормативный документ"@ru ;
-  rdfs:label "Normative document"@en ;
-  rdfs:range v-s:NormativeDocument ;
-  rdfs:domain v-s:NormativeDocument ;
-.
-v-s:requirementGroupNumber
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Номер группы требований"@ru ;
-  rdfs:label "Requirement group number"@en ;
-  rdfs:range xsd:integer ;
-  rdfs:domain v-s:NormativeDocumentRequirement ;
-.
+
 #---------------------------------------------------------
 v-s:Risk
   rdf:type owl:Class ;
@@ -197,14 +155,6 @@ v-s:MaintainedObject
   rdfs:label "Maintained Object"@en ;
 .
 
-#---------------------------------------------------------
-v-s:UnitOfMeasure
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:ClassifiedRus ;
-  rdfs:label "Единицы измерения"@ru ;
-  rdfs:label "Unit of measure"@en ;
-.
 
 #---------------------------------------------------------
 v-s:LocalRegulatoryDocument
@@ -360,13 +310,8 @@ v-s:isIssuedForAbsencePeriodOfEmployee
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:PowerOfAttorney ;
 .
-#----------Причина_оформления_доверенности-----
-v-s:ReasonForPowerOfAttorney
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Причина оформления доверенности"@ru ;
-  rdfs:label "Reason for power of attorney"@en ;
-.
+
+
 
 #----------------------------------КОМАНДИРОВКА-----------------------
 v-s:BusinessTrip
@@ -502,14 +447,6 @@ v-s:InternalDocument
 # v-s:attachment
 # v-s:hasLink
 # v-s:hasComment
-
-###----------------------------------Жизненный_Цикл_Изделия---------------------
-v-s:LifecycleStage
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Стадия жизненного цикла изделия"@ru ;
-  rdfs:label "Stage of lifecycle "@en ;
-.
 
 
 #---------------------------------------

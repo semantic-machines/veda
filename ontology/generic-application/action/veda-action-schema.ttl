@@ -8,7 +8,7 @@
 
 <http://semantic-machines.com/veda/veda-action-schema/>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Задача. Схема."@ru ;
+  rdfs:label "Онтология системы Veda. Мероприятие. Схема."@ru ;
   rdfs:label "Veda system ontology. Action. Schema."@en ;
   v-s:loadPriority 11 ;
 .

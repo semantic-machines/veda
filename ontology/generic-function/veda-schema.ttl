@@ -55,21 +55,9 @@ v-s:ClassifiedFile
   rdfs:label "Classified file"@en ;
 .
 ### ------------------------------------------------------
-v-s:Status
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Статус"@ru ;
-  rdfs:label "Status"@en ;
-  v-ui:hasTemplate v-ui:StatusTemplate;
-.
+
 ### ------------------------------------------------------
-v-s:Sector
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Тематика"@ru ;
-  rdfs:label "Subjects"@en ;
-.
+
 ### ------------------------------------------------------
 
 # v-s:hasNormativeDocument

@@ -1147,6 +1147,27 @@ v-s:developer
   rdfs:range v-s:Correspondent ;
   rdfs:domain v-s:Projectable ;
 .
+v-s:hasProjectKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид проекта"@ru ;
+  rdfs:label "Project category"@en ;
+  rdfs:range v-s:ProjectKind ;
+  rdfs:domain v-s:Projectable ;
+.
+v-s:hasProjectPhaseKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид фазы проекта"@ru ;
+  rdfs:label "Project phase kind"@en ;
+  rdfs:range v-s:ProjectPhaseKind ;
+  rdfs:domain v-s:Projectable ;
+.
+v-s:hasProjectStage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Стадия проекта"@ru ;
+  rdfs:label "Project phase"@en ;
+  rdfs:range v-s:ProjectStage ;
+  rdfs:domain v-s:Projectable ;
+.
 ### ------------------------------------------------------------
 v-s:Deliverable2
   rdf:type owl:Class ;

@@ -76,19 +76,8 @@ v-s:hasVehicleCategory
 .
 
 #----------------------------------------------------
-v-s:VehicleModel
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Марка ТС"@ru ;
-  rdfs:label "Vehicle model"@en ;
-.
-#----------------------------------------------------
-v-s:VehicleCategory
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Категория ТС"@ru ;
-  rdfs:label "Vehicle Category"@en ;
-.
+
+
 
 #----------------------------------------------------
 v-s:Pts
