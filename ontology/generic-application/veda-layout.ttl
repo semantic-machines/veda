@@ -84,13 +84,13 @@ v-s:MainPageTemplate
       <span><span property="v-s:appBuildVersion"></span> <span property="v-s:appBuildDate"></span></span>&nbsp;
     </div>
     <div class="pull-right text-muted" about="v-s:vedaInfo">
-      <a href="http://www.semantic-machines.com">
-        © <span about="v-s:SemanticMachines" property="rdfs:label"></span>.
-      </a>
-      <span about="v-s:License" property="rdfs:label"></span>
-      <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">
-        GPLv3.
-      </a>
+      <div>
+        <span about="v-s:PoweredBy" property="rdfs:label"></span>
+        <a about="v-s:VedaPlatform" property="rdfs:label"></a>.
+        &copy; <a href="http://www.semantic-machines.com" about="v-s:SemanticMachines" property="rdfs:label"></a>.
+        <span about="v-s:License" property="rdfs:label"></span>
+        <a alt="GNU General Public License version 3 official text" href="http://www.gnu.org/licenses/gpl.html">GPLv3.</a>
+      </div>
     </div>
   </nav>
 </div>
@@ -246,6 +246,15 @@ v-s:VedaDescription
   rdf:type v-s:Bundle ;
   rdfs:label """Платформа для разработки web-приложений уровня предприятий."""@ru ;
   rdfs:label """Enterprise application development platform."""@en ;
+.
+v-s:PoweredBy
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сделано на платформе"@ru ;
+  rdfs:label "Powered by"@en ;
+.
+v-s:VedaPlatform
+  rdf:type v-s:Bundle ;
+  rdfs:label "Veda" ;
 .
 
 ### INDIVIDUALS ###
