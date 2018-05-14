@@ -57,7 +57,7 @@ public struct Individual
         if (bin.length == 0)
             return -1;
 
-        if ((cast(ubyte[])bin)[ 0 ] == 0xFF)
+        if ((cast(ubyte[])bin)[ 0 ] == 146)
         {
             // this MSGPACK
             return msgpack2individual(this, bin);

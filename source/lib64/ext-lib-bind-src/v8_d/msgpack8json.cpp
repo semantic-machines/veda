@@ -555,7 +555,6 @@ void jsobject2msgpack(Local<Value> value, Isolate *isolate, std::vector<char> &o
         }
     }
 
-    ou.push_back((char)0xFF);
     ou.insert(ou.end(), buf, bptr);
 
     //cerr << "!!END LOGGING!!" << endl;

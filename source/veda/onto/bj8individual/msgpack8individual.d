@@ -94,15 +94,14 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
     }
 }
 
-ubyte magic_header = 0xFF;
+ubyte magic_header = 146;
 
 public string individual2msgpack(ref Individual in_obj)
 {
     // this concatinate created copy ?
-    return cast(string)([ magic_header ] ~write_individual(in_obj));
+    ubyte[] res = write_individual(in_obj);
 
-    //ubyte[] buff = write_individual(in_obj);
-    //return cast(string)buff[ 0..buff.length ].dup;
+    return cast(string)(res);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -127,7 +126,7 @@ public int msgpack2individual(ref Individual individual, string in_str)
     {
         try
         {
-            StreamingUnpacker unpacker = StreamingUnpacker(src[ 1..$ ]);
+            StreamingUnpacker unpacker = StreamingUnpacker(src[ 0..$ ]);
 
             if (unpacker.execute())
             {

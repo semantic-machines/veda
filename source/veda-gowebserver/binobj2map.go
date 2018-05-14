@@ -196,7 +196,7 @@ func stringToLang(str string) Lang {
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
 func BinobjToMap(binobjStr string) map[string]interface{} {
-	if binobjStr[0] == 0xFF {
+	if binobjStr[0] == 146 {
 		return MsgpackToMap(binobjStr)
 	} else {
 		return CborToMap(binobjStr)
@@ -442,7 +442,7 @@ func CborToMap(cborStr string) map[string]interface{} {
 func MsgpackToMap(msgpackStr string) map[string]interface{} {
 	//Allocate map and decode msgpack
 	individual := make(map[string]interface{})
-	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[1:len(msgpackStr)]))
+	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[0:len(msgpackStr)]))
 	decoder.DecodeArrayLen()
 
 	// log.Printf("@MSGPACK %v\n", msgpackStr)

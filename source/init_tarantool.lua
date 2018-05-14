@@ -11,9 +11,14 @@ if box.space.individuals == nil then
     end 
 
     print ('space.individuals:', space.id, '\n')
-   
+
     box.space.individuals:create_index('primary', {parts={1, 'string'}})
     box.schema.user.grant('guest', 'read,write', 'space', 'individuals')
+    box.schema.user.grant('guest', 'read,write', 'universe')
+
+    box.schema.user.create('veda6', {password = '8b8nfeAj'}, {if_not_exists = false})
+	box.schema.user.grant('veda6', 'read,write,execute', 'universe')
+
 end
 
 if box.space.tickets == nil then
