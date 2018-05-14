@@ -471,15 +471,6 @@ v-s:Pass
 # v-s:dateFrom
 # v-s:dateTo
 
-
-###----------------------------------РЕЖИМ_РАБОТЫ---------------------
-v-s:WorkMode
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Режим работы"@ru ;
-  rdfs:label "WorkMode"@en ;
-.
-
 #----------------------------------РАСПОРЯДИТЕЛЬНЫЙ_ДОКУМЕНТ-----------------------
 v-s:Decree
   rdf:type owl:Class ;
