@@ -4,10 +4,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
-@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 <http://semantic-machines.com/veda/veda-correspondence-ui>
   rdf:type owl:Ontology ;
@@ -17,7 +13,7 @@
   v-s:loadPriority 6 ;
 .
 
-# СПЕЦИФИКАЦИИ ---------------------------------------------------------
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasDocumentKindForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -90,7 +86,7 @@ v-s:PsDeliveryMethodForDelivery
   rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
 .
 
-# СТРОКИ ---------------------------------------------------------------
+# ------------------------------------------------------------ СТРОКИ --
 
 v-s:AutomaticallyBundle
   rdf:type v-s:Bundle ;
@@ -110,7 +106,7 @@ v-s:OutgoingLetterPrintBlank
   rdfs:label "Print form"@en ;
 .
 
-# ШАБЛОНЫ --------------------------------------------------------------
+# ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:LetterTemplate
   rdf:type v-ui:ClassTemplate ;

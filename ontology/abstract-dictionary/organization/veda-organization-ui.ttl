@@ -4,10 +4,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
-@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix cfg: <http://semantic-machines.com/veda/config/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/veda-organization-ui>
@@ -18,7 +14,7 @@
   v-s:loadPriority 6 ;
 .
 
-# МОДЕЛИ ---------------------------------------------------------------
+# ------------------------------------------------------------ МОДЕЛИ --
 
 v-s:OrganizationUnitModel
   rdf:type v-ui:ClassModel ;
@@ -88,7 +84,7 @@ v-s:OrganizationUnitModel
   """ ;
 .
 
-# СПЕЦИФИКАЦИИ ---------------------------------------------------------
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasSubsidiaryForOrganization
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -180,7 +176,8 @@ v-s:PsContractorProfileDateFromFact
   rdfs:label "Спецификация к свойству v-s:dateFromFact для класса v-s:ContractorProfile"@ru ;
   rdfs:label "Spec for property v-s:dateFromFact for class v-s:ContractorProfile"@en ;
 .
-# СТРОКИ ---------------------------------------------------------------
+
+# ------------------------------------------------------------ СТРОКИ --
 
 v-s:NonUniqueTaxId
   rdf:type v-s:Bundle ;
@@ -205,7 +202,7 @@ v-s:AddSubsidiary
   rdfs:label "Add subsidiary"@en ;
 .
 
-# ШАБЛОНЫ --------------------------------------------------------------
+# ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
