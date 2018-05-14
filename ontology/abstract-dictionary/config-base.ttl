@@ -35,8 +35,8 @@ cfg:User_position
   a v-s:Position;
   v-s:updateCounter "1"^^xsd:integer;
   v-s:origin "manual"^^xsd:string;
-  rdfs:label "Должность"@ru;
-  rdfs:label "Position"@en;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
   v-s:parentUnit cfg:User_department;
 .
 
@@ -138,8 +138,8 @@ cfg:VedaSystem
   v-s:author cfg:VedaSystem ;
   v-s:actualVersion cfg:VedaSystem ;
   v-s:birthday "2014-03-05"^^xsd:dateTime ;
-  v-s:firstName "Веда"@ru ;
-  v-s:firstName "Veda"@en ;
+#  v-s:firstName "Веда"@ru ;
+#  v-s:firstName "Veda"@en ;
   v-s:hasAccount cfg:VedaSystemAccount ;
   v-s:hasAppointment cfg:VedaSystemAppointment ;
   v-s:lastName "Система"@ru ;
