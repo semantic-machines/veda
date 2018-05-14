@@ -55,13 +55,6 @@ v-s:ClassifiedFile
   rdfs:label "Classified file"@en ;
 .
 ### ------------------------------------------------------
-v-s:Level
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Уровень"@ru ;
-  rdfs:label "Level"@en ;
-.
-### ------------------------------------------------------
 v-s:Status
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -78,13 +71,7 @@ v-s:Sector
   rdfs:label "Subjects"@en ;
 .
 ### ------------------------------------------------------
-v-s:DocumentKind
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:NormativeDocument ;
-  rdfs:label "Вид документа"@ru ;
-  rdfs:label "Document kind"@en ;
-.
+
 # v-s:hasNormativeDocument
 
 ### veda-workflow

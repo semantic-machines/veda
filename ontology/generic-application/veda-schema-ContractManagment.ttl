@@ -83,65 +83,6 @@ v-s:PsAttachmentForInternalAccountingDocument
 
 # ------------------------------------------------------------
 
-v-s:CurrencyExchangeRate
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Measurable ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Курс обмена валюты"@ru ;
-  rdfs:label "Currency exchange rate"@en ;
-  v-ui:hasTemplate v-s:CurrencyExchangeRateTemplate ;
-.
-
-v-s:PsHasCurrency_CurrencyExchangeRate
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencySource ;
-  v-ui:forProperty v-s:hasCurrencyTarget ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
-  v-ui:placeholder "Выберите валюту"@ru ;
-  v-ui:placeholder "Select currency"@en ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:rate ;
-  v-ui:forProperty v-s:date ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-
-v-s:hasCurrencyExchangeRatePurpose
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Назначение"@ru ;
-  rdfs:label "Purpose"@en ;
-  rdfs:range v-s:CurrencyExchangeRatePurpose ;
-  rdfs:domain  v-s:CurrencyExchangeRate;
-.
-
-v-s:CurrencyExchangeRatePurpose
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Назначение курса обмена валюты"@ru ;
-  rdfs:label "Currency exchange rate purpose"@en ;
-.
-
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
-.
 
 # ------------------------------------------------------------
 v-s:Price
@@ -268,30 +209,7 @@ v-s:ContractRequest
   rdfs:label "Заявка на контракт"@ru ;
   rdfs:label "ContractRequest"@en ;
 .
-# ------------------------------------------------------------
-v-s:ClassifierOKVED
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Классификатор ОКВЭД"@ru ;
-  rdfs:label "Classifier OKVED"@en ;
-.
-# ------------------------------------------------------------
-v-s:ClassifierCountry
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Страна"@ru ;
-  rdfs:label "Country"@en ;
-.
-# ------------------------------------------------------------
-v-s:ClassifierLegalForm
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Организационно правовая форма"@ru ;
-  rdfs:label "Legal form classifier"@en ;
-.
+
 # ------------------------------------------------------------
 v-s:BudgetCategory
   rdf:type owl:Class ;

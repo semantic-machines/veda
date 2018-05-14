@@ -552,15 +552,7 @@ v-s:ProjectPhaseKind
   rdfs:label "Вид фазы проекта"@ru ;
   rdfs:label "Project phase kind"@en ;
 .
-#--------------------------------------------------
-# -- Подумать о другом названии и перенсти в другой файл
-v-s:Currency
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Валюта"@ru ;
-  rdfs:label "Currency"@en ;
-.
+
 #--------------------------------------------------
 # -- перенсти в другой файл
 v-s:MaintenanceKind

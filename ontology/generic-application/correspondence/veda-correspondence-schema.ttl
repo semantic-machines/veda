@@ -81,24 +81,7 @@ v-s:Letter
   rdfs:label "Letter"@en ;
   v-ui:hasTemplate v-s:LetterTemplate ;
 .
-v-s:IncomingLetter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Letter ;
-  rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
-  rdfs:label "Входящее письмо"@ru ;
-  rdfs:label "Incoming letter"@en ;
-  v-ui:hasTemplate v-s:LetterTemplate ;
-.
-v-s:OutgoingLetter
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Letter ;
-  rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
-  rdfs:label "Исходящее письмо"@ru ;
-  rdfs:label "Outgoing letter"@en ;
-  v-ui:hasTemplate v-s:LetterTemplate ;
-.
+
 v-s:hasLetterRegistrationRecordSender
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Letter ;
@@ -135,6 +118,28 @@ v-s:hasRelatedLetter
 # v-s:attachment
 
 # ----------------------------------------------------------------------
+v-s:IncomingLetter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Letter ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
+  rdfs:label "Входящее письмо"@ru ;
+  rdfs:label "Incoming letter"@en ;
+  v-ui:hasTemplate v-s:LetterTemplate ;
+.
+
+# ----------------------------------------------------------------------
+v-s:OutgoingLetter
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Letter ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:sender.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordSender.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordSender.v-s:registrationDate}) -> {@.v-s:recipient.v-s:correspondentOrganization.v-s:shortLabel} (№{@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationNumber}, {@.v-s:hasLetterRegistrationRecordRecipient.v-s:registrationDate}) - {@.v-s:hasDocumentKind.v-s:shortLabel} - {@.v-s:description}" ;
+  rdfs:label "Исходящее письмо"@ru ;
+  rdfs:label "Outgoing letter"@en ;
+  v-ui:hasTemplate v-s:LetterTemplate ;
+.
+
+# ----------------------------------------------------------------------
 v-s:Delivery
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -151,14 +156,6 @@ v-s:Delivery
 .
 
 # ----------------------------------------------------------------------
-v-s:DeliveryMethod
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Метод доставки"@ru ;
-  rdfs:label "Delivery method"@en ;
-.
-
-# ----------------------------------------------------------------------
 v-s:RegistrationRecord
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -166,6 +163,7 @@ v-s:RegistrationRecord
   rdfs:label "Регистрационная запись"@ru ;
   rdfs:label "Registration record"@en ;
 .
+
 # ----------------------------------------------------------------------
 v-s:LetterRegistrationRecordEnumerated
   rdf:type owl:Class ;

@@ -942,20 +942,7 @@ v-s:hasCurrency
   rdfs:range v-s:Currency ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:hasCurrencySource
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Исходная валюта"@ru ;
-  rdfs:label "Source currency"@en ;
-  rdfs:range v-s:Currency ;
-  rdfs:domain v-s:Measurable ;
-.
-v-s:hasCurrencyTarget
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Целевая валюта"@ru ;
-  rdfs:label "Target currency"@en ;
-  rdfs:range v-s:Currency ;
-  rdfs:domain v-s:Measurable ;
-.
+
 v-s:hasUnitOfMeasure
   rdf:type owl:ObjectProperty ;
   rdfs:label "Единицы измерения"@ru ;

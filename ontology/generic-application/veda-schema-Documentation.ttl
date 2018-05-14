@@ -367,13 +367,6 @@ v-s:ReasonForPowerOfAttorney
   rdfs:label "Причина оформления доверенности"@ru ;
   rdfs:label "Reason for power of attorney"@en ;
 .
-#----------Форма_доверенности-----
-v-s:FormOfPowerOfAttorney
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Форма доверенности"@ru ;
-  rdfs:label "Form of power of attorney"@en ;
-.
 
 #----------------------------------КОМАНДИРОВКА-----------------------
 v-s:BusinessTrip
