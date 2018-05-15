@@ -89,12 +89,9 @@ public class TarantoolDriver : KeyValueDB
             }
 
             uint field_count = mp_decode_array(&reply.data);
-
             char *str_value;
             uint str_value_length;
-
             mp_decode_str(&reply.data, &str_value_length);
-
             str_value = mp_decode_str(&reply.data, &str_value_length);
             string res = cast(string)str_value[ 0..str_value_length ].dup;
 
@@ -128,8 +125,8 @@ public class TarantoolDriver : KeyValueDB
 
         tnt_stream *tuple = tnt_object(null);
 //		tuple = tnt_object_as(tuple, cast(char*)in_value, in_value.length);
-        tnt_object_add_array(tuple, 2);
 
+        tnt_object_add_array(tuple, 2);
         tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
         tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
 

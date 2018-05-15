@@ -86,7 +86,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		individual["srv:current_count"] = map[string]interface{}{"data": main_cs.count_popped, "type": "Integer"}
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
-			log.Println("@ERR GET_INDIVIDUAL: ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("@ERR GET_INDIVIDUAL: #1 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
@@ -102,7 +102,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 	if ok {
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
-			log.Println("@ERR GET_INDIVIDUAL: ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("@ERR GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
@@ -144,7 +144,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
-			log.Println("@ERR GET_INDIVIDUAL: ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("@ERR GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
@@ -268,7 +268,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		}
 
 		if err != nil {
-			log.Println("ERR! get individuals: ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("ERR! get individuals: #4 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", InternalServerError, timestamp)
 			return
