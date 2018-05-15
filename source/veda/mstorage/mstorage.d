@@ -740,11 +740,15 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
         {
             ticket = create_new_ticket("cfg:VedaSystem", "90000000");
 
-            long op_id;
-            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.YES, INDV_OP.PUT, null, "systicket", null, ticket.id, -1, null,
+            long       op_id;
+            Individual sys_ticket_link;
+            sys_ticket_link.uri = "systicket";
+            sys_ticket_link.addResource("rdf:type", Resource(DataType.Uri, "rdfs:Resource"));
+            sys_ticket_link.addResource("v-s:resource", Resource(DataType.Uri, ticket.id));
+
+            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null, sys_ticket_link.serialize(), -1, null,
                                        -1, 0, OptFreeze.NONE,
                                        op_id);
-            log.trace("systicket [%s] was created", ticket.id);
 
             Individual sys_account_permission;
             sys_account_permission.uri = "p:" ~ ticket.id;
@@ -762,6 +766,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
                                                 OptAuthorize.NO,
                                                 OptTrace.NONE);
 
+            log.trace("systicket [%s] was created", ticket.id);
 
             if (opres.result == ResultCode.OK)
                 log.trace("permission was created [%s]", sys_account_permission);
@@ -875,7 +880,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 //        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
 //        {
 //            is_new = true;
-            //log.trace("INFO! %s is new, use UPSERT", indv.uri);
+//			  log.trace("INFO! %s is new, use UPSERT", indv.uri);
 //        }
 
 //        if (is_new == false)

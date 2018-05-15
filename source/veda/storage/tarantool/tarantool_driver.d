@@ -96,13 +96,13 @@ public class TarantoolDriver : KeyValueDB
             mp_decode_str(&reply.data, &str_value_length);
 
             str_value = mp_decode_str(&reply.data, &str_value_length);
+            string res = cast(string)str_value[ 0..str_value_length ].dup;
+
+//            auto   data_size = reply.data_end - reply.data;
+//            string res       = cast(string)reply.data[ 0..data_size ].dup;
 
             //stderr.writefln("@ TarantoolDriver.find: FOUND %s->[%s]", uri, cast(string)str_value[ 0..str_value_length ]);
 
-//            auto data_size = reply.data_end - reply.data;
-//            string res = cast(string)reply.data[ 0..data_size ].dup;
-
-			string res = cast(string)str_value[ 0..str_value_length ].dup;
             return res;
         }
         finally
@@ -120,9 +120,9 @@ public class TarantoolDriver : KeyValueDB
                 return ResultCode.Connect_Error;
         }
 
-		if (in_value.length < 3)
-			return ResultCode.Internal_Server_Error;				
-		
+        if (in_value.length < 3)
+            return ResultCode.Internal_Server_Error;
+
 //        auto field_type = mp_typeof(*cast(char*)in_value);
 //		stderr.writefln ("\n@P field_type=%s", field_type);
 
