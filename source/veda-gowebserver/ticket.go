@@ -56,10 +56,16 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return rr.OpRC[0], ticket
 		}
 
-		individual := BinobjToMap(rr.Data[0])
-		if individual == nil {
-			log.Println("@ERR GET_TICKET0: DECODING TICKET")
-			return InternalServerError, ticket
+		var individual map[string]interface {}
+
+		if rr.as_indv == true {
+			//individual = rr.Indv[0]
+		} else {
+			individual = BinobjToMap(rr.Data[0])
+			if individual == nil {
+				log.Println("@ERR GET_TICKET0: DECODING TICKET")
+				return InternalServerError, ticket
+			}
 		}
 
 		var duration int64
