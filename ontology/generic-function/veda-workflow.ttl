@@ -2064,6 +2064,17 @@ v-wf:isStopped
   rdfs:range xsd:boolean ;
 .
 
+v-wf:isDirectTask
+  rdf:type rdf:Property ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Прямая задача"@ru ;
+  rdfs:label "Is вшксуе ефыд"@en ;
+  rdfs:domain v-wf:WorkItem ;
+  rdfs:domain v-wf:Process ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:range xsd:boolean ;
+.
+
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder
   rdf:type owl:Class ;

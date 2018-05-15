@@ -1746,12 +1746,8 @@ v-ui:SimplifiedJournalTemplate
             $(".docflow-button", template).remove();
           };
           if ( this.hasValue("v-wf:isCompleted", false) ) {
-            if ( (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) &&
-              (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]) ) {
-              $(".docflow-button", template).remove();
-              return;
-            };
-            if (individual["v-wf:onWorkOrder"][0]["v-wf:forWorkItem"][0]["v-wf:forNetElement"][0].id == "s-wf:cr_rework") {
+            var needHide = ( (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) && (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]) ) || (!this.hasValue("v-wf:isDirectTask", true));
+            if (needHide) {
               $(".docflow-button", template).remove();
               return;
             };
