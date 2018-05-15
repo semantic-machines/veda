@@ -13,7 +13,7 @@
   v-s:loadPriority 11 ;
 .
 
-#---------------------------------------------------------
+# ------------------------------------------------------------ КЛАССЫ --
 v-s:CurrencyExchangeRate
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -46,39 +46,6 @@ v-s:hasCurrencyExchangeRatePurpose
   rdfs:domain  v-s:CurrencyExchangeRate;
 .
 
-#---------------------------------------------------------
-v-s:PsHasCurrency_CurrencyExchangeRate
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencySource ;
-  v-ui:forProperty v-s:hasCurrencyTarget ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
-  v-ui:placeholder "Выберите валюту"@ru ;
-  v-ui:placeholder "Select currency"@en ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:rate ;
-  v-ui:forProperty v-s:date ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
-.
 
 
 

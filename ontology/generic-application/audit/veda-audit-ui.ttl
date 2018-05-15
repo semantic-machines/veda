@@ -14,3 +14,15 @@
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
+
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+
+v-s:PsAuditorForAudit
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Audit ;
+  v-ui:forProperty v-s:auditor ;
+  v-ui:maxCardinality 10 ;
+  v-ui:minCardinality 0 ;
+  rdfs:label "Спецификация свойства v-s:auditor для класса v-s:Audit"@ru ;
+  rdfs:label "v-s:auditor property specification for v-s:Audit class"@en ;
+.
