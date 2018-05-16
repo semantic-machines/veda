@@ -101,7 +101,7 @@ func getFirstInt(indv map[string]interface{}, predicate string) (int, bool) {
 	}
 }
 
-func getFirstString(indv map[string]interface{}, predicate string) (string, bool) {
+func getFirstString(indv map[interface{}]interface{}, predicate string) (string, bool) {
 	rss, err := indv[predicate].([]interface{})
 	if err != true {
 		return "", false

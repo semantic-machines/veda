@@ -21,7 +21,7 @@ var ontologyRdfType = map[string]bool{
 
 //tryStoreToOntologyCache checks rdf:type of individual, if its ontology class
 //then it is stored to cache with individual's uri used as key
-func tryStoreInOntologyCache(individual map[string]interface{}) {
+func tryStoreInOntologyCache(individual map[interface{}]interface{}) {
 	uri := individual["@"].(string)
 	rType := individual["rdf:type"]
 	if rType != nil {

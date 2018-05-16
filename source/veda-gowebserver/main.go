@@ -57,7 +57,7 @@ var ticketCache map[string]ticket
 var ticketCacheMutex = sync.RWMutex{}
 
 //ontologyCache is map to cache requested earlier individuals from ontology
-var ontologyCache map[string]map[string]interface{}
+var ontologyCache map[string]map[interface{}]interface{}
 
 //mifCache is map to cache opened ModuleInfoFile structs
 var mifCache map[int]*ModuleInfoFile
@@ -291,7 +291,7 @@ func main() {
 	conn.Connect(tarantoolURL)
 
 	ticketCache = make(map[string]ticket)
-	ontologyCache = make(map[string]map[string]interface{})
+	ontologyCache = make(map[string]map[interface{}]interface{})
 	mifCache = make(map[int]*ModuleInfoFile)
 	externalUsersTicketId = make(map[string]bool)
 

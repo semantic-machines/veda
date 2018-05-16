@@ -39,9 +39,9 @@ type RequestResponse struct {
 	Data []string
 	//Returned rights for auth requests
 	Rights []uint8
-	
-	Indv [](map[interface {}]interface{})
-	
+
+	Indv [](map[interface{}]interface{})
+
 	as_indv bool
 }
 
@@ -513,21 +513,21 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	if conn.tt_client != nil {
 
-/*
- 		var resp []interface{}
-		
-		err := conn.tt_client.SelectTyped("tickets", "primary", 0, 1, tarantool.IterEq, tarantool.StringKey{ticketIDs[0]}, &resp)
-			log.Printf("resp=%v\n", resp)
-		if err != nil {
-			log.Println("Error:", err)
-		} else {
-				rr.OpRC = append(rr.OpRC, Ok)
-				//rr.Data = append(rr.Data, resp[1].(string))
-				//rr.Indv = append(rr.Indv, tpl[1].(map[interface {}]interface {}))
-				//rr.as_indv = true
-				rr.CommonRC = Ok
-		}
-*/ 
+		/*
+		    		var resp []interface{}
+
+		   		err := conn.tt_client.SelectTyped("tickets", "primary", 0, 1, tarantool.IterEq, tarantool.StringKey{ticketIDs[0]}, &resp)
+		   			log.Printf("resp=%v\n", resp)
+		   		if err != nil {
+		   			log.Println("Error:", err)
+		   		} else {
+		   				rr.OpRC = append(rr.OpRC, Ok)
+		   				//rr.Data = append(rr.Data, resp[1].(string))
+		   				//rr.Indv = append(rr.Indv, tpl[1].(map[interface {}]interface {}))
+		   				//rr.as_indv = true
+		   				rr.CommonRC = Ok
+		   		}
+		*/
 
 		resp, err := conn.tt_client.Select("tickets", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
 		if err != nil {

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/op/go-nanomsg"
 	"github.com/valyala/fasthttp"
-	"github.com/op/go-nanomsg"	
 )
 
 //query function handle query request with fulltext search
@@ -52,7 +52,7 @@ func query(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
-	
+
 	var querySocket *nanomsg.Socket
 	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
@@ -63,12 +63,12 @@ func query(ctx *fasthttp.RequestCtx) {
 
 	//log.Println("use query service url: ", queryServiceURL)
 	_, err = querySocket.Connect(queryServiceURL)
-	
+
 	querySocket.Send(jsonRequest, 0)
 	responseBuf, err := querySocket.Recv(0)
-	
-	querySocket.Close();
-	
+
+	querySocket.Close()
+
 	ctx.Write(responseBuf)
 
 	var jsonResponce map[string]interface{}

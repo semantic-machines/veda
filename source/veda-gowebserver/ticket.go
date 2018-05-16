@@ -56,7 +56,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return rr.OpRC[0], ticket
 		}
 
-		var individual map[string]interface {}
+		var individual map[interface{}]interface{}
 
 		if rr.as_indv == true {
 			//individual = rr.Indv[0]

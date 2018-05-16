@@ -17,7 +17,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 	var ticketKey string
 	var ticket ticket
 	var reopen bool
-	
+
 	ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
 	uri = string(ctx.QueryArgs().Peek("uri")[:])
 
@@ -100,7 +100,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	individual, ok := ontologyCache[uri]
 	if ok {
-		individualJSON, err := json.Marshal(individual)
+		individualJSON, err := json.Marshal(castKeyOfIndividual(individual))
 		if err != nil {
 			log.Println("@ERR GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -141,8 +141,8 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
 		}
-
-		individualJSON, err := json.Marshal(individual)
+		
+		individualJSON, err := json.Marshal(castKeyOfIndividual(individual))
 		if err != nil {
 			log.Println("@ERR GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -204,7 +204,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	for i := 0; i < len(uris); i++ {
 		individual, ok := ontologyCache[uris[i]]
 		if ok {
-			individuals = append(individuals, individual)
+			individuals = append(individuals, castKeyOfIndividual(individual))
 		} else {
 			urisToGet = append(urisToGet, uris[i])
 		}
@@ -264,7 +264,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			}
 
 			tryStoreInOntologyCache(individual)
-			individuals = append(individuals, individual)
+			individuals = append(individuals, castKeyOfIndividual(individual))
 		}
 
 		if err != nil {
@@ -282,4 +282,13 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, string(individualsJSON), BadRequest, timestamp)
 	ctx.Write(individualsJSON)
 	ctx.Response.SetStatusCode(int(Ok))
+}
+
+func castKeyOfIndividual(individual map[interface{}]interface{}) map[string]interface{} {
+	m2 := make(map[string]interface{})
+
+	for key, value := range individual {
+		m2[key.(string)] = value
+	}
+	return m2
 }

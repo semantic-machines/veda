@@ -195,7 +195,7 @@ func stringToLang(str string) Lang {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func BinobjToMap(binobjStr string) map[string]interface{} {
+func BinobjToMap(binobjStr string) map[interface{}]interface{} {
 	if binobjStr[0] == 146 {
 		return MsgpackToMap(binobjStr)
 	} else {
@@ -376,8 +376,8 @@ func prepareElement(v interface{}) (interface{}, error) {
 	}
 }
 
-func CborToMap(cborStr string) map[string]interface{} {
-	individual := make(map[string]interface{})
+func CborToMap(cborStr string) map[interface{}]interface{} {
+	individual := make(map[interface{}]interface{})
 
 	ring := cbor.NewDecoder(strings.NewReader(cborStr))
 	var cborObject interface{}
@@ -439,9 +439,9 @@ func CborToMap(cborStr string) map[string]interface{} {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func MsgpackToMap(msgpackStr string) map[string]interface{} {
+func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 	//Allocate map and decode msgpack
-	individual := make(map[string]interface{})
+	individual := make(map[interface{}]interface{})
 	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[0:len(msgpackStr)]))
 	decoder.DecodeArrayLen()
 

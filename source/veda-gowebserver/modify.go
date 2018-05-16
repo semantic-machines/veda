@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/valyala/fasthttp"
 	"github.com/op/go-nanomsg"
+	"github.com/valyala/fasthttp"
 )
 
 //modifyIndividual sends request to veda server
@@ -34,7 +34,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	}
 
 	responseJSON := make(map[string]interface{})
-	
+
 	var mstorage_ch *nanomsg.Socket
 	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
@@ -47,12 +47,12 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 		log.Fatal("@ERR ON CREATING ENDPOINT to mstorage")
 		return InternalServerError
 	}
-	
+
 	mstorage_ch.Send(jsonRequest, 0)
 	responseBuf, err := mstorage_ch.Recv(0)
-	
-	mstorage_ch.Close ();
-	
+
+	mstorage_ch.Close()
+
 	if err != nil {
 		log.Printf("ERR! modify individual: recieve, cmd=%v: err=%v, request=%v\n", cmd, err, request)
 		ctx.Response.SetStatusCode(int(InternalServerError))
