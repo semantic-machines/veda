@@ -56,17 +56,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return rr.OpRC[0], ticket
 		}
 
-		var individual map[interface{}]interface{}
-
-		if rr.as_indv == true {
-			//individual = rr.Indv[0]
-		} else {
-			individual = BinobjToMap(rr.Data[0])
-			if individual == nil {
-				log.Println("@ERR GET_TICKET0: DECODING TICKET")
-				return InternalServerError, ticket
-			}
-		}
+		individual := rr.Indv[0]
 
 		var duration int64
 
@@ -95,7 +85,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		if !ok {
 			//If ticket not found then get user from tarantool and decode it
 			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
-			user := BinobjToMap(rr.Data[0])
+			user := rr.Indv[0]
 			//Check its field v-s:origin
 			data, ok := user["v-s:origin"]
 			if !ok || (ok && !data.(map[string]interface{})["data"].(bool)) {

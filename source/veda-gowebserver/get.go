@@ -134,14 +134,15 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.OpRC[0], timestamp)
 		return
 	} else {
-		individual = BinobjToMap(rr.Data[0])
+		//		individual = BinobjToMap(rr.Data[0])
+		individual = rr.Indv[0]
 		if individual == nil {
 			log.Println("@ERR GET_INDIVIDUAL: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
 		}
-		
+
 		individualJSON, err := json.Marshal(castKeyOfIndividual(individual))
 		if err != nil {
 			log.Println("@ERR GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
@@ -210,41 +211,6 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		}
 	}
 
-	/*if len(urisToGet) > 0 {
-		for i := 0; i < len
-		rr := conn.Get(true, ticket.UserURI, urisToGet, false)
-		if rr.CommonRC != Ok {
-			log.Println("@ERR GET_INDIVIDUALS: GET COMMON ", rr.CommonRC)
-			ctx.Response.SetStatusCode(int(rr.CommonRC))
-			return
-		}
-
-		for i := 0; i < len(rr.Data); i++ {
-
-			// log.Println("i=", i)
-			// log.Println("rr.Data[i]=", rr.Data[i])
-			// log.Println("rr.OpRC[i]=", rr.OpRC[i])
-			if rr.OpRC[i] == Ok {
-				individual := BinobjToMap(rr.Data[i])
-				if individual == nil {
-					log.Println("@ERR GET_INDIVIDUALS: DECODING INDIVIDUAL")
-					ctx.Response.SetStatusCode(int(InternalServerError))
-					return
-				}
-
-				tryStoreInOntologyCache(individual)
-				individuals = append(individuals, individual)
-			}
-
-			if err != nil {
-				log.Println("@ERR ENCODING INDIVIDUAL TO JSON ", err)
-				ctx.Response.SetStatusCode(int(InternalServerError))
-				return
-			}
-
-		}
-	}*/
-
 	for i := 0; i < len(urisToGet); i++ {
 		rr := conn.Get(true, ticket.UserURI, []string{urisToGet[i]}, false, false)
 		if rr.CommonRC != Ok {
@@ -255,7 +221,8 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		}
 
 		if rr.OpRC[0] == Ok {
-			individual := BinobjToMap(rr.Data[0])
+			//individual := BinobjToMap(rr.Data[0])
+			individual := rr.Indv[0]
 			if individual == nil {
 				log.Println("ERR! get individuals: DECODING INDIVIDUAL")
 				ctx.Response.SetStatusCode(int(InternalServerError))
@@ -289,6 +256,19 @@ func castKeyOfIndividual(individual map[interface{}]interface{}) map[string]inte
 
 	for key, value := range individual {
 		m2[key.(string)] = value
+	}
+	return m2
+}
+
+func castKeyOfIndividuals(individuals []map[interface{}]interface{}) []map[string]interface{} {
+	m2 := make([]map[string]interface{}, 0)
+
+	for _, el := range individuals {
+		m3 := make(map[string]interface{})
+		for key, value := range el {
+			m3[key.(string)] = value
+		}
+		m2 = append(m2, m3)
 	}
 	return m2
 }

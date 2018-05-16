@@ -86,7 +86,9 @@ func monitorIndividualChanges() {
 					continue
 				}
 
-				individualTNT := BinobjToMap(rr.Data[0])
+				//individualTNT := BinobjToMap(rr.Data[0])
+				individualTNT := rr.Indv[0]
+
 				ontologyCache[uri] = individualTNT
 			}
 		}

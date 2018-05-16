@@ -8,7 +8,7 @@ package main
 import "C"
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"github.com/itiu/lmdb-go/lmdb"
 	"github.com/tarantool/go-tarantool"
 	"log"
@@ -36,13 +36,11 @@ type RequestResponse struct {
 	//ResultCode for each uri in request
 	OpRC []ResultCode
 	//Response data
-	Data []string
+	//	Data []string
 	//Returned rights for auth requests
 	Rights []uint8
 
 	Indv [](map[interface{}]interface{})
-
-	as_indv bool
 }
 
 //MaxPacketSize is critical value for request/response packets,
@@ -222,7 +220,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
-	rr.Data = make([]string, 0, len(uris))
+	rr.Indv = make([]map[interface{}]interface{}, 0, len(uris))
 
 	if conn.tt_client != nil {
 
@@ -258,7 +256,8 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 							}
 						}
 						rr.OpRC = append(rr.OpRC, Ok)
-						rr.Data = append(rr.Data, tpl[1].(string))
+						ii := tpl[1].(string)
+						rr.Indv = append(rr.Indv, BinobjToMap(ii))
 					}
 				}
 
@@ -300,7 +299,8 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Data = append(rr.Data, string(val))
+
+				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
 			}
 			return nil
 		})
@@ -403,16 +403,15 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		//defer C.free(unsafe.Pointer(right))
 
 		rr.Rights = make([]uint8, 1)
-		rr.Data = make([]string, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		statements := strings.Split(rights_str, "\n")
+		rr.Indv = make([]map[interface{}]interface{}, 0)
 
-		data := make([]interface{}, 0)
 		for j := 0; j < len(statements)-1; j++ {
 
 			parts := strings.Split(statements[j], ";")
-			statementIndiv := map[string]interface{}{
+			statementIndiv := map[interface{}]interface{}{
 				"@": "_",
 				"rdf:type": []interface{}{
 					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
@@ -427,7 +426,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			data = append(data, statementIndiv)
+			rr.Indv = append(rr.Indv, statementIndiv)
 		}
 
 		//			commentIndiv := map[string]interface{}{
@@ -445,8 +444,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		//			}
 		//			data = append(data, commentIndiv)
 
-		jsonBytes, _ := json.Marshal(data)
-		rr.Data[0] = string(jsonBytes)
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -463,7 +460,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
 
 		rr.Rights = make([]uint8, 1)
-		rr.Data = make([]string, 1)
+		rr.Indv = make([]map[interface{}]interface{}, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		parts := strings.Split(info_str, "\n")
@@ -473,7 +470,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
 		}
 
-		membershipIndividual := map[string]interface{}{
+		membershipIndividual := map[interface{}]interface{}{
 			"@": "_",
 			"rdf:type": []interface{}{
 				map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
@@ -484,8 +481,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			"v-s:memberOf": memberOf,
 		}
 
-		jsonBytes, _ := json.Marshal(membershipIndividual)
-		rr.Data[0] = string(jsonBytes)
+		rr.Indv[0] = membershipIndividual
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -509,7 +505,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
-	rr.Data = make([]string, 0, len(ticketIDs))
+	rr.Indv = make([]map[interface{}]interface{}, 0, len(ticketIDs))
 
 	if conn.tt_client != nil {
 
@@ -538,7 +534,8 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 				rr.CommonRC = InternalServerError
 			} else {
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Data = append(rr.Data, tpl[1].(string))
+				ii := tpl[1].(string)
+				rr.Indv = append(rr.Indv, BinobjToMap(ii))
 				rr.CommonRC = Ok
 			}
 		}
@@ -559,7 +556,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Data = append(rr.Data, string(val))
+				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
 			}
 			return nil
 		})

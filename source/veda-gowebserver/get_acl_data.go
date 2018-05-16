@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
-
+	"encoding/json"
 	"github.com/valyala/fasthttp"
+	"log"
 )
 
 //getAclData performs request GetRightsOrigin of GetMembership, this is set by operation parametr
@@ -46,8 +46,12 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 		return
 	}
 
-	if len(rr.Data) > 0 {
-		ctx.Write([]byte(rr.Data[0]))
+	if len(rr.Indv) == 1 {
+		jsonBytes, _ := json.Marshal(castKeyOfIndividual(rr.Indv[0]))
+		ctx.Write(jsonBytes)
+	} else if len(rr.Indv) > 1 {
+		jsonBytes, _ := json.Marshal(castKeyOfIndividuals(rr.Indv))
+		ctx.Write(jsonBytes)
 	}
 	ctx.Response.SetStatusCode(int(Ok))
 }
