@@ -1746,11 +1746,25 @@ v-ui:SimplifiedJournalTemplate
             $(".docflow-button", template).remove();
           };
           if ( this.hasValue("v-wf:isCompleted", false) ) {
-            var needHide = ( (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) && (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]) ) || (!this.hasValue("v-wf:isDirectTask", true));
-            if (needHide) {
+            var notAuthor = (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) && (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]);
+            var notDirect = !this.hasValue("v-wf:isDirectTask", true);
+
+            //------ Для плавного перехода между версиями
+            if (individual.hasValue("v-wf:onWorkOrder") 
+                && individual["v-wf:onWorkOrder"][0].hasValue("v-wf:forWorkItem") 
+                && individual["v-wf:onWorkOrder"][0]["v-wf:forWorkItem"][0].hasValue("v-wf:forNetElement")) {
+              var netElementId = individual["v-wf:onWorkOrder"][0]["v-wf:forWorkItem"][0]["v-wf:forNetElement"][0].id;
+              if (netElementId == "s-wf:nc_t2") {
+                notDirect = false;
+              }
+            };
+            //------
+            
+            if (notAuthor || notDirect) {
               $(".docflow-button", template).remove();
               return;
             };
+
             $("[rel='v-wf:takenDecision']", template).remove();
             $(".docflow-button", template).show();
 
