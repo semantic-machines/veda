@@ -239,9 +239,11 @@ func MapToMsgpack(jsonMap map[string]interface{}) string {
 			switch datatype {
 			//Integer, Uri, Boolean are simply encoded into array
 			case Uri:
-				encoder.Encode(resource["data"].(string))
+				encoder.EncodeArrayLen(2)
+				encoder.Encode(Uri, resource["data"].(string))
 			case Integer:
-				encoder.Encode(int64(resource["data"].(float64)))
+				encoder.EncodeArrayLen(2)
+				encoder.Encode(Integer, int64(resource["data"].(float64)))
 			case Datetime:
 				datetime, _ := time.Parse("2006-01-02T15:04:05.000Z", resource["data"].(string))
 				encoder.EncodeArrayLen(2)
@@ -509,7 +511,23 @@ func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 						}
 						resource["type"] = dataTypeToString(String)
 						resource["lang"] = langToString(LangNone)
+					} else if resType == Uri {
+						resource["type"] = dataTypeToString(Uri)
+						resource["data"] = resArrI[1]
+					} else if resType == Integer {
+						switch resArrI[1].(type) {
+						case int64:
+							resource["type"] = dataTypeToString(Integer)
+							resource["data"] = resArrI[1]
+						case uint64:
+							resource["type"] = dataTypeToString(Integer)
+							resource["data"] = resArrI[1]
+						}
+					} else if resType == Boolean {
+						resource["type"] = dataTypeToString(Boolean)
+						resource["data"] = resArrI[1]
 					}
+
 				} else if len(resArrI) == 3 {
 					resType := DataType(resArrI[0].(uint64))
 
@@ -556,19 +574,6 @@ func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 					}
 				}
 
-			//Other types are simply decoded from msgpack
-			case string:
-				resource["type"] = dataTypeToString(Uri)
-				resource["data"] = resI
-			case int64:
-				resource["type"] = dataTypeToString(Integer)
-				resource["data"] = resI
-			case uint64:
-				resource["type"] = dataTypeToString(Integer)
-				resource["data"] = resI
-			case bool:
-				resource["type"] = dataTypeToString(Boolean)
-				resource["data"] = resI
 			default:
 				log.Printf("@ERR! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
 				return nil
