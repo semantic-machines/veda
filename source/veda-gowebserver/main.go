@@ -57,7 +57,7 @@ var ticketCache map[string]ticket
 var ticketCacheMutex = sync.RWMutex{}
 
 //ontologyCache is map to cache requested earlier individuals from ontology
-var ontologyCache map[string]map[interface{}]interface{}
+var ontologyCache map[string]Individual
 
 //mifCache is map to cache opened ModuleInfoFile structs
 var mifCache map[int]*ModuleInfoFile
@@ -67,6 +67,7 @@ var conn Connector
 
 //socket is nanomsg socket connected to server
 var g_mstorage_ch *nanomsg.Socket
+
 //var mstorage_ch_Mutex = sync.RWMutex{}
 
 //endpoint is nanomsg endpoint connected to server
@@ -257,7 +258,6 @@ func main() {
 		log.Fatal("@ERR ON CREATING SOCKET")
 	}
 
-
 	_, err = g_mstorage_ch.Connect(mainModuleURL)
 	for err != nil {
 		_, err = g_mstorage_ch.Connect(mainModuleURL)
@@ -274,24 +274,24 @@ func main() {
 	//		endpoint, err = aclSocket.Connect(aclServiceURL)
 	//		time.Sleep(3000 * time.Millisecond)
 	//	}
-/*
-	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-	if err != nil {
-		log.Fatal("@ERR ON CREATING QUERY SOCKET")
-	}
+	/*
+		querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+		if err != nil {
+			log.Fatal("@ERR ON CREATING QUERY SOCKET")
+		}
 
-	log.Println("use query service url: ", queryServiceURL)
-	queryEndpoint, err = querySocket.Connect(queryServiceURL)
-	for err != nil {
-		//		endpoint, err = aclSocket.Connect(aclServiceURL)
-		//		time.Sleep(3000 * time.Millisecond)
-	}
-*/
-	
+		log.Println("use query service url: ", queryServiceURL)
+		queryEndpoint, err = querySocket.Connect(queryServiceURL)
+		for err != nil {
+			//		endpoint, err = aclSocket.Connect(aclServiceURL)
+			//		time.Sleep(3000 * time.Millisecond)
+		}
+	*/
+
 	conn.Connect(tarantoolURL)
 
 	ticketCache = make(map[string]ticket)
-	ontologyCache = make(map[string]map[interface{}]interface{})
+	ontologyCache = make(map[string]Individual)
 	mifCache = make(map[int]*ModuleInfoFile)
 	externalUsersTicketId = make(map[string]bool)
 

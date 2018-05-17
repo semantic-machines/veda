@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+type Individual map[interface{}]interface{}
+
 //DataType represents Resource type in veda
 type DataType uint8
 
@@ -586,7 +588,7 @@ func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 	return individual
 }
 
-func getFirstInt(indv map[interface{}]interface{}, predicate string) (int, bool) {
+func getFirstInt(indv Individual, predicate string) (int, bool) {
 	rss, err := indv[predicate].([]interface{})
 	if err != true {
 		return 0, false
@@ -604,7 +606,7 @@ func getFirstInt(indv map[interface{}]interface{}, predicate string) (int, bool)
 	}
 }
 
-func getFirstString(indv map[interface{}]interface{}, predicate string) (string, bool) {
+func getFirstString(indv Individual, predicate string) (string, bool) {
 	rss, err := indv[predicate].([]interface{})
 	if err != true {
 		return "", false

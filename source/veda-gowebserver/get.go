@@ -251,7 +251,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	ctx.Response.SetStatusCode(int(Ok))
 }
 
-func castKeyOfIndividual(individual map[interface{}]interface{}) map[string]interface{} {
+func castKeyOfIndividual(individual Individual) map[string]interface{} {
 	m2 := make(map[string]interface{})
 
 	for key, value := range individual {
@@ -260,7 +260,7 @@ func castKeyOfIndividual(individual map[interface{}]interface{}) map[string]inte
 	return m2
 }
 
-func castKeyOfIndividuals(individuals []map[interface{}]interface{}) []map[string]interface{} {
+func castKeyOfIndividuals(individuals []Individual) []map[string]interface{} {
 	m2 := make([]map[string]interface{}, 0)
 
 	for _, el := range individuals {

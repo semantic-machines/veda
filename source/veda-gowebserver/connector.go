@@ -40,7 +40,7 @@ type RequestResponse struct {
 	//Returned rights for auth requests
 	Rights []uint8
 
-	Indv [](map[interface{}]interface{})
+	Indv []Individual
 }
 
 //MaxPacketSize is critical value for request/response packets,
@@ -220,7 +220,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
-	rr.Indv = make([]map[interface{}]interface{}, 0, len(uris))
+	rr.Indv = make([]Individual, 0, len(uris))
 
 	if conn.tt_client != nil {
 
@@ -406,7 +406,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		rr.OpRC = make([]ResultCode, 1)
 
 		statements := strings.Split(rights_str, "\n")
-		rr.Indv = make([]map[interface{}]interface{}, 0)
+		rr.Indv = make([]Individual, 0)
 
 		for j := 0; j < len(statements)-1; j++ {
 
@@ -460,7 +460,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
 
 		rr.Rights = make([]uint8, 1)
-		rr.Indv = make([]map[interface{}]interface{}, 1)
+		rr.Indv = make([]Individual, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		parts := strings.Split(info_str, "\n")
@@ -505,7 +505,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
-	rr.Indv = make([]map[interface{}]interface{}, 0, len(ticketIDs))
+	rr.Indv = make([]Individual, 0, len(ticketIDs))
 
 	if conn.tt_client != nil {
 
