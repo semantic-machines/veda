@@ -188,6 +188,7 @@ cfg:AdministratorAccount
   v-s:owner cfg:Administrator ;
   rdfs:label "Администратор. Учетная запись"@ru ;
   rdfs:label "Administrator. Account"@en ;
+  v-s:mailbox "veda@semantic-machines.com"^^xsd:string ;
 .
 cfg:AdministratorAppointment
   rdf:type v-s:Appointment ;
