@@ -585,3 +585,37 @@ func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 
 	return individual
 }
+
+func getFirstInt(indv map[interface{}]interface{}, predicate string) (int, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return 0, false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case int64:
+		return int(_data.(int64)), true
+	case uint64:
+		return int(_data.(uint64)), true
+	default:
+		return 0, false
+	}
+}
+
+func getFirstString(indv map[interface{}]interface{}, predicate string) (string, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return "", false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case string:
+		return _data.(string), true
+	default:
+		return "", false
+	}
+}
