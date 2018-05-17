@@ -753,7 +753,7 @@ class VedaStorageRest : VedaStorageRest_API
 
                         if (cb.length > 0)
                         {
-                            if (cb[ 0 ] == 0xFF)
+                            if (cb[ 0 ] == 146)
                                 msgpack2json(&res_i, cb);
                             else
                                 cbor2json(&res_i, cb);
@@ -880,7 +880,7 @@ class VedaStorageRest : VedaStorageRest_API
 
                         if (cb.length > 0)
                         {
-                            if (cb[ 0 ] == 0xFF)
+                            if (cb[ 0 ] == 146)
                                 msgpack2json(&res, cb);
                             else
                                 cbor2json(&res, cb);

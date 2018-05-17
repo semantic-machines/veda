@@ -7,7 +7,7 @@ private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json, msgpack;
 private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang;
 
-ubyte magic_header = 0xFF;
+ubyte magic_header = 146;
 
 // ///////////////////////////////////////////////////////////////////////////////////
 public int msgpack2json(Json *individual, string in_str)
@@ -28,7 +28,7 @@ public int msgpack2json(Json *individual, string in_str)
             return -1;
         }
 
-        StreamingUnpacker unpacker = StreamingUnpacker(src[ 1..$ ]);
+        StreamingUnpacker unpacker = StreamingUnpacker(src[ 0..$ ]);
 
         if (unpacker.execute())
         {
