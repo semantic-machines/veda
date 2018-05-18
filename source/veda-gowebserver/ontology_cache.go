@@ -21,19 +21,15 @@ var ontologyRdfType = map[string]bool{
 
 //tryStoreToOntologyCache checks rdf:type of individual, if its ontology class
 //then it is stored to cache with individual's uri used as key
-func tryStoreInOntologyCache(individual map[interface{}]interface{}) {
-	uri := individual["@"].(string)
-	rType := individual["rdf:type"]
-	if rType != nil {
-		rdfType := rType.([]interface{})
-		for i := 0; i < len(rdfType); i++ {
-			if ontologyRdfType[rdfType[i].(map[string]interface{})["data"].(string)] {
-				ontologyCache[uri] = individual
-				break
-			}
-		}
-	} else {
+func tryStoreInOntologyCache(individual Individual) {
+	uri := individual.getUri()
+	rdfType, Err := individual.getFirstString("rdf:type")
+	if Err == true {
 		log.Println("WARN! individual not content type, uri=", uri)
+	} else {
+		if ontologyRdfType[rdfType] {
+			ontologyCache[uri] = individual
+		}
 	}
 }
 
@@ -66,14 +62,13 @@ func monitorIndividualChanges() {
 
 		strdata := strings.Replace(strings.Replace(string(bytes), "#", "", -1), ";", " ", -1)
 		uri := ""
-		updateCounter := uint64(0)
+		updateCounter := int(0)
 		opID := 0
 		fmt.Sscanf(strdata, "%s %d %d", &uri, &updateCounter, &opID)
 		individualCache, ok := ontologyCache[uri]
 		if ok {
 			log.Println(individualCache)
-			resourceCache := individualCache["v-s:updateCounter"].([]interface{})[0]
-			updateCounterCache := resourceCache.(map[string]interface{})["data"].(uint64)
+			updateCounterCache, _ := individualCache.getFirstInt("v-s:updateCounter")
 			if updateCounter > updateCounterCache {
 				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false, false)
 				if rr.CommonRC != Ok {

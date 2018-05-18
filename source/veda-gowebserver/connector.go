@@ -257,7 +257,9 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 						}
 						rr.OpRC = append(rr.OpRC, Ok)
 						ii := tpl[1].(string)
-						rr.Indv = append(rr.Indv, BinobjToMap(ii))
+						ii1 := NewIndividual()
+						ii1.BinobjToMap(ii)
+						rr.Indv = append(rr.Indv, *ii1)
 					}
 				}
 
@@ -300,7 +302,9 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 
 				rr.OpRC = append(rr.OpRC, Ok)
 
-				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
+				ii1 := Individual{}
+				ii1.BinobjToMap(string(val))
+				rr.Indv = append(rr.Indv, ii1)
 			}
 			return nil
 		})
@@ -426,7 +430,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			rr.Indv = append(rr.Indv, statementIndiv)
+			rr.Indv = append(rr.Indv, *NewIndividualFromMap(statementIndiv))
 		}
 
 		//			commentIndiv := map[string]interface{}{
@@ -481,7 +485,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			"v-s:memberOf": memberOf,
 		}
 
-		rr.Indv[0] = membershipIndividual
+		rr.Indv[0] = *NewIndividualFromMap(membershipIndividual)
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -535,7 +539,9 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 			} else {
 				rr.OpRC = append(rr.OpRC, Ok)
 				ii := tpl[1].(string)
-				rr.Indv = append(rr.Indv, BinobjToMap(ii))
+				indv := NewIndividual()
+				indv.BinobjToMap(ii)
+				rr.Indv = append(rr.Indv, *indv)
 				rr.CommonRC = Ok
 			}
 		}
@@ -556,7 +562,9 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
+				indv := NewIndividual()
+				indv.BinobjToMap(string(val))
+				rr.Indv = append(rr.Indv, *indv)
 			}
 			return nil
 		})

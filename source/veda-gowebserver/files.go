@@ -134,12 +134,12 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		//fileInfo := BinobjToMap(rr.Data[0])
 		fileInfo := rr.Indv[0]
 		//log.Println(fileInfo)
-		filePath := fileInfo["v-s:filePath"].([]interface{})[0].(map[string]interface{})
-		fileURI := fileInfo["v-s:fileUri"].([]interface{})[0].(map[string]interface{})
-		fileName := fileInfo["v-s:fileName"].([]interface{})[0].(map[string]interface{})
+		filePath, _ := fileInfo.getFirstString("v-s:filePath")
+		fileURI, _ := fileInfo.getFirstString("v-s:fileUri")
+		fileName, _ := fileInfo.getFirstString("v-s:fileName")
 
 		//Create path to file string
-		filePathStr := attachmentsPath + filePath["data"].(string) + "/" + fileURI["data"].(string)
+		filePathStr := attachmentsPath + filePath + "/" + fileURI
 
 		//Check if file exists, return err code if not or InternalServerError if error occured
 		_, err := os.Stat(filePathStr)
@@ -153,7 +153,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		}
 
 		//Return file to client
-		ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+fileName["data"].(string))
+		ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+fileName)
 		//ctx.SendFile(filePathStr)
 		fasthttp.ServeFileUncompressed(ctx, filePathStr)
 	}

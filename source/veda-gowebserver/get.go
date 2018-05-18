@@ -135,13 +135,14 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	} else {
 		//		individual = BinobjToMap(rr.Data[0])
-		individual = rr.Indv[0]
-		if individual == nil {
+		if len(rr.Indv) == 0 {
 			log.Println("@ERR GET_INDIVIDUAL: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
 		}
+
+		individual = rr.Indv[0]
 
 		individualJSON, err := json.Marshal(castKeyOfIndividual(individual))
 		if err != nil {
@@ -222,13 +223,13 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 
 		if rr.OpRC[0] == Ok {
 			//individual := BinobjToMap(rr.Data[0])
-			individual := rr.Indv[0]
-			if individual == nil {
+			if len(rr.Indv) == 0 {
 				log.Println("ERR! get individuals: DECODING INDIVIDUAL")
 				ctx.Response.SetStatusCode(int(InternalServerError))
 				trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", InternalServerError, timestamp)
 				return
 			}
+			individual := rr.Indv[0]
 
 			tryStoreInOntologyCache(individual)
 			individuals = append(individuals, castKeyOfIndividual(individual))
@@ -249,26 +250,4 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, string(individualsJSON), BadRequest, timestamp)
 	ctx.Write(individualsJSON)
 	ctx.Response.SetStatusCode(int(Ok))
-}
-
-func castKeyOfIndividual(individual Individual) map[string]interface{} {
-	m2 := make(map[string]interface{})
-
-	for key, value := range individual {
-		m2[key.(string)] = value
-	}
-	return m2
-}
-
-func castKeyOfIndividuals(individuals []Individual) []map[string]interface{} {
-	m2 := make([]map[string]interface{}, 0)
-
-	for _, el := range individuals {
-		m3 := make(map[string]interface{})
-		for key, value := range el {
-			m3[key.(string)] = value
-		}
-		m2 = append(m2, m3)
-	}
-	return m2
 }

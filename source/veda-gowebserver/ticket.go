@@ -60,12 +60,12 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 
 		var duration int64
 
-		ticket.UserURI, _ = getFirstString(individual, "ticket:accessor")
-		tt, _ := getFirstString(individual, "ticket:when")
+		ticket.UserURI, _ = individual.getFirstString("ticket:accessor")
+		tt, _ := individual.getFirstString("ticket:when")
 		mask := "2006-01-02T15:04:05.00000000"
 		startTime, _ := time.Parse(mask[0:len(tt)], tt)
 		ticket.StartTime = startTime.Unix()
-		dd, _ := getFirstString(individual, "ticket:duration")
+		dd, _ := individual.getFirstString("ticket:duration")
 		duration, _ = strconv.ParseInt(dd, 10, 64)
 
 		ticket.Id = ticketKey
@@ -87,18 +87,21 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
 			user := rr.Indv[0]
 			//Check its field v-s:origin
-			data, ok := user["v-s:origin"]
-			if !ok || (ok && !data.(map[string]interface{})["data"].(bool)) {
+
+			origin, ok := user.getFirstBool("v-s:origin")
+			if !ok || (ok && origin == false) {
 				//If this field not found or it contains false then return error code
 				log.Printf("ERR! user (%s) is not external\n", ticket.UserURI)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
-			} else if ok && data.(map[string]interface{})["data"].(bool) {
+			} else if ok && origin == true {
 				//Else store ticket to cache
 				log.Printf("user is external (%s)\n", ticket.UserURI)
 				externalUsersTicketId[ticket.UserURI] = true
 			}
+
 		}
+
 	}
 
 	return Ok, ticket

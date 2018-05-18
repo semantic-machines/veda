@@ -55,18 +55,17 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		log.Printf("authenticate:check external user (%v)\n", authResponse["user_uri"])
 		//sending get request to tarantool
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
-		//decoding msgpack to individual map
-		//user := BinobjToMap(rr.Data[0])
 		user := rr.Indv[0]
-		data, ok := user["v-s:origin"]
-		if !ok || (ok && !data.(map[string]interface{})["data"].(bool)) {
+		origin, ok := user.getFirstBool("v-s:origin")
+
+		if !ok || (ok && origin == false) {
 			//if v-s:origin not found or value is false than return NotAuthorized
 			log.Printf("ERR! user (%v) is not external\n", authResponse["user_uri"])
 			authResponse["end_time"] = 0
 			authResponse["id"] = ""
 			authResponse["user_uri"] = ""
 			authResponse["result"] = NotAuthorized
-		} else if ok && data.(map[string]interface{})["data"].(bool) {
+		} else if ok && origin == true {
 			//else set externals users ticket id to true valuse
 			externalUsersTicketId[authResponse["user_uri"].(string)] = true
 		}
