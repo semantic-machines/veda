@@ -134,9 +134,9 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		//fileInfo := BinobjToMap(rr.Data[0])
 		fileInfo := rr.Indv[0]
 		//log.Println(fileInfo)
-		filePath, _ := fileInfo.getFirstString("v-s:filePath")
-		fileURI, _ := fileInfo.getFirstString("v-s:fileUri")
-		fileName, _ := fileInfo.getFirstString("v-s:fileName")
+		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
+		fileURI, _ := getFirstString(fileInfo, "v-s:fileUri")
+		fileName, _ := getFirstString(fileInfo, "v-s:fileName")
 
 		//Create path to file string
 		filePathStr := attachmentsPath + filePath + "/" + fileURI

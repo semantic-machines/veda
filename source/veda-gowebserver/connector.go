@@ -257,9 +257,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 						}
 						rr.OpRC = append(rr.OpRC, Ok)
 						ii := tpl[1].(string)
-						ii1 := NewIndividual()
-						ii1.BinobjToMap(ii)
-						rr.Indv = append(rr.Indv, *ii1)
+						rr.Indv = append(rr.Indv, BinobjToMap(ii))
 					}
 				}
 
@@ -301,10 +299,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-
-				ii1 := Individual{}
-				ii1.BinobjToMap(string(val))
-				rr.Indv = append(rr.Indv, ii1)
+				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
 			}
 			return nil
 		})
@@ -415,7 +410,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		for j := 0; j < len(statements)-1; j++ {
 
 			parts := strings.Split(statements[j], ";")
-			statementIndiv := map[interface{}]interface{}{
+			statementIndiv := Individual{
 				"@": "_",
 				"rdf:type": []interface{}{
 					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
@@ -430,7 +425,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			rr.Indv = append(rr.Indv, *NewIndividualFromMap(statementIndiv))
+			rr.Indv = append(rr.Indv, statementIndiv)
 		}
 
 		//			commentIndiv := map[string]interface{}{
@@ -474,7 +469,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
 		}
 
-		membershipIndividual := map[interface{}]interface{}{
+		membershipIndividual := Individual{
 			"@": "_",
 			"rdf:type": []interface{}{
 				map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
@@ -485,7 +480,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			"v-s:memberOf": memberOf,
 		}
 
-		rr.Indv[0] = *NewIndividualFromMap(membershipIndividual)
+		rr.Indv[0] = membershipIndividual
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -539,9 +534,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 			} else {
 				rr.OpRC = append(rr.OpRC, Ok)
 				ii := tpl[1].(string)
-				indv := NewIndividual()
-				indv.BinobjToMap(ii)
-				rr.Indv = append(rr.Indv, *indv)
+				rr.Indv = append(rr.Indv, BinobjToMap(ii))
 				rr.CommonRC = Ok
 			}
 		}
@@ -562,9 +555,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-				indv := NewIndividual()
-				indv.BinobjToMap(string(val))
-				rr.Indv = append(rr.Indv, *indv)
+				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
 			}
 			return nil
 		})

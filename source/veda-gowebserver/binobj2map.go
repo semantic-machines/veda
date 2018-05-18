@@ -13,21 +13,7 @@ import (
 	"time"
 )
 
-type Individual struct {
-	obj map[interface{}]interface{}
-}
-
-func NewIndividual() *Individual {
-	pp := new(Individual)
-	pp.obj = make(map[interface{}]interface{})
-	return pp
-}
-
-func NewIndividualFromMap(aa map[interface{}]interface{}) *Individual {
-	pp := new(Individual)
-	pp.obj = aa
-	return pp
-}
+type Individual map[string]interface{}
 
 //DataType represents Resource type in veda
 type DataType uint8
@@ -211,11 +197,11 @@ func stringToLang(str string) Lang {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func (indv *Individual) BinobjToMap(binobjStr string) {
+func BinobjToMap(binobjStr string) (Individual){
 	if binobjStr[0] == 146 {
-		indv.MsgpackToMap(binobjStr)
+		return MsgpackToMap(binobjStr)
 	} else {
-		indv.CborToMap(binobjStr)
+		return CborToMap(binobjStr)
 	}
 }
 
@@ -394,14 +380,15 @@ func prepareElement(v interface{}) (interface{}, error) {
 	}
 }
 
-func (individual *Individual) CborToMap(cborStr string) {
-
+func CborToMap(cborStr string) (Individual) {
+	individual := make(Individual)
+	
 	ring := cbor.NewDecoder(strings.NewReader(cborStr))
 	var cborObject interface{}
 	err := ring.Decode(&cborObject)
 	if err != nil {
 		log.Println("@ERR DECODING CBOR OBJECT")
-		return
+		return nil
 	}
 
 	var individualMap map[interface{}]interface{}
@@ -410,7 +397,7 @@ func (individual *Individual) CborToMap(cborStr string) {
 		individualMap = cborObject.(map[interface{}]interface{})
 	default:
 		log.Printf("@ERR CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
-		return
+		return nil
 	}
 
 	//log.Println(cborStr)
@@ -419,7 +406,7 @@ func (individual *Individual) CborToMap(cborStr string) {
 		//log.Println(k)
 		keyStr := k.(string)
 		if keyStr == "@" {
-			individual.obj["@"] = v.(string)
+			individual["@"] = v.(string)
 			continue
 		}
 
@@ -438,7 +425,7 @@ func (individual *Individual) CborToMap(cborStr string) {
 				resources = append(resources, resource)
 			}
 
-			individual.obj[keyStr] = resources
+			individual[keyStr] = resources
 		case nil:
 			continue
 
@@ -448,28 +435,29 @@ func (individual *Individual) CborToMap(cborStr string) {
 				log.Fatalln(err)
 			}
 
-			individual.obj[keyStr] = []interface{}{resource}
+			individual[keyStr] = []interface{}{resource}
 		}
 	}
 
-	return
+	return individual
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
+func MsgpackToMap(msgpackStr string) Individual {
 	//Allocate map and decode msgpack
+	individual := make(Individual)
 	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[0:len(msgpackStr)]))
 	decoder.DecodeArrayLen()
 
 	// log.Printf("@MSGPACK %v\n", msgpackStr)
 
 	//Set individual uri and decode map of resources
-	individual.obj["@"], _ = decoder.DecodeString()
+	individual["@"], _ = decoder.DecodeString()
 	resMapI, err := decoder.DecodeMap()
 
 	if err != nil {
 		log.Fatalln(err)
-		return false
+		return nil
 	}
 
 	resMap := resMapI.(map[interface{}]interface{})
@@ -508,7 +496,7 @@ func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
 						default:
 							log.Printf("@ERR SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
 								reflect.TypeOf(resArrI[1]))
-							return false
+							return nil
 						}
 						resource["type"] = dataTypeToString(Datetime)
 					} else if resType == String {
@@ -521,7 +509,7 @@ func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
 						default:
 							log.Printf("@ERR SIZE 2! NOT STRING: %s\n",
 								reflect.TypeOf(resArrI[1]))
-							return false
+							return individual
 						}
 						resource["type"] = dataTypeToString(String)
 						resource["lang"] = langToString(LangNone)
@@ -556,7 +544,7 @@ func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
 						default:
 							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
 								reflect.TypeOf(resArrI[1]))
-							return false
+							return nil
 						}
 
 						switch resArrI[2].(type) {
@@ -567,7 +555,7 @@ func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
 						default:
 							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s",
 								reflect.TypeOf(resArrI[1]))
-							return false
+							return nil
 						}
 						resource["type"] = dataTypeToString(Decimal)
 						resource["data"] = decimalToString(mantissa, exponent)
@@ -580,7 +568,7 @@ func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
 						default:
 							log.Printf("@ERR SIZE 3! NOT STRING: %s\n",
 								reflect.TypeOf(resArrI[1]))
-							return false
+							return nil
 						}
 
 						resource["type"] = dataTypeToString(String)
@@ -590,18 +578,18 @@ func (individual *Individual) MsgpackToMap(msgpackStr string) bool {
 
 			default:
 				log.Printf("@ERR! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
-				return false
+				return nil
 			}
 			resources = append(resources, resource)
 		}
-		individual.obj[predicate] = resources
+		individual[predicate] = resources
 	}
 
-	return true
+	return individual
 }
 
-func (indv *Individual) getFirstInt(predicate string) (int, bool) {
-	rss, err := indv.obj[predicate].([]interface{})
+func getFirstInt(indv Individual, predicate string) (int, bool) {
+	rss, err := indv[predicate].([]interface{})
 	if err != true {
 		return 0, false
 	}
@@ -618,8 +606,8 @@ func (indv *Individual) getFirstInt(predicate string) (int, bool) {
 	}
 }
 
-func (indv *Individual) getFirstString(predicate string) (string, bool) {
-	rss, err := indv.obj[predicate].([]interface{})
+func getFirstString(indv Individual, predicate string) (string, bool) {
+	rss, err := indv[predicate].([]interface{})
 	if err != true {
 		return "", false
 	}
@@ -634,8 +622,8 @@ func (indv *Individual) getFirstString(predicate string) (string, bool) {
 	}
 }
 
-func (indv *Individual) getFirstBool(predicate string) (bool, bool) {
-	rss, err := indv.obj[predicate].([]interface{})
+func getFirstBool(indv Individual, predicate string) (bool, bool) {
+	rss, err := indv[predicate].([]interface{})
 	if err != true {
 		return false, false
 	}
@@ -650,28 +638,6 @@ func (indv *Individual) getFirstBool(predicate string) (bool, bool) {
 	}
 }
 
-func (indv *Individual) getUri() string {
-	return indv.obj["@"].(string)
-}
-
-func castKeyOfIndividual(individual Individual) map[string]interface{} {
-	m2 := make(map[string]interface{})
-
-	for key, value := range individual.obj {
-		m2[key.(string)] = value
-	}
-	return m2
-}
-
-func castKeyOfIndividuals(individuals []Individual) []map[string]interface{} {
-	m2 := make([]map[string]interface{}, 0)
-
-	for _, el := range individuals {
-		m3 := make(map[string]interface{})
-		for key, value := range el.obj {
-			m3[key.(string)] = value
-		}
-		m2 = append(m2, m3)
-	}
-	return m2
+func getUri(indv Individual) string {
+	return indv["@"].(string)
 }

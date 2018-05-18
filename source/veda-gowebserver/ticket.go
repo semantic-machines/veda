@@ -60,12 +60,12 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 
 		var duration int64
 
-		ticket.UserURI, _ = individual.getFirstString("ticket:accessor")
-		tt, _ := individual.getFirstString("ticket:when")
+		ticket.UserURI, _ = getFirstString(individual, "ticket:accessor")
+		tt, _ := getFirstString(individual, "ticket:when")
 		mask := "2006-01-02T15:04:05.00000000"
 		startTime, _ := time.Parse(mask[0:len(tt)], tt)
 		ticket.StartTime = startTime.Unix()
-		dd, _ := individual.getFirstString("ticket:duration")
+		dd, _ := getFirstString(individual, "ticket:duration")
 		duration, _ = strconv.ParseInt(dd, 10, 64)
 
 		ticket.Id = ticketKey
@@ -88,7 +88,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			user := rr.Indv[0]
 			//Check its field v-s:origin
 
-			origin, ok := user.getFirstBool("v-s:origin")
+			origin, ok := getFirstBool(user, "v-s:origin")
 			if !ok || (ok && origin == false) {
 				//If this field not found or it contains false then return error code
 				log.Printf("ERR! user (%s) is not external\n", ticket.UserURI)

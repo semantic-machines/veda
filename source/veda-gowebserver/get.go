@@ -100,7 +100,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	individual, ok := ontologyCache[uri]
 	if ok {
-		individualJSON, err := json.Marshal(castKeyOfIndividual(individual))
+		individualJSON, err := json.Marshal(individual)
 		if err != nil {
 			log.Println("@ERR GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -144,7 +144,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		individual = rr.Indv[0]
 
-		individualJSON, err := json.Marshal(castKeyOfIndividual(individual))
+		individualJSON, err := json.Marshal(individual)
 		if err != nil {
 			log.Println("@ERR GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -206,7 +206,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	for i := 0; i < len(uris); i++ {
 		individual, ok := ontologyCache[uris[i]]
 		if ok {
-			individuals = append(individuals, castKeyOfIndividual(individual))
+			individuals = append(individuals, individual)
 		} else {
 			urisToGet = append(urisToGet, uris[i])
 		}
@@ -232,7 +232,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			individual := rr.Indv[0]
 
 			tryStoreInOntologyCache(individual)
-			individuals = append(individuals, castKeyOfIndividual(individual))
+			individuals = append(individuals, individual)
 		}
 
 		if err != nil {

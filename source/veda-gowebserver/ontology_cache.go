@@ -22,8 +22,8 @@ var ontologyRdfType = map[string]bool{
 //tryStoreToOntologyCache checks rdf:type of individual, if its ontology class
 //then it is stored to cache with individual's uri used as key
 func tryStoreInOntologyCache(individual Individual) {
-	uri := individual.getUri()
-	rdfType, Err := individual.getFirstString("rdf:type")
+	uri := getUri(individual)
+	rdfType, Err := getFirstString(individual, "rdf:type")
 	if Err == true {
 		log.Println("WARN! individual not content type, uri=", uri)
 	} else {
@@ -68,7 +68,7 @@ func monitorIndividualChanges() {
 		individualCache, ok := ontologyCache[uri]
 		if ok {
 			log.Println(individualCache)
-			updateCounterCache, _ := individualCache.getFirstInt("v-s:updateCounter")
+			updateCounterCache, _ := getFirstInt(individualCache, "v-s:updateCounter")
 			if updateCounter > updateCounterCache {
 				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false, false)
 				if rr.CommonRC != Ok {

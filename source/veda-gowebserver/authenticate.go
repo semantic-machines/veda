@@ -56,7 +56,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		//sending get request to tarantool
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
 		user := rr.Indv[0]
-		origin, ok := user.getFirstBool("v-s:origin")
+		origin, ok := getFirstBool(user, "v-s:origin")
 
 		if !ok || (ok && origin == false) {
 			//if v-s:origin not found or value is false than return NotAuthorized
