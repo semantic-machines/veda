@@ -5,15 +5,15 @@ memtx = false
 
 if box.space.individuals == nil then
     if memtx then
-        space = box.schema.space.create('individuals')
+        space = box.schema.space.create('INDIVIDUALS')
     else
-        space = box.schema.space.create('individuals', {engine='vinyl'})
+        space = box.schema.space.create('INDIVIDUALS', {engine='vinyl'})
     end 
 
     print ('space.individuals:', space.id, '\n')
 
-    box.space.individuals:create_index('primary', {parts={1, 'string'}})
-    box.schema.user.grant('guest', 'read,write', 'space', 'individuals')
+    box.space.INDIVIDUALS:create_index('primary', {parts={1, 'string'}})
+    box.schema.user.grant('guest', 'read,write', 'space', 'INDIVIDUALS')
     box.schema.user.grant('guest', 'read,write', 'universe')
 
     box.schema.user.create('veda6', {password = '8b8nfeAj'}, {if_not_exists = false})
@@ -23,25 +23,15 @@ end
 
 if box.space.tickets == nil then
     if memtx then
-        space = box.schema.space.create('tickets')
+        space = box.schema.space.create('TICKETS')
     else
-        space = box.schema.space.create('tickets', {engine='vinyl'})
+        space = box.schema.space.create('TICKETS', {engine='vinyl'})
     end
 
     print ('space.tickets:', space.id, '\n')
 
-    box.space.tickets:create_index('primary', {parts={1, 'string'}})
-    box.schema.user.grant('guest', 'read,write', 'space', 'tickets')
-end
-
-if box.space.acl_indexes == nil then
-
-    space = box.schema.space.create('acl_indexes')
-
-    print ('space.acl_indexes:', space.id, '\n')
-
-    box.space.acl_indexes:create_index('primary', {parts={1, 'string'}})
-    box.schema.user.grant('guest', 'read,write', 'space', 'acl_indexes')
+    box.space.TICKETS:create_index('primary', {parts={1, 'string'}})
+    box.schema.user.grant('guest', 'read,write', 'space', 'TICKETS')
 end
 
 print('ready\n')

@@ -54,7 +54,7 @@ public class TarantoolStorage : Storage
     override KeyValueDB get_tickets_storage_r()
     {
         if (tickets_storage_r is null)
-            tickets_storage_r = new TarantoolDriver(log, "tickets", 513);
+            tickets_storage_r = new TarantoolDriver(log, "TICKETS", 513);
 
         return tickets_storage_r;
     }
@@ -62,7 +62,7 @@ public class TarantoolStorage : Storage
     override KeyValueDB get_inividuals_storage_r()
     {
         if (inividuals_storage_r is null)
-            inividuals_storage_r = new TarantoolDriver(log, "individuals", 512);
+            inividuals_storage_r = new TarantoolDriver(log, "INDIVIDUALS", 512);
 
         return inividuals_storage_r;
     }

@@ -225,7 +225,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	if conn.tt_client != nil {
 
 		for i := 0; i < len(uris); i++ {
-			resp, err := conn.tt_client.Select("individuals", "primary", 0, 1, tarantool.IterEq, []interface{}{uris[i]})
+			resp, err := conn.tt_client.Select("INDIVIDUALS", "primary", 0, 1, tarantool.IterEq, []interface{}{uris[i]})
 			if err != nil {
 				log.Println("Error", err)
 			} else {
@@ -510,7 +510,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	if conn.tt_client != nil {
 
-		resp, err := conn.tt_client.Select("tickets", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
+		resp, err := conn.tt_client.Select("TICKETS", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
 		if err != nil {
 			log.Println("Error", err)
 		} else {
