@@ -23,8 +23,8 @@ var ontologyRdfType = map[string]bool{
 //then it is stored to cache with individual's uri used as key
 func tryStoreInOntologyCache(individual Individual) {
 	uri := getUri(individual)
-	rdfType, Err := getFirstString(individual, "rdf:type")
-	if Err == true {
+	rdfType, Ok := getFirstString(individual, "rdf:type")
+	if Ok == false {
 		log.Println("WARN! individual not content type, uri=", uri)
 	} else {
 		if ontologyRdfType[rdfType] {

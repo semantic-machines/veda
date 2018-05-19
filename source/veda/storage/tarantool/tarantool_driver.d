@@ -88,15 +88,16 @@ public class TarantoolDriver : KeyValueDB
                 return null;
             }
 
-            uint field_count = mp_decode_array(&reply.data);
-            char *str_value;
-            uint str_value_length;
-            mp_decode_str(&reply.data, &str_value_length);
-            str_value = mp_decode_str(&reply.data, &str_value_length);
-            string res = cast(string)str_value[ 0..str_value_length ].dup;
+//            uint field_count = mp_decode_array(&reply.data);
+//            char *str_value;
+//            uint str_value_length;
+//            mp_decode_str(&reply.data, &str_value_length);
+//            str_value = mp_decode_str(&reply.data, &str_value_length);
+//            string res = cast(string)str_value[ 0..str_value_length ].dup;
 
-//            auto   data_size = reply.data_end - reply.data;
-//            string res       = cast(string)reply.data[ 0..data_size ].dup;
+            auto   data_size = reply.data_end - reply.data;
+            string res       = cast(string)reply.data[ 0..data_size ].dup;
+            		//stderr.writefln ("\n@GET reply.data=%s", res);
 
             //stderr.writefln("@ TarantoolDriver.find: FOUND %s->[%s]", uri, cast(string)str_value[ 0..str_value_length ]);
 
@@ -121,14 +122,14 @@ public class TarantoolDriver : KeyValueDB
             return ResultCode.Internal_Server_Error;
 
 //        auto field_type = mp_typeof(*cast(char*)in_value);
-//		stderr.writefln ("\n@P field_type=%s", field_type);
+		//stderr.writefln ("\n@PUT in_value=%s", in_value);
 
         tnt_stream *tuple = tnt_object(null);
-//		tuple = tnt_object_as(tuple, cast(char*)in_value, in_value.length);
+		tuple = tnt_object_as(tuple, cast(char*)in_value, in_value.length);
 
-        tnt_object_add_array(tuple, 2);
-        tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
-        tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
+//        tnt_object_add_array(tuple, 2);
+//        tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
+//        tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
 
         tnt_replace(tnt, space_id, tuple);
         tnt_flush(tnt);
