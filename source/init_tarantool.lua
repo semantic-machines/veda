@@ -3,7 +3,7 @@ log = require('log')
 
 memtx = false
 
-if box.space.individuals == nil then
+if box.space.INDIVIDUALS == nil then
     if memtx then
         space = box.schema.space.create('INDIVIDUALS')
     else
@@ -21,7 +21,7 @@ if box.space.individuals == nil then
 
 end
 
-if box.space.tickets == nil then
+if box.space.TICKETS == nil then
     if memtx then
         space = box.schema.space.create('TICKETS')
     else
