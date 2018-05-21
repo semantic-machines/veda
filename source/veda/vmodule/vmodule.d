@@ -173,7 +173,7 @@ class VedaModule : VedaModuleBasic
 
         ubyte[] buffer = new ubyte[ 1024 ];
 
-        main_queue = new Queue(queue_db_path, main_queue_name, Mode.R, log);
+        main_queue = new Queue(main_queue_path, main_queue_name, Mode.R, log);
         main_queue.open();
 
         while (!main_queue.isReady)

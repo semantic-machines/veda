@@ -87,6 +87,10 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
     ./build-component.sh veda-ft-query ft-query
 fi
 
+if [ -z $1 ] || [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
+    ./build-component.sh veda-input-queue input-queue
+fi
+
 if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
     cd source/veda-gowebserver
     go build

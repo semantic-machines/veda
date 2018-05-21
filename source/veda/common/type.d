@@ -48,6 +48,7 @@ public struct Ticket
 /// id подсистем
 public enum SUBSYSTEM : ubyte
 {
+	NONE			  = 0,
     STORAGE           = 1,
     ACL               = 2,
     FULL_TEXT_INDEXER = 4,
@@ -108,6 +109,8 @@ public enum COMPONENT : ubyte
     /// Загрузка из файлов
     file_reader                = 40,
     
+    input_queue				   = 41,	
+    
     user_modules_tool		   = 64
 }
 
@@ -139,7 +142,8 @@ public enum MODULE : ubyte
     user_modules_tool = COMPONENT.user_modules_tool,
     ltr_scripts      = COMPONENT.ltr_scripts,
     fanout_sql_np    = COMPONENT.fanout_sql_np,
-    fanout_sql_lp    = COMPONENT.fanout_sql_lp
+    fanout_sql_lp    = COMPONENT.fanout_sql_lp,
+    input_queue      = COMPONENT.input_queue
 }
 
 /**
