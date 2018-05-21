@@ -16,6 +16,7 @@ struct Module
     string   name;
     string[] wr_components;
     bool     is_main;
+    bool     is_enable;
 
     void     unlock()
     {
@@ -37,7 +38,7 @@ struct Module
 
 struct RunModuleInfo
 {
-    Module mdl;
+    Module *mdl;
     string args;
     Pid    pid;
 }
@@ -207,19 +208,53 @@ void main(string[] args)
     string[ string ] env;
     int exit_code;
 
-    Module[ string ] modules;
+    Module *[ string ] modules;
 
-    modules[ "veda-mstorage" ]      = Module("veda-mstorage", [ "acl_preparer", "subject_manager", "ticket_manager" ], true);
-    modules[ "veda-ccus" ]          = Module("veda-ccus", [], false);
-    modules[ "veda-ft-query" ]      = Module("veda-ft-query", [], false);
-    modules[ "veda-ttlreader" ]     = Module("veda-ttlreader", [], false);
-    modules[ "veda-fanout-email" ]  = Module("veda-fanout-email", [ "fanout_email" ], false);
-    modules[ "veda-fanout-sql-np" ] = Module("veda-fanout-sql-np", [ "fanout_sql_np" ], false);
-    modules[ "veda-fanout-sql-lp" ] = Module("veda-fanout-sql-lp", [ "fanout_sql_lp" ], false);
-    modules[ "veda-scripts-main" ]  = Module("veda-scripts-main", [ "scripts-main" ], false);
-    modules[ "veda-scripts-lp" ]    = Module("veda-scripts-lp", [ "scripts-lp" ], false);
-    modules[ "veda-ltr-scripts" ]   = Module("veda-ltr-scripts", [ "ltr_scripts" ], false);
-    modules[ "veda-ft-indexer" ]    = Module("veda-ft-indexer", [ "fulltext_indexer" ], false);
+    modules[ "veda-mstorage" ]      = new Module("veda-mstorage", [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true);
+    modules[ "veda-ccus" ]          = new Module("veda-ccus", [], false, false);
+    modules[ "veda-ft-query" ]      = new Module("veda-ft-query", [], false, false);
+    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", [], false, false);
+    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", [ "fanout_email" ], false, false);
+    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", [ "fanout_sql_np" ], false, false);
+    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", [ "fanout_sql_lp" ], false, false);
+    modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", [ "scripts-main" ], false, false);
+    modules[ "veda-scripts-lp" ]    = new Module("veda-scripts-lp", [ "scripts-lp" ], false, false);
+    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", [ "ltr_scripts" ], false, false);
+    modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", [ "fulltext_indexer" ], false, false);
+    modules[ "veda-webserver" ]     = new Module("veda-webserver", [], false);
+
+    string[ string ] properties;
+    properties = readProperties("./veda.properties");
+
+    bool[ string ] need_modules;
+    auto modules_list_str = properties.as!(string)("modules");
+    if (modules_list_str !is null)
+    {
+        foreach (el; modules_list_str.split(","))
+        {
+            stderr.writeln("module on start:", el.strip());
+            need_modules[ el.strip() ] = true;
+        }
+    }
+
+    if (need_modules.length > 0)
+    {
+        foreach (mdl; modules.values)
+        {
+            if (need_modules.get(mdl.name, false) == true)
+            {
+                mdl.is_enable = true;
+            }
+        }
+    }
+    else
+    {
+        foreach (mdl; modules.values)
+        {
+            mdl.is_enable = true;
+        }
+    }
+
 
 
     bool is_found_modules = false;
@@ -276,8 +311,10 @@ void main(string[] args)
 
         foreach (ml; modules)
         {
-            auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
-            stderr.writeln("start " ~ ml.name);
+            if (ml.is_enable == false || ml.name == "veda-webserver")
+                continue;
+
+            auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
 
             string[] sargs;
 
@@ -287,6 +324,8 @@ void main(string[] args)
                 sargs = [ "./" ~ ml.name, "reload-ontology" ];
             else
                 sargs = [ "./" ~ ml.name ];
+
+            stderr.writeln("starting ", sargs);
 
             auto _pid = spawnProcess(sargs,
                                      std.stdio.stdin,
@@ -300,24 +339,45 @@ void main(string[] args)
             started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
         }
 
-        if (need_remove_ontology == false && need_reload_ontology == false)
-        {
-            Module ml = Module("veda-webserver", [], false);
-            modules[ "veda-webserver" ] = ml;
+        Module *ml = modules.get("veda-webserver", null);
 
-            if (webserver_ports.length > 0)
+        if (ml !is null && ml.is_enable == true)
+        {
+            if (need_remove_ontology == false && need_reload_ontology == false)
             {
-                foreach (port; webserver_ports)
+                if (webserver_ports.length > 0)
+                {
+                    foreach (port; webserver_ports)
+                    {
+                        string[] sargs;
+
+                        sargs = [ "./" ~ ml.name, "--http_port=" ~ port ];
+
+                        if (ext_user_port_str.length > 0)
+                            sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
+
+                        auto _logFile = File("logs/" ~ ml.name ~ port ~ "-stderr.log", "w");
+
+                        stderr.writeln("starting ", sargs);
+
+                        auto _pid = spawnProcess(sargs,
+                                                 std.stdio.stdin,
+                                                 std.stdio.stdout,
+                                                 _logFile, env, Config.suppressConsole);
+
+                        auto stsargs = array_to_str(sargs);
+                        started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
+                    }
+                }
+                else
                 {
                     string[] sargs;
 
-                    sargs = [ "./" ~ ml.name, "--http_port=" ~ port ];
+                    sargs = [ "./" ~ ml.name ];
 
-                    if (ext_user_port_str.length > 0)
-                        sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
+                    auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
 
-                    auto _logFile = File("logs/" ~ ml.name ~ port ~ "-stderr.log", "w");
-                    stderr.writeln("start " ~ ml.name);
+                    stderr.writeln("starting ", sargs);
 
                     auto _pid = spawnProcess(sargs,
                                              std.stdio.stdin,
@@ -329,25 +389,8 @@ void main(string[] args)
                 }
             }
             else
-            {
-                string[] sargs;
-
-                sargs = [ "./" ~ ml.name ];
-
-                auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
-                stderr.writeln("start " ~ ml.name);
-
-                auto _pid = spawnProcess(sargs,
-                                         std.stdio.stdin,
-                                         std.stdio.stdout,
-                                         _logFile, env, Config.suppressConsole);
-
-                auto stsargs = array_to_str(sargs);
-                started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
-            }
+                is_main_loop = false;
         }
-        else
-            is_main_loop = false;
 
         bool is_next = true;
 
@@ -365,18 +408,19 @@ void main(string[] args)
             auto args_2_pid = get_processes_info(started_modules.keys, processes);
 
             is_next = false;
-            foreach (ml; started_modules.keys)
+            foreach (eml; started_modules.keys)
             {
-                //stderr.writeln ("check module ", ml);
                 int pid;
-                pid = args_2_pid.get(ml, -1);
+                pid = args_2_pid.get(eml, -1);
 
                 if (pid == -1)
                 {
-                    stderr.writeln("not found running module ", ml, " (", pid, ")");
+                    stderr.writeln("not found running module ", eml, " (", pid, ")");
                     is_next = true;
                     break;
                 }
+                else
+                    stderr.writeln(eml, "Ok");
             }
         }
         stderr.writefln("all component started, need_watchdog=%s", need_watchdog);
