@@ -36,43 +36,47 @@ shared static this()
 
 class VedaModuleBasic
 {
-    ModuleInfoFile       module_info;
+    ModuleInfoFile module_info;
 
-    long   last_committed_op_id;
-    long   last_check_time;
+    long           last_committed_op_id;
+    long           last_check_time;
 
-    long                 op_id           = 0;
-    long                 committed_op_id = 0;
+    long           op_id           = 0;
+    long           committed_op_id = 0;
 
-    int    sock;
-    string notify_channel_url     = "tcp://127.0.0.1:9111\0";
+    int            sock;
+    string         notify_channel_url = "tcp://127.0.0.1:9111\0";
 
-    bool   already_notify_channel = false;
+    bool           already_notify_channel = false;
 
-    string               main_queue_name = "individuals-flow";
-    Queue                main_queue;
-    Consumer[]           main_cs;
-    Consumer             main_cs_prefetch;
+    string         main_queue_name = "individuals-flow";
+    Queue          main_queue;
+    Consumer[]     main_cs;
+    Consumer       main_cs_prefetch;
 
-    Queue                prepare_batch_queue;
-    Consumer             prepare_batch_cs;
+    Queue          prepare_batch_queue;
+    Consumer       prepare_batch_cs;
 }
 
 class VedaModule : VedaModuleBasic
 {
-    long                 count_signal           = 0;
-    long                 count_readed           = 0;
-    long                 count_success_prepared = 0;
+    long       count_signal           = 0;
+    long       count_readed           = 0;
+    long       count_success_prepared = 0;
 
-    Context              context;
-    Onto                 onto;
+    Context    context;
+    Onto       onto;
 
-    Individual           node;
+    Individual node;
 
-    string               main_module_url = "tcp://127.0.0.1:9112\0";
-    Ticket               sticket;
-    string               message_header;
-    string               module_uid;
+    string     main_module_url = "tcp://127.0.0.1:9112\0";
+    Ticket     sticket;
+    string     message_header;
+    string     module_uid;
+    string     main_queue_path;
+    string     my_consumer_path;
+
+
     int delegate(string) priority;
     bool[ string ]   subsrc;
 
@@ -86,7 +90,7 @@ class VedaModule : VedaModuleBasic
         return 0;
     }
 
-    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger in_log)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger in_log, string _main_queue_path = null, string _my_consumer_path = null)
     {
         priority       = &basic_priority;
         module_uid     = text(_module_id).replace("-", "_");
@@ -97,6 +101,16 @@ class VedaModule : VedaModuleBasic
         main_cs.length = 1;
         module_id      = _module_id;
         subsystem_id   = _subsystem_id;
+
+        if (_main_queue_path !is null)
+            main_queue_path = _main_queue_path;
+        else
+            main_queue_path = queue_db_path;
+
+        if (_my_consumer_path !is null)
+            my_consumer_path = _my_consumer_path;
+        else
+            my_consumer_path = queue_db_path;
     }
 
     ~this()
@@ -171,11 +185,11 @@ class VedaModule : VedaModuleBasic
 
         for (int i = 0; i < main_cs.length; i++)
         {
-            main_cs[ i ] = new Consumer(main_queue, queue_db_path, process_name ~ text(i), Mode.RW, log);
+            main_cs[ i ] = new Consumer(main_queue, my_consumer_path, process_name ~ text(i), Mode.RW, log);
             main_cs[ i ].open();
         }
 
-        main_cs_prefetch = new Consumer(main_queue, queue_db_path, process_name ~ "_prefetch", Mode.RW, log);
+        main_cs_prefetch = new Consumer(main_queue, my_consumer_path, process_name ~ "_prefetch", Mode.RW, log);
         main_cs_prefetch.open();
 
         // attempt open [prepareall] queue
@@ -540,7 +554,7 @@ class VedaModule : VedaModuleBasic
         set_global_systicket(sticket);
         log.trace("load_systicket: systicket=%s", text(sticket));
     }
-*/
+ */
     void ev_CALLBACK_GET_THREAD_ID()
     {
         //g_child_process.thread_id();
