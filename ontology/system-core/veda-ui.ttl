@@ -1122,7 +1122,13 @@ v-ui:DraftLinkEditTemplate
   rdfs:label "Шаблон черновика со ссылкой"@ru ;
   rdfs:label "Draft template with link"@en ;
   v-ui:template """
-  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit">
+    <span about="@" rel="rdf:type">
+      <span about="@" property="rdfs:label"></span>
+    </span>: 
+    <span id="label" about="@" property="rdfs:label"></span>. Создано: 
+    <span about="@" property="v-s:created"></span>
+  </a>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
