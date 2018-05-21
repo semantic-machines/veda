@@ -336,7 +336,10 @@ void main(string[] args)
 
         foreach (ml; modules)
         {
-            if (ml.is_main == true && (ml.is_enable == false || ml.name == "veda-webserver"))
+            if (ml.is_main == true)
+                continue;
+
+            if (ml.is_enable == false || ml.name == "veda-webserver")
                 continue;
 
             auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
