@@ -311,7 +311,32 @@ void main(string[] args)
 
         foreach (ml; modules)
         {
-            if (ml.is_enable == false || ml.name == "veda-webserver")
+            if (ml.is_main != true)
+                continue;
+
+            auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
+
+            string[] sargs;
+            sargs = [ "./" ~ ml.name ];
+            stderr.writeln("starting ", sargs);
+
+            auto _pid = spawnProcess(sargs,
+                                     std.stdio.stdin,
+                                     std.stdio.stdout,
+                                     _logFile, env, Config.suppressConsole);
+
+            server_pid = _pid;
+
+            auto stsargs = array_to_str(sargs);
+            started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
+
+            break;
+        }
+        core.thread.Thread.sleep(dur!("msecs")(100));
+
+        foreach (ml; modules)
+        {
+            if (ml.is_main == true && (ml.is_enable == false || ml.name == "veda-webserver"))
                 continue;
 
             auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
