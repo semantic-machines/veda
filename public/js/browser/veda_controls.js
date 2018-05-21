@@ -1347,24 +1347,55 @@
     });
   }
 
+//  function resizeImage (image, maxWidth) {
+//    if (image.width <= maxWidth) {
+//      return image;
+//    }
+//    var canvas1 = document.createElement("canvas"),
+//        context1 = canvas1.getContext("2d"),
+//        canvas2 = document.createElement("canvas"),
+//        context2 = canvas2.getContext("2d"),
+//        ratio = maxWidth / image.width,
+//        width = image.width * ratio >> 0,
+//        height = image.height * ratio >> 0;
+//    canvas1.width = width;
+//    canvas1.height = height;
+//    canvas2.width = image.width * 2;
+//    canvas2.height = image.height * 2;
+//    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
+//    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
+//    var resizedSrc = canvas1.toDataURL("image/jpeg");
+//    var resized = new Image();
+//    resized.src = resizedSrc;
+//    return resized;
+//  }
+
   function resizeImage (image, maxWidth) {
-    if (image.width < maxWidth) {
+    if (image.width <= maxWidth) {
       return image;
     }
-    var canvas1 = document.createElement("canvas"),
-        context1 = canvas1.getContext("2d"),
-        canvas2 = document.createElement("canvas"),
-        context2 = canvas2.getContext("2d"),
-        ratio = maxWidth / image.width,
-        width = image.width * ratio >> 0,
-        height = image.height * ratio >> 0;
-    canvas1.width = width;
-    canvas1.height = height;
-    canvas2.width = image.width * 2;
-    canvas2.height = image.height * 2;
-    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
-    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-    var resizedSrc = canvas1.toDataURL("image/jpeg");
+    var canvas = document.createElement('canvas'),
+        ctx = canvas.getContext("2d"),
+        oc = document.createElement('canvas'),
+        octx = oc.getContext('2d');
+    canvas.width = maxWidth;
+    canvas.height = canvas.width * image.height / image.width;
+    var cur = {
+      width: Math.floor(image.width * 0.5),
+      height: Math.floor(image.height * 0.5)
+    }
+    oc.width = cur.width;
+    oc.height = cur.height;
+    octx.drawImage(image, 0, 0, cur.width, cur.height);
+    while (cur.width * 0.5 > maxWidth) {
+      cur = {
+        width: Math.floor(cur.width * 0.5),
+        height: Math.floor(cur.height * 0.5)
+      };
+      octx.drawImage(oc, 0, 0, cur.width * 2, cur.height * 2, 0, 0, cur.width, cur.height);
+    }
+    ctx.drawImage(oc, 0, 0, cur.width, cur.height, 0, 0, canvas.width, canvas.height);
+    var resizedSrc = canvas.toDataURL("image/jpeg");
     var resized = new Image();
     resized.src = resizedSrc;
     return resized;
