@@ -222,6 +222,7 @@ void main(string[] args)
     modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", [ "ltr_scripts" ], false, false);
     modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", [ "fulltext_indexer" ], false, false);
     modules[ "veda-webserver" ]     = new Module("veda-webserver", [], false);
+    modules[ "veda-input-queue" ]     = new Module("veda-input-queue", [], false);
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");

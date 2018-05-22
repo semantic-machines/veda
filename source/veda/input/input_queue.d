@@ -31,7 +31,7 @@ class InputQueueProcess : VedaModule
         properties = readProperties("./veda.properties");
 
         main_queue_path = properties.as!(string)("input_queue_path");
-		log.trace ("use input_queue_path=%s", main_queue_path);
+        log.trace("use input_queue_path=%s", main_queue_path);
 
         try
         {
@@ -48,7 +48,16 @@ class InputQueueProcess : VedaModule
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id)
     {
-        //log.trace("[%s]: start prepare", new_indv.uri);
+        log.trace("[%s]: start prepare", new_indv.uri);
+
+        auto sticket = context.sys_ticket();
+
+        auto rc = context.update(transaction_id, &sticket, cmd, &new_indv, event_id, 0, OptFreeze.NONE, OptAuthorize.NO).result;
+
+        if (rc != ResultCode.OK)
+        {
+            log.trace("ERR! fail store [%s]", new_indv.uri);
+        }
 
         //scope (exit)
         //{

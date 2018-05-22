@@ -1,5 +1,7 @@
 BUILD_PATH=$PWD
 
+./stop
+
 #!/bin/sh
 rm *.log
 rm ./logs/*.log
