@@ -425,6 +425,22 @@ v-s:Decree
 # v-s:registrationDate
 # v-s:title
 
+v-s:hasDecreeKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид документа"@ru ;
+  rdfs:label "Decree kind"@en ;
+  rdfs:range v-s:DecreeKind ;
+  rdfs:domain v-s:Decree ;
+.
+
+v-s:DecreeKind
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Вид распорядительного документа"@ru ;
+  rdfs:label "Decree kind"@en ;
+.
+
+
 #-----------------ВНУТРЕННИЙ_ДОКУМЕНТ--------------------
 v-s:InternalDocument
   rdf:type owl:Class ;

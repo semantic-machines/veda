@@ -126,6 +126,13 @@ v-s:locked
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
+v-s:isFixedTerm
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Срочный"@ru ;
+  rdfs:label "Fixed-term"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:deletedInOrigin
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Удален во внешней системе"@ru ;
