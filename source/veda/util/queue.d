@@ -369,8 +369,7 @@ class Queue
     private File   *ff_info_push_r = null;
 
     private File   *ff_queue_w = null;
-    private File *[ int ] ff_queue_chunk_r;
-    File   *ff_queue_r = null;
+    private File   *ff_queue_chunk_r = null;
 
     private string file_name_info_push;
     private string file_name_queue;
@@ -459,28 +458,15 @@ class Queue
 
                 ff_info_push_r = new File(file_name_info_push, "r");
 
-                ff_queue_r = new File(file_name_queue, "r");
-
-                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_push_r !is null && ff_queue_w !is null && ff_queue_r !is null ||
-                    mode == Mode.R && ff_info_push_r !is null && ff_queue_r !is null
-                    )
+                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_push_r !is null && ff_queue_w !is null || mode == Mode.R &&
+                    ff_info_push_r !is null)
                 {
                     isReady = true;
                     get_info();
 
-                    if (mode == Mode.R && ff_queue_r.size() < right_edge || mode == Mode.RW && ff_queue_r.size() != right_edge)
-                    {
-                        isReady = false;
-                        log.trace("ERR! queue:open(%s): [%s].size (%d) != right_edge=", text(mode), file_name_queue, ff_queue_r.size(), right_edge);
-                    }
-                    else
-                    {
-                        isReady = true;
-                        put_info();
-                    }
+                    isReady = true;
+                    put_info();
                 }
-
-                //ff_queue_r.close();
             }
         }
         catch (Throwable ex)
@@ -492,15 +478,13 @@ class Queue
 
     File *get_chunk_file(int chunk)
     {
-     //   File *ff_queue_r = ff_queue_chunk_r.get(chunk, null);
+        if (ff_queue_chunk_r is null)
+        {
+	        file_name_queue = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+            ff_queue_chunk_r = new File(file_name_queue, "r");
+        }
 
-     //   if (ff_queue_r is null)
-     //   {
-     //       ff_queue_r                = new File(file_name_queue, "r");
-     //       ff_queue_chunk_r[ chunk ] = ff_queue_r;
-     //   }
-
-        return ff_queue_r;
+        return ff_queue_chunk_r;
     }
 
     private void remove_lock()
@@ -527,9 +511,12 @@ class Queue
 
             ff_info_push_r.close();
 
-            foreach (ff; ff_queue_chunk_r)
-                ff.close();
-			ff_queue_r.close();
+            if (ff_queue_chunk_r !is null)
+            {
+                ff_queue_chunk_r.close();
+                ff_queue_chunk_r = null;
+            }
+
             if (mode == Mode.RW)
             {
                 flush();
