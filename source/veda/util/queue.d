@@ -368,9 +368,10 @@ class Queue
     private File   *ff_info_push_w = null;
     private File   *ff_info_push_r = null;
 
-    private File   *ff_queue_w = null;
+    private File   *ff_queue_w       = null;
     private File   *ff_queue_chunk_r = null;
 
+    private string file_name_current_chunk;
     private string file_name_info_push;
     private string file_name_queue;
     private string file_name_lock;
@@ -394,9 +395,10 @@ class Queue
 
     void set_filenames()
     {
-        file_name_info_push = path ~ "/" ~ name ~ "_info_push";
-        file_name_queue     = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-        file_name_lock      = path ~ "/" ~ name ~ "_queue.lock";
+        file_name_current_chunk = path ~ "/" ~ name ~ "_current_chunk";
+        file_name_info_push     = path ~ "/" ~ name ~ "_info_push";
+        file_name_queue         = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+        file_name_lock          = path ~ "/" ~ name ~ "_queue.lock";
     }
 
     ~this()
@@ -443,7 +445,19 @@ class Queue
                         log.trace("Queue [%s] already open, or not deleted lock file", name);
                         return false;
                     }
-                    std.file.write(file_name_lock, "0");
+
+                    try
+                    {
+                        string s_chunk = readText(file_name_current_chunk);
+                        chunk = to!int (s_chunk);
+                        log.trace("queue %s, current chunk=%d", name, chunk);
+                    }
+                    catch (Throwable tr)
+                    {
+                        std.file.write(file_name_current_chunk, text(chunk));
+                    }
+
+                    std.file.write(file_name_lock, text(chunk));
 
                     if (exists(file_name_info_push) == false)
                         ff_info_push_w = new File(file_name_info_push, "w");
@@ -480,7 +494,7 @@ class Queue
     {
         if (ff_queue_chunk_r is null)
         {
-	        file_name_queue = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+            file_name_queue  = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
             ff_queue_chunk_r = new File(file_name_queue, "r");
         }
 
