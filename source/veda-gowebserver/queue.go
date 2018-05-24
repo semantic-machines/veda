@@ -2,11 +2,11 @@ package main
 
 import (
 	"bufio"
-	"encoding/hex"
+	//	"encoding/hex"
 	"fmt"
 	"hash"
 	"hash/crc32"
-	"io/ioutil"
+	//	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -340,15 +340,12 @@ type Queue struct {
 	count_pushed uint32
 	mode         Mode
 
-	ff_info_push_w *os.File
 	ff_info_push_r *os.File
 
-	ff_queue_w *os.File
 	ff_queue_r *os.File
 
 	file_name_info_push string
 	file_name_queue     string
-	file_name_lock      string
 
 	// --- tmp ---
 	header Header
@@ -367,7 +364,6 @@ func NewQueue(_name string, _mode Mode) *Queue {
 
 	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push"
 	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
-	p.file_name_lock = queue_db_path + "/" + p.name + "_queue.lock"
 
 	p.hash = crc32.NewIEEE()
 	return p
@@ -385,34 +381,10 @@ func (ths *Queue) open(_mode Mode) bool {
 	//defer log.Printf("ERR! queue, not open: ex: %s", ex.msg);
 
 	//writeln("open ", text (mode));
-
-	if ths.mode == RW {
-		if _, err = os.Stat(ths.file_name_lock); os.IsNotExist(err) == false {
-			log.Printf("Queue [%s] already open, or not deleted lock file", ths.name)
-			return false
-		}
-		err = ioutil.WriteFile(ths.file_name_lock, []byte("0"), 0644)
-
-		if _, err = os.Stat(ths.file_name_info_push); os.IsNotExist(err) {
-			ths.ff_info_push_w, err = os.OpenFile(ths.file_name_info_push, os.O_CREATE|os.O_RDWR, 0644)
-		} else {
-			ths.ff_info_push_w, err = os.OpenFile(ths.file_name_info_push, os.O_RDWR, 0644)
-		}
-
-		if err != nil {
-			return false
-		}
-
-		if _, err = os.Stat(ths.file_name_queue); os.IsNotExist(err) {
-			ths.ff_queue_w, err = os.OpenFile(ths.file_name_info_push, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
-		} else {
-			ths.ff_queue_w, err = os.OpenFile(ths.file_name_info_push, os.O_RDWR|os.O_APPEND, 0644)
-		}
-
-		if err != nil {
-			return false
-		}
+	if ths.mode != R {
+		return false
 	}
+
 	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 
 	if err != nil {
@@ -436,7 +408,7 @@ func (ths *Queue) open(_mode Mode) bool {
 		log.Printf("ERR! queue:open(%s): [%s].size (%d) != right_edge=", ths.mode, ths.file_name_queue, queue_r_info.Size(), ths.right_edge)
 	} else {
 		ths.isReady = true
-		ths.put_info()
+		//ths.put_info()
 	}
 
 	return ths.isReady
@@ -509,22 +481,4 @@ func (ths *Queue) get_info() bool {
 	//log.Printf("@queue info=%s", ths)
 
 	return true
-}
-
-func (ths *Queue) put_info() {
-	if !ths.isReady || ths.mode == R {
-		return
-	}
-	ths.ff_info_push_w.Seek(0, 0)
-
-	data := ths.name + ";" + strconv.FormatInt(int64(ths.chunk), 10) + ";" + strconv.FormatInt(int64(ths.right_edge), 10) + ";" + strconv.FormatUint(uint64(ths.count_pushed), 10)
-
-	ths.hash.Reset()
-	ths.hash.Write([]uint8(data))
-	hashInBytes := ths.hash.Sum(nil)[:]
-	hash_hex := []uint8(hex.EncodeToString(hashInBytes))
-
-	ths.ff_info_push_w.Write([]uint8(data))
-	ths.ff_info_push_w.Write([]uint8(hash_hex))
-	ths.ff_info_push_w.Write([]uint8("\n"))
 }
