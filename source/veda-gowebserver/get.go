@@ -61,7 +61,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		// main_queue.open(CURRENT)
 
-		main_cs = NewConsumer(main_queue, queueName)
+		main_cs = NewConsumer(main_queue, queueName, R)
 		if !main_cs.open() {
 			log.Println("@ERR OPENING CONSUMER: ", queueName)
 			ctx.Response.SetStatusCode(int(InvalidIdentifier))
