@@ -251,6 +251,8 @@ class Consumer
         if (!queue.isReady || !isReady || mode == Mode.R)
             return null;
 
+        queue.get_info(chunk);
+
         if (count_popped >= queue.count_pushed)
             return null;
 
@@ -303,6 +305,8 @@ class Consumer
             log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
             return false;
         }
+
+        queue.get_info(chunk);
 
         if (count_popped >= queue.count_pushed)
         {
@@ -360,16 +364,18 @@ class Queue
     private Logger log;
     private string name;
     private string path;
-    private int    chunk;
+    int            chunk;
     private ulong  right_edge;
     uint           count_pushed;
     private Mode   mode;
 
-    private File   *ff_info_push_w = null;
-    private File   *ff_info_push_r = null;
+    // Write (current chunk)
+    private File *ff_info_push_w = null;
+    private File *ff_queue_w     = null;
 
-    private File   *ff_queue_w       = null;
-    private File   *ff_queue_chunk_r = null;
+    // Read (request chunk)
+    private File   *ff_queue_chunk_r     = null;
+    private File   *ff_info_push_chunk_r = null;
 
     private string file_name_current_chunk;
     private string file_name_info_push;
@@ -396,8 +402,8 @@ class Queue
     void set_filenames()
     {
         file_name_current_chunk = path ~ "/" ~ name ~ "_current_chunk";
-        file_name_info_push     = path ~ "/" ~ name ~ "_info_push";
         file_name_queue         = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
+        file_name_info_push     = path ~ "/" ~ name ~ "_info_push_" ~ text(chunk);
         file_name_lock          = path ~ "/" ~ name ~ "_queue.lock";
     }
 
@@ -468,18 +474,14 @@ class Queue
                         ff_queue_w = new File(file_name_queue, "wb");
                     else
                         ff_queue_w = new File(file_name_queue, "ab+");
+
+                    get_info(chunk, false);
                 }
 
-                ff_info_push_r = new File(file_name_info_push, "r");
-
-                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_push_r !is null && ff_queue_w !is null || mode == Mode.R &&
-                    ff_info_push_r !is null)
+                if (mode == Mode.RW && ff_info_push_w !is null && ff_queue_w !is null || mode == Mode.R)
                 {
                     isReady = true;
-                    get_info();
-
-                    isReady = true;
-                    put_info();
+                    //put_info();
                 }
             }
         }
@@ -523,7 +525,11 @@ class Queue
         {
             //writeln("queue_close:", file_name_queue);
 
-            ff_info_push_r.close();
+            if (ff_info_push_chunk_r !is null)
+            {
+                ff_info_push_chunk_r.close();
+                ff_info_push_chunk_r = null;
+            }
 
             if (ff_queue_chunk_r !is null)
             {
@@ -560,15 +566,20 @@ class Queue
         ff_info_push_w.writeln(hash_hex);
     }
 
-    public bool get_info(bool is_check_ready = true)
+    public bool get_info(int r_chunk, bool is_check_ready = true)
     {
         if (is_check_ready && !isReady)
             return false;
 
-        ff_info_push_r.seek(0);
+        if (ff_info_push_chunk_r is null)
+        {
+            ff_info_push_chunk_r = new File(path ~ "/" ~ name ~ "_info_push_" ~ text(r_chunk), "r");
+        }
+
+        ff_info_push_chunk_r.seek(0);
 //        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
 
-        string str = ff_info_push_r.readln();
+        string str = ff_info_push_chunk_r.readln();
         //writeln("@3 str=[", str, "]");
         if (str !is null)
         {

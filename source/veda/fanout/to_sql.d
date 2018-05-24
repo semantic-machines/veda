@@ -348,7 +348,7 @@ public class FanoutProcess : VedaModule
             {
                 Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
                 log.trace("connect_to_mysql:connection: %s=[%s]", gate.uri, connection);
-                subscribe_on_prefetch(gate.uri);
+                //subscribe_on_prefetch(gate.uri);
 
                 Resource transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)

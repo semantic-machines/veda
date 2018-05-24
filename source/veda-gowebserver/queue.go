@@ -1,12 +1,12 @@
 package main
 
+// Veda queue, read only mode
+
 import (
 	"bufio"
-	//	"encoding/hex"
 	"fmt"
 	"hash"
 	"hash/crc32"
-	//	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -98,6 +98,7 @@ type Consumer struct {
 	count_popped  uint32
 	last_read_msg []uint8
 	mode          Mode
+	chunk         int32
 
 	ff_info_pop_w *os.File
 	ff_info_pop_r *os.File
@@ -114,8 +115,6 @@ func NewConsumer(_queue *Queue, _name string, _mode Mode) *Consumer {
 	p.queue = _queue
 	p.name = _name
 	p.mode = _mode
-	//tablePolynomial := crc32.MakeTable(0xD5828281)
-	//p.hash = crc32.New(tablePolynomial)
 	p.hash = crc32.NewIEEE()
 	return p
 }
@@ -263,6 +262,8 @@ func (ths *Consumer) pop() string {
 		return ""
 	}
 
+	ths.queue.get_info(ths.chunk)
+
 	if ths.count_popped >= ths.queue.count_pushed {
 		return ""
 	}
@@ -315,6 +316,8 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 		return false
 	}
 
+	ths.queue.get_info(ths.chunk)
+
 	if ths.count_popped >= ths.queue.count_pushed {
 		log.Printf("ERR! queue[%s][%s]:commit_and_next:count_popped(%d) >= queue.count_pushed(%d)", ths.queue.name, ths.name, ths.count_popped,
 			ths.queue.count_pushed)
@@ -364,8 +367,8 @@ type Queue struct {
 
 	ff_queue_r *os.File
 
-	file_name_info_push string
-	file_name_queue     string
+	//file_name_info_push string
+	file_name_queue string
 
 	// --- tmp ---
 	header Header
@@ -382,7 +385,7 @@ func NewQueue(_name string, _mode Mode) *Queue {
 	buff = make([]uint8, 4096*100)
 	header_buff = make([]uint8, p.header.length())
 
-	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push"
+	//p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
 	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
 
 	p.hash = crc32.NewIEEE()
@@ -405,19 +408,19 @@ func (ths *Queue) open(_mode Mode) bool {
 		return false
 	}
 
-	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
+	//ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 
-	if err != nil {
-		return false
-	}
+	//if err != nil {
+	//	return false
+	//}
 	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
 
 	if err != nil {
 		return false
 	}
 
-	ths.isReady = true
-	ths.get_info()
+	//ths.isReady = true
+	//ths.get_info()
 
 	var queue_r_info os.FileInfo
 
@@ -437,29 +440,32 @@ func (ths *Queue) open(_mode Mode) bool {
 func (ths *Queue) reopen_reader() {
 	var err error
 
-	ths.ff_info_push_r.Close()
-	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
-	if err != nil {
-		ths.isReady = false
-		return
+	if ths.ff_queue_r != nil {
+		ths.ff_queue_r.Close()
 	}
-
-	ths.ff_queue_r.Close()
 	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
 	if err != nil {
 		ths.isReady = false
 		return
 	}
-	ths.get_info()
+	//ths.get_info()
 }
 
-func (ths *Queue) get_info() bool {
+func (ths *Queue) get_info(chunk int32) bool {
 
 	if !ths.isReady {
 		return false
 	}
 
 	var err error
+
+	file_name_info_push := queue_db_path + "/" + ths.name + "_info_push_" + strconv.Itoa(int(chunk))
+	ths.ff_info_push_r.Close()
+	ths.ff_info_push_r, err = os.OpenFile(file_name_info_push, os.O_RDONLY, 0644)
+	if err != nil {
+		ths.isReady = false
+		return false
+	}
 
 	ths.ff_info_push_r.Seek(0, 0)
 	//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);

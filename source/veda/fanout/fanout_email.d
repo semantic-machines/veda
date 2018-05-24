@@ -467,7 +467,7 @@ class FanoutProcess : VedaModule
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
-                subscribe_on_prefetch(gate.uri);
+                //subscribe_on_prefetch(gate.uri);
                 Resource   transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)
                 {

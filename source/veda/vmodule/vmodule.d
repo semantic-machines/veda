@@ -52,7 +52,7 @@ class VedaModuleBasic
     string         main_queue_name = "individuals-flow";
     Queue          main_queue;
     Consumer[]     main_cs;
-    Consumer       main_cs_prefetch;
+    //Consumer       main_cs_prefetch;
 
     Queue          prepare_batch_queue;
     Consumer       prepare_batch_cs;
@@ -189,8 +189,8 @@ class VedaModule : VedaModuleBasic
             main_cs[ i ].open();
         }
 
-        main_cs_prefetch = new Consumer(main_queue, my_consumer_path, process_name ~ "_prefetch", Mode.RW, log);
-        main_cs_prefetch.open();
+        //main_cs_prefetch = new Consumer(main_queue, my_consumer_path, process_name ~ "_prefetch", Mode.RW, log);
+        //main_cs_prefetch.open();
 
         // attempt open [prepareall] queue
         open_perapare_batch_queue(true);
@@ -259,15 +259,15 @@ class VedaModule : VedaModuleBasic
 
     abstract void receive_msg(string msg);
 
-    public void subscribe_on_prefetch(string uri)
-    {
-        subsrc[ uri.idup ] = true;
-    }
+    //public void subscribe_on_prefetch(string uri)
+    //{
+    //    subsrc[ uri.idup ] = true;
+    //}
 
-    public void unsubscribe_on_prefetch(string uri)
-    {
-        subsrc.remove(uri.dup);
-    }
+    //public void unsubscribe_on_prefetch(string uri)
+    //{
+    //    subsrc.remove(uri.dup);
+    //}
 
     abstract void event_of_change(string uri);
 
@@ -276,6 +276,7 @@ class VedaModule : VedaModuleBasic
         open_perapare_batch_queue(false);
     }
 
+/*
     private void configuration_found_in_queue()
     {
         string data;
@@ -325,7 +326,7 @@ class VedaModule : VedaModuleBasic
         }
         main_cs_prefetch.sync();
     }
-
+*/
     /+private int priority(string user_uri)
        {
         stderr.writefln("basic user uri %s", user_uri);
@@ -343,7 +344,7 @@ class VedaModule : VedaModuleBasic
             if (f_listen_exit == true)
                 break;
 
-            configuration_found_in_queue();
+            //configuration_found_in_queue();
 
             string data = main_cs[ i ].pop();
 

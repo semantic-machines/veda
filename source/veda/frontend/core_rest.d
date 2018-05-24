@@ -828,7 +828,7 @@ class VedaStorageRest : VedaStorageRest_API
 
 
                         // TODO: ? возможно для скорости следует переделать get_info на rawRead
-                        main_queue.get_info();
+                        main_queue.get_info(main_queue.chunk);
                         cs0.get_info();
 
                         Individual indv_res;
