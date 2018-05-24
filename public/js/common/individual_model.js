@@ -51,7 +51,6 @@ veda.Module(function (veda) { "use strict";
       this["v-s:lastEditor"] = [ user ];
     }
     if ( !this.hasValue("v-s:creator") && (!this.hasValue("v-s:created") || this.isDraft()) ) {
-      console.log("isDraft");
       this["v-s:creator"] = [ user ];
       this["v-s:created"] = [ now ];
     }
