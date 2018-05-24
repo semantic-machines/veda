@@ -25,6 +25,24 @@ LIB_NAME[12]="curl"
 LIB_OK="Status: install ok installed"
 F_UL=0
 
+### LIBS FROM APT ###
+
+for i in "${LIB_NAME[@]}"; do
+
+    L1=`dpkg -s $i | grep 'install ok'`
+
+    if  [ "$L1" != "$LIB_OK" ]; then
+
+      if [ $F_UL == 0 ]; then
+          sudo apt-get update
+          F_UL=1
+      fi
+
+        sudo apt-get install -y $i
+    fi
+
+done
+
 #echo "--- INSTALL VIBE.D ---"
 #mkdir tmp
 #cd tmp
@@ -130,25 +148,6 @@ go get github.com/divan/expvarmon
 go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go
-
-### LIBS FROM APT ###
-
-for i in "${LIB_NAME[@]}"; do
-
-    L1=`dpkg -s $i | grep 'install ok'`
-
-    if  [ "$L1" != "$LIB_OK" ]; then
-
-      if [ $F_UL == 0 ]; then
-          sudo apt-get update
-          F_UL=1
-      fi
-
-        sudo apt-get install -y $i
-    fi
-
-done
-
 
 ### TARANTOOL SERVER ###
 
