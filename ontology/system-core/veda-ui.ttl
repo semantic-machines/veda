@@ -535,9 +535,9 @@ v-ui:StandardButtonsTemplate
       window.open(journalDMS_url + uri, "journal-dms");
     }
   });
-  $("#send", template).on("click", function () {
-    //template.parent().closest("[resource]").trigger("save");
-    veda.Util.send(individual, template);
+  $("#send", template).on("click", function (e) {
+    // template.parent().closest("[resource]").trigger("save");
+    veda.Util.send(individual, template.parent().closest("[resource]"));
   });
   $("#createReport", template).on("click", function () { veda.Util.createReport(individual); });
   $("#showRights", template).on("click", function () { veda.Util.showRights(individual); });
