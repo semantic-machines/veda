@@ -41,6 +41,18 @@ veda.Module(function (veda) { "use strict";
   function beforeSaveHandler() {
     var now = new Date();
     var user = veda.appointment ? veda.appointment : veda.user;
+
+    try {
+      //don't overwrite v-s:created from draft
+      var origin = get_individual(veda.ticket, this.id);
+      this["v-s:created"] = origin["v-s:created"];
+    } catch (e) {
+      if (e.code === 422 || e.code === 404) {
+        this["v-s:creator"] = [ user ];
+        this["v-s:created"] = [ now ];
+      };
+    };
+
     if (
       !this.hasValue("v-s:lastEditor")
       || !this.hasValue("v-s:edited")
@@ -49,11 +61,7 @@ veda.Module(function (veda) { "use strict";
     ) {
       this["v-s:edited"] = [ now ];
       this["v-s:lastEditor"] = [ user ];
-    }
-    if ( !this.hasValue("v-s:creator") && (!this.hasValue("v-s:created") || this.isDraft()) ) {
-      this["v-s:creator"] = [ user ];
-      this["v-s:created"] = [ now ];
-    }
+    };
   }
 
   var proto = veda.IndividualModel.prototype;
