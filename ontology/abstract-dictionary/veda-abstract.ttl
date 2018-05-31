@@ -614,6 +614,13 @@ v-s:hasPaymentForm
   rdfs:label "Payment form"@en ;
   rdfs:range v-s:PaymentForm ;
 .
+v-s:hasPaymentDaysForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Виды дней расчета"@ru ;
+  rdfs:label "Payment days form"@en ;
+  rdfs:range v-s:PaymentDaysForm ;
+.
 v-s:hasDeliveryConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
