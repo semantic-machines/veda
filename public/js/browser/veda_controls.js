@@ -1705,7 +1705,9 @@
       header.find(".close-menu")
         .click(function () {
           fulltextMenu.hide();
+          $(".form-control", control).val("");
           individual.set(rel_uri, selected);
+
         })
         .text("Ok");
       if (isSingle) {
