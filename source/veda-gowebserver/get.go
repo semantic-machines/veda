@@ -190,9 +190,13 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 
 	uris = make([]string, len(jsonData["uris"].([]interface{})))
 	for i := 0; i < len(jsonData["uris"].([]interface{})); i++ {
-		iuri := jsonData["uris"].([]interface{})[i]
-		if iuri != nil {
-			uris[i] = iuri.(string)
+		if jsonData["uris"].([]interface{})[i] != nil {
+			iuri := jsonData["uris"].([]interface{})[i]
+			if iuri != nil {
+				uris[i] = iuri.(string)
+			} else {
+				log.Println("WARN! invalid uri(null) %v", jsonData)
+			}
 		} else {
 			log.Println("WARN! invalid uri(null) %v", jsonData)
 		}
