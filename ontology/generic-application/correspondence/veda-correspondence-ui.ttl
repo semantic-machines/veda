@@ -334,9 +334,16 @@ v-s:LetterTemplate
     ) {
       $('#delete.action', template).remove();
     } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
+      var complexTemplateUri;
+      if (individual['rdf:type'][0].id === "v-s:IncomingLetter"){
+        complexTemplateUri = 'v-s:IncomingLetter_ComplexRouteStartForm_Template';
+      }
+      if (individual['rdf:type'][0].id === "v-s:OutgoingLetter"){
+        complexTemplateUri = 'v-s:OutgoingLetter_ComplexRouteStartForm_Template';
+      }
       $('#send.action', template).off("click");
       $('#send.action', template).on('click', function () {
-        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform', undefined, complexTemplateUri);
       });
     } else {
       $('#delete.action', template).remove();
