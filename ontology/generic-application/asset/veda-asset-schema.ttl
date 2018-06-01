@@ -2,18 +2,19 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
 
-<http://semantic-machines.com/veda/veda-schema-Asset/>
+
+<http://semantic-machines.com/veda/veda-asset-schema/>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Основное средство"@ru ;
-  rdfs:label "Veda system ontology. Asset"@en ;
+  rdfs:label "Онтология системы Veda. Основное средство. Схема."@ru ;
+  rdfs:label "Veda system ontology. Asset. Schema."@en ;
   v-s:loadPriority 11 ;
 .
-#--------------------------------------------------
+
+# ------------------------------------------------------------ КЛАССЫ --
 v-s:Asset
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -22,11 +23,10 @@ v-s:Asset
   rdfs:subClassOf v-s:Vehicle ;
   rdfs:label "Основное средство"@ru ;
   rdfs:label "Asset"@en ;
+#--------- mnd-s шаблон
   v-ui:hasTemplate mnd-s:AssetTemplate ;
 .
-# v-s:registrationNumber
-
-
+# --- В связи с вводом класса возникает предикат v-s:hasAsset. Он описан в классе v-s:Contractual
 #----------------------------------------------------
 v-s:RegistrationCertificate
   rdf:type owl:Class ;
@@ -36,6 +36,7 @@ v-s:RegistrationCertificate
   rdfs:subClassOf v-s:Spatial ;
   rdfs:label "Свидетельство о регистрации"@ru ;
   rdfs:label "Registration сertificate"@en ;
+#--------- mnd-s шаблон
   v-ui:hasTemplate mnd-s:RegistrationCertificateTemplate ;
 .
 # v-s:registrationNumber
@@ -71,13 +72,7 @@ v-s:egrpNumber
   rdfs:range xsd:string ;
   rdfs:domain v-s:RegistrationCertificate ;
 .
-v-s:PsTypeOfOwnershipForRegistrationCertificate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:RegistrationCertificate ;
-  v-ui:forProperty v-s:typeOfOwnership ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('@' == 'd:1b0d368c502f4e4db36f0e6cf9513b16' || '@' == 'd:6d6e3b9704994786adf6f7bfed9e0c87')"^^xsd:string ;
-  rdfs:label "Спецификация свойства typeOfOwnership для класса v-s:RegistrationCertificate"@ru ;
-  rdfs:label "typeOfOwnership property specification for v-s:RegistrationCertificate class"@en ;
-.
+# --- В связи с вводом класса возникает предикат v-s:hasRegistrationCertificate. Он описан в классе v-s:RequestContractDetail
+
+
+

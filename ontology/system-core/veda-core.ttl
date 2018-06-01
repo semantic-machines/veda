@@ -228,7 +228,6 @@ v-s:Account
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Учетная запись"@ru ;
   rdfs:label "Account"@en ;
-  v-ui:hasTemplate td:AccountTemplate1 ;
 .
 
 v-s:GitAccount

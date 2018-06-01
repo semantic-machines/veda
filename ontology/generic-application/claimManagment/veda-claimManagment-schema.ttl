@@ -14,14 +14,6 @@
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
-v-s:ClaimCircumstance
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Обстоятельства претензии"@ru ;
-  rdfs:label "Claim circumstance"@en ;
-.
-# --- В связи с вводом класса возникает предикат v-s:hasClaimCircumstance. Он описан в классе v-s:Claim
-# -----------------------
 v-s:Claim
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;

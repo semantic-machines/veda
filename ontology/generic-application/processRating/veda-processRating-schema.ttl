@@ -2,17 +2,18 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
-@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
-<http://semantic-machines.com/veda/veda-schema-ProcessRating/>
+
+<http://semantic-machines.com/veda/veda-processRating-schema/>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Удовлетворенность внутреннего потребителя"@ru ;
-  rdfs:label "Veda system ontology. Internal customer satisfaction"@en ;
+  rdfs:label "Онтология системы Veda. Оценка процесса. Схема."@ru ;
+  rdfs:label "Veda system ontology. Process rating. Schema."@en ;
   v-s:loadPriority 11 ;
 .
-#--------------------------------------КЛАССЫ-------------------
+
+#---------------------------------------------------------
 v-s:SetOfProcessRatingForms
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Journaling ;
@@ -59,6 +60,7 @@ v-s:hasProcessRating
   rdfs:range v-s:ProcessRating ;
   rdfs:domain v-s:ProcessRatingForm ;
 .
+# --- В связи с вводом класса возникает предикат v-s:hasProcessRatingForm. Он описан в классе v-s:SetOfProcessRatingForms
 #--------------------------
 v-s:ProcessRating
   rdf:type owl:Class ;
@@ -70,3 +72,7 @@ v-s:ProcessRating
   rdfs:label "Оценка"@ru ;
   rdfs:label "Rating"@en ;
 .
+# --- В связи с вводом класса возникает предикат v-s:hasProcessRating. Он описан в классе v-s:ProcessRatingForm
+
+
+

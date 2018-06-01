@@ -239,6 +239,16 @@ v-s:PaymentConditions
 # rdfs:label
 
 #----------------------------------------------
+v-s:PaymentDaysForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Виды дней расчета"@ru ;
+  rdfs:label "Payment days form"@en ;
+.
+# rdfs:label
+
+#----------------------------------------------
 v-s:PaymentForm
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
