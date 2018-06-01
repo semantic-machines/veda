@@ -71,9 +71,12 @@ veda.Module(function (veda) { "use strict";
 
   proto.set = function (uri, individual) {
     this[uri] = individual;
-    if (!individual.hasValue("v-s:created")) individual["v-s:created"] = [ new Date() ];
+    var temp = individual.toJson();
+    if (this._[uri] === undefined) {
+      temp["v-s:created"] = newDate(new Date());
+    };
     individual.isSync(false);
-    this._[uri] = individual.toJson();
+    this._[uri] = temp;
     storage.drafts = JSON.stringify(this._);
     veda.trigger("update:drafts", this);
     return this;
