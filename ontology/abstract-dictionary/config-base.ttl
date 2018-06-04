@@ -81,6 +81,7 @@ cfg:ImportDMSToVeda
 .
 cfg:ImportDMSToVedaAccount
   rdf:type v-s:Account ;
+  v-s:author cfg:VedaSystem ;  
   rdfs:label "Import DMS to Veda account"@en ;
   v-s:owner cfg:ImportDMSToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
@@ -96,6 +97,38 @@ cfg:ImportDMSToVedaAppointment
   v-s:official "false"^^xsd:boolean;
   rdfs:label "Утилита DMS to Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
+  v-s:parentUnit cfg:User_department;
+.
+
+### -------------------------------------------------------
+cfg:ImportFromOtherSystemToVeda
+  rdf:type v-s:Person ;
+  v-s:author cfg:VedaSystem ;
+  v-s:firstName "Утилита импорта в Veda"@ru ;
+  v-s:firstName "Import From Other System to Veda"@en ;
+  v-s:hasAccount cfg:ImportFromOtherSystemToVedaAccount ;
+  v-s:hasAppointment cfg:ImportFromOtherSystemToVedaAppointment ;
+  rdfs:label "Утилита импорта в Veda"@ru ;
+  rdfs:label "Import DMS to Veda"@en ;
+.
+cfg:ImportFromOtherSystemToVedaAccount
+  rdf:type v-s:Account ;
+  v-s:author cfg:VedaSystem ;  
+  rdfs:label "Import DMS to Veda account"@en ;
+  v-s:owner cfg:ImportFromOtherSystemToVeda;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  v-s:login "ImportFromOtherSystemToVeda" ;
+  rdfs:label "ImportFromOtherSystemToVeda. Учетная запись"@ru ;
+  rdfs:label "ImportFromOtherSystemToVeda. Account"@en ;
+.
+cfg:ImportFromOtherSystemToVedaAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:ImportFromOtherSystemToVeda ;
+  v-s:occupation cfg:User_position;
+  v-s:official "false"^^xsd:boolean;
+  rdfs:label "Утилита импорта в Veda"@ru ;
+  rdfs:label "Import From Other System to Veda"@en ;
   v-s:parentUnit cfg:User_department;
 .
 ### -------------------------------------------------------
