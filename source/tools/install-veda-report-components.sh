@@ -27,15 +27,17 @@ CREATE USER 'ba'@'localhost' IDENTIFIED BY ',f,ehtxyfz69';
 GRANT ALL PRIVILEGES ON * . * TO 'ba'@'localhost';
 CREATE DATABASE veda_db;
 
-add to file mysqld.cnf:
+add to file /etc/mysql/mysql.conf.d/mysqld.cnf:
 
 [mysqld]
+...
 skip-external-locking
 lower_case_table_names=1
 collation-server = utf8_unicode_ci
 init-connect='SET NAMES utf8'
 character-set-server = utf8
 sql_mode=NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
+...
 
 sudo /etc/init.d/mysql restart
 
