@@ -807,6 +807,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
       //* выполнить маппинг для сообщения
       var messageVars = [];
       messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
+      
 
       if (messageVars) {
 
@@ -1266,5 +1267,24 @@ function remove_empty_branches_from_journal(journal_uri)
       }
         }
     }
+}
 
+function getSystemUrl(var_to) {
+    var userTo = get_individual(ticket, var_to[0].data);
+    var isExternal = false;
+    if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="External User") {
+        isExternal = true;
+    };
+    var systemIndivid = isExternal ? newUri ('cfg:SystemInfoExternal') : newUri ('v-s:vedaInfo');
+    return getFirstValue (get_properties_chain (systemIndivid, [{$get:'v-s:appUrl'}]));
+}
+
+function getInboxUrl(var_to) {
+    var userTo = get_individual(ticket, var_to[0].data);
+    var isExternal = false;
+    if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="External User") {
+        isExternal = true;
+    };
+    var systemIndivid = isExternal ? newUri ('cfg:SystemInfoExternal') : newUri ('v-s:vedaInfo');
+    return getFirstValue (get_properties_chain (systemIndivid, [{$get:'v-wf:appInboxUrl'}]));
 }
