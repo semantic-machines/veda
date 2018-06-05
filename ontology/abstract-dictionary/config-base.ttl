@@ -301,6 +301,7 @@ cfg:Membership_su
   v-s:resource cfg:VedaSystem ;
   v-s:resource cfg:Administrator ;
   v-s:resource cfg:ImportDMSToVeda ;
+  v-s:resource cfg:ImportFromOtherSystemToVeda ;
   v-s:memberOf cfg:SuperUser ;
 .
 
