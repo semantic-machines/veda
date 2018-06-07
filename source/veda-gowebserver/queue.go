@@ -367,8 +367,8 @@ type Queue struct {
 
 	ff_queue_r *os.File
 
-	//file_name_info_push string
-	file_name_queue string
+	file_name_info_push string
+	file_name_queue     string
 
 	// --- tmp ---
 	header Header
@@ -385,7 +385,7 @@ func NewQueue(_name string, _mode Mode) *Queue {
 	buff = make([]uint8, 4096*100)
 	header_buff = make([]uint8, p.header.length())
 
-	//p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
+	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
 	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
 
 	p.hash = crc32.NewIEEE()
@@ -408,19 +408,19 @@ func (ths *Queue) open(_mode Mode) bool {
 		return false
 	}
 
-	//ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
+	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 
-	//if err != nil {
-	//	return false
-	//}
+	if err != nil {
+		return false
+	}
 	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
 
 	if err != nil {
 		return false
 	}
 
-	//ths.isReady = true
-	//ths.get_info()
+	ths.isReady = true
+	ths.get_info(ths.chunk)
 
 	var queue_r_info os.FileInfo
 
@@ -448,7 +448,7 @@ func (ths *Queue) reopen_reader() {
 		ths.isReady = false
 		return
 	}
-	//ths.get_info()
+	ths.get_info(ths.chunk)
 }
 
 func (ths *Queue) get_info(chunk int32) bool {
