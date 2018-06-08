@@ -3,7 +3,7 @@
 adduser sedadm
 adduser sedadm sudo
 sudo locale-gen "en_US.UTF-8"
-sudo dpkg-reconfigure locales 
+sudo dpkg-reconfigure locales
 
 ############################################
 
@@ -22,22 +22,26 @@ sudo apt-get install mysql-client
 
 #configure mysql for veda
 
-mysql -u root -p
-CREATE USER 'ba'@'localhost' IDENTIFIED BY ',f,ehtxyfz69';
-GRANT ALL PRIVILEGES ON * . * TO 'ba'@'localhost';
-CREATE DATABASE veda_db;
+dbuser=ba
+dbname=veda_db
+dbpassword=,f,ehtxyfz691
+echo "Enter root password for MYSQL connect"
+mysql -u root -p -e "create user '$dbuser'@'localhost';
+create database $dbname;
+grant all on $dbname.* to '$dbuser'@'localhost';
+set password for '$dbuser'@'localhost' = password('$dbpassword');"
+if [ $? != 0 ]; then
+  echo "Some errors ocured. Check STDOUT to see."
+else
+  echo "DB $dbname created. User $dbuser created."
+fi
 
-add to file /etc/mysql/mysql.conf.d/mysqld.cnf:
-
-[mysqld]
-...
-skip-external-locking
-lower_case_table_names=1
-collation-server = utf8_unicode_ci
-init-connect='SET NAMES utf8'
-character-set-server = utf8
-sql_mode=NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
-...
+sudo sed -i '27a\skip-external-locking\nlower_case_table_names=1\ncollation-server = utf8_unicode_ci\ninit-connect="SET NAMES utf8"\ncharacter-set-server = utf8\nsql_mode=NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' /etc/mysql/mysql.conf.d/mysqld.cnf
+if [ $? != 0 ]; then
+  echo "Some errors ocured. Check STDOUT to see."
+else
+  echo "Strings add into mysqld.cnf."
+fi
 
 sudo /etc/init.d/mysql restart
 
