@@ -48,7 +48,13 @@ func query(ctx *fasthttp.RequestCtx) {
 	//Marshal request and send to socket
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR QUERY INDIVIDUAL: ENCODE JSON REQUEST: %s %v\n", request, err)
+		log.Printf("ERR! QUERY: ENCODE JSON REQUEST: %s %v\n", request, err)
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		return
+	}
+
+	if len(jsonRequest) == 0 {
+		log.Printf("ERR! empty query: %s %v\n", request, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -56,7 +62,7 @@ func query(ctx *fasthttp.RequestCtx) {
 	var querySocket *nanomsg.Socket
 	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
-		log.Fatal("@ERR ON CREATING QUERY SOCKET")
+		log.Fatal("ERR! ON CREATING QUERY SOCKET")
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
