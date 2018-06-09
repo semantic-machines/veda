@@ -243,10 +243,16 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 							defer C.free(unsafe.Pointer(curi))
 							cuser_uri := C.CString(userUri)
 							defer C.free(unsafe.Pointer(cuser_uri))
-							
-							if C.authorize_r(curi, cuser_uri, 2, reopen) != 2 {
-								rr.OpRC = append(rr.OpRC, NotAuthorized)
-								continue
+							if reopen == true {
+								if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
+							} else {
+								if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
 							}
 						}
 						rr.OpRC = append(rr.OpRC, Ok)
@@ -281,10 +287,16 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 					defer C.free(unsafe.Pointer(curi))
 					cuser_uri := C.CString(userUri)
 					defer C.free(unsafe.Pointer(cuser_uri))
-
-					if C.authorize_r(curi, cuser_uri, 2, reopen) != 2 {
-						rr.OpRC = append(rr.OpRC, NotAuthorized)
-						continue
+					if reopen == true {
+						if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+							rr.OpRC = append(rr.OpRC, NotAuthorized)
+							continue
+						}
+					} else {
+						if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+							rr.OpRC = append(rr.OpRC, NotAuthorized)
+							continue
+						}
 					}
 				}
 
