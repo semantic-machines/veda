@@ -235,6 +235,17 @@ private class LoggerQueue
     {
         trace_logfilename = log_name;
         ext               = _ext;
+
+        try
+        {
+        	auto path = "logs";
+            std.file.mkdir(path);
+            writeln("create folder: ", path);
+        }
+        catch (Exception ex)
+        {
+        }
+
     }
 
     ~this()
