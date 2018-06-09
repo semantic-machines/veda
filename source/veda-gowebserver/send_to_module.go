@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"os"
+	"runtime"
+	"runtime/pprof"
 
 	"github.com/valyala/fasthttp"
 )
@@ -26,6 +29,35 @@ func sendToModule(ctx *fasthttp.RequestCtx) {
 	request["module_id"] = moduleId
 	//message data
 	request["msg"] = msg
+
+	if moduleId == 0 {
+		if msg == "start_cpuprofile" {
+			cpuprofile := "gowebserver-cpu.prof"
+			f, err := os.Create(cpuprofile)
+			if err != nil {
+				log.Fatal("could not create CPU profile: ", err)
+			}
+
+			if err := pprof.StartCPUProfile(f); err != nil {
+				log.Fatal("could not start CPU profile: ", err)
+			}
+		} else if msg == "stop_cpuprofile" {
+			pprof.StopCPUProfile()
+		} else if msg == "snap_memprofile" {
+			memprofile := "gowebserver-mem.prof"
+			f, err := os.Create(memprofile)
+			if err != nil {
+				log.Fatal("could not create memory profile: ", err)
+			}
+			runtime.GC() // get up-to-date statistics
+			if err := pprof.WriteHeapProfile(f); err != nil {
+				log.Fatal("could not write memory profile: ", err)
+			}
+			f.Close()
+		}
+
+		return
+	}
 
 	//Encode json request
 	jsonRequest, err := json.Marshal(request)
