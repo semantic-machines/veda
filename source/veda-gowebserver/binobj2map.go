@@ -680,7 +680,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 						case uint64:
 							mantissa = int64(resArrI[1].(uint64))
 						default:
-							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
+							log.Printf("ERR! SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
 								reflect.TypeOf(resArrI[1]))
 							return nil
 						}
@@ -691,7 +691,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 						case uint64:
 							exponent = int64(resArrI[2].(uint64))
 						default:
-							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s",
+							log.Printf("ERR! SIZE 3! NOT INT/UINT IN MANTISSA: %s",
 								reflect.TypeOf(resArrI[1]))
 							return nil
 						}

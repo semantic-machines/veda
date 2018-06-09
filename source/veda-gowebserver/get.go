@@ -195,10 +195,10 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			if iuri != nil {
 				uris[i] = iuri.(string)
 			} else {
-				log.Println("WARN! invalid uri(null) %v", jsonData)
+				log.Printf("WARN! invalid uri(null) %v\n", jsonData)
 			}
 		} else {
-			log.Println("WARN! invalid uri(null) %v", jsonData)
+			log.Printf("WARN! invalid uri(null) %v\n", jsonData)
 		}
 
 	}
