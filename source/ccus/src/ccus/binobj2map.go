@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-type Individual map[interface{}]interface{}
+type Individual map[string]interface{}
 
 //DataType represents Resource type in veda
 type DataType uint8
@@ -197,12 +197,150 @@ func stringToLang(str string) Lang {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func BinobjToMap(binobjStr string) map[interface{}]interface{} {
+func BinobjToMap(binobjStr string) Individual {
 	if binobjStr[0] == 146 {
 		return MsgpackToMap(binobjStr)
 	} else {
 		return CborToMap(binobjStr)
 	}
+}
+
+func ttResordToMap(uri string, tt_record map[interface{}]interface{}) Individual {
+	individual := make(Individual)
+
+	individual["@"] = uri
+	for predicate, pp := range tt_record {
+
+		switch reflect.TypeOf(pp).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(pp)
+
+			resources := make([]interface{}, 0, s.Len())
+
+			for i := 0; i < s.Len(); i++ {
+				arr_val := s.Index(i)
+
+				val1 := arr_val.Interface()
+				val := reflect.ValueOf(val1)
+
+				v_size := val.Len()
+
+				if v_size == 0 || v_size > 3 {
+					log.Printf("!ERR ttResordToMap: vsize < 1 || > 3 %d", v_size)
+					continue
+				}
+
+				resource := make(map[string]interface{})
+
+				vtype := DataType(val.Index(0).Interface().(uint64))
+
+				switch vtype {
+				case Uri:
+					resource["type"] = dataTypeToString(Uri)
+					resource["data"] = val.Index(1).Interface().(string)
+				case Integer:
+					resource["type"] = dataTypeToString(Integer)
+
+					num := val.Index(1).Interface()
+					switch num.(type) {
+					case uint64:
+						resource["data"] = num.(uint64)
+					case int64:
+						resource["data"] = num.(int64)
+					default:
+						log.Printf("!ERR unknown num type %v", num)
+						return nil
+					}
+
+				case Datetime:
+					r_dt := val.Index(1).Interface()
+
+					switch r_dt.(type) {
+					case int64:
+						resource["data"] = time.Unix(r_dt.(int64), 0).UTC().Format("2006-01-02T15:04:05Z")
+					case uint64:
+						resource["data"] = time.Unix(int64(r_dt.(uint64)), 0).UTC().Format("2006-01-02T15:04:05Z")
+					default:
+						log.Printf("!ERR ttResordToMap: NOT INT/UINT IN DATETIME: %v", r_dt)
+						return nil
+					}
+					resource["type"] = dataTypeToString(Datetime)
+
+				case Decimal:
+					var mantissa, exponent int64
+
+					r_mantissa := val.Index(1).Interface()
+					switch r_mantissa.(type) {
+					case uint64:
+						mantissa = int64(r_mantissa.(uint64))
+					case int64:
+						mantissa = r_mantissa.(int64)
+					default:
+						log.Printf("!ERR ttResordToMap: unknown num type %v", r_mantissa)
+						return nil
+					}
+
+					r_exponent := val.Index(2).Interface()
+					switch r_exponent.(type) {
+					case uint64:
+						exponent = int64(r_exponent.(uint64))
+					case int64:
+						exponent = r_exponent.(int64)
+					default:
+						log.Printf("!ERR ttResordToMap: unknown num type %v", r_exponent)
+						return nil
+					}
+
+					resource["type"] = dataTypeToString(Decimal)
+					resource["data"] = decimalToString(mantissa, exponent)
+
+				case Boolean:
+					resource["type"] = dataTypeToString(Boolean)
+					resource["data"] = val.Index(1).Interface().(bool)
+
+				case String:
+					rval := val.Index(1).Interface()
+
+					switch rval.(type) {
+					case string:
+						resource["type"] = dataTypeToString(String)
+						resource["data"] = rval.(string)
+
+						if v_size == 3 {
+
+							r_lang := val.Index(2).Interface()
+							switch r_lang.(type) {
+							case uint64:
+								resource["lang"] = langToString(Lang(r_lang.(uint64)))
+							case int64:
+								resource["lang"] = langToString(Lang(r_lang.(int64)))
+							default:
+								log.Printf("!ERR ttResordToMap: unknown lang type %v", r_lang)
+								return nil
+							}
+						}
+					case nil:
+						resource["type"] = dataTypeToString(String)
+						resource["data"] = ""
+					default:
+						log.Printf("!ERR ttResordToMap: unknown string type %v", rval)
+						return nil
+					}
+
+				default:
+					log.Printf("!ERR ttResordToMap: unknown type %v", vtype)
+					return nil
+				}
+				resources = append(resources, resource)
+
+			}
+			individual[predicate.(string)] = resources
+		}
+		//resources = append(resources, resource)
+		//individual[key.(string)] = v
+	}
+
+	return individual
 }
 
 //MapToMsgpack converts individual map from client to msgpack for sending to tarantool
@@ -380,15 +518,15 @@ func prepareElement(v interface{}) (interface{}, error) {
 	}
 }
 
-func CborToMap(cborStr string) map[interface{}]interface{} {
-	individual := make(map[interface{}]interface{})
+func CborToMap(cborStr string) Individual {
+	individual := make(Individual)
 
 	ring := cbor.NewDecoder(strings.NewReader(cborStr))
 	var cborObject interface{}
 	err := ring.Decode(&cborObject)
 	if err != nil {
 		log.Println("@ERR DECODING CBOR OBJECT")
-		return individual
+		return nil
 	}
 
 	var individualMap map[interface{}]interface{}
@@ -397,7 +535,7 @@ func CborToMap(cborStr string) map[interface{}]interface{} {
 		individualMap = cborObject.(map[interface{}]interface{})
 	default:
 		log.Printf("@ERR CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
-		return individual
+		return nil
 	}
 
 	//log.Println(cborStr)
@@ -443,9 +581,9 @@ func CborToMap(cborStr string) map[interface{}]interface{} {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
+func MsgpackToMap(msgpackStr string) Individual {
 	//Allocate map and decode msgpack
-	individual := make(map[interface{}]interface{})
+	individual := make(Individual)
 	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[0:len(msgpackStr)]))
 	decoder.DecodeArrayLen()
 
@@ -542,7 +680,7 @@ func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 						case uint64:
 							mantissa = int64(resArrI[1].(uint64))
 						default:
-							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
+							log.Printf("ERR! SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
 								reflect.TypeOf(resArrI[1]))
 							return nil
 						}
@@ -553,7 +691,7 @@ func MsgpackToMap(msgpackStr string) map[interface{}]interface{} {
 						case uint64:
 							exponent = int64(resArrI[2].(uint64))
 						default:
-							log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s",
+							log.Printf("ERR! SIZE 3! NOT INT/UINT IN MANTISSA: %s",
 								reflect.TypeOf(resArrI[1]))
 							return nil
 						}
@@ -620,4 +758,24 @@ func getFirstString(indv Individual, predicate string) (string, bool) {
 	default:
 		return "", false
 	}
+}
+
+func getFirstBool(indv Individual, predicate string) (bool, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return false, false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case bool:
+		return _data.(bool), true
+	default:
+		return false, false
+	}
+}
+
+func getUri(indv Individual) string {
+	return indv["@"].(string)
 }

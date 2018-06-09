@@ -274,7 +274,7 @@ func (ths *Consumer) pop() string {
 	//log.Printf("@header=%s, ths.count_popped=%d", ths.header.toString(), ths.count_popped)
 
 	if ths.header.start_pos != ths.first_element {
-		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", ths.header.start_pos, ths.first_element, ths.header)
+		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %v\n", ths.header.start_pos, ths.first_element, ths.header)
 		return ""
 	}
 
@@ -290,11 +290,11 @@ func (ths *Consumer) pop() string {
 
 		copy(ths.last_read_msg, buff[0:ths.header.msg_length])
 		if uint64(len(ths.last_read_msg)) < ths.header.msg_length {
-			log.Printf("pop:invalid msg: msg.length < header.msg_length : %s", ths.header)
+			log.Printf("pop:invalid msg: msg.length < header.msg_length : %v\n", ths.header)
 			return ""
 		}
 	} else {
-		log.Printf("pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %s", ths.header.msg_length, len(buff), ths.header)
+		log.Printf("pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %v\n", ths.header.msg_length, len(buff), ths.header)
 		return ""
 	}
 
@@ -339,11 +339,11 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 	crc[3] = hashInBytes[0]
 
 	if ths.header.crc[0] != crc[0] || ths.header.crc[1] != crc[1] || ths.header.crc[2] != crc[2] || ths.header.crc[3] != crc[3] {
-		log.Printf("ERR! queue:commit:invalid msg: fail crc[%s] : %s", crc, ths.header)
-		log.Printf("hashInBytes=[%d][%d][%d][%d]", hashInBytes[0], hashInBytes[1], hashInBytes[2], hashInBytes[3])
-		log.Printf("header CRC =[%d][%d][%d][%d]", ths.header.crc[0], ths.header.crc[1], ths.header.crc[2], ths.header.crc[3])
-		log.Printf("%s", len(ths.last_read_msg))
-		log.Printf("%s", ths.last_read_msg)
+		log.Printf("ERR! queue:commit:invalid msg: fail crc[%s] : %v\n", crc, ths.header)
+		log.Printf("hashInBytes=[%d][%d][%d][%d]\n", hashInBytes[0], hashInBytes[1], hashInBytes[2], hashInBytes[3])
+		log.Printf("header CRC =[%d][%d][%d][%d]\n", ths.header.crc[0], ths.header.crc[1], ths.header.crc[2], ths.header.crc[3])
+		log.Printf("%v\n", len(ths.last_read_msg))
+		log.Printf("%v\n", ths.last_read_msg)
 		return false
 	}
 
@@ -367,8 +367,8 @@ type Queue struct {
 
 	ff_queue_r *os.File
 
-	//file_name_info_push string
-	file_name_queue string
+	file_name_info_push string
+	file_name_queue     string
 
 	// --- tmp ---
 	header Header
@@ -385,7 +385,7 @@ func NewQueue(_name string, _mode Mode) *Queue {
 	buff = make([]uint8, 4096*100)
 	header_buff = make([]uint8, p.header.length())
 
-	//p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
+	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
 	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
 
 	p.hash = crc32.NewIEEE()
@@ -408,19 +408,19 @@ func (ths *Queue) open(_mode Mode) bool {
 		return false
 	}
 
-	//ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
+	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 
-	//if err != nil {
-	//	return false
-	//}
+	if err != nil {
+		return false
+	}
 	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
 
 	if err != nil {
 		return false
 	}
 
-	//ths.isReady = true
-	//ths.get_info()
+	ths.isReady = true
+	ths.get_info(ths.chunk)
 
 	var queue_r_info os.FileInfo
 
@@ -428,7 +428,7 @@ func (ths *Queue) open(_mode Mode) bool {
 
 	if ths.mode == R && queue_r_info.Size() < int64(ths.right_edge) || ths.mode == RW && queue_r_info.Size() != int64(ths.right_edge) {
 		ths.isReady = false
-		log.Printf("ERR! queue:open(%s): [%s].size (%d) != right_edge=", ths.mode, ths.file_name_queue, queue_r_info.Size(), ths.right_edge)
+		log.Printf("ERR! queue:open(%v): [%v].size (%d) != right_edge=%v\n", ths.mode, ths.file_name_queue, queue_r_info.Size(), ths.right_edge)
 	} else {
 		ths.isReady = true
 		//ths.put_info()
@@ -448,7 +448,7 @@ func (ths *Queue) reopen_reader() {
 		ths.isReady = false
 		return
 	}
-	//ths.get_info()
+	ths.get_info(ths.chunk)
 }
 
 func (ths *Queue) get_info(chunk int32) bool {
