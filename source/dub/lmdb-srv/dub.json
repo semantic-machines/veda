@@ -17,6 +17,7 @@
     	    "../../veda/bind/nano.d",
     	    "../../veda/util/properd.d",
     	    "../../veda/core/common/define.d",
+    	    "../../veda/core/common/know_predicates.d",
     	    "../../veda/common/logger.d",
     	    "../../veda/common/type.d",
 	    "../../veda/storage/common.d",
