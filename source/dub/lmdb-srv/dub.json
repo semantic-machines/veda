@@ -8,11 +8,20 @@
 	},
         "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
+        "sourcePaths":[
+            "../../veda/lmdb_srv"
+	],
         "sourceFiles":[
     	    "../../lib64/liblmdb.a",
     	    "../../veda/util/commando.d",
     	    "../../veda/bind/nano.d",
-    	    "../../veda/util/properd.d"
+    	    "../../veda/util/properd.d",
+    	    "../../veda/core/common/define.d",
+    	    "../../veda/common/logger.d",
+    	    "../../veda/common/type.d",
+	    "../../veda/storage/common.d",
+	    "../../veda/storage/lmdb/lmdb_driver.d",
+	    "../../veda/storage/lmdb/lmdb_header.d"
 	],
         "libs":["nanomsg"],
 	"configurations": [
