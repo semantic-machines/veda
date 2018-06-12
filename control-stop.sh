@@ -22,7 +22,7 @@ killall -9 veda-ttlreader
 killall -9 veda-webserver
 killall -9 veda-gowebserver
 killall -9 veda-ft-query
-killall -9 veda-lmdb-server
+killall -9 veda-lmdb-srv
 killall -9 veda-authorization
 
 tarantoolctl stop init_tarantool.lua

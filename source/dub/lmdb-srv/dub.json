@@ -1,0 +1,30 @@
+{
+	"name": "veda-lmdb-srv",
+	"description": "veda-lmdb-srv",
+	"dependencies": {
+		"backtrace-d": "0.1.2", 
+		"d-nanomsg": "0.2.0",
+		"msgpack-d": "1.0.0-beta.6",
+	},
+        "versions": ["isModule", "std_socket"],
+        "license": "LGPL v3",
+        "sourceFiles":[
+    	    "../../lib64/liblmdb.a",
+    	    "../../veda/util/commando.d",
+    	    "../../veda/bind/nano.d",
+    	    "../../veda/util/properd.d"
+	],
+        "libs":["nanomsg"],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	},
+	{
+	    "name": "trace-app",
+	    "versions": ["trace_api_l1"],
+	    "targetType": "executable"
+	    
+	}]
+}

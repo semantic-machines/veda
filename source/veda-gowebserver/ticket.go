@@ -47,7 +47,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		rr := conn.GetTicket([]string{ticketKey}, false)
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
-			log.Println("@ERR ON GET TICKET FROM TARANTOOL")
+			log.Println("ERR! ON GET TICKET")
 			return InternalServerError, ticket
 		}
 

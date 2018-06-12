@@ -22,7 +22,7 @@ public class TarantoolStorage : Storage
 
     ~this()
     {
-        log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
+        log.trace_log_and_console("DESTROY OBJECT TarantoolStorage:[%s]", name);
         acl_client.close();
     }
 

@@ -48,7 +48,6 @@ type ticket struct {
 }
 
 const (
-	lmdbTicketsDBPath = "./data/lmdb-tickets"
 	tdbPath           = "./data/trails/	"
 )
 
@@ -89,6 +88,7 @@ var g_mstorage_ch *nanomsg.Socket
 var mainModuleURL = "tcp://127.0.0.1:9112"
 var notifyChannelURL = "tcp://127.0.0.1:9111"
 var queryServiceURL = "tcp://127.0.0.1:23000"
+var lmdbServiceURL = "tcp://127.0.0.1:23001"
 var tarantoolURL = "" // = "127.0.0.1:3309"
 var webserverPort = "8080"
 var webserverHTTPSPort = "8020"

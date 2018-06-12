@@ -213,6 +213,7 @@ void main(string[] args)
     modules[ "veda-mstorage" ]      = new Module("veda-mstorage", [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true);
     modules[ "veda-ccus" ]          = new Module("veda-ccus", [], false, false);
     modules[ "veda-ft-query" ]      = new Module("veda-ft-query", [], false, false);
+    modules[ "veda-lmdb-srv" ]      = new Module("veda-lmdb-srv", [], false, false);
     modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", [], false, false);
     modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", [ "fanout_email" ], false, false);
     modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", [ "fanout_sql_np" ], false, false);

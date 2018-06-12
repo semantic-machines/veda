@@ -51,6 +51,10 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
     ./build-component.sh veda-mstorage mstorage
 fi
 
+if [ -z $1 ] || [ $1 == "lmdb-srv" ] || [ $1 == "veda-lmdb-srv" ] ; then
+    ./build-component.sh veda-lmdb-srv lmdb-srv
+fi
+
 if [ -z $1 ] || [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./build-component.sh veda-authorization authorization
 fi

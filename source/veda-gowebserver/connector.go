@@ -9,7 +9,7 @@ import "C"
 
 import (
 	//"encoding/json"
-	"github.com/itiu/lmdb-go/lmdb"
+	"github.com/op/go-nanomsg"
 	"github.com/tarantool/go-tarantool"
 	"log"
 	"strings"
@@ -23,8 +23,7 @@ type Connector struct {
 	tt_addr   string
 	tt_client *tarantool.Connection
 
-	indivEnv  *lmdb.Env
-	ticketEnv *lmdb.Env
+	lmdb_client *nanomsg.Socket
 
 	db_is_open bool
 }
@@ -65,7 +64,6 @@ const (
 )
 
 func (conn *Connector) open_dbs() {
-	var err error
 	if conn.tt_client != nil {
 		resp, err := conn.tt_client.Ping()
 
@@ -79,77 +77,25 @@ func (conn *Connector) open_dbs() {
 		}
 
 	} else {
-		err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-		if err != nil {
-			log.Fatal("ERR! can not open lmdb individuals base: ", err)
-			conn.db_is_open = false
-			return
-		}
 
-		err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-		if err != nil {
-			log.Fatal("ERR! can not open tickets lmdb base: ", err)
-			conn.db_is_open = false
-			return
-		}
-
-		conn.db_is_open = true
 	}
 }
 
 func (conn *Connector) reopen_individual_db() {
-	var err error
+	//var err error
 	if conn.tt_client != nil {
 
 	} else {
 
-		log.Println("INFO! reopen individual db")
-
-		conn.indivEnv.Close()
-
-		conn.indivEnv, err = lmdb.NewEnv()
-		if err != nil {
-			log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
-		}
-
-		err = conn.indivEnv.SetMaxDBs(1)
-		if err != nil {
-			log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
-		}
-
-		err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-		if err != nil {
-			log.Fatal("ERR! can not open lmdb individuals base: ", err)
-			conn.db_is_open = false
-			return
-		}
 	}
 }
 
 func (conn *Connector) reopen_ticket_db() {
-	var err error
+	//var err error
 
 	if conn.tt_client != nil {
 
 	} else {
-		conn.ticketEnv.Close()
-
-		conn.ticketEnv, err = lmdb.NewEnv()
-		if err != nil {
-			log.Fatal("@ERR CREATING LMDB TICKETS ENV")
-		}
-
-		err = conn.ticketEnv.SetMaxDBs(1)
-		if err != nil {
-			log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
-		}
-
-		err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-		if err != nil {
-			log.Fatal("ERR! can not open tickets lmdb base: ", err)
-			conn.db_is_open = false
-			return
-		}
 	}
 }
 
@@ -174,24 +120,24 @@ func (conn *Connector) Connect(tt_addr string) {
 		log.Println("INFO! tarantool connect is ok")
 		conn.tt_client = tt_client
 	} else {
-		conn.indivEnv, err = lmdb.NewEnv()
+
+		conn.lmdb_client, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 		if err != nil {
-			log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
+			conn.db_is_open = false
+			log.Fatal("ERR! open_dbs: nanomsg.NewSocket")
+
+		} else {
+			conn.db_is_open = true
 		}
 
-		err = conn.indivEnv.SetMaxDBs(1)
-		if err != nil {
-			log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
-		}
-
-		conn.ticketEnv, err = lmdb.NewEnv()
-		if err != nil {
-			log.Fatal("@ERR CREATING LMDB TICKETS ENV")
-		}
-
-		err = conn.ticketEnv.SetMaxDBs(1)
-		if err != nil {
-			log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
+		//log.Println("use lmdb service url: ", lmdbServiceURL)
+		_, err = conn.lmdb_client.Connect(lmdbServiceURL)
+		for err != nil {
+			log.Println("ERR! Creating lmdb service connection: err=", err)
+			log.Println("INFO! sleep")
+			time.Sleep(3000 * time.Millisecond)
+			log.Println("INFO! retry connect")
+			_, err = conn.lmdb_client.Connect(queryServiceURL)
 		}
 	}
 }
@@ -268,59 +214,57 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		rr.CommonRC = Ok
 
 	} else {
-		err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
-			dbi, err := txn.OpenDBI("", 0)
+		for i := 0; i < len(uris); i++ {
+			request := "I," + uris[i]
+			_, err := conn.lmdb_client.Send([]byte(request), 0)
 			if err != nil {
-				return err
-			}
-			for i := 0; i < len(uris); i++ {
-				val, err := txn.Get(dbi, []byte(uris[i]))
-				if err == lmdb.NotFound {
-					rr.OpRC = append(rr.OpRC, NotFound)
-					continue
-				} else if err != nil {
-					return err
-				}
+				log.Println("ERR! send to lmdb service", err)
+				rr.CommonRC = InternalServerError
+				return rr
+			} else {
+				responseBuf, err := conn.lmdb_client.Recv(0)
+				if err != nil {
+					log.Println("ERR! recv from lmdb service", err)
+					rr.CommonRC = InternalServerError
+					return rr
+				} else {
 
-				if needAuth {
-					curi := C.CString(uris[i])
-					defer C.free(unsafe.Pointer(curi))
-					cuser_uri := C.CString(userUri)
-					defer C.free(unsafe.Pointer(cuser_uri))
-					if reopen == true {
-						if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
-							rr.OpRC = append(rr.OpRC, NotAuthorized)
-							continue
-						}
-					} else {
-						if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
-							rr.OpRC = append(rr.OpRC, NotAuthorized)
-							continue
+					val := string(responseBuf)
+					if val == "[]" {
+						rr.OpRC = append(rr.OpRC, NotFound)
+						continue
+					}
+
+					if strings.Index(val, "ERR") > 0 {
+						rr.CommonRC = InternalServerError
+						return rr
+					}
+
+					if needAuth {
+						curi := C.CString(uris[i])
+						defer C.free(unsafe.Pointer(curi))
+						cuser_uri := C.CString(userUri)
+						defer C.free(unsafe.Pointer(cuser_uri))
+						if reopen == true {
+							if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+								rr.OpRC = append(rr.OpRC, NotAuthorized)
+								continue
+							}
+						} else {
+							if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+								rr.OpRC = append(rr.OpRC, NotAuthorized)
+								continue
+							}
 						}
 					}
-				}
 
-				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
-			}
-			return nil
-		})
-		rr.CommonRC = Ok
-		if err != nil {
-			if lmdb.IsErrno(err, lmdb.NotFound) == true {
-				rr.CommonRC = NotFound
-			} else {
-				if lmdb.IsErrno(err, lmdb.MapResized) == true {
-					conn.reopen_individual_db()
-					return conn.Get(needAuth, userUri, uris, trace, reopen)
-				} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
-					return conn.Get(needAuth, userUri, uris, trace, reopen)
-				}
+					rr.OpRC = append(rr.OpRC, Ok)
+					rr.Indv = append(rr.Indv, BinobjToMap(string(responseBuf)))
 
-				log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
-				rr.CommonRC = InternalServerError
+				}
 			}
 		}
+		rr.CommonRC = Ok
 	}
 
 	return rr
@@ -528,35 +472,35 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		}
 
 	} else {
-		err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {
-			dbi, err := txn.OpenDBI("", 0)
+		request := "T," + ticketIDs[0]
+		_, err := conn.lmdb_client.Send([]byte(request), 0)
+		if err != nil {
+			log.Println("ERR! send to lmdb service", err)
+			rr.CommonRC = InternalServerError
+			return rr
+		} else {
+			responseBuf, err := conn.lmdb_client.Recv(0)
 			if err != nil {
-				return err
-			}
-			for _, id := range ticketIDs {
-				val, err := txn.Get(dbi, []byte(id))
-				if err == lmdb.NotFound {
+				log.Println("ERR! recv from lmdb service", err)
+				rr.CommonRC = InternalServerError
+				return rr
+			} else {
+
+				val := string(responseBuf)
+				if val == "[]" {
 					rr.OpRC = append(rr.OpRC, NotFound)
-					continue
-				} else if err != nil {
-					return err
+					return rr
+				}
+
+				if strings.Index(val, "ERR") > 0 {
+					rr.CommonRC = InternalServerError
+					return rr
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Indv = append(rr.Indv, BinobjToMap(string(val)))
+				rr.Indv = append(rr.Indv, BinobjToMap(string(responseBuf)))
+				rr.CommonRC = Ok
 			}
-			return nil
-		})
-		rr.CommonRC = Ok
-		if err != nil {
-			if lmdb.IsErrno(err, lmdb.MapResized) == true {
-				conn.reopen_ticket_db()
-				return conn.GetTicket(ticketIDs, trace)
-			} else if lmdb.IsErrno(err, lmdb.BadRSlot) == true {
-				return conn.GetTicket(ticketIDs, trace)
-			}
-			log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
-			rr.CommonRC = InternalServerError
 		}
 	}
 
