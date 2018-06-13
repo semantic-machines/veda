@@ -11,6 +11,7 @@ import (
 //query function handle query request with fulltext search
 //query request redirects to fr-query module via socket
 func query(ctx *fasthttp.RequestCtx) {
+
 	request := make([]interface{}, 8)
 	// request := make(map[string]interface{})
 	/**/
@@ -45,6 +46,14 @@ func query(ctx *fasthttp.RequestCtx) {
 	request[6] = limit
 	request[7] = from
 
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("ERR! fail execute(%s) request=%v\n", queryServiceURL, request)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+	}()
+
 	//Marshal request and send to socket
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
@@ -62,15 +71,26 @@ func query(ctx *fasthttp.RequestCtx) {
 	var querySocket *nanomsg.Socket
 	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
-		log.Fatal("ERR! ON CREATING QUERY SOCKET")
+		log.Printf("ERR! ON CREATING QUERY SOCKET")
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
 
 	//log.Println("use query service url: ", queryServiceURL)
 	_, err = querySocket.Connect(queryServiceURL)
+	if err != nil {
+		log.Printf("ERR! ON CONNECT TO QUERY SOCKET, url=%s, query=%s", queryServiceURL, string(jsonRequest))
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		return
+	}
 
-	querySocket.Send(jsonRequest, 0)
+	cb, err1 := NNSend(querySocket, jsonRequest, 0)
+	if err1 != nil || cb <= 0 {
+		log.Printf("ERR! ON SEND TO FT-QUERY SOCKET, url=%s, query=%s", queryServiceURL, string(jsonRequest))
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		return
+	}
+
 	responseBuf, err := querySocket.Recv(0)
 
 	querySocket.Close()
@@ -80,7 +100,7 @@ func query(ctx *fasthttp.RequestCtx) {
 	var jsonResponce map[string]interface{}
 	err = json.Unmarshal(responseBuf, &jsonResponce)
 	if err != nil {
-		log.Printf("@ERR QUERY INDIVIDUAL: ENCODE JSON RESPONCE: %s %v\n", responseBuf, err)
+		log.Printf("ERR! QUERY INDIVIDUAL: ENCODE JSON RESPONCE: %s %v\n", responseBuf, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -99,3 +119,4 @@ func query(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(result_code)
 	}
 }
+

@@ -100,6 +100,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	individual, ok := ontologyCache[uri]
 	if ok {
+		log.Println("@get from cache, ", uri);
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
 			log.Println("@ERR GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)

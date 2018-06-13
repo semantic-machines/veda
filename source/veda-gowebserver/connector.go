@@ -506,3 +506,17 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	return rr
 }
+
+func NNSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("ERR! fail send to NN socket")
+			return
+		}
+	}()
+
+	tmp := make([]byte, len(data))
+	copy(tmp, data)
+
+	return s.Send(tmp, flags)
+}
