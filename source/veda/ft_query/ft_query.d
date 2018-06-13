@@ -139,6 +139,8 @@ void main(string[] args)
 
     int sock;
     log = new Logger("veda-core-ft-query", "log", "");
+    Ticket  systicket;
+    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
@@ -152,9 +154,6 @@ void main(string[] args)
         return;
     }
     log.trace("success bind to %s", bind_url);
-
-    Ticket  systicket;
-    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
     while (!f_listen_exit)
     {
