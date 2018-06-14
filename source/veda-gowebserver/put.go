@@ -27,7 +27,7 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 
 	//err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 	if err := d.Decode(&jsonData); err != nil {
-		log.Println("@ERR PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
+		log.Println("ERR! PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -67,7 +67,7 @@ func putIndividuals(ctx *fasthttp.RequestCtx) {
 	var jsonData map[string]interface{}
 	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 	if err != nil {
-		log.Println("@ERR PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
+		log.Println("ERR! PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}

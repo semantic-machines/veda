@@ -255,7 +255,7 @@ func main() {
 
 	g_mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
-		log.Fatal("@ERR ON CREATING SOCKET")
+		log.Fatal("ERR! ON CREATING SOCKET")
 	}
 
 	_, err = g_mstorage_ch.Connect(mainModuleURL)
@@ -266,7 +266,7 @@ func main() {
 
 	//	aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	//	if err != nil {
-	//		log.Fatal("@ERR ON CREATING ACL SOCKET")
+	//		log.Fatal("ERR! ON CREATING ACL SOCKET")
 	//	}
 
 	//	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
@@ -277,7 +277,7 @@ func main() {
 	/*
 		querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 		if err != nil {
-			log.Fatal("@ERR ON CREATING QUERY SOCKET")
+			log.Fatal("ERR! ON CREATING QUERY SOCKET")
 		}
 
 		log.Println("use query service url: ", queryServiceURL)
@@ -303,7 +303,7 @@ func main() {
 		}
 		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {
-			log.Fatal("@ERR ON STARTUP HTTP WEBSERVER ", err)
+			log.Fatal("ERR! ON STARTUP HTTP WEBSERVER ", err)
 		}
 	}()
 
@@ -311,7 +311,7 @@ func main() {
 		err = fasthttp.ListenAndServeTLS("0.0.0.0:"+webserverHTTPSPort, "ssl-certs/server.crt",
 			"ssl-certs/server.key", requestHandler)
 		if err != nil {
-			log.Fatal("@ERR ON STARTUP HTTPS WEBSERVER", err)
+			log.Fatal("ERR! ON STARTUP HTTPS WEBSERVER", err)
 		}
 	}
 
@@ -321,7 +321,7 @@ func main() {
 		err = fasthttp.ListenAndServeTLS("0.0.0.0:8020", "ssl-certs/server.crt",
 			"ssl-certs/server.key", requestHandler)
 		if err != nil {
-			log.Fatal("@ERR ON STARTUP WEBSERVER ON HTTPS", err)
+			log.Fatal("ERR! ON STARTUP WEBSERVER ON HTTPS", err)
 		}
 	*/
 }

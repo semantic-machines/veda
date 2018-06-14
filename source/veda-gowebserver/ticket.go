@@ -149,7 +149,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	//Marshal json request
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR GET_TICKET_TRUSTED: ENCODE JSON REQUEST: %v\n", err)
+		log.Printf("ERR! GET_TICKET_TRUSTED: ENCODE JSON REQUEST: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -160,7 +160,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
-		log.Printf("@ERR GET_TICKET_TRUSTED: DECODE JSON RESPONSE: %v\n", err)
+		log.Printf("ERR! GET_TICKET_TRUSTED: DECODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -175,7 +175,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	//Encoding json response and retiurn to client
 	getTicketResponseBuf, err := json.Marshal(getTicketResponse)
 	if err != nil {
-		log.Printf("@ERR GET_TICKET_TRUSTED: ENCODE JSON RESPONSE: %v\n", err)
+		log.Printf("ERR! GET_TICKET_TRUSTED: ENCODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}

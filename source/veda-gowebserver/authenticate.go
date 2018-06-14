@@ -19,7 +19,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	//encode request to json
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR AUTHENTICATE: ENCODE JSON REQUEST: %v\n", err)
+		log.Printf("ERR! AUTHENTICATE: ENCODE JSON REQUEST: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -31,7 +31,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
-		log.Printf("@ERR MODIFY AUTHENTICATE: DECODE JSON RESPONSE: %v\n", err)
+		log.Printf("ERR! MODIFY AUTHENTICATE: DECODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -44,7 +44,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	authResponse["result"] = responseJSON["result"]
 	authResponseBuf, err := json.Marshal(authResponse)
 	if err != nil {
-		log.Printf("@ERR AUTHENTICATE: ENCODE JSON AUTH RESPONSE: %v\n", err)
+		log.Printf("ERR! AUTHENTICATE: ENCODE JSON AUTH RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -53,7 +53,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	if areExternalUsers {
 		//loging about external user authentication checl
 		log.Printf("authenticate:check external user (%v)\n", authResponse["user_uri"])
-		//sending get request to tarantool
+		//sending get request to storage
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
 		user := rr.GetIndv(0)
 		origin, ok := getFirstBool(user, "v-s:origin")

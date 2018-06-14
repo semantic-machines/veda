@@ -28,7 +28,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 	// log.Println("\t@getIndividual: ticket=", ticketKey, ", uri=", uri, "ctx=", ctx.QueryArgs())
 
 	if len(uri) == 0 {
-		log.Println("@ERR GET_INDIVIDUAL: ZERO LENGTH TICKET OR URI")
+		log.Println("ERR! GET_INDIVIDUAL: ZERO LENGTH TICKET OR URI")
 		log.Println("\t@REQUEST QUERY STRING ", string(ctx.QueryArgs().QueryString()))
 		ctx.Response.SetStatusCode(int(BadRequest))
 		trail("", "", "get_individual", make(map[string]interface{}), "{}", BadRequest, timestamp)
@@ -37,7 +37,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	rc, ticket := getTicket(ticketKey)
 	if rc != Ok {
-		log.Println("@ERR GET TICKET: GET_INDIVIDUAL ", rc)
+		log.Println("ERR! GET TICKET: GET_INDIVIDUAL ", rc)
 		log.Println("\t@REQUEST BODY ", string(ctx.Request.Body()))
 		log.Println("\t@getIndividual: ticket=", ticketKey, ", uri=", uri)
 		ctx.Response.SetStatusCode(int(rc))
@@ -53,7 +53,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		main_queue_name := "individuals-flow"
 		main_queue = NewQueue(main_queue_name, R)
 		if !main_queue.open(CURRENT) {
-			log.Println("@ERR OPENING QUEUE: ", queueName)
+			log.Println("ERR! OPENING QUEUE: ", queueName)
 			ctx.Response.SetStatusCode(int(InvalidIdentifier))
 			trail(ticket.Id, ticket.UserURI, "get_individual", make(map[string]interface{}), "{}", InvalidIdentifier, timestamp)
 			return
@@ -63,14 +63,14 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		main_cs = NewConsumer(main_queue, queueName, R)
 		if !main_cs.open() {
-			log.Println("@ERR OPENING CONSUMER: ", queueName)
+			log.Println("ERR! OPENING CONSUMER: ", queueName)
 			ctx.Response.SetStatusCode(int(InvalidIdentifier))
 			trail(ticket.Id, ticket.UserURI, "get_individual", make(map[string]interface{}), "{}", InvalidIdentifier, timestamp)
 			return
 		}
 
 		if !main_cs.get_info() {
-			log.Println("@ERR GETTING INFO: ", queueName)
+			log.Println("ERR! GETTING INFO: ", queueName)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", make(map[string]interface{}), "{}", InternalServerError, timestamp)
 			return
@@ -86,7 +86,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		individual["srv:current_count"] = map[string]interface{}{"data": main_cs.count_popped, "type": "Integer"}
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
-			log.Println("@ERR GET_INDIVIDUAL: #1 ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("ERR! GET_INDIVIDUAL: #1 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
@@ -104,7 +104,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 			log.Println("@get from cache, ", uri);
 			individualJSON, err := json.Marshal(individual)
 			if err != nil {
-				log.Println("@ERR GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)
+				log.Println("ERR! GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)
 				ctx.Response.SetStatusCode(int(InternalServerError))
 				return
 			}
@@ -124,7 +124,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	if rr.CommonRC != Ok {
 		if rr.CommonRC != NotFound {
-			log.Println("@ERR GET_INDIVIDUAL: GET INDIVIDUAL COMMON ", rr.CommonRC)
+			log.Println("ERR! GET_INDIVIDUAL: GET INDIVIDUAL COMMON ", rr.CommonRC)
 		}
 		ctx.Response.SetStatusCode(int(rr.CommonRC))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.CommonRC, timestamp)
@@ -138,7 +138,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 	} else {
 
 		if rr.GetCount() == 0 {
-			log.Println("@ERR GET_INDIVIDUAL: DECODING INDIVIDUAL")
+			log.Println("ERR! GET_INDIVIDUAL: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
@@ -148,7 +148,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
-			log.Println("@ERR GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("ERR! GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
@@ -206,7 +206,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	}
 
 	//if len(uris) == 0 {
-	//	log.Println("@ERR GET_INDIVIDUALS: ZERO LENGTH TICKET OR URI")
+	//	log.Println("ERR! GET_INDIVIDUALS: ZERO LENGTH TICKET OR URI")
 	//	log.Println("\t@REQUEST BODY ", string(ctx.Request.Body()))
 	//	ctx.Response.SetStatusCode(int(BadRequest))
 	//	trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", BadRequest, timestamp)

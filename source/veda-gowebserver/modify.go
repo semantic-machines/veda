@@ -38,13 +38,13 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	var mstorage_ch *nanomsg.Socket
 	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
-		log.Fatal("@ERR ON CREATING SOCKET to mstorage")
+		log.Fatal("ERR! ON CREATING SOCKET to mstorage")
 		return InternalServerError
 	}
 
 	_, err = mstorage_ch.Connect(mainModuleURL)
 	for err != nil {
-		log.Fatal("@ERR ON CREATING ENDPOINT to mstorage")
+		log.Fatal("ERR! ON CREATING ENDPOINT to mstorage")
 		return InternalServerError
 	}
 

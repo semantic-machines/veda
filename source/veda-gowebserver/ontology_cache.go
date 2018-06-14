@@ -39,12 +39,12 @@ func tryStoreInOntologyCache(individual Individual) {
 func monitorIndividualChanges() {
 	notifyChannel, err := nanomsg.NewSubSocket()
 	if err != nil {
-		log.Fatal("@ERR ON CREATING UPDATE CHANNEL SOCKET: ", err)
+		log.Fatal("ERR! ON CREATING UPDATE CHANNEL SOCKET: ", err)
 	}
 
 	err = notifyChannel.Subscribe("")
 	if err != nil {
-		log.Fatal("@ERR ON SUBSCRIBING TO UPDATES: ", err)
+		log.Fatal("ERR! ON SUBSCRIBING TO UPDATES: ", err)
 	}
 
 	_, err = notifyChannel.Connect(notifyChannelURL)
@@ -56,7 +56,7 @@ func monitorIndividualChanges() {
 	for {
 		bytes, err := notifyChannel.Recv(0)
 		if err != nil {
-			log.Println("@ERR ON RECEIVING MESSAGE VIA UPDATE CHANNEL: ", err)
+			log.Println("ERR! ON RECEIVING MESSAGE VIA UPDATE CHANNEL: ", err)
 			continue
 		}
 
@@ -72,11 +72,11 @@ func monitorIndividualChanges() {
 			if updateCounter > updateCounterCache {
 				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false, false)
 				if rr.CommonRC != Ok {
-					log.Println("@ERR ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH COMMON CODE: ",
+					log.Println("ERR! ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH COMMON CODE: ",
 						rr.CommonRC)
 					continue
 				} else if rr.OpRC[0] != Ok {
-					log.Println("@ERR ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH OP CODE: ",
+					log.Println("ERR! ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH OP CODE: ",
 						rr.OpRC[0])
 					continue
 				}

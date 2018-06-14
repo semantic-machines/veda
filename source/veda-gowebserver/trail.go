@@ -22,14 +22,14 @@ func trail(ticketId, userId, action string, args map[string]interface{}, result 
 			cons, err = tdb.NewTrailDBConstructor(tdbPath+"rest_trails_"+time.Now().Format("2006-01-02T15:04:05Z")+"_"+portStr,
 				"ticket", "user_id", "action", "args", "result", "result_code", "duration")
 			if err != nil {
-				log.Println("@ERR OPENING TRAILS: ", err)
+				log.Println("ERR! OPENING TRAILS: ", err)
 				return
 			}
 		}
 
 		u, err := uuid.NewRandom()
 		if err != nil {
-			log.Println("@ERR ON CREATING TRAIL UUID: ", err)
+			log.Println("ERR! ON CREATING TRAIL UUID: ", err)
 			return
 		}
 
@@ -43,7 +43,7 @@ func trail(ticketId, userId, action string, args map[string]interface{}, result 
 			log.Println("flush trail db")
 			err = cons.Finalize()
 			if err != nil {
-				log.Println("@ERR FINALIZING TRAILS: ", err)
+				log.Println("ERR! FINALIZING TRAILS: ", err)
 			}
 			cons = nil
 			countTrails = 0

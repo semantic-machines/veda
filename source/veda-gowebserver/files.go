@@ -75,7 +75,7 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 		//Create file in destination directory
 		destFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
-			log.Println("@ERR CREATING DESTIONTION FILE ON UPLOAD: ", err)
+			log.Println("ERR! CREATING DESTIONTION FILE ON UPLOAD: ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
@@ -85,7 +85,7 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 
 		srcFile, err := form.File["file"][0].Open()
 		if err != nil {
-			log.Println("@ERR OPENING FORM FILE ON UPLOAD: ", err)
+			log.Println("ERR! OPENING FORM FILE ON UPLOAD: ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
@@ -95,7 +95,7 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 		//Copy srce file from form to destination
 		_, err = io.Copy(destFile, srcFile)
 		if err != nil {
-			log.Println("@ERR ON COPYING FILE ON UPLOAD: ", err)
+			log.Println("ERR! ON COPYING FILE ON UPLOAD: ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
@@ -121,7 +121,6 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 	//If uri len is more then 3 and icket is valid than continue downloading
 	if utf8.RuneCountInString(uri) > 3 && ticketKey != "" {
-		//log.Println("@DOWNLOAD")
 
 		//Check if ticket is valid, return fail code if ticket is not valid
 		rc, ticket := getTicket(ticketKey)
@@ -135,7 +134,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 		//If common  request code of operation code are not Ok then return fail code
 		if rr.CommonRC != Ok {
-			log.Println("@ERR COMMON FILES: GET INDIVIDUAL user=", ticket.UserURI, ", uri=", uri)
+			log.Println("ERR! COMMON FILES: GET INDIVIDUAL user=", ticket.UserURI, ", uri=", uri)
 			ctx.Response.SetStatusCode(int(rr.CommonRC))
 			return
 		} else if rr.OpRC[0] != Ok {
@@ -143,8 +142,6 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 			return
 		}
 
-		//Decode individual with file info and read file info
-		//fileInfo := BinobjToMap(rr.Data[0])
 		fileInfo := rr.GetIndv(0)
 		//log.Println(fileInfo)
 		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
@@ -160,7 +157,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 			ctx.Response.SetStatusCode(int(NotFound))
 			return
 		} else if err != nil {
-			log.Println("@ERR ON CHECK FILE EXISTANCE: ", err)
+			log.Println("ERR! ON CHECK FILE EXISTANCE: ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}

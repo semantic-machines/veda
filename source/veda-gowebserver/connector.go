@@ -229,7 +229,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	//If user uri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR GET: ", uris)
+		log.Println("ERR! CONNECTOR GET: ", uris)
 		return rr
 	}
 
@@ -379,7 +379,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 	//If userUri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR AUTHORIZE: ", uri)
+		log.Println("ERR! CONNECTOR AUTHORIZE: ", uri)
 		return rr
 	}
 
