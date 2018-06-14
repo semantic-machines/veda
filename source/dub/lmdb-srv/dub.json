@@ -9,11 +9,15 @@
         "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
         "sourcePaths":[
-            "../../veda/lmdb_srv"
+            "../../veda/lmdb_srv",
+	    "../../veda/onto/bj8individual",
 	],
         "sourceFiles":[
     	    "../../lib64/liblmdb.a",
+    	    "../../veda/onto/individual.d",
+    	    "../../veda/onto/resource.d",
     	    "../../veda/util/commando.d",
+    	    "../../veda/util/tools.d",
     	    "../../veda/bind/nano.d",
     	    "../../veda/util/properd.d",
     	    "../../veda/core/common/define.d",
