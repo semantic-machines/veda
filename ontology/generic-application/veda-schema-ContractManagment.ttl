@@ -50,6 +50,67 @@ v-s:forOrganization
 .
 
 # ------------------------------------------------------------
+v-s:ContractParticipant
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:label "Contract participant"@en ;
+  rdfs:label "Участник контракта"@ru ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+v-s:hasRoleInContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Роль в контракте"@ru ;
+  rdfs:label "Role in contract"@en ;
+  rdfs:range v-s:RoleInContract ;
+  rdfs:domain v-s:ContractParticipant ;
+.
+# rdfs:comment
+
+# ------------------------------------------------------------
+v-s:ContractParticipantCustomer
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:label "Customer"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+# ------------------------------------------------------------
+v-s:ContractParticipantSupplier
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:label "Supplier"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+# ------------------------------------------------------------
+v-s:ContractParticipantStakeholder
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Заинтересованная сторона"@ru ;
+  rdfs:label "Stakeholder"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+
+# ------------------------------------------------------------
+v-s:RoleInContract
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Роль в контракте"@ru ;
+  rdfs:label "Role in contract"@en ;
+.
+
+# ------------------------------------------------------------
 v-s:ContractorLock
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Contractual ;
@@ -586,5 +647,43 @@ v-s:CurrencyExchangeRateTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
+  """ ;
+.
+
+v-s:ContractParticipantTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractParticipantCustomer ;
+  v-ui:forClass v-s:ContractParticipantSupplier ;
+  v-ui:forClass v-s:ContractParticipantStakeholder ;
+  rdfs:label "Шаблон для класса v-s:ContractParticipantCustomer ContractParticipantSupplier"@ru ;
+  rdfs:label "Template for v-s:ContractParticipantCustomer ContractParticipantSupplier class"@en ;
+  v-ui:template """
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title" about="@" rel="v-s:hasRoleInContract" class="view -edit -search" data-template="v-ui:LabelTemplate"></h3>
+      <veda-control data-type="link" rel="v-s:hasRoleInContract" class="-view edit search dropdown fulltext"></veda-control>
+    </div>
+    <div class="panel-body">
+      <em about="v-s:hasContractor" property="rdfs:label"></em>
+      <div rel="v-s:hasContractor" class="view edit search">
+        <a href="#/@">
+          <span about="@" property="rdfs:label"></span>,
+          <span about="@" property="v-s:registrationNumber"></span>
+        </a>
+      </div>
+      <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext" data-template="{individual['rdfs:label'].join(' ') + ', ' + individual['v-s:registrationNumber'][0]}"></veda-control>
+      <em about="stg:OrganizationBundleContract" property="rdfs:label"></em>
+      <div rel="v-s:hasOrganization" class="view edit search">
+        <a href="#/@">
+          <span about="@" property="rdfs:label"></span>,
+          <span about="@" property="v-s:taxId"></span>
+        </a>
+      </div>
+      <veda-control data-type="link" rel="v-s:hasOrganization" class="-view edit search fulltext" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:taxId'][0]}"></veda-control>
+      <em about="rdfs:comment" property="rdfs:label"></em>
+      <div property="rdfs:comment" class="view -edit -search"></div>
+      <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
+    </div>
+  </div>
   """ ;
 .
