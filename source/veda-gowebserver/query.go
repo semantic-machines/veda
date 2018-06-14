@@ -84,7 +84,7 @@ func query(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	cb, err1 := NNSend(querySocket, jsonRequest, 0)
+	cb, err1 := NmCSend(querySocket, jsonRequest, 0)
 	if err1 != nil || cb <= 0 {
 		log.Printf("ERR! ON SEND TO FT-QUERY SOCKET, url=%s, query=%s", queryServiceURL, string(jsonRequest))
 		ctx.Response.SetStatusCode(int(InternalServerError))
@@ -119,4 +119,3 @@ func query(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(result_code)
 	}
 }
-

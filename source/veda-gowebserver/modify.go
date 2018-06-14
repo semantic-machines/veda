@@ -48,7 +48,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 		return InternalServerError
 	}
 
-	mstorage_ch.Send(jsonRequest, 0)
+	NmCSend(mstorage_ch, jsonRequest, 0)
 	responseBuf, err := mstorage_ch.Recv(0)
 
 	mstorage_ch.Close()

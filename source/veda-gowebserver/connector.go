@@ -458,8 +458,11 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		if err != nil {
 			log.Println("Error", err)
 		} else {
-			if tpl, ok := resp.Data[0].([]interface{}); !ok {
-				log.Println("Unexpected body of Insert")
+			if len(resp.Data) == 0 {
+				log.Println("ERR! Empty body of Insert")
+				rr.CommonRC = InternalServerError
+			} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
+				log.Println("ERR! Unexpected body of Insert")
 				rr.CommonRC = InternalServerError
 			} else {
 				rr.OpRC = append(rr.OpRC, Ok)
@@ -507,7 +510,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	return rr
 }
 
-func NNSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
+func NmCSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("ERR! fail send to NN socket")
@@ -519,4 +522,15 @@ func NNSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
 	copy(tmp, data)
 
 	return s.Send(tmp, flags)
+}
+
+func NmSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("ERR! fail send to NN socket")
+			return
+		}
+	}()
+
+	return s.Send(data, flags)
 }
