@@ -145,7 +145,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 		//Decode individual with file info and read file info
 		//fileInfo := BinobjToMap(rr.Data[0])
-		fileInfo := rr.Indv[0]
+		fileInfo := rr.GetIndv(0)
 		//log.Println(fileInfo)
 		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
 		fileURI, _ := getFirstString(fileInfo, "v-s:fileUri")

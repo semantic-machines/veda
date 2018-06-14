@@ -56,7 +56,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return rr.OpRC[0], ticket
 		}
 
-		individual := rr.Indv[0]
+		individual := rr.GetIndv(0)
 
 		var duration int64
 
@@ -85,7 +85,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		if !ok {
 			//If ticket not found then get user from tarantool and decode it
 			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
-			user := rr.Indv[0]
+			user := rr.GetIndv(0)
 			//Check its field v-s:origin
 
 			origin, ok := getFirstBool(user, "v-s:origin")

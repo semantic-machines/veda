@@ -55,7 +55,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		log.Printf("authenticate:check external user (%v)\n", authResponse["user_uri"])
 		//sending get request to tarantool
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
-		user := rr.Indv[0]
+		user := rr.GetIndv(0)
 		origin, ok := getFirstBool(user, "v-s:origin")
 
 		if !ok || (ok && origin == false) {

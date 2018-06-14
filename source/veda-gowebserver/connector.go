@@ -28,18 +28,92 @@ type Connector struct {
 	db_is_open bool
 }
 
+const (
+	TT   = 1
+	LMDB = 2
+	NONE = 0
+)
+
 //RequestResponse represents structure for tarantool request response
 type RequestResponse struct {
 	//ResultCode for request
 	CommonRC ResultCode
 	//ResultCode for each uri in request
 	OpRC []ResultCode
-	//Response data
-	//	Data []string
+
 	//Returned rights for auth requests
 	Rights []uint8
 
-	Indv []Individual
+	indv []Individual
+
+	uris        []string
+	data_binobj []string
+	data_obj_tt []map[interface{}]interface{}
+	src_type    int
+}
+
+func (rr *RequestResponse) SetUris(data []string) {
+	rr.uris = data
+}
+
+func (rr *RequestResponse) AddIndv(data Individual) {
+	rr.src_type = NONE
+	rr.indv = append(rr.indv, data)
+}
+
+func (rr *RequestResponse) AddTTResult(data map[interface{}]interface{}) {
+	rr.src_type = TT
+	rr.data_obj_tt = append(rr.data_obj_tt, data)
+}
+
+func (rr *RequestResponse) AddLMDBResult(data string) {
+	rr.src_type = LMDB
+	rr.data_binobj = append(rr.data_binobj, data)
+}
+
+func (rr *RequestResponse) GetCount() int {
+	if rr.src_type == TT {
+		return len(rr.data_obj_tt)
+	} else if rr.src_type == LMDB {
+		return len(rr.data_binobj)
+	} else {
+		return len(rr.indv)
+	}
+}
+
+func (rr *RequestResponse) GetIndv(idx int) Individual {
+	if len(rr.indv) == 0 {
+		rr.indv = make([]Individual, len(rr.uris))
+	}
+
+	if rr.indv[idx] != nil {
+		return rr.indv[idx]
+	} else {
+		if rr.src_type == TT {
+			rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
+		} else if rr.src_type == LMDB {
+			rr.indv[idx] = BinobjToMap(string(rr.data_binobj[idx]))
+		}
+		return rr.indv[idx]
+	}
+}
+
+func (rr *RequestResponse) GetIndvs() []Individual {
+	if len(rr.indv) == 0 {
+		rr.indv = make([]Individual, len(rr.uris))
+	}
+
+	for idx := 0; idx < len(rr.uris); idx++ {
+		if rr.indv[idx] == nil {
+			if rr.src_type == TT {
+				rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
+			} else if rr.src_type == LMDB {
+				rr.indv[idx] = BinobjToMap(string(rr.data_binobj[idx]))
+			}
+		}
+	}
+
+	return rr.indv
 }
 
 //MaxPacketSize is critical value for request/response packets,
@@ -166,7 +240,8 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
-	rr.Indv = make([]Individual, 0, len(uris))
+	rr.SetUris(uris)
+	//rr.Indv = make([]Individual, 0, len(uris))
 
 	if conn.tt_client != nil {
 
@@ -202,7 +277,8 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 							}
 						}
 						rr.OpRC = append(rr.OpRC, Ok)
-						rr.Indv = append(rr.Indv, ttResordToMap(uris[i], tpl[1].(map[interface{}]interface{})))
+						rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
+						//rr.Indv = append(rr.Indv, ttResordToMap(uris[i], tpl[1].(map[interface{}]interface{})))
 
 						//						ii := tpl[1].(string)
 						//						rr.Indv = append(rr.Indv, BinobjToMap(ii))
@@ -259,7 +335,8 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 					}
 
 					rr.OpRC = append(rr.OpRC, Ok)
-					rr.Indv = append(rr.Indv, BinobjToMap(string(responseBuf)))
+					rr.AddLMDBResult(string(responseBuf))
+					//rr.Indv = append(rr.Indv, BinobjToMap(string(responseBuf)))
 
 				}
 			}
@@ -351,7 +428,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		rr.OpRC = make([]ResultCode, 1)
 
 		statements := strings.Split(rights_str, "\n")
-		rr.Indv = make([]Individual, 0)
+		//rr.Indv = make([]Individual, 0)
 
 		for j := 0; j < len(statements)-1; j++ {
 
@@ -371,7 +448,8 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			rr.Indv = append(rr.Indv, statementIndiv)
+			rr.AddIndv(statementIndiv)
+			//rr.Indv = append(rr.Indv, statementIndiv)
 		}
 
 		//			commentIndiv := map[string]interface{}{
@@ -405,7 +483,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
 
 		rr.Rights = make([]uint8, 1)
-		rr.Indv = make([]Individual, 1)
+		//rr.Indv = make([]Individual, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		parts := strings.Split(info_str, "\n")
@@ -426,7 +504,8 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			"v-s:memberOf": memberOf,
 		}
 
-		rr.Indv[0] = membershipIndividual
+		//rr.Indv[0] = membershipIndividual
+		rr.AddIndv(membershipIndividual)
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -450,7 +529,8 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
-	rr.Indv = make([]Individual, 0, len(ticketIDs))
+	//rr.Indv = make([]Individual, 0, len(ticketIDs))
+	rr.SetUris(ticketIDs)
 
 	if conn.tt_client != nil {
 
@@ -466,7 +546,9 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 				rr.CommonRC = InternalServerError
 			} else {
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Indv = append(rr.Indv, ttResordToMap(ticketIDs[0], tpl[1].(map[interface{}]interface{})))
+
+				rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
+				//rr.Indv = append(rr.Indv, ttResordToMap(ticketIDs[0], tpl[1].(map[interface{}]interface{})))
 
 				//ii := tpl[1].(string)
 				//rr.Indv = append(rr.Indv, BinobjToMap(ii))
@@ -501,7 +583,8 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 				}
 
 				rr.OpRC = append(rr.OpRC, Ok)
-				rr.Indv = append(rr.Indv, BinobjToMap(string(responseBuf)))
+				rr.AddLMDBResult(string(responseBuf))
+				//rr.Indv = append(rr.Indv, BinobjToMap(string(responseBuf)))
 				rr.CommonRC = Ok
 			}
 		}

@@ -46,11 +46,11 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 		return
 	}
 
-	if len(rr.Indv) == 1 {
-		jsonBytes, _ := json.Marshal(rr.Indv[0])
+	if rr.GetCount() == 1 {
+		jsonBytes, _ := json.Marshal(rr.GetIndv(0))
 		ctx.Write(jsonBytes)
-	} else if len(rr.Indv) > 1 {
-		jsonBytes, _ := json.Marshal(rr.Indv)
+	} else if rr.GetCount() > 1 {
+		jsonBytes, _ := json.Marshal(rr.GetIndvs())
 		ctx.Write(jsonBytes)
 	}
 	ctx.Response.SetStatusCode(int(Ok))
