@@ -48,7 +48,7 @@ type ticket struct {
 }
 
 const (
-	tdbPath           = "./data/trails/	"
+	tdbPath = "./data/trails/	"
 )
 
 //ticketCache is map to cache requested earlier tickets
@@ -152,7 +152,7 @@ func codeToJsonException(code ResultCode) []byte {
 func requestHandler(ctx *fasthttp.RequestCtx) {
 	routeParts := strings.Split(string(ctx.Path()[:]), "/")
 	if len(routeParts) >= 2 && routeParts[1] == "files" {
-		//log.Printf("len=%v arr=%v\n", len(routeParts), routeParts)
+		//log.Printf("@len=%v arr=%v\n", len(routeParts), routeParts)
 		files(ctx, routeParts)
 		return
 	}

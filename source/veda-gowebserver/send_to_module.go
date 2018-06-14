@@ -35,11 +35,15 @@ func sendToModule(ctx *fasthttp.RequestCtx) {
 			cpuprofile := "gowebserver-cpu.prof"
 			f, err := os.Create(cpuprofile)
 			if err != nil {
-				log.Fatal("could not create CPU profile: ", err)
+				log.Println("ERR! could not create CPU profile: ", err)
+				ctx.Response.SetStatusCode(int(InternalServerError))
+				return
 			}
 
 			if err := pprof.StartCPUProfile(f); err != nil {
-				log.Fatal("could not start CPU profile: ", err)
+				log.Println("ERR! could not start CPU profile: ", err)
+				ctx.Response.SetStatusCode(int(InternalServerError))
+				return
 			}
 		} else if msg == "stop_cpuprofile" {
 			pprof.StopCPUProfile()
@@ -47,11 +51,15 @@ func sendToModule(ctx *fasthttp.RequestCtx) {
 			memprofile := "gowebserver-mem.prof"
 			f, err := os.Create(memprofile)
 			if err != nil {
-				log.Fatal("could not create memory profile: ", err)
+				log.Println("ERR! could not create memory profile: ", err)
+				ctx.Response.SetStatusCode(int(InternalServerError))
+				return
 			}
 			runtime.GC() // get up-to-date statistics
 			if err := pprof.WriteHeapProfile(f); err != nil {
-				log.Fatal("could not write memory profile: ", err)
+				log.Println("ERR! could not write memory profile: ", err)
+				ctx.Response.SetStatusCode(int(InternalServerError))
+				return
 			}
 			f.Close()
 		}
@@ -67,7 +75,7 @@ func sendToModule(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	log.Println(string(jsonRequest))
+	//log.Println(string(jsonRequest))
 
 	NmCSend(g_mstorage_ch, jsonRequest, 0)
 	responseBuf, _ := g_mstorage_ch.Recv(0)
@@ -79,6 +87,6 @@ func sendToModule(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
-	log.Println(responseJSON)
+	//log.Println(responseJSON)
 	ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
 }

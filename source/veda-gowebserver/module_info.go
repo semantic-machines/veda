@@ -163,7 +163,7 @@ func NewModuleInfoFile(moduleName string, mode OpenMode) *ModuleInfoFile {
 		_, err := os.Stat(mif.fnModuleInfo + ".lock")
 		if err == nil {
 			//If no lock then component is opened already or old file was not deleted
-			log.Printf("Veda not started: component [%s] already open, or not deleted lock file\n",
+			log.Printf("ERR! Veda not started: component [%s] already open, or not deleted lock file\n",
 				mif.fnModuleInfo)
 			return nil
 		}

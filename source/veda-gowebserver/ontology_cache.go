@@ -39,12 +39,14 @@ func tryStoreInOntologyCache(individual Individual) {
 func monitorIndividualChanges() {
 	notifyChannel, err := nanomsg.NewSubSocket()
 	if err != nil {
-		log.Fatal("ERR! ON CREATING UPDATE CHANNEL SOCKET: ", err)
+		log.Println("ERR! ON CREATING UPDATE CHANNEL SOCKET: ", err)
+		return
 	}
 
 	err = notifyChannel.Subscribe("")
 	if err != nil {
-		log.Fatal("ERR! ON SUBSCRIBING TO UPDATES: ", err)
+		log.Println("ERR! ON SUBSCRIBING TO UPDATES: ", err)
+		return
 	}
 
 	_, err = notifyChannel.Connect(notifyChannelURL)
@@ -67,7 +69,7 @@ func monitorIndividualChanges() {
 		fmt.Sscanf(strdata, "%s %d %d", &uri, &updateCounter, &opID)
 		individualCache, ok := ontologyCache[uri]
 		if ok {
-			log.Println(individualCache)
+			log.Println("monitor cache:changed: ", individualCache)
 			updateCounterCache, _ := getFirstInt(individualCache, "v-s:updateCounter")
 			if updateCounter > updateCounterCache {
 				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false, false)

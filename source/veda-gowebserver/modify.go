@@ -38,13 +38,13 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	var mstorage_ch *nanomsg.Socket
 	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
-		log.Fatal("ERR! ON CREATING SOCKET to mstorage")
+		log.Println("ERR! ON CREATING SOCKET to mstorage")
 		return InternalServerError
 	}
 
 	_, err = mstorage_ch.Connect(mainModuleURL)
 	for err != nil {
-		log.Fatal("ERR! ON CREATING ENDPOINT to mstorage")
+		log.Println("ERR! ON CREATING ENDPOINT to mstorage")
 		return InternalServerError
 	}
 
@@ -74,7 +74,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 			responseData := data.([]interface{})[0].(map[string]interface{})
 			ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
 			responseDataJSON, _ := json.Marshal(responseData)
-			//log.Println(string(responseDataJSON))
+			//log.Println("@", string(responseDataJSON))
 			ctx.Write(responseDataJSON)
 			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
 				ResultCode(responseData["result"].(float64)), timestamp)
@@ -82,7 +82,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 		} else {
 			ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
 			responseDataJSON, _ := json.Marshal(responseJSON)
-			log.Println(string(responseDataJSON))
+			//log.Println("@", string(responseDataJSON))
 			ctx.Write(responseDataJSON)
 			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
 				ResultCode(responseJSON["result"].(float64)), timestamp)

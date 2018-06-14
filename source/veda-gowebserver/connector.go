@@ -143,11 +143,11 @@ func (conn *Connector) open_dbs() {
 
 		if err != nil {
 			conn.db_is_open = false
-			log.Fatal(err)
+			log.Fatal("ERR! open_dbs", err)
 		} else {
 			conn.db_is_open = true
-			log.Println(resp.Code)
-			log.Println(resp.Data)
+			log.Println("@ resp.Code=", resp.Code)
+			log.Println("@ resp.Data=", resp.Data)
 		}
 
 	} else {
@@ -248,14 +248,14 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 		for i := 0; i < len(uris); i++ {
 			resp, err := conn.tt_client.Select("INDIVIDUALS", "primary", 0, 1, tarantool.IterEq, []interface{}{uris[i]})
 			if err != nil {
-				log.Println("Error", err)
+				log.Println("ERR! ", err)
 			} else {
 				if len(resp.Data) == 0 {
 					rr.OpRC = append(rr.OpRC, NotFound)
 					continue
 				}
 				if tpl, ok := resp.Data[0].([]interface{}); !ok {
-					log.Println("Unexpected body of Insert")
+					log.Println("ERR! Unexpected body of Insert")
 					rr.CommonRC = InternalServerError
 				} else {
 					if len(tpl) == 2 {
@@ -536,7 +536,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 		resp, err := conn.tt_client.Select("TICKETS", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
 		if err != nil {
-			log.Println("Error", err)
+			log.Println("ERR! ", err)
 		} else {
 			if len(resp.Data) == 0 {
 				log.Println("ERR! Empty body of Insert")

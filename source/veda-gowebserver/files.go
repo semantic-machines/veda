@@ -14,14 +14,14 @@ import (
 //uploadFile handles file uploading from request context
 func uploadFile(ctx *fasthttp.RequestCtx) {
 	//Get form from context
-	
+
 	form, err := ctx.Request.MultipartForm()
 	if err != nil {
 		log.Println("ERR!, REDING FORM: UPLOAD FILE: ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
-			
+
 	if form.Value["path"] == nil {
 		log.Printf("ERR!, UPLOAD FILE: path not defined or null content, form=%v, request=%v\n", form, ctx.String())
 		ctx.Response.SetStatusCode(int(InternalServerError))
@@ -143,7 +143,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		}
 
 		fileInfo := rr.GetIndv(0)
-		//log.Println(fileInfo)
+		//log.Println("@", fileInfo)
 		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
 		fileURI, _ := getFirstString(fileInfo, "v-s:fileUri")
 		fileName, _ := getFirstString(fileInfo, "v-s:fileName")

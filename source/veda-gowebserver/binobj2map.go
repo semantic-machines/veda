@@ -558,9 +558,10 @@ func CborToMap(cborStr string) Individual {
 				if err != nil {
 					log.Println(cborStr)
 					log.Println(keyStr)
-					log.Fatalln(err)
+					log.Println(err)
+				} else {
+					resources = append(resources, resource)
 				}
-				resources = append(resources, resource)
 			}
 
 			individual[keyStr] = resources
@@ -570,10 +571,10 @@ func CborToMap(cborStr string) Individual {
 		default:
 			resource, err := prepareElement(v)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+			} else {
+				individual[keyStr] = []interface{}{resource}
 			}
-
-			individual[keyStr] = []interface{}{resource}
 		}
 	}
 
@@ -594,7 +595,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 	resMapI, err := decoder.DecodeMap()
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return nil
 	}
 
