@@ -98,6 +98,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+/*
 	individual, ok := ontologyCache[uri]
 	if ok {
 		log.Println("@get from cache, ", uri);
@@ -114,7 +115,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(Ok))
 		return
 	}
-
+*/
 	uris := make([]string, 1)
 	uris[0] = uri
 	jsonArgs := map[string]interface{}{"uri": uri}
@@ -143,7 +144,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 			return
 		}
 
-		individual = rr.Indv[0]
+		individual := rr.Indv[0]
 
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
@@ -213,6 +214,8 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	//}
 
 	individuals := make([]map[string]interface{}, 0, len(uris))
+	
+/*
 	urisToGet := make([]string, 0, len(uris))
 	for i := 0; i < len(uris); i++ {
 		individual, ok := ontologyCache[uris[i]]
@@ -222,6 +225,9 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			urisToGet = append(urisToGet, uris[i])
 		}
 	}
+*/
+	
+	urisToGet := uris
 
 	for i := 0; i < len(urisToGet); i++ {
 		rr := conn.Get(true, ticket.UserURI, []string{urisToGet[i]}, false, false)
