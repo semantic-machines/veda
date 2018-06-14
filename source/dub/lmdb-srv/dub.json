@@ -16,6 +16,7 @@
     	    "../../lib64/liblmdb.a",
     	    "../../veda/onto/individual.d",
     	    "../../veda/onto/resource.d",
+    	    "../../veda/onto/lang.d",
     	    "../../veda/util/commando.d",
     	    "../../veda/util/tools.d",
     	    "../../veda/bind/nano.d",
