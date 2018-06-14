@@ -144,19 +144,11 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 			return
 		}
 
-		individual := rr.GetIndv(0)
+		individual := rr.GetJson(0)
 
-		individualJSON, err := json.Marshal(individual)
-		if err != nil {
-			log.Println("ERR! GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
-			ctx.Response.SetStatusCode(int(InternalServerError))
-			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
-			return
-		}
+		ctx.Write([]byte(individual))
 
-		tryStoreInOntologyCache(individual)
-		ctx.Write(individualJSON)
-		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, string(individualJSON), Ok, timestamp)
+		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, individual, Ok, timestamp)
 	}
 
 	ctx.Response.SetStatusCode(int(Ok))
@@ -231,6 +223,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 
 	for i := 0; i < len(urisToGet); i++ {
 		rr := conn.Get(true, ticket.UserURI, []string{urisToGet[i]}, false, false)
+
 		if rr.CommonRC != Ok {
 			log.Println("ERR! get individuals: err=", rr.CommonRC, ", user=", ticket.UserURI, ", uri=", urisToGet[i])
 			ctx.Response.SetStatusCode(int(rr.CommonRC))
@@ -239,7 +232,6 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 		}
 
 		if rr.OpRC[0] == Ok {
-
 			if rr.GetCount() == 0 {
 				log.Println("ERR! get individuals: DECODING INDIVIDUAL")
 				ctx.Response.SetStatusCode(int(InternalServerError))
@@ -248,7 +240,6 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			}
 			individual := rr.GetIndv(0)
 
-			tryStoreInOntologyCache(individual)
 			individuals = append(individuals, individual)
 		}
 
@@ -259,6 +250,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
+	
 	individualsJSON, err := json.Marshal(individuals)
 	if err != nil {
 		log.Println("ERR! get individuals: ENCODING INDIVIDUALS JSON ", err)

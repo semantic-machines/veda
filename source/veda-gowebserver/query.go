@@ -97,15 +97,15 @@ func query(ctx *fasthttp.RequestCtx) {
 
 	ctx.Write(responseBuf)
 
-	var jsonResponce map[string]interface{}
-	err = json.Unmarshal(responseBuf, &jsonResponce)
+	var jsonResponse map[string]interface{}
+	err = json.Unmarshal(responseBuf, &jsonResponse)
 	if err != nil {
-		log.Printf("ERR! QUERY INDIVIDUAL: ENCODE JSON RESPONCE: %s %v\n", responseBuf, err)
+		log.Printf("ERR! QUERY INDIVIDUAL: ENCODE JSON RESPONSE: %s %v\n", responseBuf, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
 
-	rc := jsonResponce["result_code"]
+	rc := jsonResponse["result_code"]
 
 	var result_code = int(InternalServerError)
 	if rc != nil {

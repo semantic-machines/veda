@@ -61,7 +61,7 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	} else {
 		err = json.Unmarshal(responseBuf, &responseJSON)
 		if err != nil {
-			log.Printf("ERR! modify individual: DECODE JSON RESPONCE, cmd=%v: request=%v, responce=%v, err=%v\n", cmd, request, responseBuf, err)
+			log.Printf("ERR! modify individual: DECODE JSON RESPONSE, cmd=%v: request=%v, response=%v, err=%v\n", cmd, request, responseBuf, err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
 			return InternalServerError

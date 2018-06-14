@@ -64,7 +64,7 @@ func dataTypeToString(dataType DataType) string {
 		return "Boolean"
 	}
 
-	log.Println("@ERR UNKNOWN DATA TYPE")
+	log.Println("ERR! UNKNOWN DATA TYPE")
 	return ""
 }
 
@@ -180,7 +180,7 @@ func stringToDataType(str string) DataType {
 		return Boolean
 	}
 
-	log.Println("@ERR UNKNOWN DATA TYPE STRING")
+	log.Println("ERR! UNKNOWN DATA TYPE STRING")
 	return Unknown
 }
 
@@ -525,7 +525,7 @@ func CborToMap(cborStr string) Individual {
 	var cborObject interface{}
 	err := ring.Decode(&cborObject)
 	if err != nil {
-		log.Println("@ERR DECODING CBOR OBJECT")
+		log.Println("ERR! DECODING CBOR OBJECT")
 		return nil
 	}
 
@@ -534,7 +534,7 @@ func CborToMap(cborStr string) Individual {
 	case map[interface{}]interface{}:
 		individualMap = cborObject.(map[interface{}]interface{})
 	default:
-		log.Printf("@ERR CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
+		log.Printf("ERR! CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
 		return nil
 	}
 
@@ -558,9 +558,10 @@ func CborToMap(cborStr string) Individual {
 				if err != nil {
 					log.Println(cborStr)
 					log.Println(keyStr)
-					log.Fatalln(err)
+					log.Println(err)
+				} else {
+					resources = append(resources, resource)
 				}
-				resources = append(resources, resource)
 			}
 
 			individual[keyStr] = resources
@@ -570,10 +571,10 @@ func CborToMap(cborStr string) Individual {
 		default:
 			resource, err := prepareElement(v)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+			} else {
+				individual[keyStr] = []interface{}{resource}
 			}
-
-			individual[keyStr] = []interface{}{resource}
 		}
 	}
 
@@ -594,7 +595,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 	resMapI, err := decoder.DecodeMap()
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 		return nil
 	}
 
@@ -632,7 +633,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 						case uint64:
 							resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).UTC().Format("2006-01-02T15:04:05Z")
 						default:
-							log.Printf("@ERR SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
+							log.Printf("ERR! SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
 								reflect.TypeOf(resArrI[1]))
 							return nil
 						}
@@ -645,7 +646,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 						case nil:
 							resource["data"] = ""
 						default:
-							log.Printf("@ERR SIZE 2! NOT STRING: %s\n",
+							log.Printf("ERR! SIZE 2! NOT STRING: %s\n",
 								reflect.TypeOf(resArrI[1]))
 							return individual
 						}
@@ -704,7 +705,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 						case nil:
 							resource["data"] = ""
 						default:
-							log.Printf("@ERR SIZE 3! NOT STRING: %s\n",
+							log.Printf("ERR! SIZE 3! NOT STRING: %s\n",
 								reflect.TypeOf(resArrI[1]))
 							return nil
 						}
@@ -715,7 +716,7 @@ func MsgpackToMap(msgpackStr string) Individual {
 				}
 
 			default:
-				log.Printf("@ERR! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
+				log.Printf("ERR!! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
 				return nil
 			}
 			resources = append(resources, resource)
