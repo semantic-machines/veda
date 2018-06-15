@@ -60,6 +60,7 @@ script:
 
 after_script:
   - ./control-stop.sh
+  - ./send-to-chunk-io.sh
 
 after_failure:
   - ./control-stop.sh
