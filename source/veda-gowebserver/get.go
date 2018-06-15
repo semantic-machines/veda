@@ -146,7 +146,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		individualJSON := rr.GetJson(0)
 
-		log.Println("@ GET RESULT:",  uri, ", ", string(individualJSON))
+		//log.Println("@ GET RESULT:",  uri, ", ", string(individualJSON))
 		
 		ctx.Write([]byte(individualJSON))
 
