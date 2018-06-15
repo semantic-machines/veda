@@ -153,6 +153,8 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return
 		}
+	
+		log.Println("@ GET RESULT:", individualJSON)
 
 		//tryStoreInOntologyCache(individual)
 		ctx.Write(individualJSON)
