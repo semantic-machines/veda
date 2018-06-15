@@ -33,7 +33,7 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
         JSONValue jsn;
 
         string[]  rel      = request.split(",");
-        string    response = "{}";
+        string    response = "[]";
 
         if (rel.length == 2)
         {
@@ -51,7 +51,7 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
             }
 
             if (response == null || response.length == 0)
-                return "{}";
+                return "[]";
 
             Individual indv;
 
