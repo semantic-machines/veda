@@ -8,7 +8,7 @@ package main
 import "C"
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	"github.com/op/go-nanomsg"
 	"github.com/tarantool/go-tarantool"
 	"log"
@@ -81,6 +81,31 @@ func (rr *RequestResponse) GetCount() int {
 	}
 }
 
+func (rr *RequestResponse) GetJson(idx int) string {
+	if rr.src_type == TT {
+
+		if len(rr.indv) == 0 {
+			rr.indv = make([]Individual, len(rr.uris))
+		}
+
+		if rr.indv[idx] == nil {
+			rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
+		}
+
+		individualJSON, err := json.Marshal(rr.indv[idx])
+		if err != nil {
+			log.Println("ERR! GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
+			return ""
+		}
+		return string(individualJSON)
+
+	} else if rr.src_type == LMDB {
+		return rr.data_binobj[idx]
+	}
+
+	return ""
+}
+
 func (rr *RequestResponse) GetIndv(idx int) Individual {
 	if len(rr.indv) == 0 {
 		rr.indv = make([]Individual, len(rr.uris))
@@ -92,7 +117,15 @@ func (rr *RequestResponse) GetIndv(idx int) Individual {
 		if rr.src_type == TT {
 			rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
 		} else if rr.src_type == LMDB {
-			rr.indv[idx] = BinobjToMap(string(rr.data_binobj[idx]))
+
+			var jsonObj map[string]interface{}
+			err := json.Unmarshal([]byte(rr.data_binobj[idx]), &jsonObj)
+			if err != nil {
+				log.Printf("ERR! GetIndv: ENCODE JSON: %s %v\n", rr.data_binobj[idx], err)
+				return make(Individual)
+			}
+
+			rr.indv[idx] = jsonObj
 		}
 		return rr.indv[idx]
 	}
@@ -108,7 +141,14 @@ func (rr *RequestResponse) GetIndvs() []Individual {
 			if rr.src_type == TT {
 				rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
 			} else if rr.src_type == LMDB {
-				rr.indv[idx] = BinobjToMap(string(rr.data_binobj[idx]))
+				var jsonObj map[string]interface{}
+				err := json.Unmarshal([]byte(rr.data_binobj[idx]), &jsonObj)
+				if err != nil {
+					log.Printf("ERR! GetIndv: ENCODE JSON: %s %v\n", rr.data_binobj[idx], err)
+					return make([]Individual, 0)
+				}
+
+				rr.indv[idx] = jsonObj
 			}
 		}
 	}

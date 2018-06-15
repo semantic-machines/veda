@@ -7,7 +7,7 @@ import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.common.logger;
-import veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.common.type;
+import veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.common.type, veda.onto.individual, veda.onto.bj8individual.individual8json;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
@@ -32,8 +32,8 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
     {
         JSONValue jsn;
 
-        string[]  rel = request.split(",");
-        string    response;
+        string[]  rel      = request.split(",");
+        string    response = "{}";
 
         if (rel.length == 2)
         {
@@ -47,15 +47,26 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
             }
             else
             {
-                response = "ERR:invalid query:" ~ request;
+                return "{ERR:\"invalid query:" ~ request ~ "\"}";
             }
 
             if (response == null || response.length == 0)
-                response = "[]";
+                return "{}";
+
+            Individual indv;
+
+            if (indv.deserialize(response) > 0)
+            {
+                response = individual_to_json(indv).toString();
+            }
+            else
+            {
+                return "{ERR:\"fail binobj to json:" ~ response ~ "\"}";
+            }
         }
         else
         {
-            response = "{ERR:\"invalid query:" ~ request ~ "\"}";
+            return "{ERR:\"invalid query:" ~ request ~ "\"}";
         }
 
         return response;
@@ -127,7 +138,7 @@ void main(string[] args)
 
                 nn_freemsg(buf);
 
-                bytes = nn_send(sock, cast(char *)rep, rep.length, 0);
+                bytes = nn_send(sock, cast(char *)rep.dup (), rep.length, 0);
                 //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
             }
         }
