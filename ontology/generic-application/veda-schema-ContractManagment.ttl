@@ -134,7 +134,7 @@ v-s:LockedReason
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Locked reason"@en ;
-  rdfs:label "Причина блокировки"@ru
+  rdfs:label "Причина блокировки"@ru ;
 .
 
 # ------------------------------------------------------------
