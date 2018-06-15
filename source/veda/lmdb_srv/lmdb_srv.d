@@ -138,7 +138,7 @@ void main(string[] args)
 
                 nn_freemsg(buf);
 
-                bytes = nn_send(sock, cast(char *)rep, rep.length, 0);
+                bytes = nn_send(sock, cast(char *)rep.dup (), rep.length, 0);
                 //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
             }
         }
