@@ -243,17 +243,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     function cancelHandler (e, parent) {
       if (parent !== individual.id) {
         individual.reset()
-          .then( function () {
-            if (container.prop("id") === "main") {
-              window.history.back();
-            }
-          }, function () {
-            if (container.prop("id") === "main") {
-              window.history.back();
-            }
+          .then(function () {
+            template.trigger("view");
+          })
+          .catch(function () {
+            template.trigger("view");
           });
       }
-      template.trigger("view");
       e.stopPropagation();
     }
     template.on("cancel", cancelHandler);
