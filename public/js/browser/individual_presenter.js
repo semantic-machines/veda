@@ -317,6 +317,34 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
     }
     template.on("recover", recoverHandler);
 
+    // Valid alert
+    function validHandler () {
+      if ( this.hasValue("v-s:valid", false) ) {
+        if ( container.prop("id") === "main" && !template.hasClass("invalid") ) {
+          var alert = new veda.IndividualModel("v-s:InvalidAlert")["rdfs:label"].join(" ");
+          var invalidAlert = $(
+            '<div id="invalid-alert" class="container sheet margin-lg">\
+              <div class="alert alert-warning no-margin clearfix" role="alert">\
+                <p id="invalid-alert-msg">' + alert + '</p>\
+              </div>\
+            </div>'
+          );
+          template.prepend(invalidAlert);
+        }
+        template.addClass("invalid");
+      } else {
+        template.removeClass("invalid");
+        if ( container.prop("id") === "main" ) {
+          $("#invalid-alert", template).remove();
+        }
+      }
+    }
+    individual.on("v-s:valid", validHandler);
+    template.one("remove", function () {
+      individual.off("v-s:valid", validHandler);
+    });
+    validHandler.call(individual);
+
     // Draft label
     var draftable, showLabel;
 
@@ -327,13 +355,13 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
       // If individual is draft
       if ( individual.isDraft() && showLabel ) {
         if ( template.children(".sheet").length ) {
-          template.children(".sheet").first().addClass("is-draft");
+          template.children(".sheet").addClass("is-draft");
         } else {
           template.addClass("is-draft");
         }
       } else {
         if ( template.children(".sheet").length ) {
-          template.children(".sheet").first().removeClass("is-draft");
+          template.children(".sheet").removeClass("is-draft");
         } else {
           template.removeClass("is-draft");
         }

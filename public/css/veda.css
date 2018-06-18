@@ -465,7 +465,8 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover) {
+.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover),
+.invalid, .invalid *:not(#invalid-alert-msg):not(#invalid-alert-recover) {
   text-decoration: none!important;
   color: #aaa;
 }
