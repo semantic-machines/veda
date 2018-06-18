@@ -65,12 +65,15 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 			authResponse["id"] = ""
 			authResponse["user_uri"] = ""
 			authResponse["result"] = NotAuthorized
+			ctx.SetStatusCode(int(NotAuthorized))
 		} else if ok && origin == true {
 			//else set externals users ticket id to true valuse
 			externalUsersTicketId[authResponse["user_uri"].(string)] = true
+			ctx.SetStatusCode(int(Ok))
+		} else {
+			ctx.SetStatusCode(int(Ok))
 		}
 	}
 
-	ctx.SetStatusCode(int(Ok))
 	ctx.Write(authResponseBuf)
 }
