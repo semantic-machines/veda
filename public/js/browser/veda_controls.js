@@ -363,7 +363,11 @@
       allowInputToggle: true,
       format: format,
       sideBySide: true,
-      useCurrent: true
+      useCurrent: true,
+      widgetPositioning: {
+        horizontal: "auto",
+        vertical: "bottom"
+      }
     });
 
     input.on("change focusout", function () {
