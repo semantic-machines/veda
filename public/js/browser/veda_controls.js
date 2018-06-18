@@ -828,9 +828,10 @@
 
     function handler() {
       if (isSingle) {
+        populate();
         $("option", control).each(function () {
           var value = $(this).data("value");
-          var hasValue = individual.hasValue(property_uri, value);
+          var hasValue = !!value && individual.hasValue(property_uri, value);
           $(this).prop("selected", hasValue);
         });
       }
