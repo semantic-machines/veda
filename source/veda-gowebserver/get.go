@@ -124,11 +124,11 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	if rr.CommonRC != Ok {
 		if rr.CommonRC != NotFound {
-			log.Println("ERR! GET_INDIVIDUAL: GET INDIVIDUAL COMMON ", rr.CommonRC)
+			log.Println("ERR! get_individual: err=", rr.CommonRC)
 		}
+
 		ctx.Response.SetStatusCode(int(rr.CommonRC))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.CommonRC, timestamp)
-
 		return
 	} else if rr.OpRC[0] != Ok {
 		ctx.Write(codeToJsonException(rr.OpRC[0]))
@@ -138,7 +138,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 	} else {
 
 		if rr.GetCount() == 0 {
-			log.Println("ERR! GET_INDIVIDUAL: DECODING INDIVIDUAL")
+			log.Println("ERR! get_individual: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
 			return

@@ -234,7 +234,7 @@ func (conn *Connector) Connect(tt_addr string) {
 		log.Println("INFO! tarantool connect is ok")
 		conn.tt_client = tt_client
 	} else {
-
+		log.Println("INFO! Connect to lmdb service, start")		
 		conn.lmdb_client, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 		if err != nil {
 			conn.db_is_open = false
@@ -252,7 +252,8 @@ func (conn *Connector) Connect(tt_addr string) {
 			time.Sleep(3000 * time.Millisecond)
 			log.Println("INFO! retry connect")
 			_, err = conn.lmdb_client.Connect(queryServiceURL)
-		}
+		} 
+		log.Println("INFO! Connect to lmdb service, socket=", conn.lmdb_client)		
 	}
 }
 
@@ -330,13 +331,13 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 			request := "I," + uris[i]
 			_, err := conn.lmdb_client.Send([]byte(request), 0)
 			if err != nil {
-				log.Println("ERR! send to lmdb service", err)
+				log.Println("ERR! send to lmdb service, err=", err)
 				rr.CommonRC = InternalServerError
 				return rr
 			} else {
 				responseBuf, err := conn.lmdb_client.Recv(0)
 				if err != nil {
-					log.Println("ERR! recv from lmdb service", err)
+					log.Println("ERR! recv from lmdb service, err=", err)
 					rr.CommonRC = InternalServerError
 					return rr
 				} else {
