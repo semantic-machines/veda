@@ -705,7 +705,7 @@ v-s:PsHasRoleInContract_ContractParticipantCustomer
   v-ui:forProperty v-s:hasRoleInContract ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'@' == 'd:dsxyd1uxsxuui6f1t3s4ki3rdp' || '@' == 'd:a14fhdnimgodskj2jlmzwausubs' || '@' == 'd:rdvfeae7ylufawj02z492cxmto' || '@' == 'd:a1nzzs06xqqx3fvud0bsjq78cdq' || '@' == 'd:wh0t3y7ou4k9o0ec5vw4j5df5c' || '@' == 'd:a1268rvzfsml3g4j0wcjxf2skc9'" ;
+  v-ui:queryPrefix "'@' == 'd:dsxyd1uxsxuui6f1t3s4ki3rdp' || '@' == 'd:a14fhdnimgodskj2jlmzwausubs' || '@' == 'd:a1nzzs06xqqx3fvud0bsjq78cdq' || '@' == 'd:wh0t3y7ou4k9o0ec5vw4j5df5c' || '@' == 'd:a1268rvzfsml3g4j0wcjxf2skc9'" ;
 .
 v-s:PsHasRoleInContract_ContractParticipantSupplier
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -713,7 +713,7 @@ v-s:PsHasRoleInContract_ContractParticipantSupplier
   v-ui:forProperty v-s:hasRoleInContract ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'@' == 'd:wws2oz313z6xpl1hd4u3laxzfg' || '@' == 'd:jslj1t0dm3o6sg8jas931um4kw' || '@' == 'd:tv2r6lzebfk6p3298jsnwokgxk' || '@' == 'd:ji9b5cqs5ucr1uy8ou7s78989x' || '@' == 'd:xxsa1kfknh7anmo6688y026udp' || '@' == 'd:p7xxv9vvwex8f1jfs2lhqjl85v'" ;
+  v-ui:queryPrefix "'@' == 'd:wws2oz313z6xpl1hd4u3laxzfg' || '@' == 'd:jslj1t0dm3o6sg8jas931um4kw' || '@' == 'd:ji9b5cqs5ucr1uy8ou7s78989x' || '@' == 'd:xxsa1kfknh7anmo6688y026udp' || '@' == 'd:p7xxv9vvwex8f1jfs2lhqjl85v'" ;
 .
 v-s:PsHasRoleInContract_ContractParticipantStakeholder
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -721,7 +721,7 @@ v-s:PsHasRoleInContract_ContractParticipantStakeholder
   v-ui:forProperty v-s:hasRoleInContract ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'@' == 'd:dm44s17tayal8frdutpnb2matk'" ;
+  v-ui:queryPrefix "'@' == 'd:dm44s17tayal8frdutpnb2matk' || '@' == 'd:rdvfeae7ylufawj02z492cxmto' || '@' == 'd:tv2r6lzebfk6p3298jsnwokgxk'" ;
 .
 
 v-s:PsHasContractParticipant_Contract
@@ -739,7 +739,7 @@ v-s:Ps_ContractParticipant
   v-ui:forProperty v-s:hasContractor ;
   v-ui:forProperty v-s:hasOrganization ;
   v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 100 ;
+  v-ui:maxCardinality 1 ;
 .
 ### -------------------------------------------------------
 v-s:Controlled
