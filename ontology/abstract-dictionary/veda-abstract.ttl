@@ -698,6 +698,13 @@ v-s:hasContractParticipantStakeholder
   rdfs:range v-s:ContractParticipantStakeholder ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:supportSpecialistOfContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Специалист по сопровождению"@ru ;
+  rdfs:label "Support specialist"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 v-s:PsHasRoleInContract_ContractParticipantCustomer
   rdf:type v-ui:ObjectPropertySpecification ;
