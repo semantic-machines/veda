@@ -147,8 +147,8 @@ v-s:DeletedAlert
 .
 v-s:InvalidAlert
   rdf:type v-s:Bundle ;
-  rdfs:label "Объект не действителен"@ru ;
-  rdfs:label "Object is invalid"@en ;
+  rdfs:label "Документ не актуален"@ru ;
+  rdfs:label "Document is invalid"@en ;
 .
 v-s:Destroy
   rdf:type v-s:Bundle ;
