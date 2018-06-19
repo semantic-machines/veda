@@ -4,7 +4,7 @@
 
 
 Окружение для приведенной конфигурации:
-  
+
   имя компьютера = computer.localdomain.local
   имя пользователя = localuser
 
@@ -15,7 +15,7 @@
 
 
 2. Создать / отредактировать файл /etc/postfix/main.cf :
-  
+
   # Имя этого компьютера
   myhostname = computer.localdomain.local
   myorigin = $myhostname
@@ -44,30 +44,30 @@
 
 
 3. Создать / отредактировать файл /etc/postfix/generic :
-  
+
   # Подстановка отправителя письма
   localuser@computer.localdomain.local veda@semantic-machines.com
 
 
-4. Выполнить команду 
+4. Выполнить команду
   # postmap /etc/postfix/generic
-  
+
 
 5. Создать / отредактировать файл /etc/postfix/sasl_passwd
-  
-  # Адрес и порт relay сервера, имя пользователя и пароль учетной записи на этот мочтовом сервере.
+
+  # Адрес и порт relay сервера, имя пользователя и пароль учетной записи на этот почтовом сервере.
   [smtp.semantic-machines.com]:587 veda@semantic-machines.com:password
-  
+
 
 6. Выполнить команды
   # chmod 600 /etc/postfix/sasl_passwd
   # postmap /etc/postfix/sasl_passwd
-  
+
 
 7. Перезапустить postfix
 
   # service postfix restart
-  
+
 
 8. Проверить отправку почты
 
