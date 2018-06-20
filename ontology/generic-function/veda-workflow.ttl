@@ -1840,6 +1840,15 @@ v-wf:useTransformation
   rdfs:range v-wf:Transform ;
 .
 
+v-wf:fromShedulerScript
+  rdf:type rdf:Property ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Запускается из скрипта по расписанию"@ru ;
+  rdfs:label "Run from sheduler script"@en ;
+  rdfs:domain v-wf:StartForm ;
+  rdfs:range xsd:boolean ;
+.
+
 # --------------------------- Mapping to variable ---------------------------
 
 v-wf:Mapping
@@ -2128,8 +2137,8 @@ v-wf:event_df1
  */
 
 var toBeSent = hasValue(document, 'v-wf:hasStatusWorkflow', {data: 'v-wf:ToBeSent', type: _Uri});
-
-if ( !parent_script_id && toBeSent) {
+var fromShedulerScript = hasValue(document, 'v-wf:fromShedulerScript', {data: true, type: _Boolean});
+if ( (!parent_script_id || fromShedulerScript) && toBeSent) {
   prepare_start_form (ticket, document);
 }
 """ ;
