@@ -883,6 +883,14 @@ v-s:evaluatedProcess
   rdfs:range v-s:Process ;
   rdfs:domain v-s:Controlled ;
 .
+
+v-s:scriptHandlered
+  rdf:type owl:DatatypeProperty ; 
+  rdfs:label "Обработано скриптом "@ru ;
+  rdfs:label "Script handlered"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Controlled ;
+.
 ### -------------------------------------------------------
 v-s:Registered
   rdf:type owl:Class ;
