@@ -84,7 +84,7 @@ private Logger log;
 
 void main(string[] args)
 {
-    string bind_url = "tcp://127.0.0.1:23001";
+    string bind_url = "tcp://127.0.0.1:24000";
 
     try
     {
@@ -92,7 +92,7 @@ void main(string[] args)
                              {
                                  syntax.config.caseSensitive = commando.CaseSensitive.yes;
                                  syntax.option('b', "bind", &bind_url, Required.no,
-                                               "Set binding url, example: --bind=tcp://127.0.0.1:23001");
+                                               "Set binding url, example: --bind=tcp://127.0.0.1:24000");
                              });
     }
     catch (ArgumentParserException ex)
