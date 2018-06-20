@@ -23,7 +23,7 @@ type Connector struct {
 	tt_addr   string
 	tt_client *tarantool.Connection
 
-	lmdb_client *nanomsg.Socket
+	//	lmdb_client *nanomsg.Socket
 
 	db_is_open bool
 }
@@ -94,7 +94,7 @@ func (rr *RequestResponse) GetJson(idx int) string {
 
 		individualJSON, err := json.Marshal(rr.indv[idx])
 		if err != nil {
-			log.Println("ERR! GET_INDIVIDUAL: #3 ENCODING INDIVIDUAL TO JSON ", err)
+			log.Println("ERR! GetIndv: #3 ENCODING INDIVIDUAL TO JSON ", err)
 			return ""
 		}
 		return string(individualJSON)
@@ -215,7 +215,6 @@ func (conn *Connector) reopen_ticket_db() {
 
 //Connect tries to connect to socket in tarantool while connection is not established
 func (conn *Connector) Connect(tt_addr string) {
-	var err error
 
 	if tt_addr != "" {
 		opts := tarantool.Opts{User: "guest"}
@@ -233,28 +232,29 @@ func (conn *Connector) Connect(tt_addr string) {
 
 		log.Println("INFO! tarantool connect is ok")
 		conn.tt_client = tt_client
-	} else {
-		log.Println("INFO! Connect to lmdb service, start")		
-		conn.lmdb_client, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-		if err != nil {
-			conn.db_is_open = false
-			log.Fatal("ERR! open_dbs: nanomsg.NewSocket")
-
-		} else {
-			conn.db_is_open = true
-		}
-
-		//log.Println("use lmdb service url: ", lmdbServiceURL)
-		_, err = conn.lmdb_client.Connect(lmdbServiceURL)
-		for err != nil {
-			log.Println("ERR! Creating lmdb service connection: err=", err)
-			log.Println("INFO! sleep")
-			time.Sleep(3000 * time.Millisecond)
-			log.Println("INFO! retry connect")
-			_, err = conn.lmdb_client.Connect(queryServiceURL)
-		} 
-		log.Println("INFO! Connect to lmdb service, socket=", conn.lmdb_client)		
 	}
+	//	 else {
+	//		log.Println("INFO! Connect to lmdb service, start")
+	//		conn.lmdb_client, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	//		if err != nil {
+	//			conn.db_is_open = false
+	//			log.Fatal("ERR! open_dbs: nanomsg.NewSocket")
+	//
+	//		} else {
+	//			conn.db_is_open = true
+	//		}
+
+	//log.Println("use lmdb service url: ", lmdbServiceURL)
+	//		_, err = conn.lmdb_client.Connect(lmdbServiceURL)
+	//		for err != nil {
+	//			log.Println("ERR! Creating lmdb service connection: err=", err)
+	//			log.Println("INFO! sleep")
+	//			time.Sleep(3000 * time.Millisecond)
+	//			log.Println("INFO! retry connect")
+	//			_, err = conn.lmdb_client.Connect(queryServiceURL)
+	//		}
+	//		log.Println("INFO! Connect to lmdb service, socket=", conn.lmdb_client)
+	//	}
 }
 
 //Get sends get request to tarantool, individuals uris passed as data here
@@ -296,7 +296,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 					continue
 				}
 				if tpl, ok := resp.Data[0].([]interface{}); !ok {
-					log.Println("ERR! Unexpected body of Insert")
+					log.Println("ERR! Get: Unexpected body of Insert")
 					rr.CommonRC = InternalServerError
 				} else {
 					if len(tpl) == 2 {
@@ -329,52 +329,69 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	} else {
 		for i := 0; i < len(uris); i++ {
 			request := "I," + uris[i]
-			_, err := conn.lmdb_client.Send([]byte(request), 0)
+
+			lmdb_client, err := nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 			if err != nil {
-				log.Println("ERR! send to lmdb service, err=", err)
+				log.Println("ERR! Get: fail open nanomsg socket")
 				rr.CommonRC = InternalServerError
 				return rr
-			} else {
-				responseBuf, err := conn.lmdb_client.Recv(0)
-				if err != nil {
-					log.Println("ERR! recv from lmdb service, err=", err)
-					rr.CommonRC = InternalServerError
-					return rr
-				} else {
 
-					val := string(responseBuf)
-					if val == "[]" {
-						rr.OpRC = append(rr.OpRC, NotFound)
+			}
+			_, err = lmdb_client.Connect(lmdbServiceURL)
+			if err != nil {
+				log.Printf("ERR! Get: fail connect to lmdb service %s, err=%s\n", lmdbServiceURL, err)
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			defer lmdb_client.Close()
+
+			_, err = lmdb_client.Send([]byte(request), 0)
+			if err != nil {
+				log.Println("ERR! Get: send to lmdb service, err=", err)
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			responseBuf, err1 := lmdb_client.Recv(0)
+			if err1 != nil {
+				log.Println("ERR! Get: recv from lmdb serGet:vice, err=", err1)
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			val := string(responseBuf)
+			if val == "[]" {
+				rr.OpRC = append(rr.OpRC, NotFound)
+				continue
+			}
+
+			if strings.Index(val, "ERR") > 0 {
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			if needAuth {
+				curi := C.CString(uris[i])
+				defer C.free(unsafe.Pointer(curi))
+				cuser_uri := C.CString(userUri)
+				defer C.free(unsafe.Pointer(cuser_uri))
+				if reopen == true {
+					if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+						rr.OpRC = append(rr.OpRC, NotAuthorized)
 						continue
 					}
-
-					if strings.Index(val, "ERR") > 0 {
-						rr.CommonRC = InternalServerError
-						return rr
+				} else {
+					if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+						rr.OpRC = append(rr.OpRC, NotAuthorized)
+						continue
 					}
-
-					if needAuth {
-						curi := C.CString(uris[i])
-						defer C.free(unsafe.Pointer(curi))
-						cuser_uri := C.CString(userUri)
-						defer C.free(unsafe.Pointer(cuser_uri))
-						if reopen == true {
-							if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
-								rr.OpRC = append(rr.OpRC, NotAuthorized)
-								continue
-							}
-						} else {
-							if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
-								rr.OpRC = append(rr.OpRC, NotAuthorized)
-								continue
-							}
-						}
-					}
-
-					rr.OpRC = append(rr.OpRC, Ok)
-					rr.AddLMDBResult(string(responseBuf))
 				}
 			}
+
+			rr.OpRC = append(rr.OpRC, Ok)
+			rr.AddLMDBResult(string(responseBuf))
+
 		}
 		rr.CommonRC = Ok
 	}
@@ -572,52 +589,69 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		resp, err := conn.tt_client.Select("TICKETS", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
 		if err != nil {
 			log.Println("ERR! ", err)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+		if len(resp.Data) == 0 {
+			log.Println("ERR! Empty body of Insert")
+			rr.CommonRC = InternalServerError
+		} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
+			log.Println("ERR! Unexpected body of Insert")
+			rr.CommonRC = InternalServerError
 		} else {
-			if len(resp.Data) == 0 {
-				log.Println("ERR! Empty body of Insert")
-				rr.CommonRC = InternalServerError
-			} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
-				log.Println("ERR! Unexpected body of Insert")
-				rr.CommonRC = InternalServerError
-			} else {
-				rr.OpRC = append(rr.OpRC, Ok)
+			rr.OpRC = append(rr.OpRC, Ok)
 
-				rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
-				rr.CommonRC = Ok
-			}
+			rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
+			rr.CommonRC = Ok
 		}
 
 	} else {
 		request := "T," + ticketIDs[0]
-		_, err := conn.lmdb_client.Send([]byte(request), 0)
+
+		lmdb_client, err := nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 		if err != nil {
-			log.Println("ERR! send to lmdb service", err)
+			log.Println("ERR! GetTicket: fail open nanomsg socket")
 			rr.CommonRC = InternalServerError
 			return rr
-		} else {
-			responseBuf, err := conn.lmdb_client.Recv(0)
-			if err != nil {
-				log.Println("ERR! recv from lmdb service", err)
-				rr.CommonRC = InternalServerError
-				return rr
-			} else {
 
-				val := string(responseBuf)
-				if val == "[]" {
-					rr.OpRC = append(rr.OpRC, NotFound)
-					return rr
-				}
-
-				if strings.Index(val, "ERR") > 0 {
-					rr.CommonRC = InternalServerError
-					return rr
-				}
-
-				rr.OpRC = append(rr.OpRC, Ok)
-				rr.AddLMDBResult(string(responseBuf))
-				rr.CommonRC = Ok
-			}
 		}
+		_, err = lmdb_client.Connect(lmdbServiceURL)
+		if err != nil {
+			log.Printf("ERR! GetTicket: fail connect to lmdb service %s, err=%s\n", lmdbServiceURL, err)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		defer lmdb_client.Close()
+
+		_, err = lmdb_client.Send([]byte(request), 0)
+		if err != nil {
+			log.Println("ERR! GetTicket: send to lmdb service, err=", err)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		responseBuf, err1 := lmdb_client.Recv(0)
+		if err1 != nil {
+			log.Println("ERR! GetTicket: recv from lmdb service, err=", err1)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		val := string(responseBuf)
+		if val == "[]" {
+			rr.OpRC = append(rr.OpRC, NotFound)
+			return rr
+		}
+
+		if strings.Index(val, "ERR") > 0 {
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		rr.OpRC = append(rr.OpRC, Ok)
+		rr.AddLMDBResult(string(responseBuf))
+		rr.CommonRC = Ok
 	}
 
 	return rr
