@@ -1828,18 +1828,6 @@ v-ui:JournalTemplate
   $('.createReport0', template).on('click', function () {
     veda.Util.createReport(doc,'v-s:Journal_printBlank');
   });
-  $('#createReport',template).on('click', function (e) {
-    e.preventDefault();
-    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_pdf');
-  });
-  $('#createReport2', template).on('click', function (e) {
-    e.preventDefault();
-    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_xlsx');
-  });
-  $('#createReport3', template).on('click', function (e) {
-    e.preventDefault();
-    veda.Util.createReport(doc, 'v-s:JournalCoordination_printBlank_docx');
-  });
   //# sourceURL=v-ui:JournalTemplate_pre
 </script>
 <div class="container journal sheet">
@@ -1860,17 +1848,6 @@ v-ui:JournalTemplate
     </div>
     <div class="pull-right">
       <button type="button" class="action btn btn-info view -edit -search createReport0" about="v-s:PrintBlank" property="rdfs:label"></button>
-      <div class="btn-group dropdown">
-        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span about="v-s:CoordinationList" property="rdfs:label"> </span>
-          <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu">
-          <li><a href="#v-s:JournalCoordination_printBlank_pdf" id="createReport" about="v-s:JournalCoordination_printBlank_pdf" property="rdfs:label"></a></li>
-          <li><a href="#v-s:JournalCoordination_printBlank_xlsx" id="createReport2" about="v-s:JournalCoordination_printBlank_xlsx" property="rdfs:label"></a></li>
-          <li><a href="#v-s:JournalCoordination_printBlank_docx" id="createReport3" about="v-s:JournalCoordination_printBlank_docx" property="rdfs:label"></a></li>
-        </ul>
-      </div>
     </div>
   </div>
   <div rel="v-wf:onProcess">
