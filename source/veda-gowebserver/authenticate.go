@@ -41,11 +41,24 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	authResponse["end_time"] = responseJSON["end_time"]
 	authResponse["id"] = responseJSON["id"]
 	authResponse["user_uri"] = responseJSON["user_uri"]
-	authResponse["result"] = responseJSON["result"]
+
+	jresult := responseJSON["result"]
+	result := int(InternalServerError)
+
+	switch jresult.(type) {
+	case float64:
+		result = int(jresult.(float64))
+	case int:
+		result = jresult.(int)
+	}
+
+	ctx.SetStatusCode(result)
+
+	authResponse["result"] = result
 	authResponseBuf, err := json.Marshal(authResponse)
 	if err != nil {
 		log.Printf("ERR! AUTHENTICATE: ENCODE JSON AUTH RESPONSE: %v\n", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
+		ctx.SetStatusCode(int(InternalServerError))
 		return
 	}
 
