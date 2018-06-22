@@ -295,7 +295,7 @@ func main() {
 	mifCache = make(map[int]*ModuleInfoFile)
 	externalUsersTicketId = make(map[string]bool)
 
-	go monitorIndividualChanges()
+	//go monitorIndividualChanges()
 	go func() {
 		h := fasthttp.Server{
 			Handler:            requestHandler,
