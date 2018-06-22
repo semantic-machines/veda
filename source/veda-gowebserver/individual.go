@@ -2,12 +2,10 @@ package main
 
 import (
 	"log"
-	"strings"
-	"time"
 	"reflect"
 	"strconv"
+	"time"
 )
-
 
 type Individual map[string]interface{}
 
