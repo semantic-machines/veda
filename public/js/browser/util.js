@@ -4,6 +4,42 @@ veda.Module(function Util(veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
+  // Уcтанавливает cookie
+  // name - Название cookie
+  // value - Значение cookie (строка)
+  // props - Объект с дополнительными свойствами для установки cookie:
+  //   expires - Время истечения cookie. Интерпретируется по-разному, в зависимости от типа:
+  //     Если число - количество миллисекунд до истечения.
+  //     Если объект типа Date - точная дата истечения.
+  //     Если expires в прошлом, то cookie будет удалено.
+  //     Если expires отсутствует или равно 0, то cookie будет установлено как сессионное и исчезнет при закрытии браузера.
+  //   path - Путь для cookie.
+  //   domain - Домен для cookie.
+  //   secure - Пересылать cookie только по защищенному соединению.
+
+  veda.Util.setCookie = function (name, value, props) {
+    props = props || {};
+    var exp = props.expires;
+    if (typeof exp === "number" && exp) {
+      var d = new Date();
+      d.setTime(d.getTime() + exp);
+      exp = props.expires = d;
+    }
+    if (exp && exp.toUTCString) { props.expires = exp.toUTCString(); }
+    value = encodeURIComponent(value);
+    var updatedCookie = name + "=" + value;
+    for(var propName in props) {
+      updatedCookie += "; " + propName;
+      var propValue = props[propName];
+      if (propValue !== true) { updatedCookie += "=" + propValue; }
+    }
+    document.cookie = updatedCookie;
+  };
+
+  veda.Util.delCookie = function (name) {
+    setCookie(name, null, { expires: -1 });
+  };
+
   veda.Util.clearStorage = function () {
     if ( typeof localStorage !== "undefined" ) {
       delete localStorage["ontology"];
