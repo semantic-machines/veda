@@ -37,7 +37,7 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.delCookie = function (name) {
-    setCookie(name, null, { expires: -1 });
+    veda.Util.setCookie(name, null, { expires: -1 });
   };
 
   veda.Util.clearStorage = function () {
