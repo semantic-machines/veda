@@ -366,7 +366,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				continue
 			}
 
-			if strings.Index(val, "ERR") > 0 {
+		if strings.Index(val, "{ERR:") == 0 {
 				rr.CommonRC = InternalServerError
 				return rr
 			}
@@ -644,7 +644,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 			return rr
 		}
 
-		if strings.Index(val, "ERR") > 0 {
+		if strings.Index(val, "{ERR:") == 0 {
 			rr.CommonRC = InternalServerError
 			return rr
 		}
