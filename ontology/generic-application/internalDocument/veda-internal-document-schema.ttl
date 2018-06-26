@@ -1,0 +1,42 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+<http://semantic-machines.com/veda/veda-internal-document-schema>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Внутренний документ. Схема."@ru ;
+  rdfs:label "Veda system ontology. Internal document. Schema."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# Classes --------------------------------------------------------------
+
+v-s:InternalDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:hasDocumentKind.rdfs:label} - {@.v-s:theme}" ;
+  rdfs:label "Внутренний документ"@ru ;
+  rdfs:label "Internal document"@en ;
+  v-s:hasNumeration v-s:RegistrationNumberYearNumeration2_6 ;
+  v-ui:hasTemplate v-s:InternalDocumentTemplate ;
+.
+# v-s:hasDocumentKind
+# v-s:initiator
+# v-s:responsibleDepartment
+# v-s:copyTo
+# v-s:theme
+# v-s:content
+# v-s:attachment
+# v-s:hasLink
+# v-s:hasComment

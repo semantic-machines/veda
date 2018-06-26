@@ -1,0 +1,217 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+<http://semantic-machines.com/veda/veda-internal-document-ui>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Внутренний документ. Интерфейс."@ru ;
+  rdfs:label "Veda system ontology. Internal document. UI."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# Specifications -------------------------------------------------------
+
+v-s:PS_hasDocumentKind_InternalDocument
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:InternalDocument ;
+  v-ui:forProperty v-s:hasDocumentKind ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:DocumentKind')" ;
+  rdfs:label "Спецификация свойства v-s:hasDocumentKind для класса v-s:InternalDocument"@ru ;
+  rdfs:label "v-s:hasDocumentKind property specification for v-s:InternalDocument class"@en ;
+.
+
+v-s:PS_initiator_InternalDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:InternalDocument ;
+  v-ui:forProperty v-s:initiator ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:Department')"^^xsd:string ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация свойства v-s:initiator для класса v-s:InternalDocument"@ru ;
+  rdfs:label "v-s:initiator property specification for v-s:InternalDocument class"@en ;
+.
+
+v-s:PS_responsibleDepartment_InternalDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:InternalDocument ;
+  v-ui:forProperty v-s:responsibleDepartment ;
+  v-ui:queryPrefix "('rdf:type'==='v-s:Department')"^^xsd:string ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация свойства v-s:responsibleDepartment для класса v-s:InternalDocument"@ru ;
+  rdfs:label "v-s:responsibleDepartment property specification for v-s:InternalDocument class"@en ;
+.
+
+v-s:PS_copyTo_InternalDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:InternalDocument ;
+  v-ui:forProperty v-s:copyTo ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:queryPrefix "(('rdf:type'=='v-s:Appointment' ) && ('v-s:origin'=='sap hr' || 'v-s:origin'=='Internal'|| 'v-s:origin'=='External' || 'v-s:origin'=='Group' )) || (('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role'))"^^xsd:string ;
+  rdfs:label "Спецификация свойства v-s:copyTo для класса v-s:InternalDocument"@ru ;
+  rdfs:label "v-s:copyTo property specification for v-s:InternalDocument class"@en ;
+.
+
+v-s:PS_theme_InternalDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:InternalDocument ;
+  v-ui:forProperty v-s:theme ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:theme для класса v-s:InternalDocument"@ru ;
+  rdfs:label "v-s:theme property specification for v-s:InternalDocument class"@en ;
+.
+
+# Strings --------------------------------------------------------------
+
+v-s:ResponsibleDepartmentForInternalDocumentBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Подразделение-исполнитель"@ru ;
+  rdfs:label "Executor department"@en ;
+.
+
+v-s:InitiatorDepartmentForInternalDocumentBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Подразделение-инициатор"@ru ;
+  rdfs:label "Initiator unit"@en ;
+.
+
+# Templates ------------------------------------------------------------
+
+v-s:InternalDocumentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:InternalDocument ;
+  rdfs:label "Шаблон для класса v-s:InternalDocument"@ru ;
+  rdfs:label "Template for v-s:InternalDocument class"@en ;
+  v-ui:template """
+<script>
+  if (mode == "edit" && individual.isNew()) {
+    if (!individual.hasValue("v-s:initiator")){
+     individual["v-s:initiator"] = [ veda.appointment["v-s:parentUnit"][0] ] ;
+    }
+  }
+//# sourceURL=v-s:InternalDocumentTemplate_pre
+</script>
+<div>
+  <div class="container sheet">
+    <h2>
+      <span about="@" property="rdf:type"></span><br>
+      <small about="@" property="rdfs:label" class="view edit -search"></small>
+    </h2>
+    <span about="@" data-template="v-ui:RabbitHole" class="view edit -search"></span>
+    <hr>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body bg-default">
+            <em about="v-s:registrationNumber" property="rdfs:label"></em>
+            <div about="@" property="v-s:registrationNumber" class="-view edit -search"></div>
+            <div property="v-s:registrationNumber" class="view -edit search"></div>
+            <veda-control data-type="text" property="v-s:registrationNumber" class="-view -edit search"></veda-control>
+            <em about="v-s:hasDocumentKind" property="rdfs:label"></em>
+            <div rel="v-s:hasDocumentKind" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+            <veda-control data-type="link" rel="v-s:hasDocumentKind" class="-view edit search fulltext dropdown"></veda-control>
+            <em about="v-s:InitiatorDepartmentForInternalDocumentBundle" property="rdfs:label"></em>
+            <div rel="v-s:initiator" class="view edit search" data-template="v-ui:LabelTemplate"></div>
+            <veda-control data-type="link" rel="v-s:initiator" class="-view edit search fulltext"></veda-control>
+            <em about="v-s:ResponsibleDepartmentForInternalDocumentBundle" property="rdfs:label"></em>
+            <div rel="v-s:responsibleDepartment" class="view edit search" data-template="v-ui:LabelTemplate"></div>
+            <veda-control data-type="link" rel="v-s:responsibleDepartment" class="-view edit search fulltext"></veda-control>
+            <em about="v-s:copyTo" property="rdfs:label"></em>
+            <div rel="v-s:copyTo" class="view edit search" data-template="v-ui:LabelTemplate"></div>
+            <veda-control data-type="link" rel="v-s:copyTo" class="-view edit search fulltext"></veda-control>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:theme" property="rdfs:label"></em>
+        <div property="v-s:theme" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:theme" class="-view edit search"></veda-control>
+        <em about="v-s:content" property="rdfs:label"></em>
+        <div property="v-s:content" class="view -edit -search"></div>
+        <veda-control data-type="text" property="v-s:content" class="-view edit search"></veda-control>
+        <em about="rdfs:comment" property="rdfs:label"></em>
+        <div property="rdfs:comment" class="view -edit -search"></div>
+        <veda-control data-type="text" property="rdfs:comment" class="-view edit search"></veda-control>
+      </div>
+      <br>
+    </div>
+    <em about="v-s:attachment" property="rdfs:label" class="view edit -search"></em>
+    <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+    <veda-control data-type="file"  rel="v-s:attachment" class="-view edit -search"></veda-control>
+
+    <hr>
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <div class="actions view edit -search">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal task"></span>
+      <button type="button" class="action btn btn-default view -edit -search" id="make-copy" about="v-s:Clone" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-info view -edit -search" id="print-blank" about="v-s:InternalDocument_printBlank" property="rdfs:label"></button>
+    </div>
+  </div>
+  <br>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
+  <br>
+  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+</div>
+<script>
+  $("#make-copy", template).click(function () {
+    var cntr = $("<div></div>"),
+        _class = new veda.IndividualModel("v-s:InternalDocument"),
+        InternalDocument = new veda.IndividualModel(),
+        tmpl = "v-s:InternalDocumentTemplate" ;
+    InternalDocument["rdf:type"] = [_class] ;
+    InternalDocument["v-s:responsibleDepartment"] = individual["v-s:responsibleDepartment"] ;
+    InternalDocument["v-s:hasDocumentKind"] = individual["v-s:hasDocumentKind"] ;
+    InternalDocument["v-s:copyTo"] = individual["v-s:copyTo"] ;
+    InternalDocument["v-s:theme"] = individual["v-s:theme"] ;
+    InternalDocument["v-s:content"] = individual["v-s:content"] ;
+    riot.route( ["#", InternalDocument.id, "#main", tmpl, "edit"].join("/") ) ;
+    InternalDocument.one("afterSave", function () {
+      riot.route("#/" + InternalDocument.id, false);
+    });
+  });
+
+  $("#print-blank", template).click(function () {
+    veda.Util.createReport(individual, 'v-s:InternalDocument_printBlank');
+  });
+
+  function processHandler() {
+    if (individual.hasValue("v-wf:isProcess")
+      && individual["v-wf:isProcess"][0].hasValue("v-wf:instanceOf")
+      && individual["v-wf:isProcess"][0]["v-wf:instanceOf"][0].id === "s-wf:net_complex_route"
+    ) {
+      $('#send.action', template).remove();
+      // $('#save.action', template).remove();
+      // $('#edit.action', template).remove();
+      $('#delete.action', template).remove();
+    } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
+      $('#send.action', template).off("click");
+      $('#send.action', template).on('click', function () {
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform', undefined, 'v-s:InternalDocument_ComplexRouteStartForm_Template');
+      });
+    } else {
+      $('#send.action', template).remove();
+      // $('#save.action', template).remove();
+      // $('#edit.action', template).remove();
+      $('#delete.action', template).remove();
+    }
+  }
+  processHandler();
+
+  individual.on("afterReset", processHandler);
+  template.one("remove", function () {
+    individual.off("afterReset", processHandler);
+  });
+
+  //# sourceURL=v-s:InternalDocumentTemplate
+</script>
+  """
+.

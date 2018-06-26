@@ -440,31 +440,6 @@ v-s:DecreeKind
   rdfs:label "Decree kind"@en ;
 .
 
-
-#-----------------ВНУТРЕННИЙ_ДОКУМЕНТ--------------------
-v-s:InternalDocument
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Document ;
-  rdfs:subClassOf v-s:Contractual ;
-  rdfs:subClassOf v-s:Controlled ;
-  rdfs:subClassOf v-s:Deliverable2 ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:subClassOf v-s:Enumerated ;
-  rdfs:label "Внутренний документ"@ru ;
-  rdfs:label "Internal document"@en ;
-.
-# v-s:hasDocumentKind
-# v-s:initiator
-# v-s:responsibleDepartment
-# v-s:copyTo
-# v-s:theme
-# v-s:content
-# v-s:attachment
-# v-s:hasLink
-# v-s:hasComment
-
-
 #---------------------------------------
 v-s:AddendumTemplate
   rdf:type v-ui:ClassTemplate ;

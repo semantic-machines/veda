@@ -1,0 +1,79 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-internal-document-registries>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Внутренний документ. Реестры."@ru ;
+  rdfs:label "Veda system ontology. Internal document. Registries."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# Registries -----------------------------------------------------------
+
+v-s:InternalDocumentRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Внутренний документ"@ru ;
+  rdfs:label "Internal document"@en ;
+  v-fs:searchBlank v-s:InternalDocumentRegistryBlank ;
+  v-fs:searchBlankTemplate v-s:InternalDocumentTemplate ;
+  v-fs:searchResultTemplate v-s:InternalDocumentRegistryResultTemplate ;
+.
+
+v-s:InternalDocumentRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Внутренний документ"@ru ;
+  rdfs:label "Internal document"@en ;
+  v-fc:targetType v-s:InternalDocument ;
+.
+
+v-s:InternalDocumentRegistryResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:InternalDocument"@ru ;
+  rdfs:label "Template for v-s:InternalDocument class"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="11" about="v-s:InternalDocument" property="rdfs:label"></th>
+    </tr>
+    <tr class="active">
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:registrationNumber"><span about="v-s:registrationNumber" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:hasDocumentKind"><span about="v-s:hasDocumentKind" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:ResponsibleDepartmentForInternalDocumentBundle"><span about="v-s:responsibleDepartment" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:InitiatorDepartmentForInternalDocumentBundle"><span about="v-s:initiator" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:copyTo"><span about="v-s:copyTo" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:theme"><span about="v-s:theme" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:content"><span about="v-s:content" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td property="v-s:created"></td>
+      <td property="v-s:registrationNumber"></td>
+      <td rel="v-s:hasDocumentKind" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-s:responsibleDepartment" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-s:initiator" data-template="v-ui:LabelTemplate"></td>
+      <td property="v-s:copyTo"></td>
+      <td property="v-s:theme"></td>
+      <td property="v-s:content"></td>
+      <td property="rdfs:comment"></td>
+    </tr>
+  </tbody>
+</table>
+  """
+.
