@@ -319,7 +319,7 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
 
     // Valid alert
     function validHandler () {
-      if ( this.hasValue("v-s:valid", false) ) {
+      if ( this.hasValue("v-s:valid", false) && mode === "view" ) {
         if ( container.prop("id") === "main" && !template.hasClass("invalid") ) {
           var alert = new veda.IndividualModel("v-s:InvalidAlert")["rdfs:label"].join(" ");
           var invalidAlert = $(
