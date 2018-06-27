@@ -895,6 +895,11 @@ v-ui:PersonPopoverTemplate
   <div class="media-body" style="width:auto">
     <strong class="media-heading" about="@" property="rdfs:label"></strong>
     <hr class="no-margin">
+    <div about="@" rel="v-s:hasAppointment">
+      <small about="@" rel="v-s:occupation">
+        <span about="@" property="rdfs:label"></span>
+      </small>
+    </div>
     <div about="@" rel="v-s:hasAccount">
       <div>
         <small about="@" property="v-s:mailbox"></small>
