@@ -319,22 +319,22 @@ v-s:RequestDelegationRegistryResultTemplate
 
 v-s:CreateRequestDelegationUser
   a v-fc:Blank ;
-  rdfs:label "Заявка на делегирование для пользoвателя"@ru ;
-  rdfs:label "Request delegation for user"@en ;
+  rdfs:label "Заявка на делегирование"@ru ;
+  rdfs:label "Delegation request"@en ;
   v-fc:targetType v-s:RequestDelegationUser ;
 .
 
 v-s:CreateRequestDelegationAdmin
   a v-fc:Blank ;
   rdfs:label "Заявка на делегирование для администратора"@ru ;
-  rdfs:label "Request delegation for admin"@en ;
+  rdfs:label "Delegation request for admin"@en ;
   v-fc:targetType v-s:RequestDelegationAdmin ;
 .
 
 v-s:RequestDelegationRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Заявка на делегирование"@ru;
-  rdfs:label "Request delegation"@en;
+  rdfs:label "Заявки на делегирование"@ru;
+  rdfs:label "Delegation requests"@en;
   v-fs:searchBlank v-s:RequestDelegationRegistryBlank ;
   v-fs:searchBlankTemplate v-s:RequestDelegationTemplate ;
   v-fs:searchResultTemplate v-s:RequestDelegationRegistryResultTemplate ;
@@ -343,7 +343,7 @@ v-s:RequestDelegationRegistry
 v-s:RequestDelegationRegistryBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Заявки на делегирование"@ru ;
-  rdfs:label "Request delegation"@en ;
+  rdfs:label "Delegation requests"@en ;
   v-fc:targetType v-s:RequestDelegation ;
   v-fc:targetType v-s:RequestDelegationUser ;
   v-fc:targetType v-s:RequestDelegationAdmin ;
