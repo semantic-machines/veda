@@ -876,9 +876,15 @@ v-ui:AppointmentPopoverTemplate
 .
 v-ui:PersonPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон назначения с фотографией"@ru ;
-  rdfs:label "Appointment template with photo"@en ;
+  rdfs:label "Шаблон персоны с фотографией"@ru ;
+  rdfs:label "Person template with photo"@en ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-s:hasImage")) {
+    $(".media-left", template).hide();
+  }
+//# sourceURL=v-ui:PersonPopoverTemplate_pre
+</script>
 <div class="media" style="margin-top:0px;">
   <span class="close">&times;</span>
   <div class="media-left" style="width:128px">
@@ -1125,8 +1131,8 @@ v-ui:DraftLinkEditTemplate
   <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit">
     <span about="@" rel="rdf:type">
       <span about="@" property="rdfs:label"></span>
-    </span>: 
-    <span id="label" about="@" property="rdfs:label"></span>. Создано: 
+    </span>:
+    <span id="label" about="@" property="rdfs:label"></span>. Создано:
     <span about="@" property="v-s:created"></span>
   </a>
   <script>
@@ -1756,8 +1762,8 @@ v-ui:SimplifiedJournalTemplate
             var notDirect = !this.hasValue("v-wf:isDirectTask", true);
 
             //------ Для плавного перехода между версиями
-            if (individual.hasValue("v-wf:onWorkOrder") 
-                && individual["v-wf:onWorkOrder"][0].hasValue("v-wf:forWorkItem") 
+            if (individual.hasValue("v-wf:onWorkOrder")
+                && individual["v-wf:onWorkOrder"][0].hasValue("v-wf:forWorkItem")
                 && individual["v-wf:onWorkOrder"][0]["v-wf:forWorkItem"][0].hasValue("v-wf:forNetElement")) {
               var netElementId = individual["v-wf:onWorkOrder"][0]["v-wf:forWorkItem"][0]["v-wf:forNetElement"][0].id;
               if (netElementId == "s-wf:nc_t2") {
@@ -1765,7 +1771,7 @@ v-ui:SimplifiedJournalTemplate
               }
             };
             //------
-            
+
             if (notAuthor || notDirect) {
               $(".docflow-button", template).remove();
               return;
