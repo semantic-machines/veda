@@ -188,7 +188,6 @@ cfg:VedaSystemAccount
   v-s:owner cfg:VedaSystem ;
   rdfs:label "VedaSystem. Учетная запись"@ru ;
   rdfs:label "VedaSystem. Account"@en ;
-  v-s:mailbox "DocFlow.Syktyvkar@mondigroup.com" ;
 .
 cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
