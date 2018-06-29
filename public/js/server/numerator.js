@@ -32,75 +32,60 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
     var deleted = hasValue( individual, "v-s:deleted", { data: true, type: _Boolean} );
     var prevDeleted = prev_state && hasValue( prev_state, "v-s:deleted", { data: true, type: _Boolean} );
 
-    var type_uri = individual['rdf:type'] && individual['rdf:type'][0] && individual['rdf:type'][0].data;
-    var type = get_individual(ticket, type_uri);
-    var prev_type_uri = prev_state['rdf:type'] && prev_state['rdf:type'][0] && prev_state['rdf:type'][0].data;
-    var prev_type = get_individual(ticket, prev_type_uri);
+    individual['rdf:type'] && individual['rdf:type'].length && individual['rdf:type'].forEach(function (typeValue) {
+      var type = get_individual(ticket, typeValue.data);
+      if (!type || !type['v-s:hasNumeration']) { return; }
 
-    if (!type || !type['v-s:hasNumeration']) { return; }
+      var numeration = get_individual(ticket, type['v-s:hasNumeration'][0].data);
+      var enumeratedProperty = numeration['v-s:enumeratedProperty'][0].data;
+      var number = parseInt( individual[enumeratedProperty] && individual[enumeratedProperty].length && individual[enumeratedProperty][0].data || 0 );
+      var prevNumber = parseInt( prev_state && prev_state[enumeratedProperty] && prev_state[enumeratedProperty][0].data || 0 );
 
-    var numeration_uri = type['v-s:hasNumeration'][0].data;
-    var numeration = get_individual(ticket, type['v-s:hasNumeration'][0].data);
-    var enumeratedProperty = numeration['v-s:enumeratedProperty'][0].data;
-
-    var prev_numeration_uri = prev_type['v-s:hasNumeration'][0].data;
-    var prev_numeration = get_individual(ticket, prev_type['v-s:hasNumeration'][0].data);
-    var prev_enumeratedProperty = prev_numeration['v-s:enumeratedProperty'][0].data;
-
-    var number = parseInt( individual[enumeratedProperty] && individual[enumeratedProperty].length && individual[enumeratedProperty][0].data || 0 );
-    var prev_number = parseInt( prev_state && prev_state[prev_enumeratedProperty] && prev_state[prev_enumeratedProperty][0].data || 0 );
-
-    // Already processed
-    if (number && prev_number && number === prev_number && deleted === prevDeleted) {
-      // Nothing changed return
-      //print("@1 nothing changed exit");
-      return;
-    } else {
-      var rule = get_individual(ticket, numeration['v-s:hasNumerationRule'][0].data);
-      var scopeId = getScope(ticket, individual, rule);
-      var scope = get_individual(ticket, scopeId) || createScope(ticket, scopeId);
-
-      var prev_rule = get_individual(ticket, prev_numeration['v-s:hasNumerationRule'][0].data);
-      var prev_scopeId = getScope(ticket, prev_state, prev_rule);
-      var prev_scope = get_individual(ticket, prev_scopeId);
-
-      //print("@2 | number", number, "| deleted", deleted, "| prev_state", !!prev_state, "| prev_number", prev_number, "| scopeId", scopeId);
-
-      if (!number && !prev_number) {
-        // Update individual, commit number
-        number = getNewValue(ticket, individual, rule, scope);
-        commitValue(ticket, scope, number, _event_id);
-        individual[enumeratedProperty] = newStr( number.toString() );
-        put_individual(ticket, individual, _event_id);
-        //print("@3 update individual, commit number");
-      } else if (!number && prev_number && prev_scopeId === scopeId) {
-        // Restore number
-        individual[enumeratedProperty] = newStr( prev_number.toString() );
-        put_individual(ticket, individual, _event_id);
-      } else if (prev_scopeId !== scopeId) {
-        // Scope changed, i.e. after type was changed
-        revokeValue(ticket, prev_scope, prev_number, _event_id);
-        number = getNewValue(ticket, individual, rule, scope);
-        commitValue(ticket, scope, number, _event_id);
-        individual[enumeratedProperty] = newStr( number.toString() );
-        put_individual(ticket, individual, _event_id);
-      } else if (number && !prev_state) {
-        // Commit number
-        commitValue(ticket, scope, number, _event_id);
-        //print("@4 commit number");
-      } else if (number && deleted) {
-        // revoke number
-        revokeValue(ticket, scope, number, _event_id);
-        //print("@5 revoke number");
-      } else if (number && prev_number && number !== prev_number) {
-        // Commit number, revoke prev_number
-        commitValue(ticket, scope, number, _event_id);
-        revokeValue(ticket, prev_scope, prev_number, _event_id);
-        //print("@6 commit number, revoke prev_number");
+      // Already processed
+      if (number && prevNumber && number === prevNumber && deleted === prevDeleted) {
+        // Nothing changed return
+        //print("@1 nothing changed exit");
+        return;
       } else {
-        //print("@7 no condition fullfilled");
+        var rule = get_individual(ticket, numeration['v-s:hasNumerationRule'][0].data);
+        var scopeId = getScope(ticket, individual, rule);
+        var scope = get_individual(ticket, scopeId) || createScope(ticket, scopeId);
+        //print("@2 | number", number, "| deleted", deleted, "| prev_state", !!prev_state, "| prevNumber", prevNumber, "| scopeId", scopeId);
+
+        if (!number && !prevNumber) {
+          // update doc, commit number
+          number = getNewValue(ticket, individual, rule, scope);
+          commitValue(ticket, scope, number, _event_id);
+          individual[enumeratedProperty] = newStr( number.toString() );
+          put_individual(ticket, individual, _event_id);
+          //print("@3 update doc, commit number");
+
+        } else if (!number && prevNumber) {
+          individual[enumeratedProperty] = newStr( prevNumber.toString() ); // Restore number
+          put_individual(ticket, individual, _event_id);
+        } else if (number && !prev_state) {
+          // commit number
+          commitValue(ticket, scope, number, _event_id);
+          //print("@4 commit number");
+
+        } else if (number && deleted) {
+          // revoke number
+          revokeValue(ticket, scope, number, _event_id);
+          //print("@5 revoke number");
+
+        } else if (number && prevNumber && number !== prevNumber) {
+          // commit number, revoke prevNumber
+          commitValue(ticket, scope, number, _event_id);
+          var prevScopeId = getScope(ticket, prev_state, rule);
+          var prevScope = get_individual(ticket, prevScopeId);
+          revokeValue(ticket, prevScope, prevNumber, _event_id);
+          //print("@6 commit number, revoke prevNumber");
+
+        } else {
+          //print("@7 no condition fullfilled");
+        }
       }
-    }
+    });
   } catch (e) {
     print(e.stack);
   }
