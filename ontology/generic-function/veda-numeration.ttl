@@ -274,6 +274,8 @@ v-s:NumerationEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+  // First class event only
+  if (parent_script_id) { return; }
   // Get actual state
   document = get_individual(ticket, document["@"]);
   var result = numerate(ticket, document, super_classes, prev_state, _event_id);
