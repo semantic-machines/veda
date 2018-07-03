@@ -275,7 +275,10 @@ v-s:NumerationEvent
  * super_classes = super classes of the document.
  */
   // First class event only
-  if (parent_script_id) { return; }
+  if (parent_script_id) {
+    // print("Not first class event. Exit.");
+    return;
+  }
   // Get actual state
   document = get_individual(ticket, document["@"]);
   var result = numerate(ticket, document, super_classes, prev_state, _event_id);

@@ -81,7 +81,7 @@ cfg:ImportDMSToVeda
 .
 cfg:ImportDMSToVedaAccount
   rdf:type v-s:Account ;
-  v-s:author cfg:VedaSystem ;  
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Import DMS to Veda account"@en ;
   v-s:owner cfg:ImportDMSToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
@@ -113,7 +113,7 @@ cfg:ImportFromOtherSystemToVeda
 .
 cfg:ImportFromOtherSystemToVedaAccount
   rdf:type v-s:Account ;
-  v-s:author cfg:VedaSystem ;  
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Import DMS to Veda account"@en ;
   v-s:owner cfg:ImportFromOtherSystemToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
@@ -430,6 +430,12 @@ cfg:Event_1
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var doc_uri = document['@'],
   isDefinedBy = document['rdfs:isDefinedBy'],
   isGroup = getUri(document['rdf:type']) === "v-s:Group";
@@ -465,6 +471,13 @@ cfg:Event_2
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var doc_uri = document['@'],
     owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
 
@@ -643,6 +656,12 @@ cfg:Event_4
  * super_classes = super classes of the document.
  */
 
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var doc_uri = document['@'],
     deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
 
@@ -710,6 +729,12 @@ cfg:Event_5
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var doc_uri = document["@"],
     deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean}),
@@ -786,6 +811,12 @@ cfg:Event_6
  * super_classes = super classes of the document.
  */
 
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 // Update ontology vsn
 var vsn = {
   "@" : "cfg:OntoVsn",
@@ -831,7 +862,10 @@ cfg:Event_7
  * super_classes = super classes of the document.
  */
 
-if (parent_document_id && parent_document_id === document['@']) return;
+if (parent_document_id && parent_document_id === document['@']) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var doc_uri = document["@"],
   _classes = getUris( document["rdf:type"] );
@@ -870,7 +904,16 @@ cfg:Event_8
  * super_classes = super classes of the document.
  */
 
-if (parent_document_id && parent_document_id === document['@']) return;
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
+if (parent_document_id && parent_document_id === document['@']) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var _class = document,
   class_uri = _class["@"],
@@ -951,6 +994,12 @@ cfg:Event_9
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var doc_uri = document["@"],
   parent_uri = getUri( document["v-s:parent"] ),
@@ -1124,6 +1173,13 @@ cfg:Event_13
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 // Get actual state
 document = get_individual(ticket, document["@"]);
 if ( hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: _Boolean} ) || !prev_state ) {
@@ -1150,6 +1206,13 @@ cfg:Event_15
   rdfs:comment "Скрипт обработки связей документов" ;
   v-s:triggerByType v-s:Link ;
   v-s:script """
+
+  // First class event
+  if (parent_script_id) {
+    // print("Not first class event. Exit.");
+    return;
+  }
+
   var linkDeleted = hasValue( document, "v-s:deleted", {data: true, type: _Boolean} ),
       linkUri = document["@"],
       linkToUri = getUri(document["v-s:to"]),
@@ -1232,6 +1295,13 @@ cfg:Event_16
   v-s:triggerByType v-s:BackwardLink ;
   v-s:preventByType v-s:Version;
   v-s:script """
+
+  // First class event
+  if (parent_script_id) {
+    // print("Not first class event. Exit.");
+    return;
+  }
+
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
       backwardTargetUris = getUris(document["v-s:backwardTarget"]),
@@ -1241,7 +1311,7 @@ cfg:Event_16
       canDelete = document["v-s:canDelete"],
       isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
 
-  //expected equil backwardPropery and backwardReplaceUris for all backwardTargets
+  //expected equal backwardPropery and backwardReplaceUris for all backwardTargets
   for (var i = 0; i < backwardTargetUris.length; i++) {
     var backwardTargetUri = backwardTargetUris[i],
         backwardTarget = get_individual(ticket, backwardTargetUri),

@@ -76,6 +76,13 @@ v-s:UserScriptEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
 var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
 

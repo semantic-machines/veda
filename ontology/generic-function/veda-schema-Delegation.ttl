@@ -417,6 +417,12 @@ cfg:Event_Delegation
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByType v-s:RequestDelegation ;
   v-s:script """
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var request_uri = document["@"],
     request_type = getUri(document["rdf:type"]),
     dateFrom = document["v-s:dateFrom"],
