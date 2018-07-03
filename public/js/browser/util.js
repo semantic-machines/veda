@@ -49,6 +49,32 @@ veda.Module(function Util(veda) { "use strict";
     }
   };
 
+  veda.Util.generate_passes = function (length, count) {
+    var result = {};
+    for (var i = 0; i < count; i++) {
+      var pass = generate_pass(length);
+      var hash = Sha256.hash(pass);
+      result[pass] = hash;
+    }
+    return result;
+  }
+
+  function generate_pass (length) {
+    var ranges = [[48, 57], [97, 122]];
+    var pass = "";
+    for (var i = 0; i < length; i++) {
+      var range = ranges[randomInRange(0, ranges.length - 1)];
+      var charcode = randomInRange(range[0], range[1]);
+      pass += String.fromCharCode(charcode);
+    }
+    return pass;
+  }
+
+  function randomInRange(begin, end) {
+    return Math.round(Math.random() * (end - begin) + begin);
+  }
+
+
   veda.Util.hash = function (str) {
     var hash = 0, char;
     if (str.length === 0) {
