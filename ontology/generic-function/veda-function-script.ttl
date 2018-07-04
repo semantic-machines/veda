@@ -91,10 +91,11 @@ var nativeConsole = this.console;
 var print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
+    var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
     if (i === 0) {
-      output += arg.toString();
+      output += argString;
     } else {
-      output += " " + arg.toString();
+      output += " " + argString;
     }
   }
   output += String.fromCharCode(13, 10);
