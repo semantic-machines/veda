@@ -121,7 +121,7 @@ if (script) {
   try {
     script();
   } catch (err) {
-    print(err);
+    print(err, err.stack);
   }
   document["v-s:output"] = [{
     data: output,
