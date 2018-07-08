@@ -72,23 +72,12 @@ _Buff *
 query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
       const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit);
 
-_Buff *
-read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
-int
-put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
-               int _event_id_length);
-int
-remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
-                  int _event_id_length);
-int
-add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
-                  int _event_id_length);
-int
-set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
-                  int _event_id_length);
-int
-remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length,
-                       const char *_event_id, int _event_id_length);
+_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
+int put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length);
+int remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
+int add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length);
+int set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length);
+int remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length);
 
 void log_trace(const char *_str, int _str_length);
 
@@ -459,10 +448,7 @@ RemoveIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     const char            *cstr = ToCString(str1);
 
-    v8::String::Utf8Value str_event_id(args[ 2 ]);
-    const char            *event_id = ToCString(str_event_id);
-
-    res = remove_individual(ticket, str.length(), cstr, str1.length(), event_id, str_event_id.length());
+    res = remove_individual(ticket, str.length(), cstr, str1.length());
 
     args.GetReturnValue().Set(res);
 }
@@ -488,9 +474,6 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         v8::String::Utf8Value str_ticket(args[ 0 ]);
         const char            *ticket = ToCString(str_ticket);
 
-        v8::String::Utf8Value str_event_id(args[ 2 ]);
-        const char            *event_id = ToCString(str_event_id);
-
         std::vector<char>     buff;
         // std::vector<char>     buff1;
 
@@ -499,7 +482,7 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         // cerr << "@NEW " << buff1.size() << "[" << std::string(buff1.data(), buff1.size()) << "]" << endl;
 
         char *ptr = buff.data();
-        res = put_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
+        res = put_individual(ticket, str_ticket.length(), ptr, buff.size());
 
         buff.clear();
     }
@@ -525,9 +508,6 @@ AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         v8::String::Utf8Value str_ticket(args[ 0 ]);
         const char            *ticket = ToCString(str_ticket);
 
-        v8::String::Utf8Value str_event_id(args[ 2 ]);
-        const char            *event_id = ToCString(str_event_id);
-
         std::vector<char>     buff;
         // std::vector<char>     buff1;
 
@@ -537,7 +517,7 @@ AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
         jsobject2cbor(args[ 1 ], isolate, buff);
         char *ptr = buff.data();
-        res = add_to_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
+        res = add_to_individual(ticket, str_ticket.length(), ptr, buff.size());
 
         buff.clear();
     }
@@ -563,9 +543,6 @@ SetInIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         v8::String::Utf8Value str_ticket(args[ 0 ]);
         const char            *ticket = ToCString(str_ticket);
 
-        v8::String::Utf8Value str_event_id(args[ 2 ]);
-        const char            *event_id = ToCString(str_event_id);
-
         std::vector<char>     buff;
         // std::vector<char>     buff1;
 
@@ -575,7 +552,7 @@ SetInIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
         jsobject2cbor(args[ 1 ], isolate, buff);
         char *ptr = buff.data();
-        res = set_in_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
+        res = set_in_individual(ticket, str_ticket.length(), ptr, buff.size());
 
         buff.clear();
     }
@@ -601,9 +578,6 @@ RemoveFromIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         v8::String::Utf8Value str_ticket(args[ 0 ]);
         const char            *ticket = ToCString(str_ticket);
 
-        v8::String::Utf8Value str_event_id(args[ 2 ]);
-        const char            *event_id = ToCString(str_event_id);
-
         std::vector<char>     buff;
         // std::vector<char>     buff1;
 
@@ -612,7 +586,7 @@ RemoveFromIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
         // cerr << "@NEW " << buff1.size() << "[" << std::string(buff1.data(), buff1.size()) << "]" << endl;
 
         char *ptr = buff.data();
-        res = remove_from_individual(ticket, str_ticket.length(), ptr, buff.size(), event_id, str_event_id.length());
+        res = remove_from_individual(ticket, str_ticket.length(), ptr, buff.size());
 
         buff.clear();
     }
