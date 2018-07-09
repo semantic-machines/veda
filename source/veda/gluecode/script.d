@@ -39,6 +39,7 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
 {
     //if (trace)
     //log.trace("prepare_script uri=%s, scripts_order.length=%d", ss.uri, wpl.scripts_order.length);
+    g_event_id = ss.uri;
 
     try
     {
