@@ -620,7 +620,7 @@ ScriptVM get_ScriptVM(Context ctx)
                 g_context = ctx;
                 log       = ctx.get_logger();
 
-                reload_ext_scripts();
+                reload_ext_scripts(ctx);
             }
             catch (Exception ex)
             {
@@ -632,11 +632,15 @@ ScriptVM get_ScriptVM(Context ctx)
     return script_vm;
 }
 
-private void reload_ext_scripts()
+private void reload_ext_scripts(Context ctx)
 {
     Script[] scripts;
     string[] script_file_name;
     writeln("-");
+
+    string sticket = ctx.sys_ticket().id;
+    g_ticket.data   = cast(char *)sticket;
+    g_ticket.length = cast(int)sticket.length;
 
     foreach (path; [ "./public/js/server", "./public/js/common" ])
     {
