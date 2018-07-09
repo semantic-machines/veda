@@ -27,9 +27,9 @@ class ScriptProcess : VedaModule
     {
         super(_subsystem_id, _module_id, log);
 
-        vm_id           = _vm_id;
-        g_vm_id         = vm_id;
-        wpl             = new ScriptsWorkPlace();
+        vm_id   = _vm_id;
+        g_vm_id = vm_id;
+        wpl     = new ScriptsWorkPlace();
     }
 
     long count_sckip = 0;
@@ -117,7 +117,8 @@ class ScriptProcess : VedaModule
 
         foreach (_script_id; wpl.scripts_order)
         {
-            script_id = _script_id;
+            script_id  = _script_id;
+            g_event_id = new_indv.uri ~ '+' ~ script_id;
 
             ScriptInfo script = wpl.scripts[ script_id ];
 
@@ -171,7 +172,7 @@ class ScriptProcess : VedaModule
                     log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
                     foreach (item; tnx.get_queue())
                     {
-                        log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text (item.rc));
+                        log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
                     }
 
                     if (res != ResultCode.OK)
@@ -219,7 +220,7 @@ class ScriptProcess : VedaModule
             ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var super_classes = get_env_str_var ('$super_classes');"
-            ~ "var _event_id = document['@'] + '+' + _script_id;";
+            ~ "var _event_id = '?';";
 
         before_vars =
             "var document = get_individual (ticket, '$document');"
