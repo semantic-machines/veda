@@ -251,7 +251,10 @@ class ScriptProcess : VedaModule
         //if (trace_msg[ 301 ] == 1)
         log.trace("start load db scripts");
 
-        Ticket       sticket = context.sys_ticket();
+        Ticket sticket = context.sys_ticket();
+        g_ticket.data   = cast(char *)sticket.id;
+        g_ticket.length = cast(int)sticket.id.length;
+
         Individual[] res;
 
         auto         si = context.get_storage().get_info(MODULE.subject_manager);
