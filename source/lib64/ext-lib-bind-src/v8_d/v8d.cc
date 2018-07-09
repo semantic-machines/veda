@@ -72,7 +72,7 @@ _Buff *
 query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
       const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit);
 
-_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
+_Buff *read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
 int put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length);
 int remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length);
 int add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length);
@@ -426,6 +426,70 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
+GetIndividuals(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    // cerr << "#START GETINDIVIDUALS#" << endl;
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 2)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+    v8::String::Utf8Value str(args[ 0 ]);
+    const char            *ticket = ToCString(str);
+
+    v8::String::Utf8Value uris(args[ 1 ]);
+
+    if (uris.length() == 0)
+        return;
+
+    const char            *curis = ToCString(uris);
+    std::string           suris(curis, uris.length());
+
+    std::string           el;
+    std::istringstream    tokenStream(suris);
+
+    v8::Handle<v8::Array> arr_1 = v8::Array::New(isolate, 0);
+
+    int                   i = 0;
+
+    while (std::getline(tokenStream, el, ','))
+    {
+        _Buff *doc_as_binobj = read_individual(ticket, str.length(), el.c_str(), el.length());
+
+        if (doc_as_binobj != NULL)
+        {
+            std::string data(doc_as_binobj->data, doc_as_binobj->length);
+
+            //std::cerr << "@c #get_individual uri=" << cstr << std::endl;
+
+            Handle<Value> oo;
+            if (data[ 0 ] == (char)146)
+            {
+                //std::cerr << "@c MSGPACK" << std::endl;
+                if (data.size() < 2)
+                {
+                    isolate->ThrowException(v8::String::NewFromUtf8(isolate, "invalid msgpack, size < 2"));
+                    return;
+                }
+                oo = msgpack2jsobject(isolate, data.substr(0, data.size()));
+            }
+            else
+                oo = cbor2jsobject(isolate, data);
+
+            arr_1->Set(i, oo);
+            i++;
+        }
+    }
+
+    args.GetReturnValue().Set(arr_1);
+
+    // cerr << "#END GET INDIVIDUAL#" << endl;
+}
+
+void
 RemoveIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     int     res      = 500;
@@ -446,7 +510,7 @@ RemoveIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     if (str1.length() == 0)
         return;
 
-    const char            *cstr = ToCString(str1);
+    const char *cstr = ToCString(str1);
 
     res = remove_individual(ticket, str.length(), cstr, str1.length());
 
@@ -649,6 +713,8 @@ WrappedContext::WrappedContext ()
                 v8::FunctionTemplate::New(isolate_, Query));
     global->Set(v8::String::NewFromUtf8(isolate_, "get_individual"),
                 v8::FunctionTemplate::New(isolate_, GetIndividual));
+    global->Set(v8::String::NewFromUtf8(isolate_, "get_individuals"),
+                v8::FunctionTemplate::New(isolate_, GetIndividuals));
     global->Set(v8::String::NewFromUtf8(isolate_, "remove_individual"),
                 v8::FunctionTemplate::New(isolate_, RemoveIndividual));
     global->Set(v8::String::NewFromUtf8(isolate_, "put_individual"),
