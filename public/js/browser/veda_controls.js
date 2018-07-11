@@ -1437,6 +1437,7 @@
         var fileIndividualPromise = createFileIndividual(file, undefined, individual);
         fileIndividualPromises.push(fileIndividualPromise);
       }
+      if (!fileIndividualPromises.length) { return; }
       Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
         that.value = "";
         indicatorSpinner.empty().hide();
@@ -1446,6 +1447,8 @@
         } else {
           individual.addValue(rel_uri, fileIndividuals);
         }
+      }).catch(function (error) {
+        console.log(error);
       });
     });
 
@@ -1497,6 +1500,8 @@
         });
       }).then(function () {
         return fileIndividual.save();
+      }).catch(function (error) {
+        console.log(error);
       });
     }
 
