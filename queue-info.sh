@@ -3,28 +3,28 @@
 IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_CCUS`
 COUNT_CCUS=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fanout_email`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fanout_email0`
 COUNT_FANOUT_EMAIL=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fanout_sql_lp`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fanout_sql_lp0`
 COUNT_FANOUT_SQL_LP=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fanout_sql_np`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fanout_sql_np0`
 COUNT_FANOUT_SQL_NP=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fulltext_indexer`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_fulltext_indexer0`
 COUNT_FTI=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_ltr_scripts`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_ltr_scripts0`
 COUNT_LTR_SCRIPTS=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_scripts_lp`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_scripts_lp0`
 COUNT_SCRIPTS_LP=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_scripts_main`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_pop_scripts_main0`
 COUNT_SCRIPTS_MAIN=${array[4]}
 
-IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_push`
+IFS=';' read -r -a array <<< `cat data/queue/individuals-flow_info_push_0`
 COUNT_PUT=${array[3]}
 
 echo count put: $COUNT_PUT
