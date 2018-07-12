@@ -36,3 +36,9 @@ echo fulltext-indexer: $(($COUNT_PUT - $COUNT_FTI))
 echo ltr-scripts: $(($COUNT_PUT - $COUNT_LTR_SCRIPTS))
 echo scripts-lp: $(($COUNT_PUT - $COUNT_SCRIPTS_LP))
 echo scripts-main: $(($COUNT_PUT - $COUNT_SCRIPTS_MAIN))
+
+if (($COUNT_PUT > 0)) && (($COUNT_PUT - $COUNT_CCUS == 0)) && (($COUNT_PUT - $COUNT_FANOUT_EMAIL == 0)) && (($COUNT_PUT - $COUNT_FANOUT_SQL_LP == 0)) && (($COUNT_PUT - $COUNT_FANOUT_SQL_NP == 0)) && (($COUNT_PUT - $COUNT_FTI == 0)) && (($COUNT_PUT - $COUNT_LTR_SCRIPTS == 0)) && (($COUNT_PUT - $COUNT_SCRIPTS_LP == 0)) && (($COUNT_PUT - $COUNT_SCRIPTS_MAIN == 0)); then
+
+    echo 'WARN! all subscribers have processed all messages, this queue can be deleted.'
+
+fi
