@@ -1728,8 +1728,7 @@
       Promise.all([
         new veda.IndividualModel("v-s:SelectAll").load(),
         new veda.IndividualModel("v-s:CancelSelection").load(),
-        new veda.IndividualModel("v-s:InvertSelection").load(),
-        new veda.IndividualModel("v-s:Ok").load()
+        new veda.IndividualModel("v-s:InvertSelection").load()
       ]).then(function (actions) {
         header.find(".select-all")
           .click(function () { suggestions.children(":not(.selected)").click(); })
@@ -1746,7 +1745,7 @@
             $(".form-control", control).val("");
             individual.set(rel_uri, selected);
           })
-          .text( actions[3] );
+          .text( "Ok" );
       });
       if (isSingle) {
         header.hide();
