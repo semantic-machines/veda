@@ -232,6 +232,8 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
     {
         std::string data(res->data, res->length);
 
+		v8::Local<v8::Value> result = v8::JSON::Parse(String::NewFromUtf8(isolate, data.c_str()));
+
         if (data.length() > 5)
         {
             std::string::size_type prev_pos = 1, pos = 1;
@@ -255,8 +257,8 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
                 arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
             }
         }
+		args.GetReturnValue().Set(result);
     }
-    args.GetReturnValue().Set(arr_1);
 }
 
 ////////////////
