@@ -451,7 +451,7 @@ void main(string[] args)
                     break;
                 }
                 else
-                    stderr.writeln(eml, "Ok");
+                    stderr.writeln("module ", eml, "...Ok");
             }
         }
         stderr.writefln("all component started, need_watchdog=%s", need_watchdog);
