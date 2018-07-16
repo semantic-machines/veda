@@ -49,6 +49,7 @@ class FanoutProcess : VedaModule
         {
             if (smtp_conn is null)
             {
+	            log.trace("ERR! connect to smtp server not exist, reconnect", );
                 connect_to_smtp(context);
             }
 
@@ -74,7 +75,6 @@ class FanoutProcess : VedaModule
         }
         else
         {
-            log.trace("ERR! fail connect");
             return ResultCode.Fail_Commit;
         }
     }
@@ -471,7 +471,7 @@ class FanoutProcess : VedaModule
             Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
-            //log.trace("connect_to_smtp:found gates: %s", gates);
+            log.trace("connect_to_smtp:found gates: %s", gates);
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
