@@ -413,11 +413,11 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
     string sort;
     string databases;
 
-    if (g_vm_id != "V8.LowPriority")
-    {
-        log.trace("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");
-        return null;
-    }
+    //if (g_vm_id != "V8.LowPriority")
+    //{
+    //    log.trace("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");
+    //    return null;
+    //}
 
     try
     {
