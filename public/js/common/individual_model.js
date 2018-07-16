@@ -286,7 +286,7 @@ veda.Module(function (veda) { "use strict";
         return self;
       }).catch(function (error) {
         console.log("load individual error", self.id, error);
-        if (error.code === 422 || e.code === 404) {
+        if (error.code === 422 || error.code === 404) {
           self.isNew(true);
           self.isSync(false);
           self.isLoaded(false);
