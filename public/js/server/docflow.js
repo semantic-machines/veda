@@ -1070,11 +1070,13 @@ function prepare_work_item(ticket, document)
                     var resultEval = true;
                     try {
                         var predicate = flow['v-wf:predicate'];
-                        var expression = getFirstValue(predicate);
-                        //var task_result = new WorkItemResult(work_item_result);
-                        var task = new Context(work_item, ticket);
-                        var process = new Context(_process, ticket);
-                        resultEval = eval(expression);
+			if (predicate) {
+                    	    var expression = getFirstValue(predicate);
+                    	    //var task_result = new WorkItemResult(work_item_result);
+                    	    var task = new Context(work_item, ticket);
+                    	    var process = new Context(_process, ticket);
+                    	    resultEval = eval(expression);
+			}
                     } catch (e) {
                         print(e.stack);
                     }
