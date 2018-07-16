@@ -1066,7 +1066,7 @@ function prepare_work_item(ticket, document)
                     var flowsInto = flow['v-wf:flowsInto'];
                     if (!flowsInto) continue;
 
-/* !!! это дополнение ломает тесты, какой функционал тут планировалось достичь ? 
+
                     var resultEval = true;
                     try {
                         var predicate = flow['v-wf:predicate'];
@@ -1080,7 +1080,7 @@ function prepare_work_item(ticket, document)
                     }
 
                     if (!resultEval) continue;
-*/
+
                     var nextNetElement = get_individual(ticket, getUri(flowsInto));
                     if (!nextNetElement) continue;
 
