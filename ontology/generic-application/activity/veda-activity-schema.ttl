@@ -1,0 +1,103 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-activity-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Активность. Схема."@ru ;
+  rdfs:label "Veda system ontology. Activity. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+v-s:Activity
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Spatial ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:BackwardLink;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:WorkGroup ;
+  rdfs:label "Активность"@ru ;
+  rdfs:label "Activity"@en ;
+.
+v-s:topic
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Предмет"@ru ;
+  rdfs:label "Topic"@en ;
+  rdfs:range v-s:Thing ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:hasActivity
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Активность"@ru ;
+  rdfs:label "Has activity"@en ;
+  rdfs:range v-s:Activity ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:hasAction
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Мероприятие"@ru ;
+  rdfs:label "Action"@en ;
+  rdfs:range v-s:Action ;
+  rdfs:subPropertyOf v-s:hasActivity ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:activityApprover
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Утверждающий"@ru ;
+  rdfs:label "Approver"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:activityCoordinator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Согласующий"@ru ;
+  rdfs:label "Coordinator"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Activity ;
+.
+v-s:participant
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Участник"@ru ;
+  rdfs:label "Participant"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Activity ;
+.
+# v-s:member
+
+v-s:isActivityAccidental
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Activity ;
+  rdfs:label "Нарушение существенное?"@ru ;
+  rdfs:label "is activity accidental"@en ;
+  rdfs:range xsd:boolean ;
+.
+v-s:hasThirdPartyParticipant
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Сторонние участники"@ru ;
+  rdfs:label "Third-party participant"@en ;
+  rdfs:range v-s:ThirdPartyParticipant ;
+  rdfs:domain v-s:Activity ;
+.
+#---------------------------------------------------------
+
+v-s:ThirdPartyParticipant
+  rdf:type owl:Class;
+  rdfs:label "Сторонние участники"@ru ;
+  rdfs:label "Third-party participant"@en ;
+  rdfs:subClassOf v-s:Correspondent;
+.
+# --- В связи с вводом класса возникает предикат v-s:hasThirdPartyParticipant. Он описан в классе v-s:Activity
+
+
+
+

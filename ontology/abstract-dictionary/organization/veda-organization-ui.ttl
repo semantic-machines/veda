@@ -4,10 +4,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
-@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix cfg: <http://semantic-machines.com/veda/config/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 <http://semantic-machines.com/veda/veda-organization-ui>
@@ -18,7 +14,7 @@
   v-s:loadPriority 6 ;
 .
 
-# МОДЕЛИ ---------------------------------------------------------------
+# ------------------------------------------------------------ МОДЕЛИ --
 
 v-s:OrganizationUnitModel
   rdf:type v-ui:ClassModel ;
@@ -84,11 +80,11 @@ v-s:OrganizationUnitModel
     }, undefined);
   };
 
-  // sourceURL=v-s:OrganizationUnitModel
+  //# sourceURL=v-s:OrganizationUnitModel
   """ ;
 .
 
-# СПЕЦИФИКАЦИИ ---------------------------------------------------------
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasSubsidiaryForOrganization
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -180,7 +176,8 @@ v-s:PsContractorProfileDateFromFact
   rdfs:label "Спецификация к свойству v-s:dateFromFact для класса v-s:ContractorProfile"@ru ;
   rdfs:label "Spec for property v-s:dateFromFact for class v-s:ContractorProfile"@en ;
 .
-# СТРОКИ ---------------------------------------------------------------
+
+# ------------------------------------------------------------ СТРОКИ --
 
 v-s:NonUniqueTaxId
   rdf:type v-s:Bundle ;
@@ -189,10 +186,10 @@ v-s:NonUniqueTaxId
   rdfs:comment "Организация с таким ИНН уже существует"@ru ;
   rdfs:comment "Organization with this tax number already exists"@en ;
 .
-v-s:AddDateContractorProfile
+v-s:LegalEntityExistencePeriodBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Период существования юридического лица"@ru ;
-  rdfs:label "Period of existence of the legal entity"@en ;
+  rdfs:label "Legal entity existence period"@en ;
 .
 v-s:AddProfile
   rdf:type v-s:Bundle ;
@@ -205,7 +202,7 @@ v-s:AddSubsidiary
   rdfs:label "Add subsidiary"@en ;
 .
 
-# ШАБЛОНЫ --------------------------------------------------------------
+# ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:OrganizationTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -290,19 +287,19 @@ v-s:OrganizationTemplate
       <div class="col-md-8">
         <em about="rdfs:label" property="rdfs:label"></em>
         <div property="rdfs:label" class="view -edit -search"></div>
-        <veda-control id="krot" data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+        <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
       </div>
     </div>
     <hr class="view -edit -search">
     <div class="row">
       <div class="col-md-4">
         <em about="v-s:hasClassifierCountry" property="rdfs:label"></em>
-        <div rel="v-s:hasClassifierCountry" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+        <div rel="v-s:hasClassifierCountry" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasClassifierCountry" class="-view edit search fulltext" data-template="{individual['v-s:shortLabel'][0] + ' | ' + individual['rdfs:label'][0]}"></veda-control>
       </div>
       <div class="col-md-8">
         <em about="v-s:hasClassifierLegalForm" property="rdfs:label"></em>
-        <div rel="v-s:hasClassifierLegalForm" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+        <div rel="v-s:hasClassifierLegalForm" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasClassifierLegalForm" class="-view edit search fulltext dropdown"></veda-control>
       </div>
     </div>
@@ -347,15 +344,15 @@ v-s:OrganizationTemplate
 
     <hr class="view -edit -search">
 
-    <em about="v-s:AddDateContractorProfile" property="rdfs:label"></em>
+    <em about="v-s:LegalEntityExistencePeriodBundle" property="rdfs:label"></em>
     <div class="row">
       <div class="col-md-4">
         <div property="v-s:dateFromFact" class="view -edit -search"></div>
-        <veda-control property="v-s:dateFromFact" data-type="dateTime" class="-view edit search"></veda-control>
+        <veda-control property="v-s:dateFromFact" data-type="date" class="-view edit search"></veda-control>
       </div>
       <div class="col-md-4">
         <div property="v-s:dateToFact" class="view -edit -search"></div>
-        <veda-control property="v-s:dateToFact" data-type="dateTime" class="-view edit search"></veda-control>
+        <veda-control property="v-s:dateToFact" data-type="date" class="-view edit search"></veda-control>
       </div>
     </div>
 

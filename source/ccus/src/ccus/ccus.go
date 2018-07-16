@@ -166,7 +166,7 @@ func queue_reader(ch_collector_update chan updateInfo) {
 	var main_queue *Queue
 	var main_cs *Consumer
 
-	main_queue = NewQueue(main_queue_name, R, "./data/queue")
+	main_queue = NewQueue(main_queue_name, R)
 	main_queue.open(CURRENT)
 
 	main_cs = NewConsumer(main_queue, "CCUS", RW)
@@ -310,38 +310,3 @@ func main() {
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
-func getFirstInt(indv map[string]interface{}, predicate string) (int, bool) {
-	rss, err := indv[predicate].([]interface{})
-	if err != true {
-		return 0, false
-	}
-
-	_data := rss[0].(map[string]interface{})["data"]
-
-	switch _data.(type) {
-	case int64:
-		return int(_data.(int64)), true
-	case uint64:
-		return int(_data.(uint64)), true
-	default:
-		return 0, false
-	}
-}
-
-func getFirstString(indv map[string]interface{}, predicate string) (string, bool) {
-	rss, err := indv[predicate].([]interface{})
-	if err != true {
-		return "", false
-	}
-
-	_data := rss[0].(map[string]interface{})["data"]
-
-	switch _data.(type) {
-	case string:
-		return _data.(string), true
-	default:
-		return "", false
-	}
-}

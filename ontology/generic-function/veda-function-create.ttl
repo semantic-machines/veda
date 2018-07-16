@@ -262,7 +262,7 @@ v-fc:BlankTemplate
       <div id="object-container"></div>
       <div id="no-rights" class="alert alert-warning container hidden">
         <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
-        <button class="btn btn-default" about="v-s:Back" property="rdfs:label" onclick="window.history.back();"></button>
+        <button class="btn btn-default" about="v-fc:Back" property="rdfs:label" onclick="window.history.back();"></button>
       </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="mgmt">
@@ -346,6 +346,12 @@ v-fc:BlankSuccessfullyUpdated
   rdfs:label "Blank successfully updated"@en ;
 .
 
+v-fc:Back
+  rdf:type v-s:Bundle ;
+  rdfs:label "Назад"@ru ;
+  rdfs:label "Back"@en ;
+.
+
 v-fc:BlankTemplateShort
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
@@ -418,7 +424,7 @@ v-fc:BlankTemplateShort
   <div id="object-container"></div>
   <div id="no-rights" class="alert alert-warning container hidden">
     <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
-    <button class="btn btn-default" about="v-s:Back" property="rdfs:label" onclick="window.history.back();"></button>
+    <button class="btn btn-default" about="v-fc:Back" property="rdfs:label" onclick="window.history.back();"></button>
   </div>
 </div>
 <script>

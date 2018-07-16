@@ -228,7 +228,6 @@ v-s:Account
   rdfs:subClassOf v-s:Deliverable2 ;
   rdfs:label "Учетная запись"@ru ;
   rdfs:label "Account"@en ;
-  v-ui:hasTemplate td:AccountTemplate1 ;
 .
 
 v-s:GitAccount
@@ -277,35 +276,6 @@ v-s:Container
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Контейнер"@ru ;
-.
-
-# ------------------------------------------------------------
-v-s:TemplateForText
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Шаблон для текста"@ru ;
-.
-v-s:templateBody
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Тело шаблона" ;
-  rdfs:range v-s:TemplateForText ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:TemplateForText ;
-.
-v-s:templateSubject
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Тема шаблона" ;
-  rdfs:range v-s:TemplateForText ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:TemplateForText ;
-.
-v-s:templateLanguage
-  rdf:type owl:ObjectProperty ;
-  rdfs:range v-s:TemplateForText ;
-  rdfs:label "Язык используемый в шаблоне"@ru ;
-  rdfs:label "Template language"@en ;
-  rdfs:range v-ui:Language ;
-  rdfs:domain v-s:TemplateForText ;
 .
 
 # ------------------------------------------------------------

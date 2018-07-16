@@ -1,0 +1,45 @@
+{
+	"name": "veda-lmdb-srv",
+	"description": "veda-lmdb-srv",
+	"dependencies": {
+		"backtrace-d": "0.1.2", 
+		"d-nanomsg": "0.2.0",
+		"msgpack-d": "1.0.0-beta.6",
+	},
+        "versions": ["isModule", "std_socket"],
+        "license": "LGPL v3",
+        "sourcePaths":[
+            "../../veda/lmdb_srv",
+	    "../../veda/onto/bj8individual",
+	],
+        "sourceFiles":[
+    	    "../../lib64/liblmdb.a",
+    	    "../../veda/onto/individual.d",
+    	    "../../veda/onto/resource.d",
+    	    "../../veda/onto/lang.d",
+    	    "../../veda/util/commando.d",
+    	    "../../veda/util/tools.d",
+    	    "../../veda/bind/nano.d",
+    	    "../../veda/util/properd.d",
+    	    "../../veda/core/common/define.d",
+    	    "../../veda/core/common/know_predicates.d",
+    	    "../../veda/common/logger.d",
+    	    "../../veda/common/type.d",
+	    "../../veda/storage/common.d",
+	    "../../veda/storage/lmdb/lmdb_driver.d",
+	    "../../veda/storage/lmdb/lmdb_header.d"
+	],
+        "libs":["nanomsg"],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	},
+	{
+	    "name": "trace-app",
+	    "versions": ["trace_api_l1"],
+	    "targetType": "executable"
+	    
+	}]
+}

@@ -18,8 +18,9 @@ veda.Module(function UpdateService(veda) { "use strict";
 
     var self = riot.observable(this);
 
-    var address0 = "ws://" + location.host + "/ccus",
-        address1 = "ws://" + location.hostname + ":8088/ccus",
+    var protocol = location.protocol === "http:" ? "ws:" : "wss:",
+        address0 = protocol + "//" + location.host + "/ccus",
+        address1 = protocol + "//" + location.hostname + ":8088/ccus",
         socket,
         msgTimeout,
         msgDelay = 1000,

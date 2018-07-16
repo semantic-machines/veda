@@ -12,9 +12,7 @@
                     "nanomsg", "tarantool"
         ],
 	"sourcePaths":[
-	    "../../veda/authorization",
-	    "../../veda/storage/tarantool",
-            "../../veda/bind/tarantool"
+	    "../../veda/authorization"
 	],
         "sourceFiles":[
             "../../lib64/libauthorization.a",
@@ -25,10 +23,6 @@
             "../../veda/util/tools.d",
             "../../veda/util/queue.d",
 	    "../../veda/util/module_info.d",
-	    "../../veda/storage/common.d",
-	    "../../veda/storage/lmdb/lmdb_acl.d",
-	    "../../veda/storage/lmdb/lmdb_driver.d",
-	    "../../veda/storage/lmdb/lmdb_header.d",
 	    "../../veda/common/logger.d",
 	    "../../veda/common/type.d",
 	    "../../veda/util/properd.d",

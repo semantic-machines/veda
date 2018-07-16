@@ -286,7 +286,7 @@ veda.Module(function (veda) { "use strict";
         return self;
       }).catch(function (error) {
         console.log("load individual error", self.id, error);
-        if (error.code === 422) {
+        if (error.code === 422 || e.code === 404) {
           self.isNew(true);
           self.isSync(false);
           self.isLoaded(false);
@@ -310,6 +310,10 @@ veda.Module(function (veda) { "use strict";
               {type: "String", data: "Insufficient rights", lang: "EN"}
             ]
           };
+        } else if (e.code === 470 || e.code === 471) {
+          self.isNew(false);
+          self.isSync(false);
+          self.isLoaded(false);
         } else {
           self.isNew(false);
           self.isSync(false);

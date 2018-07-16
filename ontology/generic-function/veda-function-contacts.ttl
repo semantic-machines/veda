@@ -125,7 +125,7 @@ v-s:ContactsTemplate
         </div>
         <script>
           $(".org-tree table thead", template).remove();
-          template.on("click", "tr", function (e) {
+          template.on("click", ".org-tree table tr", function (e) {
             e.stopPropagation();
             var row = $(this);
             var unitUri = row.attr("resource");
@@ -136,17 +136,17 @@ v-s:ContactsTemplate
             unit.present(unitContainer, "v-s:OrganizationUnitContentTemplate");
           });
           if (individual.selected) {
-            $("tr[resource='" + individual.selected + "']", template).click();
+            $(".org-tree table tr[resource='" + individual.selected + "']", template).click();
+          } else {
+            $(".org-tree table tr", template).first().click();
           }
           //# sourceURL=v-s:ContactsTemplate_inline_post
         </script>
       </div>
     </div>
-
     <div role="tabpanel" class="tab-pane" id="search">
       <div about="v-s:ContactsSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
     </div>
-
   </div>
 </div>
   """
@@ -296,7 +296,7 @@ v-s:ContactsInUnitSearch
   rdfs:label "Search"@en ;
   v-fs:searchBlank v-s:ContactsInUnitSearchRegistryBlank ;
   v-fs:searchResultTemplate v-s:ContactsInUnitSearchResultTemplate ;
-  v-fs:sortOrder "'rdfs:label' asc" ;
+  v-fs:sortOrder "'rdf:type.rdfs:label' desc" ;
   v-fs:searchOnLoad true ;
 .
 
@@ -306,10 +306,32 @@ v-s:ContactsInUnitSearchRegistryBlank
   rdfs:label "Contacts search blank"@en ;
   v-fc:targetType v-s:Appointment ;
 #  v-fc:targetType v-s:Position ;
-#  v-fc:targetType v-s:Department ;
-#  v-fc:targetType v-s:OrgGroup ;
+  v-fc:targetType v-s:Department ;
+  v-fc:targetType v-s:OrgGroup ;
 .
 
+#v-s:ContactsInUnitSearchResultTemplate
+#  rdf:type v-ui:ClassTemplate ;
+#  rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
+#  rdfs:label "Contacts search result template"@en ;
+#  v-ui:template """
+#<div>
+#  <div class="result-container">
+#    <script>
+#      if ( individual.hasValue("rdf:type", "v-s:Appointment") ) {
+#        template.attr("data-template", "v-s:AppointmentContactTemplate");
+#      } else if ( individual.hasValue("rdf:type", "v-s:Position") ) {
+#        template.attr("data-template", "v-s:PositionContactTemplate");
+#      } else if ( individual.hasValue("rdf:type", "v-s:Department") || individual.hasValue("rdf:type", "v-s:OrgGroup") ) {
+#        template.attr("data-template", "v-s:DepartmentContactTemplate");
+#      }
+#      //# sourceURL=v-s:ContactsInUnitSearchResultTemplate_inline
+#    </script>
+#    <span about="@"></span>
+#  </div>
+#</div>
+#  """ ;
+#.
 v-s:ContactsInUnitSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
@@ -318,17 +340,41 @@ v-s:ContactsInUnitSearchResultTemplate
 <div>
   <div class="result-container">
     <script>
-      if ( individual.hasValue("rdf:type", "v-s:Appointment") ) {
-        template.attr("data-template", "v-s:AppointmentContactTemplate");
-      } else if ( individual.hasValue("rdf:type", "v-s:Position") ) {
-        template.attr("data-template", "v-s:PositionContactTemplate");
-      } else if ( individual.hasValue("rdf:type", "v-s:Department") || individual.hasValue("rdf:type", "v-s:OrgGroup") ) {
-        template.attr("data-template", "v-s:DepartmentContactTemplate");
+      if ( individual.is("v-s:Appointment") ) {
+        template.children().not(".app").remove();
+      } else if ( individual.is("v-s:Department") || individual.is("v-s:OrgGroup") ) {
+        template.children().not(".dep").remove();
+      } else if ( individual.is("v-s:Organization") ) {
+        template.children().not(".org").remove();
       }
-      //# sourceURL=v-s:ContactsInUnitSearchResultTemplate_inline
+    //# sourceURL=v-s:ContactsInUnitSearchResultTemplate
     </script>
-    <span about="@"></span>
+    <div>
+      <hr class="app dep org margin-md">
+      <span style="width:20px" class="app fa fa-lg fa-user-o"></span>
+      <span style="width:20px" class="dep fa fa-lg fa-folder-o"></span>
+      <span style="width:20px" class="org fa fa-lg fa-sitemap"></span>
+      <strong class="app" about="@" rel="v-s:employee">
+        <span property="rdfs:label"></span>
+      </strong>
+      <span class="app" about="@" rel="v-s:occupation">
+        <span property="rdfs:label"></span>
+      </span>
+      <span class="app" about="@" rel="v-s:employee">
+        <span property="v-s:phone"></span>
+      </span>
+      <span class="app" about="@" rel="v-s:employee">
+        <span rel="v-s:hasAccount">
+          <a class="view -edit -search" about="@" property="v-s:mailbox"></a>
+          <script>
+            template.attr("href", "mailto:" + individual["v-s:mailbox"][0]);
+          </script>
+        </span>
+      </span>
+      <strong class="dep org" about="@" property="rdfs:label"></strong>
+    </div>
   </div>
+  <br>
 </div>
   """ ;
 .

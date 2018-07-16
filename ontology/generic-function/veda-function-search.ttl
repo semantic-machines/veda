@@ -1601,6 +1601,7 @@ v-fs:AttributiveSearchInlineTemplate
       searchResultContainer = $(".search-result", template);
 
   if ( !searchBlankTemplate ) {
+    $(".results-load-buttons", template).detach().appendTo(template);
     $(".params", template).remove();
   }
   if ( this.hasValue("v-fs:loadAll", true) ) {
@@ -1697,8 +1698,10 @@ v-fs:AttributiveSearchInlineTemplate
     <br>
     <div class="search-actions clearfix">
       <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
-      <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
-      <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      <span class="results-load-buttons">
+        <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
+        <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
+      </span>
       <div class="pull-right btn-group dropup set-columns-wrapper" style="margin-left:3px;">
         <button type="button" class="btn btn-info dropdown-toggle set-columns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span about="v-fs:SetColumns" property="rdfs:label"></span>
@@ -2015,7 +2018,7 @@ v-fs:AttributiveSearchInlineTemplate
   sortBy = tmp[0]; dir = tmp[1];
   $(".orderby", template).each( function () {
     var header = $(this);
-    var a = $("<a class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
+    var a = $("<a href='#' class='text-muted glyphicon glyphicon-sort-by-attributes'></a>");
     header.prepend(a, " ");
     var property_uri = header.attr("data-orderby");
     if (sortBy.indexOf(property_uri) >= 0) {

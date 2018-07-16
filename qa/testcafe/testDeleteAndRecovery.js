@@ -9,13 +9,13 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Стартовая форма')
       .click('div.suggestion[resource="v-wf:StartForm"]')
       .typeText('veda-control[data-type="multilingualString"] input[type="text"]', timeStamp)
       .click('#save')
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Find"]')
+      .click('li[id="menu"] li[resource="v-s:Find"]')
       .typeText('veda-control[property="v-fs:fulltextQuery"] input[type="text"]', timeStamp)
       .typeText('veda-control[rel="v-fs:typeToSearch"] textarea[name="v_fs_fulltextrequest_v_fs_typetosearch"]', 'Стартовая форма')
       .click('div.suggestion[resource="v-wf:StartForm"]')

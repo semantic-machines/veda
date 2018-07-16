@@ -1,0 +1,74 @@
+Руководство по установке и настройке локального smtp сервера для отправки почтовых уведомлений.
+Сервер просто пересылает всю входящую почту на удаленный relay сервер для фактической отправки.
+Сервер не требует аутентификации.
+
+
+Окружение для приведенной конфигурации:
+
+  имя компьютера = computer.localdomain.local
+  имя пользователя = localuser
+
+
+1. Установить postfix.
+
+  # apt install postfix
+
+
+2. Создать / отредактировать файл /etc/postfix/main.cf :
+
+  # Имя этого компьютера
+  myhostname = computer.localdomain.local
+  myorigin = $myhostname
+
+  # Оставить пустым!
+  mydestination =
+
+  # Принимаем почту только от локальных оптравителей (только с этого компьютера)
+  inet_interfaces = loopback-only
+
+  smtpd_banner = $myhostname ESMTP
+
+  # Удаленный smtp сервер
+  relayhost = [smtp.semantic-machines.com]:587
+
+  smtp_sasl_auth_enable = yes
+  smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+  smtp_sasl_security_options = noanonymous
+  smtp_tls_CApath = /etc/ssl/certs
+  smtp_use_tls = yes
+  smtp_enforce_tls=yes
+  smtp_generic_maps = hash:/etc/postfix/generic
+
+  # Этот параметр нужен если relay не имеет удостоверенного сертификата
+  smtp_tls_security_level = encrypt
+
+
+3. Создать / отредактировать файл /etc/postfix/generic :
+
+  # Подстановка отправителя письма
+  localuser@computer.localdomain.local veda@semantic-machines.com
+
+
+4. Выполнить команду
+  # postmap /etc/postfix/generic
+
+
+5. Создать / отредактировать файл /etc/postfix/sasl_passwd
+
+  # Адрес и порт relay сервера, имя пользователя и пароль учетной записи на этот почтовом сервере.
+  [smtp.semantic-machines.com]:587 veda@semantic-machines.com:password
+
+
+6. Выполнить команды
+  # chmod 600 /etc/postfix/sasl_passwd
+  # postmap /etc/postfix/sasl_passwd
+
+
+7. Перезапустить postfix
+
+  # service postfix restart
+
+
+8. Проверить отправку почты
+
+  $ echo "Test message body." | mail -s "Test message subject" veda@semantic-machines.com

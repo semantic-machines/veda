@@ -1,0 +1,43 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-audit-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Аудит. Схема."@ru ;
+  rdfs:label "Veda system ontology. Audit. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+v-s:Audit
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:label "Аудит"@ru ;
+  rdfs:label "Audit"@en ;
+.
+v-s:auditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:Appointment ;
+  rdfs:label "Аудитор"@ru ;
+  rdfs:label "Auditor"@en ;
+  rdfs:domain v-s:Audit ;
+.
+v-s:chiefAuditor
+  rdf:type owl:ObjectProperty ;
+  rdfs:range v-s:Appointment ;
+  rdfs:label "Ведущий аудитор"@ru ;
+  rdfs:label "Chief auditor"@en ;
+  rdfs:domain v-s:Audit ;
+.
+
+
+# --- В связи с вводом класса может использоваться предикат v-s:hasActivity. Он описан в классе v-s:Activity
+
+
+

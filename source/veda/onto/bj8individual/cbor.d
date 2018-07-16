@@ -6,7 +6,7 @@ module veda.onto.bj8individual.cbor;
 private
 {
     import std.outbuffer, std.stdio, std.typetuple, std.datetime, std.conv;
-    import veda.util.container, veda.util.tools;
+    import veda.util.tools;
 }
 
 enum : byte

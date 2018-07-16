@@ -3,7 +3,7 @@ module veda.authorization.authorization;
 import std.conv, std.datetime, std.uuid, std.outbuffer, std.string, std.stdio;
 import veda.common.logger, veda.core.common.define, veda.common.type;
 import veda.core.common.know_predicates, veda.util.module_info;
-import veda.authorization.right_set, veda.storage.common, veda.authorization.cache;
+import veda.authorization.right_set, veda.authorization.cache;
 
 extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload);
 extern (C) char *get_trace(immutable(char) * _uri, immutable(char) * _user_uri, ubyte _request_access, ubyte trace_mode, bool _is_check_for_reload);
@@ -72,6 +72,7 @@ public class AuthorizationUseLib : Authorization
         }
         else
         {
+	    is_check_for_reload = false;
             return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, is_check_for_reload);
         }
     }
@@ -120,4 +121,28 @@ ubyte access_from_pretty_string(const string access)
             res = res | Access.can_delete;
     }
     return res;
+}
+
+string access_to_string(const ubyte src)
+{
+    char[] res = new char[ 4 ];
+
+    if (src & Access.can_create)
+        res[ 0 ] = 'C';
+    else
+        res[ 0 ] = '-';
+    if (src & Access.can_read)
+        res[ 1 ] = 'R';
+    else
+        res[ 1 ] = '-';
+    if (src & Access.can_update)
+        res[ 2 ] = 'U';
+    else
+        res[ 2 ] = '-';
+    if (src & Access.can_delete)
+        res[ 3 ] = 'D';
+    else
+        res[ 3 ] = '-';
+
+    return cast(string)res;
 }

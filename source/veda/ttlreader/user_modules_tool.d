@@ -159,7 +159,7 @@ class UserModuleInfo
 
         foreach (uid; sr.result)
         {
-            Individual module_info_ist = context.get_individual(&sticket, uid);
+            Individual module_info_ist = context.get_individual(&sticket, uid, OptAuthorize.NO);
             result[ uid ] = new UserModuleInfo(context, sticket, module_info_ist);
             mmsrc[ uid ]  = module_info_ist;
         }
@@ -311,7 +311,7 @@ class UserModuleInfo
                     log.trace("WARN! can not remove %s, err=%s", dest_image_name, tr.msg);
                 }
 
-                Individual mindv = context.get_individual(&sticket, module_id);
+                Individual mindv = context.get_individual(&sticket, module_id, OptAuthorize.NO);
                 if (mindv.getStatus() == ResultCode.OK)
                 {
                     Individual indv;
@@ -424,7 +424,7 @@ class UserModuleInfo
         {
             log.trace("MODULE [%s][%s] ALREADY INSTALLED", uri, ver);
 
-            Individual mindv = context.get_individual(&sticket, uri);
+            Individual mindv = context.get_individual(&sticket, uri, OptAuthorize.NO);
             if (mindv.getStatus() != ResultCode.OK)
                 this.store_module_individ();
             else if (mindv.isExists("v-s:deleted", true))
@@ -494,7 +494,7 @@ class UserModuleInfo
             string     hash_indv_file = indv_0.get_CRC32();
 
             //log.trace("check individual [%s]", uid);
-            Individual indv_in_storage = context.get_individual(&sticket, uid);
+            Individual indv_in_storage = context.get_individual(&sticket, uid, OptAuthorize.NO);
 
             if (indv_in_storage.getStatus() == ResultCode.OK)
             {
@@ -506,7 +506,7 @@ class UserModuleInfo
                 if (is_defined_by_in_storage != uri)
                 {
                     // [rdfs:isDefinedBy] is not equal to the installed uid module, we check the possibility of replacement
-                    Individual indv_module = context.get_individual(&sticket, is_defined_by_in_storage);
+                    Individual indv_module = context.get_individual(&sticket, is_defined_by_in_storage, OptAuthorize.NO);
                     if (indv_module.getStatus() == ResultCode.OK)
                     {
                         if (indv_module.isExists("rdf:type", "v-s:Module") == true)

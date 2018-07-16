@@ -1,0 +1,75 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-normativeDocument-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Нормативный документ. Схема."@ru ;
+  rdfs:label "Veda system ontology. Normative Document. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:NormativeDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document"@en ;
+.
+
+# --- В связи с вводом класса возникает предикат v-s:hasNormativeDocument. Он описан в классе v-s:NormativeDocument
+
+v-s:hasNormativeDocumentRequirement
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Требование"@ru ;
+  rdfs:label "Requirement"@en ;
+  rdfs:range v-s:NormativeDocumentRequirement ;
+  rdfs:domain v-s:NormativeDocument ;
+.
+v-s:hasNormativeDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document"@en ;
+  rdfs:range v-s:NormativeDocument ;
+  rdfs:domain v-s:NormativeDocument ;
+.
+#---------------------------------------------------------
+v-s:NormativeDocumentRequirement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:NormativeDocument ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document requirement"@en ;
+.
+# --- В связи с вводом класса возникает предикат v-s:hasNormativeDocumentRequirement. Он описан в классе v-s:NormativeDocument
+
+v-s:checkQuestion
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Контрольный вопрос"@ru ;
+  rdfs:label "Check question"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:NormativeDocumentRequirement ;
+.
+v-s:hasNormativeDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Normative document"@en ;
+  rdfs:range v-s:NormativeDocument ;
+  rdfs:domain v-s:NormativeDocument ;
+.
+v-s:requirementGroupNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Номер группы требований"@ru ;
+  rdfs:label "Requirement group number"@en ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:NormativeDocumentRequirement ;
+.
+
+
+
+

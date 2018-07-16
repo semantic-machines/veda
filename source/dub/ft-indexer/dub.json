@@ -19,6 +19,7 @@
             "../../veda/core/impl",
             "../../veda/core/search",
             "../../veda/storage/lmdb",
+            "../../veda/storage/tarantool",
             "../../veda/core/common"
 	],
         "sourceFiles":[
@@ -42,7 +43,7 @@
     	    "../../veda/util/tests_tools.d",
     	    "../../veda/util/module_info.d"
 	],
-	"libs":["nanomsg"],
+	"libs":["nanomsg", "tarantool"],
 	"configurations": [
 	{
 	    "name": "app",

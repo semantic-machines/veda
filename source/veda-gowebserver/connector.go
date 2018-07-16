@@ -8,32 +8,31 @@ package main
 import "C"
 
 import (
-	"bytes"
 	"encoding/json"
+	"github.com/op/go-nanomsg"
+	"github.com/tarantool/go-tarantool"
 	"log"
-	"net"
-	//"os"
-	"bufio"
 	"strings"
 	"time"
-	//"fmt"
-	"github.com/itiu/lmdb-go/lmdb"
-	"gopkg.in/vmihailenco/msgpack.v2"
 	"unsafe"
 )
 
 //Connector represents struct for connection to tarantool
 type Connector struct {
-	//Tcp connection to tarantool
-	conn net.Conn
 	//Address of tarantool database
-	addr string
+	tt_addr   string
+	tt_client *tarantool.Connection
 
-	indivEnv  *lmdb.Env
-	ticketEnv *lmdb.Env
+	//	lmdb_client *nanomsg.Socket
 
 	db_is_open bool
 }
+
+const (
+	TT   = 1
+	LMDB = 2
+	NONE = 0
+)
 
 //RequestResponse represents structure for tarantool request response
 type RequestResponse struct {
@@ -41,10 +40,120 @@ type RequestResponse struct {
 	CommonRC ResultCode
 	//ResultCode for each uri in request
 	OpRC []ResultCode
-	//Response data
-	Data []string
+
 	//Returned rights for auth requests
 	Rights []uint8
+
+	indv []Individual
+
+	uris        []string
+	data_binobj []string
+	data_obj_tt []map[interface{}]interface{}
+	src_type    int
+}
+
+func (rr *RequestResponse) SetUris(data []string) {
+	rr.uris = data
+}
+
+func (rr *RequestResponse) AddIndv(data Individual) {
+	rr.src_type = NONE
+	rr.indv = append(rr.indv, data)
+}
+
+func (rr *RequestResponse) AddTTResult(data map[interface{}]interface{}) {
+	rr.src_type = TT
+	rr.data_obj_tt = append(rr.data_obj_tt, data)
+}
+
+func (rr *RequestResponse) AddLMDBResult(data string) {
+	rr.src_type = LMDB
+	rr.data_binobj = append(rr.data_binobj, data)
+}
+
+func (rr *RequestResponse) GetCount() int {
+	if rr.src_type == TT {
+		return len(rr.data_obj_tt)
+	} else if rr.src_type == LMDB {
+		return len(rr.data_binobj)
+	} else {
+		return len(rr.indv)
+	}
+}
+
+func (rr *RequestResponse) GetJson(idx int) string {
+	if rr.src_type == TT {
+
+		if len(rr.indv) == 0 {
+			rr.indv = make([]Individual, len(rr.uris))
+		}
+
+		if rr.indv[idx] == nil {
+			rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
+		}
+
+		individualJSON, err := json.Marshal(rr.indv[idx])
+		if err != nil {
+			log.Println("ERR! GetIndv: #3 ENCODING INDIVIDUAL TO JSON ", err)
+			return ""
+		}
+		return string(individualJSON)
+
+	} else if rr.src_type == LMDB {
+		return rr.data_binobj[idx]
+	}
+
+	return ""
+}
+
+func (rr *RequestResponse) GetIndv(idx int) Individual {
+	if len(rr.indv) == 0 {
+		rr.indv = make([]Individual, len(rr.uris))
+	}
+
+	if rr.indv[idx] != nil {
+		return rr.indv[idx]
+	} else {
+		if rr.src_type == TT {
+			rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
+		} else if rr.src_type == LMDB {
+
+			var jsonObj map[string]interface{}
+			err := json.Unmarshal([]byte(rr.data_binobj[idx]), &jsonObj)
+			if err != nil {
+				log.Printf("ERR! GetIndv: ENCODE JSON: %s %v\n", rr.data_binobj[idx], err)
+				return make(Individual)
+			}
+
+			rr.indv[idx] = jsonObj
+		}
+		return rr.indv[idx]
+	}
+}
+
+func (rr *RequestResponse) GetIndvs() []Individual {
+	if len(rr.indv) == 0 {
+		rr.indv = make([]Individual, len(rr.uris))
+	}
+
+	for idx := 0; idx < len(rr.uris); idx++ {
+		if rr.indv[idx] == nil {
+			if rr.src_type == TT {
+				rr.indv[idx] = ttResordToMap(rr.uris[idx], rr.data_obj_tt[idx])
+			} else if rr.src_type == LMDB {
+				var jsonObj map[string]interface{}
+				err := json.Unmarshal([]byte(rr.data_binobj[idx]), &jsonObj)
+				if err != nil {
+					log.Printf("ERR! GetIndv: ENCODE JSON: %s %v\n", rr.data_binobj[idx], err)
+					return make([]Individual, 0)
+				}
+
+				rr.indv[idx] = jsonObj
+			}
+		}
+	}
+
+	return rr.indv
 }
 
 //MaxPacketSize is critical value for request/response packets,
@@ -68,281 +177,100 @@ const (
 	Remove = 51
 )
 
-func (conn *Connector) open_db() {
-	var err error
-	err = conn.indivEnv.Open("./data/lmdb-individuals", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open lmdb individuals base: ", err)
-		conn.db_is_open = false
-		return
-	}
+func (conn *Connector) open_dbs() {
+	if conn.tt_client != nil {
+		resp, err := conn.tt_client.Ping()
 
-	err = conn.ticketEnv.Open("./data/lmdb-tickets", lmdb.Readonly|lmdb.NoMetaSync|lmdb.NoSync|lmdb.NoLock, 0644)
-	if err != nil {
-		log.Fatal("Err: can not open tickets lmdb base: ", err)
-		conn.db_is_open = false
-		return
-	}
+		if err != nil {
+			conn.db_is_open = false
+			log.Fatal("ERR! open_dbs", err)
+		} else {
+			conn.db_is_open = true
+			log.Println("@ resp.Code=", resp.Code)
+			log.Println("@ resp.Data=", resp.Data)
+		}
 
-	conn.db_is_open = true
+	} else {
+
+	}
+}
+
+func (conn *Connector) reopen_individual_db() {
+	//var err error
+	if conn.tt_client != nil {
+
+	} else {
+
+	}
+}
+
+func (conn *Connector) reopen_ticket_db() {
+	//var err error
+
+	if conn.tt_client != nil {
+
+	} else {
+	}
 }
 
 //Connect tries to connect to socket in tarantool while connection is not established
-func (conn *Connector) Connect(addr string) {
-	var err error
-	conn.indivEnv, err = lmdb.NewEnv()
-	if err != nil {
-		log.Fatal("@ERR CREATING INDIVIDUALS LMDB ENV")
-	}
+func (conn *Connector) Connect(tt_addr string) {
 
-	err = conn.indivEnv.SetMaxDBs(1)
-	if err != nil {
-		log.Fatal("@ERR SETTING INDIVIDUALS MAX DBS ", err)
-	}
+	if tt_addr != "" {
+		opts := tarantool.Opts{User: "guest"}
 
-	conn.ticketEnv, err = lmdb.NewEnv()
-	if err != nil {
-		log.Fatal("@ERR CREATING LMDB TICKETS ENV")
-	}
-
-	err = conn.ticketEnv.SetMaxDBs(1)
-	if err != nil {
-		log.Fatal("@ERR SETTING ID MAX TICKETS DBS ", err)
-	}
-
-	/*	var err error
-		conn.addr = addr
-		conn.conn, err = net.Dial("tcp", addr)
+		conn.tt_addr = tt_addr
+		tt_client, err := tarantool.Connect(tt_addr, opts)
 
 		for err != nil {
+			log.Println("ERR! Creating tarantool connection: err=", err)
+			log.Println("INFO! sleep")
 			time.Sleep(3000 * time.Millisecond)
-			conn.conn, err = net.Dial("tcp", addr)
-			log.Println("@TRY CONNECT")
-		}*/
-}
+			log.Println("INFO! retry connect")
+			tt_client, err = tarantool.Connect(tt_addr, opts)
+		}
 
-//doRequest encodes request  and sends it to tarantool, after that it reading and decoding response
-func doRequest(needAuth bool, userUri string, data []string, trace, traceAuth bool, op uint) (ResultCode, []byte) {
-	var request bytes.Buffer
-	var response []byte
-
-	writer := bufio.NewWriter(&request)
-	encoder := msgpack.NewEncoder(writer)
-
-	//for GetRightsOrigin, Authorize and GetMembership array
-	//for requset size is bigget because of trace param
-	if op == GetRightsOrigin || op == Authorize || op == GetMembership {
-		encoder.EncodeArrayLen(len(data) + 4)
-	} else {
-		encoder.EncodeArrayLen(len(data) + 3)
+		log.Println("INFO! tarantool connect is ok")
+		conn.tt_client = tt_client
 	}
-	// encoder.EncodeArrayLen(len(data) + 3)
+	//	 else {
+	//		log.Println("INFO! Connect to lmdb service, start")
+	//		conn.lmdb_client, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	//		if err != nil {
+	//			conn.db_is_open = false
+	//			log.Fatal("ERR! open_dbs: nanomsg.NewSocket")
+	//
+	//		} else {
+	//			conn.db_is_open = true
+	//		}
 
-	//Encoding operation code, needAuth flag, trace if needed and userUri
-	encoder.EncodeUint(op)
-	encoder.EncodeBool(needAuth)
-	if op == GetRightsOrigin || op == Authorize || op == GetMembership {
-		encoder.EncodeBool(traceAuth)
-	}
-	encoder.EncodeString(userUri)
-
-	//Encode request data
-	for i := 0; i < len(data); i++ {
-		encoder.EncodeString(data[i])
-	}
-
-	writer.Flush()
-	if trace {
-		log.Println("@CONNECTOR GET DATA SIZE ", request.Len())
-	}
-
-	//Encoding request size for sending via socket
-	requestSize := uint32(request.Len())
-	buf := make([]byte, 4)
-	buf[0] = byte((requestSize >> 24) & 0xFF)
-	buf[1] = byte((requestSize >> 16) & 0xFF)
-	buf[2] = byte((requestSize >> 8) & 0xFF)
-	buf[3] = byte(requestSize & 0xFF)
-	buf = append(buf, request.Bytes()...)
-
-	//Retry sending until not successed
-	//If error occured on some step try to reconnect and restart sending
-	for {
-		var responseSize uint32
-		var n int
-		var err error
-
-		n, err = 0, nil
-		//Writing until whole buffer is sent
-		for n < len(buf) {
-			var sent int
-			sent, err = conn.conn.Write(buf[n:])
-			if err != nil {
-				break
-			}
-			n += sent
-		}
-
-		if err != nil {
-			log.Printf("@ERR ON SEND OP %v: REQUEST %v\n", op, err)
-			time.Sleep(3000 * time.Millisecond)
-			conn.conn, err = net.Dial("tcp", conn.addr)
-			log.Printf("@RECONNECT %v REQUEST\n", op)
-			continue
-		}
-
-		if trace {
-			log.Printf("@CONNECTOR OP %v: SEND %v", op, n)
-		}
-
-		buf = make([]byte, 4)
-		n, err = 0, nil
-		//Reading response size
-		for n < 4 {
-			var read int
-			read, err = conn.conn.Read(buf[n:])
-			if err != nil {
-				break
-			}
-			n += read
-		}
-
-		if err != nil {
-			log.Printf("@ERR OP %v: RECEIVING RESPONSE SIZE BUF %v\n", op, err)
-			time.Sleep(3000 * time.Millisecond)
-			conn.conn, err = net.Dial("tcp", conn.addr)
-			log.Printf("@RECONNECT %v REQUEST\n", op)
-			continue
-		}
-
-		if err != nil {
-			log.Printf("@ERR OP %v: RECEIVING RESPONSE SIZE BUF %v\n", op, err)
-		}
-
-		//decoding response size
-		for i := 0; i < 4; i++ {
-			responseSize = (responseSize << 8) + uint32(buf[i])
-		}
-
-		if trace {
-			log.Printf("@CONNECTOR OP %v: RESPONSE SIZE %v\n", op, responseSize)
-		}
-
-		//If response size is bigger than packet size than return SizeTooLarge to client
-		if responseSize > MaxPacketSize {
-			log.Printf("@ERR OP %v: RESPONSE IS TOO LARGE %v\n", op, data)
-			return SizeTooLarge, nil
-		}
-
-		//Reading response until whole buffer is read
-		response = make([]byte, responseSize)
-		n, err = 0, nil
-		for n < int(responseSize) {
-			var read int
-			read, err = conn.conn.Read(response[n:])
-			if err != nil {
-				break
-			}
-			n += read
-		}
-
-		if err != nil {
-			log.Printf("@ERR ON READING RESPONSE OP %v: %v", op, err)
-			time.Sleep(3000 * time.Millisecond)
-			conn.conn, err = net.Dial("tcp", conn.addr)
-			log.Printf("@RECONNECT %v REQUEST\n", op)
-			continue
-		}
-
-		if trace {
-			log.Printf("@CONNECTOR OP %v: RECEIVE RESPONSE %v\n", op, n)
-		}
-
-		if err != nil {
-			log.Printf("@ERR RECEIVING OP %v: RESPONSE %v\n", op, err)
-		}
-
-		if trace {
-			log.Printf("@CONNECTOR %v RECEIVED RESPONSE %v\n", op, string(response))
-		}
-
-		//If there are no errors than break cycle and return Ok code and response
-		break
-	}
-	return Ok, response
-}
-
-//Put sends put request to tarantool, data here represented with msgpacks of individuals
-func (conn *Connector) Put(needAuth bool, userUri string, individuals []string, trace bool) RequestResponse {
-	var rr RequestResponse
-
-	if conn.db_is_open == false {
-		conn.open_db()
-	}
-
-	//If user uri is too shorth than return not authorized
-	if len(userUri) < 3 {
-		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR PUT: ", individuals)
-		return rr
-	}
-
-	//If no individuals passed than return NoContent to client
-	if len(individuals) == 0 {
-		rr.CommonRC = NoContent
-		return rr
-	}
-
-	if trace {
-		log.Printf("@CONNECTOR PUT: PACK PUT REQUEST need_auth=%v, user_uri=%v, uris=%v \n",
-			needAuth, userUri, individuals)
-	}
-
-	//Send request
-	rcRequest, response := doRequest(needAuth, userUri, individuals, trace, false, Put)
-	//If failed return fail code
-	if rcRequest != Ok {
-		rr.CommonRC = rcRequest
-		return rr
-	}
-
-	//Decoding msgpack response
-	decoder := msgpack.NewDecoder(bytes.NewReader(response))
-	arrLen, _ := decoder.DecodeArrayLen()
-	rc, _ := decoder.DecodeUint()
-	//Decoding common code for request
-	rr.CommonRC = ResultCode(rc)
-
-	if trace {
-		log.Println("@CONNECTOR PUT: COMMON RC ", rr.CommonRC)
-	}
-
-	rr.OpRC = make([]ResultCode, len(individuals))
-
-	//For put request only operation codes returned
-	for i := 1; i < arrLen; i++ {
-		rc, _ = decoder.DecodeUint()
-		rr.OpRC[i-1] = ResultCode(rc)
-		if trace {
-			log.Println("@CONNECTOR PUT: OP CODE ", rr.OpRC[i-1])
-		}
-	}
-
-	return rr
+	//log.Println("use lmdb service url: ", lmdbServiceURL)
+	//		_, err = conn.lmdb_client.Connect(lmdbServiceURL)
+	//		for err != nil {
+	//			log.Println("ERR! Creating lmdb service connection: err=", err)
+	//			log.Println("INFO! sleep")
+	//			time.Sleep(3000 * time.Millisecond)
+	//			log.Println("INFO! retry connect")
+	//			_, err = conn.lmdb_client.Connect(queryServiceURL)
+	//		}
+	//		log.Println("INFO! Connect to lmdb service, socket=", conn.lmdb_client)
+	//	}
 }
 
 //Get sends get request to tarantool, individuals uris passed as data here
-func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool) RequestResponse {
+func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace bool, reopen bool) RequestResponse {
 	var rr RequestResponse
 
 	if conn.db_is_open == false {
-		conn.open_db()
+		conn.open_dbs()
+	} else if reopen == true {
+		conn.reopen_individual_db()
 	}
 
 	//If user uri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR GET: ", uris)
+		log.Println("ERR! CONNECTOR GET: ", uris)
 		return rr
 	}
 
@@ -353,48 +281,119 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
-	rr.Data = make([]string, 0, len(uris))
-	err := conn.indivEnv.View(func(txn *lmdb.Txn) (err error) {
-		dbi, err := txn.OpenDBI("", 0)
-		if err != nil {
-			return err
-		}
+	rr.SetUris(uris)
+	//rr.Indv = make([]Individual, 0, len(uris))
+
+	if conn.tt_client != nil {
+
 		for i := 0; i < len(uris); i++ {
-			if needAuth {
-
-				curi := C.CString(uris[i])
-				defer C.free(unsafe.Pointer(curi))
-
-				cuser_uri := C.CString(userUri)
-				defer C.free(unsafe.Pointer(cuser_uri))
-
-				if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
-					rr.OpRC = append(rr.OpRC, NotAuthorized)
+			resp, err := conn.tt_client.Select("INDIVIDUALS", "primary", 0, 1, tarantool.IterEq, []interface{}{uris[i]})
+			if err != nil {
+				log.Println("ERR! ", err)
+			} else {
+				if len(resp.Data) == 0 {
+					rr.OpRC = append(rr.OpRC, NotFound)
 					continue
 				}
+				if tpl, ok := resp.Data[0].([]interface{}); !ok {
+					log.Println("ERR! Get: Unexpected body of Insert")
+					rr.CommonRC = InternalServerError
+				} else {
+					if len(tpl) == 2 {
+						if needAuth {
+							curi := C.CString(uris[i])
+							defer C.free(unsafe.Pointer(curi))
+							cuser_uri := C.CString(userUri)
+							defer C.free(unsafe.Pointer(cuser_uri))
+							if reopen == true {
+								if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
+							} else {
+								if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
+							}
+						}
+						rr.OpRC = append(rr.OpRC, Ok)
+						rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
+					}
+				}
+
 			}
-			val, err := txn.Get(dbi, []byte(uris[i]))
-			if err == lmdb.NotFound {
+		}
+		rr.CommonRC = Ok
+
+	} else {
+		for i := 0; i < len(uris); i++ {
+			request := "I," + uris[i]
+
+			lmdb_client, err := nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+			if err != nil {
+				log.Println("ERR! Get: fail open nanomsg socket")
+				rr.CommonRC = InternalServerError
+				return rr
+
+			}
+			_, err = lmdb_client.Connect(lmdbServiceURL)
+			if err != nil {
+				log.Printf("ERR! Get: fail connect to lmdb service %s, err=%s\n", lmdbServiceURL, err)
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			defer lmdb_client.Close()
+
+			_, err = lmdb_client.Send([]byte(request), 0)
+			if err != nil {
+				log.Println("ERR! Get: send to lmdb service, err=", err)
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			responseBuf, err1 := lmdb_client.Recv(0)
+			if err1 != nil {
+				log.Println("ERR! Get: recv from lmdb serGet:vice, err=", err1)
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			val := string(responseBuf)
+			if val == "[]" {
 				rr.OpRC = append(rr.OpRC, NotFound)
 				continue
-			} else if err != nil {
-				return err
+			}
+
+		if strings.Index(val, "{ERR:") == 0 {
+				rr.CommonRC = InternalServerError
+				return rr
+			}
+
+			if needAuth {
+				curi := C.CString(uris[i])
+				defer C.free(unsafe.Pointer(curi))
+				cuser_uri := C.CString(userUri)
+				defer C.free(unsafe.Pointer(cuser_uri))
+				if reopen == true {
+					if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+						rr.OpRC = append(rr.OpRC, NotAuthorized)
+						continue
+					}
+				} else {
+					if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+						rr.OpRC = append(rr.OpRC, NotAuthorized)
+						continue
+					}
+				}
 			}
 
 			rr.OpRC = append(rr.OpRC, Ok)
-			rr.Data = append(rr.Data, string(val))
-		}
-		return nil
-	})
+			rr.AddLMDBResult(string(responseBuf))
 
-	rr.CommonRC = Ok
-	if err != nil {
-		if lmdb.IsErrno(err, lmdb.NotFound) == true {
-			rr.CommonRC = NotFound
-		} else {
-			log.Printf("ERR! Get: GET INDIVIDUAL FROM LMDB %v, keys=%s\n", err, uris)
-			rr.CommonRC = InternalServerError
 		}
+		rr.CommonRC = Ok
 	}
 
 	return rr
@@ -432,7 +431,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 	//If userUri is too short return NotAuthorized to client
 	if len(userUri) < 3 {
 		rr.CommonRC = NotAuthorized
-		log.Println("@ERR CONNECTOR AUTHORIZE: ", uri)
+		log.Println("ERR! CONNECTOR AUTHORIZE: ", uri)
 		return rr
 	}
 
@@ -458,7 +457,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		cuser_uri := C.CString(userUri)
 		defer C.free(unsafe.Pointer(cuser_uri))
 
-		right := C.authorize_r(curi, cuser_uri, 15, true)
+		right := C.authorize_r(curi, cuser_uri, 15, false)
 
 		rr.Rights[0] = uint8(right)
 		rr.OpRC[0] = Ok
@@ -478,16 +477,15 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		//defer C.free(unsafe.Pointer(right))
 
 		rr.Rights = make([]uint8, 1)
-		rr.Data = make([]string, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		statements := strings.Split(rights_str, "\n")
+		//rr.Indv = make([]Individual, 0)
 
-		data := make([]interface{}, 0)
 		for j := 0; j < len(statements)-1; j++ {
 
 			parts := strings.Split(statements[j], ";")
-			statementIndiv := map[string]interface{}{
+			statementIndiv := Individual{
 				"@": "_",
 				"rdf:type": []interface{}{
 					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
@@ -502,7 +500,8 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 					map[string]interface{}{"type": "Boolean", "data": true},
 				},
 			}
-			data = append(data, statementIndiv)
+			rr.AddIndv(statementIndiv)
+			//rr.Indv = append(rr.Indv, statementIndiv)
 		}
 
 		//			commentIndiv := map[string]interface{}{
@@ -520,8 +519,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		//			}
 		//			data = append(data, commentIndiv)
 
-		jsonBytes, _ := json.Marshal(data)
-		rr.Data[0] = string(jsonBytes)
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -538,7 +535,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
 
 		rr.Rights = make([]uint8, 1)
-		rr.Data = make([]string, 1)
+		//rr.Indv = make([]Individual, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		parts := strings.Split(info_str, "\n")
@@ -548,7 +545,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			memberOf[k] = map[string]interface{}{"type": "Uri", "data": parts[k]}
 		}
 
-		membershipIndividual := map[string]interface{}{
+		membershipIndividual := Individual{
 			"@": "_",
 			"rdf:type": []interface{}{
 				map[string]interface{}{"type": "Uri", "data": "v-s:Membership"},
@@ -559,8 +556,8 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			"v-s:memberOf": memberOf,
 		}
 
-		jsonBytes, _ := json.Marshal(membershipIndividual)
-		rr.Data[0] = string(jsonBytes)
+		//rr.Indv[0] = membershipIndividual
+		rr.AddIndv(membershipIndividual)
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
@@ -574,7 +571,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	var rr RequestResponse
 
 	if conn.db_is_open == false {
-		conn.open_db()
+		conn.open_dbs()
 	}
 
 	//If no ticket ids passed than NoContent returned to client.
@@ -584,32 +581,103 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
-	rr.Data = make([]string, 0, len(ticketIDs))
-	err := conn.ticketEnv.View(func(txn *lmdb.Txn) (err error) {
-		dbi, err := txn.OpenDBI("", 0)
+	//rr.Indv = make([]Individual, 0, len(ticketIDs))
+	rr.SetUris(ticketIDs)
+
+	if conn.tt_client != nil {
+
+		resp, err := conn.tt_client.Select("TICKETS", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
 		if err != nil {
-			return err
+			log.Println("ERR! ", err)
+			rr.CommonRC = InternalServerError
+			return rr
 		}
-		for _, id := range ticketIDs {
-			val, err := txn.Get(dbi, []byte(id))
-			if err == lmdb.NotFound {
-				rr.OpRC = append(rr.OpRC, NotFound)
-				continue
-			} else if err != nil {
-				return err
-			}
-
+		if len(resp.Data) == 0 {
+			log.Println("ERR! Empty body of Insert")
+			rr.CommonRC = InternalServerError
+		} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
+			log.Println("ERR! Unexpected body of Insert")
+			rr.CommonRC = InternalServerError
+		} else {
 			rr.OpRC = append(rr.OpRC, Ok)
-			rr.Data = append(rr.Data, string(val))
-		}
-		return nil
-	})
 
-	rr.CommonRC = Ok
-	if err != nil {
-		log.Printf("ERR! GetTicket: GET INDIVIDUAL FROM LMDB, err=%s\n", err)
-		rr.CommonRC = InternalServerError
+			rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
+			rr.CommonRC = Ok
+		}
+
+	} else {
+		request := "T," + ticketIDs[0]
+
+		lmdb_client, err := nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+		if err != nil {
+			log.Println("ERR! GetTicket: fail open nanomsg socket")
+			rr.CommonRC = InternalServerError
+			return rr
+
+		}
+		_, err = lmdb_client.Connect(lmdbServiceURL)
+		if err != nil {
+			log.Printf("ERR! GetTicket: fail connect to lmdb service %s, err=%s\n", lmdbServiceURL, err)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		defer lmdb_client.Close()
+
+		_, err = lmdb_client.Send([]byte(request), 0)
+		if err != nil {
+			log.Println("ERR! GetTicket: send to lmdb service, err=", err)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		responseBuf, err1 := lmdb_client.Recv(0)
+		if err1 != nil {
+			log.Println("ERR! GetTicket: recv from lmdb service, err=", err1)
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		val := string(responseBuf)
+		if val == "[]" {
+			rr.OpRC = append(rr.OpRC, NotFound)
+			return rr
+		}
+
+		if strings.Index(val, "{ERR:") == 0 {
+			rr.CommonRC = InternalServerError
+			return rr
+		}
+
+		rr.OpRC = append(rr.OpRC, Ok)
+		rr.AddLMDBResult(string(responseBuf))
+		rr.CommonRC = Ok
 	}
 
 	return rr
+}
+
+func NmCSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("ERR! fail send to NN socket")
+			return
+		}
+	}()
+
+	tmp := make([]byte, len(data))
+	copy(tmp, data)
+
+	return s.Send(tmp, flags)
+}
+
+func NmSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("ERR! fail send to NN socket")
+			return
+		}
+	}()
+
+	return s.Send(data, flags)
 }

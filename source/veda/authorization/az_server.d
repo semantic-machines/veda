@@ -6,8 +6,7 @@ module veda.authorization.az_server;
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string, std.datetime;
 import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.define;
-import veda.common.logger, veda.authorization.authorization, veda.storage.common, veda.common.type, veda.util.queue;
-import veda.storage.lmdb.lmdb_acl;
+import veda.common.logger, veda.authorization.authorization, veda.common.type, veda.util.queue;
 
 extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload,
                              void function(immutable(char) *_trace_acl), void function(immutable(char) *_trace_group), void function(
@@ -227,7 +226,7 @@ void main(string[] args)
     long   authorization_cache_size = properties.as!(long)("authorization_cache_size");
     string authorization_lib        = properties.as!(string)("authorization_lib");
 
-    athrz = new LmdbAuthorization(DBMode.R, "acl", authorization_cache_size, authorization_lib == "external", log);
+    athrz = new AuthorizationUseLib(log);
 
     if (test_user_url !is null)
     {
@@ -279,13 +278,8 @@ void main(string[] args)
                             ubyte request_access = 15;
 
                             ubyte res = 0;
-                            if (experimental_authorize !is null && experimental_authorize == "experimental")
-                                athrz.set_use_ext_libauthorization(true);
-                            else
-                                athrz.set_use_ext_libauthorization(false);
 
                             res = athrz.authorize(data, test_user_url, request_access, false, null, null, null);
-
 
                             count_prepared++;
                             writefln("%d;%d;%s;%s;%s", count, count_prepared, data, access_to_string(request_access), access_to_string(res));

@@ -1,4 +1,7 @@
+module veda.bind.tarantool.tnt_delete;
+
 import core.stdc.config;
+import veda.bind.tarantool.tnt_stream;
 
 extern (C) :
 
@@ -49,7 +52,7 @@ alias c_long ssize_t;
  * \retval number of bytes written to stream
  */
 
-struct tnt_stream;
+//struct tnt_stream;
 ssize_t tnt_delete(tnt_stream *s, uint space, uint index, tnt_stream *key);
 
 /* TNT_DELETE_H_INCLUDED */

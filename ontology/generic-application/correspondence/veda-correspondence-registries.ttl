@@ -9,10 +9,10 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 
-<http://semantic-machines.com/veda/veda-correspondence-blanks>
+<http://semantic-machines.com/veda/veda-correspondence-registries>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Корреспонденция. Бланки."@ru ;
-  rdfs:label "Veda system ontology. Correspondence. Blanks."@en ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Реестры."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Registries."@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .

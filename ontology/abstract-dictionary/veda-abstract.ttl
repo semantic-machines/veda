@@ -119,6 +119,13 @@ v-s:locked
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
+v-s:isFixedTerm
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Срочный"@ru ;
+  rdfs:label "Fixed-term"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:deletedInOrigin
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Удален во внешней системе"@ru ;
@@ -452,6 +459,13 @@ v-s:hasWorkMode
   rdfs:range v-s:WorkMode ;
   rdfs:domain v-s:Temporal ;
 .
+v-s:hasTerm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Срок"@ru ;
+  rdfs:label "Term"@en ;
+  rdfs:range v-s:Term ;
+  rdfs:domain v-s:Temporal ;
+.
 ### -------------------------------------------------------
 v-s:Spatial
   rdf:type owl:Class ;
@@ -593,6 +607,13 @@ v-s:hasPaymentForm
   rdfs:label "Payment form"@en ;
   rdfs:range v-s:PaymentForm ;
 .
+v-s:hasPaymentDaysForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Contractual ;
+  rdfs:label "Виды дней расчета"@ru ;
+  rdfs:label "Payment days form"@en ;
+  rdfs:range v-s:PaymentDaysForm ;
+.
 v-s:hasDeliveryConditions
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Contractual ;
@@ -641,6 +662,84 @@ v-s:hasConfidentialDocument
   rdfs:label "Confidential document"@en ;
   rdfs:range v-s:InternalDocument ;
   rdfs:domain v-s:Contractual ;
+.
+v-s:hasOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasContractParticipantCustomer
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:label "Customer"@en ;
+  rdfs:range v-s:ContractParticipantCustomer ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasContractParticipantSupplier
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:label "Supplier"@en ;
+  rdfs:range v-s:ContractParticipantSupplier ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasContractParticipantStakeholder
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Заинтересованная сторона"@ru ;
+  rdfs:label "Stakeholder"@en ;
+  rdfs:range v-s:ContractParticipantStakeholder ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:supportSpecialistOfContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Специалист по сопровождению"@ru ;
+  rdfs:label "Support specialist"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+v-s:PsHasRoleInContract_ContractParticipantCustomer
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipantCustomer ;
+  v-ui:forProperty v-s:hasRoleInContract ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'@' == 'd:dsxyd1uxsxuui6f1t3s4ki3rdp' || '@' == 'd:a14fhdnimgodskj2jlmzwausubs' || '@' == 'd:a1nzzs06xqqx3fvud0bsjq78cdq' || '@' == 'd:wh0t3y7ou4k9o0ec5vw4j5df5c' || '@' == 'd:a1268rvzfsml3g4j0wcjxf2skc9'" ;
+.
+v-s:PsHasRoleInContract_ContractParticipantSupplier
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipantSupplier ;
+  v-ui:forProperty v-s:hasRoleInContract ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'@' == 'd:wws2oz313z6xpl1hd4u3laxzfg' || '@' == 'd:jslj1t0dm3o6sg8jas931um4kw' || '@' == 'd:ji9b5cqs5ucr1uy8ou7s78989x' || '@' == 'd:xxsa1kfknh7anmo6688y026udp' || '@' == 'd:p7xxv9vvwex8f1jfs2lhqjl85v'" ;
+.
+v-s:PsHasRoleInContract_ContractParticipantStakeholder
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipantStakeholder ;
+  v-ui:forProperty v-s:hasRoleInContract ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'@' == 'd:dm44s17tayal8frdutpnb2matk' || '@' == 'd:rdvfeae7ylufawj02z492cxmto' || '@' == 'd:tv2r6lzebfk6p3298jsnwokgxk'" ;
+.
+
+v-s:PsHasContractParticipant_Contract
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Contract ;
+  v-ui:forProperty v-s:hasContractParticipantCustomer ;
+  v-ui:forProperty v-s:hasContractParticipantSupplier ;
+  v-ui:forProperty v-s:hasContractParticipantStakeholder ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+.
+v-s:Ps_ContractParticipant
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipant ;
+  v-ui:forProperty v-s:hasContractor ;
+  v-ui:forProperty v-s:hasOrganization ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
 .
 ### -------------------------------------------------------
 v-s:Controlled
@@ -775,6 +874,14 @@ v-s:evaluatedProcess
   rdfs:label "Оцениваемый процесс "@ru ;
   rdfs:label "Evaluated process"@en ;
   rdfs:range v-s:Process ;
+  rdfs:domain v-s:Controlled ;
+.
+
+v-s:scriptHandlered
+  rdf:type owl:DatatypeProperty ; 
+  rdfs:label "Обработано скриптом "@ru ;
+  rdfs:label "Script handlered"@en ;
+  rdfs:range xsd:boolean ;
   rdfs:domain v-s:Controlled ;
 .
 ### -------------------------------------------------------
@@ -928,20 +1035,7 @@ v-s:hasCurrency
   rdfs:range v-s:Currency ;
   rdfs:domain v-s:Measurable ;
 .
-v-s:hasCurrencySource
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Исходная валюта"@ru ;
-  rdfs:label "Source currency"@en ;
-  rdfs:range v-s:Currency ;
-  rdfs:domain v-s:Measurable ;
-.
-v-s:hasCurrencyTarget
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Целевая валюта"@ru ;
-  rdfs:label "Target currency"@en ;
-  rdfs:range v-s:Currency ;
-  rdfs:domain v-s:Measurable ;
-.
+
 v-s:hasUnitOfMeasure
   rdf:type owl:ObjectProperty ;
   rdfs:label "Единицы измерения"@ru ;
@@ -998,6 +1092,47 @@ v-s:hasMaintainedObject
   rdfs:range v-s:MaintainedObject ;
   rdfs:domain v-s:Maintained ;
 .
+#--------------Template--------------------------------
+
+v-s:hasMaintainedObjectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон объектов ТОРО"@ru ;
+  rdfs:label "Шаблон объектов ТОРО"@en ;
+  rdfs:comment "Объекты ТОРО"@ru ;
+  rdfs:comment "Объекты ТОРО"@en ;
+  v-ui:template """
+<div>
+  <em about="v-s:hasMaintainedObject" property="rdfs:label"></em>
+  <table class="table table-condensed table-bordered">
+    <thead>
+      <tr class="active">
+        <th about="rdfs:label" property="rdfs:label"></th>
+        <th></th>
+        <th about="v-s:hasParentLinkBundle" property="rdfs:label"></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasMaintainedObject">
+      <tr>
+        <td property="rdfs:label" class="view edit search"></td>
+        <td property="v-s:shortLabel" class="view edit search"></td>
+        <td property="v-s:hasParentLink" class="view edit search"></td>
+        <td>
+          <div about="@" rel="v-s:hasParentLink" class="view edit search">
+            <div property="v-s:shortLabel" class="view edit search"></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot class="-view edit search"><tr><td colspan="5">
+      <veda-control data-type="link" rel="v-s:hasMaintainedObject" class="-view edit search fulltext tree"></veda-control>
+    </tfoot>
+  </table>
+</div>
+""" ;
+.
+
+#------------------------------------------------------
 v-s:eliminatingTime
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Время устранения"@ru ;
@@ -1103,6 +1238,27 @@ v-s:developer
   rdfs:label "Разработчик"@ru ;
   rdfs:label "Developer"@en ;
   rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Projectable ;
+.
+v-s:hasProjectKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид проекта"@ru ;
+  rdfs:label "Project category"@en ;
+  rdfs:range v-s:ProjectKind ;
+  rdfs:domain v-s:Projectable ;
+.
+v-s:hasProjectPhaseKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид фазы проекта"@ru ;
+  rdfs:label "Project phase kind"@en ;
+  rdfs:range v-s:ProjectPhaseKind ;
+  rdfs:domain v-s:Projectable ;
+.
+v-s:hasProjectStage
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Стадия проекта"@ru ;
+  rdfs:label "Project phase"@en ;
+  rdfs:range v-s:ProjectStage ;
   rdfs:domain v-s:Projectable ;
 .
 ### ------------------------------------------------------------

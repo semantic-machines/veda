@@ -4,10 +4,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
-@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
 
 <http://semantic-machines.com/veda/veda-organization-schema>
   rdf:type owl:Ontology ;
@@ -17,7 +14,7 @@
   v-s:loadPriority 6 ;
 .
 
-# КЛАССЫ ---------------------------------------------------------------
+# ------------------------------------------------------------ КЛАССЫ --
 
 v-s:OrganizationUnit
   rdf:type owl:Class ;
@@ -58,7 +55,6 @@ v-s:Organization
   rdfs:label "Organization"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
   v-ui:hasTemplate v-s:OrganizationTemplate ;
-  v-s:hasLinksTree v-s:OrganizationLinksTree ;
 .
 v-s:taxId
   rdf:type owl:DatatypeProperty ;
@@ -87,6 +83,13 @@ v-s:hasSubsidiary
   rdfs:label "Обособленное подразделение"@ru ;
   rdfs:label "Subsidiary"@en ;
   rdfs:range v-s:Department ;
+  rdfs:domain v-s:Organization ;
+.
+v-s:isOwnOrganization
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Собственная организация?"@ru ;
+  rdfs:label "Own organization?"@en ;
+  rdfs:range xsd:boolean ;
   rdfs:domain v-s:Organization ;
 .
 

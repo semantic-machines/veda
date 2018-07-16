@@ -1,0 +1,86 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+
+<http://semantic-machines.com/veda/veda-internal-document-startForm>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Внутренний документ. Стартовая форма."@ru ;
+  rdfs:label "Veda system ontology. Internal document. Start form."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+# Start form -----------------------------------------------------------
+
+v-s:InternalDocument_ComplexRouteStartForm_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных комплексного маршрута Внутренний документ"@ru ;
+  rdfs:label "InternalDocument complex route start form template"@en ;
+  v-ui:template """
+<script>
+  var stages = ['coordination1', 'coordination2', 'coordination3', 'sign', 'approval', 'review', 'examination', 'instruction'];
+  var complex = "s-wf:ComplexRouteStartForm_";
+  var simple = "s-wf:SimpleRouteStartForm_";
+  if ( mode !== "edit" ) { return; }
+
+  var doc = individual['v-wf:processedDocument'][0];
+  if (!doc) { return; }
+
+  individual.addSimpleStartForm(stages, complex);
+
+  individual[complex+'coordination1'][0][simple+'visible'] = [true];
+  individual[complex+'coordination1'][0][simple+'editable'] = [true];
+  individual[complex+'coordination2'][0][simple+'visible'] = [true];
+  individual[complex+'coordination2'][0][simple+'editable'] = [true];
+  individual[complex+'coordination3'][0][simple+'visible'] = [true];
+  individual[complex+'coordination3'][0][simple+'editable'] = [true];
+
+  if ( doc.hasValue("v-s:initiator") ) {
+    individual[complex+'sign'][0][simple+'participant'] = [ doc["v-s:initiator"][0].getChief() ];
+  } else if ( doc.hasValue("v-s:creator") ) {
+    individual[complex+'sign'][0][simple+'participant'] = [ doc["v-s:creator"][0].getChief() ];
+  }
+
+  if ( doc.hasValue("v-s:responsibleDepartment") ) {
+    individual[complex+'review'][0][simple+'participant'] = [ doc["v-s:responsibleDepartment"][0].getChief() ];
+  } else if ( doc.hasValue("v-s:creator") ) {
+    individual[complex+'review'][0][simple+'participant'] = [ doc["v-s:creator"][0].getChief() ];
+  }
+
+  individual[complex+'sign'][0][simple+'visible'] = [true];
+  individual[complex+'sign'][0][simple+'editable'] = [true];
+  individual[complex+'sign'][0][simple+'deadlineDays'] = [5];
+  individual[complex+'sign']["v-wf:StartForm_canEdit"] = [true];
+  individual[complex+'approval'][0][simple+'visible'] = [true];
+  individual[complex+'approval'][0][simple+'editable'] = [true];
+  individual[complex+'approval'][0][simple+'deadlineDays'] = [5];
+  individual[complex+'review'][0][simple+'visible'] = [true];
+  individual[complex+'review'][0][simple+'editable'] = [true];
+  individual[complex+'review'][0][simple+'deadlineDays'] = [3];
+
+  //Ознакомление
+  if (doc.hasValue('v-s:copyTo')) {
+    var copy = doc["v-s:copyTo"];
+    individual[complex+'examination'][0][simple+'visible'] = [true];
+    individual[complex+'examination'][0][simple+'editable'] = [true];
+    individual[complex+'examination'][0][simple+'participant'] = copy;
+  } else {
+    individual[complex+'examination'][0][simple+'visible'] = [true];
+    individual[complex+'examination'][0][simple+'editable'] = [true];
+  }
+
+  //Поручение
+  individual[complex+'instruction'][0][simple+'visible'] = [true];
+  individual[complex+'instruction'][0][simple+'editable'] = [true];
+
+//# sourceURL=v-s:InternalDocument_ComplexRouteStartForm_Template_pre
+</script>
+<div about="@" data-embedded="true" data-template="s-wf:ComplexRouteStartForm_Common_Template" class="view edit"></div>
+""" ;
+.

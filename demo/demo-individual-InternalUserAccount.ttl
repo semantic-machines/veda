@@ -1,0 +1,1358 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://semantic-machines.com/veda/mondi-individual-InternalUserAccount>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология индивидов Демо. Учетные записи пользователей"@ru ;
+  rdfs:label "Demo individuals. User Account"@en ;
+# owl:versionInfo "1.3" ;
+.
+
+
+#------------------------------------------ООО "Демо"-------
+d:org_RU1100220011
+  a v-s:Organization;
+  v-s:origin "Internal User"^^xsd:string;
+  rdfs:label "Общество с ограниченной ответственностью \"Демо\""^^xsd:string;
+  v-s:hasClassifierCountry d:Country_RUS;
+  v-s:hasClassifierLegalForm d:OKOPF_12300;
+  v-s:legalAddress "167000, г. Сыктывкар, ул. Главная, д. 1"^^xsd:string;
+  v-s:postalAddress "167000, г. Сыктывкар, ул. Главная, д. 1"^^xsd:string;
+  v-s:shortLabel "ООО \"Демо\""^^xsd:string;
+  v-s:taxId "1100220011"^^xsd:string;
+  v-s:taxRegistrationCause "110022001"^^xsd:string;
+  v-s:taxRegistrationNumber "1110001110001"^^xsd:string;
+  v-s:isOwnOrganization true;
+.
+
+d:org_RU1100220011_role_DocsRegistrar
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+  rdfs:label "Регистратор документов"@ru;
+  rdfs:label "Docs registrar"@en;
+.
+d:org_RU1100220011_employee_3_role_DocsRegistrar
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_3;
+  v-s:occupation d:org_RU1100220011_role_DocsRegistrar;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Красавина И.А. Регистратор документов"@ru;
+  rdfs:label "Krasavina Irina. Docs registrar"@en;
+.
+
+#----
+d:demo_department_1
+  a v-s:Department;
+  rdfs:label "Руководство"@ru;
+  rdfs:label "Management"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:demo_department_2
+  a v-s:Department;
+  rdfs:label "Юридический отдел"@ru;
+  rdfs:label "Legal department"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:demo_department_3
+  a v-s:Department;
+  rdfs:label "Бухгалтерия"@ru;
+  rdfs:label "Accounting"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:demo_department_4
+  a v-s:Department;
+  rdfs:label "Отдел кадров"@ru;
+  rdfs:label "HR department"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:demo_department_5
+  a v-s:Department;
+  rdfs:label "Отдел продаж"@ru;
+  rdfs:label "Sales department"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:demo_department_6
+  a v-s:Department;
+  rdfs:label "Производственный отдел"@ru;
+  rdfs:label "Production department"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:demo_department_6_1
+  a v-s:Department;
+  rdfs:label "Цех №1"@ru;
+  rdfs:label "Shop #1"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:demo_department_6;
+.
+
+#----
+d:demo_department_6_2
+  a v-s:Department;
+  rdfs:label "Цех №2"@ru;
+  rdfs:label "Shop #2"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:demo_department_6;
+.
+
+#----
+d:demo_department_7
+  a v-s:Department;
+  rdfs:label "Транспортный отдел"@ru;
+  rdfs:label "Transport department"@en;
+  v-s:origin "admin"^^xsd:string;
+  v-s:parentUnit d:org_RU1100220011;
+.
+
+#----
+d:org_RU1100220011_employee_1
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_1;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Куракин"@ru;
+  v-s:lastName "Kurakin"@en;
+  v-s:firstName "Вадим"@ru;
+  v-s:firstName "Vadim"@en;
+  v-s:middleName "Владимирович"@ru;
+  v-s:hasAccount d:demo_account_kurakinv;
+  v-s:hasAppointment d:org_RU1100220011_employee_1_position_1;
+  rdfs:label "Куракин В.В."@ru;
+  rdfs:label "Kurakin Vadim"@en;
+.
+d:demo_account_kurakinv
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_1;
+  v-s:login "kurakinv"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "kurakinv"@ru;
+  rdfs:label "kurakinv"@en;
+.
+d:org_RU1100220011_position_1
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_1;
+  rdfs:label "Генеральный директор"@ru;
+  rdfs:label "CEO"@en;
+.
+d:org_RU1100220011_employee_1_position_1
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_1;
+  v-s:occupation d:org_RU1100220011_position_1;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Куракин В.В. Генеральный директор ООО \"Демо\""@ru;
+  rdfs:label "Kurakin Vadim. CEO LLC Demo"@en;
+.
+
+#----
+d:org_RU1100220011_employee_2
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_2;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Петров"@ru;
+  v-s:lastName "Petrov"@en;
+  v-s:firstName "Сергей"@ru;
+  v-s:firstName "Sergey"@en;
+  v-s:middleName "Иванович"@ru;
+  v-s:hasAccount d:demo_account_petrovs;
+  v-s:hasAppointment d:org_RU1100220011_employee_2_position_2;
+  rdfs:label "Петров С.И."@ru;
+  rdfs:label "Petrov Sergey"@en;
+.
+d:demo_account_petrovs
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_2;
+  v-s:login "petrovs"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "petrovs"@ru;
+  rdfs:label "petrovs"@en;
+.
+d:org_RU1100220011_position_2
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_1;
+  rdfs:label "Помощник генерального директора"@ru;
+  rdfs:label "Assistant CEO"@en;
+.
+d:org_RU1100220011_employee_2_position_2
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_2;
+  v-s:occupation d:org_RU1100220011_position_2;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Петров С.И. Помощник генерального директора"@ru;
+  rdfs:label "Petrov Sergey. Assistant CEO"@en;
+.
+
+#----
+d:org_RU1100220011_employee_3
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_3;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Красавина"@ru;
+  v-s:lastName "Krasavina"@en;
+  v-s:firstName "Ирина"@ru;
+  v-s:firstName "Irina"@en;
+  v-s:middleName "Анатольевна"@ru;
+  v-s:hasAccount d:demo_account_krasavinai;
+  v-s:hasAppointment d:org_RU1100220011_employee_3_position_3;
+  rdfs:label "Красавина И.А."@ru;
+  rdfs:label "Krasavina Irina"@en;
+.
+d:demo_account_krasavinai
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_3;
+  v-s:login "krasavinai"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "krasavinai"@ru;
+  rdfs:label "krasavinai"@en;
+.
+d:org_RU1100220011_position_3
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_1;
+  rdfs:label "Делопроизводитель"@ru;
+  rdfs:label "Clerk"@en;
+.
+d:org_RU1100220011_employee_3_position_3
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_3;
+  v-s:occupation d:org_RU1100220011_position_3;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Красавина И.А. Делопроизводитель"@ru;
+  rdfs:label "Krasavina Irina. Clerk"@en;
+.
+
+#----
+d:org_RU1100220011_employee_4
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_4;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Кузин"@ru;
+  v-s:lastName "Kuzin"@en;
+  v-s:firstName "Петр"@ru;
+  v-s:firstName "Petr"@en;
+  v-s:middleName "Валерьевич"@ru;
+  v-s:hasAccount d:demo_account_kuzinp;
+  v-s:hasAppointment d:org_RU1100220011_employee_4_position_4;
+  rdfs:label "Кузин П.В."@ru;
+  rdfs:label "Kuzin Petr"@en;
+.
+d:demo_account_kuzinp
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_4;
+  v-s:login "kuzinp"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "kuzinp"@ru;
+  rdfs:label "kuzinp"@en;
+.
+d:org_RU1100220011_position_4
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_2;
+  rdfs:label "Руководитель юридического отдела"@ru;
+  rdfs:label "Head Legal Department"@en;
+.
+d:org_RU1100220011_employee_4_position_4
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_4;
+  v-s:occupation d:org_RU1100220011_position_4;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Кузин П.В. Руководитель юридического отдела"@ru;
+  rdfs:label "Kuzin Petr. Head Legal Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_5
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_5;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Маркова"@ru;
+  v-s:lastName "Markova"@en;
+  v-s:firstName "Валентина"@ru;
+  v-s:firstName "Valentina"@en;
+  v-s:middleName "Ивановна"@ru;
+  v-s:hasAccount d:demo_account_markovav;
+  v-s:hasAppointment d:org_RU1100220011_employee_5_position_5;
+  rdfs:label "Маркова В.И."@ru;
+  rdfs:label "Markova Valentina"@en;
+.
+d:demo_account_markovav
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_5;
+  v-s:login "markovav"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "markovav"@ru;
+  rdfs:label "markovav"@en;
+.
+d:org_RU1100220011_position_5
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_2;
+  rdfs:label "Ведущий юрист"@ru;
+  rdfs:label "Leading lawyer"@en;
+.
+d:org_RU1100220011_employee_5_position_5
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_5;
+  v-s:occupation d:org_RU1100220011_position_5;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Маркова В.И. Ведущий юрист"@ru;
+  rdfs:label "Markova Valentina. Leading lawyer"@en;
+.
+
+#----
+d:org_RU1100220011_employee_6
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_6;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Потапов"@ru;
+  v-s:lastName "Potapov"@en;
+  v-s:firstName "Иван"@ru;
+  v-s:firstName "Ivan"@en;
+  v-s:middleName "Николаевич"@ru;
+  v-s:hasAccount d:demo_account_p;
+  v-s:hasAppointment d:org_RU1100220011_employee_6_position_6;
+  rdfs:label "Потапов И.Н."@ru;
+  rdfs:label "Potapov Ivan"@en;
+.
+d:demo_account_potapovi
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_6;
+  v-s:login "potapovi"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "potapovi"@ru;
+  rdfs:label "potapovi"@en;
+.
+d:org_RU1100220011_position_6
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_2;
+  rdfs:label "Юрист"@ru;
+  rdfs:label "Lawyer"@en;
+.
+d:org_RU1100220011_employee_6_position_6
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_6;
+  v-s:occupation d:org_RU1100220011_position_6;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Потапов И.Н. Юрист"@ru;
+  rdfs:label "Potapov Ivan. Lawyer"@en;
+.
+
+#----
+d:org_RU1100220011_employee_7
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_7;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Потапова"@ru;
+  v-s:lastName "Potapova"@en;
+  v-s:firstName "Вера"@ru;
+  v-s:firstName "Vera"@en;
+  v-s:middleName "Аркадьевна"@ru;
+  v-s:hasAccount d:demo_account_potapovav;
+  v-s:hasAppointment d:org_RU1100220011_employee_7_position_7;
+  rdfs:label "Потапова В.А."@ru;
+  rdfs:label "Potapova Vera"@en;
+.
+d:demo_account_potapovav
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_7;
+  v-s:login "potapovav"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "potapovav"@ru;
+  rdfs:label "potapovav"@en;
+.
+d:org_RU1100220011_position_7
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_3;
+  rdfs:label "Главный бухгалтер"@ru;
+  rdfs:label "Chief Accountant"@en;
+.
+d:org_RU1100220011_employee_7_position_7
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_7;
+  v-s:occupation d:org_RU1100220011_position_7;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Потапова В.А. Главный бухгалтер"@ru;
+  rdfs:label "Potapova Vera. Chief Accountant"@en;
+.
+
+#----
+d:org_RU1100220011_employee_8
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_8;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Мухина"@ru;
+  v-s:lastName "Mukhina"@en;
+  v-s:firstName "Елена"@ru;
+  v-s:firstName "Elena"@en;
+  v-s:middleName "Андреевна"@ru;
+  v-s:hasAccount d:demo_account_mukhinae;
+  v-s:hasAppointment d:org_RU1100220011_employee_8_position_8;
+  rdfs:label "Мухина Е.А."@ru;
+  rdfs:label "Mukhina Elena"@en;
+.
+d:demo_account_mukhinae
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_8;
+  v-s:login "mukhinae"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "mukhinae"@ru;
+  rdfs:label "mukhinae"@en;
+.
+d:org_RU1100220011_position_8
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_3;
+  rdfs:label "Бухгалтер"@ru;
+  rdfs:label "Accountant"@en;
+.
+d:org_RU1100220011_employee_8_position_8
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_8;
+  v-s:occupation d:org_RU1100220011_position_8;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Мухина Е.А. Бухгалтер"@ru;
+  rdfs:label "Mukhina Elena. Accountant"@en;
+.
+
+#----
+d:org_RU1100220011_employee_9
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_9;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Левина"@ru;
+  v-s:lastName "Levina"@en;
+  v-s:firstName "Екатерина"@ru;
+  v-s:firstName "Ekaterina"@en;
+  v-s:middleName "Александровна"@ru;
+  v-s:hasAccount d:demo_account_levinae;
+  v-s:hasAppointment d:org_RU1100220011_employee_9_position_9;
+  rdfs:label "Левина Е.А."@ru;
+  rdfs:label "Levina Elena"@en;
+.
+d:demo_account_levinae
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_9;
+  v-s:login "levinae"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "levinae"@ru;
+  rdfs:label "levinae"@en;
+.
+d:org_RU1100220011_position_9
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_3;
+  rdfs:label "Бухгалтер"@ru;
+  rdfs:label "Accountant"@en;
+.
+d:org_RU1100220011_employee_9_position_9
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_9;
+  v-s:occupation d:org_RU1100220011_position_9;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Левина Е.А. Бухгалтер"@ru;
+  rdfs:label "Levina Elena. Accountant"@en;
+.
+
+#----
+d:org_RU1100220011_employee_10
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_10;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Боброва"@ru;
+  v-s:lastName "Bobrova"@en;
+  v-s:firstName "Надежда"@ru;
+  v-s:firstName "Nadezhda"@en;
+  v-s:middleName "Викторовна"@ru;
+  v-s:hasAccount d:demo_account_bobrovan;
+  v-s:hasAppointment d:org_RU1100220011_employee_10_position_10;
+  rdfs:label "Боброва Н.В."@ru;
+  rdfs:label "Bobrova Nadezhda"@en;
+.
+d:demo_account_bobrovan
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_10;
+  v-s:login "bobrovan"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "bobrovan"@ru;
+  rdfs:label "bobrovan"@en;
+.
+d:org_RU1100220011_position_10
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_4;
+  rdfs:label "Начальник отдела кадров"@ru;
+  rdfs:label "Chief HR Department"@en;
+.
+d:org_RU1100220011_employee_10_position_10
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_10;
+  v-s:occupation d:org_RU1100220011_position_10;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Боброва Н.В. Начальник отдела кадров"@ru;
+  rdfs:label "Bobrova Nadezhda. Chief HR Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_11
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_11;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Куликова"@ru;
+  v-s:lastName "Kulikova"@en;
+  v-s:firstName "Анна"@ru;
+  v-s:firstName "Anna"@en;
+  v-s:middleName "Геннадьевна"@ru;
+  v-s:hasAccount d:demo_account_kulikovaa;
+  v-s:hasAppointment d:org_RU1100220011_employee_11_position_11;
+  rdfs:label "Куликова А.Г."@ru;
+  rdfs:label "Kulikova Anna"@en;
+.
+d:demo_account_kulikovaa
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_11;
+  v-s:login "kulikovaa"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "kulikovaa"@ru;
+  rdfs:label "kulikovaa"@en;
+.
+d:org_RU1100220011_position_11
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_4;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_11_position_11
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_11;
+  v-s:occupation d:org_RU1100220011_position_11;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Куликова А.Г. Специалист"@ru;
+  rdfs:label "Kulikova Anna. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_12
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_12;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Дмитриев"@ru;
+  v-s:lastName "Dmitriev"@en;
+  v-s:firstName "Александр"@ru;
+  v-s:firstName "Alexander"@en;
+  v-s:middleName "Владимирович"@ru;
+  v-s:hasAccount d:demo_account_dmitrieva;
+  v-s:hasAppointment d:org_RU1100220011_employee_12_position_12;
+  rdfs:label "Дмитриев А.В."@ru;
+  rdfs:label "Dmitriev Alexander"@en;
+.
+d:demo_account_dmitrieva
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_12;
+  v-s:login "dmitrieva"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "dmitrieva"@ru;
+  rdfs:label "dmitrieva"@en;
+.
+d:org_RU1100220011_position_12
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_5;
+  rdfs:label "Руководитель отдела продаж"@ru;
+  rdfs:label "Head Sales Department"@en;
+.
+d:org_RU1100220011_employee_12_position_12
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_12;
+  v-s:occupation d:org_RU1100220011_position_12;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Дмитриев А.В. Руководитель отдела продаж"@ru;
+  rdfs:label "Dmitriev Alexander. Head Sales Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_13
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_13;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Авдеев"@ru;
+  v-s:lastName "Avdeev"@en;
+  v-s:firstName "Антон"@ru;
+  v-s:firstName "Anton"@en;
+  v-s:middleName "Алексеевич"@ru;
+  v-s:hasAccount d:demo_account_avdeeva;
+  v-s:hasAppointment d:org_RU1100220011_employee_13_position_13;
+  rdfs:label "Авдеев А.А."@ru;
+  rdfs:label "Avdeev Anton"@en;
+.
+d:demo_account_avdeeva
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_13;
+  v-s:login "avdeeva"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "avdeeva"@ru;
+  rdfs:label "avdeeva"@en;
+.
+d:org_RU1100220011_position_13
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_5;
+  rdfs:label "Заместитель руководителя отдела продаж"@ru;
+  rdfs:label "Deputy Head Sales Department"@en;
+.
+d:org_RU1100220011_employee_13_position_13
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_13;
+  v-s:occupation d:org_RU1100220011_position_13;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Авдеев А.А. Заместитель руководителя отдела продаж"@ru;
+  rdfs:label "Avdeev Anton. Deputy Head Sales Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_14
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_14;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Попов"@ru;
+  v-s:lastName "Popov"@en;
+  v-s:firstName "Николай"@ru;
+  v-s:firstName "Nikolai"@en;
+  v-s:middleName "Денисович"@ru;
+  v-s:hasAccount d:demo_account_popovn;
+  v-s:hasAppointment d:org_RU1100220011_employee_14_position_14;
+  rdfs:label "Попов Н.Д."@ru;
+  rdfs:label "Popov Nikolai"@en;
+.
+d:demo_account_popovn
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_14;
+  v-s:login "popovn"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "popovn"@ru;
+  rdfs:label "popovn"@en;
+.
+d:org_RU1100220011_position_14
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_5;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_14_position_14
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_14;
+  v-s:occupation d:org_RU1100220011_position_14;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Попов Н.Д. Специалист"@ru;
+  rdfs:label "Popov Nikolai. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_15
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_15;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Денисов"@ru;
+  v-s:lastName "Denisov"@en;
+  v-s:firstName "Петр"@ru;
+  v-s:firstName "Petr"@en;
+  v-s:middleName "Антонович"@ru;
+  v-s:hasAccount d:demo_account_denisovp;
+  v-s:hasAppointment d:org_RU1100220011_employee_15_position_15;
+  rdfs:label "Денисов П.А."@ru;
+  rdfs:label "Denisov Petr"@en;
+.
+d:demo_account_denisovp
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_15;
+  v-s:login "denisovp"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "denisovp"@ru;
+  rdfs:label "denisovp"@en;
+.
+d:org_RU1100220011_position_15
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_5;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_15_position_15
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_15;
+  v-s:occupation d:org_RU1100220011_position_15;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Денисов П.А. Специалист"@ru;
+  rdfs:label "Denisov Petr. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_16
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_16;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Щукина"@ru;
+  v-s:lastName "Schukina"@en;
+  v-s:firstName "Наталья"@ru;
+  v-s:firstName "Natalya"@en;
+  v-s:middleName "Сергеевна"@ru;
+  v-s:hasAccount d:demo_account_schukinan;
+  v-s:hasAppointment d:org_RU1100220011_employee_16_position_16;
+  rdfs:label "Щукина Н.С."@ru;
+  rdfs:label "Schukina Natalya"@en;
+.
+d:demo_account_schukinan
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_16;
+  v-s:login "schukinan"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "schukinan"@ru;
+  rdfs:label "schukinan"@en;
+.
+d:org_RU1100220011_position_16
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_5;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_16_position_16
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_16;
+  v-s:occupation d:org_RU1100220011_position_16;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Щукина Н.С. Специалист"@ru;
+  rdfs:label "Schukina Natalya. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_17
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_17;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Быков"@ru;
+  v-s:lastName "Bykov"@en;
+  v-s:firstName "Владислав"@ru;
+  v-s:firstName "Vladislav"@en;
+  v-s:middleName "Владимирович"@ru;
+  v-s:hasAccount d:demo_account_bykovv;
+  v-s:hasAppointment d:org_RU1100220011_employee_17_position_17;
+  rdfs:label "Быков В.В."@ru;
+  rdfs:label "Bykov Vladislav"@en;
+.
+d:demo_account_bykovv
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_17;
+  v-s:login "bykovv"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "bykovv"@ru;
+  rdfs:label "bykovv"@en;
+.
+d:org_RU1100220011_position_17
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6;
+  rdfs:label "Руководитель производственного отдела"@ru;
+  rdfs:label "Head Production Department"@en;
+.
+d:org_RU1100220011_employee_17_position_17
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_17;
+  v-s:occupation d:org_RU1100220011_position_17;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Быков В.В. Руководитель производственного отдела"@ru;
+  rdfs:label "Bykov Vladislav. Head Production Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_18
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_18;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Самохин"@ru;
+  v-s:lastName "Samohin"@en;
+  v-s:firstName "Валерий"@ru;
+  v-s:firstName "Valery"@en;
+  v-s:middleName "Александрович"@ru;
+  v-s:hasAccount d:demo_account_samohinv;
+  v-s:hasAppointment d:org_RU1100220011_employee_18_position_18;
+  rdfs:label "Самохин В.А."@ru;
+  rdfs:label "Samohin Valery"@en;
+.
+d:demo_account_samohinv
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_18;
+  v-s:login "samohinv"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "samohinv"@ru;
+  rdfs:label "samohinv"@en;
+.
+d:org_RU1100220011_position_18
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6;
+  rdfs:label "Заместитель руководителя производственного отдела"@ru;
+  rdfs:label "Deputy Head Production Department"@en;
+.
+d:org_RU1100220011_employee_18_position_18
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_18;
+  v-s:occupation d:org_RU1100220011_position_18;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Самохин В.А. Заместитель руководителя производственного отдела"@ru;
+  rdfs:label "Samohin Valery. Deputy Head Production Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_19
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_19;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Тропин"@ru;
+  v-s:lastName "Tropin"@en;
+  v-s:firstName "Роман"@ru;
+  v-s:firstName "Roman"@en;
+  v-s:middleName "Александрович"@ru;
+  v-s:hasAccount d:demo_account_tropinr;
+  v-s:hasAppointment d:org_RU1100220011_employee_19_position_19;
+  rdfs:label "Тропин Р.А."@ru;
+  rdfs:label "Tropin Roman"@en;
+.
+d:demo_account_tropinr
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_19;
+  v-s:login "tropinr"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "tropinr"@ru;
+  rdfs:label "tropinr"@en;
+.
+d:org_RU1100220011_position_19
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_1;
+  rdfs:label "Начальник Цеха №1"@ru;
+  rdfs:label "Chief Shop #1"@en;
+.
+d:org_RU1100220011_employee_19_position_19
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_19;
+  v-s:occupation d:org_RU1100220011_position_19;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Тропин Р.А. Начальник Цеха №1"@ru;
+  rdfs:label "Tropin Roman. Chief Shop #1"@en;
+.
+
+#----
+d:org_RU1100220011_employee_20
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_20;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Ракин"@ru;
+  v-s:lastName "Rakin"@en;
+  v-s:firstName "Алексей"@ru;
+  v-s:firstName "Aleksey"@en;
+  v-s:middleName "Петрович"@ru;
+  v-s:hasAccount d:demo_account_rakina;
+  v-s:hasAppointment d:org_RU1100220011_employee_20_position_20;
+  rdfs:label "Ракин А.П."@ru;
+  rdfs:label "Rakin Aleksey"@en;
+.
+d:demo_account_rakina
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_20;
+  v-s:login "rakina"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "rakina"@ru;
+  rdfs:label "rakina"@en;
+.
+d:org_RU1100220011_position_20
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_1;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_20_position_20
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_20;
+  v-s:occupation d:org_RU1100220011_position_20;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Ракин А.П. Специалист"@ru;
+  rdfs:label "Rakin Aleksey. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_21
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_21;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Опарина"@ru;
+  v-s:lastName "Oparina"@en;
+  v-s:firstName "Ольга"@ru;
+  v-s:firstName "Olga"@en;
+  v-s:middleName "Андреевна"@ru;
+  v-s:hasAccount d:demo_account_oparinao;
+  v-s:hasAppointment d:org_RU1100220011_employee_21_position_21;
+  rdfs:label "Опарина О.А."@ru;
+  rdfs:label "Oparina Olga"@en;
+.
+d:demo_account_oparinao
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_21;
+  v-s:login "oparinao"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "oparinao"@ru;
+  rdfs:label "oparinao"@en;
+.
+d:org_RU1100220011_position_21
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_1;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_21_position_21
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_21;
+  v-s:occupation d:org_RU1100220011_position_21;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Опарина О.А. Специалист"@ru;
+  rdfs:label "Oparina Olga. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_22
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_22;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Андреев"@ru;
+  v-s:lastName "Andreev"@en;
+  v-s:firstName "Семен"@ru;
+  v-s:firstName "Semen"@en;
+  v-s:middleName "Семенович"@ru;
+  v-s:hasAccount d:demo_account_andreevs;
+  v-s:hasAppointment d:org_RU1100220011_employee_22_position_22;
+  rdfs:label "Андреев С.С."@ru;
+  rdfs:label "Andreev Semen"@en;
+.
+d:demo_account_andreevs
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_22;
+  v-s:login "andreevs"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "andreevs"@ru;
+  rdfs:label "andreevs"@en;
+.
+d:org_RU1100220011_position_22
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_1;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_22_position_22
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_22;
+  v-s:occupation d:org_RU1100220011_position_22;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Андреев С.С. Специалист"@ru;
+  rdfs:label "Andreev Semen. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_23
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_23;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Рыков"@ru;
+  v-s:lastName "Rykov"@en;
+  v-s:firstName "Владимир"@ru;
+  v-s:firstName "Vladimir"@en;
+  v-s:middleName "Владимирович"@ru;
+  v-s:hasAccount d:demo_account_rykovv;
+  v-s:hasAppointment d:org_RU1100220011_employee_23_position_23;
+  rdfs:label "Рыков В.В."@ru;
+  rdfs:label "Rykov Vladimir"@en;
+.
+d:demo_account_rykovv
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_23;
+  v-s:login "rykovv"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "rykovv"@ru;
+  rdfs:label "rykovv"@en;
+.
+d:org_RU1100220011_position_23
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_2;
+  rdfs:label "Начальник Цеха №2"@ru;
+  rdfs:label "Chief Shop #2"@en;
+.
+d:org_RU1100220011_employee_23_position_23
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_23;
+  v-s:occupation d:org_RU1100220011_position_23;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Рыков В.В. Начальник Цеха №2"@ru;
+  rdfs:label "Rykov Vladimir. Chief Shop #2"@en;
+.
+
+#----
+d:org_RU1100220011_employee_24
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_24;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Юсупов"@ru;
+  v-s:lastName "Yusupov"@en;
+  v-s:firstName "Артем"@ru;
+  v-s:firstName "Artem"@en;
+  v-s:middleName "Александрович"@ru;
+  v-s:hasAccount d:demo_account_yusupova;
+  v-s:hasAppointment d:org_RU1100220011_employee_24_position_24;
+  rdfs:label "Юсупов А.А."@ru;
+  rdfs:label "Yusupov Artem"@en;
+.
+d:demo_account_yusupova
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_24;
+  v-s:login "yusupova"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "yusupova"@ru;
+  rdfs:label "yusupova"@en;
+.
+d:org_RU1100220011_position_24
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_2;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_24_position_24
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_24;
+  v-s:occupation d:org_RU1100220011_position_24;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Юсупов А.А. Специалист"@ru;
+  rdfs:label "Yusupov Artem. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_25
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_25;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Вахнин"@ru;
+  v-s:lastName "Vahnin"@en;
+  v-s:firstName "Тимофей"@ru;
+  v-s:firstName "Timofey"@en;
+  v-s:middleName "Игоревич"@ru;
+  v-s:hasAccount d:demo_account_vahnint;
+  v-s:hasAppointment d:org_RU1100220011_employee_25_position_25;
+  rdfs:label "Вахнин Т.И."@ru;
+  rdfs:label "Vahnin Timofey"@en;
+.
+d:demo_account_vahnint
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_25;
+  v-s:login "vahnint"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "vahnint"@ru;
+  rdfs:label "vahnint"@en;
+.
+d:org_RU1100220011_position_25
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_2;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_25_position_25
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_25;
+  v-s:occupation d:org_RU1100220011_position_25;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Вахнин Т.И. Специалист"@ru;
+  rdfs:label "Vahnin Timofey. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_26
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_26;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Семенова"@ru;
+  v-s:lastName "Semenova"@en;
+  v-s:firstName "Светлана"@ru;
+  v-s:firstName "Svetlana"@en;
+  v-s:middleName "Романовна"@ru;
+  v-s:hasAccount d:demo_account_semenovas;
+  v-s:hasAppointment d:org_RU1100220011_employee_26_position_26;
+  rdfs:label "Семенова С.Р."@ru;
+  rdfs:label "Semenova Svetlana"@en;
+.
+d:demo_account_semenovas
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_26;
+  v-s:login "semenovas"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "semenovas"@ru;
+  rdfs:label "semenovas"@en;
+.
+d:org_RU1100220011_position_26
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_6_2;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
+.
+d:org_RU1100220011_employee_26_position_26
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_26;
+  v-s:occupation d:org_RU1100220011_position_26;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Семенова С.Р. Специалист"@ru;
+  rdfs:label "Semenova Svetlana. Specialist"@en;
+.
+
+#----
+d:org_RU1100220011_employee_27
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_27;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Сидоров"@ru;
+  v-s:lastName "Sidorov"@en;
+  v-s:firstName "Николай"@ru;
+  v-s:firstName "Nikolay"@en;
+  v-s:middleName "Петрович"@ru;
+  v-s:hasAccount d:demo_account_sidorovn;
+  v-s:hasAppointment d:org_RU1100220011_employee_27_position_27;
+  rdfs:label "Сидоров Н.П."@ru;
+  rdfs:label "Sidorov Nikolay"@en;
+.
+d:demo_account_sidorovn
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_27;
+  v-s:login "sidorovn"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "sidorovn"@ru;
+  rdfs:label "sidorovn"@en;
+.
+d:org_RU1100220011_position_27
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_7;
+  rdfs:label "Начальник транспортного отдела"@ru;
+  rdfs:label "Chief Transport Department"@en;
+.
+d:org_RU1100220011_employee_27_position_27
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_27;
+  v-s:occupation d:org_RU1100220011_position_27;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Сидоров Н.П. Начальник транспортного отдела"@ru;
+  rdfs:label "Sidorov Nikolay. Chief Transport Department"@en;
+.
+
+#----
+d:org_RU1100220011_employee_28
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_28;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Иванов"@ru;
+  v-s:lastName "Ivanov"@en;
+  v-s:firstName "Алексей"@ru;
+  v-s:firstName "Aleksey"@en;
+  v-s:middleName "Викторович"@ru;
+  v-s:hasAccount d:demo_account_ivanova;
+  v-s:hasAppointment d:org_RU1100220011_employee_28_position_28;
+  rdfs:label "Иванов А.В."@ru;
+  rdfs:label "Ivanov Aleksey"@en;
+.
+d:demo_account_ivanova
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_28;
+  v-s:login "ivanova"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "ivanova"@ru;
+  rdfs:label "ivanova"@en;
+.
+d:org_RU1100220011_position_28
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_7;
+  rdfs:label "Водитель"@ru;
+  rdfs:label "Driver"@en;
+.
+d:org_RU1100220011_employee_28_position_28
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_28;
+  v-s:occupation d:org_RU1100220011_position_28;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Иванов А.В. Водитель"@ru;
+  rdfs:label "Ivanov Aleksey. Driver"@en;
+.
+
+#----
+d:org_RU1100220011_employee_29
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_29;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Быстрых"@ru;
+  v-s:lastName "Bystryh"@en;
+  v-s:firstName "Леонид"@ru;
+  v-s:firstName "Leonid"@en;
+  v-s:middleName "Егорович"@ru;
+  v-s:hasAccount d:demo_account_bystryhl;
+  v-s:hasAppointment d:org_RU1100220011_employee_29_position_29;
+  rdfs:label "Быстрых Л.Е."@ru;
+  rdfs:label "Bystryh Leonid"@en;
+.
+d:demo_account_bystryhl
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_29;
+  v-s:login "bystryhl"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "bystryhl"@ru;
+  rdfs:label "bystryhl"@en;
+.
+d:org_RU1100220011_position_29
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_7;
+  rdfs:label "Водитель"@ru;
+  rdfs:label "Driver"@en;
+.
+d:org_RU1100220011_employee_29_position_29
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_29;
+  v-s:occupation d:org_RU1100220011_position_29;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Быстрых Л.Е. Водитель"@ru;
+  rdfs:label "Bystryh Leonid. Driver"@en;
+.
+
+#----
+d:org_RU1100220011_employee_30
+  a v-s:Person;
+  v-s:owner d:org_RU1100220011_employee_30;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:lastName "Самоделкин"@ru;
+  v-s:lastName "Samodelkin"@en;
+  v-s:firstName "Сергей"@ru;
+  v-s:firstName "Sergey"@en;
+  v-s:middleName "Макарович"@ru;
+  v-s:hasAccount d:demo_account_samodelkins;
+  v-s:hasAppointment d:org_RU1100220011_employee_30_position_30;
+  rdfs:label "Самоделкин С.М."@ru;
+  rdfs:label "Samodelkin Sergey"@en;
+.
+d:demo_account_samodelkins
+  a v-s:Account;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:owner d:org_RU1100220011_employee_30;
+  v-s:login "samodelkins"^^xsd:string;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  rdfs:label "samodelkins"@ru;
+  rdfs:label "samodelkins"@en;
+.
+d:org_RU1100220011_position_30
+  a v-s:Position;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:parentUnit d:demo_department_7;
+  rdfs:label "Механик"@ru;
+  rdfs:label "Mechanic"@en;
+.
+d:org_RU1100220011_employee_30_position_30
+  a v-s:Appointment;
+  v-s:origin "Internal User"^^xsd:string;
+  v-s:employee d:org_RU1100220011_employee_30;
+  v-s:occupation d:org_RU1100220011_position_30;
+  v-s:official "true"^^xsd:boolean;
+  rdfs:label "Самоделкин С.М. Механик"@ru;
+  rdfs:label "Samodelkin Sergey. Mechanic"@en;
+.

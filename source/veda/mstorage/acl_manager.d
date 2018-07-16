@@ -72,18 +72,10 @@ void acl_manager(string thread_name)
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
-    string tarantool_url = properties.as!(string)("tarantool_url");
 
-    if (tarantool_url !is null)
-    {
-        storage = new TarantoolDriver(log, "acl-indexes", 513);
-    }
-    else
-    {
-        string authorization_db_type = properties.as!(string)("authorization_db_type");
+    string authorization_db_type = properties.as!(string)("authorization_db_type");
 
-        storage = new LmdbDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
-    }
+    storage = new LmdbDriver(acl_indexes_db_path, DBMode.RW, "acl_manager", log);
 
 
     long l_op_id;
@@ -165,9 +157,6 @@ void acl_manager(string thread_name)
                             finally
                             {
                                 l_op_id = op_id;
-
-                                if (tarantool_url !is null)
-                                    committed_op_id = l_op_id;
 
                                 module_info.put_info(l_op_id, committed_op_id);
                             }

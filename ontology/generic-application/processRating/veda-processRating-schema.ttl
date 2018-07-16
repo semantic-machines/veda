@@ -1,0 +1,78 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-processRating-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Оценка процесса. Схема."@ru ;
+  rdfs:label "Veda system ontology. Process rating. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:SetOfProcessRatingForms
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Комплект анкет"@ru ;
+  rdfs:label "Set of rating forms"@en ;
+.
+v-s:hasProcessRatingForm
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Анкета"@ru ;
+  rdfs:label "Rating form"@en ;
+  rdfs:range v-s:ProcessRatingForm ;
+  rdfs:domain v-s:SetOfProcessRatingForms ;
+.
+v-s:hasPreviousSetOfProcessRatingForms
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Предыдущий период"@ru ;
+  rdfs:label "Previous set"@en ;
+  rdfs:range v-s:SetOfProcessRatingForms ;
+  rdfs:domain v-s:SetOfProcessRatingForms ;
+.
+v-s:hasNextSetOfProcessRatingForms
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Следующий период"@ru ;
+  rdfs:label "Next set"@en ;
+  rdfs:range v-s:SetOfProcessRatingForms ;
+  rdfs:domain v-s:SetOfProcessRatingForms ;
+.
+#-------------------------
+v-s:ProcessRatingForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:label "Анкета"@ru ;
+  rdfs:label "Rating form"@en ;
+.
+v-s:hasProcessRating
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Оценка"@ru ;
+  rdfs:label "Rating"@en ;
+  rdfs:range v-s:ProcessRating ;
+  rdfs:domain v-s:ProcessRatingForm ;
+.
+# --- В связи с вводом класса возникает предикат v-s:hasProcessRatingForm. Он описан в классе v-s:SetOfProcessRatingForms
+#--------------------------
+v-s:ProcessRating
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:label "Оценка"@ru ;
+  rdfs:label "Rating"@en ;
+.
+# --- В связи с вводом класса возникает предикат v-s:hasProcessRating. Он описан в классе v-s:ProcessRatingForm
+
+
+

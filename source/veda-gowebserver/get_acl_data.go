@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
-
+	"encoding/json"
 	"github.com/valyala/fasthttp"
+	"log"
 )
 
 //getAclData performs request GetRightsOrigin of GetMembership, this is set by operation parametr
@@ -18,7 +18,7 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 
 	//If no uris passed than return BadRequest to client
 	if len(uri) == 0 {
-		log.Println("@ERR GET_INDIVIDUAL: ZERO LENGTH TICKET OR URI")
+		log.Println("ERR! GET_INDIVIDUAL: ZERO LENGTH TICKET OR URI")
 		ctx.Response.SetStatusCode(int(BadRequest))
 		return
 	}
@@ -41,13 +41,17 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 
 	//If common response code is not Ok return fail to client
 	if rr.CommonRC != Ok {
-		log.Printf("@ERR GET_ACL_DATA %v: AUTH %v\n", operation, rr.CommonRC)
+		log.Printf("ERR! GET_ACL_DATA %v: AUTH %v\n", operation, rr.CommonRC)
 		ctx.Response.SetStatusCode(int(rr.CommonRC))
 		return
 	}
 
-	if len(rr.Data) > 0 {
-		ctx.Write([]byte(rr.Data[0]))
+	if rr.GetCount() == 1 {
+		jsonBytes, _ := json.Marshal(rr.GetIndv(0))
+		ctx.Write(jsonBytes)
+	} else if rr.GetCount() > 1 {
+		jsonBytes, _ := json.Marshal(rr.GetIndvs())
+		ctx.Write(jsonBytes)
 	}
 	ctx.Response.SetStatusCode(int(Ok))
 }

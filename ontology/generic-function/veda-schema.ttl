@@ -55,36 +55,11 @@ v-s:ClassifiedFile
   rdfs:label "Classified file"@en ;
 .
 ### ------------------------------------------------------
-v-s:Level
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Уровень"@ru ;
-  rdfs:label "Level"@en ;
-.
+
 ### ------------------------------------------------------
-v-s:Status
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Статус"@ru ;
-  rdfs:label "Status"@en ;
-  v-ui:hasTemplate v-ui:StatusTemplate;
-.
+
 ### ------------------------------------------------------
-v-s:Sector
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Тематика"@ru ;
-  rdfs:label "Subjects"@en ;
-.
-### ------------------------------------------------------
-v-s:DocumentKind
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:NormativeDocument ;
-  rdfs:label "Вид документа"@ru ;
-  rdfs:label "Document kind"@en ;
-.
+
 # v-s:hasNormativeDocument
 
 ### veda-workflow
@@ -446,13 +421,13 @@ v-s:AppointmentSaveEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Appointment ;
   v-s:script """
-  if (document['v-s:occupation'] && document['v-s:occupation'].length>0) {
-      var occupation = get_individual(ticket, document['v-s:occupation'][0].data);
-      if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length>0) {
-        document['v-s:parentUnit'] = occupation['v-s:parentUnit'];
-        put_individual (ticket, document, _event_id);
-      }
+if (document['v-s:occupation'] && document['v-s:occupation'].length > 0) {
+  var occupation = get_individual(ticket, document['v-s:occupation'][0].data);
+  if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length > 0) {
+    document['v-s:parentUnit'] = occupation['v-s:parentUnit'];
+    put_individual (ticket, document, _event_id);
   }
+}
 """
 .
 
@@ -563,6 +538,13 @@ v-s:Directory_Event
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var directory_uri = document['@'];
 var parents = document["v-s:parentUnit"];
 var children = document["v-s:childUnit"];

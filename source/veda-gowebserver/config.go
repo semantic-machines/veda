@@ -30,7 +30,7 @@ func configWebServer() {
 
 			splitted := strings.SplitN(line, "=", 2)
 			if len(splitted) < 2 {
-				log.Printf("@ERR NO ASSIGNATION SING FOUND ON LINE %d\n", count)
+				log.Printf("ERR! NO ASSIGNATION SING FOUND ON LINE %d\n", count)
 				continue
 			}
 
@@ -46,7 +46,7 @@ func configWebServer() {
 			case "use_https":
 				boolVal, err := strconv.ParseBool(paramVal)
 				if err != nil {
-					log.Printf("@ERR ON PARSING BOOL IN CONFIG ON LINE %d\n", count)
+					log.Printf("ERR! ON PARSING BOOL IN CONFIG ON LINE %d\n", count)
 					continue
 				}
 				useHTTPS = boolVal
@@ -54,10 +54,10 @@ func configWebServer() {
 				webserverPort = paramVal
 			case "https_port":
 				webserverHTTPSPort = paramVal
-//			case "acl_service_url":
-//				aclServiceURL = paramVal
+			case "lmdb_service_url":
+				lmdbServiceURL = paramVal
 			case "ft_query_service_url":
-				queryServiceURL = "tcp://" + paramVal
+				queryServiceURL = paramVal
 
 			default:
 				continue
@@ -65,6 +65,6 @@ func configWebServer() {
 		}
 		file.Close()
 	} else {
-		log.Println("@ERR ON READING CONFIG, START WITH DEFAULTS: ", err)
+		log.Println("ERR! ON READING CONFIG, START WITH DEFAULTS: ", err)
 	}
 }

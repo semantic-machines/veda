@@ -767,8 +767,9 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket.id, new_test_doc1);
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
 
-            var read_individual = Backend.get_individual(ticket.id, new_test_doc1_uri);
+            var read_individual = Backend.get_individual(ticket.id, new_test_doc1_uri, true);
 
             //#1
             assert.ok(compare(new_test_doc1, read_individual));
@@ -786,8 +787,9 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket.id, new_test_doc2);
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
 
-            read_individual = Backend.get_individual(ticket.id, new_test_doc2_uri);
+            read_individual = Backend.get_individual(ticket.id, new_test_doc2_uri, true);
 
             //#3
             assert.ok(compare(new_test_doc2, read_individual));
@@ -806,6 +808,7 @@ for (i = 0; i < 1; i++)
             var res = Backend.put_individual(ticket.id, new_test_doc3);
             Backend.wait_module(m_subject, res.op_id);
             Backend.wait_module(m_acl, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
 
             read_individual = Backend.get_individual(ticket.id, new_test_doc3_uri);
 
@@ -1575,6 +1578,7 @@ for (i = 0; i < 1; i++)
           createMeetings(user, 9, 3);
           var res = createMeetings(admin, 12, 9);
           Backend.wait_module(m_fulltext_indexer, res.op_id);
+          Backend.wait_module(m_acl, res.op_id);
 
           var q = "'rdf:type'==='rdfs:Resource' && '@'=='d:QueryTestResource*'";
           var s = "'rdfs:label' asc";
@@ -1715,7 +1719,7 @@ for (i = 0; i < 1; i++)
     {
         var ticket_admin = get_admin_ticket();
 
-        var res = Backend.get_rights_origin(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var res = Backend.get_rights_origin(ticket_admin.id, "td:RomanKarpov_pref")
         var result_rights = 0;
         res.forEach(function(item, i) {
             if (res[i]["v-s:canCreate"]) {
@@ -1729,7 +1733,7 @@ for (i = 0; i < 1; i++)
             }
         });
 
-        var res = Backend.get_rights(ticket_admin.id, "td:Preferences_RomanKarpov");
+        var res = Backend.get_rights(ticket_admin.id, "td:RomanKarpov_pref");
         var expected_rights = 0;
         if (res["v-s:canCreate"]) {
             expected_rights |= 1;
@@ -1750,16 +1754,16 @@ for (i = 0; i < 1; i++)
 
     QUnit.test("#024 test get_membership", function(assert)
     {
-    //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:Preferences_RomanKarpov"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
+    //"v-s:memberOf":[{"type":"Uri","data":"v-s:AllResourcesGroup"},{"type":"Uri","data":"td:RomanKarpov_pref"},{"type":"Uri","data":"cfg:TTLResourcesGroup"}]}
 
         var ticket_admin = get_admin_ticket();
 
-        var res = Backend.get_membership(ticket_admin.id, "td:Preferences_RomanKarpov")
+        var res = Backend.get_membership(ticket_admin.id, "td:RomanKarpov_pref")
         var check = true;
         var found = 0;
         res["v-s:memberOf"].forEach(function(item, i) {
             switch (res["v-s:memberOf"][i]["data"]) {
-                case "td:Preferences_RomanKarpov":
+                case "td:RomanKarpov_pref":
                 case "v-s:AllResourcesGroup":
                 case "cfg:TTLResourcesGroup":
                     found++
@@ -2196,20 +2200,21 @@ QUnit.test(
 
             var res1 = addRightWithFilter(ticket_admin.id, [can_update], ticket_user2.user_uri, new_test_doc1_uri, new_permission_filter_uri+'xxx');
             var new_permission1 = res1[0];
-            Backend.wait_module(m_acl, res1[1].op_id);
 
             test_fail_update(assert, ticket_user1, new_test_doc1);
             test_success_update(assert, ticket_user2, new_test_doc1);
 
 	    // disable permission with filter 
 	    new_permission1['v-s:deleted'] = newBool (true);
-            Backend.put_individual(ticket_admin.id, new_permission1);
+            res1 = Backend.put_individual(ticket_admin.id, new_permission1);
 
+            Backend.wait_module(m_acl, res1.op_id);
             test_fail_update(assert, ticket_user2, new_test_doc1);
 
 	    // disable filter 
 	    new_permission_filter['v-s:deleted'] = newBool (true);
-            Backend.put_individual(ticket_admin.id, new_permission_filter);
+            var res2 = Backend.put_individual(ticket_admin.id, new_permission_filter);
+            Backend.wait_module(m_acl, res2.op_id);
 
             test_success_update(assert, ticket_user2, new_test_doc1);
         });

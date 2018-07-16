@@ -1066,6 +1066,23 @@ function prepare_work_item(ticket, document)
                     var flowsInto = flow['v-wf:flowsInto'];
                     if (!flowsInto) continue;
 
+
+                    var resultEval = true;
+                    try {
+                        var predicate = flow['v-wf:predicate'];
+			if (predicate) {
+                    	    var expression = getFirstValue(predicate);
+                    	    //var task_result = new WorkItemResult(work_item_result);
+                    	    var task = new Context(work_item, ticket);
+                    	    var process = new Context(_process, ticket);
+                    	    resultEval = eval(expression);
+			}
+                    } catch (e) {
+                        print(e.stack);
+                    }
+
+                    if (!resultEval) continue;
+
                     var nextNetElement = get_individual(ticket, getUri(flowsInto));
                     if (!nextNetElement) continue;
 
@@ -1075,12 +1092,11 @@ function prepare_work_item(ticket, document)
                         data: work_item_uri,
                         type: _Uri
                     });
+
                     document['v-wf:isCompleted'] = newBool(true);
                     document['v-s:isExecuted'] = newBool(false);
                     document['v-s:created'] = newDate(new Date());
-
                     is_completed = true;
-
                     ////print("[WO12] document=", toJson(document));
                 }
             }

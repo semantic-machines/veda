@@ -22,6 +22,7 @@ v-s:Contractor
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Контрагент"@ru ;
   rdfs:label "Contractor"@en ;
   v-ui:hasTemplate v-s:ContractorTemplate ;
@@ -33,6 +34,109 @@ v-s:linkedOrganization
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Contractor ;
 .
+v-s:hasContractorLock
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "История блокировок"@ru ;
+  rdfs:label "Contractor lock history"@en ;
+  rdfs:range v-s:ContractorLock ;
+  rdfs:domain v-s:Contractor ;
+.
+v-s:forOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Контрагент для юр лица"@ru ;
+  rdfs:label "Contractor for organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractor ;
+.
+
+# ------------------------------------------------------------
+v-s:ContractParticipant
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:label "Contract participant"@en ;
+  rdfs:label "Участник контракта"@ru ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+v-s:hasRoleInContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Роль в контракте"@ru ;
+  rdfs:label "Role in contract"@en ;
+  rdfs:range v-s:RoleInContract ;
+  rdfs:domain v-s:ContractParticipant ;
+.
+# rdfs:comment
+
+# ------------------------------------------------------------
+v-s:ContractParticipantCustomer
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:label "Customer"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+# ------------------------------------------------------------
+v-s:ContractParticipantSupplier
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:label "Supplier"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+# ------------------------------------------------------------
+v-s:ContractParticipantStakeholder
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Заинтересованная сторона"@ru ;
+  rdfs:label "Stakeholder"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+
+# ------------------------------------------------------------
+v-s:RoleInContract
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Роль в контракте"@ru ;
+  rdfs:label "Role in contract"@en ;
+.
+
+# ------------------------------------------------------------
+v-s:ContractorLock
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Блокировка контрагента"@ru ;
+  rdfs:label "Contractor lock"@en ;
+.
+# v-s:dateFrom
+# v-s:dateTo
+v-s:hasLockedReason
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Причина блокировки"@ru ;
+  rdfs:label "Locked reason"@en ;
+  rdfs:range v-s:LockedReason ;
+  rdfs:domain v-s:ContractorLock ;
+.
+
+# ------------------------------------------------------------
+v-s:LockedReason
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Locked reason"@en ;
+  rdfs:label "Причина блокировки"@ru ;
+.
+
 # ------------------------------------------------------------
 v-s:ContractorProfile
   rdf:type owl:Class ;
@@ -83,65 +187,6 @@ v-s:PsAttachmentForInternalAccountingDocument
 
 # ------------------------------------------------------------
 
-v-s:CurrencyExchangeRate
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Measurable ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:label "Курс обмена валюты"@ru ;
-  rdfs:label "Currency exchange rate"@en ;
-  v-ui:hasTemplate v-s:CurrencyExchangeRateTemplate ;
-.
-
-v-s:PsHasCurrency_CurrencyExchangeRate
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencySource ;
-  v-ui:forProperty v-s:hasCurrencyTarget ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
-  v-ui:placeholder "Выберите валюту"@ru ;
-  v-ui:placeholder "Select currency"@en ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:rate ;
-  v-ui:forProperty v-s:date ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-
-v-s:hasCurrencyExchangeRatePurpose
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Назначение"@ru ;
-  rdfs:label "Purpose"@en ;
-  rdfs:range v-s:CurrencyExchangeRatePurpose ;
-  rdfs:domain  v-s:CurrencyExchangeRate;
-.
-
-v-s:CurrencyExchangeRatePurpose
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Назначение курса обмена валюты"@ru ;
-  rdfs:label "Currency exchange rate purpose"@en ;
-.
-
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
-.
 
 # ------------------------------------------------------------
 v-s:Price
@@ -268,30 +313,7 @@ v-s:ContractRequest
   rdfs:label "Заявка на контракт"@ru ;
   rdfs:label "ContractRequest"@en ;
 .
-# ------------------------------------------------------------
-v-s:ClassifierOKVED
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Классификатор ОКВЭД"@ru ;
-  rdfs:label "Classifier OKVED"@en ;
-.
-# ------------------------------------------------------------
-v-s:ClassifierCountry
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Страна"@ru ;
-  rdfs:label "Country"@en ;
-.
-# ------------------------------------------------------------
-v-s:ClassifierLegalForm
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Организационно правовая форма"@ru ;
-  rdfs:label "Legal form classifier"@en ;
-.
+
 # ------------------------------------------------------------
 v-s:BudgetCategory
   rdf:type owl:Class ;
@@ -318,6 +340,16 @@ v-s:PaymentConditions
 .
 # v-s:registrationNumber
 # rdfs:comment
+# rdfs:label
+
+#----------------------------------------------
+v-s:PaymentDaysForm
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Виды дней расчета"@ru ;
+  rdfs:label "Payment days form"@en ;
+.
 # rdfs:label
 
 #----------------------------------------------
@@ -476,20 +508,20 @@ v-s:ContractorTemplate
       <em about="v-s:locked" property="rdfs:label"></em>
     </label>
   </div>
-  <em about="mnd-s:hasContractorLock" property="rdfs:label"></em>
+  <em about="v-s:hasContractorLock" property="rdfs:label"></em>
   <table class="table table-condensed table-bordered">
     <thead>
       <tr class="active">
-        <th width="60%" about="mnd-s:hasLockedReason" property="rdfs:label"></th>
+        <th width="60%" about="v-s:hasLockedReason" property="rdfs:label"></th>
         <th width="20%" about="v-s:dateFrom" property="rdfs:label"></th>
         <th width="20%" about="v-s:dateTo" property="rdfs:label"></th>
       </tr>
     </thead>
-    <tbody rel="mnd-s:hasContractorLock" data-embedded="true">
+    <tbody rel="v-s:hasContractorLock" data-embedded="true">
       <tr>
        <td>
-          <div property="mnd-s:hasLockedReason" class="view -edit -search"></div>
-          <veda-control data-type="link" rel="mnd-s:hasLockedReason" class="-view edit search fulltext dropdown"></veda-control>
+          <div property="v-s:hasLockedReason" class="view -edit -search"></div>
+          <veda-control data-type="link" rel="v-s:hasLockedReason" class="-view edit search fulltext dropdown"></veda-control>
         </td>
         <td>
           <div property="v-s:dateFrom" class="view -edit search"> </div>
@@ -502,7 +534,7 @@ v-s:ContractorTemplate
       </tr>
     </tbody>
   </table>
-  <veda-control rel="mnd-s:hasContractorLock" data-type="link" class="-view edit -search create"></veda-control>
+  <veda-control rel="v-s:hasContractorLock" data-type="link" class="-view edit -search create"></veda-control>
   <br>
   <div class="checkbox">
     <label>
@@ -531,13 +563,13 @@ v-s:ContractorTemplate
 
   <hr class="view -edit -search">
 
-  <em about="mnd-s:forOrganization" property="rdfs:label"></em>
-  <div rel="mnd-s:forOrganization" class="view -edit -search">
+  <em about="v-s:forOrganization" property="rdfs:label"></em>
+  <div rel="v-s:forOrganization" class="view -edit -search">
     <a href="#/@">
       <span about="@" property="v-s:taxId"></span> - <span about="@" property="v-s:shortLabel"></span> - <span about="@" property="v-s:legalAddress"></span>
     </a>
   </div>
-  <veda-control data-type="link" rel="mnd-s:forOrganization" class="-view edit search fulltext"></veda-control>
+  <veda-control data-type="link" rel="v-s:forOrganization" class="-view edit search fulltext"></veda-control>
 
   <hr>
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
@@ -615,5 +647,43 @@ v-s:CurrencyExchangeRateTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
   </div>
 </div>
+  """ ;
+.
+
+v-s:ContractParticipantTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractParticipantCustomer ;
+  v-ui:forClass v-s:ContractParticipantSupplier ;
+  v-ui:forClass v-s:ContractParticipantStakeholder ;
+  rdfs:label "Шаблон для класса v-s:ContractParticipantCustomer ContractParticipantSupplier"@ru ;
+  rdfs:label "Template for v-s:ContractParticipantCustomer ContractParticipantSupplier class"@en ;
+  v-ui:template """
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title" about="@" rel="v-s:hasRoleInContract" class="view -edit -search" data-template="v-ui:LabelTemplate"></h3>
+      <veda-control data-type="link" rel="v-s:hasRoleInContract" class="-view edit search dropdown fulltext"></veda-control>
+    </div>
+    <div class="panel-body">
+      <em about="v-s:hasContractor" property="rdfs:label"></em>
+      <div rel="v-s:hasContractor" class="view edit search">
+        <a href="#/@">
+          <span about="@" property="rdfs:label"></span>,
+          <span about="@" property="v-s:registrationNumber"></span>
+        </a>
+      </div>
+      <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext" data-template="{individual['rdfs:label'].join(' ') + ', ' + individual['v-s:registrationNumber'][0]}"></veda-control>
+      <em about="stg:OrganizationBundleContract" property="rdfs:label"></em>
+      <div rel="v-s:hasOrganization" class="view edit search">
+        <a href="#/@">
+          <span about="@" property="rdfs:label"></span>,
+          <span about="@" property="v-s:taxId"></span>
+        </a>
+      </div>
+      <veda-control data-type="link" rel="v-s:hasOrganization" class="-view edit search fulltext" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:taxId'][0]}"></veda-control>
+      <em about="rdfs:comment" property="rdfs:label"></em>
+      <div property="rdfs:comment" class="view -edit -search"></div>
+      <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
+    </div>
+  </div>
   """ ;
 .

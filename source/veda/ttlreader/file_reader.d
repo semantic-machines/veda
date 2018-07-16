@@ -289,7 +289,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
             log.trace("change file %s", fname);
 
             string     file_uri       = "d:" ~ baseName(fname);
-            Individual indv_ttrl_file = context.get_individual(&sticket, file_uri);
+            Individual indv_ttrl_file = context.get_individual(&sticket, file_uri, OptAuthorize.NO);
 
             if (!is_check)
             {
@@ -427,7 +427,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
                     {
                         individuals[ uri ] = Individual.init;
 
-                        Individual indv_in_storage = context.get_individual(&sticket, uri);
+                        Individual indv_in_storage = context.get_individual(&sticket, uri, OptAuthorize.NO);
 						long prev_update_counter = indv_in_storage.getFirstInteger ("v-s:updateCounter"); 
                         indv_in_storage.removeResource("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:previousVersion");

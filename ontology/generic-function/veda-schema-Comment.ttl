@@ -67,6 +67,12 @@ v-s:AllUsersGroup_CommentBaseUser_membership
 .
 #--------------------- Comments template ---------------------
 
+v-s:AddComment
+  rdf:type v-s:Bundle ;
+  rdfs:label "Добавить"@ru ;
+  rdfs:label "Add"@en ;
+.
+
 v-s:CommentsTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для отображения комментариев"@ru ;
@@ -76,7 +82,7 @@ v-s:CommentsTemplate
   <h3 about="v-s:Comments" property="rdfs:label"></h3>
   <div about="@" rel="v-s:hasComment" data-template="v-s:RecursiveCommentTemplate"></div>
   <div id="new-comment"></div>
-  <button class="margin-sm btn btn-success" id="add-comment" about="v-s:Add" property="rdfs:label"></button>
+  <button class="margin-sm btn btn-success" id="add-comment" about="v-s:AddComment" property="rdfs:label"></button>
 </div>
 <script>
   $("#add-comment", template).click(function () {

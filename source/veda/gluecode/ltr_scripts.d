@@ -211,7 +211,7 @@ private void ltrs_thread(string parent_url)
                         {
                             //log.trace("uri=%s", uri);
                             ResultCode rs;
-                            string     data = uri; 
+                            string     data = uri;
                             execute_script(sticket.user_uri, data, task.codelet_id, task.executed_script_binobj);
 
                             bool res = task.consumer.commit_and_next(true);
@@ -278,7 +278,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
 
     if (script is ScriptInfo.init)
     {
-        Individual codelet = context.get_individual(&sticket, script_uri);
+        Individual codelet = context.get_individual(&sticket, script_uri, OptAuthorize.NO);
         prepare_script(_wpl, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
     }
 

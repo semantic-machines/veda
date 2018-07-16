@@ -11,9 +11,7 @@
 	},
         "versions": ["isModule"],
         "license": "LGPL v3",
-        "libs": [
-                "raptor2"
-        ],
+        "libs": ["raptor2", "tarantool"],
 	"sourcePaths":[
             "../../veda/common",
             "../../veda/onto",
@@ -24,6 +22,7 @@
             "../../veda/core/common",
             "../../veda/vmodule",
             "../../veda/storage/lmdb",
+            "../../veda/storage/tarantool",
             "../../veda/ttlreader"
 	],
         "sourceFiles":[

@@ -86,22 +86,9 @@ v-s:actualState
   rdfs:domain v-s:Initiative ;
 .
 
-# -- Может в Проект а не в Инициативу. Используется ли в Идее
-v-s:hasProjectKind
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Вид проекта"@ru ;
-  rdfs:label "Project category"@en ;
-  rdfs:range v-s:ProjectKind ;
-  rdfs:domain v-s:Initiative ;
-.
-# -- Может в Проект а не в Инициативу. Используется ли в Идее
-v-s:hasProjectStage
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Стадия проекта"@ru ;
-  rdfs:label "Project phase"@en ;
-  rdfs:range v-s:ProjectStage ;
-  rdfs:domain v-s:Initiative ;
-.
+
+
+
 # -- Может в Проект а не в Инициативу. Используется ли в Идее
 v-s:projectManager
   rdf:type owl:ObjectProperty ;
@@ -399,19 +386,8 @@ v-s:FileContentClassifier
   rdfs:label "File content classifier"@en ;
 .
 #--------------------------------------------------
-v-s:ProjectStage
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Стадия проекта"@ru ;
-  rdfs:label "ProjectStage"@en ;
-.
-#--------------------------------------------------
-v-s:ProjectKind
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Вид проекта"@ru ;
-  rdfs:label "Project category"@en ;
-.
+
+
 #--------------------------------------------------
 v-s:WorkGroup
   rdf:type owl:Class ;
@@ -492,6 +468,7 @@ v-s:ProjectPhase
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Projectable ;  
   rdfs:label "Фаза проекта"@ru ;
   rdfs:label "Project phase"@en ;
 .
@@ -515,6 +492,7 @@ v-s:ProjectMilestone
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Projectable ;   
   rdfs:label "Контрольная точка проекта"@ru ;
   rdfs:label "Project milestone"@en ;
 .
@@ -546,29 +524,8 @@ v-s:riskAttachment
   rdfs:domain v-s:ProjectPhaseRisk ;
 .
 #--------------------------------------------------
-v-s:ProjectPhaseKind
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Вид фазы проекта"@ru ;
-  rdfs:label "Project phase kind"@en ;
-.
-#--------------------------------------------------
-# -- Подумать о другом названии и перенсти в другой файл
-v-s:Currency
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Registered ;
-  rdfs:label "Валюта"@ru ;
-  rdfs:label "Currency"@en ;
-.
-#--------------------------------------------------
-# -- перенсти в другой файл
-v-s:MaintenanceKind
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Вид обуслуживания оборудования"@ru ;
-  rdfs:label "Kind of maintenance"@en ;
-.
+
+
 
 # -- АТТРИБУТЫ START --------------------------------------------------
 
@@ -582,15 +539,8 @@ v-s:completion
   rdfs:domain v-s:ProjectMilestone ;
   rdfs:domain v-s:ProjectPlan ;
 .
-# --  судя по названию предикат должен быть только у фазы
-v-s:hasProjectPhaseKind
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Вид фазы проекта"@ru ;
-  rdfs:label "Project phase kind"@en ;
-  rdfs:range v-s:ProjectPhaseKind ;
-  rdfs:domain v-s:ProjectPhase ;
-  rdfs:domain v-s:ProjectMilestone ;
-.
+
+
 # --  уточнить используется ли в этих классах
 v-s:hasFileContentClassifier
   rdf:type owl:ObjectProperty ;

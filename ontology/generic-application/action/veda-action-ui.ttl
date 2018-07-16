@@ -1,0 +1,43 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-action-ui>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Мероптиятие. Интерфейс."@ru ;
+  rdfs:label "Veda system ontology. Action. UI."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+
+v-s:PsDateToForAction
+  rdf:type v-ui:DatatypePropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forProperty v-s:dateTo ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "Небязательно к заполнению, единичное значение."@ru ;
+  v-ui:tooltip "Non-Required, single value."@en ;
+  rdfs:label "Спецификация даты окончания для класса Action"@ru ;
+  rdfs:label "Preferences property specification for dateTo in Action class"@en ;
+.
+
+v-s:PsResponsibleForAction
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forProperty v-s:responsible ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
+  rdfs:label "Спецификация свойства responsible для класса Action"@ru ;
+  rdfs:label "Responsible property specification for Action class"@en ;
+.

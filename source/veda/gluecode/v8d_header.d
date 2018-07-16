@@ -3,7 +3,7 @@
  */
 module veda.gluecode.v8d_header;
 
-import std.stdio, std.conv, std.file, std.path, std.uuid;
+import std.stdio, std.conv, std.file, std.path, std.uuid, std.json;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction;
 import veda.util.container;
@@ -28,6 +28,7 @@ _Buff   g_document;
 _Buff   g_uri;
 _Buff   g_user;
 _Buff   g_ticket;
+string  g_event_id;
 
 _Buff   tmp_individual;
 _Buff   tmp;
@@ -144,7 +145,7 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
         if (code < 0)
         {
             ti.rc = ResultCode.Unprocessable_Entity;
-            log.trace("ERR! v8d:transaction:deserialize cmd:[%s] ticket:[%s] event:[%s] binobj[%s]", text (_cmd), _ticket_id, _event_id, _binobj);
+            log.trace("ERR! v8d:transaction:deserialize cmd:[%s] ticket:[%s] event:[%s] binobj[%s]", text(_cmd), _ticket_id, _event_id, _binobj);
             return;
         }
         else
@@ -295,14 +296,13 @@ extern (C++) bool uris_commit_and_next(const char *_consumer_id, int _consumer_i
 //////////////////////
 
 //чтение неправильное после операции add set
-extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
-                                       int _event_id_length)
+extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
 {
     // writeln("@V8:put_individual");
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                         cast(string)_event_id[ 0.._event_id_length ].dup);
+                         g_event_id);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -310,13 +310,12 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
     return ti.rc;
 }
 
-extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
-                                          int _event_id_length)
+extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
 {
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                         cast(string)_event_id[ 0.._event_id_length ].dup);
+                         g_event_id);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -324,13 +323,12 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
     return ti.rc;
 }
 
-extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length, const char *_event_id,
-                                          int _event_id_length)
+extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
 {
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                         cast(string)_event_id[ 0.._event_id_length ].dup);
+                         g_event_id);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -338,14 +336,12 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
     return ti.rc;
 }
 
-extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length,
-                                               const char *_event_id,
-                                               int _event_id_length)
+extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
 {
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                         cast(string)_event_id[ 0.._event_id_length ].dup);
+                         g_event_id);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -353,13 +349,12 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
     return ti.rc;
 }
 
-extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length, const char *_event_id,
-                                          int _event_id_length)
+extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length)
 {
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
-                         cast(string)_event_id[ 0.._event_id_length ].dup);
+                         g_event_id);
 
     if (ti.rc == ResultCode.OK)
         tnx.add(ti);
@@ -435,26 +430,32 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         if (_databases !is null && _databases_length > 1)
             databases = cast(string)_databases[ 0.._databases_length ];
 
-        Ticket   *ticket = g_context.get_storage().get_ticket(ticket_id, false);
+        Ticket *ticket = g_context.get_storage().get_ticket(ticket_id, false);
 
-		if (ticket is null)
-		{
-	        log.trace("ERR! [query] ticket not found, id=%s", ticket_id);
-	        return null;
-	    }
-		
-        string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false).result;
-        res = text(icb);
-
-        if (icb !is null)
+        if (ticket is null)
         {
-            tmp_individual.data   = cast(char *)res;
-            tmp_individual.length = cast(int)res.length;
-            return &tmp_individual;
-        }
-        else
+            log.trace("ERR! [query] ticket not found, id=%s", ticket_id);
             return null;
+        }
+
+        SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false);
+
+        JSONValue    jres;
+        jres[ "result" ]         = sr.result;
+        jres[ "count" ]          = sr.count;
+        jres[ "estimated" ]      = sr.estimated;
+        jres[ "processed" ]      = sr.processed;
+        jres[ "cursor" ]         = sr.cursor;
+        jres[ "total_time" ]     = sr.total_time;
+        jres[ "query_time" ]     = sr.query_time;
+        jres[ "authorize_time" ] = sr.authorize_time;
+        jres[ "result_code" ]    = sr.result_code;
+
+        res = jres.toString();
+
+        tmp_individual.data   = cast(char *)res;
+        tmp_individual.length = cast(int)res.length;
+        return &tmp_individual;
     }
     finally
     {
@@ -625,7 +626,7 @@ ScriptVM get_ScriptVM(Context ctx)
                 g_context = ctx;
                 log       = ctx.get_logger();
 
-                reload_ext_scripts();
+                reload_ext_scripts(ctx);
             }
             catch (Exception ex)
             {
@@ -637,11 +638,15 @@ ScriptVM get_ScriptVM(Context ctx)
     return script_vm;
 }
 
-private void reload_ext_scripts()
+private void reload_ext_scripts(Context ctx)
 {
     Script[] scripts;
     string[] script_file_name;
     writeln("-");
+
+    string sticket = ctx.sys_ticket().id;
+    g_ticket.data   = cast(char *)sticket;
+    g_ticket.length = cast(int)sticket.length;
 
     foreach (path; [ "./public/js/server", "./public/js/common" ])
     {

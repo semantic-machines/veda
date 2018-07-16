@@ -181,6 +181,12 @@ v-s:LinksTemplate
 """ ;
 .
 
+v-s:AddLink
+  rdf:type v-s:Bundle ;
+  rdfs:label "Добавить"@ru ;
+  rdfs:label "Add"@en ;
+.
+
 v-s:LinksListTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для управлениями произвольными связями документа"@ru ;
@@ -286,7 +292,7 @@ v-s:LinksListTemplate
       </tr>
     </tbody>
   </table>
-  <button class="margin-sm btn btn-success" id="add-link" about="v-s:Add" property="rdfs:label"></button>
+  <button class="margin-sm btn btn-success" id="add-link" about="v-s:AddLink" property="rdfs:label"></button>
 </div>
 """ ;
 .

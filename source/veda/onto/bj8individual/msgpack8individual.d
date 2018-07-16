@@ -10,7 +10,6 @@ module veda.onto.bj8individual.msgpack8individual;
 private import msgpack;
 private import std.outbuffer, std.stdio, std.string, std.conv;
 private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang;
-import veda.util.tests_tools;
 import backtrace.backtrace;
 import Backtrace = backtrace.backtrace;
 
@@ -45,14 +44,15 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
             string svalue = value.get!string;
 
             if (svalue == "")
-                packer.pack(null);
+                packer.beginArray(2).pack(DataType.Uri, null);
             else
-                packer.pack(svalue.dup);
+                packer.beginArray(2).pack(DataType.Uri, svalue);
+
             //stderr.writef("\tDATATYPE URI [%s]\n", value.get!string);
         }
         else if (value.type == DataType.Integer)
         {
-            packer.pack(value.get!long);
+            packer.beginArray(2).pack(DataType.Integer, value.get!long);
             //stderr.writef("\tDATATYPE INTEGER %d\n", value.get!long);
         }
         else if (value.type == DataType.Datetime)
@@ -60,16 +60,16 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
             packer.beginArray(2).pack(DataType.Datetime, value.get!long);
             //stderr.writef("\tDATATYPE DATETIME %d\n", value.get!long);
         }
+        else if (value.type == DataType.Boolean)
+        {
+            packer.beginArray(2).pack(DataType.Boolean, value.get!bool);
+            //stderr.writef("\tDATATYPE BOOLEAN %s\n", value.get!bool);
+        }
         else if (value.type == DataType.Decimal)
         {
             decimal x = value.get!decimal;
             packer.beginArray(3).pack(DataType.Decimal, x.mantissa, x.exponent);
             //stderr.writef("\tDATATYPE DECIMAL %d %d\n", x.mantissa, x.exponent);
-        }
-        else if (value.type == DataType.Boolean)
-        {
-            packer.pack(value.get!bool);
-            //stderr.writef("\tDATATYPE BOOLEAN %s\n", value.get!long);
         }
         else
         {
@@ -95,15 +95,14 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
     }
 }
 
-ubyte magic_header = 0xFF;
+ubyte magic_header = 146;
 
 public string individual2msgpack(ref Individual in_obj)
 {
     // this concatinate created copy ?
-    return cast(string)([ magic_header ] ~write_individual(in_obj));
+    ubyte[] res = write_individual(in_obj);
 
-    //ubyte[] buff = write_individual(in_obj);
-    //return cast(string)buff[ 0..buff.length ].dup;
+    return cast(string)(res);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -128,7 +127,7 @@ public int msgpack2individual(ref Individual individual, string in_str)
     {
         try
         {
-            StreamingUnpacker unpacker = StreamingUnpacker(src[ 1..$ ]);
+            StreamingUnpacker unpacker = StreamingUnpacker(src[ 0..$ ]);
 
             if (unpacker.execute())
             {
@@ -188,6 +187,27 @@ public int msgpack2individual(ref Individual individual, string in_str)
                                                 resources ~= Resource(DataType.String, "",
                                                                       LANG.NONE);
                                         }
+                                        else if (type == DataType.Uri)
+                                        {
+                                            if (arr[ 1 ].type == Value.type.raw)
+                                                resources ~= Resource(DataType.Uri,
+                                                                      (cast(string)arr[ 1 ].via.raw).dup);
+                                            else if (arr[ 1 ].type == Value.type.nil)
+                                                resources ~= Resource(DataType.Uri, "");
+                                        }
+                                        else if (type == DataType.Integer)
+                                        {
+                                            if (arr[ 1 ].type == Value.Type.unsigned)
+                                                resources ~= Resource(DataType.Integer,
+                                                                      arr[ 1 ].via.uinteger);
+                                            else
+                                                resources ~= Resource(DataType.Integer,
+                                                                      arr[ 1 ].via.integer);
+                                        }
+                                        else if (type == DataType.Boolean)
+                                        {
+                                            resources ~= Resource(DataType.Boolean, arr[ 1 ].via.boolean);
+                                        }
                                         else
                                         {
                                             stderr.writeln("ERR! msgpack2individual: [0][1] unknown type [%d]", type);
@@ -227,28 +247,6 @@ public int msgpack2individual(ref Individual individual, string in_str)
                                             return -1;
                                         }
                                     }
-                                    break;
-
-                                case Value.Type.raw:
-                                    // writeln("\t\t\t\t", cast(string)resources_vals[i].via.raw);
-                                    resources ~= Resource(DataType.Uri,
-                                                          (cast(string)resources_vals[ i ].via.raw).dup);
-                                    break;
-
-                                case Value.Type.unsigned:
-                                    resources ~= Resource(DataType.Integer,
-                                                          resources_vals[ i ].via.uinteger);
-                                    break;
-
-                                case Value.Type.signed:
-                                    resources ~= Resource(DataType.Integer,
-                                                          resources_vals[ i ].via.integer);
-                                    break;
-
-
-                                case Value.Type.boolean:
-                                    resources ~= Resource(DataType.Boolean,
-                                                          resources_vals[ i ].via.boolean);
                                     break;
 
                                 default:

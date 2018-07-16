@@ -1,5 +1,7 @@
 BUILD_PATH=$PWD
 
+./stop
+
 #!/bin/sh
 rm *.log
 rm ./logs/*.log
@@ -14,7 +16,8 @@ fi
     cd source/authorization
     cargo build --release
     cd $BUILD_PATH
-    sudo cp ./source/lib64/libauthorization.so /usr/local/lib
+    sudo cp ./source/lib64/libauthorization.so $PWD
+    sudo cp $PWD/libauthorization.so /usr/local/lib
     sudo ldconfig
 
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
@@ -46,6 +49,10 @@ fi
 
 if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
     ./build-component.sh veda-mstorage mstorage
+fi
+
+if [ -z $1 ] || [ $1 == "lmdb-srv" ] || [ $1 == "veda-lmdb-srv" ] ; then
+    ./build-component.sh veda-lmdb-srv lmdb-srv
 fi
 
 if [ -z $1 ] || [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
@@ -86,12 +93,9 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
     ./build-component.sh veda-ft-query ft-query
 fi
 
-#if [ -z $1 ] || [ $1 == "lmdb-server" ] || [ $1 == "veda-lmdb-server" ] ; then
-#  cd source/lmdb-server
-#  cargo build --release
-#  cp ./target/release/veda-lmdb-server $BUILD_PATH/veda-lmdb-server      
-#  cd $BUILD_PATH
-#fi
+if [ -z $1 ] || [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
+    ./build-component.sh veda-input-queue input-queue
+fi
 
 if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
     cd source/veda-gowebserver
@@ -99,7 +103,6 @@ if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
     cd $BUILD_PATH
     cp source/veda-gowebserver/veda-gowebserver ./veda-gowebserver
 fi
-
 
 #if [ -z $1 ] || [ $1 == "db_handler" ] ; then
 #  cd source/rust_db_handler/db_handler

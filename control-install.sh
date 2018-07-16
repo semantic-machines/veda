@@ -5,6 +5,7 @@ DMD_VER=2.073.2
 DUB_VER=1.2.0
 GO_VER=go1.10.1
 MSGPUCK_VER=2.0
+TARANTOOL_VER=2.0
 
 INSTALL_PATH=$PWD
 
@@ -23,6 +24,24 @@ LIB_NAME[12]="curl"
 
 LIB_OK="Status: install ok installed"
 F_UL=0
+
+### LIBS FROM APT ###
+
+for i in "${LIB_NAME[@]}"; do
+
+    L1=`dpkg -s $i | grep 'install ok'`
+
+    if  [ "$L1" != "$LIB_OK" ]; then
+
+      if [ $F_UL == 0 ]; then
+          sudo apt-get update
+          F_UL=1
+      fi
+
+        sudo apt-get install -y $i
+    fi
+
+done
 
 #echo "--- INSTALL VIBE.D ---"
 #mkdir tmp
@@ -56,26 +75,30 @@ cargo -V
 ### D LANG ###
 
 # Get right version of DMD
-if ! dmd --version | grep $DMD_VER ; then    
+if ! dmd --version | grep $DMD_VER ; then
     echo "--- INSTALL DMD ---"
-    wget http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
+    wget -w 10 http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
     sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
     rm dmd_$DMD_VER-0_amd64.deb
     rm -r ~/.dub
+else
+    echo "--- DMD INSTALLED ---"
 fi
 
 # Get right version of DUB
 if ! dub --version | grep $DUB_VER ; then
     echo "--- INSTALL DUB ---"
     wget http://code.dlang.org/files/dub-$DUB_VER-linux-x86_64.tar.gz
-    tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz    
+    tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz
     sudo cp ./dub /usr/bin/dub
     rm dub-$DUB_VER-linux-x86_64.tar.gz
     rm dub
+else
+    echo "--- DUB INSTALLED ---"
 fi
 
 ### GO LANG ###
-
+if ! go version | grep $GO_VER ; then
     echo "--- INSTALL GOLANG ---"
     mkdir tmp
     cd tmp
@@ -103,7 +126,9 @@ fi
 
     go version
     cd ..
-
+else
+    echo "--- GOLANG INSTALLED ---"
+fi
 
 #lmdb-go
 #go get -v github.com/muller95/lmdb-go/lmdb
@@ -117,36 +142,17 @@ go get -v github.com/op/go-nanomsg
 
 #traildb-go
 go get github.com/traildb/traildb-go
-
+go get github.com/tarantool/go-tarantool
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
 go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
-ls $HOME/go 
-
-### LIBS FROM APT ###
-
-for i in "${LIB_NAME[@]}"; do
-
-    L1=`dpkg -s $i | grep 'install ok'`
-
-    if  [ "$L1" != "$LIB_OK" ]; then
-
-	if [ $F_UL == 0 ]; then
-	    sudo apt-get update
-	    F_UL=1
-	fi 
-
-        sudo apt-get install -y $i
-    fi
-
-done
-
+ls $HOME/go
 
 ### TARANTOOL SERVER ###
 
-if ! tarantool -V | grep 2.0; then
-
+if ! tarantool -V | grep $TARANTOOL_VER; then
+echo "--- INSTALL TARANTOOL ---"
 curl http://download.tarantool.org/tarantool/2.0/gpgkey | sudo apt-key add -
 release=`lsb_release -c -s`
 
@@ -159,7 +165,7 @@ sudo tee /etc/apt/sources.list.d/tarantool_2_0.list <<- EOF
 deb http://download.tarantool.org/tarantool/2.0/ubuntu/ $release main
 deb-src http://download.tarantool.org/tarantool/2.0/ubuntu/ $release main
 EOF
-    
+
 # install
 sudo apt-get update
 sudo apt-get remove tarantool
@@ -169,12 +175,13 @@ sudo apt-get -y install tarantool-dev
 
 tarantool -V
 
+else
+    echo "--- TARANTOOL INSTALLED ---"
 fi
 
 ### LIB WEBSOCKETS ###
 
 if ! ldconfig -p | grep libwebsockets; then
-
     # make libwebsockets dependency
     mkdir tmp
     wget https://github.com/warmcat/libwebsockets/archive/v2.0.3.tar.gz -P tmp
@@ -196,13 +203,12 @@ fi
 ### LIB NANOMSG ###
 
 if ! ldconfig -p | grep libnanomsg; then
-
     # make nanomsg dependency
     mkdir tmp
-    wget https://github.com/nanomsg/nanomsg/archive/1.1.2.tar.gz -P tmp
+    wget https://github.com/nanomsg/nanomsg/archive/1.1.4.tar.gz -P tmp
     cd tmp
-    tar -xvzf 1.1.2.tar.gz
-    cd nanomsg-1.1.2
+    tar -xvzf 1.1.4.tar.gz
+    cd nanomsg-1.1.4
     mkdir build
     cd build
     cmake ..
@@ -222,7 +228,7 @@ fi
 ### LIB TRAILDB ###
 
 if ! ldconfig -p | grep libtraildb; then
-
+    echo "--- INSTALL LIB TRAILDB ---"
     sudo apt-get install -y libarchive-dev pkg-config
     sudo apt-get remove -y libjudydebian1
     sudo apt-get remove -y libjudy-dev
@@ -247,6 +253,8 @@ if ! ldconfig -p | grep libtraildb; then
     cd ..
     cd ..
     cd ..
+else
+    echo "--- LIB TRAILDB INSTALLED ---"
 fi
 
 ### LIB RAPTOR ###
@@ -254,7 +262,7 @@ fi
 sudo apt-get remove -y libraptor2-0
 ldconfig -p | grep libraptor2
 if ! ldconfig -p | grep libraptor2; then
-
+    echo "--- INSTALL LIB RAPTOR ---"
     sudo apt-get install -y gtk-doc-tools
     sudo apt-get install -y libxml2-dev
     sudo apt-get install -y flex
@@ -276,10 +284,12 @@ if ! ldconfig -p | grep libraptor2; then
     cd ..
     cd ..
 
+else
+    echo "--- LIB RAPTOR INSTALLED ---"
 fi
 
 if ! ldconfig -p | grep libtarantool; then
-
+    echo "--- INSTALL LIBTARANTOOL ---"
     TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
 
     mkdir tmp
@@ -291,7 +301,7 @@ if ! ldconfig -p | grep libtarantool; then
     wget https://github.com/tarantool/msgpuck/archive/$MSGPUCK_VER.tar.gz -P third_party/msgpuck -P .
     tar -xvzf $MSGPUCK_VER.tar.gz
 
-    cp msgpuck-$MSGPUCK_VER/* tarantool-c-$TTC/third_party/msgpuck 
+    cp msgpuck-$MSGPUCK_VER/* tarantool-c-$TTC/third_party/msgpuck
     cd tarantool-c-$TTC
 
     mkdir build
@@ -304,10 +314,12 @@ if ! ldconfig -p | grep libtarantool; then
     cd ..
     cd ..
 
+else
+    echo "--- LIBTARANTOOL INSTALLED ---"
 fi
 
 if ! ldconfig -p | grep libmdbx; then
-
+    echo "--- INSTALL LIBMDBX ---"
     TTC=24a8bdec49ee360bf0412631ff8931de91e109fc
 
     mkdir tmp
@@ -327,6 +339,8 @@ if ! ldconfig -p | grep libmdbx; then
 
     cd ..
 
+else
+    echo "--- LIBMDBX INSTALLED ---"
 fi
     cd $INSTALL_PATH
     cd source/authorization

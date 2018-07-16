@@ -138,8 +138,46 @@ Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
                             rr_v8->Set(f_type, String::NewFromUtf8(isolate, "String"));
                             resources_v8->Set(j, rr_v8);
                         }
+                        else if (value_type == _Uri)
+                        {
+							Handle<Object> rr_v8 = Object::New(isolate);
+
+							sval = mp_decode_str(&binobj, &sval_len);
+							string val = string(sval, sval_len);
+							rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
+							rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Uri"));
+							resources_v8->Set(j, rr_v8);							
+						}	
+                        else if (value_type == _Integer)
+                        {
+                            Handle<Object> rr_v8 = Object::New(isolate);
+
+                            type = mp_typeof(*binobj);
+                            //std::cerr << "MSGPACK->JS INTEGER " << type << endl;
+
+                            int64_t value;
+
+                            if (type == MP_INT)
+                                value = mp_decode_int(&binobj);
+                            else if (type == MP_UINT)
+                                value = mp_decode_uint(&binobj);
+
+							rr_v8->Set(f_data, v8::Integer::New(isolate, value));
+							rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Integer"));
+							resources_v8->Set(j, rr_v8);
+						}	
+                        else if (value_type == _Boolean)
+                        {
+							Handle<Object> rr_v8 = Object::New(isolate);
+
+							bool           value = mp_decode_bool(&binobj);
+							rr_v8->Set(f_data, v8::Boolean::New(isolate, value));
+							rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Boolean"));
+							resources_v8->Set(j, rr_v8);							
+						}	
                         else
                         {
+                            std::cerr << "ERR! MSGPACK->JS ??? value_type=" << value_type << endl;
                             return Object::New(isolate);
                         }
                     }
@@ -195,7 +233,7 @@ Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
                             else
                             {
                                 mp_next(&binobj);
-                                //std::cerr << "@ERR! NOT A STRING IN RESOURCE ARRAY 2" << endl;
+                                std::cerr << "ERR! NOT A STRING IN RESOURCE ARRAY 2" << endl;
                                 return Object::New(isolate);
                             }
 
@@ -216,57 +254,9 @@ Handle<Value> msgpack2jsobject(Isolate *isolate, string in_str)
                     }
                     else
                     {
+                        std::cerr << "ERR! MSGPACK->JS other ARRAY size, value_struct_size=" << value_struct_size << endl;
                         return Object::New(isolate);
                     }
-                    break;
-                }
-
-            case MP_STR:
-                {
-                    Handle<Object> rr_v8 = Object::New(isolate);
-
-                    sval = mp_decode_str(&binobj, &sval_len);
-                    string val = string(sval, sval_len);
-                    rr_v8->Set(f_data, String::NewFromUtf8(isolate, val.c_str()));
-                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Uri"));
-                    resources_v8->Set(j, rr_v8);
-
-                    break;
-                }
-
-            case MP_INT:
-                {
-                    Handle<Object> rr_v8 = Object::New(isolate);
-
-                    int64_t        value = mp_decode_int(&binobj);
-                    rr_v8->Set(f_data, v8::Integer::New(isolate, value));
-                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Integer"));
-                    resources_v8->Set(j, rr_v8);
-
-                    break;
-                }
-
-            case MP_UINT:
-                {
-                    Handle<Object> rr_v8 = Object::New(isolate);
-
-                    uint64_t       value = mp_decode_uint(&binobj);
-                    rr_v8->Set(f_data, v8::Integer::New(isolate, value));
-                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Integer"));
-                    resources_v8->Set(j, rr_v8);
-
-                    break;
-                }
-
-            case MP_BOOL:
-                {
-                    Handle<Object> rr_v8 = Object::New(isolate);
-
-                    bool           value = mp_decode_bool(&binobj);
-                    rr_v8->Set(f_data, v8::Boolean::New(isolate, value));
-                    rr_v8->Set(f_type, String::NewFromUtf8(isolate, "Boolean"));
-                    resources_v8->Set(j, rr_v8);
-
                     break;
                 }
 
@@ -325,12 +315,16 @@ char *js_el_2_msgpack_el(Local<Object> resource_obj, Handle<Value> f_data, Handl
     //cerr << "\t\t@TYPE " << type << endl;
     if (type == _Uri)
     {
+        bptr = mp_encode_array(bptr, 2);
+        bptr = mp_encode_uint(bptr, (uint)_Uri);
         string str_data = std::string(*v8::String::Utf8Value(v_data));
         bptr = mp_encode_str(bptr, str_data.c_str(), str_data.size());
         //cerr << "\t\t\t@STR DATA " << str_data << endl;
     }
     else if (type == _Boolean)
     {
+        bptr = mp_encode_array(bptr, 2);
+        bptr = mp_encode_uint(bptr, (uint)_Boolean);
         bool bool_data = v_data->ToBoolean()->Value();
         bptr = mp_encode_bool(bptr, bool_data);
         //cerr << "\t\t\t@BOOL DATA " << bool_data << endl;
@@ -345,6 +339,8 @@ char *js_el_2_msgpack_el(Local<Object> resource_obj, Handle<Value> f_data, Handl
     }
     else if (type == _Integer)
     {
+        bptr = mp_encode_array(bptr, 2);
+        bptr = mp_encode_uint(bptr, (uint)_Integer);
         int64_t long_data = v_data->ToInteger()->Value();
         bptr = mp_encode_int(bptr, long_data);
         //cerr << "\t\t\t@LONG DATA " << long_data << endl;
@@ -555,7 +551,6 @@ void jsobject2msgpack(Local<Value> value, Isolate *isolate, std::vector<char> &o
         }
     }
 
-    ou.push_back((char)0xFF);
     ou.insert(ou.end(), buf, bptr);
 
     //cerr << "!!END LOGGING!!" << endl;

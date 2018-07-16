@@ -1,0 +1,49 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-meeting-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Встреча. Схема."@ru ;
+  rdfs:label "Veda system ontology. Meeting. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:Meeting
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Activity ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:label "Встреча"@ru ;
+  rdfs:label "Meeting"@en ;
+.
+v-s:agenda
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Повестка"@ru ;
+  rdfs:label "Agenda"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Meeting ;
+.
+v-s:meetingDecision
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Решение"@ru ;
+  rdfs:label "Decision"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:Meeting ;
+.
+v-s:moderator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Модератор"@ru ;
+  rdfs:label "Moderator"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Meeting ;
+.
+# --- В связи с вводом класса может использоваться предикат v-s:hasActivity. Он описан в классе v-s:Activity
+
+
+

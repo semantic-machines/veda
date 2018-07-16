@@ -41,8 +41,6 @@ private nothrow string req_prepare(string request, Context context)
         {
             if (jsn.array.length == 8)
             {
-                //context.get_logger.trace ("query: %s", els);
-
                 string _ticket    = jsn.array[ 0 ].str;
                 string _query     = jsn.array[ 1 ].str;
                 string _sort      = jsn.array[ 2 ].str;
@@ -63,7 +61,6 @@ private nothrow string req_prepare(string request, Context context)
                     try
                     {
                         res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
-                        //context.get_logger.trace("res=%s", res);
                     }
                     catch (Throwable tr)
                     {
@@ -75,9 +72,15 @@ private nothrow string req_prepare(string request, Context context)
                 {
                     context.get_logger.trace("ERR! ticket is null: ticket_id = %s", _ticket);
                 }
+                
+		        //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
             }
         }
+
         string response = to_json_str(res);
+
+        //context.get_logger.trace("RESPONCE: %s", response);
+
         return response;
     }
     catch (Throwable tr)
@@ -136,6 +139,8 @@ void main(string[] args)
 
     int sock;
     log = new Logger("veda-core-ft-query", "log", "");
+    Ticket  systicket;
+    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
@@ -149,9 +154,6 @@ void main(string[] args)
         return;
     }
     log.trace("success bind to %s", bind_url);
-
-    Ticket  systicket;
-    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
     while (!f_listen_exit)
     {

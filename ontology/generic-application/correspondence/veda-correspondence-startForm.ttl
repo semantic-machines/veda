@@ -1,0 +1,82 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix s-wfb: <http://semantic-machines.com/veda/simple-workflow-base/> .
+@prefix : <http://semantic-machines.com/veda/simple-workflow/> .
+@prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix td: <http://semantic-machines.com/veda/test-data/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+
+
+<http://semantic-machines.com/veda/veda-correspondence-startForm>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Корреспонденция. Стартовая форма."@ru ;
+  rdfs:label "Veda system ontology. Correspondence. Start form."@en ;
+  v-s:loadPriority 20 ;
+.
+
+v-s:IncomingLetter_ComplexRouteStartForm_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных комплексного маршрута Входящее письмо"@ru ;
+  rdfs:label "IncomingLetter complex route start form template"@en ;
+  v-ui:template """
+<script>
+  var stages = ['review'];
+  var complex = "s-wf:ComplexRouteStartForm_";
+  var simple = "s-wf:SimpleRouteStartForm_";
+  if (mode!=="edit") return;
+
+  var doc = individual['v-wf:processedDocument'][0];
+  if (!doc) { return; }
+
+  individual.addSimpleStartForm(stages, complex);
+
+  individual[complex+'review'][0][simple+'visible'] = [true];
+  individual[complex+'review'][0][simple+'editable'] = [true];
+  individual[complex+'review'][0][simple+'deadlineDays'] = [10];
+  if (doc.hasValue("v-s:recipient")) individual[complex+'review'][0][simple+'participant'] = doc["v-s:recipient"][0]["v-s:correspondentPerson"];
+  
+//# sourceURL=v-s:IncomingLetter_ComplexRouteStartForm_Template_pre
+</script>
+<div about="@" data-embedded="true" data-template="s-wf:ComplexRouteStartForm_Common_Template" class="view edit"></div>
+""" ;
+.
+
+v-s:OutgoingLetter_ComplexRouteStartForm_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон стартовых данных комплексного маршрута Исходящее письмо"@ru ;
+  rdfs:label "OutgoingLetter complex route start form template"@en ;
+  v-ui:template """
+<script>
+  var stages = ['coordination1', 'coordination2', 'sign'];
+  var complex = "s-wf:ComplexRouteStartForm_";
+  var simple = "s-wf:SimpleRouteStartForm_";
+  if (mode!=="edit") return;
+
+  var doc = individual['v-wf:processedDocument'][0];
+  if (!doc) { return; }
+
+  individual.addSimpleStartForm(stages, complex);
+
+  individual[complex+'coordination1'][0][simple+'visible'] = [true];
+  individual[complex+'coordination1'][0][simple+'editable'] = [true];
+  individual[complex+'coordination1'][0][simple+'deadlineDays'] = [3];
+  individual[complex+'coordination2'][0][simple+'visible'] = [true];
+  individual[complex+'coordination2'][0][simple+'editable'] = [true];
+  individual[complex+'coordination2'][0][simple+'deadlineDays'] = [3];
+  individual[complex+'sign'][0][simple+'visible'] = [true];
+  individual[complex+'sign'][0][simple+'editable'] = [true];
+  individual[complex+'sign'][0][simple+'deadlineDays'] = [3];
+  individual[complex+'sign'][0][simple+'participant'] = doc["v-s:sender"][0]["v-s:correspondentPerson"];
+
+//# sourceURL=v-s:OutgoingLetter_ComplexRouteStartForm_Template_pre
+</script>
+<div about="@" data-embedded="true" data-template="s-wf:ComplexRouteStartForm_Common_Template" class="view edit"></div>
+""" ;
+.

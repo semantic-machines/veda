@@ -212,7 +212,7 @@ class VedaStorageRest : VedaStorageRest_API
             ResultCode rc = ticket.result;
             if (rc == ResultCode.OK)
             {
-                file_info = context.get_individual(ticket, uri);
+                file_info = context.get_individual(ticket, uri, OptAuthorize.YES);
 
                 //log.trace("@v file_info=%s", file_info);
                 auto fileServerSettings = new HTTPFileServerSettings;
@@ -476,7 +476,7 @@ class VedaStorageRest : VedaStorageRest_API
                 if (is_external_users)
                 {
                     log.trace("authenticate:check external user (%s)", ticket.user_uri);
-                    Individual user = context.get_individual(&ticket, ticket.user_uri);
+                    Individual user = context.get_individual(&ticket, ticket.user_uri, OptAuthorize.YES);
                     if (user.isExists("v-s:origin", Resource("External User")) == false)
                     {
                         log.trace("ERR! authenticate:user (%s) is not external", ticket.user_uri);
@@ -753,7 +753,7 @@ class VedaStorageRest : VedaStorageRest_API
 
                         if (cb.length > 0)
                         {
-                            if (cb[ 0 ] == 0xFF)
+                            if (cb[ 0 ] == 146)
                                 msgpack2json(&res_i, cb);
                             else
                                 cbor2json(&res_i, cb);
@@ -828,7 +828,7 @@ class VedaStorageRest : VedaStorageRest_API
 
 
                         // TODO: ? возможно для скорости следует переделать get_info на rawRead
-                        main_queue.get_info();
+                        main_queue.get_info(main_queue.chunk);
                         cs0.get_info();
 
                         Individual indv_res;
@@ -880,7 +880,7 @@ class VedaStorageRest : VedaStorageRest_API
 
                         if (cb.length > 0)
                         {
-                            if (cb[ 0 ] == 0xFF)
+                            if (cb[ 0 ] == 146)
                                 msgpack2json(&res, cb);
                             else
                                 cbor2json(&res, cb);
@@ -1372,7 +1372,7 @@ private Ticket *get_ticket(Context context, string ticket_id)
 
         if (external_users_ticket_id.get(ticket_id, false) == false)
         {
-            Individual user = context.get_individual(ticket, ticket.user_uri);
+            Individual user = context.get_individual(ticket, ticket.user_uri, OptAuthorize.YES);
             if (user.isExists("v-s:origin", Resource("External User")) == false)
             {
                 log.trace("ERR! user (%s) is not external", ticket.user_uri);

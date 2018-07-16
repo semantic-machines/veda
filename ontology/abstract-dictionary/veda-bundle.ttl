@@ -13,82 +13,21 @@
   v-s:loadPriority 9 ;
 .
 
-v-s:SystemProperties
-  rdf:type v-s:Bundle ;
-  rdfs:label "Системные свойства"@ru ;
-  rdfs:label "System properties"@en ;
-.
 v-s:MainProperties
   rdf:type v-s:Bundle ;
   rdfs:label "Основные свойства"@ru ;
   rdfs:label "Main properties"@en ;
-.
-v-s:Versions
-  rdf:type v-s:Bundle ;
-  rdfs:label "Версии"@ru ;
-  rdfs:label "Versions"@en ;
-.
-v-s:Back
-  rdf:type v-s:Bundle ;
-  rdfs:label "Назад"@ru ;
-  rdfs:label "Back"@en ;
-.
-v-s:Add
-  rdf:type v-s:Bundle ;
-  rdfs:label "Добавить"@ru ;
-  rdfs:label "Add"@en ;
-.
-v-s:Ok
-  rdf:type v-s:Bundle ;
-  rdfs:label "Ок"@ru ;
-  rdfs:label "Ok"@en ;
 .
 v-s:Forward
   rdf:type v-s:Bundle ;
   rdfs:label "Вперед"@ru ;
   rdfs:label "Forward"@en ;
 .
-v-s:Chief
-  rdf:type v-s:Bundle ;
-  rdfs:label "Руководитель"@ru ;
-  rdfs:label "Chief"@en ;
-.
-v-s:ImplementationPeriod
-  rdf:type v-s:Bundle ;
-  rdfs:label "Период реализации"@ru ;
-  rdfs:label "Implementation period"@en ;
-.
-
-v-s:ViewDetails
-  rdf:type v-s:Bundle ;
-  rdfs:label "Подробнее"@ru ;
-  rdfs:label "View details"@en ;
-.
-
 v-s:Clone
   rdf:type v-s:Bundle ;
   rdfs:label "Сделать копию"@ru ;
   rdfs:label "Make a copy"@en ;
 .
-
-v-s:NewTasks
-  rdf:type v-s:Bundle ;
-  rdfs:label "Новые задачи"@ru ;
-  rdfs:label "New tasks"@en ;
-.
-
-v-s:MyPage
-  rdf:type v-s:Bundle ;
-  rdfs:label "Моя страница"@ru ;
-  rdfs:label "My page"@en ;
-.
-
-v-s:Aspects
-  rdf:type v-s:Bundle ;
-  rdfs:label "Аспекты"@ru ;
-  rdfs:label "Aspects"@en ;
-.
-
 v-s:Favorites
   rdf:type v-s:Bundle ;
   rdfs:label "Избранное"@ru ;
@@ -188,6 +127,11 @@ v-s:DeletedAlert
   rdf:type v-s:Bundle ;
   rdfs:label "Объект удален"@ru ;
   rdfs:label "Object is deleted"@en ;
+.
+v-s:InvalidAlert
+  rdf:type v-s:Bundle ;
+  rdfs:label "Документ не актуален"@ru ;
+  rdfs:label "Document is invalid"@en ;
 .
 v-s:Destroy
   rdf:type v-s:Bundle ;

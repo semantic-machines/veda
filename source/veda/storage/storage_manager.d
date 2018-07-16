@@ -8,10 +8,12 @@ private
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string, std.digest.ripemd, std.bigint;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
-    import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage, veda.storage.binlog_tools, veda.util.module_info;
+    import veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type, veda.core.common.transaction, veda.storage.common;
-    import kaleidic.nanomsg.nano;
+    import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.bind.libwebsocketd, veda.util.properd;
+    import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage;
+    import veda.storage.tarantool.tarantool_driver;
 }
 
 // ////// Logger ///////////////////////////////////////////
@@ -88,7 +90,7 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
 }
 
 public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze,
-                         out long op_id)
+                       out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
@@ -109,10 +111,10 @@ public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, immutable 
 }
 
 public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
-                         string new_binobj,
-                         long update_counter,
-                         string event_id, long tnx_id, long assigned_subsystems, OptFreeze opt_freeze,
-                         out long op_id)
+                       string new_binobj,
+                       long update_counter,
+                       string event_id, long tnx_id, long assigned_subsystems, OptFreeze opt_freeze,
+                       out long op_id)
 {
     ResultCode rc;
     Tid        tid = getTid(storage_id);
@@ -146,18 +148,39 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     core.thread.Thread.getThis().name = thread_name;
 
     KeyValueDB                   storage = null;
-    string                       db_path;
+    string                       db_name;
 
-    if (_storage_id == P_MODULE.subject_manager)
+    string[ string ] properties = readProperties("./veda.properties");
+    string tarantool_url = properties.as!(string)("tarantool_url");
+
+    if (tarantool_url !is null)
     {
-        storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
-        db_path = individuals_db_path;
+        if (_storage_id == P_MODULE.subject_manager)
+        {
+            storage = new TarantoolDriver(log, "individuals", 512);
+            db_name = individuals_db_path;
+        }
+        else if (_storage_id == P_MODULE.ticket_manager)
+        {
+            storage = new TarantoolDriver(log, "tickets", 513);
+            db_name = tickets_db_path;
+        }
     }
-    else if (_storage_id == P_MODULE.ticket_manager)
+    else
     {
-        storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
-        db_path = tickets_db_path;
+        if (_storage_id == P_MODULE.subject_manager)
+        {
+            storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
+            db_name = individuals_db_path;
+        }
+        else if (_storage_id == P_MODULE.ticket_manager)
+        {
+            storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
+            db_name = tickets_db_path;
+        }
     }
+
+    create_folder_struct();
 
     long count = storage.count_entries();
 
@@ -165,7 +188,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
     int            size_bin_log         = 0;
     int            max_size_bin_log     = 10_000_000;
-    string         bin_log_name         = get_new_binlog_name(db_path);
+    string         bin_log_name         = get_new_binlog_name(db_name);
     long           last_reopen_rw_op_id = 0;
     int            max_count_updates    = 10_000;
 
@@ -376,7 +399,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                         BigInt msg_hash = "0x" ~ toHexString(hash);
                                         new_hash = toHex(msg_hash);
 
-                                        bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_path);
+                                        bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_name);
 
                                         if (storage_id == P_MODULE.subject_manager)
                                         {

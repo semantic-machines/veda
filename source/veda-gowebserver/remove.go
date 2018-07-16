@@ -22,7 +22,7 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 	var jsonData map[string]interface{}
 	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 	if err != nil {
-		log.Println("@ERR REMOVE_FROM_INDIVIDUAL: DECODING JSON REQUEST ", err)
+		log.Println("ERR! REMOVE_FROM_INDIVIDUAL: DECODING JSON REQUEST ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -63,7 +63,7 @@ func removeIndividual(ctx *fasthttp.RequestCtx) {
 	var jsonData map[string]interface{}
 	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 	if err != nil {
-		log.Println("@ERR REMOVE_INDIVIDUAL: DECODING JSON REQUEST ", err)
+		log.Println("ERR! REMOVE_INDIVIDUAL: DECODING JSON REQUEST ", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}

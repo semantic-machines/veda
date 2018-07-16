@@ -363,7 +363,11 @@
       allowInputToggle: true,
       format: format,
       sideBySide: true,
-      useCurrent: true
+      useCurrent: true,
+      widgetPositioning: {
+        horizontal: "auto",
+        vertical: "bottom"
+      }
     });
 
     input.on("change focusout", function () {
@@ -743,7 +747,6 @@
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
       select = $("select", control),
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
@@ -752,7 +755,9 @@
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
-      options = [];
+      options = [],
+      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
+      withDeleted = false || this.data("deleted");
 
     populate();
 
@@ -804,7 +809,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix).then(renderOptions);
+        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -817,6 +822,9 @@
         if (index >= 100) { return; }
         var opt = first_opt.clone().appendTo(select);
         opt.text( renderValue(value) ).data("value", value);
+        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+          opt.addClass("deleted");
+        }
         if ( isSingle && individual.hasValue(property_uri, value) ) {
           opt.prop("selected", true);
         }
@@ -825,9 +833,10 @@
 
     function handler() {
       if (isSingle) {
+        populate();
         $("option", control).each(function () {
           var value = $(this).data("value");
-          var hasValue = individual.hasValue(property_uri, value);
+          var hasValue = !!value && individual.hasValue(property_uri, value);
           $(this).prop("selected", hasValue);
         });
       }
@@ -848,6 +857,10 @@
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
+      if (e.type === "search") {
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
+      }
     });
     this.val = function (value) {
       if (!value) return $("select", this).val();
@@ -879,7 +892,8 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
-      options = [];
+      options = [],
+      withDeleted = false || this.data("deleted");
 
     populate();
 
@@ -915,7 +929,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix).then(renderOptions);
+        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -928,15 +942,16 @@
         var hld = holder.clone().appendTo(control);
         var lbl = $("label", hld).append( renderValue(value) );
         var chk = $("input", lbl).data("value", value);
+        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+          hld.addClass("deleted");
+        }
         var hasValue = individual.hasValue(property_uri, value);
         chk.prop("checked", hasValue);
         chk.change(function () {
           if ( chk.is(":checked") ) {
-            individual.set(property_uri, individual.get(property_uri).concat( chk.data("value") ));
+            individual.addValue(property_uri, value);
           } else {
-            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
-              return i.valueOf() !== chk.data("value").valueOf();
-            }));
+            individual.removeValue(property_uri, value);
           }
         });
       });
@@ -972,6 +987,10 @@
         $("div.checkbox", control).removeClass("disabled");
         $("input", control).removeAttr("disabled");
       }
+      if (e.type === "search") {
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
+      }
     });
     this.val = function (value) {
       if (!value) return $("input", this).map(function () { return this.value; });
@@ -1004,7 +1023,8 @@
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
-      options = [];
+      options = [],
+      withDeleted = false || this.data("deleted");
 
     populate();
 
@@ -1040,7 +1060,7 @@
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix).then(renderOptions);
+        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
       renderOptions(options);
@@ -1053,6 +1073,9 @@
         var hld = holder.clone().appendTo(control);
         var lbl = $("label", hld).append( renderValue(value) );
         var rad = $("input", lbl).data("value", value);
+        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+          hld.addClass("deleted");
+        }
         var hasValue = individual.hasValue(property_uri, value);
         rad.prop("checked", hasValue);
         rad.change(function () {
@@ -1096,6 +1119,10 @@
       } else {
         $("div.radio", control).removeClass("disabled");
         $("input", control).removeAttr("disabled");
+      }
+      if (e.type === "search") {
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
     this.val = function (value) {
@@ -1340,24 +1367,55 @@
     });
   }
 
+//  function resizeImage (image, maxWidth) {
+//    if (image.width <= maxWidth) {
+//      return image;
+//    }
+//    var canvas1 = document.createElement("canvas"),
+//        context1 = canvas1.getContext("2d"),
+//        canvas2 = document.createElement("canvas"),
+//        context2 = canvas2.getContext("2d"),
+//        ratio = maxWidth / image.width,
+//        width = image.width * ratio >> 0,
+//        height = image.height * ratio >> 0;
+//    canvas1.width = width;
+//    canvas1.height = height;
+//    canvas2.width = image.width * 2;
+//    canvas2.height = image.height * 2;
+//    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
+//    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
+//    var resizedSrc = canvas1.toDataURL("image/jpeg");
+//    var resized = new Image();
+//    resized.src = resizedSrc;
+//    return resized;
+//  }
+
   function resizeImage (image, maxWidth) {
-    if (image.width < maxWidth) {
+    if (image.width <= maxWidth) {
       return image;
     }
-    var canvas1 = document.createElement("canvas"),
-        context1 = canvas1.getContext("2d"),
-        canvas2 = document.createElement("canvas"),
-        context2 = canvas2.getContext("2d"),
-        ratio = maxWidth / image.width,
-        width = image.width * ratio >> 0,
-        height = image.height * ratio >> 0;
-    canvas1.width = width;
-    canvas1.height = height;
-    canvas2.width = image.width * 2;
-    canvas2.height = image.height * 2;
-    context2.drawImage(image, 0, 0, image.width, image.height, 0, 0, width * 2, height * 2);
-    context1.drawImage(canvas2, 0, 0, width * 2, height * 2, 0, 0, width, height);
-    var resizedSrc = canvas1.toDataURL("image/jpeg");
+    var canvas = document.createElement('canvas'),
+        ctx = canvas.getContext("2d"),
+        oc = document.createElement('canvas'),
+        octx = oc.getContext('2d');
+    canvas.width = maxWidth;
+    canvas.height = canvas.width * image.height / image.width;
+    var cur = {
+      width: Math.floor(image.width * 0.5),
+      height: Math.floor(image.height * 0.5)
+    }
+    oc.width = cur.width;
+    oc.height = cur.height;
+    octx.drawImage(image, 0, 0, cur.width, cur.height);
+    while (cur.width * 0.5 > maxWidth) {
+      cur = {
+        width: Math.floor(cur.width * 0.5),
+        height: Math.floor(cur.height * 0.5)
+      };
+      octx.drawImage(oc, 0, 0, cur.width * 2, cur.height * 2, 0, 0, cur.width, cur.height);
+    }
+    ctx.drawImage(oc, 0, 0, cur.width, cur.height, 0, 0, canvas.width, canvas.height);
+    var resizedSrc = canvas.toDataURL("image/jpeg");
     var resized = new Image();
     resized.src = resizedSrc;
     return resized;
@@ -1394,6 +1452,7 @@
         var fileIndividualPromise = createFileIndividual(file, undefined, individual);
         fileIndividualPromises.push(fileIndividualPromise);
       }
+      if (!fileIndividualPromises.length) { return; }
       Promise.all(fileIndividualPromises).then(function (fileIndividuals) {
         that.value = "";
         indicatorSpinner.empty().hide();
@@ -1403,6 +1462,8 @@
         } else {
           individual.addValue(rel_uri, fileIndividuals);
         }
+      }).catch(function (error) {
+        console.log(error);
       });
     });
 
@@ -1429,7 +1490,7 @@
       fileIndividual["v-s:parent"] = [ parent ];
       return new Promise(function (resolve, reject) {
         // If file is image && !thumbnail
-        if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|tiff|tif|bmp|svg)$/i).test(file.name) ) {
+        if ( file.name && (/^(?!thumbnail-).+\.(jpg|jpeg|gif|png|bmp|svg)$/i).test(file.name) ) {
           loadImage(file)
           .then(function (image) {
             var resized = resizeImage(image, 2048);
@@ -1454,6 +1515,8 @@
         });
       }).then(function () {
         return fileIndividual.save();
+      }).catch(function (error) {
+        console.log(error);
       });
     }
 
@@ -1479,7 +1542,8 @@
       sort = this.data("sort") || spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       rel_uri = opts.rel_uri,
-      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single");
+      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
+      withDeleted = false || this.data("deleted");
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
@@ -1622,7 +1686,8 @@
             selectableFilter: selectableFilter,
             displayedProperty: displayedProperty,
             targetRel_uri: rel_uri,
-            isSingle: isSingle
+            isSingle: isSingle,
+            withDeleted: withDeleted
           };
           var $modal = $(modal);
           var cntr = $(".modal-body", $modal);
@@ -1678,6 +1743,7 @@
         header.find(".close-menu")
           .click(function () {
             fulltextMenu.hide();
+            $(".form-control", control).val("");
             individual.set(rel_uri, selected);
           })
           .text( actions[3] );
@@ -1717,7 +1783,7 @@
       }());
 
       var performSearch = function (e, value) {
-        ftQuery(queryPrefix, value, sort)
+        ftQuery(queryPrefix, value, sort, withDeleted)
           .then(renderResults)
           .catch(function (error) {
             console.log("Fulltext query error", error);
@@ -1739,6 +1805,9 @@
               .attr("resource", result.id);
             if (individual.hasValue(rel_uri, result)) {
               tmpl.addClass("selected");
+            }
+            if (result.hasValue("v-s:deleted", true)) {
+              tmpl.addClass("deleted");
             }
             return tmpl;
           });
@@ -1836,6 +1905,8 @@
       e.stopPropagation();
       if (e.type === "search") {
         isSingle = false || $(this).data("single");
+        var dataDeleted = $(this).data("deleted");
+        withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
 
@@ -1866,7 +1937,7 @@
 
 /* UTILS */
 
-  function ftQuery(prefix, input, sort) {
+  function ftQuery(prefix, input, sort, withDeleted) {
     var queryString = "";
     if ( input ) {
       var lines = input.split("\n");
@@ -1877,12 +1948,22 @@
       queryString = lineQueries.join(" || ");
     }
     if (prefix) {
-      queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : prefix ;
+      queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;
     }
 
     var result = [];
 
-    return incrementalSearch(0, 100, []).then(function (results) {
+    return incrementalSearch(0, 100, [])
+    .then(function (results) {
+      if (withDeleted) {
+        queryString = queryString + " && ('v-s:deleted' == true )";
+        return incrementalSearch(0, 100, results);
+      } else {
+        return results;
+      }
+    })
+    .then(function (results) {
+      results = veda.Util.unique( results );
       var getList = results.filter( function (uri, index) {
         if ( veda.cache[uri] ) {
           result.push(veda.cache[uri]);
@@ -1891,7 +1972,6 @@
           return true;
         }
       });
-
       if (getList.length) {
         return veda.Backend.get_individuals({
           ticket: veda.ticket,
@@ -1900,7 +1980,8 @@
       } else {
         return [];
       }
-    }).then(function (individuals) {
+    })
+    .then(function (individuals) {
       individuals.map( function (json) {
         result.push( new veda.IndividualModel(json) );
       });

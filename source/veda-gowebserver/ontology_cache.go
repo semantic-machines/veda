@@ -21,13 +21,14 @@ var ontologyRdfType = map[string]bool{
 
 //tryStoreToOntologyCache checks rdf:type of individual, if its ontology class
 //then it is stored to cache with individual's uri used as key
-func tryStoreInOntologyCache(individual map[string]interface{}) {
-	uri := individual["@"].(string)
-	rdfType := individual["rdf:type"].([]interface{})
-	for i := 0; i < len(rdfType); i++ {
-		if ontologyRdfType[rdfType[i].(map[string]interface{})["data"].(string)] {
+func tryStoreInOntologyCache(individual Individual) {
+	uri := getUri(individual)
+	rdfType, Ok := getFirstString(individual, "rdf:type")
+	if Ok == false {
+		log.Println("WARN! individual not content type, uri=", uri)
+	} else {
+		if ontologyRdfType[rdfType] {
 			ontologyCache[uri] = individual
-			break
 		}
 	}
 }
@@ -38,12 +39,14 @@ func tryStoreInOntologyCache(individual map[string]interface{}) {
 func monitorIndividualChanges() {
 	notifyChannel, err := nanomsg.NewSubSocket()
 	if err != nil {
-		log.Fatal("@ERR ON CREATING UPDATE CHANNEL SOCKET: ", err)
+		log.Println("ERR! ON CREATING UPDATE CHANNEL SOCKET: ", err)
+		return
 	}
 
 	err = notifyChannel.Subscribe("")
 	if err != nil {
-		log.Fatal("@ERR ON SUBSCRIBING TO UPDATES: ", err)
+		log.Println("ERR! ON SUBSCRIBING TO UPDATES: ", err)
+		return
 	}
 
 	_, err = notifyChannel.Connect(notifyChannelURL)
@@ -55,33 +58,33 @@ func monitorIndividualChanges() {
 	for {
 		bytes, err := notifyChannel.Recv(0)
 		if err != nil {
-			log.Println("@ERR ON RECEIVING MESSAGE VIA UPDATE CHANNEL: ", err)
+			log.Println("ERR! ON RECEIVING MESSAGE VIA UPDATE CHANNEL: ", err)
 			continue
 		}
 
 		strdata := strings.Replace(strings.Replace(string(bytes), "#", "", -1), ";", " ", -1)
 		uri := ""
-		updateCounter := uint64(0)
+		updateCounter := int(0)
 		opID := 0
 		fmt.Sscanf(strdata, "%s %d %d", &uri, &updateCounter, &opID)
 		individualCache, ok := ontologyCache[uri]
 		if ok {
-			log.Println(individualCache)
-			resourceCache := individualCache["v-s:updateCounter"].([]interface{})[0]
-			updateCounterCache := resourceCache.(map[string]interface{})["data"].(uint64)
+			log.Println("monitor cache:changed: ", individualCache)
+			updateCounterCache, _ := getFirstInt(individualCache, "v-s:updateCounter")
 			if updateCounter > updateCounterCache {
-				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false)
+				rr := conn.Get(false, "cfg:VedaSystem", []string{uri}, false, false)
 				if rr.CommonRC != Ok {
-					log.Println("@ERR ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH COMMON CODE: ",
+					log.Println("ERR! ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH COMMON CODE: ",
 						rr.CommonRC)
 					continue
 				} else if rr.OpRC[0] != Ok {
-					log.Println("@ERR ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH OP CODE: ",
+					log.Println("ERR! ON GETTING UPDATED FROM TARANTOOL INDIVIDUAL WITH OP CODE: ",
 						rr.OpRC[0])
 					continue
 				}
 
-				individualTNT := BinobjToMap(rr.Data[0])
+				individualTNT := rr.GetIndv(0)
+
 				ontologyCache[uri] = individualTNT
 			}
 		}

@@ -163,7 +163,7 @@ func NewModuleInfoFile(moduleName string, mode OpenMode) *ModuleInfoFile {
 		_, err := os.Stat(mif.fnModuleInfo + ".lock")
 		if err == nil {
 			//If no lock then component is opened already or old file was not deleted
-			log.Printf("Veda not started: component [%s] already open, or not deleted lock file\n",
+			log.Printf("ERR! Veda not started: component [%s] already open, or not deleted lock file\n",
 				mif.fnModuleInfo)
 			return nil
 		}
@@ -205,7 +205,7 @@ func (mif *ModuleInfoFile) openWriter() bool {
 		//If not exists than create module info file
 		mif.ffModuleInfoW, err = os.Create(mif.fnModuleInfo)
 		if err != nil {
-			log.Println("@ERR CREATING ffModuleInfoW: ", err)
+			log.Println("ERR! CREATING ffModuleInfoW: ", err)
 			return false
 		}
 		mif.isWriterOpen = true
@@ -215,7 +215,7 @@ func (mif *ModuleInfoFile) openWriter() bool {
 		//If exists then open module info file
 		mif.ffModuleInfoW, err = os.OpenFile(mif.fnModuleInfo, os.O_RDWR, 0666)
 		if err != nil {
-			log.Println("@ERR OPENING ffModuleInfoW: ", err)
+			log.Println("ERR! OPENING ffModuleInfoW: ", err)
 			return false
 		}
 		return true
@@ -235,7 +235,7 @@ func (mif *ModuleInfoFile) removeLock() {
 	if err == nil {
 		log.Printf("module_info:remove lock file %s\n", mif.fnModuleInfo+".lock")
 	} else {
-		log.Println("@ERR DELETING LOCK ", err)
+		log.Println("ERR! DELETING LOCK ", err)
 	}
 }
 
@@ -267,7 +267,7 @@ func (mif *ModuleInfoFile) openReader() {
 	//Open or create file for reading
 	mif.ffModuleInfoR, err = os.OpenFile(mif.fnModuleInfo, os.O_RDONLY, 0666)
 	if err != nil {
-		log.Println("@ERR OPENING ffModuleInfoR: ", err)
+		log.Println("ERR! OPENING ffModuleInfoR: ", err)
 		return
 	}
 
@@ -297,12 +297,12 @@ func (mif *ModuleInfoFile) PutInfo(opID int64, commitedOpID int64) bool {
 	mif.ffModuleInfoW.Seek(0, 0)
 	_, err := mif.ffModuleInfoW.Write([]byte(data))
 	if err != nil {
-		log.Println("@ERR WRITING DATA TO MODULE FILE INFO ", err)
+		log.Println("ERR! WRITING DATA TO MODULE FILE INFO ", err)
 		return false
 	}
 	_, err = mif.ffModuleInfoW.Write([]byte(hashStr + "\n"))
 	if err != nil {
-		log.Println("@ERR WRITING HASH TO MODULE FILE INFO ", err)
+		log.Println("ERR! WRITING HASH TO MODULE FILE INFO ", err)
 		return false
 	}
 
@@ -334,7 +334,7 @@ func (mif *ModuleInfoFile) GetInfo() MInfo {
 	//Read module info data to buffer
 	_, err := mif.ffModuleInfoR.Read(mif.buff)
 	if err != nil {
-		log.Println("@ERR READING MODULE INFO FILE ", err)
+		log.Println("ERR! READING MODULE INFO FILE ", err)
 	}
 
 	str := string(mif.buff)

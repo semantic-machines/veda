@@ -224,12 +224,14 @@ veda.Module(function (veda) { "use strict";
 
     function cancelHandler (e, parent) {
       if (parent !== individual.id) {
-        individual.reset();
+        individual.reset()
+          .then(function () {
+            template.trigger("view");
+          })
+          .catch(function () {
+            template.trigger("view");
+          });
       }
-      if (container && typeof container.prop === "function" && container.prop("id") === "main") {
-        window.history.back();
-      }
-      template.trigger("view");
       e.stopPropagation();
     }
     template.on("cancel", cancelHandler);
@@ -308,6 +310,34 @@ veda.Module(function (veda) { "use strict";
       e.stopPropagation();
     }
     template.on("recover", recoverHandler);
+
+    // Valid alert
+    function validHandler () {
+      if ( this.hasValue("v-s:valid", false) && mode === "view" ) {
+        if ( container.prop("id") === "main" && !template.hasClass("invalid") ) {
+          var alert = new veda.IndividualModel("v-s:InvalidAlert")["rdfs:label"].join(" ");
+          var invalidAlert = $(
+            '<div id="invalid-alert" class="container sheet margin-lg">\
+              <div class="alert alert-warning no-margin clearfix" role="alert">\
+                <p id="invalid-alert-msg">' + alert + '</p>\
+              </div>\
+            </div>'
+          );
+          template.prepend(invalidAlert);
+        }
+        template.addClass("invalid");
+      } else {
+        template.removeClass("invalid");
+        if ( container.prop("id") === "main" ) {
+          $("#invalid-alert", template).remove();
+        }
+      }
+    }
+    individual.on("v-s:valid", validHandler);
+    template.one("remove", function () {
+      individual.off("v-s:valid", validHandler);
+    });
+    validHandler.call(individual);
 
     // Process RDFa compliant template
 

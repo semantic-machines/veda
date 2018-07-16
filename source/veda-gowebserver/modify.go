@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/op/go-nanomsg"
 	"github.com/valyala/fasthttp"
 )
 
@@ -27,42 +28,65 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 	//Marshal request and send to socket
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR MODIFY INDIVIDUAL CMD %v: ENCODE JSON REQUEST: %v\n", cmd, err)
+		log.Printf("ERR! modify individual: ENCODE JSON REQUEST, cmd=%v: request=%v, err=%v\n", cmd, request, err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return InternalServerError
 	}
-	socket.Send(jsonRequest, 0)
 
-	responseBuf, _ := socket.Recv(0)
 	responseJSON := make(map[string]interface{})
-	err = json.Unmarshal(responseBuf, &responseJSON)
+
+	var mstorage_ch *nanomsg.Socket
+	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
 	if err != nil {
-		log.Printf("@ERR MODIFY INDIVIDUAL CMD %v: DECODE JSON RESPONSE: %v\n", cmd, err)
+		log.Println("ERR! ON CREATING SOCKET to mstorage")
+		return InternalServerError
+	}
+
+	_, err = mstorage_ch.Connect(mainModuleURL)
+	for err != nil {
+		log.Println("ERR! ON CREATING ENDPOINT to mstorage")
+		return InternalServerError
+	}
+
+	NmCSend(mstorage_ch, jsonRequest, 0)
+	responseBuf, err := mstorage_ch.Recv(0)
+
+	mstorage_ch.Close()
+
+	if err != nil {
+		log.Printf("ERR! modify individual: recieve, cmd=%v: err=%v, request=%v\n", cmd, err, request)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
 		return InternalServerError
-	}
-
-	//Unmarshal response data and gives response to client
-	data := responseJSON["data"]
-
-	if data != nil {
-		responseData := data.([]interface{})[0].(map[string]interface{})
-		ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
-		responseDataJSON, _ := json.Marshal(responseData)
-		//log.Println(string(responseDataJSON))
-		ctx.Write(responseDataJSON)
-		trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
-			ResultCode(responseData["result"].(float64)), timestamp)
-		return ResultCode(responseData["result"].(float64))
 	} else {
-		ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
-		responseDataJSON, _ := json.Marshal(responseJSON)
-		log.Println(string(responseDataJSON))
-		ctx.Write(responseDataJSON)
-		trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
-			ResultCode(responseJSON["result"].(float64)), timestamp)
-		return ResultCode(responseJSON["result"].(float64))
-	}
+		err = json.Unmarshal(responseBuf, &responseJSON)
+		if err != nil {
+			log.Printf("ERR! modify individual: DECODE JSON RESPONSE, cmd=%v: request=%v, response=%v, err=%v\n", cmd, request, responseBuf, err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
+			return InternalServerError
+		}
 
+		//Unmarshal response data and gives response to client
+		data := responseJSON["data"]
+
+		if data != nil {
+			responseData := data.([]interface{})[0].(map[string]interface{})
+			ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
+			responseDataJSON, _ := json.Marshal(responseData)
+			//log.Println("@", string(responseDataJSON))
+			ctx.Write(responseDataJSON)
+			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
+				ResultCode(responseData["result"].(float64)), timestamp)
+			return ResultCode(responseData["result"].(float64))
+		} else {
+			ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
+			responseDataJSON, _ := json.Marshal(responseJSON)
+			//log.Println("@", string(responseDataJSON))
+			ctx.Write(responseDataJSON)
+			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
+				ResultCode(responseJSON["result"].(float64)), timestamp)
+			return ResultCode(responseJSON["result"].(float64))
+		}
+	}
 }

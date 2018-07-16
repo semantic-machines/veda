@@ -1,23 +1,35 @@
 package main
 
 import (
-	"io"
-	"log"
-	"unicode/utf8"
-
-	"strings"
-
-	"os"
-
+	"encoding/base64"
 	"github.com/valyala/fasthttp"
+	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
+	"unicode/utf8"
 )
 
 //uploadFile handles file uploading from request context
 func uploadFile(ctx *fasthttp.RequestCtx) {
 	//Get form from context
+
 	form, err := ctx.Request.MultipartForm()
 	if err != nil {
-		log.Println("@ERR REDING FORM: UPLOAD FILE: ", err)
+		log.Println("ERR!, REDING FORM: UPLOAD FILE: ", err)
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		return
+	}
+
+	if form.Value["path"] == nil {
+		log.Printf("ERR!, UPLOAD FILE: path not defined or null content, form=%v, request=%v\n", form, ctx.String())
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		return
+	}
+
+	if len(form.Value["path"]) != 1 {
+		log.Println("ERR!, UPLOAD FILE: invalid path, path=", form.Value["path"])
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -30,34 +42,66 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 		attachmentsPathCurr += "/" + pathParts[i]
 		os.Mkdir(attachmentsPathCurr, os.ModePerm)
 	}
+	path := attachmentsPathCurr + "/" + form.Value["uri"][0]
 
-	//Create file in destination directory
-	destFile, err := os.OpenFile(attachmentsPathCurr+"/"+form.Value["uri"][0], os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		log.Println("@ERR CREATING DESTIONTION FILE ON UPLOAD: ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
-		return
+	if len(form.Value["content"]) > 0 {
+		content := form.Value["content"][0]
+
+		if len(content) > 0 {
+
+			pos := strings.Index(content, "base64")
+			if pos > 0 {
+				//header := content[0:pos]
+				cntstr := content[pos+6+1 : len(content)]
+				decoded, err := base64.StdEncoding.DecodeString(cntstr)
+
+				if err != nil {
+					log.Println("ERR! Upload file: decode base64:", err)
+					ctx.Response.SetStatusCode(int(InternalServerError))
+					return
+				}
+				err = ioutil.WriteFile(path, decoded, 0644)
+				if err != nil {
+					log.Println("ERR! Upload file: write file:", err)
+					ctx.Response.SetStatusCode(int(InternalServerError))
+					return
+				}
+			}
+		}
 	}
 
-	defer destFile.Close()
-	//Open frime form
-	srcFile, err := form.File["file"][0].Open()
-	if err != nil {
-		log.Println("@ERR OPENING FORM FILE ON UPLOAD: ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
-		return
-	}
-	defer srcFile.Close()
+	if len(form.File["file"]) > 0 {
 
-	//Copy srce file from form to destination
-	_, err = io.Copy(destFile, srcFile)
-	if err != nil {
-		log.Println("@ERR ON COPYING FILE ON UPLOAD: ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
-		return
-	}
+		//Create file in destination directory
+		destFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			log.Println("ERR! CREATING DESTIONTION FILE ON UPLOAD: ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
 
-	ctx.Response.SetStatusCode(int(Ok))
+		defer destFile.Close()
+		//Open frime form
+
+		srcFile, err := form.File["file"][0].Open()
+		if err != nil {
+			log.Println("ERR! OPENING FORM FILE ON UPLOAD: ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
+		defer srcFile.Close()
+
+		//Copy srce file from form to destination
+		_, err = io.Copy(destFile, srcFile)
+		if err != nil {
+			log.Println("ERR! ON COPYING FILE ON UPLOAD: ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
+		ctx.Response.SetStatusCode(int(Ok))
+	}
 }
 
 //files is handler for this rest request, routeParts is parts of request path separated by slash
@@ -77,7 +121,6 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
 	//If uri len is more then 3 and icket is valid than continue downloading
 	if utf8.RuneCountInString(uri) > 3 && ticketKey != "" {
-		//log.Println("@DOWNLOAD")
 
 		//Check if ticket is valid, return fail code if ticket is not valid
 		rc, ticket := getTicket(ticketKey)
@@ -87,11 +130,11 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		}
 
 		//Get individual of requested file from tarantool
-		rr := conn.Get(true, ticket.UserURI, []string{uri}, false)
+		rr := conn.Get(true, ticket.UserURI, []string{uri}, false, false)
 
 		//If common  request code of operation code are not Ok then return fail code
 		if rr.CommonRC != Ok {
-			log.Println("@ERR COMMON FILES: GET INDIVIDUAL user=", ticket.UserURI, ", uri=", uri)
+			log.Println("ERR! COMMON FILES: GET INDIVIDUAL user=", ticket.UserURI, ", uri=", uri)
 			ctx.Response.SetStatusCode(int(rr.CommonRC))
 			return
 		} else if rr.OpRC[0] != Ok {
@@ -99,15 +142,14 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 			return
 		}
 
-		//Decode individual with file info and read file info
-		fileInfo := BinobjToMap(rr.Data[0])
-		//log.Println(fileInfo)
-		filePath := fileInfo["v-s:filePath"].([]interface{})[0].(map[string]interface{})
-		fileURI := fileInfo["v-s:fileUri"].([]interface{})[0].(map[string]interface{})
-		fileName := fileInfo["v-s:fileName"].([]interface{})[0].(map[string]interface{})
+		fileInfo := rr.GetIndv(0)
+		//log.Println("@", fileInfo)
+		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
+		fileURI, _ := getFirstString(fileInfo, "v-s:fileUri")
+		fileName, _ := getFirstString(fileInfo, "v-s:fileName")
 
 		//Create path to file string
-		filePathStr := attachmentsPath + filePath["data"].(string) + "/" + fileURI["data"].(string)
+		filePathStr := attachmentsPath + filePath + "/" + fileURI
 
 		//Check if file exists, return err code if not or InternalServerError if error occured
 		_, err := os.Stat(filePathStr)
@@ -115,13 +157,14 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 			ctx.Response.SetStatusCode(int(NotFound))
 			return
 		} else if err != nil {
-			log.Println("@ERR ON CHECK FILE EXISTANCE: ", err)
+			log.Println("ERR! ON CHECK FILE EXISTANCE: ", err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			return
 		}
 
 		//Return file to client
-		ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+fileName["data"].(string))
-		ctx.SendFile(filePathStr)
+		ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+fileName)
+		//ctx.SendFile(filePathStr)
+		fasthttp.ServeFileUncompressed(ctx, filePathStr)
 	}
 }

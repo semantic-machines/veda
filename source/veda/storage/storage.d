@@ -91,10 +91,22 @@ public abstract class Storage
 
     public Ticket *get_systicket_from_storage()
     {
-        string systicket_id = get_tickets_storage_r().find(OptAuthorize.NO, null, "systicket");
+        string str_systicket_link = get_tickets_storage_r().find(OptAuthorize.NO, null, "systicket");
+        string systicket_id;
+
+        if (str_systicket_link !is null)
+        {
+            Individual indv_systicket_link;
+
+            indv_systicket_link.deserialize(str_systicket_link);
+
+            systicket_id = indv_systicket_link.getFirstLiteral("v-s:resource");
+        }
 
         if (systicket_id is null)
+        {
             log.trace("SYSTICKET NOT FOUND");
+        }
 
         return get_ticket(systicket_id, false);
     }

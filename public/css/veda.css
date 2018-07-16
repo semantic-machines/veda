@@ -119,6 +119,9 @@ body {
 .ribbon.warning { background: #f0ad4e; }
 .ribbon.danger { background: #d9534f; }
 
+.pointer {
+  cursor: pointer;
+}
 
 /* Sheets */
 .sheet {
@@ -132,7 +135,7 @@ body {
 .sheet .sheet {
   border: none!important;
   padding: 0!important;
-  position: static!important;
+  /*position: static!important;*/
 }
 
 .modal .sheet {
@@ -158,16 +161,19 @@ body {
     -webkit-columns: 2;
     -moz-columns: 2;
     columns: 2;
+    column-gap: 3em;
   }
   .columns-3 {
     -webkit-columns: 3;
     -moz-columns: 3;
     columns: 3;
+    column-gap: 3em;
   }
   .columns-4 {
     -webkit-columns: 4;
     -moz-columns: 4;
     columns: 4;
+    column-gap: 3em;
   }
 }
 
@@ -391,9 +397,6 @@ footer {
 .navbar-collapse.collapse.in li , .navbar-collapse.collapsing li {
   display: inline-block!important;
 }
-.text-muted {
-  color: #707070;
-}
 .text-black {
   color: #000;
 }
@@ -462,7 +465,8 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover) {
+.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover),
+.invalid, .invalid *:not(#invalid-alert-msg):not(#invalid-alert-recover) {
   text-decoration: none!important;
   color: #aaa;
 }

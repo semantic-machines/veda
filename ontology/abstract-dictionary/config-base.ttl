@@ -5,7 +5,6 @@
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix v-l: <http://semantic-machines.com/veda/veda-layout/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
@@ -36,8 +35,8 @@ cfg:User_position
   a v-s:Position;
   v-s:updateCounter "1"^^xsd:integer;
   v-s:origin "manual"^^xsd:string;
-  rdfs:label "Должность"@ru;
-  rdfs:label "Position"@en;
+  rdfs:label "Специалист"@ru;
+  rdfs:label "Specialist"@en;
   v-s:parentUnit cfg:User_department;
 .
 
@@ -69,6 +68,7 @@ cfg:GuestAppointment
   v-s:occupation cfg:User_position;
   rdfs:label "Гость"@ru ;
   rdfs:label "Guest"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 cfg:Guest_pref
   rdf:type v-ui:Preferences ;
@@ -100,6 +100,7 @@ cfg:ImportDMSToVeda
 .
 cfg:ImportDMSToVedaAccount
   rdf:type v-s:Account ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Import DMS to Veda account"@en ;
   v-s:owner cfg:ImportDMSToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
@@ -115,6 +116,39 @@ cfg:ImportDMSToVedaAppointment
   v-s:official "false"^^xsd:boolean;
   rdfs:label "Утилита DMS to Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
+  v-s:parentUnit cfg:User_department;
+.
+
+### -------------------------------------------------------
+cfg:ImportFromOtherSystemToVeda
+  rdf:type v-s:Person ;
+  v-s:author cfg:VedaSystem ;
+  v-s:firstName "Утилита импорта в Veda"@ru ;
+  v-s:firstName "Import From Other System to Veda"@en ;
+  v-s:hasAccount cfg:ImportFromOtherSystemToVedaAccount ;
+  v-s:hasAppointment cfg:ImportFromOtherSystemToVedaAppointment ;
+  rdfs:label "Утилита импорта в Veda"@ru ;
+  rdfs:label "Import DMS to Veda"@en ;
+.
+cfg:ImportFromOtherSystemToVedaAccount
+  rdf:type v-s:Account ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Import DMS to Veda account"@en ;
+  v-s:owner cfg:ImportFromOtherSystemToVeda;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  v-s:login "ImportFromOtherSystemToVeda" ;
+  rdfs:label "ImportFromOtherSystemToVeda. Учетная запись"@ru ;
+  rdfs:label "ImportFromOtherSystemToVeda. Account"@en ;
+.
+cfg:ImportFromOtherSystemToVedaAppointment
+  rdf:type v-s:Appointment ;
+  v-s:author cfg:VedaSystem ;
+  v-s:employee cfg:ImportFromOtherSystemToVeda ;
+  v-s:occupation cfg:User_position;
+  v-s:official "false"^^xsd:boolean;
+  rdfs:label "Утилита импорта в Veda"@ru ;
+  rdfs:label "Import From Other System to Veda"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 ### -------------------------------------------------------
 
@@ -147,6 +181,7 @@ cfg:VedaNTLMFilterAppointment
   v-s:official "false"^^xsd:boolean;
   rdfs:label "Veda NTLM Фильтр"@ru ;
   rdfs:label "Veda NTLM Filter"@en ;
+  v-s:parentUnit cfg:User_department;
 .
 
 ### -------------------------------------------------------
@@ -155,13 +190,13 @@ cfg:VedaSystem
   v-s:author cfg:VedaSystem ;
   v-s:actualVersion cfg:VedaSystem ;
   v-s:birthday "2014-03-05"^^xsd:dateTime ;
-  v-s:firstName "Веда"@ru ;
-  v-s:firstName "Veda"@en ;
+#  v-s:firstName "Веда"@ru ;
+#  v-s:firstName "Veda"@en ;
   v-s:hasAccount cfg:VedaSystemAccount ;
   v-s:hasAppointment cfg:VedaSystemAppointment ;
   v-s:lastName "Система"@ru ;
   v-s:lastName "System"@en ;
-  rdfs:label "Система Веда"@ru ;
+  rdfs:label "Система"@ru ;
   rdfs:label "Veda System"@en ;
 .
 cfg:VedaSystemAccount
@@ -172,11 +207,10 @@ cfg:VedaSystemAccount
   v-s:owner cfg:VedaSystem ;
   rdfs:label "VedaSystem. Учетная запись"@ru ;
   rdfs:label "VedaSystem. Account"@en ;
-  v-s:mailbox "DocFlow.Syktyvkar@mondigroup.com" ;
 .
 cfg:VedaSystemAppointment
   rdf:type v-s:Appointment ;
-  rdfs:label "Система Веда"@ru ;
+  rdfs:label "Система"@ru ;
   rdfs:label "Veda System"@en ;
   v-s:author cfg:VedaSystem ;
   v-s:employee cfg:VedaSystem ;
@@ -205,6 +239,7 @@ cfg:AdministratorAccount
   v-s:owner cfg:Administrator ;
   rdfs:label "Администратор. Учетная запись"@ru ;
   rdfs:label "Administrator. Account"@en ;
+  v-s:mailbox "veda@semantic-machines.com"^^xsd:string ;
 .
 cfg:AdministratorAppointment
   rdf:type v-s:Appointment ;
@@ -214,6 +249,7 @@ cfg:AdministratorAppointment
   rdfs:label "Администратор"@ru ;
   rdfs:label "Administrator"@en ;
   v-s:origin "Internal" ;
+  v-s:parentUnit cfg:User_department;
 .
 
 ### -------------------------------------------------------
@@ -283,6 +319,7 @@ cfg:Membership_su
   v-s:resource cfg:VedaSystem ;
   v-s:resource cfg:Administrator ;
   v-s:resource cfg:ImportDMSToVeda ;
+  v-s:resource cfg:ImportFromOtherSystemToVeda ;
   v-s:memberOf cfg:SuperUser ;
 .
 
@@ -412,6 +449,12 @@ cfg:Event_1
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var doc_uri = document['@'],
   isDefinedBy = document['rdfs:isDefinedBy'],
   isGroup = getUri(document['rdf:type']) === "v-s:Group";
@@ -447,6 +490,13 @@ cfg:Event_2
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var doc_uri = document['@'],
     owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
 
@@ -625,6 +675,12 @@ cfg:Event_4
  * super_classes = super classes of the document.
  */
 
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 var doc_uri = document['@'],
     deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
 
@@ -692,6 +748,12 @@ cfg:Event_5
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var doc_uri = document["@"],
     deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean}),
@@ -768,6 +830,12 @@ cfg:Event_6
  * super_classes = super classes of the document.
  */
 
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 // Update ontology vsn
 var vsn = {
   "@" : "cfg:OntoVsn",
@@ -813,7 +881,10 @@ cfg:Event_7
  * super_classes = super classes of the document.
  */
 
-if (parent_document_id && parent_document_id === document['@']) return;
+if (parent_document_id && parent_document_id === document['@']) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var doc_uri = document["@"],
   _classes = getUris( document["rdf:type"] );
@@ -852,7 +923,16 @@ cfg:Event_8
  * super_classes = super classes of the document.
  */
 
-if (parent_document_id && parent_document_id === document['@']) return;
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
+if (parent_document_id && parent_document_id === document['@']) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var _class = document,
   class_uri = _class["@"],
@@ -933,6 +1013,12 @@ cfg:Event_9
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
 
 var doc_uri = document["@"],
   parent_uri = getUri( document["v-s:parent"] ),
@@ -1106,6 +1192,13 @@ cfg:Event_13
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
 // Get actual state
 document = get_individual(ticket, document["@"]);
 if ( hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: _Boolean} ) || !prev_state ) {
@@ -1132,6 +1225,13 @@ cfg:Event_15
   rdfs:comment "Скрипт обработки связей документов" ;
   v-s:triggerByType v-s:Link ;
   v-s:script """
+
+  // First class event
+  if (parent_script_id) {
+    // print("Not first class event. Exit.");
+    return;
+  }
+
   var linkDeleted = hasValue( document, "v-s:deleted", {data: true, type: _Boolean} ),
       linkUri = document["@"],
       linkToUri = getUri(document["v-s:to"]),
@@ -1214,69 +1314,80 @@ cfg:Event_16
   v-s:triggerByType v-s:BackwardLink ;
   v-s:preventByType v-s:Version;
   v-s:script """
+
+  // First class event
+  if (parent_script_id) {
+    // print("Not first class event. Exit.");
+    return;
+  }
+
   var backwardLinkUri = document["@"],
       backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
-      backwardTargetUri = getUri(document["v-s:backwardTarget"]),
+      backwardTargetUris = getUris(document["v-s:backwardTarget"]),
       backwardReplaceUris = getUris(document["v-s:backwardReplace"]),
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
-      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean }),
-      backwardTarget = get_individual(ticket, backwardTargetUri),
-      backwardTarget_original = JSON.stringify(backwardTarget);
+      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
 
-  if (!backwardTarget) { return; }
+  //expected equal backwardPropery and backwardReplaceUris for all backwardTargets
+  for (var i = 0; i < backwardTargetUris.length; i++) {
+    var backwardTargetUri = backwardTargetUris[i],
+        backwardTarget = get_individual(ticket, backwardTargetUri),
+        backwardTarget_original = JSON.stringify(backwardTarget);
+    if (!backwardTarget) { return; }
 
-  if (canRead || canUpdate || canDelete) {
-    var membershipUri = "d:backward_membership_" + backwardLinkUri.split(":").join('_') + '_' + backwardTargetUri.split(':').join('_');
+    if (canRead || canUpdate || canDelete) {
+      var membershipUri = "d:backward_membership_" + backwardLinkUri.split(":").join('_') + '_' + backwardTargetUri.split(':').join('_');
+
+      if (isDeleted) {
+        remove_individual(ticket, membershipUri, _event_id);
+      } else {
+        var membership = {
+          '@' : membershipUri,
+          'rdf:type'     : newUri('v-s:Membership'),
+          'v-s:memberOf' : newUri(backwardTargetUri),
+          'v-s:resource' : newUri(backwardLinkUri),
+          'rdfs:comment' : newStr('создано cfg:Event_16')
+        };
+        if (canRead) {
+          membership["v-s:canRead"] = canRead;
+        }
+        if (canUpdate) {
+          membership["v-s:canUpdate"] = canUpdate;
+        }
+        if (canDelete) {
+          membership["v-s:canDelete"] = canDelete;
+        }
+        if (isDeleted) {
+          membership['v-s:deleted'] = newBool(true);
+        }
+        put_individual(ticket, membership, _event_id);
+      }
+    }
 
     if (isDeleted) {
-      remove_individual(ticket, membershipUri, _event_id);
-    } else {
-      var membership = {
-        '@' : membershipUri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(backwardTargetUri),
-        'v-s:resource' : newUri(backwardLinkUri),
-        'rdfs:comment' : newStr('создано cfg:Event_16')
-      };
-      if (canRead) {
-        membership["v-s:canRead"] = canRead;
+      for (var property_uri in backwardTarget) {
+        if (property_uri === "@") { continue; }
+        backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (value) {
+          return (value.data !== backwardLinkUri);
+        });
       }
-      if (canUpdate) {
-        membership["v-s:canUpdate"] = canUpdate;
+    } else if (backwardPropertyUri) {
+      var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
+      //print( "BL already there =", alreadyThere );
+      if ( !alreadyThere ) {
+        backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
+        backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
       }
-      if (canDelete) {
-        membership["v-s:canDelete"] = canDelete;
-      }
-      if (isDeleted) {
-        membership['v-s:deleted'] = newBool(true);
-      }
-      put_individual(ticket, membership, _event_id);
     }
-  }
-
-  if (isDeleted) {
-    for (var property_uri in backwardTarget) {
-      if (property_uri === "@") { continue; }
-      backwardTarget[property_uri] = backwardTarget[property_uri].filter(function (value) {
-        return (value.data !== backwardLinkUri);
-      });
+    backwardReplaceUris.map(function (replaceUri) {
+      backwardTarget[replaceUri] = document[replaceUri];
+    });
+    if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
+      put_individual(ticket, backwardTarget, _event_id);
+      //print( "BL target updated =", JSON.stringify(backwardTarget) );
     }
-  } else if (backwardPropertyUri) {
-    var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
-    //print( "BL already there =", alreadyThere );
-    if ( !alreadyThere ) {
-      backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
-      backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
-    }
-  }
-  backwardReplaceUris.map(function (replaceUri) {
-    backwardTarget[replaceUri] = document[replaceUri];
-  });
-  if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
-    put_individual(ticket, backwardTarget, _event_id);
-    //print( "BL target updated =", JSON.stringify(backwardTarget) );
   }
   """ ;
 .

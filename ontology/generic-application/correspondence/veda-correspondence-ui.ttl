@@ -4,10 +4,6 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
-@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
-@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
-@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
-@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 <http://semantic-machines.com/veda/veda-correspondence-ui>
   rdf:type owl:Ontology ;
@@ -17,7 +13,7 @@
   v-s:loadPriority 6 ;
 .
 
-# СПЕЦИФИКАЦИИ ---------------------------------------------------------
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
 
 v-s:PsHasDocumentKindForLetter
   rdf:type v-ui:ObjectPropertySpecification ;
@@ -90,7 +86,7 @@ v-s:PsDeliveryMethodForDelivery
   rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
 .
 
-# СТРОКИ ---------------------------------------------------------------
+# ------------------------------------------------------------ СТРОКИ --
 
 v-s:AutomaticallyBundle
   rdf:type v-s:Bundle ;
@@ -110,7 +106,7 @@ v-s:OutgoingLetterPrintBlank
   rdfs:label "Print form"@en ;
 .
 
-# ШАБЛОНЫ --------------------------------------------------------------
+# ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:LetterTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -229,7 +225,49 @@ v-s:LetterTemplate
     <em about="v-s:attachment" property="rdfs:label"></em>
     <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
     <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search create"></veda-control>
-
+    <div class="view edit -search">
+      <em about="v-s:hasRelatedLetter" property="rdfs:label"></em>
+      <table class="table table-bordered">
+        <thead class="result-header">
+          <tr>
+            <th colspan="1" ></th>
+            <th colspan="3" about="v-s:sender" property="rdfs:label"></th>
+            <th colspan="3" about="v-s:recipient" property="rdfs:label"></th>
+          </tr>
+          <tr class="active">
+            <th width="1%"><span class="glyphicon glyphicon-search"></th>
+            <th about="v-s:correspondentOrganization" property="rdfs:label"></th>
+            <!--th about="v-s:correspondentDepartmentDescription" property="rdfs:label"></th>
+            <th about="v-s:correspondentPersonDescription" property="rdfs:label"></th-->
+            <th about="v-s:registrationNumber" property="rdfs:label"></th>
+            <th about="v-s:registrationDate" property="rdfs:label"></th>
+            <th about="v-s:correspondentOrganization" property="rdfs:label"></th>
+            <!--th about="v-s:correspondentDepartmentDescription" property="rdfs:label"></th>
+            <th about="v-s:correspondentPersonDescription" property="rdfs:label"></th-->
+            <th about="v-s:registrationNumber" property="rdfs:label"></th>
+            <th about="v-s:registrationDate" property="rdfs:label"></th>
+          </tr>
+        </thead>
+        <tbody rel="v-s:hasRelatedLetter">
+          <tr>
+            <td about="@" data-template="v-ui:IconModalTemplate"></td>
+            <td rel="v-s:sender" ><span property="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"> </span> </td>
+            <!--th rel="v-s:sender" ><span property="v-s:correspondentDepartmentDescription" data-template="v-ui:LabelTemplate"> </span> </td>
+            <td rel="v-s:sender" ><span property="v-s:correspondentPersonDescription" data-template="v-ui:LabelTemplate"> </span></th-->
+            <td rel="v-s:hasLetterRegistrationRecordSender" ><span property="v-s:registrationNumber" data-template="v-ui:LabelTemplate"> </span></td>
+            <td rel="v-s:hasLetterRegistrationRecordSender" ><span property="v-s:registrationDate" data-template="v-ui:LabelTemplate"> </span></td>
+            <td rel="v-s:recipient" ><span property="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"> </span></td>
+            <!--th rel="v-s:recipient" ><span property="v-s:correspondentDepartmentDescription" data-template="v-ui:LabelTemplate"> </span></td>
+            <td rel="v-s:recipient" ><span property="v-s:correspondentPersonDescription" data-template="v-ui:LabelTemplate"> </span></th-->
+            <td rel="v-s:hasLetterRegistrationRecordRecipient" ><span property="v-s:registrationNumber" data-template="v-ui:LabelTemplate"> </span></td>
+            <td rel="v-s:hasLetterRegistrationRecordRecipient" ><span property="v-s:registrationDate" data-template="v-ui:LabelTemplate"> </span></td>
+          </tr>
+        </tbody>
+        <tfoot class="-view edit search"><tr><td colspan="7">
+          <veda-control data-type="link" rel="v-s:hasRelatedLetter" class="-view edit search fulltext"></veda-control>
+        </td></tr></tfoot>
+      </table>
+    </div>
     <hr>
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
     <br>
@@ -338,9 +376,16 @@ v-s:LetterTemplate
     ) {
       $('#delete.action', template).remove();
     } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
+      var complexTemplateUri;
+      if (individual['rdf:type'][0].id === "v-s:IncomingLetter"){
+        complexTemplateUri = 'v-s:IncomingLetter_ComplexRouteStartForm_Template';
+      }
+      if (individual['rdf:type'][0].id === "v-s:OutgoingLetter"){
+        complexTemplateUri = 'v-s:OutgoingLetter_ComplexRouteStartForm_Template';
+      }
       $('#send.action', template).off("click");
       $('#send.action', template).on('click', function () {
-        veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+        veda.Util.send(individual, template, 's-wf:complexRouteTransform', undefined, complexTemplateUri);
       });
     } else {
       $('#delete.action', template).remove();
@@ -403,11 +448,19 @@ v-s:CorrespondentTemplate
     self.off("v-s:correspondentOrganization", correspondentOrganizationHandler);
   });
   function correspondentOrganizationHandler () {
-    var userOrganization = veda.appointment.getOrganization();
-    if ( this.hasValue("v-s:correspondentOrganization", userOrganization) ) {
+    if (
+      this.hasValue("v-s:correspondentOrganization") && this["v-s:correspondentOrganization"][0].hasValue("v-s:isOwnOrganization", true) ||
+      this.hasValue("v-s:correspondentOrganization", veda.appointment.getOrganization())
+    ) {
+      this
+        .clearValue("v-s:correspondentDepartmentDescription")
+        .clearValue("v-s:correspondentPersonDescription");
       $(".user-organization", template).show();
       $(".other-organization", template).hide();
     } else {
+      this
+        .clearValue("v-s:correspondentDepartment")
+        .clearValue("v-s:correspondentPerson");
       $(".user-organization", template).hide();
       $(".other-organization", template).show();
     }
@@ -488,7 +541,6 @@ v-s:DeliveryTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
   </div>
 </div>
-
   """ ;
 .
 

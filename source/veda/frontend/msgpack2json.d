@@ -7,7 +7,7 @@ private import std.outbuffer, std.stdio, std.string, std.conv, std.datetime;
 private import vibe.data.json, msgpack;
 private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang;
 
-ubyte magic_header = 0xFF;
+ubyte magic_header = 146;
 
 // ///////////////////////////////////////////////////////////////////////////////////
 public int msgpack2json(Json *individual, string in_str)
@@ -28,7 +28,7 @@ public int msgpack2json(Json *individual, string in_str)
             return -1;
         }
 
-        StreamingUnpacker unpacker = StreamingUnpacker(src[ 1..$ ]);
+        StreamingUnpacker unpacker = StreamingUnpacker(src[ 0..$ ]);
 
         if (unpacker.execute())
         {
@@ -105,6 +105,36 @@ public int msgpack2json(Json *individual, string in_str)
                                         resource_json[ "lang" ] = text(LANG.NONE);
                                         resources ~= resource_json;
                                     }
+                                    else if (type == DataType.Uri)
+                                    {
+                                        string str = (cast(string)arr[ 1 ].via.raw).dup;
+                                        resource_json[ "type" ] = text(DataType.Uri);
+                                        resource_json[ "data" ] = str;
+                                        resources ~= resource_json;
+                                    }
+                                    else if (type == DataType.Integer)
+                                    {
+                                        if (arr[ 1 ].type == Value.Type.unsigned)
+                                        {
+                                            long value = arr[ 1 ].via.uinteger;
+                                            resource_json[ "type" ] = text(DataType.Integer);
+                                            resource_json[ "data" ] = value;
+                                            resources ~= resource_json;
+                                        }
+                                        else
+                                        {
+                                            long value = arr[ 1 ].via.integer;
+                                            resource_json[ "type" ] = text(DataType.Integer);
+                                            resource_json[ "data" ] = value;
+                                            resources ~= resource_json;
+                                        }
+                                    }
+                                    else if (type == DataType.Boolean)
+                                    {
+                                        resource_json[ "type" ] = text(DataType.Boolean);
+                                        resource_json[ "data" ] = arr[ 1 ].via.boolean;
+                                        resources ~= resource_json;
+                                    }
                                     else
                                     {
                                         stderr.writeln("ERR! msgpack2individual: [0][1] unknown type [%d]", type);
@@ -152,40 +182,6 @@ public int msgpack2json(Json *individual, string in_str)
                                         return -1;
                                     }
                                 }
-                                break;
-
-                            case Value.Type.raw:
-                                string str              = (cast(string)resources_vals[ i ].via.raw).dup;
-                                resource_json[ "type" ] = text(DataType.Uri);
-                                resource_json[ "data" ] = str;
-                                resources ~= resource_json;
-                                break;
-
-                            case Value.Type.unsigned:
-
-                                long value              = resources_vals[ i ].via.uinteger;
-                                resource_json[ "type" ] = text(DataType.Integer);
-                                resource_json[ "data" ] = value;
-                                resources ~= resource_json;
-
-                                break;
-
-                            case Value.Type.signed:
-
-                                long value              = resources_vals[ i ].via.integer;
-                                resource_json[ "type" ] = text(DataType.Integer);
-                                resource_json[ "data" ] = value;
-                                resources ~= resource_json;
-
-                                break;
-
-
-                            case Value.Type.boolean:
-
-                                resource_json[ "type" ] = text(DataType.Boolean);
-                                resource_json[ "data" ] = resources_vals[ i ].via.boolean;
-                                resources ~= resource_json;
-
                                 break;
 
                             default:

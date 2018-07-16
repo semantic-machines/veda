@@ -785,13 +785,19 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
 /*
  * функция mapToMessage, генерирует индивид/сообщение с помощью шаблонизатора mustache (http://mustache.github.io/)
  *
- *    ! для работы требуется заполненная переменная $template, которая указывает на шаблон (индивид типа v-s:TemplateForText)
+ *    ! для работы требуется заполненная переменная $template, которая указывает на шаблон (индивид типа v-s:Notification)
  *
  *    из шаблона используются поля:
- *      v-s:templateLanguage - указание какой язык выбран для генерации текста
- *      v-s:templateSubject  - шаблон для заголовка
- *      v-s:templateBody   - шаблон для тела
+ *      v-s:notificationLanguage - указание какой язык выбран для генерации текста
+ *      v-s:notificationSubject  - шаблон для заголовка
+ *      v-s:notificationBody   - шаблон для тела
  */
+
+function getAppName() {
+  var appInfo = get_individual(ticket, "v-s:vedaInfo");
+  var appName = appInfo ? getFirstValue(appInfo["rdfs:label"]) : "";
+  return appName;
+}
 
 function mapToMessage(map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment) {
   try {
@@ -801,6 +807,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
       //* выполнить маппинг для сообщения
       var messageVars = [];
       messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
+      
 
       if (messageVars) {
 
@@ -830,9 +837,9 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
         }
 
         if (template) {
-          var lang = template['v-s:templateLanguage'];
-          var subject = getFirstValue(template['v-s:templateSubject']);
-          var body = getFirstValue(template['v-s:templateBody']);
+          var lang = template['v-s:notificationLanguage'];
+          var subject = getFirstValue(template['v-s:notificationSubject']);
+          var body = getFirstValue(template['v-s:notificationBody']);
 
           if (lang) {
             var lang_indv = get_individual(ticket, lang);
@@ -845,7 +852,9 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
           } else {
             lang = 'RU';
           }
-          var view = {};
+          var view = {
+            "app_name": getAppName
+          };
 
           for (var idx = 0; idx < messageVars.length; idx++) {
             var jvar = messageVars[idx];
@@ -891,6 +900,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
           new_message['v-s:subject'] = newStr (output_subject, lang);
           new_message['v-s:messageBody'] = newStr (output_body, lang);
           new_message['v-wf:onWorkOrder'] = newUri (_order['@']);
+          new_message['v-s:hasMessageType'] = template['v-s:hasMessageType'];
           put_individual(ticket, new_message, _event_id);
         }
         //print("@@@ mapToMessage=" + toJson(new_message));
@@ -1257,5 +1267,24 @@ function remove_empty_branches_from_journal(journal_uri)
       }
         }
     }
+}
 
+function getSystemUrl(var_to) {
+    var userTo = get_individual(ticket, var_to[0].data);
+    var isExternal = false;
+    if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="External User") {
+        isExternal = true;
+    };
+    var systemIndivid = isExternal ? newUri ('cfg:SystemInfoExternal') : newUri ('v-s:vedaInfo');
+    return getFirstValue (get_properties_chain (systemIndivid, [{$get:'v-s:appUrl'}]));
+}
+
+function getInboxUrl(var_to) {
+    var userTo = get_individual(ticket, var_to[0].data);
+    var isExternal = false;
+    if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="External User") {
+        isExternal = true;
+    };
+    var systemIndivid = isExternal ? newUri ('cfg:SystemInfoExternal') : newUri ('v-s:vedaInfo');
+    return getFirstValue (get_properties_chain (systemIndivid, [{$get:'v-wf:appInboxUrl'}]));
 }

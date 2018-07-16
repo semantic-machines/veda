@@ -22,7 +22,7 @@ killall -9 veda-ttlreader
 killall -9 veda-webserver
 killall -9 veda-gowebserver
 killall -9 veda-ft-query
-killall -9 veda-lmdb-server
+killall -9 veda-lmdb-srv
 killall -9 veda-authorization
 
 tarantoolctl stop init_tarantool.lua
@@ -32,3 +32,5 @@ rm .veda-pid
 rm data/module-info/*.lock
 rm data/queue/*.lock
 rm data/uris/*.lock
+
+exit 0

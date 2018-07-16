@@ -6,8 +6,8 @@ module veda.onto.individual;
 private
 {
     import std.stdio, std.typecons, std.conv, std.algorithm, std.digest.crc, std.exception : assumeUnique;
-    import veda.onto.resource, veda.core.common.context, veda.core.common.know_predicates, veda.core.util.utils;
-    import veda.util.container, veda.common.type, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
+    import veda.onto.resource;
+    import veda.common.type, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
     import veda.util.properd;
 }
 /// Массив индивидуалов
@@ -57,7 +57,7 @@ public struct Individual
         if (bin.length == 0)
             return -1;
 
-        if ((cast(ubyte[])bin)[ 0 ] == 0xFF)
+        if ((cast(ubyte[])bin)[ 0 ] == 146)
         {
             // this MSGPACK
             return msgpack2individual(this, bin);
@@ -87,10 +87,10 @@ public struct Individual
             }
             catch (Throwable ex)
             {
-                log.trace("ERR! unable read ./veda.properties, ex=%s", ex.msg);
+                stderr.writefln("ERR! unable read ./veda.properties, ex=%s", ex.msg);
             }
 
-            log.trace("SET binobj_format=%s", text(binobj_format));
+            stderr.writefln("SET binobj_format=%s", text(binobj_format));
         }
 
 
@@ -397,24 +397,4 @@ public struct Individual
 
         return str_hash;
     }
-}
-
-
-unittest
-{
-    import std.datetime;
-    import veda.onto.lang;
-    import veda.util.tests_tools;
-
-    Individual new_indv_A = generate_new_test_individual();
-    string     bin        = new_indv_A.serialize();
-
-    Individual new_indv_B;
-    new_indv_B.deserialize(bin);
-
-    assert(new_indv_B.compare(new_indv_A));
-    new_indv_B.setResources("rdfs:label", [ Resource(decimal(cast(long)122234, cast(byte)25)) ]);
-    assert(!new_indv_B.compare(new_indv_A));
-
-    writeln("unittest [Individual serialize, deserialize] Ok");
 }

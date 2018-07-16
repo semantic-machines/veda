@@ -2,16 +2,18 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"cbor"
 	"fmt"
+	"gopkg.in/vmihailenco/msgpack.v2"
 	"log"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
-	"bytes"
-	"gopkg.in/vmihailenco/msgpack.v2"
 )
+
+type Individual map[string]interface{}
 
 //DataType represents Resource type in veda
 type DataType uint8
@@ -62,7 +64,7 @@ func dataTypeToString(dataType DataType) string {
 		return "Boolean"
 	}
 
-	log.Println("@ERR UNKNOWN DATA TYPE")
+	log.Println("ERR! UNKNOWN DATA TYPE")
 	return ""
 }
 
@@ -178,7 +180,7 @@ func stringToDataType(str string) DataType {
 		return Boolean
 	}
 
-	log.Println("@ERR UNKNOWN DATA TYPE STRING")
+	log.Println("ERR! UNKNOWN DATA TYPE STRING")
 	return Unknown
 }
 
@@ -195,12 +197,150 @@ func stringToLang(str string) Lang {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func BinobjToMap(binobjStr string) map[string]interface{} {
-	if binobjStr[0] == 0xFF {
-			return MsgpackToMap(binobjStr)
-		} else {
-			return CborToMap(binobjStr)			
-		}	
+func BinobjToMap(binobjStr string) Individual {
+	if binobjStr[0] == 146 {
+		return MsgpackToMap(binobjStr)
+	} else {
+		return CborToMap(binobjStr)
+	}
+}
+
+func ttResordToMap(uri string, tt_record map[interface{}]interface{}) Individual {
+	individual := make(Individual)
+
+	individual["@"] = uri
+	for predicate, pp := range tt_record {
+
+		switch reflect.TypeOf(pp).Kind() {
+		case reflect.Slice:
+			s := reflect.ValueOf(pp)
+
+			resources := make([]interface{}, 0, s.Len())
+
+			for i := 0; i < s.Len(); i++ {
+				arr_val := s.Index(i)
+
+				val1 := arr_val.Interface()
+				val := reflect.ValueOf(val1)
+
+				v_size := val.Len()
+
+				if v_size == 0 || v_size > 3 {
+					log.Printf("!ERR ttResordToMap: vsize < 1 || > 3 %d", v_size)
+					continue
+				}
+
+				resource := make(map[string]interface{})
+
+				vtype := DataType(val.Index(0).Interface().(uint64))
+
+				switch vtype {
+				case Uri:
+					resource["type"] = dataTypeToString(Uri)
+					resource["data"] = val.Index(1).Interface().(string)
+				case Integer:
+					resource["type"] = dataTypeToString(Integer)
+
+					num := val.Index(1).Interface()
+					switch num.(type) {
+					case uint64:
+						resource["data"] = num.(uint64)
+					case int64:
+						resource["data"] = num.(int64)
+					default:
+						log.Printf("!ERR unknown num type %v", num)
+						return nil
+					}
+
+				case Datetime:
+					r_dt := val.Index(1).Interface()
+
+					switch r_dt.(type) {
+					case int64:
+						resource["data"] = time.Unix(r_dt.(int64), 0).UTC().Format("2006-01-02T15:04:05Z")
+					case uint64:
+						resource["data"] = time.Unix(int64(r_dt.(uint64)), 0).UTC().Format("2006-01-02T15:04:05Z")
+					default:
+						log.Printf("!ERR ttResordToMap: NOT INT/UINT IN DATETIME: %v", r_dt)
+						return nil
+					}
+					resource["type"] = dataTypeToString(Datetime)
+
+				case Decimal:
+					var mantissa, exponent int64
+
+					r_mantissa := val.Index(1).Interface()
+					switch r_mantissa.(type) {
+					case uint64:
+						mantissa = int64(r_mantissa.(uint64))
+					case int64:
+						mantissa = r_mantissa.(int64)
+					default:
+						log.Printf("!ERR ttResordToMap: unknown num type %v", r_mantissa)
+						return nil
+					}
+
+					r_exponent := val.Index(2).Interface()
+					switch r_exponent.(type) {
+					case uint64:
+						exponent = int64(r_exponent.(uint64))
+					case int64:
+						exponent = r_exponent.(int64)
+					default:
+						log.Printf("!ERR ttResordToMap: unknown num type %v", r_exponent)
+						return nil
+					}
+
+					resource["type"] = dataTypeToString(Decimal)
+					resource["data"] = decimalToString(mantissa, exponent)
+
+				case Boolean:
+					resource["type"] = dataTypeToString(Boolean)
+					resource["data"] = val.Index(1).Interface().(bool)
+
+				case String:
+					rval := val.Index(1).Interface()
+
+					switch rval.(type) {
+					case string:
+						resource["type"] = dataTypeToString(String)
+						resource["data"] = rval.(string)
+
+						if v_size == 3 {
+
+							r_lang := val.Index(2).Interface()
+							switch r_lang.(type) {
+							case uint64:
+								resource["lang"] = langToString(Lang(r_lang.(uint64)))
+							case int64:
+								resource["lang"] = langToString(Lang(r_lang.(int64)))
+							default:
+								log.Printf("!ERR ttResordToMap: unknown lang type %v", r_lang)
+								return nil
+							}
+						}
+					case nil:
+						resource["type"] = dataTypeToString(String)
+						resource["data"] = ""
+					default:
+						log.Printf("!ERR ttResordToMap: unknown string type %v", rval)
+						return nil
+					}
+
+				default:
+					log.Printf("!ERR ttResordToMap: unknown type %v", vtype)
+					return nil
+				}
+				resources = append(resources, resource)
+
+			}
+			individual[predicate.(string)] = resources
+		}
+		//resources = append(resources, resource)
+		//individual[key.(string)] = v
+	}
+
+	return individual
 }
 
 //MapToMsgpack converts individual map from client to msgpack for sending to tarantool
@@ -239,9 +379,11 @@ func MapToMsgpack(jsonMap map[string]interface{}) string {
 			switch datatype {
 			//Integer, Uri, Boolean are simply encoded into array
 			case Uri:
-				encoder.Encode(resource["data"].(string))
+				encoder.EncodeArrayLen(2)
+				encoder.Encode(Uri, resource["data"].(string))
 			case Integer:
-				encoder.Encode(int64(resource["data"].(float64)))
+				encoder.EncodeArrayLen(2)
+				encoder.Encode(Integer, int64(resource["data"].(float64)))
 			case Datetime:
 				datetime, _ := time.Parse("2006-01-02T15:04:05.000Z", resource["data"].(string))
 				encoder.EncodeArrayLen(2)
@@ -308,7 +450,6 @@ func prepareElement(v interface{}) (interface{}, error) {
 	case cbor.CBORTag:
 		wrappedVal := v.(cbor.CBORTag).WrappedObject
 		tag := TAG(v.(cbor.CBORTag).Tag)
-		//		log.Printf("tag #1 subject_uri=%s, predicate_uri=%s", subject_uri, predicate_uri)
 
 		if tag == TAG_TEXT_RU {
 			return map[string]interface{}{
@@ -328,22 +469,48 @@ func prepareElement(v interface{}) (interface{}, error) {
 				"type": dataTypeToString(Uri),
 			}, nil
 		} else if tag == TAG_DECIMAL_FRACTION {
-			log.Fatalln("decimal ", wrappedVal)
-			arr := wrappedVal.([]interface{})
-			mantissa := arr[0].(int64)
-			exponent := arr[1].(int64)
+
+			v_e := (wrappedVal.(reflect.Value)).Index(1).Interface()
+			var exponent int64
+			switch v_e.(type) {
+			case int64:
+				exponent = v_e.(int64)
+			case uint64:
+				exponent = int64(v_e.(uint64))
+			}
+
+			v_m := (wrappedVal.(reflect.Value)).Index(0).Interface()
+			var mantissa int64
+			switch v_m.(type) {
+			case int64:
+				mantissa = v_m.(int64)
+			case uint64:
+				mantissa = int64(v_m.(uint64))
+			}
+
 			return map[string]interface{}{
 				"data": decimalToString(mantissa, exponent),
 				"type": dataTypeToString(Decimal),
 			}, nil
 		} else if tag == TAG_EPOCH_DATE_TIME {
+			var tt time.Time
+
+			switch wrappedVal.(type) {
+
+			case int64:
+				tt = time.Unix(int64(wrappedVal.(int64)), 0).UTC()
+
+			case uint64:
+				tt = time.Unix(int64(wrappedVal.(uint64)), 0).UTC()
+			}
+
 			return map[string]interface{}{
-				"data": time.Unix(int64(wrappedVal.(uint64)), 0).Format("2006-01-02T15:04:05Z"),
-				"type": dataTypeToString(Decimal),
+				"data": tt.Format("2006-01-02T15:04:05Z"),
+				"type": dataTypeToString(Datetime),
 			}, nil
+
 		}
 
-		log.Fatalf("TAG: %v\n", tag)
 		return nil, fmt.Errorf("Unsupported tag: %v", tag)
 
 	default:
@@ -351,15 +518,15 @@ func prepareElement(v interface{}) (interface{}, error) {
 	}
 }
 
-func CborToMap(cborStr string) map[string]interface{} {
-	individual := make(map[string]interface{})
+func CborToMap(cborStr string) Individual {
+	individual := make(Individual)
 
 	ring := cbor.NewDecoder(strings.NewReader(cborStr))
 	var cborObject interface{}
 	err := ring.Decode(&cborObject)
 	if err != nil {
-		log.Println("@ERR DECODING CBOR OBJECT")
-		return individual
+		log.Println("ERR! DECODING CBOR OBJECT")
+		return nil
 	}
 
 	var individualMap map[interface{}]interface{}
@@ -367,8 +534,8 @@ func CborToMap(cborStr string) map[string]interface{} {
 	case map[interface{}]interface{}:
 		individualMap = cborObject.(map[interface{}]interface{})
 	default:
-		log.Printf("@ERR CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
-		return individual
+		log.Printf("ERR! CBOR: DECODING INIVIDUAL MAP: INTERFACE IS TYPE OF %v\n", reflect.TypeOf(cborObject))
+		return nil
 	}
 
 	//log.Println(cborStr)
@@ -391,9 +558,10 @@ func CborToMap(cborStr string) map[string]interface{} {
 				if err != nil {
 					log.Println(cborStr)
 					log.Println(keyStr)
-					log.Fatalln(err)
+					log.Println(err)
+				} else {
+					resources = append(resources, resource)
 				}
-				resources = append(resources, resource)
 			}
 
 			individual[keyStr] = resources
@@ -403,10 +571,10 @@ func CborToMap(cborStr string) map[string]interface{} {
 		default:
 			resource, err := prepareElement(v)
 			if err != nil {
-				log.Fatalln(err)
+				log.Println(err)
+			} else {
+				individual[keyStr] = []interface{}{resource}
 			}
-
-			individual[keyStr] = []interface{}{resource}
 		}
 	}
 
@@ -414,144 +582,201 @@ func CborToMap(cborStr string) map[string]interface{} {
 }
 
 //MsgpackToMap converts msgpack from tarantool to json map representation of veda individual
-func MsgpackToMap(msgpackStr string) map[string]interface{} {
-		//Allocate map and decode msgpack
-		individual := make(map[string]interface{})
-		decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[1:len (msgpackStr)]))
-		decoder.DecodeArrayLen()
+func MsgpackToMap(msgpackStr string) Individual {
+	//Allocate map and decode msgpack
+	individual := make(Individual)
+	decoder := msgpack.NewDecoder(strings.NewReader(msgpackStr[0:len(msgpackStr)]))
+	decoder.DecodeArrayLen()
 
-		// log.Printf("@MSGPACK %v\n", msgpackStr)
+	// log.Printf("@MSGPACK %v\n", msgpackStr)
 
-		//Set individual uri and decode map of resources
-		individual["@"], _ = decoder.DecodeString()
-		resMapI, err := decoder.DecodeMap()
-		
-		if err != nil {
-			log.Fatalln(err)
-			return nil
-		}
-		
-		resMap := resMapI.(map[interface{}]interface{})
-		// log.Println("@URI ", individual["@"])
-		for keyI, resArrI := range resMap {
-			// log.Printf("\t@PREDICATE %v\n", keyI)
+	//Set individual uri and decode map of resources
+	individual["@"], _ = decoder.DecodeString()
+	resMapI, err := decoder.DecodeMap()
 
-			//Decode resource name
-			predicate := keyI.(string)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
 
-			// log.Println("\t", predicate, resArrI)
+	resMap := resMapI.(map[interface{}]interface{})
+	// log.Println("@URI ", individual["@"])
+	for keyI, resArrI := range resMap {
+		// log.Printf("\t@PREDICATE %v\n", keyI)
 
-			//Decode resource values and allocate resources arrat
-			resArr := resArrI.([]interface{})
-			resources := make([]interface{}, 0, len(resArr))
+		//Decode resource name
+		predicate := keyI.(string)
 
-			for i := 0; i < len(resArr); i++ {
-				//Decode resource and check its type
-				resI := resArr[i]
-				// log.Printf("\t\t@RES %v : %v\n", resI, reflect.TypeOf(resI))
-				resource := make(map[string]interface{})
-				switch resI.(type) {
-				//Arrays can contain strings and date time
-				case []interface{}:
-					resArrI := resI.([]interface{})
-					//Arrays of len tow can be date time or string without lang
-					//Arrays of len three can be String with lang or Decimal
-					if len(resArrI) == 2 {
-						resType := DataType(resArrI[0].(uint64))
-						if resType == Datetime {
-							switch resArrI[1].(type) {
-							case int64:
-								resource["data"] = time.Unix(resArrI[1].(int64), 0).Format("2006-01-02T15:04:05Z")
-							case uint64:
-								resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).Format("2006-01-02T15:04:05Z")
-							default:
-								log.Printf("@ERR SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
-									reflect.TypeOf(resArrI[1]))
-								return nil
-							}
-							resource["type"] = dataTypeToString(Datetime)
-						} else if resType == String {
-							// fmt.Println("TRY TO DECODE STR")
-							switch resArrI[1].(type) {
-							case string:
-								resource["data"] = resArrI[1]
-							case nil:
-								resource["data"] = ""
-							default:
-								log.Printf("@ERR SIZE 2! NOT STRING: %s\n",
-									reflect.TypeOf(resArrI[1]))
-								return individual
-							}
-							resource["type"] = dataTypeToString(String)
-							resource["lang"] = langToString(LangNone)
+		// log.Println("\t", predicate, resArrI)
+
+		//Decode resource values and allocate resources arrat
+		resArr := resArrI.([]interface{})
+		resources := make([]interface{}, 0, len(resArr))
+
+		for i := 0; i < len(resArr); i++ {
+			//Decode resource and check its type
+			resI := resArr[i]
+			// log.Printf("\t\t@RES %v : %v\n", resI, reflect.TypeOf(resI))
+			resource := make(map[string]interface{})
+			switch resI.(type) {
+			//Arrays can contain strings and date time
+			case []interface{}:
+				resArrI := resI.([]interface{})
+				//Arrays of len tow can be date time or string without lang
+				//Arrays of len three can be String with lang or Decimal
+				if len(resArrI) == 2 {
+					resType := DataType(resArrI[0].(uint64))
+					if resType == Datetime {
+						switch resArrI[1].(type) {
+						case int64:
+							resource["data"] = time.Unix(resArrI[1].(int64), 0).UTC().Format("2006-01-02T15:04:05Z")
+						case uint64:
+							resource["data"] = time.Unix(int64(resArrI[1].(uint64)), 0).UTC().Format("2006-01-02T15:04:05Z")
+						default:
+							log.Printf("ERR! SIZE 2! NOT INT/UINT IN DATETIME: %s\n",
+								reflect.TypeOf(resArrI[1]))
+							return nil
 						}
-					} else if len(resArrI) == 3 {
-						resType := DataType(resArrI[0].(uint64))
-
-						if resType == Decimal {
-							var mantissa, exponent int64
-
-							switch resArrI[1].(type) {
-							case int64:
-								mantissa = resArrI[1].(int64)
-							case uint64:
-								mantissa = int64(resArrI[1].(uint64))
-							default:
-								log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
-									reflect.TypeOf(resArrI[1]))
-								return nil
-							}
-
-							switch resArrI[2].(type) {
-							case int64:
-								exponent = resArrI[2].(int64)
-							case uint64:
-								exponent = int64(resArrI[2].(uint64))
-							default:
-								log.Println("@ERR SIZE 3! NOT INT/UINT IN MANTISSA: %s",
-									reflect.TypeOf(resArrI[1]))
-								return nil
-							}
-							resource["type"] = dataTypeToString(Decimal)
-							resource["data"] = decimalToString(mantissa, exponent)
-						} else if resType == String {
-							switch resArrI[1].(type) {
-							case string:
-								resource["data"] = resArrI[1]
-							case nil:
-								resource["data"] = ""
-							default:
-								log.Printf("@ERR SIZE 3! NOT STRING: %s\n",
-									reflect.TypeOf(resArrI[1]))
-								return nil
-							}
-
-							resource["type"] = dataTypeToString(String)
-							resource["lang"] = langToString(Lang(resArrI[2].(uint64)))
+						resource["type"] = dataTypeToString(Datetime)
+					} else if resType == String {
+						// fmt.Println("TRY TO DECODE STR")
+						switch resArrI[1].(type) {
+						case string:
+							resource["data"] = resArrI[1]
+						case nil:
+							resource["data"] = ""
+						default:
+							log.Printf("ERR! SIZE 2! NOT STRING: %s\n",
+								reflect.TypeOf(resArrI[1]))
+							return individual
 						}
+						resource["type"] = dataTypeToString(String)
+						resource["lang"] = langToString(LangNone)
+					} else if resType == Uri {
+						resource["type"] = dataTypeToString(Uri)
+						resource["data"] = resArrI[1]
+					} else if resType == Integer {
+						switch resArrI[1].(type) {
+						case int64:
+							resource["type"] = dataTypeToString(Integer)
+							resource["data"] = resArrI[1]
+						case uint64:
+							resource["type"] = dataTypeToString(Integer)
+							resource["data"] = resArrI[1]
+						}
+					} else if resType == Boolean {
+						resource["type"] = dataTypeToString(Boolean)
+						resource["data"] = resArrI[1]
 					}
 
-				//Other types are simply decoded from msgpack
-				case string:
-					resource["type"] = dataTypeToString(Uri)
-					resource["data"] = resI
-				case int64:
-					resource["type"] = dataTypeToString(Integer)
-					resource["data"] = resI
-				case uint64:
-					resource["type"] = dataTypeToString(Integer)
-					resource["data"] = resI
-				case bool:
-					resource["type"] = dataTypeToString(Boolean)
-					resource["data"] = resI
-				default:
-					log.Printf("@ERR! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
-					return nil
-				}
-				resources = append(resources, resource)
-			}
-			individual[predicate] = resources
-		}
+				} else if len(resArrI) == 3 {
+					resType := DataType(resArrI[0].(uint64))
 
-		return individual
+					if resType == Decimal {
+						var mantissa, exponent int64
+
+						switch resArrI[1].(type) {
+						case int64:
+							mantissa = resArrI[1].(int64)
+						case uint64:
+							mantissa = int64(resArrI[1].(uint64))
+						default:
+							log.Printf("ERR! SIZE 3! NOT INT/UINT IN MANTISSA: %s\n",
+								reflect.TypeOf(resArrI[1]))
+							return nil
+						}
+
+						switch resArrI[2].(type) {
+						case int64:
+							exponent = resArrI[2].(int64)
+						case uint64:
+							exponent = int64(resArrI[2].(uint64))
+						default:
+							log.Printf("ERR! SIZE 3! NOT INT/UINT IN MANTISSA: %s",
+								reflect.TypeOf(resArrI[1]))
+							return nil
+						}
+						resource["type"] = dataTypeToString(Decimal)
+						resource["data"] = decimalToString(mantissa, exponent)
+					} else if resType == String {
+						switch resArrI[1].(type) {
+						case string:
+							resource["data"] = resArrI[1]
+						case nil:
+							resource["data"] = ""
+						default:
+							log.Printf("ERR! SIZE 3! NOT STRING: %s\n",
+								reflect.TypeOf(resArrI[1]))
+							return nil
+						}
+
+						resource["type"] = dataTypeToString(String)
+						resource["lang"] = langToString(Lang(resArrI[2].(uint64)))
+					}
+				}
+
+			default:
+				log.Printf("ERR!! UNSUPPORTED TYPE %s\n", reflect.TypeOf(resI))
+				return nil
+			}
+			resources = append(resources, resource)
+		}
+		individual[predicate] = resources
+	}
+
+	return individual
+}
+
+func getFirstInt(indv Individual, predicate string) (int, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return 0, false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case int64:
+		return int(_data.(int64)), true
+	case uint64:
+		return int(_data.(uint64)), true
+	default:
+		return 0, false
+	}
+}
+
+func getFirstString(indv Individual, predicate string) (string, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return "", false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case string:
+		return _data.(string), true
+	default:
+		return "", false
+	}
+}
+
+func getFirstBool(indv Individual, predicate string) (bool, bool) {
+	rss, err := indv[predicate].([]interface{})
+	if err != true {
+		return false, false
+	}
+
+	_data := rss[0].(map[string]interface{})["data"]
+
+	switch _data.(type) {
+	case bool:
+		return _data.(bool), true
+	default:
+		return false, false
+	}
+}
+
+func getUri(indv Individual) string {
+	return indv["@"].(string)
 }

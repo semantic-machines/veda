@@ -19,7 +19,8 @@
 	    "../../veda/core/impl", 
 	    "../../veda/core/search", 
 	    "../../veda/core/common",
-	    "../../veda/storage/lmdb"
+	    "../../veda/storage/lmdb",
+            "../../veda/storage/tarantool"
 	],
         "sourceFiles":[
             "../../lib64/libauthorization.a",
@@ -44,7 +45,7 @@
 	    "../../veda/storage/storage.d",
 	    "../../veda/storage/binlog_tools.d"
 	],
-        "libs":["nanomsg"],
+        "libs":["nanomsg", "tarantool"],
 	"configurations": [
 	{
 	    "name": "app",

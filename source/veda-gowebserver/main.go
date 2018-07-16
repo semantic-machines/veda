@@ -1,13 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
-	"time"
-	"encoding/json"
+	"os"
 	"strings"
-
-	//	"github.com/muller95/traildb-go"
+	"sync"
+	"time"
 
 	"github.com/op/go-nanomsg"
 	"github.com/valyala/fasthttp"
@@ -48,15 +48,15 @@ type ticket struct {
 }
 
 const (
-	lmdbTicketsDBPath = "./data/lmdb-tickets"
-	tdbPath           = "./data/trails/	"
+	tdbPath = "./data/trails/	"
 )
 
 //ticketCache is map to cache requested earlier tickets
 var ticketCache map[string]ticket
+var ticketCacheMutex = sync.RWMutex{}
 
 //ontologyCache is map to cache requested earlier individuals from ontology
-var ontologyCache map[string]map[string]interface{}
+var ontologyCache map[string]Individual
 
 //mifCache is map to cache opened ModuleInfoFile structs
 var mifCache map[int]*ModuleInfoFile
@@ -65,10 +65,12 @@ var mifCache map[int]*ModuleInfoFile
 var conn Connector
 
 //socket is nanomsg socket connected to server
-var socket *nanomsg.Socket
+var g_mstorage_ch *nanomsg.Socket
+
+//var mstorage_ch_Mutex = sync.RWMutex{}
 
 //endpoint is nanomsg endpoint connected to server
-var endpoint *nanomsg.Endpoint
+//var endpoint *nanomsg.Endpoint
 
 //aclSocket is nanomsg socket connected to acl service
 //var aclSocket *nanomsg.Socket
@@ -77,18 +79,20 @@ var endpoint *nanomsg.Endpoint
 //var aclEndpoint *nanomsg.Endpoint
 
 //querySocket is nanomsg socket connected to query service
-var querySocket *nanomsg.Socket
+//var querySocket *nanomsg.Socket
 
 //aclEndpoint is nanomsg endpoint connected to acl service
-var queryEndpoint *nanomsg.Endpoint
+//var queryEndpoint *nanomsg.Endpoint
 
 //mainModuleURL is tcp address of veda server
 var mainModuleURL = "tcp://127.0.0.1:9112"
 var notifyChannelURL = "tcp://127.0.0.1:9111"
 var queryServiceURL = "tcp://127.0.0.1:23000"
-var tarantoolURL = "127.0.0.1:9999"
+var lmdbServiceURL = "tcp://127.0.0.1:23001"
+var tarantoolURL = "" // = "127.0.0.1:3309"
 var webserverPort = "8080"
 var webserverHTTPSPort = "8020"
+
 //var aclServiceURL = "tcp://127.0.0.1:22000"
 var useHTTPS = false
 
@@ -148,7 +152,7 @@ func codeToJsonException(code ResultCode) []byte {
 func requestHandler(ctx *fasthttp.RequestCtx) {
 	routeParts := strings.Split(string(ctx.Path()[:]), "/")
 	if len(routeParts) >= 2 && routeParts[1] == "files" {
-		//log.Printf("len=%v arr=%v\n", len(routeParts), routeParts)
+		//log.Printf("@len=%v arr=%v\n", len(routeParts), routeParts)
 		files(ctx, routeParts)
 		return
 	}
@@ -205,60 +209,101 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
 	case "/tests":
 		ctx.SendFile("public/tests.html")
 	default:
-		fasthttp.FSHandler("public/", 0)(ctx)
+
+		fs := &fasthttp.FS{
+			Root:       "public/",
+			IndexNames: []string{"index.html"},
+			Compress:   false,
+		}
+		fsHandler := fs.NewRequestHandler()
+		fsHandler(ctx)
+		//fasthttp.FSHandler("public/", 0)(ctx)
 	}
 }
 
 func main() {
+
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	var err error
 
 	configWebServer()
 
-	socket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-	if err != nil {
-		log.Fatal("@ERR ON CREATING SOCKET")
+	args := os.Args[1:]
+
+	opt_external_users_http_port := ""
+
+	for _, arg := range args {
+		cuts := strings.Split(arg, "=")
+		if len(cuts) == 2 {
+			name := cuts[0]
+			val := cuts[1]
+
+			if name == "--http_port" {
+				webserverPort = val
+				fmt.Println("use command line param http_port=", webserverPort)
+			} else if name == "--ext_usr_http_port" {
+				opt_external_users_http_port = val
+			}
+		}
 	}
 
-	endpoint, err = socket.Connect(mainModuleURL)
+	if opt_external_users_http_port != "" && opt_external_users_http_port == webserverPort {
+		fmt.Println("use external user mode")
+		areExternalUsers = true
+	}
+
+	g_mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	if err != nil {
+		log.Fatal("ERR! ON CREATING SOCKET")
+	}
+
+	_, err = g_mstorage_ch.Connect(mainModuleURL)
 	for err != nil {
-		endpoint, err = socket.Connect(mainModuleURL)
+		_, err = g_mstorage_ch.Connect(mainModuleURL)
 		time.Sleep(3000 * time.Millisecond)
 	}
 
-//	aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-//	if err != nil {
-//		log.Fatal("@ERR ON CREATING ACL SOCKET")
-//	}
+	//	aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+	//	if err != nil {
+	//		log.Fatal("ERR! ON CREATING ACL SOCKET")
+	//	}
 
-//	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
-//	for err != nil {
-//		endpoint, err = aclSocket.Connect(aclServiceURL)
-//		time.Sleep(3000 * time.Millisecond)
-//	}
+	//	aclEndpoint, err = aclSocket.Connect(aclServiceURL)
+	//	for err != nil {
+	//		endpoint, err = aclSocket.Connect(aclServiceURL)
+	//		time.Sleep(3000 * time.Millisecond)
+	//	}
+	/*
+		querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+		if err != nil {
+			log.Fatal("ERR! ON CREATING QUERY SOCKET")
+		}
 
-	querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-	if err != nil {
-		log.Fatal("@ERR ON CREATING QUERY SOCKET")
-	}
-
-	queryEndpoint, err = querySocket.Connect(queryServiceURL)
-	for err != nil {
-//		endpoint, err = aclSocket.Connect(aclServiceURL)
-//		time.Sleep(3000 * time.Millisecond)
-	}
+		log.Println("use query service url: ", queryServiceURL)
+		queryEndpoint, err = querySocket.Connect(queryServiceURL)
+		for err != nil {
+			//		endpoint, err = aclSocket.Connect(aclServiceURL)
+			//		time.Sleep(3000 * time.Millisecond)
+		}
+	*/
 
 	conn.Connect(tarantoolURL)
 
 	ticketCache = make(map[string]ticket)
-	ontologyCache = make(map[string]map[string]interface{})
+	ontologyCache = make(map[string]Individual)
 	mifCache = make(map[int]*ModuleInfoFile)
 	externalUsersTicketId = make(map[string]bool)
 
-	go monitorIndividualChanges()
+	//go monitorIndividualChanges()
 	go func() {
-		err = fasthttp.ListenAndServe("0.0.0.0:"+webserverPort, requestHandler)
+		h := fasthttp.Server{
+			Handler:            requestHandler,
+			MaxRequestBodySize: 10 * 1024 * 1024 * 1024,
+		}
+		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {
-			log.Fatal("@ERR ON STARTUP HTTP WEBSERVER ", err)
+			log.Fatal("ERR! ON STARTUP HTTP WEBSERVER ", err)
 		}
 	}()
 
@@ -266,7 +311,7 @@ func main() {
 		err = fasthttp.ListenAndServeTLS("0.0.0.0:"+webserverHTTPSPort, "ssl-certs/server.crt",
 			"ssl-certs/server.key", requestHandler)
 		if err != nil {
-			log.Fatal("@ERR ON STARTUP HTTPS WEBSERVER", err)
+			log.Fatal("ERR! ON STARTUP HTTPS WEBSERVER", err)
 		}
 	}
 
@@ -276,7 +321,7 @@ func main() {
 		err = fasthttp.ListenAndServeTLS("0.0.0.0:8020", "ssl-certs/server.crt",
 			"ssl-certs/server.key", requestHandler)
 		if err != nil {
-			log.Fatal("@ERR ON STARTUP WEBSERVER ON HTTPS", err)
+			log.Fatal("ERR! ON STARTUP WEBSERVER ON HTTPS", err)
 		}
 	*/
 }

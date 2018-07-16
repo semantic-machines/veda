@@ -5,9 +5,8 @@ import (
 	"log"
 	"strconv"
 	//"strings"
-	"time"
-
 	"github.com/valyala/fasthttp"
+	"time"
 )
 
 //getTicket handles get_ticket request
@@ -26,12 +25,19 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 	}
 
 	//Look for ticket in cache
-	if ticketCache[ticketKey].Id != "" {
+	ticketCacheMutex.RLock()
+	tk := ticketCache[ticketKey]
+	ticketCacheMutex.RUnlock()
+
+	if tk.Id != "" {
 		//If found check expiration time
-		ticket = ticketCache[ticketKey]
+		ticket = tk
 		if time.Now().Unix() > ticket.EndTime {
 			//If expired, delete and return
+			ticketCacheMutex.Lock()
 			delete(ticketCache, ticketKey)
+			ticketCacheMutex.Unlock()
+
 			log.Printf("@TICKET %v FROM USER %v EXPIRED: START %v END %v NOW %v\n", ticket.Id, ticket.UserURI,
 				ticket.StartTime, ticket.EndTime, time.Now().Unix())
 			return TicketExpired, ticket
@@ -41,7 +47,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		rr := conn.GetTicket([]string{ticketKey}, false)
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
-			log.Println("@ERR ON GET TICKET FROM TARANTOOL")
+			log.Println("ERR! ON GET TICKET")
 			return InternalServerError, ticket
 		}
 
@@ -50,11 +56,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return rr.OpRC[0], ticket
 		}
 
-		individual := BinobjToMap(rr.Data[0])
-		if individual == nil {
-			log.Println("@ERR GET_TICKET0: DECODING TICKET")
-			return InternalServerError, ticket
-		}
+		individual := rr.GetIndv(0)
 
 		var duration int64
 
@@ -70,7 +72,9 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		ticket.EndTime = ticket.StartTime + duration
 
 		//Save ticket in the cache
+		ticketCacheMutex.Lock()
 		ticketCache[ticketKey] = ticket
+		ticketCacheMutex.Unlock()
 	}
 
 	if areExternalUsers {
@@ -80,21 +84,24 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		_, ok := externalUsersTicketId[ticket.Id]
 		if !ok {
 			//If ticket not found then get user from tarantool and decode it
-			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false)
-			user := BinobjToMap(rr.Data[0])
+			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
+			user := rr.GetIndv(0)
 			//Check its field v-s:origin
-			data, ok := user["v-s:origin"]
-			if !ok || (ok && !data.(map[string]interface{})["data"].(bool)) {
+
+			origin, ok := getFirstBool(user, "v-s:origin")
+			if !ok || (ok && origin == false) {
 				//If this field not found or it contains false then return error code
 				log.Printf("ERR! user (%s) is not external\n", ticket.UserURI)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
-			} else if ok && data.(map[string]interface{})["data"].(bool) {
+			} else if ok && origin == true {
 				//Else store ticket to cache
 				log.Printf("user is external (%s)\n", ticket.UserURI)
 				externalUsersTicketId[ticket.UserURI] = true
 			}
+
 		}
+
 	}
 
 	return Ok, ticket
@@ -142,18 +149,18 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	//Marshal json request
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		log.Printf("@ERR GET_TICKET_TRUSTED: ENCODE JSON REQUEST: %v\n", err)
+		log.Printf("ERR! GET_TICKET_TRUSTED: ENCODE JSON REQUEST: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
 
 	//Send request to veda server and read response
-	socket.Send(jsonRequest, 0)
-	responseBuf, _ := socket.Recv(0)
+	NmCSend(g_mstorage_ch, jsonRequest, 0)
+	responseBuf, _ := g_mstorage_ch.Recv(0)
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
-		log.Printf("@ERR GET_TICKET_TRUSTED: DECODE JSON RESPONSE: %v\n", err)
+		log.Printf("ERR! GET_TICKET_TRUSTED: DECODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
@@ -168,7 +175,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	//Encoding json response and retiurn to client
 	getTicketResponseBuf, err := json.Marshal(getTicketResponse)
 	if err != nil {
-		log.Printf("@ERR GET_TICKET_TRUSTED: ENCODE JSON RESPONSE: %v\n", err)
+		log.Printf("ERR! GET_TICKET_TRUSTED: ENCODE JSON RESPONSE: %v\n", err)
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}

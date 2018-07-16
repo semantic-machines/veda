@@ -163,7 +163,7 @@ class XapianReader : SearchReader
 
                 sr.result_code = cast(ResultCode)errcode;
                 
-                log.trace("WARN! request emulate error code = [%s]", sr.result_code);
+                log.trace("WARN! request emulate error code = [%s]", text (sr.result_code));
 
                 return sr;
             }
@@ -307,7 +307,7 @@ class XapianReader : SearchReader
 
             if (sr.total_time > 10_000)
             {
-                log.trace("WARN! [%s] xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
+                log.trace("WARN! xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
             }
 
             if (sr.result_code == ResultCode.DatabaseModifiedError)

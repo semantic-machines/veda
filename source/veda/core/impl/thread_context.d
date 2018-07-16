@@ -6,14 +6,17 @@ module veda.core.impl.thread_context;
 
 private
 {
-    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.file, std.path,
+    import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.file, std.path,
            std.json, std.regex;
+    import veda.util.properd;
     import veda.bind.xapian_d_header;
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
-    import veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger, veda.storage.lmdb.lmdb_storage;
+    import veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
+    import veda.storage.lmdb.lmdb_storage;
+    import veda.storage.tarantool.tarantool_storage;
 
     version (isMStorage)
     {
@@ -25,23 +28,23 @@ private
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    private Onto        onto;
+    private Onto       onto;
 
-    private string      name;
+    private string     name;
 
-    private             string[ string ] prefix_map;
+    private            string[ string ] prefix_map;
 
-    private VQL         _vql;
+    private VQL        _vql;
 
-    private LmdbStorage storage;
+    private Storage    storage;
 
-    private long        local_last_update_time;
-    private Individual  node = Individual.init;
-    private string      node_id;
+    private long       local_last_update_time;
+    private Individual node = Individual.init;
+    private string     node_id;
 
-    private bool        API_ready = true;
-    private string      main_module_url;
-    private Logger      log;
+    private bool       API_ready = true;
+    private string     main_module_url;
+    private Logger     log;
 
     Storage get_storage()
     {
@@ -125,7 +128,7 @@ class PThreadContext : Context
                         if (res > 0 || res == -1 && nn_errno() != 4)
                             break;
 
-                        log.trace("ERR! N_CHANNEL: repeat recv, attempt=%d", attempt+1);
+                        log.trace("ERR! N_CHANNEL: repeat recv, attempt=%d", attempt + 1);
                     }
 
 
@@ -221,7 +224,17 @@ class PThreadContext : Context
         ctx.main_module_url = _main_module_url;
         ctx.node_id         = _node_id;
 
-        ctx.storage = new LmdbStorage(context_name, ctx.log);
+        string[ string ] properties = readProperties("./veda.properties");
+        string tarantool_url = properties.as!(string)("tarantool_url");
+
+        if (tarantool_url !is null)
+        {
+            ctx.storage = new TarantoolStorage(context_name, ctx.log);
+        }
+        else
+        {
+            ctx.storage = new LmdbStorage(context_name, ctx.log);
+        }
 
         ctx.name = context_name;
 
@@ -385,12 +398,14 @@ class PThreadContext : Context
 
     public void reopen_ro_individuals_storage_db()
     {
-        storage.get_inividuals_storage_r().reopen();
+        if (storage !is null)
+            storage.get_inividuals_storage_r().reopen();
     }
 
     public void reopen_ro_acl_storage_db()
     {
-        storage.get_acl_client().reopen();
+        if (storage !is null)
+            storage.get_acl_client().reopen();
     }
 
     // ////////// external ////////////
@@ -409,7 +424,8 @@ class PThreadContext : Context
         if (ticket is null)
             return;
 
-        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null,
+        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true,
+                                           trace_acl, null,
                                            trace_info);
     }
 
@@ -418,7 +434,8 @@ class PThreadContext : Context
         if (ticket is null)
             return;
 
-        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, null, trace_group,
+        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true,
+                                           null, trace_group,
                                            null);
     }
 
@@ -435,7 +452,7 @@ class PThreadContext : Context
         return sr;
     }
 
-    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize = OptAuthorize.YES)
+    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize)
     {
         Individual individual = Individual.init;
 
@@ -690,7 +707,9 @@ class PThreadContext : Context
 
                 long update_counter = item.new_indv.getFirstInteger("v-s:updateCounter", -1);
 
-                rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
+                rc =
+                    this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                                opt_authorize).result;
 
                 if (rc == ResultCode.Internal_Server_Error)
                 {
@@ -710,7 +729,8 @@ class PThreadContext : Context
                         }
                         this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
 
-                        rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE, opt_authorize).result;
+                        rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                                         opt_authorize).result;
 
                         if (rc != ResultCode.Internal_Server_Error)
                             break;

@@ -7,7 +7,7 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     await t
       .click('#menu')
-      .click('li[id="menu"] li[resource="v-l:Create"]')
+      .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Сеть')
       .click('div.suggestion[resource="v-wf:Net"]')
       .setNativeDialogHandler(() => true)

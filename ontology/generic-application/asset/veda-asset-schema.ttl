@@ -1,0 +1,78 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix mnd-s: <http://semantic-machines.com/veda/mondi-schema/> .
+
+
+<http://semantic-machines.com/veda/veda-asset-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Основное средство. Схема."@ru ;
+  rdfs:label "Veda system ontology. Asset. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+v-s:Asset
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Vehicle ;
+  rdfs:label "Основное средство"@ru ;
+  rdfs:label "Asset"@en ;
+#--------- mnd-s шаблон
+  v-ui:hasTemplate mnd-s:AssetTemplate ;
+.
+# --- В связи с вводом класса возникает предикат v-s:hasAsset. Он описан в классе v-s:Contractual
+#----------------------------------------------------
+v-s:RegistrationCertificate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Spatial ;
+  rdfs:label "Свидетельство о регистрации"@ru ;
+  rdfs:label "Registration сertificate"@en ;
+#--------- mnd-s шаблон
+  v-ui:hasTemplate mnd-s:RegistrationCertificateTemplate ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+v-s:typeOfOwnership
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид собственности"@ru ;
+  rdfs:label "type of ownership"@en ;
+  rdfs:range v-s:Sector ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+# v-s:postalAddress
+# rdfs:label
+v-s:cadastralNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Кадастровый номер"@ru ;
+  rdfs:label "cadastrl number"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+v-s:cadastralPassport
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Кадастровый паспорт"@ru ;
+  rdfs:label "Cadastral passport"@en ;
+  rdfs:range v-s:File ;
+  rdfs:subPropertyOf v-s:attachment ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+v-s:egrpNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "ЕГРП номер"@ru ;
+  rdfs:label "egrp number"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:RegistrationCertificate ;
+.
+# --- В связи с вводом класса возникает предикат v-s:hasRegistrationCertificate. Он описан в классе v-s:RequestContractDetail
+
+
+
