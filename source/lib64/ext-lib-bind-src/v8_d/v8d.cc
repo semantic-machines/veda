@@ -525,7 +525,7 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     int     res      = 500;
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 3)
+    if (args.Length() != 2)
     {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
@@ -562,7 +562,7 @@ AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     int     res      = 500;
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 3)
+    if (args.Length() != 2)
     {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
@@ -597,7 +597,7 @@ SetInIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     int     res      = 500;
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 3)
+    if (args.Length() != 2)
     {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
@@ -632,7 +632,7 @@ RemoveFromIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
     int     res      = 500;
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 3)
+    if (args.Length() != 2)
     {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
