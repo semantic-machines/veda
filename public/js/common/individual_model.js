@@ -340,7 +340,7 @@ veda.Module(function (veda) { "use strict";
       this.isNew(false);
       this.isSync(true);
     } catch (error) {
-      var notify = new veda.Notify();
+      var notify = veda.Notify ? new veda.Notify() : console.log;
       notify("danger", error);
       if ( this.is("v-s:UserThing") && error.code !== 472 ) { this.draft(); }
     }
@@ -447,7 +447,7 @@ veda.Module(function (veda) { "use strict";
           delete veda.cache[this.id];
         }
       } catch (error) {
-        var notify = new veda.Notify();
+        var notify = veda.Notify ? new veda.Notify() : console.log;
         notify("danger", error);
       }
     }
