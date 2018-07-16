@@ -396,6 +396,9 @@ veda.Module(function (veda) { "use strict";
       });
       self.trigger("afterReset");
       return self;
+    }).catch(function (error) {
+      console.log("reset individual error", error);
+      self.trigger("afterReset");
     });
   };
 
