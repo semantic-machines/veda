@@ -3,7 +3,7 @@
  */
 module veda.gluecode.v8d_header;
 
-import std.stdio, std.conv, std.file, std.path, std.uuid;
+import std.stdio, std.conv, std.file, std.path, std.uuid, std.json;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction;
 import veda.util.container;
@@ -438,18 +438,24 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
             return null;
         }
 
-        string[] icb;
-        icb = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false).result;
-        res = text(icb);
+        SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false);
 
-        if (icb !is null)
-        {
-            tmp_individual.data   = cast(char *)res;
-            tmp_individual.length = cast(int)res.length;
-            return &tmp_individual;
-        }
-        else
-            return null;
+        JSONValue    jres;
+        jres[ "result" ]         = sr.result;
+        jres[ "count" ]          = sr.count;
+        jres[ "estimated" ]      = sr.estimated;
+        jres[ "processed" ]      = sr.processed;
+        jres[ "cursor" ]         = sr.cursor;
+        jres[ "total_time" ]     = sr.total_time;
+        jres[ "query_time" ]     = sr.query_time;
+        jres[ "authorize_time" ] = sr.authorize_time;
+        jres[ "result_code" ]    = sr.result_code;
+
+        res = jres.toString();
+
+        tmp_individual.data   = cast(char *)res;
+        tmp_individual.length = cast(int)res.length;
+        return &tmp_individual;
     }
     finally
     {
