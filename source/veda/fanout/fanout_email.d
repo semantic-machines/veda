@@ -47,6 +47,11 @@ class FanoutProcess : VedaModule
 
         try
         {
+            if (smtp_conn is null)
+            {
+                connect_to_smtp(context);
+            }
+
             if (smtp_conn !is null)
             {
                 res = push_to_smtp(prev_indv, new_indv);
@@ -68,7 +73,10 @@ class FanoutProcess : VedaModule
             return ResultCode.OK;
         }
         else
+        {
+            log.trace("ERR! fail connect");
             return ResultCode.Fail_Commit;
+        }
     }
 
     override void thread_id()
