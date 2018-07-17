@@ -211,12 +211,13 @@ v-s:LinksListTemplate
     if (isMutual) {
       Link["v-s:mutualMembership"] = [ true ];
     }
-    var newRow = Link.present(cntr, rowTmpl, "edit");
-    Link.one("beforeReset", function () {
-      newRow.remove();
-    });
-    Link.one("afterSave", function () {
-      newRow.remove();
+    Link.present(cntr, rowTmpl, "edit").then(function (newRow) {
+      Link.one("beforeReset", function () {
+        newRow.remove();
+      });
+      Link.one("afterSave", function () {
+        newRow.remove();
+      });
     });
     setTimeout(function () {
       if ( individual.isNew() ) {
@@ -359,58 +360,65 @@ v-s:LinksTreeRecursiveTemplate
   var allowedTypesContainer = $(".allowed-types", template);
   var allowedTypesTemplate = allowedTypesContainer.html();
   allowedTypesContainer.empty();
-  allowedTypesUris.forEach(function (allowedTypeUri) {
+  var allowedTypesPromises = allowedTypesUris.map(function (allowedTypeUri) {
     var allowedType = new veda.IndividualModel(allowedTypeUri);
-    allowedType.present(allowedTypesContainer, allowedTypesTemplate);
-  });
-  $(".glyphicon.expand", template).click(function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var $this = $(this);
-
-    if ( $this.hasClass("glyphicon-chevron-right") ) {
-      $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
-      allowedTypesContainer.removeClass("hidden");
-    } else if ( $this.hasClass("glyphicon-chevron-down") ) {
-      $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
-      allowedTypesContainer.addClass("hidden");
-    }
+    return allowedType.present(allowedTypesContainer, allowedTypesTemplate);
   });
 
-  $(".glyphicon.expand-type", template).click(function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var $this = $(this);
-    var typeLinksContainer = $this.siblings(".type-links");
-    if ( $this.hasClass("glyphicon-chevron-right") ) {
-      $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
-      typeLinksContainer.removeClass("hidden");
-      $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
-      if ( !typeLinksContainer.children().length ) {
-        var allowedTypeUri = $this.parent().attr("resource");
-        var outLinks = getOutTypeLinks(allowedTypeUri);
-        outLinks.forEach(function (link) {
-          presentTypeLink(link, typeLinksContainer);
-        });
-        getInTypeLinks(allowedTypeUri).then(function (inLinks) {
-          inLinks.forEach(function (link) {
-            presentTypeLink(link, typeLinksContainer);
-          });
-        }).then(function () {
-          $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
-        }).then(function () {
-          if ( !typeLinksContainer.children().length ) {
-            $this.parent().hide(350, function () { $(this).remove() });
-          }
-        });
-      } else {
-        $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+  Promise.all(allowedTypesPromises).then(function () {
+    $(".glyphicon.expand", template).click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $this = $(this);
+
+      if ( $this.hasClass("glyphicon-chevron-right") ) {
+        $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+        allowedTypesContainer.removeClass("hidden");
+      } else if ( $this.hasClass("glyphicon-chevron-down") ) {
+        $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+        allowedTypesContainer.addClass("hidden");
       }
-    } else if ( $this.hasClass("glyphicon-chevron-down") ) {
-      $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
-      typeLinksContainer.addClass("hidden");
-    }
+    });
+
+    $(".glyphicon.expand-type", template).click(function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var $this = $(this);
+      var typeLinksContainer = $this.siblings(".type-links");
+      if ( $this.hasClass("glyphicon-chevron-right") ) {
+        $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+        typeLinksContainer.removeClass("hidden");
+        $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+        if ( !typeLinksContainer.children().length ) {
+          var allowedTypeUri = $this.parent().attr("resource");
+          var outLinks = getOutTypeLinks(allowedTypeUri);
+          Promise.all(outLinks.map(function (link) {
+            return presentTypeLink(link, typeLinksContainer);
+          })).then(function () {
+            return getInTypeLinks(allowedTypeUri);
+          }).then(function (inLinks) {
+            return Promise.all(inLinks.map(function (link) {
+              return presentTypeLink(link, typeLinksContainer);
+            }));
+          }).then(function () {
+            $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+          }).then(function () {
+            if ( !typeLinksContainer.children().length ) {
+              $this.parent().hide(350, function () { $(this).remove() });
+            }
+          }).catch(function (error) {
+            console.log(error);
+          });
+        } else {
+          $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+        }
+      } else if ( $this.hasClass("glyphicon-chevron-down") ) {
+        $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+        typeLinksContainer.addClass("hidden");
+      }
+    });
   });
+
   function presentTypeLink(link, typeLinksContainer) {
     if ( link.is("v-s:Link") ) {
       if ( link.hasValue("v-s:from", individual) && link.hasValue("v-s:to") ) {
