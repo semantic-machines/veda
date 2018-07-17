@@ -116,17 +116,4 @@ riot.render = function(tmpl, data, escape_fn) {
     if (!prevent) pop(to);
   };
 })();
-if (typeof exports === 'object') {
-  // CommonJS support
-  module.exports = riot;
-} else if (typeof define === 'function' && define.amd) {
-  // support AMD
-  define(function() { return riot; });
-} else if (typeof window === 'object') {
-  // support browser
-  window.riot = riot;
-} else {
-  // support veda server
-  this.riot = riot;
-}
-})({});
+})( typeof window === 'object' ? window.riot = {} : this.riot = {} );

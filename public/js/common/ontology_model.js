@@ -259,7 +259,7 @@ veda.Module(function (veda) { "use strict";
           "'rdf:type' === 'v-ui:ObjectPropertySpecification'";
 
       var result = {};
-      var ontology_uris = query({ ticket: veda.ticket, query: q, limit: 10000 }).result;
+      var ontology_uris = query(veda.ticket, q).result;
       var ontology_individuals = get_individuals(veda.ticket, ontology_uris);
       ontology_individuals.map( function (item) {
         result[ item["@"] ] = item;

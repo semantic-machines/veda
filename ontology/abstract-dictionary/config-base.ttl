@@ -209,6 +209,8 @@ cfg:Administrator
   v-s:firstName "Administrator"@en ;
   v-s:hasAccount cfg:AdministratorAccount ;
   v-s:hasAppointment cfg:AdministratorAppointment ;
+  v-s:hasAspect cfg:Administrator_aspect ;
+  v-ui:hasPreferences cfg:Administrator_pref ;
   rdfs:label "Администратор"@ru ;
   rdfs:label "Administrator"@en ;
 .
@@ -231,6 +233,16 @@ cfg:AdministratorAppointment
   rdfs:label "Administrator"@en ;
   v-s:origin "Internal" ;
   v-s:parentUnit cfg:User_department;
+.
+cfg:Administrator_pref
+  rdf:type v-ui:Preferences ;
+  v-s:author cfg:Administrator ;
+  v-ui:displayedElements "10"^^xsd:integer ;
+  v-ui:preferredLanguage v-ui:RU ;
+.
+cfg:Administrator_aspect
+  rdf:type v-s:PersonalAspect;
+  v-s:owner cfg:Administrator ;
 .
 
 ### -------------------------------------------------------
