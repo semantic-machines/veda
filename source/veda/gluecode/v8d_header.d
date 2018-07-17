@@ -660,8 +660,10 @@ private void reload_ext_scripts(Context ctx)
             auto fileNames = seqFile.byLine();
             foreach (fileName; fileNames) {
               fileName = path ~ fileName;
-              DirEntry fileEntry = DirEntry(cast(string)fileName);
-              oFiles ~= fileEntry;
+              if (fileName.exists) {
+                DirEntry fileEntry = DirEntry(cast(string)fileName);
+                oFiles ~= fileEntry;
+              }
             }
         } else {
           oFiles = dirEntries(path, SpanMode.depth).array;
@@ -671,7 +673,7 @@ private void reload_ext_scripts(Context ctx)
         {
             if (extension(o.name) == ".js")
             {
-                log.trace(" load script:%s", o);
+                log.trace("load script:%s", o);
                 auto str_js        = cast(ubyte[]) read(o.name);
                 auto str_js_script = script_vm.compile(cast(string)str_js);
                 if (str_js_script !is null)
