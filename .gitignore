@@ -47,3 +47,7 @@ veda.properties
 /veda-lmdb-server
 /veda-ft-query
 /veda-authorization
+/veda-lmdb-srv
+/veda-input-queue
+/veda-gowebserver
+/libauthorization.so
