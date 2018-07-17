@@ -388,25 +388,29 @@ v-s:LinksTreeRecursiveTemplate
       if ( $this.hasClass("glyphicon-chevron-right") ) {
         $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
         typeLinksContainer.removeClass("hidden");
-        $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+        $this.addClass("fa fa-spinner fa-pulse fa-lg fa-fw");
         if ( !typeLinksContainer.children().length ) {
           var allowedTypeUri = $this.parent().attr("resource");
           var outLinks = getOutTypeLinks(allowedTypeUri);
           Promise.all(outLinks.map(function (link) {
             return presentTypeLink(link, typeLinksContainer);
-          })).then(function () {
+          }))
+          .then(function () {
             return getInTypeLinks(allowedTypeUri);
-          }).then(function (inLinks) {
-            return Promise.all(inLinks.map(function (link) {
+          })
+          .then(function (inLinks) {
+            var inLinksPromises = inLinks.map(function (link) {
               return presentTypeLink(link, typeLinksContainer);
-            }));
-          }).then(function () {
-            $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
-          }).then(function () {
+            });
+            return Promise.all(inLinksPromises);
+          })
+          .then(function () {
+            $this.removeClass("fa fa-spinner fa-pulse fa-lg fa-fw");
             if ( !typeLinksContainer.children().length ) {
               $this.parent().hide(350, function () { $(this).remove() });
             }
-          }).catch(function (error) {
+          })
+          .catch(function (error) {
             console.log(error);
           });
         } else {
