@@ -648,9 +648,24 @@ private void reload_ext_scripts(Context ctx)
     g_ticket.data   = cast(char *)sticket;
     g_ticket.length = cast(int)sticket.length;
 
-    foreach (path; [ "./public/js/server", "./public/js/common" ])
+    foreach (path; [ "./public/js/server/", "./public/js/common/" ])
     {
-        auto oFiles = dirEntries(path, SpanMode.depth).array.sort!((a,b)=>a.name<b.name);
+
+        DirEntry[] oFiles = [];
+
+        auto seq = path ~ ".seq";
+
+        if (seq.exists) {
+            auto seqFile = File(seq);
+            auto fileNames = seqFile.byLine();
+            foreach (fileName; fileNames) {
+              fileName = path ~ fileName;
+              DirEntry fileEntry = DirEntry(cast(string)fileName);
+              oFiles ~= fileEntry;
+            }
+        } else {
+          oFiles = dirEntries(path, SpanMode.depth).array;
+        }
 
         foreach (o; oFiles)
         {
