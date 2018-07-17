@@ -310,7 +310,7 @@ veda.Module(function (veda) { "use strict";
               {type: "String", data: "Insufficient rights", lang: "EN"}
             ]
           };
-        } else if (e.code === 470 || e.code === 471) {
+        } else if (error.code === 470 || error.code === 471) {
           self.isNew(false);
           self.isSync(false);
           self.isLoaded(false);
@@ -386,13 +386,18 @@ veda.Module(function (veda) { "use strict";
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
       var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
-      self.properties = original;
+      //self.properties = original;
       self.isNew(false);
       self.isSync(true);
       union.forEach( function (property_uri) {
         if (property_uri === "@") { return; }
-        self.trigger("propertyModified", property_uri, self.get(property_uri));
-        self.trigger(property_uri, self.get(property_uri));
+        var currentSum = JSON.stringify(self.properties[property_uri] || null).split("").reduce(function (acc, char) {return acc += char.charCodeAt(0);}, 0);
+        var originalSum = JSON.stringify(original[property_uri] || null).split("").reduce(function (acc, char) {return acc += char.charCodeAt(0);}, 0);
+        if (currentSum !== originalSum) {
+          self.properties[property_uri] = original[property_uri];
+          self.trigger("propertyModified", property_uri, self.get(property_uri));
+          self.trigger(property_uri, self.get(property_uri));
+        }
       });
       self.trigger("afterReset");
       return self;
