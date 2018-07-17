@@ -611,8 +611,8 @@ class PThreadContext : Context
         {
             if (res.result != ResultCode.OK)
                 log.trace("ERR! update: no store individual: errcode=[%s], ticket=[%s] indv=[%s]", text(res.result),
-                          indv !is null ? text(*indv) : "null",
-                          ticket !is null ? text(*ticket) : "null");
+                          ticket !is null ? text(*ticket) : "null",
+                          indv !is null ? text(*indv) : "null");
 
             if (trace_msg[ T_API_240 ] == 1)
                 log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);

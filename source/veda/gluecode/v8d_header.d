@@ -3,7 +3,7 @@
  */
 module veda.gluecode.v8d_header;
 
-import std.stdio, std.conv, std.file, std.path, std.uuid, std.json;
+import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction;
 import veda.util.container;
@@ -413,11 +413,11 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
     string sort;
     string databases;
 
-    if (g_vm_id != "V8.LowPriority")
-    {
-        log.trace("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");
-        return null;
-    }
+    //if (g_vm_id != "V8.LowPriority")
+    //{
+    //    log.trace("ERR! [query] function is available only in the [low priority] jsvm (use v-s:runAt \"V8.LowPriority\")");
+    //    return null;
+    //}
 
     try
     {
@@ -648,9 +648,24 @@ private void reload_ext_scripts(Context ctx)
     g_ticket.data   = cast(char *)sticket;
     g_ticket.length = cast(int)sticket.length;
 
-    foreach (path; [ "./public/js/server", "./public/js/common" ])
+    foreach (path; [ "./public/js/server/", "./public/js/common/" ])
     {
-        auto oFiles = dirEntries(path, SpanMode.depth);
+
+        DirEntry[] oFiles = [];
+
+        auto seq = path ~ ".seq";
+
+        if (seq.exists) {
+            auto seqFile = File(seq);
+            auto fileNames = seqFile.byLine();
+            foreach (fileName; fileNames) {
+              fileName = path ~ fileName;
+              DirEntry fileEntry = DirEntry(cast(string)fileName);
+              oFiles ~= fileEntry;
+            }
+        } else {
+          oFiles = dirEntries(path, SpanMode.depth).array;
+        }
 
         foreach (o; oFiles)
         {

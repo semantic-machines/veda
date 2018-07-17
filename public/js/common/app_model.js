@@ -7,7 +7,7 @@
     var self = riot.observable(this);
 
     self.config = config;
-    self.user_uri = self.ticket = self.end_time = "";
+    self.ticket = veda.ticket || "";
     self.cache = {};
     self.ontology = {};
 
