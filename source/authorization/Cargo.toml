@@ -11,7 +11,7 @@ crate-type = ["staticlib", "cdylib"]
     
 [dependencies]
 lazy_static = "1.0"
-lmdb-rs-m = "0.7.6"
+lmdb-rs-m = "0.7.7"
 
 #[build-dependencies]
 #cbindgen = "0.1"
