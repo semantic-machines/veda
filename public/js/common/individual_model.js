@@ -273,8 +273,11 @@ veda.Module(function (veda) { "use strict";
       if ( this.isLoaded() ) {
         this.trigger("afterLoad", this);
         return Promise.resolve( this );
+      } else if ( this.isLoading() ) {
+        return this.isLoading();
       }
-      return veda.Backend.get_individual(veda.ticket, uri).then(function (individualJson) {
+      var loadingPromise = veda.Backend.get_individual(veda.ticket, uri).then(function (individualJson) {
+        self.isLoading(false);
         self.isNew(false);
         self.isSync(true);
         self.isLoaded(true);
@@ -327,6 +330,8 @@ veda.Module(function (veda) { "use strict";
         self.trigger("afterLoad", self);
         return self;
       });
+
+      return this.isLoading(loadingPromise);
 
     } else if (typeof uri === "object") {
       this.isNew(false);
@@ -720,6 +725,10 @@ veda.Module(function (veda) { "use strict";
    */
   proto.isLoaded = function (value) {
     return ( typeof value !== "undefined" ? this._.isLoaded = value : this._.isLoaded );
+  };
+
+  proto.isLoading = function (value) {
+    return ( typeof value !== "undefined" ? this._.isLoading = value : this._.isLoading );
   };
 
   /**
