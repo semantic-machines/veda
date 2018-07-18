@@ -381,7 +381,7 @@ veda.Module(function (veda) { "use strict";
 
   /**
    * @method
-   * Reset current individual to database
+   * Reset current individual to  database
    */
   proto.reset = function () {
     var self = this;
