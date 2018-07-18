@@ -386,19 +386,30 @@ veda.Module(function (veda) { "use strict";
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
       var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
-      //self.properties = original;
-      self.isNew(false);
-      self.isSync(true);
-      union.forEach( function (property_uri) {
+      union.forEach(function (property_uri) {
+        var modified = false;
         if (property_uri === "@") { return; }
-        var currentSum = JSON.stringify(self.properties[property_uri] || null).split("").reduce(function (acc, char) {return acc += char.charCodeAt(0);}, 0);
-        var originalSum = JSON.stringify(original[property_uri] || null).split("").reduce(function (acc, char) {return acc += char.charCodeAt(0);}, 0);
-        if (currentSum !== originalSum) {
+        if (!self.properties[property_uri]) {
           self.properties[property_uri] = original[property_uri];
+          modified = true;
+        } else if (!original[property_uri]) {
+          delete self.properties[property_uri];
+          modified = true;
+        } else {
+          var currentSum = JSON.stringify(self.properties[property_uri]).split("").reduce(function (acc, char) {return acc += char.charCodeAt(0);}, 0);
+          var originalSum = JSON.stringify(original[property_uri]).split("").reduce(function (acc, char) {return acc += char.charCodeAt(0);}, 0);
+          if (currentSum !== originalSum) {
+            self.properties[property_uri] = original[property_uri];
+            modified = true;
+          }
+        }
+        if (modified) {
           self.trigger("propertyModified", property_uri, self.get(property_uri));
           self.trigger(property_uri, self.get(property_uri));
         }
       });
+      self.isNew(false);
+      self.isSync(true);
       self.trigger("afterReset");
       return self;
     }).catch(function (error) {
