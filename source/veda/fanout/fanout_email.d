@@ -26,6 +26,8 @@ class FanoutProcess : VedaModule
 {
     MailSender smtp_conn;
     string     default_mail_sender;
+    string     host;
+    ushort     port;
 
     this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
@@ -42,13 +44,21 @@ class FanoutProcess : VedaModule
         //    log.trace("[%s]: end prepare", new_indv.uri);
         //}
 
+        if (host is null)
+        {
+            // addr to smpt server not set, skip message
+
+            committed_op_id = op_id;
+            return ResultCode.OK;
+        }
+
         ResultCode res;
 
         try
         {
-            if (smtp_conn is null)
+            if (host !is null && smtp_conn is null)
             {
-                log.trace("ERR! connect to smtp server not exist, reconnect", );
+                log.trace("ERR! connect to smtp server %s:%d not exist, reconnect", host, port);
                 connect_to_smtp(context);
             }
 
@@ -475,7 +485,9 @@ class FanoutProcess : VedaModule
             Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
+
             log.trace("connect_to_smtp:found gates: %s", gates);
+
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
@@ -488,8 +500,8 @@ class FanoutProcess : VedaModule
                         try
                         {
                             log.trace("found connect to smtp [%s]", connection);
-                            auto host = connection.getFirstLiteral("v-s:host");
-                            auto port = cast(ushort)connection.getFirstInteger("v-s:port");
+                            host      = connection.getFirstLiteral("v-s:host");
+                            port      = cast(ushort)connection.getFirstInteger("v-s:port");
                             smtp_conn = new MailSender(host, port);
                             if (smtp_conn is null)
                             {
@@ -549,6 +561,9 @@ class FanoutProcess : VedaModule
             printPrettyTrace(stdout);
             log.trace("ERR! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], %s", ex.line, ex.file, ex.msg, ex.toString);
         }
+
+        if (host is null)
+            log.trace("WARN! not found configuration for connection to smtp server");
     }
 }
 
