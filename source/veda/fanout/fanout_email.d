@@ -516,7 +516,7 @@ class FanoutProcess : VedaModule
                                 SmtpReply result = smtp_conn.connect();
                                 if (!result.success)
                                 {
-                                    log.trace("fail connection to smtp server [%s] %s:%d", connection.uri, host, port);
+                                    log.trace("ERR! fail connection to smtp server [%s] %s:%d", connection.uri, host, port);
                                     smtp_conn = null;
                                     continue;
                                 }
@@ -532,7 +532,7 @@ class FanoutProcess : VedaModule
 
                                 if (!result.success)
                                 {
-                                    log.trace("fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);
+                                    log.trace("ERR! fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);
                                     smtp_conn = null;
                                     continue;
                                 }
@@ -540,7 +540,7 @@ class FanoutProcess : VedaModule
                                 default_mail_sender = connection.getFirstLiteral("v-s:mailSender");
                             }
                             else
-                                log.trace("smtp server unavailable [%s] %s:%d", connection.uri, host, port);
+                                log.trace("ERR! smtp server unavailable [%s] %s:%d", connection.uri, host, port);
                         }
                         catch (Throwable ex)
                         {
