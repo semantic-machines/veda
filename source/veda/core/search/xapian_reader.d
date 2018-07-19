@@ -19,7 +19,7 @@ interface SearchReader
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
                             bool trace);
 
-    public void reopen_db();
+    public void reopen_dbs();
 }
 
 class Database_QueryParser
@@ -218,7 +218,7 @@ class XapianReader : SearchReader
         if (cur_committed_op_id > committed_op_id)
         {
             //log.trace("search:reopen_db: cur_committed_op_id(%d) > committed_op_id(%d)", cur_committed_op_id, committed_op_id);
-            reopen_db();
+            reopen_dbs();
         }
         else
         {
@@ -259,7 +259,7 @@ class XapianReader : SearchReader
                     break;
                 }
 
-                reopen_db();
+                reopen_dbs();
                 log.trace("[Q:%X] transform_vql_to_xapian, attempt=%d",
                           cast(void *)str_query,
                           attempt_count);
@@ -311,7 +311,7 @@ class XapianReader : SearchReader
             }
 
             if (sr.result_code == ResultCode.DatabaseModifiedError)
-                reopen_db();
+                reopen_dbs();
             else
             {
                 if (sr.result_code != ResultCode.OK)
@@ -412,11 +412,11 @@ class XapianReader : SearchReader
         return db;
     }
 
-    public void reopen_db()
+    public void reopen_dbs()
     {
         long cur_committed_op_id = get_info().committed_op_id;
 
-        //log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
+        log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
 
         foreach (el; using_dbqp.values)
         {
@@ -438,7 +438,7 @@ class XapianReader : SearchReader
         committed_op_id = cur_committed_op_id;
     }
 
-    public bool close_db()
+    public bool close_dbs()
     {
         foreach (el; using_dbqp.values)
         {

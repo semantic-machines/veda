@@ -45,12 +45,12 @@ class VQL
 
     public bool close_db()
     {
-        return xr.close_db();
+        return xr.close_dbs();
     }
 
     public void reopen_db()
     {
-        xr.reopen_db();
+        xr.reopen_dbs();
     }
 
     public int get(string user_uri, string filter, string freturn, string sort, int top, int limit,
