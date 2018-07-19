@@ -28,7 +28,7 @@ public class LmdbDriver : KeyValueDB
     long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
-    int                 max_count_record_in_memory = 10_000;
+	long				read_count;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
@@ -112,6 +112,8 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console("WARN! %s(%s) #2:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
             else
                 db_is_open[ _path ] = true;
+
+            read_count = 0;
 
             if (rc == 0)
             {
@@ -458,6 +460,9 @@ public class LmdbDriver : KeyValueDB
         if (db_is_opened == false)
             open();
 
+		if (read_count > 100_000)
+			reopen();
+
         if (uri is null || uri.length < 2)
             return null;
 
@@ -547,6 +552,8 @@ public class LmdbDriver : KeyValueDB
 
             if (tA > 1000)
                 log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
+                
+            read_count ++;    
         }catch (Exception ex)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);
