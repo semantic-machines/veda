@@ -28,7 +28,7 @@ const (
 	CURRENT Mode = 2
 )
 
-const queue_db_path string = "./data/queue"
+//const queue_db_path string = "./data/queue"
 
 type Header struct {
 	start_pos    uint64
@@ -125,7 +125,7 @@ func (ths *Consumer) open() bool {
 		return false
 	}
 
-	ths.file_name_info_pop = queue_db_path + "/" + ths.queue.name + "_info_pop_" + ths.name
+	ths.file_name_info_pop = ths.queue.queue_db_path + "/" + ths.queue.name + "_info_pop_" + ths.name
 
 	var err error
 
@@ -370,24 +370,27 @@ type Queue struct {
 	file_name_info_push string
 	file_name_queue     string
 
+	queue_db_path string
+
 	// --- tmp ---
 	header Header
 	hash   hash.Hash32
 }
 
 
-func NewQueue(_name string, _mode Mode) *Queue {
+func NewQueue(_name string, _mode Mode, _queue_db_path string) *Queue {
 	p := new(Queue)
 
 	p.name = _name
 	p.mode = _mode
+	p.queue_db_path = _queue_db_path
 
 	p.isReady = false
 	buff = make([]uint8, 4096*100)
 	header_buff = make([]uint8, p.header.length())
 
-	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
-	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
+	p.file_name_info_push = p.queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
+	p.file_name_queue = p.queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
 
 	p.hash = crc32.NewIEEE()
 	return p
@@ -460,7 +463,7 @@ func (ths *Queue) get_info(chunk int32) bool {
 
 	var err error
 
-	file_name_info_push := queue_db_path + "/" + ths.name + "_info_push_" + strconv.Itoa(int(chunk))
+	file_name_info_push := ths.queue_db_path + "/" + ths.name + "_info_push_" + strconv.Itoa(int(chunk))
 	ths.ff_info_push_r.Close()
 	ths.ff_info_push_r, err = os.OpenFile(file_name_info_push, os.O_RDONLY, 0644)
 	if err != nil {
