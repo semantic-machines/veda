@@ -162,8 +162,8 @@ class XapianReader : SearchReader
                 int errcode = to!int (tta.R.op);
 
                 sr.result_code = cast(ResultCode)errcode;
-                
-                log.trace("WARN! request emulate error code = [%s]", text (sr.result_code));
+
+                log.trace("WARN! request emulate error code = [%s]", text(sr.result_code));
 
                 return sr;
             }

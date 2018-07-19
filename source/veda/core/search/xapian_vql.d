@@ -772,6 +772,10 @@ class XapianVQL
 //                    sr.err = err;
                     sw.stop;
                     sr.total_time = sw.peek().msecs();
+
+                    destroy_MSetIterator(it);
+                    destroy_MSet(matches);
+
                     return sr;
                 }
 
@@ -789,6 +793,10 @@ class XapianVQL
 //                    sr.err = err;
                     sw.stop;
                     sr.total_time = sw.peek().msecs();
+
+                    destroy_MSetIterator(it);
+                    destroy_MSet(matches);
+
                     return sr;
                 }
 
