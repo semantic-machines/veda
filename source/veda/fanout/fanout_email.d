@@ -24,9 +24,8 @@ void main(char[][] args)
 
 class FanoutProcess : VedaModule
 {
-    string     database_name;
-
     MailSender smtp_conn;
+    string     default_mail_sender;
 
     this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
@@ -49,7 +48,7 @@ class FanoutProcess : VedaModule
         {
             if (smtp_conn is null)
             {
-	            log.trace("ERR! connect to smtp server not exist, reconnect", );
+                log.trace("ERR! connect to smtp server not exist, reconnect", );
                 connect_to_smtp(context);
             }
 
@@ -314,7 +313,12 @@ class FanoutProcess : VedaModule
                     string email_from;
 
                     if (senderMailbox is null)
-                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                    {
+                        if (default_mail_sender !is null)
+                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+                        else
+                            email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                    }
                     else
                         email_from = senderMailbox;
 
@@ -520,6 +524,8 @@ class FanoutProcess : VedaModule
                                     smtp_conn = null;
                                     continue;
                                 }
+
+                                default_mail_sender = connection.getFirstLiteral("v-s:mailSender");
                             }
                             else
                                 log.trace("smtp server unavailable [%s] %s:%d", connection.uri, host, port);
