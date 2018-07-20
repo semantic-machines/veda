@@ -1,0 +1,117 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-contractorProfile-registries>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Досье контрагента. Реестры."@ru ;
+  rdfs:label "Veda system ontology. ContractorProfile. Registries."@en ;
+  v-s:loadPriority 6 ;
+.
+
+# Registries -----------------------------------------------------------
+
+
+# ------------- ContractorProfile registry ---------------
+
+v-s:ContractorProfileRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Досье контрагента"@ru;
+  rdfs:label "Contractor profile"@en;
+  v-fs:searchBlank v-s:ContractorProfileRegistryBlank ;
+  v-fs:searchBlankTemplate v-s:ContractorProfileRegistryBlankTemplate;
+  v-fs:searchResultTemplate v-s:ContractorProfileResultTemplate ;
+.
+v-s:ContractorProfileRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Досье контрагента"@ru ;
+  rdfs:label "Contractor Profile"@en ;
+  v-fc:targetType v-s:ContractorProfile  ;
+  v-s:backwardTarget v-s:ContractorProfileRegistryBlank_ParentOrganization;
+.
+v-s:ContractorProfileRegistryBlank_ParentOrganization
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк родительской организации искомого досье"@ru ;
+  rdfs:label "Parent contractor profile blank for organization registry"@en ;
+  v-fc:targetType v-s:Organization;
+.
+
+# ------------- ContractorProfile registry templates ---------------
+v-s:ContractorProfileRegistryBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон поиска Contractor Profile"@ru ;
+  rdfs:label "Contractor profile blank template"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2  about="v-s:ContractorProfile" property="rdfs:label"></h2>
+  <hr>
+  <em about="rdfs:label" property="rdfs:label"></em>
+  <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-s:dateFromFact" property="rdfs:label"></em>
+      <div property="v-s:dateFromFact"></div>
+      <veda-control property="v-s:dateFromFact" data-type="dateTime"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:dateToFact" property="rdfs:label"></em>
+      <div property="v-s:dateToFact"></div>
+      <veda-control property="v-s:dateToFact" data-type="dateTime"></veda-control>
+    </div>
+  </div>
+  <em about="v-s:hasClassifierOKVED" property="rdfs:label"></em>
+  <div rel="v-s:hasClassifierOKVED" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+  <veda-control data-type="link" rel="v-s:hasClassifierOKVED" class="-view edit search fulltext" data-template="{individual['v-s:registrationNumber'][0] + ' - ' + individual['rdfs:label'][0]}"></veda-control>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <div about="@" rel="v-s:backwardTarget" data-embedded="true" data-template="v-s:OrganizationRegistryEmbededBlankTemplate"></div>
+</div>
+
+  """ ;
+.
+
+v-s:ContractorProfileResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра Досье контрагента"@ru ;
+  rdfs:label "Contractor profile registry result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="6" about="v-s:ContractorProfile" property="rdfs:label"></th>
+
+    </tr>
+    <tr class="active">
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:dateFromFact"><span about="v-s:dateFromFact" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:dateToFact"><span about="v-s:dateToFact" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:hasClassifierOKVED"><span about="v-s:hasClassifierOKVED" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td property="rdfs:label"></td>
+      <td property="rdfs:comment"></td>
+      <td property="v-s:dateFromFact"></td>
+      <td property="v-s:dateToFact"></td>
+      <td rel="v-s:hasClassifierOKVED" data-template="v-ui:LabelTemplate"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
