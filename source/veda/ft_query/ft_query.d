@@ -140,14 +140,14 @@ void main(string[] args)
     }
 
     string[] tpcs      = bind_url.split(":");
-    string   log_sufix = "-";
+    string   log_sufix = "";
     if (tpcs.length == 3)
     {
         log_sufix = tpcs[ 2 ];
     }
 
     int     sock;
-    log = new Logger("veda-core-ft-query" ~ log_sufix, "log", "");
+    log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
     Ticket  systicket;
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
