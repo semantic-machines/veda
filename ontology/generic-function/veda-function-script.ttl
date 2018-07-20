@@ -104,6 +104,8 @@ this.print = print;
 
 var console = {
   log: print,
+  error: print,
+  info: print,
   time: function (timer) {
     this[timer] = new Date();
   },
