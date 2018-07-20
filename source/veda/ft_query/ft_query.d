@@ -65,15 +65,17 @@ private nothrow string req_prepare(string request, Context context)
                     catch (Throwable tr)
                     {
                         context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
+                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort,
+                                                 _databases, _from, _top,
+                                                 _limit);
                     }
                 }
                 else
                 {
                     context.get_logger.trace("ERR! ticket is null: ticket_id = %s", _ticket);
                 }
-                
-		        //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
+
+                //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
             }
         }
 
@@ -137,8 +139,15 @@ void main(string[] args)
         return;
     }
 
-    int sock;
-    log = new Logger("veda-core-ft-query", "log", "");
+    string[] tpcs      = bind_url.split(":");
+    string   log_sufix = "-";
+    if (tpcs.length == 3)
+    {
+        log_sufix = tpcs[ 2 ];
+    }
+
+    int     sock;
+    log = new Logger("veda-core-ft-query" ~ log_sufix, "log", "");
     Ticket  systicket;
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
 
