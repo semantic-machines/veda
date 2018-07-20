@@ -7,7 +7,7 @@
     var self = riot.observable(this);
 
     self.config = config;
-    self.ticket = veda.ticket || "";
+    self.ticket = self.ticket || "";
     self.cache = {};
     self.ontology = {};
 

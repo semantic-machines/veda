@@ -1,8 +1,9 @@
 lib/riot.js
 lib/sha256.js
-util.js
 veda_spa.js
 app_model.js
+util.js
+util2.js
 drafts_model.js
 individual_list_model.js
 individual_model.js

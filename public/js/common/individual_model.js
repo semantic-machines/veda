@@ -392,10 +392,9 @@ veda.Module(function (veda) { "use strict";
       self.trigger("afterReset");
       return Promise.resolve();
     }
-    return get_individual({
-      ticket: veda.ticket,
-      uri: self.id,
-      async: true
+    return new Promise(function(resolve, reject) {
+      var got = get_individual(veda.ticket, self.id);
+      got ? resolve(got) : reject(got);
     }).then(function (original) {
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
