@@ -555,7 +555,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
   if (!publisher) { return; }
 
   var employee_uri;
-  if ( hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: _Uri}) )
+  if ( hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
   {
     employee_uri = publisher['v-s:employee'];
     if (!employee_uri) { return; }
@@ -592,7 +592,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       journal_record['rdf:type'] = [
       {
         data: 'v-s:DocumentDeleted',
-        type: _Uri
+        type: "Uri"
       }];
     }
     else
@@ -600,7 +600,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       journal_record['rdf:type'] = [
       {
         data: 'v-s:DocumentUpdated',
-        type: _Uri
+        type: "Uri"
       }];
     }
     journal_record['v-s:actor'] = actor;
@@ -615,12 +615,12 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       'rdf:type': [
       {
         data: 'v-s:Journal',
-        type: _Uri
+        type: "Uri"
       }],
       'v-s:onDocument': [
       {
         data: document['@'],
-        type: _Uri
+        type: "Uri"
       }],
       'v-s:actor': actor
     };
@@ -636,7 +636,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     journal_record['rdf:type'] = [
     {
       data: 'v-s:DocumentCreated',
-      type: _Uri
+      type: "Uri"
     }];
     journal_record['v-s:actor'] = actor;
     logToJournal(ticket, journal_uri, journal_record);
@@ -675,7 +675,7 @@ if (parent_script_id) {
 }
 
 var doc_uri = document['@'],
-    deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+    deleted = hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 
 if ( hasValue(document, "v-s:parentUnit") ) {
   var parents = getUris( document["v-s:parentUnit"] );
@@ -698,7 +698,7 @@ if ( hasValue(document, "v-s:parentUnit") ) {
   });
 }
 
-if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: _Uri }) ) {
+if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "Uri" }) ) {
   var person_uri = getUri(document['v-s:employee']),
       position_uri = getUri(document['v-s:occupation']);
 
@@ -749,7 +749,7 @@ if (parent_script_id) {
 }
 
 var doc_uri = document["@"],
-    deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean}),
+    deleted = hasValue(document, "v-s:deleted", { data: true, type: "Boolean"}),
     uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + "cfg_AllUsersGroup",
     membership;
 
@@ -760,7 +760,7 @@ var accounts_uris = getUris(document["v-s:hasAccount"]);
 accounts_uris.map(function (account_uri) {
   var account = get_individual(ticket, account_uri);
   if (account) {
-    var account_deleted = hasValue(account, "v-s:deleted", { data: true, type: _Boolean});
+    var account_deleted = hasValue(account, "v-s:deleted", { data: true, type: "Boolean"});
     if (deleted !== account_deleted) {
       account["v-s:deleted"] = newBool( deleted );
       put_individual (ticket, account, _event_id);
@@ -784,7 +784,7 @@ if (!membership) {
   return;
 }
 
-var membership_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
+var membership_deleted = hasValue(membership, "v-s:deleted", { data: true, type: "Boolean"});
 if (deleted !== membership_deleted) {
   membership["v-s:deleted"] = newBool( deleted );
   put_individual (ticket, membership, _event_id);
@@ -930,7 +930,7 @@ if (parent_document_id && parent_document_id === document['@']) {
 var _class = document,
   class_uri = _class["@"],
   class_group_uri = class_uri + "_group",
-  class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: _Boolean } ),
+  class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: "Boolean" } ),
   class_group = get_individual(ticket, class_group_uri);
 
 if ( !class_group ) {
@@ -1015,7 +1015,7 @@ if (parent_script_id) {
 
 var doc_uri = document["@"],
   parent_uri = getUri( document["v-s:parent"] ),
-  deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
+  deleted = hasValue(document, "v-s:deleted", { data: true, type: "Boolean"});
 
 if (!parent_uri) { return; }
 
@@ -1039,9 +1039,9 @@ if (deleted) {
   Object.keys(document).map(function (property_uri) {
     if (property_uri === "@") { return; }
     document[property_uri].map(function (value) {
-      if (value.type !== _Uri) { return; }
+      if (value.type !== "Uri") { return; }
       var embedded = get_individual(ticket, value.data);
-      if (embedded && hasValue(embedded, "v-s:parent", {data: doc_uri, type: _Uri}) && !hasValue(embedded, "v-s:deleted", {data: true, type: _Boolean}) ) {
+      if (embedded && hasValue(embedded, "v-s:parent", {data: doc_uri, type: "Uri"}) && !hasValue(embedded, "v-s:deleted", {data: true, type: "Boolean"}) ) {
         embedded["v-s:deleted"] = newBool(true);
         put_individual (ticket, embedded, _event_id);
         //print("embedded deleted:", embedded["@"]);
@@ -1194,7 +1194,7 @@ if (parent_script_id) {
 
 // Get actual state
 document = get_individual(ticket, document["@"]);
-if ( hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: _Boolean} ) || !prev_state ) {
+if ( hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: "Boolean"} ) || !prev_state ) {
   delete document['v-s:triggerVersionCreation'];
   create_version(ticket, document, prev_state, user_uri, _event_id);
 }
@@ -1225,14 +1225,14 @@ cfg:Event_15
     return;
   }
 
-  var linkDeleted = hasValue( document, "v-s:deleted", {data: true, type: _Boolean} ),
+  var linkDeleted = hasValue( document, "v-s:deleted", {data: true, type: "Boolean"} ),
       linkUri = document["@"],
       linkToUri = getUri(document["v-s:to"]),
       linkFromUri = getUri(document["v-s:from"]),
       linkTo = get_individual(ticket, linkToUri),
       linkFrom = get_individual(ticket, linkFromUri),
       containsThisLink,
-      mutualMembership = hasValue( document, "v-s:mutualMembership", {data: true, type: _Boolean} ),
+      mutualMembership = hasValue( document, "v-s:mutualMembership", {data: true, type: "Boolean"} ),
       membershipToFromUri = "d:link_membership_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
       membershipFromToUri = "d:link_membership_" + linkFromUri.split(":").join("_") + "_" + linkToUri.split(":").join("_"),
       membershipToFrom,
@@ -1257,9 +1257,9 @@ cfg:Event_15
   };
 
   if (linkTo) {
-    containsThisLink = hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: _Uri });
+    containsThisLink = hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: "Uri" });
     if (!containsThisLink && !linkDeleted) {
-      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).concat({type: _Uri, data: linkUri});
+      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).concat({type: "Uri", data: linkUri});
       put_individual(ticket, linkTo, _event_id);
     } else if (containsThisLink && linkDeleted) {
       linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"].filter(function (link) {
@@ -1269,9 +1269,9 @@ cfg:Event_15
     }
   }
   if (linkFrom) {
-    containsThisLink = hasValue(linkFrom, "v-s:hasLink", { data: linkUri, type: _Uri });
+    containsThisLink = hasValue(linkFrom, "v-s:hasLink", { data: linkUri, type: "Uri" });
     if (!containsThisLink && !linkDeleted) {
-      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).concat({type: _Uri, data: linkUri});
+      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).concat({type: "Uri", data: linkUri});
       put_individual(ticket, linkFrom, _event_id);
     } else if (containsThisLink && linkDeleted) {
       linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"].filter(function (link) {
@@ -1321,7 +1321,7 @@ cfg:Event_16
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
-      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 
   //expected equal backwardPropery and backwardReplaceUris for all backwardTargets
   for (var i = 0; i < backwardTargetUris.length; i++) {
@@ -1367,11 +1367,11 @@ cfg:Event_16
         });
       }
     } else if (backwardPropertyUri) {
-      var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
+      var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: "Uri" });
       //print( "BL already there =", alreadyThere );
       if ( !alreadyThere ) {
         backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
-        backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+        backwardTarget[backwardPropertyUri].push({type: "Uri", data: backwardLinkUri});
       }
     }
     backwardReplaceUris.map(function (replaceUri) {

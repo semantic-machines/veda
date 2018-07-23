@@ -90,7 +90,7 @@ veda.Module(function Backend(veda) { "use strict";
           res.responseText,
           function (key, value) {
             return key === "data" && this.type === "Datetime" ? new Date(value) :
-                   key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? parseFloat(value) : value;
+                   key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? parseFloat(value) : value;
           }
         );
       } catch (err) {
@@ -409,7 +409,7 @@ veda.Module(function Backend(veda) { "use strict";
           "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
         },
         function (key, value) {
-          return key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? value.toString() : value;
+          return key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? value.toString() : value;
         }
       ),
       contentType: "application/json"
@@ -494,7 +494,7 @@ veda.Module(function Backend(veda) { "use strict";
           "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
         },
         function (key, value) {
-          return key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? value.toString() : value;
+          return key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? value.toString() : value;
         }
       ),
       contentType: "application/json"

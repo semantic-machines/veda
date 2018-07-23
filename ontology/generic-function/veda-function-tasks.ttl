@@ -109,8 +109,8 @@ var task = document,
     to_uris = task["v-wf:to"] && task["v-wf:to"].map(function (to) {return to.data}),
     from_uris = task["v-wf:from"] && task["v-wf:from"].map(function (from) {return from.data}),
     isNew = !prev_state,
-    isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: _Boolean, data: true}) && hasValue(task, "v-wf:isCompleted", {type: _Boolean, data: true}),
-    isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: _Boolean, data: true}) && hasValue(task, "v-s:deleted", {type: _Boolean, data: true});
+    isCompleted = !isNew && !hasValue(prev_state, "v-wf:isCompleted", {type: "Boolean", data: true}) && hasValue(task, "v-wf:isCompleted", {type: "Boolean", data: true}),
+    isDeleted = !isNew && !hasValue(prev_state, "v-s:deleted", {type: "Boolean", data: true}) && hasValue(task, "v-s:deleted", {type: "Boolean", data: true});
 
 // print("************************** START **************************");
 
@@ -128,14 +128,14 @@ to_uris && to_uris.map(function (to_uri) {
   var toCounter_uri = "d:taskCounter_" + to_uri.split(':').join('_');
   var toCounter = get_individual(ticket, toCounter_uri) || createTaskCounter(to_uri);
 
-  if ( hasValue(toCounter, "rdf:type", { type: _Uri, data: "rdfs:Resource"} ) ) {
-    toCounter["rdf:type"] = [{ type: _Uri, data: "v-ft:TaskCounter" }];
+  if ( hasValue(toCounter, "rdf:type", { type: "Uri", data: "rdfs:Resource"} ) ) {
+    toCounter["rdf:type"] = [{ type: "Uri", data: "v-ft:TaskCounter" }];
   }
 
-  var toInboxCount = toCounter["v-ft:inboxCount"] ? toCounter["v-ft:inboxCount"][0] : toCounter["v-ft:inboxCount"] = [{ type: _Integer, data: 0 }],
-      toInboxWeekCount = toCounter["v-ft:inboxWeekCount"] ? toCounter["v-ft:inboxWeekCount"][0] : toCounter["v-ft:inboxWeekCount"] = [{ type: _Integer, data: 0 }],
-      toOutboxCount = toCounter["v-ft:outboxCount"] ? toCounter["v-ft:outboxCount"][0] : toCounter["v-ft:outboxCount"] = [{ type: _Integer, data: 0 }],
-      toCompletedCount = toCounter["v-ft:completedCount"] ? toCounter["v-ft:completedCount"][0] : toCounter["v-ft:completedCount"] = [{ type: _Integer, data: 0 }];
+  var toInboxCount = toCounter["v-ft:inboxCount"] ? toCounter["v-ft:inboxCount"][0] : toCounter["v-ft:inboxCount"] = [{ type: "Integer", data: 0 }],
+      toInboxWeekCount = toCounter["v-ft:inboxWeekCount"] ? toCounter["v-ft:inboxWeekCount"][0] : toCounter["v-ft:inboxWeekCount"] = [{ type: "Integer", data: 0 }],
+      toOutboxCount = toCounter["v-ft:outboxCount"] ? toCounter["v-ft:outboxCount"][0] : toCounter["v-ft:outboxCount"] = [{ type: "Integer", data: 0 }],
+      toCompletedCount = toCounter["v-ft:completedCount"] ? toCounter["v-ft:completedCount"][0] : toCounter["v-ft:completedCount"] = [{ type: "Integer", data: 0 }];
 
   switch (true) {
     case isNew:
@@ -167,13 +167,13 @@ from_uris && from_uris.map(function (from_uri) {
   var fromCounter_uri = "d:taskCounter_" + from_uri.split(':').join('_');
   var fromCounter = get_individual(ticket, fromCounter_uri) || createTaskCounter(from_uri);
 
-  if ( hasValue(fromCounter, "rdf:type", { type: _Uri, data: "rdfs:Resource"} ) ) {
-    fromCounter["rdf:type"] = [{ type: _Uri, data: "v-ft:TaskCounter" }];
+  if ( hasValue(fromCounter, "rdf:type", { type: "Uri", data: "rdfs:Resource"} ) ) {
+    fromCounter["rdf:type"] = [{ type: "Uri", data: "v-ft:TaskCounter" }];
   }
 
-  var fromInboxCount = fromCounter["v-ft:inboxCount"] ? fromCounter["v-ft:inboxCount"][0] : fromCounter["v-ft:inboxCount"] = [{ type: _Integer, data: 0 }],
-      fromOutboxCount = fromCounter["v-ft:outboxCount"] ? fromCounter["v-ft:outboxCount"][0] : fromCounter["v-ft:outboxCount"] = [{ type: _Integer, data: 0 }],
-      fromCompletedCount = fromCounter["v-ft:completedCount"] ? fromCounter["v-ft:completedCount"][0] : fromCounter["v-ft:completedCount"] = [{ type: _Integer, data: 0 }];
+  var fromInboxCount = fromCounter["v-ft:inboxCount"] ? fromCounter["v-ft:inboxCount"][0] : fromCounter["v-ft:inboxCount"] = [{ type: "Integer", data: 0 }],
+      fromOutboxCount = fromCounter["v-ft:outboxCount"] ? fromCounter["v-ft:outboxCount"][0] : fromCounter["v-ft:outboxCount"] = [{ type: "Integer", data: 0 }],
+      fromCompletedCount = fromCounter["v-ft:completedCount"] ? fromCounter["v-ft:completedCount"][0] : fromCounter["v-ft:completedCount"] = [{ type: "Integer", data: 0 }];
 
   switch (true) {
     case isNew:

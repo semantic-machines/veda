@@ -40,9 +40,9 @@ function change_rights_actor(process, task, rightset, actor)
             //print ("@JS1 process.getLocalVariable (" + actor + ")=", toJson(process.getLocalVariable (actor)));
             //print ("@JS2 process.getExecutor()=", toJson(process.getExecutor()));
             var executor = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
-	    
-	    if (!executor)
-		executor = task.getInputVariable(actor);
+
+      if (!executor)
+    executor = task.getInputVariable(actor);
 
             //print ("@JS3 executor=", toJson(executor));
 
@@ -144,8 +144,8 @@ function change_process_status(ticket, process, status, _event_id)
 }
 
 function change_document_status(process, status)
-{   
-    
+{
+
     // print ("@JS setStatus=", toJson(process.getInputVariable('setStatus')));
     if ( status ) {
         var setStatus=process.getInputVariable('setStatus');
@@ -253,7 +253,7 @@ function is_in_docflow_and_set_if_true(task)
                             'rdf:type': [
                             {
                                 data: 'v-wf:Variable',
-                                type: _Uri
+                                type: "Uri"
                             }]
                         };
                         put_individual(task.ticket, new_doc, _event_id);
@@ -384,7 +384,7 @@ function create_use_transformation(process, task)
                             new_items_uri.push(
                             {
                                 data: new_items[i]['@'],
-                                type: _Uri
+                                type: "Uri"
                             });
                         }
                     }
@@ -568,7 +568,7 @@ function onto_rename(ticket, document, execute_script)
 
                     for (var from in from_2_to)
                     {
-                        if (value.type == _Uri || value.type == _String)
+                        if (value.type == "Uri" || value.type == "String")
                         {
                             var to = from_2_to[from];
                             var new_str = replace_word(value.data, from, to);

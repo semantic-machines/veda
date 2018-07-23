@@ -128,11 +128,11 @@ if (script) {
   document["v-s:output"] = [{
     data: output,
     lang: "NONE",
-    type: _String
+    type: "String"
   }];
   document["v-s:lastRun"] = [{
     data: new Date(),
-    type: _Datetime
+    type: "Datetime"
   }];
   delete document["v-s:toBeRun"];
   put_individual(ticket, document, _event_id);

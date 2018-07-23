@@ -19,7 +19,7 @@ function prepare_decision_form(ticket, document, prev_state)
         if (!f_takenDecision && !f_prev_takenDecision)
             return;
 
-    var enforce_processing = hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: _Boolean});
+    var enforce_processing = hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: "Boolean"});
     if (f_prev_takenDecision && !enforce_processing)
     {
       if (!f_takenDecision)
@@ -203,7 +203,7 @@ function prepare_work_order(ticket, document)
                     task_output_vars.push(
                     {
                         data: 'v-wf:complete',
-                        type: _Uri
+                        type: "Uri"
                     });
                 }
                 else
@@ -218,7 +218,7 @@ function prepare_work_order(ticket, document)
                     task_output_vars.push(
                     {
                         data: 'v-wf:complete',
-                        type: _Uri
+                        type: "Uri"
                     });
                 }
                 else
@@ -269,7 +269,7 @@ function prepare_work_order(ticket, document)
                                         task_output_vars.push(
                                         {
                                             data: 'v-wf:complete',
-                                            type: _Uri
+                                            type: "Uri"
                                         });
                                     }
                                     else
@@ -336,12 +336,12 @@ function prepare_work_order(ticket, document)
                         'rdf:type': [
                         {
                             data: 'v-wf:Variable',
-                            type: _Uri
+                            type: "Uri"
                         }],
                         'v-wf:variableName': [
                         {
                             data: "curTask",
-                            type: _String
+                            type: "String"
                         }],
                         'v-wf:variableValue': forNetElement
                     };
@@ -355,12 +355,12 @@ function prepare_work_order(ticket, document)
                             'rdf:type': [
                             {
                                 data: 'v-wf:Variable',
-                                type: _Uri
+                                type: "Uri"
                             }],
                             'v-wf:variableName': [
                             {
                                 data: "prevTask",
-                                type: _String
+                                type: "String"
                             }],
                             'v-wf:variableValue': prev_task
                         };
@@ -400,7 +400,7 @@ function prepare_work_order(ticket, document)
                             decisionFormList.push(
                             {
                                 data: transform_result[i]['@'],
-                                type: _Uri
+                                type: "Uri"
                             });
 
                             // выдадим права отвечающему на эту форму
@@ -609,7 +609,7 @@ function prepare_work_order(ticket, document)
                                         workItemList.push(
                                         {
                                             data: work_item_uri,
-                                            type: _Uri
+                                            type: "Uri"
                                         });
                                     }
 
@@ -640,7 +640,7 @@ function prepare_work_order(ticket, document)
                                 workItemList.push(
                                 {
                                     data: work_item_uri,
-                                    type: _Uri
+                                    type: "Uri"
                                 });
                             }
                         }
@@ -655,7 +655,7 @@ function prepare_work_order(ticket, document)
             work_item['v-wf:isCompleted'] = [
             {
                 data: true,
-                type: _Bool
+                type: "Boolean"
             }];
 
             if (workItemList.length > 0)
@@ -928,12 +928,12 @@ function prepare_work_item(ticket, document)
                     'rdf:type': [
                     {
                         data: 'v-wf:WorkOrder',
-                        type: _Uri
+                        type: "Uri"
                     }],
                     'v-wf:forWorkItem': [
                     {
                         data: document['@'],
-                        type: _Uri
+                        type: "Uri"
                     }]
                 };
 
@@ -952,7 +952,7 @@ function prepare_work_item(ticket, document)
                 work_order_uri_list.push(
                 {
                     data: new_work_order_uri,
-                    type: _Uri
+                    type: "Uri"
                 });
 
             }
@@ -971,7 +971,7 @@ function prepare_work_item(ticket, document)
 
         } // end [Task]
         else if (is_exist(netElement, 'rdf:type', 'v-wf:InputCondition') || is_exist(netElement, 'rdf:type', 'v-wf:Condition'))
-        {   
+        {
             if (netElement['@'] == 's-wf:InterlayerNet_ic') {
                 var set_in_document = {
                     '@': _process['v-wf:executor'][0].data
@@ -982,7 +982,7 @@ function prepare_work_item(ticket, document)
             is_goto_to_next_task = true;
         } // end [InputCondition]
         else if (is_exist(netElement, 'rdf:type', 'v-wf:OutputCondition'))
-        {   
+        {
             if (trace_journal_uri)
                 traceToJournal(ticket, trace_journal_uri, "Is output condition ", "");
 
@@ -1009,7 +1009,7 @@ function prepare_work_item(ticket, document)
                         task_output_vars.push(
                         {
                             data: 'v-wf:complete',
-                            type: _Uri
+                            type: "Uri"
                         });
                     }
                     else
@@ -1030,7 +1030,7 @@ function prepare_work_item(ticket, document)
             document['v-wf:isCompleted'] = [
             {
                 data: true,
-                type: _Bool
+                type: "Boolean"
             }];
 
             is_completed = true;
@@ -1040,7 +1040,7 @@ function prepare_work_item(ticket, document)
                 'v-wf:isCompleted': [
                 {
                     data: true,
-                    type: _Bool
+                    type: "Boolean"
                 }]
             };
 
@@ -1070,13 +1070,13 @@ function prepare_work_item(ticket, document)
                     var resultEval = true;
                     try {
                         var predicate = flow['v-wf:predicate'];
-			if (predicate) {
-                    	    var expression = getFirstValue(predicate);
-                    	    //var task_result = new WorkItemResult(work_item_result);
-                    	    var task = new Context(work_item, ticket);
-                    	    var process = new Context(_process, ticket);
-                    	    resultEval = eval(expression);
-			}
+      if (predicate) {
+                          var expression = getFirstValue(predicate);
+                          //var task_result = new WorkItemResult(work_item_result);
+                          var task = new Context(work_item, ticket);
+                          var process = new Context(_process, ticket);
+                          resultEval = eval(expression);
+      }
                     } catch (e) {
                         print(e.stack);
                     }
@@ -1090,7 +1090,7 @@ function prepare_work_item(ticket, document)
                     workItemList.push(
                     {
                         data: work_item_uri,
-                        type: _Uri
+                        type: "Uri"
                     });
 
                     document['v-wf:isCompleted'] = newBool(true);
@@ -1162,7 +1162,7 @@ function prepare_process(ticket, document)
           inVars.push(
           {
             data: new_variable['@'],
-            type: _Uri
+            type: "Uri"
           });
           addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
         }
@@ -1195,7 +1195,7 @@ function prepare_process(ticket, document)
 
         workItemList.push({
           data: work_item_uri,
-          type: _Uri
+          type: "Uri"
         });
 
         break;
@@ -1238,17 +1238,17 @@ function prepare_start_form(ticket, document)
       processedDocumentId = document['v-wf:processedDocument'][0].data;
       processedDocumentValue = document['v-wf:processedDocument'];
       var processedDocument = get_individual(ticket, processedDocumentId);
-      if ( hasValue(processedDocument, "rdf:type", { data: "v-wf:DecisionForm", type: _Uri } ) ) {
+      if ( hasValue(processedDocument, "rdf:type", { data: "v-wf:DecisionForm", type: "Uri" } ) ) {
         processedDocumentId = processedDocument["v-wf:onDocument"] ? processedDocument["v-wf:onDocument"][0].data : processedDocument['@'];
-        processedDocumentValue = processedDocument["v-wf:onDocument"] || [{ data: document['@'], type: _Uri }];
+        processedDocumentValue = processedDocument["v-wf:onDocument"] || [{ data: document['@'], type: "Uri" }];
         document['v-wf:processedDocument'] = processedDocumentValue;
-        document["v-wf:hasParentTask"] = [{ data: processedDocument['@'], type: _Uri }];
+        document["v-wf:hasParentTask"] = [{ data: processedDocument['@'], type: "Uri" }];
         processedDocument["v-wf:hasChildTask"] = (processedDocument["v-wf:hasChildTask"] || []).concat( newUri(document['@']) );
         put_individual(ticket, processedDocument, _event_id);
       }
     } else {
       processedDocumentId = document['@'];
-      processedDocumentValue = [{ data: document['@'], type: _Uri }];
+      processedDocumentValue = [{ data: document['@'], type: "Uri" }];
     }
 
     var isTrace = document['v-wf:isTrace'];
@@ -1311,7 +1311,7 @@ function prepare_start_form(ticket, document)
             new_vars.push(
             {
                 data: process_inVars[i]['@'],
-                type: _Uri
+                type: "Uri"
             });
 
             addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_inVars[i]['@']);
@@ -1326,7 +1326,7 @@ function prepare_start_form(ticket, document)
     new_process['rdfs:label'] = [
     {
         data: "экземпляр маршрута :" + getFirstValue(_net['rdfs:label']),
-        type: _String
+        type: "String"
     }];
 
     if (isTrace)
@@ -1362,7 +1362,7 @@ function prepare_start_form(ticket, document)
         'v-s:created': [
         {
             data: new Date(),
-            type: _Datetime
+            type: "Datetime"
         }]
     };
 

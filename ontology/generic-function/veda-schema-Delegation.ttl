@@ -432,7 +432,7 @@ var request_uri = document["@"],
     delegator_uri = getUri(document["v-s:delegator"]) || "",
     delegate_uri = getUri(document["v-s:delegate"]),
     position_uris = getUris(document["v-s:delegatedPosition"]),
-    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean}),
+    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
     custom_label = document["rdfs:label"];
 
@@ -525,7 +525,7 @@ position_uris.map(function (position_uri) {
     //print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
     put_individual(ticket, delegate, _event_id);
   } else {
-    allDelegated["rdf:value"].push({ data: uri, type: _Uri });
+    allDelegated["rdf:value"].push({ data: uri, type: "Uri" });
   }
 
   //print("[cfg:Event_Delegation] appointment =", JSON.stringify(appointment));
@@ -571,7 +571,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var isPremature = now < appointment["v-s:dateFrom"][0].data;
   var isActual = appointment["v-s:dateFrom"][0].data <= now && now <= appointment["v-s:dateTo"][0].data;
   var isOverdue = now > appointment["v-s:dateTo"][0].data;
-  var isDeleted = hasValue(appointment, "v-s:deleted", {data: true, type: _Boolean});
+  var isDeleted = hasValue(appointment, "v-s:deleted", {data: true, type: "Boolean"});
 
   //print("[cfg:Event_Delegation]", "appointment =", appointment_uri, "| isPremature =", isPremature, "| isActual =", isActual, "| isOverdue =", isOverdue, "| isDeleted =", isDeleted );
 
@@ -586,7 +586,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"].filter( function (item) {
         return item.data !== appointment_uri;
-      }).concat({data: appointment_uri, type: _Uri});
+      }).concat({data: appointment_uri, type: "Uri"});
       put_individual(ticket, delegate, _event_id);
       //print("[cfg:Event_Delegation] delegate updated - actual appointment added", delegate_uri);
     }

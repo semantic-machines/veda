@@ -22,17 +22,17 @@ function newJournalRecord(journal_uri)
         'rdf:type': [
         {
             data: 'v-s:JournalRecord',
-            type: _Uri
+            type: "Uri"
         }],
         'v-s:parentJournal': [
         {
             data: journal_uri,
-            type: _Uri
+            type: "Uri"
         }],
         'v-s:created': [
         {
             data: new Date(),
-            type: _Datetime
+            type: "Datetime"
         }]
     };
     return new_journal_record;
@@ -50,7 +50,7 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
         'v-s:childRecord': [
         {
             data: journal_record['@'],
-            type: _Uri
+            type: "Uri"
         }]
     };
 
@@ -74,17 +74,17 @@ function traceToJournal(ticket, journal_uri, label, _data)
     journal_record['rdf:type'] = [
     {
         data: 'v-wf:TraceRecord',
-        type: _Uri
+        type: "Uri"
     }];
     journal_record['rdfs:label'] = [
     {
         data: label,
-        type: _String
+        type: "String"
     }];
     journal_record['rdfs:comment'] = [
     {
         data: _data,
-        type: _String
+        type: "String"
     }];
 
     logToJournal(ticket, journal_uri, journal_record, true);
@@ -311,19 +311,19 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     }
     version['v-s:actualVersion'] = [{
       data: document['@'],
-      type: _Uri
+      type: "Uri"
     }];
     version['v-s:nextVersion'] = [{
       data: actualId,
-      type: _Uri
+      type: "Uri"
     }];
     version['rdf:type'] = version['rdf:type'].concat(
       [{
         data: "v-s:Version",
-        type: _Uri
+        type: "Uri"
       }]
     );
-    version['v-s:created'] = [{data: new Date(), type: _Datetime}];
+    version['v-s:created'] = [{data: new Date(), type: "Datetime"}];
     version['v-s:edited'] = [];
     version['v-s:creator'] = newUri(user_uri);
     version['v-s:lastEditor'] = [];
@@ -347,7 +347,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
       var previous = get_individual(ticket, getUri(document['v-s:previousVersion']));
       previous['v-s:nextVersion'] = [{
         data: versionId,
-        type: _Uri
+        type: "Uri"
       }];
       put_individual(ticket, previous, _event_id);
     }
@@ -355,14 +355,14 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     // Update actual version
     document['v-s:previousVersion'] = [{
       data: versionId,
-      type: _Uri
+      type: "Uri"
     }];
     document['v-s:actualVersion'] = [{
       data: document['@'],
-      type: _Uri
+      type: "Uri"
     }];
     document['v-s:nextVersion'] = [];
-    document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
+    document['v-s:edited'] = [{data: new Date(), type: "Datetime"}];
     document['v-s:lastEditor'] = newUri(user_uri);
     put_individual(ticket, document, _event_id);
   }
@@ -416,7 +416,7 @@ function set_err_on_indv (msg, indv, src)
       'v-s:resource': newUri (indv['@'])
     };
     put_individual(ticket, bugreport, _event_id);
-   
+
     var add_to_indv = {
         '@': indv['@'],
         'v-s:hasError': newUri (bugreport['@'])
@@ -429,7 +429,7 @@ function set_err_on_indv (msg, indv, src)
 function set_field_to_document (field_name, value, doc_id)
 {
     var set_in_document = {
-		'@': doc_id
+    '@': doc_id
     };
 
     set_in_document[field_name] = value;

@@ -10,27 +10,27 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
             'rdf:type': [
             {
                 data: 'v-wf:WorkItem',
-                type: _Uri
+                type: "Uri"
             }],
             'v-wf:forProcess': [
             {
                 data: process_uri,
-                type: _Uri
+                type: "Uri"
             }],
             'v-wf:forNetElement': [
             {
                 data: net_element_uri,
-                type: _Uri
+                type: "Uri"
             }],
           'v-s:created': [
           {
           data: new Date(),
-          type: _Datetime
+          type: "Datetime"
             }],
           'v-s:creator': [
           {
           data: 'cfg:VedaSystem',
-          type: _Uri
+          type: "Uri"
             }]
         };
 
@@ -42,7 +42,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
             new_work_item['v-wf:previousWorkItem'] = [
             {
                 data: parent_uri,
-                type: _Uri
+                type: "Uri"
             }];
         }
 
@@ -240,7 +240,7 @@ function Context(_src_data, _ticket)
                 return [
                 {
                     'data': true_decision,
-                    'type': _Uri
+                    'type': "Uri"
                 }];
             }
             else
@@ -248,7 +248,7 @@ function Context(_src_data, _ticket)
                 return [
                 {
                     'data': false_decision,
-                    'type': _Uri
+                    'type': "Uri"
                 }];
             }
         }
@@ -375,15 +375,15 @@ function get_new_variable(variable_name, value) {
       '@': new_uri,
       'rdf:type': [{
         data: 'v-wf:Variable',
-        type: _Uri
+        type: "Uri"
       }],
       'v-wf:variableName': [{
         data: variable_name,
-        type: _String
+        type: "String"
       }],
       'v-s:created': [{
         data: new Date(),
-        type: _Datetime
+        type: "Datetime"
       }]
     };
     if (value) { new_variable['v-wf:variableValue'] = value; }
@@ -415,7 +415,7 @@ function store_items_and_set_minimal_rights(ticket, data)
             ids.push(
             {
                 data: data[i]['@'],
-                type: _Uri
+                type: "Uri"
             });
 
             addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
@@ -449,7 +449,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                 new_variable['v-wf:variableScope'] = [
                 {
                     data: scope,
-                    type: _Uri
+                    type: "Uri"
                 }];
 
                 var local_vars = _process['v-wf:localVars'];
@@ -504,7 +504,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                         'v-wf:localVars': [
                         {
                             data: new_variable_for_local['@'],
-                            type: _Uri
+                            type: "Uri"
                         }]
                     };
                     add_to_individual(ticket, add_to_document, _event_id);
@@ -597,7 +597,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                             new_vars.push(
                             {
                                 data: new_variable['@'],
-                                type: _Uri
+                                type: "Uri"
                             });
                             addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
 
@@ -705,12 +705,12 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, 
                 'rdf:type': [
                 {
                     data: 'v-s:Journal',
-                    type: _Uri
+                    type: "Uri"
                 }],
         'v-s:created': [
         {
               data: new Date(),
-              type: _Datetime
+              type: "Datetime"
                 }]
             };
 
@@ -807,7 +807,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
       //* выполнить маппинг для сообщения
       var messageVars = [];
       messageVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
-      
+
 
       if (messageVars) {
 
@@ -816,7 +816,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
           '@': new_message_uri,
           'v-s:created': [{
             data: new Date(),
-            type: _Datetime
+            type: "Datetime"
           }]
         };
 
@@ -867,7 +867,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 
             for (var val_idx in values) {
               var value = values[val_idx];
-              if (value.type == _Uri) {
+              if (value.type == "Uri") {
                 var inner_indv = get_individual(ticket, value.data);
                 if (inner_indv == undefined) {
                   araa.push('ERR! individual [' + value.data + '] not found, var.name=' + name);
@@ -938,7 +938,7 @@ function create_new_trace_subjournal(parent_uri, net_element_impl, label, jtype)
         'v-s:created': [
         {
             data: new Date(),
-            type: _Datetime
+            type: "Datetime"
         }]
     };
     add_to_individual(ticket, set_journal_to_element, _event_id);
@@ -975,7 +975,7 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
     journal_record['rdf:type'] = [
     {
         data: jtype,
-        type: _Uri
+        type: "Uri"
     }];
     if (label)
     {
@@ -985,13 +985,13 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
             journal_record['rdfs:label'] = [
             {
                 data: label,
-                type: _String
+                type: "String"
             }];
     }
     journal_record['v-s:subJournal'] = [
     {
         data: new_sub_journal_uri,
-        type: _Uri
+        type: "Uri"
     }];
     logToJournal(ticket, parent_journal_uri, journal_record, true);
 
@@ -1043,18 +1043,18 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
                 'rdf:type': [
                 {
                     data: 'v-wf:Process',
-                    type: _Uri
+                    type: "Uri"
                 }],
                 'v-wf:instanceOf': use_net,
                 'v-wf:parentWorkOrder': [
                 {
                     data: parent_process_uri,
-                    type: _Uri
+                    type: "Uri"
                 }],
         'v-s:created': [
         {
               data: new Date(),
-              type: _Datetime
+              type: "Datetime"
                 }]
             };
 
@@ -1066,7 +1066,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             new_process['rdfs:label'] = [
             {
                 data: msg,
-                type: _String
+                type: "String"
             }];
 
             // возьмем входные переменные WorkItem  и добавим их процессу
@@ -1095,7 +1095,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             document['v-wf:isProcess'] = [
             {
                 data: new_process_uri,
-                type: _Uri
+                type: "Uri"
             }];
 
             put_individual(ticket, document, _event_id);
@@ -1254,7 +1254,7 @@ function remove_empty_branches_from_journal(journal_uri)
                         'v-s:childRecord': [
                         {
                             data: chr_uri,
-                            type: _Uri
+                            type: "Uri"
                         }]
             };
             remove_from_individual(ticket, remove_from_journal, _event_id);
