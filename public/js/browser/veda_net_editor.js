@@ -366,16 +366,16 @@ jsWorkflow.ready = jsPlumb.ready;
             instance.addVarProperty = function(stateId, mapping, varId) {
               var variable = new veda.IndividualModel(varId);
 
-                var individualM = new veda.IndividualModel(); // create individual (Mapping)
+              var individualM = new veda.IndividualModel(); // create individual (Mapping)
 
               individualM["rdf:type"] = [ new veda.IndividualModel("v-wf:Mapping") ];
               individualM["v-wf:mapToVariable"] = [variable];
-                individualM['v-wf:mappingExpression'] = ["process.getInputVariable ('"+variable["v-wf:varDefineName"][0]+"')"];
+              individualM['v-wf:mappingExpression'] = ["process.getInputVariable ('"+variable["v-wf:varDefineName"][0]+"')"];
 
-                veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
-                  state[mapping] = state[mapping].concat([individualM]); // <- Add new Mapping to State
-                  net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individualM]);
-                });
+              veda.Util.forSubIndividual(net, 'v-wf:consistsOf', stateId, function (state) {
+                state[mapping] = state[mapping].concat([individualM]); // <- Add new Mapping to State
+                net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat([individualM]);
+              });
             };
 
             instance.addToDragList = function(element) {
@@ -1113,15 +1113,15 @@ jsWorkflow.ready = jsPlumb.ready;
             $('#'+workflowData).bind('mousewheel', function(e){
               if( e.originalEvent.wheelDelta > 0 ) {
                 if ( net['currentScale'] < 1 ) {
-                  return instance.changeScale(net['currentScale'] + 0.1); 
+                  return instance.changeScale(net['currentScale'] + 0.1);
                 } else if ( net['currentScale'] < 2 ) {
                   return instance.changeScale(net['currentScale'] + 0.25);
                 }
               } else {
-                if ( net['currentScale'] > 1 ) { 
-                  return instance.changeScale(net['currentScale'] - 0.25); 
-                } else if ( net['currentScale'] > 0.2 ) { 
-                  return instance.changeScale(net['currentScale'] - 0.1); 
+                if ( net['currentScale'] > 1 ) {
+                  return instance.changeScale(net['currentScale'] - 0.25);
+                } else if ( net['currentScale'] > 0.2 ) {
+                  return instance.changeScale(net['currentScale'] - 0.1);
                 }
               }
             });
