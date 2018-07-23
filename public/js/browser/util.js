@@ -203,7 +203,7 @@ veda.Module(function Util(veda) { "use strict";
       case value instanceof Date:
         formatted = veda.Util.formatDate(value);
         break;
-      case value instanceof Number:
+      case value instanceof Number || typeof value === "number":
         formatted = veda.Util.formatNumber(value);
         break;
       default:

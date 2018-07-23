@@ -27,10 +27,6 @@ v-s:ContractorCategoryRequest_Environment
   rdf:type v-s:Group ;
   rdfs:label "Окружение ContractorCategoryRequest - схема и индивиды" ;
 .
-v-s:ContractorCategoryDecisionTax_Environment
-  rdf:type v-s:Group ;
-  rdfs:label "Окружение ContractorCategoryDecisionTax - схема и индивиды" ;
-.
 v-s:ContractorCategoryDecisionSecurity_Environment
   rdf:type v-s:Group ;
   rdfs:label "Окружение ContractorCategoryDecisionSecurity - схема и индивиды" ;
@@ -73,10 +69,6 @@ v-s:ContractorProfileAll_ReadUser
   rdf:type v-s:Group ;
   rdfs:label "Пользователи с правами просмотра всех ContractorProfile." ;
 .
-v-s:ContractorCategoryDecisionTax_BaseUser
-  rdf:type v-s:Group ;
-  rdfs:label "Основные пользователи ContractorCategoryDecisionTax. Создание. Редактирование. Просмотр" ;
-.
 v-s:ContractorCategoryDecisionSecurity_BaseUser
   rdf:type v-s:Group ;
   rdfs:label "Основные пользователи ContractorCategoryDecisionSecurity. Создание. Редактирование. Просмотр" ;
@@ -84,10 +76,6 @@ v-s:ContractorCategoryDecisionSecurity_BaseUser
 v-s:ContractorCategoryDecisionLegal_BaseUser
   rdf:type v-s:Group ;
   rdfs:label "Основные пользователи ContractorCategoryDecision. Создание. Редактирование. Просмотр" ;
-.
-v-s:ContractorCategoryDecisionPurchase_BaseUser
-  rdf:type v-s:Group ;
-  rdfs:label "Основные пользователи ContractorCategoryDecisionPurchase. Создание. Редактирование. Просмотр" ;
 .
 v-s:ContractorCategoryDecisionFinancial_BaseUser
   rdf:type v-s:Group ;
@@ -127,10 +115,8 @@ v-s:Organization_permission1
   v-s:permissionObject v-s:ContractorCategoryRequest_Environment ;
   v-s:permissionObject v-s:ContractorCategoryDecision_Environment ;
   v-s:permissionObject v-s:ContractorProfile_Environment ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionTax_Environment ;
   v-s:permissionObject v-s:ContractorCategoryDecisionSecurity_Environment ;
   v-s:permissionObject v-s:ContractorCategoryDecisionLegal_Environment ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionPurchase_Environment ;
   v-s:permissionObject v-s:ContractorCategoryDecisionFinancial_Environment ;
   v-s:permissionSubject v-s:Organization_Admin ;
   v-s:canCreate "true"^^xsd:boolean ;
@@ -190,16 +176,6 @@ v-s:ContractorCategoryDecision_permission6
   v-s:canUpdate "true"^^xsd:boolean ;
   rdfs:label "CRU. Основные пользователи ContractorCategoryDecision. Окружение ContractorCategoryDecision" ;
 .
-v-s:ContractorCategoryDecisionTax_permission61
-  rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionTax_Environment ;
-  v-s:permissionObject v-s:ContractorCategoryDecision_Environment ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionTax_BaseUser ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:canUpdate "true"^^xsd:boolean ;
-  rdfs:label "CRU. Основные пользователи ContractorCategoryDecisionTax. Окружение ContractorCategoryDecision" ;
-.
 v-s:ContractorCategoryDecisionSecurity_permission62
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:ContractorCategoryDecisionSecurity_Environment ;
@@ -220,16 +196,7 @@ v-s:ContractorCategoryDecisionLegal_permission63
   v-s:canUpdate "true"^^xsd:boolean ;
   rdfs:label "CRU. Основные пользователи ContractorCategoryDecisionLegal. Окружение ContractorCategoryDecision" ;
 .
-v-s:ContractorCategoryDecisionPurchase_permission64
-  rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionPurchase_Environment ;
-  v-s:permissionObject v-s:ContractorCategoryDecision_Environment ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionPurchase_BaseUser ;
-  v-s:canCreate "true"^^xsd:boolean ;
-  v-s:canRead "true"^^xsd:boolean ;
-  v-s:canUpdate "true"^^xsd:boolean ;
-  rdfs:label "CRU. Основные пользователи ContractorCategoryDecisionPurchase. Окружение ContractorCategoryDecisionPurchase" ;
-.
+
 v-s:ContractorCategoryDecisionFinancial_permission65
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:ContractorCategoryDecisionFinancial_Environment ;
@@ -247,25 +214,17 @@ v-s:ContractorCategoryDecision_permission8
   v-s:permissionObject v-s:ContractorCategoryDecisionLegal_group ;
   v-s:permissionObject v-s:ContractorCategoryDecisionSecurity ;
   v-s:permissionObject v-s:ContractorCategoryDecisionSecurity_group ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionTax ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionTax_group ;
   v-s:permissionObject v-s:ContractorCategoryDecisionFinancial ;
   v-s:permissionObject v-s:ContractorCategoryDecisionFinancial_group ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionPurchase ;
-  v-s:permissionObject v-s:ContractorCategoryDecisionPurchase_group ;
   v-s:permissionObject v-s:Organization_Environment ;
   v-s:permissionObject v-s:ContractorProfile_Environment ;
   v-s:permissionObject v-s:ContractorCategoryRequest_Environment ;
   v-s:permissionObject v-s:ContractorCategoryDecision_Environment ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionTaxAll_ReadUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionSecurityAll_ReadUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionLegalAll_ReadUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionPurchaseAll_ReadUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionFinancialAll_ReadUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionTax_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionSecurity_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionLegal_BaseUser ;
-  v-s:permissionSubject v-s:ContractorCategoryDecisionPurchase_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionFinancial_BaseUser ;
   v-s:permissionSubject v-s:ContractorCategoryDecisionFullAll_ReadUser ;
   v-s:canRead "true"^^xsd:boolean ;
@@ -324,13 +283,6 @@ v-s:ContractorCategoryDecision_Environment_membership
   v-s:resource v-s:ContractorCategoryDecision_group ;
   rdfs:label "Члены группы Окружение ContractorCategoryDecision - схема и индивиды" ;
 .
-v-s:ContractorCategoryDecisionTax_Environment_membership
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-s:ContractorCategoryDecisionTax_Environment ;
-  v-s:resource v-s:ContractorCategoryDecisionTax ;
-  v-s:resource v-s:ContractorCategoryDecisionTax_group ;
-  rdfs:label "Члены группы Окружение ContractorCategoryDecisionTax - схема и индивиды" ;
-.
 v-s:ContractorCategoryDecisionSecurity_Environment_membership
   rdf:type v-s:Membership ;
   v-s:memberOf v-s:ContractorCategoryDecisionSecurity_Environment ;
@@ -344,13 +296,6 @@ v-s:ContractorCategoryDecisionLegal_Environment_membership
   v-s:resource v-s:ContractorCategoryDecisionLegal ;
   v-s:resource v-s:ContractorCategoryDecisionLegal_group ;
   rdfs:label "Члены группы Окружение ContractorCategoryDecisionLegal - схема и индивиды" ;
-.
-v-s:ContractorCategoryDecisionPurchase_Environment_membership
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-s:ContractorCategoryDecisionPurchase_Environment ;
-  v-s:resource v-s:ContractorCategoryDecisionPurchase ;
-  v-s:resource v-s:ContractorCategoryDecisionPurchase_group ;
-  rdfs:label "Члены группы Окружение ContractorCategoryDecisionPurchase - схема и индивиды" ;
 .
 v-s:ContractorCategoryDecisionFinancial_Environment_membership
   rdf:type v-s:Membership ;

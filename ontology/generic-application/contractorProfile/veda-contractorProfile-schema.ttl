@@ -321,105 +321,28 @@ v-s:isOrganizationOk
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
 
-v-s:hasContractorCategoryDecisionTax
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение НУ"@ru ;
-  rdfs:label "Contractor category decision Tax"@en ;
-  rdfs:range v-s:ContractorCategoryDecisionTax ;
-  rdfs:domain v-s:ContractorCategoryDecision ;
-.
-
 v-s:hasContractorCategoryDecisionSecurity
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение СЭБ"@ru ;
+  rdfs:label "Заключение СБ"@ru ;
   rdfs:label "Contractor category decision security"@en ;
   rdfs:range v-s:ContractorCategoryDecisionSecurity ;
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
 v-s:hasContractorCategoryDecisionLegal
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение ПУ"@ru ;
+  rdfs:label "Заключение ЮРО"@ru ;
   rdfs:label "Contractor category decision legal"@en ;
   rdfs:range v-s:ContractorCategoryDecisionLegal ;
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
-v-s:hasContractorCategoryDecisionPurchase
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение Фин. директора"@ru ;
-  rdfs:label "Resolution Financial"@en ;
-  rdfs:range v-s:ContractorCategoryDecisionPurchase ;
-  rdfs:domain v-s:ContractorCategoryDecision ;
-.
 v-s:hasContractorCategoryDecisionFinancial
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение Фин. директора"@ru ;
+  rdfs:label "Заключение Бухгалтерии"@ru ;
   rdfs:label "Resolution Financial"@en ;
   rdfs:range v-s:ContractorCategoryDecisionFinancial ;
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
 
-# ------------------------------------------------------------
-v-s:ContractorCategoryDecisionTax
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
-  rdfs:label "Заключение НУ"@ru ;
-  rdfs:label "Resolution Tax"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryDecisionTaxTemplate ;
-.
-v-s:contractorEmployeeCount
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Численность работников"@ru ;
-  rdfs:label "Contractor employee count"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
-v-s:productionAsset
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Производственные активы"@ru ;
-  rdfs:label "Production asset"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
-v-s:contractorTaxLiability
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Задолженность по налогам"@ru ;
-  rdfs:label "Tax liability"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
-v-s:contractorOtherTaxRisk
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Прочие налоговые риски"@ru ;
-  rdfs:label "Other tax risk"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
-v-s:contractorTurnover
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Обороты (без НДС)"@ru ;
-  rdfs:label "Turnover (without VAT)"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
-v-s:contractorTaxDepSummary
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение НУ"@ru ;
-  rdfs:label "Tax Department summary"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
-v-s:isContractorOkTaxDepSummary
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение НУ положительное?"@ru ;
-  rdfs:label "Tax Department summary"@en ;
-  rdfs:range xsd:boolean ;
-  rdfs:domain v-s:ContractorCategoryDecisionTax ;
-.
 # ------------------------------------------------------------
 v-s:ContractorCategoryDecisionSecurity
   rdf:type owl:Class ;
@@ -515,33 +438,6 @@ v-s:isContractorOkLegalDepSummary
   rdfs:label "Legal department summary"@en ;
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:ContractorCategoryDecisionLegal ;
-.
-#--------------------------------------------
-v-s:ContractorCategoryDecisionPurchase
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:Labeled ;
-  v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
-  rdfs:label "Заключение Управления закупок"@ru ;
-  rdfs:label "Resolution Purchase"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryDecisionPurchaseTemplate ;
-.
-v-s:isContractorOkPurchaseDepSummary
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение Управления закупок"@ru ;
-  rdfs:label "Purchase department summary"@en ;
-  rdfs:range xsd:boolean ;
-  rdfs:domain v-s:ContractorCategoryDecisionPurchase ;
-.
-v-s:contractorPurchaseDepSummary
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение Управления закупок  положительное?"@ru ;
-  rdfs:label "Purchase department summary"@en ;
-  rdfs:range xsd:string ;
-  rdfs:domain v-s:ContractorCategoryDecisionPurchase ;
 .
 #--------------------------------------------
 v-s:ContractorCategoryDecisionFinancial
