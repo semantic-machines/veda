@@ -833,7 +833,7 @@ if (parent_script_id) {
 var vsn = {
   "@" : "cfg:OntoVsn",
   "rdf:type"  : newUri("rdfs:Resource"),
-  "rdf:value" : newStr( guid() )
+  "rdf:value" : newStr( veda.Util.guid() )
 };
 put_individual (ticket, vsn, _event_id);
 

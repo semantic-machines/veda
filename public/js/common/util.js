@@ -11,22 +11,6 @@ function hasValue(doc, prop, val)
   }).length);
 }
 
-function genUri () {
-  var uid = guid(), re = /^\d/;
-  return (re.test(uid) ? "d:a" + uid : "d:" + uid);
-}
-function guid () {
-  var d = new Date().getTime();
-  if (typeof performance !== "undefined" && typeof performance.now === "function"){
-    d += performance.now(); //use high-precision timer if available
-  }
-  return "xxxxxxxxxxxxxxxxxxxxxxxxxx".replace(/x/g, function (c) {
-    var r = (d + Math.random() * 36) % 36 | 0;
-    d = Math.floor(d / 36);
-    return r.toString(36);
-  });
-}
-
 function compare(a, b)
 {
   if (typeof a === "function")
@@ -751,7 +735,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
           if (!grouping)
           {
             out_data0_el = {};
-            out_data0_el['@'] = genUri() + "-tr";
+            out_data0_el['@'] = veda.Util.genUri() + "-tr";
           }
           else
           {
@@ -772,7 +756,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               if (useExistsUid)
                 out_data0_el['@'] = individual['@'];
               else
-                out_data0_el['@'] = genUri() + "-tr";
+                out_data0_el['@'] = veda.Util.genUri() + "-tr";
             }
           }
 
@@ -1075,9 +1059,9 @@ function addToGroup(ticket, group, resource, rights, new_uri)
   }
 
   if (!new_uri)
-  new_uri = genUri() + "-gr";
+  new_uri = veda.Util.genUri() + "-gr";
 
-  var new_membership_uri = genUri() + "-mbh";
+  var new_membership_uri = veda.Util.genUri() + "-mbh";
   var new_membership = {
     '@': new_membership_uri,
     'rdf:type': newUri('v-s:Membership'),
@@ -1115,7 +1099,7 @@ function addToGroup(ticket, group, resource, rights, new_uri)
 
 function removeFromGroup(ticket, group, resource)
 {
-  var new_membership_uri = genUri() + "-mbh";
+  var new_membership_uri = veda.Util.genUri() + "-mbh";
   var new_membership = {
     '@': new_membership_uri,
     'rdf:type': newUri('v-s:Membership'),
@@ -1146,7 +1130,7 @@ function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
     return;
   }
 
-  var uri = right_uri || genUri() + "-r";
+  var uri = right_uri || veda.Util.genUri() + "-r";
 
   var permission = {
     '@': uri,

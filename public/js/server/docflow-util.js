@@ -4,7 +4,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
 {
     try
     {
-        var new_uri = genUri() + "-wit";
+        var new_uri = veda.Util.genUri() + "-wit";
         var new_work_item = {
             '@': new_uri,
             'rdf:type': [
@@ -370,7 +370,7 @@ function Context(_src_data, _ticket)
 
 function get_new_variable(variable_name, value) {
   try {
-    var new_uri = genUri() + "-var";
+    var new_uri = veda.Util.genUri() + "-var";
     var new_variable = {
       '@': new_uri,
       'rdf:type': [{
@@ -811,7 +811,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
 
       if (messageVars) {
 
-        var new_message_uri = genUri() + "-msg";
+        var new_message_uri = veda.Util.genUri() + "-msg";
         var new_message = {
           '@': new_message_uri,
           'v-s:created': [{
@@ -1036,7 +1036,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
         var _started_net = get_individual(ticket, getUri(use_net));
         if (_started_net)
         {
-            var new_process_uri = genUri() + "-prs";
+            var new_process_uri = veda.Util.genUri() + "-prs";
 
             var new_process = {
                 '@': new_process_uri,
