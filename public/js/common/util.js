@@ -329,85 +329,6 @@ function clone(obj)
   throw new Error("Unable to copy obj! Its type isn't supported.");
 }
 
-function complexLabel(individual) {
-
-  individual = individual.properties || individual;
-  var cache = {};
-  cache[ individual["@"] ] = individual;
-  function get (uri) {
-    return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
-  }
-
-  //print("INDIVIDUAL =", JSON.stringify(individual));
-
-  try {
-
-    var availableLanguages = get("v-ui:AvailableLanguage");
-    var languages = availableLanguages["rdf:value"].map(function (languageValue) {
-      var languageUri = languageValue.data;
-      var language = get(languageUri);
-      return language["rdf:value"][0].data;
-    });
-
-    return individual["rdf:type"].reduce(function (acc, typeValue) {
-      var typeUri = typeValue.data;
-      var type = get(typeUri);
-      if ( !type || !hasValue(type, "v-s:labelPattern") ) return;
-      var pattern = type["v-s:labelPattern"][0].data;
-      var result = languages.map(function (language) {
-        var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
-          var chain = group.split(".");
-          if (chain[0] === "@") {
-            chain[0] = individual["@"];
-          }
-          return get_localized_chain.apply({}, [language].concat(chain));
-        });
-        return {
-          data: replaced,
-          type: "String",
-          lang: language
-        };
-      });
-      return acc.concat(result);
-    }, []);
-  } catch (err) {
-    //print(err, err.stack);
-    return [];
-  }
-
-  function get_localized_chain(language, uri) {
-    var properties = [].slice.call(arguments, 2);
-    var intermediate = get(uri);
-    if (!intermediate) { return ""; }
-    for (var i = 0, property; (property = properties[i]); i++) {
-      var length = properties.length;
-      if (i === length - 1) {
-        if (!intermediate[property] || !intermediate[property].length) return "";
-        return intermediate[property].reduce(function (acc, value) {
-          //print("VALUE =", JSON.stringify(value));
-          if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
-            var data = value.data;
-            if (data instanceof Date) {
-              data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
-            }
-            return acc += data;
-          } else {
-            return acc;
-          }
-        }, "");
-      }
-      if ( hasValue(intermediate, property) ) {
-        var intermediateUri = intermediate[property][0].data;
-        intermediate = get(intermediateUri);
-        if (!intermediate) { return ""; }
-      } else {
-        return "";
-      }
-    }
-    return "";
-  }
-}
-
 
 // Veda common utility functions----------------------------------------
 
@@ -1421,6 +1342,94 @@ veda.Module(function Util(veda) { "use strict";
       {
         console.log(e.stack);
       }
+    }
+  }
+
+
+  /**
+   * Сформировать составное наименование объекта
+   *
+   * @param individual индивид
+   * @returns {Array}
+   */
+
+  veda.Util.complexLabel = function (individual) {
+
+    individual = individual.properties || individual;
+    var cache = {};
+    cache[ individual["@"] ] = individual;
+    function get (uri) {
+      return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
+    }
+
+    //print("INDIVIDUAL =", JSON.stringify(individual));
+
+    try {
+
+      var availableLanguages = get("v-ui:AvailableLanguage");
+      var languages = availableLanguages["rdf:value"].map(function (languageValue) {
+        var languageUri = languageValue.data;
+        var language = get(languageUri);
+        return language["rdf:value"][0].data;
+      });
+
+      return individual["rdf:type"].reduce(function (acc, typeValue) {
+        var typeUri = typeValue.data;
+        var type = get(typeUri);
+        if ( !type || !hasValue(type, "v-s:labelPattern") ) return;
+        var pattern = type["v-s:labelPattern"][0].data;
+        var result = languages.map(function (language) {
+          var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
+            var chain = group.split(".");
+            if (chain[0] === "@") {
+              chain[0] = individual["@"];
+            }
+            return get_localized_chain.apply({}, [language].concat(chain));
+          });
+          return {
+            data: replaced,
+            type: "String",
+            lang: language
+          };
+        });
+        acc.push(result);
+        return acc;
+      }, []);
+    } catch (err) {
+      //print(err, err.stack);
+      return [];
+    }
+
+    function get_localized_chain(language, uri) {
+      var properties = [].slice.call(arguments, 2);
+      var intermediate = get(uri);
+      if (!intermediate) { return ""; }
+      for (var i = 0, property; (property = properties[i]); i++) {
+        var length = properties.length;
+        if (i === length - 1) {
+          if (!intermediate[property] || !intermediate[property].length) return "";
+          return intermediate[property].reduce(function (acc, value) {
+            //print("VALUE =", JSON.stringify(value));
+            if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
+              var data = value.data;
+              if (data instanceof Date) {
+                data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+              }
+              return acc += data;
+            } else {
+              return acc;
+            }
+          }, "");
+        }
+        if ( hasValue(intermediate, property) ) {
+          var intermediateUri = intermediate[property][0].data;
+          intermediate = get(intermediateUri);
+          if (!intermediate) { return ""; }
+        } else {
+          return "";
+        }
+      }
+      return "";
     }
   }
 
