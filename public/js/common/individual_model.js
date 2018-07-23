@@ -139,7 +139,7 @@ veda.Module(function (veda) { "use strict";
   function serializer (value) {
     if (typeof value === "number" ) {
       return {
-        type: isInteger(value) ? "Integer" : "Decimal",
+        type: veda.Util.isInteger(value) ? "Integer" : "Decimal",
         data: value
       };
     } else if (typeof value === "boolean") {
@@ -167,8 +167,6 @@ veda.Module(function (veda) { "use strict";
       return value;
     }
   }
-
-  function isInteger (n) { return n % 1 === 0; }
 
   // Special properties
   Object.defineProperty(proto, "id", {
@@ -392,10 +390,9 @@ veda.Module(function (veda) { "use strict";
       self.trigger("afterReset");
       return Promise.resolve();
     }
-    return get_individual({
-      ticket: veda.ticket,
-      uri: self.id,
-      async: true
+    return new Promise(function(resolve, reject) {
+      var got = get_individual(veda.ticket, self.id);
+      got ? resolve(got) : reject(got);
     }).then(function (original) {
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);

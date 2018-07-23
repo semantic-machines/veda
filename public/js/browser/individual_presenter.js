@@ -44,14 +44,14 @@ veda.Module(function IndividualPresenter(veda) { "use strict";
         template = new veda.IndividualModel(template);
       } else if (typeof template === "string") {
         var templateString = template;
-        var uri = veda.Util.hash(templateString).toString();
+        var uri = veda.Util.simpleHash(templateString).toString();
         template = veda.cache[uri] ? veda.cache[uri] : new veda.IndividualModel({
           "@": uri,
           "v-ui:template": [{data: templateString, type: "String"}]
         });
       } else if (template instanceof HTMLElement) {
         var templateString = template.outerHTML;
-        var uri = veda.Util.hash(templateString).toString();
+        var uri = veda.Util.simpleHash(templateString).toString();
         template = veda.cache[uri] ? veda.cache[uri] : new veda.IndividualModel({
           "@": uri,
           "v-ui:template": [{data: templateString, type: "String"}]

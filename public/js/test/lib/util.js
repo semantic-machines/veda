@@ -1261,9 +1261,8 @@ function complexLabel(individual) {
   individual = individual.properties || individual;
   var cache = {};
   cache[ individual["@"] ] = individual;
-  var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
   function get (uri) {
-    return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
+    return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
   }
 
   //print("INDIVIDUAL =", JSON.stringify(individual));

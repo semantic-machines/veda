@@ -1,13 +1,6 @@
 // Common utility functions
 "use strict";
 
-var m_subject = 1;
-var m_acl = 2;
-var m_fulltext_indexer = 4;
-var m_fanout_email = 8;
-var m_scripts = 16;
-var m_fanout_sql = 128;
-
 var _Uri = 'Uri';
 var _String = 'String';
 var _Integer = 'Integer';
@@ -1253,9 +1246,8 @@ function complexLabel(individual) {
   individual = individual.properties || individual;
   var cache = {};
   cache[ individual["@"] ] = individual;
-  var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
   function get (uri) {
-    return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
+    return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
   }
 
   //print("INDIVIDUAL =", JSON.stringify(individual));
