@@ -300,6 +300,13 @@ func main() {
 		h := fasthttp.Server{
 			Handler:            requestHandler,
 			MaxRequestBodySize: 10 * 1024 * 1024 * 1024,
+
+			// These timeouts trigger high iowait without the CL 34784
+			// if many requests are sent over more than 100K
+			// keep-alive http connections.
+
+			ReadTimeout:  90 * time.Second,
+			WriteTimeout: 5 * time.Second,
 		}
 		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {
