@@ -41,7 +41,7 @@ function newJournalRecord(journal_uri)
 function logToJournal(ticket, journal_uri, journal_record, jr_type)
 {
     //if (!jr_type)
-    //  print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+    //  print("@@@ logToJournal, new_journal_record=" + veda.Util.toJson(journal_record));
 
     put_individual(ticket, journal_record, _event_id);
 
@@ -55,15 +55,15 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
     };
 
     //if (!jr_type)
-    //  print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+    //  print("@@@ logToJournal, add_to_journal = " + veda.Util.toJson(add_to_journal));
 
     //var before = get_individual(ticket, journal_uri);
-    //print('BEFORE : '+toJson(before))
+    //print('BEFORE : '+veda.Util.toJson(before))
 
     add_to_individual(ticket, add_to_journal, _event_id);
 
     //var after = get_individual(ticket, journal_uri);
-    //print('AFTER : '+toJson(after))
+    //print('AFTER : '+veda.Util.toJson(after))
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)
@@ -89,7 +89,7 @@ function traceToJournal(ticket, journal_uri, label, _data)
 
     logToJournal(ticket, journal_uri, journal_record, true);
 
-    //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+    //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + veda.Util.toJson(journal_record));
 }
 
 function isTecnicalChange(newdoc, olddoc)
@@ -128,8 +128,8 @@ function isTecnicalChange(newdoc, olddoc)
             {
                 if (newdoc[key][item].data.valueOf() != olddoc[key][item].data.valueOf() && !isTechnicalAttribute(key, olddoc[key][item].data))
                 { // поменялось одно из значений в нетехническом атрибуте
-                    //print ('2 old:', toJson(olddoc));
-                    //print ('2 new:', toJson(newdoc));
+                    //print ('2 old:', veda.Util.toJson(olddoc));
+                    //print ('2 new:', veda.Util.toJson(newdoc));
                     //print (newdoc['@']+' x '+olddoc[key][item].data+' >2> '+newdoc[key][item].data+' : '+key);
                     return false;
                 }
@@ -370,7 +370,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
 
 function recursiveCall(elem, path, ticket, _event_id) {
   if (path[elem['@']]) {
-    print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);
+    print('WARNING! Recursive path '+veda.Util.toJson(path)+' > '+elem['a']);
     return;
   }
 

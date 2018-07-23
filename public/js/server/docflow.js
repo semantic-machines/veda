@@ -29,7 +29,7 @@ function prepare_decision_form(ticket, document, prev_state)
       }
       else if (f_takenDecision.length != f_prev_takenDecision.length || getUri(f_takenDecision) != getUri(f_prev_takenDecision))
       {
-        set_err_on_indv("attempt set another decision " + toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
+        set_err_on_indv("attempt set another decision " + veda.Util.toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
               set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
       }
       return;
@@ -52,7 +52,7 @@ function prepare_decision_form(ticket, document, prev_state)
         if (f_executor && f_executor.length > 0)
             executor = f_executor[0];
 
-        //print ("@@@executor=", toJson (executor));
+        //print ("@@@executor=", veda.Util.toJson (executor));
         //print("[WORKFLOW][DF1].1");
 
         var f_forWorkItem = _work_order['v-wf:forWorkItem'];
@@ -110,13 +110,13 @@ function prepare_decision_form(ticket, document, prev_state)
             return;
         }
 
-        //print("[WORKFLOW][DF1].4 document=", toJson(document));
-        //print("[WORKFLOW][DF1].4 transform=", toJson(transform));
-        //print("[WORKFLOW][DF1].4 _work_order=", toJson(_work_order));
+        //print("[WORKFLOW][DF1].4 document=", veda.Util.toJson(document));
+        //print("[WORKFLOW][DF1].4 transform=", veda.Util.toJson(transform));
+        //print("[WORKFLOW][DF1].4 _work_order=", veda.Util.toJson(_work_order));
 
         var process_output_vars = transformation(ticket, decision_form, transform, executor, f_onWorkOrder, forProcess);
 
-        //print("[WORKFLOW][DF1].5 transform_result=", toJson(process_output_vars));
+        //print("[WORKFLOW][DF1].5 transform_result=", veda.Util.toJson(process_output_vars));
         var new_vars = store_items_and_set_minimal_rights(ticket, process_output_vars);
 
         if (process_output_vars.length > 0)
@@ -161,7 +161,7 @@ function prepare_work_order(ticket, document)
 
         var trace_journal_uri = create_new_trace_subjournal(f_forWorkItem, _work_order, "prepare_work_order:" + _work_order['@'], 'v-wf:WorkOrderStarted')
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", toJson(document));
+            traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", veda.Util.toJson(document));
 
         var journal_uri;
 
@@ -175,7 +175,7 @@ function prepare_work_order(ticket, document)
         var net_element = get_individual(ticket, getUri(forNetElement));
         if (!net_element) return;
 
-        //    print ("[WORKFLOW] #1 net_element.uri=", net_element['@'], ", work_order=", toJson (_work_order));
+        //    print ("[WORKFLOW] #1 net_element.uri=", net_element['@'], ", work_order=", veda.Util.toJson (_work_order));
 
         var f_local_outVars = document['v-wf:outVars'];
         var task_output_vars = [];
@@ -210,7 +210,7 @@ function prepare_work_order(ticket, document)
                 {
                     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
                     task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, null, true, trace_journal_uri, 'v-wf:completedMapping');
-                    //print("[PWO].completedMapping1, task_output_vars=", toJson(task_output_vars));
+                    //print("[PWO].completedMapping1, task_output_vars=", veda.Util.toJson(task_output_vars));
                 }
 
                 if (task_output_vars.length == 0)
@@ -259,7 +259,7 @@ function prepare_work_order(ticket, document)
                         put_individual(ticket, _work_order, _event_id);
                     }
                     /*
-                                   //print("[WORKFLOW][WO1.4] task: eval result=", toJson(result0));
+                                   //print("[WORKFLOW][WO1.4] task: eval result=", veda.Util.toJson(result0));
                                     //print ("#2");
                                     //mapToJournal (net_element['v-wf:completedJournalMap'], ticket, _process, work_item);
 
@@ -276,7 +276,7 @@ function prepare_work_order(ticket, document)
                                     {
                                    getStrings(netElement['rdfs:label'])     // сохраняем результаты в v-wf:outVars в обрабатываемом рабочем задании
                                         task_output_vars = create_and_mapping_variables(ticket, net_element['v-wf:completedMapping'], _process, work_item, null, result0, true, trace_journal_uri, 'v-wf:completedMapping');
-                                        print("[PWO]completedMapping2, task_output_vars=", toJson(task_output_vars));
+                                        print("[PWO]completedMapping2, task_output_vars=", veda.Util.toJson(task_output_vars));
                                     }
 
                                     if (task_output_vars.length > 0)
@@ -290,8 +290,8 @@ function prepare_work_order(ticket, document)
                 else if ((is_appointment || is_position) && !f_useSubNet)
                 {
                     //print("[WORKFLOW][WO2] is USER, executor=" + getUri(f_executor));
-                    //           //print("work_item.inVars=", toJson(f_inVars));
-                    //           //print("process.inVars=", toJson(f_process_inVars));
+                    //           //print("work_item.inVars=", veda.Util.toJson(f_inVars));
+                    //           //print("process.inVars=", veda.Util.toJson(f_process_inVars));
 
                     var work_item_inVars = [];
                     for (var i = 0; i < f_inVars.length; i++)
@@ -367,9 +367,9 @@ function prepare_work_order(ticket, document)
                         work_item_inVars.push(var_ctid);
                     }
 
-                    //print("[WORKFLOW][WO2.0] transform_link=" + toJson(net_element['v-wf:startDecisionTransform']));
-                    //print("[WORKFLOW][WO2.1] work_item_inVars=" + toJson(work_item_inVars));
-                    //print ("@@@1 net_element['v-wf:startingExecutorJournalMap']=", toJson (net_element['v-wf:startingExecutorJournalMap']), ", @=", net_element['@']));
+                    //print("[WORKFLOW][WO2.0] transform_link=" + veda.Util.toJson(net_element['v-wf:startDecisionTransform']));
+                    //print("[WORKFLOW][WO2.1] work_item_inVars=" + veda.Util.toJson(work_item_inVars));
+                    //print ("@@@1 net_element['v-wf:startingExecutorJournalMap']=", veda.Util.toJson (net_element['v-wf:startingExecutorJournalMap']), ", @=", net_element['@']));
                     mapToJournal(net_element['v-wf:startingExecutorJournalMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingExecutorJournalMap');
 
                     var transform_link = getUri(net_element['v-wf:startDecisionTransform']);
@@ -380,7 +380,7 @@ function prepare_work_order(ticket, document)
                     var transform_result = transformation(ticket, work_item_inVars, transform, f_executor, newUri(document['@']), forProcess);
 
                     if (trace_journal_uri)
-                        traceToJournal(ticket, trace_journal_uri, "v-wf:startDecisionTransform", "transform_result=" + toJson(transform_result));
+                        traceToJournal(ticket, trace_journal_uri, "v-wf:startDecisionTransform", "transform_result=" + veda.Util.toJson(transform_result));
 
                     var decisionFormList = [];
 
@@ -406,17 +406,17 @@ function prepare_work_order(ticket, document)
                             // выдадим права отвечающему на эту форму
                             if (is_appointment)
                             {
-                                //print("[WORKFLOW][WO2.2] appointment=" + toJson(executor));
+                                //print("[WORKFLOW][WO2.2] appointment=" + veda.Util.toJson(executor));
                                 var employee = executor['v-s:employee'];
                                 if (employee)
                                 {
-                                    //print("[WORKFLOW][WO2.2] employee=" + toJson(employee));
+                                    //print("[WORKFLOW][WO2.2] employee=" + veda.Util.toJson(employee));
                                     addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
                                 }
                                 var position = executor['v-s:occupation'];
                                 if (position)
                                 {
-                                    //print("[WORKFLOW][WO2.2] position=" + toJson(position));
+                                    //print("[WORKFLOW][WO2.2] position=" + veda.Util.toJson(position));
                                     addRight(ticket, [can_read, can_update], position[0].data, transform_result[i]['@']);
                                 }
                             }
@@ -460,14 +460,14 @@ function prepare_work_order(ticket, document)
         {
             for (var i = 0; i < workOrderList.length; i++)
             {
-                //print("[WORKFLOW][WO3.0] workOrder=" + toJson(workOrderList[i]) + "");
+                //print("[WORKFLOW][WO3.0] workOrder=" + veda.Util.toJson(workOrderList[i]) + "");
                 var workOrder;
                 if (workOrderList[i].data != document['@'])
                     workOrder = get_individual(ticket, workOrderList[i].data);
                 else
                     workOrder = document;
 
-                //print("[WORKFLOW][WO3.1] workOrder=" + toJson(workOrder) + "");
+                //print("[WORKFLOW][WO3.1] workOrder=" + veda.Util.toJson(workOrder) + "");
 
                 var outVars = workOrder['v-wf:outVars'];
                 if (outVars)
@@ -479,7 +479,7 @@ function prepare_work_order(ticket, document)
                     for (var i1 = 0; i1 < outVars.length; i1++)
                     {
                         var _result = get_individual(ticket, outVars[i1].data);
-                        //print("[WORKFLOW][WO3.2] _result=" + toJson(_result) + "");
+                        //print("[WORKFLOW][WO3.2] _result=" + veda.Util.toJson(_result) + "");
                         if (_result)
                         {
                             if (wosResultsMapping)
@@ -503,7 +503,7 @@ function prepare_work_order(ticket, document)
                                     el[key] = val;
                                     f_set = true;
                                 }
-                                //print("[WORKFLOW][WO3.3] el=" + toJson(el) + "");
+                                //print("[WORKFLOW][WO3.3] el=" + veda.Util.toJson(el) + "");
                             }
                         }
                     }
@@ -518,12 +518,12 @@ function prepare_work_order(ticket, document)
         else
         {
             if (trace_journal_uri)
-                traceToJournal(ticket, trace_journal_uri, "[WO4.0] не все задания выполнены", "stop. work_item_result" + toJson(work_item_result) + ", workOrderList=", toJson(workOrderList));
+                traceToJournal(ticket, trace_journal_uri, "[WO4.0] не все задания выполнены", "stop. work_item_result" + veda.Util.toJson(work_item_result) + ", workOrderList=", veda.Util.toJson(workOrderList));
         }
 
         // end //////////////// скрипт сборки результатов
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "[WO4] work_item_result", toJson(work_item_result));
+            traceToJournal(ticket, trace_journal_uri, "[WO4] work_item_result", veda.Util.toJson(work_item_result));
 
         var workItemList = [];
 
@@ -581,10 +581,10 @@ function prepare_work_order(ticket, document)
                     var predicate = flow['v-wf:predicate'];
                     if (predicate)
                     {
-                        //print("[WORKFLOW][WO8] predicate=" + toJson(predicate));
+                        //print("[WORKFLOW][WO8] predicate=" + veda.Util.toJson(predicate));
                         expression = getFirstValue(predicate);
-                        //print("[WORKFLOW][WO8.1] work_item_result=" + toJson(work_item_result));
-                        //print("[WORKFLOW][WO9] expression=" + toJson(expression));
+                        //print("[WORKFLOW][WO8.1] work_item_result=" + veda.Util.toJson(work_item_result));
+                        //print("[WORKFLOW][WO9] expression=" + veda.Util.toJson(expression));
                         if (expression)
                         {
                             try
@@ -595,7 +595,7 @@ function prepare_work_order(ticket, document)
                                 var res1 = eval(expression);
 
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", toJson(expression) + ", res =" + toJson(res1));
+                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", veda.Util.toJson(expression) + ", res =" + veda.Util.toJson(res1));
 
                                 if (res1 === true)
                                 {
@@ -620,7 +620,7 @@ function prepare_work_order(ticket, document)
                             catch (e)
                             {
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", toJson(expression) + ", ", toJson(e.stack));
+                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", veda.Util.toJson(expression) + ", ", veda.Util.toJson(e.stack));
 
                                 print(e.stack);
                             }
@@ -665,7 +665,7 @@ function prepare_work_order(ticket, document)
                 work_item['v-wf:outVars'] = task_output_vars;
 
             put_individual(ticket, work_item, _event_id);
-            //print("[WORKFLOW][WOe] update work_item=", toJson(work_item));
+            //print("[WORKFLOW][WOe] update work_item=", veda.Util.toJson(work_item));
 
             remove_empty_branches_from_journal(journal_uri);
         }
@@ -742,7 +742,7 @@ function prepare_work_item(ticket, document)
                         if (getUri(i_net_element["v-wf:flowsInto"]) == netElement['@'])
                         {
                             in_flows.push(i_net_element);
-                            //print("[WORKFLOW][PW00.2] flow=", toJson (i_net_element));
+                            //print("[WORKFLOW][PW00.2] flow=", veda.Util.toJson (i_net_element));
                         }
                     }
                     else if (is_exist(i_net_element, 'rdf:type', 'v-wf:Task'))
@@ -780,7 +780,7 @@ function prepare_work_item(ticket, document)
                 {
                     var found_out_task = getUri(fne[idx1].parent['v-wf:forNetElement']);
                     isExecuted = fne[idx1].work_item['v-s:isExecuted']
-                    //print ("[WORKFLOW] found_out_task=", toJson (fne[idx1].work_item));
+                    //print ("[WORKFLOW] found_out_task=", veda.Util.toJson (fne[idx1].work_item));
                     if (isExecuted)
                     {
                         // встретился уже выполняемый work_item, по этой задаче, остальные отбрасываем
@@ -806,7 +806,7 @@ function prepare_work_item(ticket, document)
 
         document['v-s:isExecuted'] = newBool(true);
         put_individual(ticket, document, _event_id);
-        //print ("[WORKFLOW] UPDATE document=", toJson (document));
+        //print ("[WORKFLOW] UPDATE document=", veda.Util.toJson (document));
 
         var is_completed = false;
         var workItemList = [];
@@ -868,7 +868,7 @@ function prepare_work_item(ticket, document)
                                 var result = eval(expression);
 
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "определение исполнителя [" + expression + "]", "executors=" + toJson(result));
+                                    traceToJournal(ticket, trace_journal_uri, "определение исполнителя [" + expression + "]", "executors=" + veda.Util.toJson(result));
 
                                 if (result !== undefined && result.length > 0)
                                 {
@@ -893,7 +893,7 @@ function prepare_work_item(ticket, document)
                         else
                         {
                             if (trace_journal_uri)
-                                traceToJournal(ticket, trace_journal_uri, "установлен исполнитель ", "executor=" + toJson(f_executor[i].data));
+                                traceToJournal(ticket, trace_journal_uri, "установлен исполнитель ", "executor=" + veda.Util.toJson(f_executor[i].data));
 
                             executor_list.push(f_executor[i]);
                         }
@@ -946,7 +946,7 @@ function prepare_work_item(ticket, document)
                 if (executor_list[i] != null)
                     new_work_order['v-wf:executor'] = executor_list[i];
 
-                //print("[PWI02-1] new order =" + toJson(new_work_order));
+                //print("[PWI02-1] new order =" + veda.Util.toJson(new_work_order));
 
                 work_order_list.push(new_work_order);
                 work_order_uri_list.push(
@@ -1097,7 +1097,7 @@ function prepare_work_item(ticket, document)
                     document['v-s:isExecuted'] = newBool(false);
                     document['v-s:created'] = newDate(new Date());
                     is_completed = true;
-                    ////print("[WO12] document=", toJson(document));
+                    ////print("[WO12] document=", veda.Util.toJson(document));
                 }
             }
         }
@@ -1185,7 +1185,7 @@ function prepare_process(ticket, document)
         continue;
       }
 
-      ////print("[PP05.1] net_consistsOf=", toJson(net_consistsOf));
+      ////print("[PP05.1] net_consistsOf=", veda.Util.toJson(net_consistsOf));
 
       if (is_exist(element, 'rdf:type', 'v-wf:InputCondition'))
       {
@@ -1343,7 +1343,7 @@ function prepare_start_form(ticket, document)
 
         if (trace_journal_uri)
         {
-            traceToJournal(ticket, trace_journal_uri, "started new process", toJson(new_process));
+            traceToJournal(ticket, trace_journal_uri, "started new process", veda.Util.toJson(new_process));
             new_process['v-wf:traceJournal'] = newUri(trace_journal_uri);
         }
     }

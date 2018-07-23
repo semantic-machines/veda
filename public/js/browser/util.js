@@ -1,170 +1,51 @@
-// Browser-side utility functions
+"use strict";
+
+// Veda browser utility functions
 
 veda.Module(function Util(veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
-  veda.Util.generate_passes = function (length, count) {
-    var result = {};
-    for (var i = 0; i < count; i++) {
-      var pass = generate_pass(length);
-      var hash = Sha256.hash(pass);
-      result[pass] = hash;
-    }
-    return result;
-  }
+  // Уcтанавливает cookie
+  // name - Название cookie
+  // value - Значение cookie (строка)
+  // props - Объект с дополнительными свойствами для установки cookie:
+  //   expires - Время истечения cookie. Интерпретируется по-разному, в зависимости от типа:
+  //     Если число - количество миллисекунд до истечения.
+  //     Если объект типа Date - точная дата истечения.
+  //     Если expires в прошлом, то cookie будет удалено.
+  //     Если expires отсутствует или равно 0, то cookie будет установлено как сессионное и исчезнет при закрытии браузера.
+  //   path - Путь для cookie.
+  //   domain - Домен для cookie.
+  //   secure - Пересылать cookie только по защищенному соединению.
 
-  function generate_pass (length) {
-    var ranges = [[48, 57], [97, 122]];
-    var pass = "";
-    for (var i = 0; i < length; i++) {
-      var range = ranges[randomInRange(0, ranges.length - 1)];
-      var charcode = randomInRange(range[0], range[1]);
-      pass += String.fromCharCode(charcode);
+  veda.Util.setCookie = function (name, value, props) {
+    props = props || {};
+    var exp = props.expires;
+    if (typeof exp === "number" && exp) {
+      var d = new Date();
+      d.setTime(d.getTime() + exp);
+      exp = props.expires = d;
     }
-    return pass;
-  }
-
-  function randomInRange(begin, end) {
-    return Math.round(Math.random() * (end - begin) + begin);
-  }
-
-  veda.Util.simpleHash = function (str) {
-    var hash = 0, char;
-    if (str.length === 0) {
-        return hash;
+    if (exp && exp.toUTCString) { props.expires = exp.toUTCString(); }
+    value = encodeURIComponent(value);
+    var updatedCookie = name + "=" + value;
+    for(var propName in props) {
+      updatedCookie += "; " + propName;
+      var propValue = props[propName];
+      if (propValue !== true) { updatedCookie += "=" + propValue; }
     }
-    for (var i = 0; i < str.length; i++) {
-      char = str.charCodeAt(i);
-      hash = ((hash<<5)-hash)+char;
-      hash = hash & hash;
-    }
-    return hash;
+    document.cookie = updatedCookie;
   };
 
-  veda.Util.processQuery = function (q, sort, limit, delta, pause, fn) {
-    if (typeof q === "object") {
-      sort  = q.sort;
-      limit = q.limit;
-      delta = q.delta;
-      pause = q.pause;
-      fn    = q.fn;
-      q     = q.query;
-    }
-    console.log((new Date()).toISOString(), "Process query results |||", "query:", q, " | ", "limit:", limit, " | ", "delta:", delta, " | ", "pause:", pause);
-    var result = [], append = [].push, fetchingProgress = 0;
-    console.time("Fetching total");
-    fetchResult();
-    return;
-
-    function fetchResult(cursor) {
-      var from = cursor || 0;
-      query({
-        ticket: veda.ticket,
-        query: q,
-        sort: sort || "'v-s:created' desc",
-        from: from,
-        top: delta,
-        limit: limit,
-        async: true
-      }).then(function (query_result) {
-        var cursor = query_result.cursor;
-        var estimated = query_result.estimated;
-        if ( limit > estimated ) {
-          limit = estimated;
-        }
-        append.apply(result, query_result.result);
-        if ( cursor/limit - fetchingProgress >= 0.05 ) {
-          fetchingProgress = cursor/limit;
-          console.log("Fetching progress:", Math.floor(fetchingProgress * 100) + "%", "(" + cursor, "of", limit + ")");
-        }
-        if ( cursor === estimated || cursor >= limit ) {
-          console.log((new Date()).toString(), "Fetching done:", limit);
-          console.timeEnd("Fetching total");
-          result.splice(limit - cursor || limit); // cut result to limit
-          veda.Util.processResult(result, delta, pause, fn);
-        } else {
-          fetchResult(query_result.cursor);
-        }
-      });
-    }
+  veda.Util.delCookie = function (name) {
+    veda.Util.setCookie(name, null, { expires: -1 });
   };
 
-  veda.Util.processResult = function (result, delta, pause, fn) {
-    var total = result.length;
-    var processingProgress = 0;
-    console.log((new Date()).toISOString(), "Process results |||", "total:", total, " | ", "delta:", delta, " | ", "pause:", pause);
-    console.time("Processing total");
-    processPortion();
-
-    function processPortion() {
-      var portion = result.splice(0, delta);
-      portion.forEach( fn );
-      if ( (total - result.length) / total - processingProgress >= 0.05 ) {
-        processingProgress = (total - result.length) / total;
-        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
-      }
-      if ( result.length ) {
-        setTimeout ? setTimeout(processPortion, pause) : processPortion();
-      } else {
-        console.log("Processing done:", total);
-        console.timeEnd("Processing total");
-      }
-    }
-  };
-
-  veda.Util.genUri = function () {
-    var uid = veda.Util.guid(), re = /^\d/;
-    return (re.test(uid) ? "d:a" + uid : "d:" + uid);
-  };
-  veda.Util.guid = function () {
-    var d = new Date().getTime();
-    if (typeof performance !== "undefined" && typeof performance.now === "function"){
-      d += performance.now(); //use high-precision timer if available
-    }
-    return "xxxxxxxxxxxxxxxxxxxxxxxxxx".replace(/x/g, function (c) {
-      var r = (d + Math.random() * 36) % 36 | 0;
-      d = Math.floor(d / 36);
-      return r.toString(36);
-    });
-  };
-
-  veda.Util.isInteger = function (n) { return n % 1 === 0; }
-
-  function zeroPref(n) {
-    return n > 9 ? n : "0" + n;
-  }
-
-  veda.Util.formatValue = function (value) {
-    var formatted;
-    switch (true) {
-      case value instanceof Date:
-        formatted = formatDate(value);
-        break;
-      case value instanceof Number || typeof value === "number":
-        formatted = formatNumber(value);
-        break;
-      default:
-        formatted = typeof value !== "undefined" ? value.toString() : value;
-    }
-    return formatted;
-  };
-  function formatDate (date) {
-    var day = date.getDate(),
-      month = date.getMonth() + 1,
-      year = date.getFullYear(),
-      hours = date.getHours(),
-      mins = date.getMinutes(),
-      secs = date.getSeconds(),
-      fdate, ftime;
-    month = zeroPref(month); day = zeroPref(day);
-    hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
-    fdate = [day, month, year].join(".");
-    ftime = [hours, mins, secs].join(":");
-    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
-  };
-  function formatNumber (n) {
-    return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
+  // Escape function for css (jQuery) selectors
+  veda.Util.escape4$ = function (str) {
+    if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
+    return str;
   };
 
   veda.Util.toTTL = function (individualList, callback) {
@@ -256,230 +137,6 @@ veda.Module(function Util(veda) { "use strict";
     writer.addPrefixes(prefixes);
     writer.addTriples(triples);
     writer.end(callback);
-  };
-
-  veda.Util.applyTransform = function (individualList, transform) {
-    return transformation(veda.ticket, individualList, transform, null, null);
-  };
-
-  veda.Util.forSubIndividual = function (net, property, id, func) {
-    if (net[property]===undefined) return;
-    net[property].forEach(function(el) {
-      if (el.id == id) {
-        func(el);
-      }
-    });
-  };
-
-  veda.Util.removeSubIndividual = function (net, property, id) {
-    if (net[property]===undefined) return undefined;
-    return net[property].filter( function (item) {
-      return item.id !== id;
-    });
-  };
-
-  /*
-   * from http://stackoverflow.com/questions/27266550/how-to-flatten-nested-array-in-javascript
-   * by http://stackoverflow.com/users/2389720/aduch
-   *
-   * This is done in a linear time O(n) without recursion
-   * memory complexity is O(1) or O(n) if mutable param is set to false
-   */
-  veda.Util.flatten = function (array, mutable) {
-    var toString = Object.prototype.toString;
-    var arrayTypeStr = '[object Array]';
-
-    var result = [];
-    var nodes = (mutable && array) || array.slice();
-    var node;
-
-    if (!array.length) {
-      return result;
-    }
-
-    node = nodes.pop();
-
-    do {
-      if (toString.call(node) === arrayTypeStr) {
-        nodes.push.apply(nodes, node);
-      } else {
-        result.push(node);
-      }
-    } while (nodes.length && (node = nodes.pop()) !== undefined);
-
-    result.reverse(); // we reverse result to restore the original order
-    return result;
-  };
-
-  veda.Util.unique = function (arr) {
-    var n = {}, r = [];
-    for(var i = 0; i < arr.length; i++) {
-      if (!n[arr[i]]) {
-        n[arr[i]] = true;
-        r.push(arr[i]);
-      }
-    }
-    return r;
-  };
-
-  veda.Util.queryFromIndividual = function (individual) {
-    var query;
-    var flat = flattenIndividual(individual.properties);
-    if ( individual.hasValue("*") && individual.get("*")[0].indexOf("==") > 0 ) {
-      return individual.get("*")[0];
-    }
-    var allProps = Object.getOwnPropertyNames(flat)
-      .map(function (property_uri) {
-        if (property_uri === "@" || property_uri === "v-s:isDraft") { return; }
-        var values = flat[property_uri].sort(function compare(a, b) {
-          return a.data < b.data ? - 1 : a.data === b.data ? 0 : 1;
-        });
-        var oneProp;
-        switch (values[0].type) {
-          case "Integer":
-          case "Decimal":
-            oneProp = "'" + property_uri + "'==[" + values[0].data + "," + values[values.length-1].data + "]";
-            break;
-          // Date
-          case "Datetime":
-            var start = new Date(values[0].data);
-            var end = new Date(values[values.length-1].data);
-            start.setHours(0,0,0,0);
-            end.setHours(23,59,59,999);
-            oneProp = "'" + property_uri + "'==[" + start.toISOString() + "," + end.toISOString() + "]";
-            break;
-          case "Boolean":
-            oneProp = values
-              .map( function (value) {
-                return "'" + property_uri + "'=='" + value.data + "'";
-              })
-              .join(" || ");
-            break;
-          case "String":
-            oneProp = values
-              .filter(function(item){return !!item && !!item.valueOf();})
-              .map( function (value) {
-                //return "'" + property_uri + "'=='" + value.data + "*'";
-                var q = value.data;
-                if ( !q.match(/[\+\-\*]/) ) {
-                  q = q.split(" ")
-                       .filter(function (token) { return token.length > 0; })
-                       .map(function (token) { return "+" + token + "*"; })
-                       .join(" ");
-                }
-                return "'" + property_uri + "'=='" + q + "'";
-              })
-              .join(" || ");
-            break;
-          case "Uri":
-            oneProp = values
-              .filter(function(item){return !!item && !!item.valueOf();})
-              .map( function (value) {
-                if (property_uri === "rdf:type") {
-                  return "'" + property_uri + "'=='" + value.data + "'";
-                } else {
-                  return "'" + property_uri + "'=='" + value.data + "'";
-                }
-              })
-              .join(" || ");
-            break;
-        }
-        return oneProp ? "( " + oneProp + " )" : undefined;
-      })
-      .filter(function(item){return typeof item !== undefined;})
-      .join(" && ");
-    query = allProps ? "( " + allProps + " )" : undefined;
-    return query;
-  };
-
-  function flattenIndividual(object, prefix, union, visited) {
-    var uri = object["@"];
-    union = typeof union !== "undefined" ? union : {};
-    prefix = typeof prefix !== "undefined" ? prefix : "";
-    visited = typeof visited !== "undefined" ? visited : [];
-    if (visited.indexOf(uri) > -1) {
-      return;
-    } else {
-      visited.push(uri);
-    }
-    for (var property_uri in object) {
-      if (property_uri === "@") { continue; }
-      var values = object[property_uri];
-      var prefixed = prefix ? prefix + "." + property_uri : property_uri;
-      for (var i = 0; i < values.length; i++) {
-        var value = values[i];
-        if (value.type === "Uri") {
-          var individ = new veda.IndividualModel(value.data);
-          if ( individ.isNew() ) {
-            flattenIndividual(individ.properties, prefixed, union, visited);
-          } else {
-            union[prefixed] = union[prefixed] ? union[prefixed] : [];
-            union[prefixed].push( value );
-          }
-        } else {
-          union[prefixed] = union[prefixed] ? union[prefixed] : [];
-          union[prefixed].push( value );
-        }
-      }
-    }
-    return union;
-  }
-
-  /**
-   * @returns veda.IndividualModel - start form
-   */
-  veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
-    var startForm = new veda.IndividualModel(transfromResult[0]);
-    startForm.isNew(true);
-    startForm.isSync(false);
-    return startForm;
-  };
-
-
-// BROWSER ONLY --------------------------------------------------------
-
-
-  // Уcтанавливает cookie
-  // name - Название cookie
-  // value - Значение cookie (строка)
-  // props - Объект с дополнительными свойствами для установки cookie:
-  //   expires - Время истечения cookie. Интерпретируется по-разному, в зависимости от типа:
-  //     Если число - количество миллисекунд до истечения.
-  //     Если объект типа Date - точная дата истечения.
-  //     Если expires в прошлом, то cookie будет удалено.
-  //     Если expires отсутствует или равно 0, то cookie будет установлено как сессионное и исчезнет при закрытии браузера.
-  //   path - Путь для cookie.
-  //   domain - Домен для cookie.
-  //   secure - Пересылать cookie только по защищенному соединению.
-
-  veda.Util.setCookie = function (name, value, props) {
-    props = props || {};
-    var exp = props.expires;
-    if (typeof exp === "number" && exp) {
-      var d = new Date();
-      d.setTime(d.getTime() + exp);
-      exp = props.expires = d;
-    }
-    if (exp && exp.toUTCString) { props.expires = exp.toUTCString(); }
-    value = encodeURIComponent(value);
-    var updatedCookie = name + "=" + value;
-    for(var propName in props) {
-      updatedCookie += "; " + propName;
-      var propValue = props[propName];
-      if (propValue !== true) { updatedCookie += "=" + propValue; }
-    }
-    document.cookie = updatedCookie;
-  };
-
-  veda.Util.delCookie = function (name) {
-    veda.Util.setCookie(name, null, { expires: -1 });
-  };
-
-  // Escape function for css (jQuery) selectors
-  veda.Util.escape4$ = function (str) {
-    if (str) return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');
-    return str;
   };
 
   veda.Util.exportTTL = function (individualList) {

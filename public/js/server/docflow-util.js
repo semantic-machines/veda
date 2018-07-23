@@ -79,9 +79,9 @@ function WorkItemResult(_work_item_result)
         if (!value || value.length < 1)
             return false;
 
-        //print ("@@@compareTaskResult this.work_item_result=", toJson (this.work_item_result));
-        //print ("@@@compareTaskResult value=", toJson (value));
-        //print ("@@@compareTaskResult var_name=", toJson (var_name));
+        //print ("@@@compareTaskResult this.work_item_result=", veda.Util.toJson (this.work_item_result));
+        //print ("@@@compareTaskResult value=", veda.Util.toJson (value));
+        //print ("@@@compareTaskResult var_name=", veda.Util.toJson (var_name));
         if (!this.work_item_result || this.work_item_result.length == 0)
             return false;
 
@@ -128,7 +128,7 @@ function WorkItemResult(_work_item_result)
 
     this.is_all_executors_taken_decision = function(var_name, value)
     {
-        //print('BLABLABLA > '+toJson(this));
+        //print('BLABLABLA > '+veda.Util.toJson(this));
         if (!value || value.length < 1)
             return false;
 
@@ -137,7 +137,7 @@ function WorkItemResult(_work_item_result)
         {
             var wirv = this.work_item_result[i][var_name];
 
-            //print("@@@is_all_executors_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
+            //print("@@@is_all_executors_taken_decision: wiri=" + veda.Util.toJson(wirv), ", value=", veda.Util.toJson(value));
 
             if (wirv && wirv.length > 0 && wirv[0].data == value[0].data && wirv[0].type == value[0].type)
                 count_agreed++;
@@ -162,7 +162,7 @@ function WorkItemResult(_work_item_result)
         {
             var wirv = this.work_item_result[i][var_name];
 
-            //print("@@@is_some_executor_taken_decision: wiri=" + toJson(wirv), ", value=", toJson(value));
+            //print("@@@is_some_executor_taken_decision: wiri=" + veda.Util.toJson(wirv), ", value=", veda.Util.toJson(value));
 
             if (wirv && wirv.length > 0 && wirv[0].data == value[0].data && wirv[0].type == value[0].type)
             {
@@ -279,7 +279,7 @@ function Context(_src_data, _ticket)
     {
         try
         {
-            //          print ("CONTEXT::getVariableValueIO src_data=" + toJson (this.src_data));
+            //          print ("CONTEXT::getVariableValueIO src_data=" + veda.Util.toJson (this.src_data));
             var variables = this.src_data[io];
 
             if (variables)
@@ -288,17 +288,17 @@ function Context(_src_data, _ticket)
                 {
                     var variable = get_individual(this.ticket, variables[i].data);
                     if (!variable) continue;
-                    //print ("CONTEXT::getVariableValueIO var=" + toJson (variable));
+                    //print ("CONTEXT::getVariableValueIO var=" + veda.Util.toJson (variable));
 
                     var variable_name = getFirstValue(variable['v-wf:variableName']);
 
-                    //print("[WORKFLOW]:getVariableIO #0: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                    //print("[WORKFLOW]:getVariableIO #0: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + veda.Util.toJson(variable['v-wf:variableValue']));
 
                     if (variable_name == var_name)
                     {
                         var val = variable['v-wf:variableValue'];
 
-                        //print("[WORKFLOW]:getVariableValue #1: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=" + toJson(val)); // + ", variable=" + toJson (variable));
+                        //print("[WORKFLOW]:getVariableValue #1: work_item=" + this.src_data['@'] + ", var_name=" + var_name + ", val=" + veda.Util.toJson(val)); // + ", variable=" + veda.Util.toJson (variable));
                         return val;
                     }
                 }
@@ -329,7 +329,7 @@ function Context(_src_data, _ticket)
 
                     var variable_name = getFirstValue(variable['v-wf:variableName']);
 
-                    //print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + toJson(variable['v-wf:variableValue']));
+                    //print("[WORKFLOW]:print_variable: work_item=" + this.src_data['@'] + ", var_name=" + variable_name + ", val=" + veda.Util.toJson(variable['v-wf:variableValue']));
                 }
 
             }
@@ -456,17 +456,17 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                 var find_local_var;
                 if (local_vars)
                 {
-                    //print("[WORKFLOW][generate_variable]: ищем переменную [", variable_name, "] среди локальных процесса:" + _process['@'] + ", local_vars=", toJson (local_vars));
+                    //print("[WORKFLOW][generate_variable]: ищем переменную [", variable_name, "] среди локальных процесса:" + _process['@'] + ", local_vars=", veda.Util.toJson (local_vars));
 
                     // найдем среди локальных переменных процесса, такую переменную
                     // если нашли, то новая переменная должна перезаписать переменную процесса
                     for (var i = 0; i < local_vars.length; i++)
                     {
-                        //print ("@@ local_var_uri=", toJson (local_vars[i]));
+                        //print ("@@ local_var_uri=", veda.Util.toJson (local_vars[i]));
                         var local_var = get_individual(ticket, local_vars[i].data);
                         if (!local_var) continue;
 
-                        //print ("@@ local_var=", toJson (local_var));
+                        //print ("@@ local_var=", veda.Util.toJson (local_var));
 
                         var var_name = getFirstValue(local_var['v-wf:variableName']);
                         if (!var_name) continue;
@@ -482,7 +482,7 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                     {
                         // нашли, обновим значение в локальной переменной
                         find_local_var['v-wf:variableValue'] = value;
-                        //            print ("find_local_var=", toJson (find_local_var));
+                        //            print ("find_local_var=", veda.Util.toJson (find_local_var));
                         put_individual(ticket, find_local_var, _event_id);
 
                         //                        new_variable['@'] = find_local_var['@'];
@@ -512,13 +512,13 @@ function generate_variable(ticket, def_variable, value, _process, _task, _task_r
                     local_vars.push(newUri(new_variable_for_local['@'])[0]);
                     _process['v-wf:localVars'] = local_vars;
 
-                    //print("[WORKFLOW][generate_variable]: _process= ", toJson (_process['v-wf:localVars']));
+                    //print("[WORKFLOW][generate_variable]: _process= ", veda.Util.toJson (_process['v-wf:localVars']));
                 }
 
             }
         }
 
-        //print("[WORKFLOW][generate_variable]: new variable: " + toJson(new_variable));
+        //print("[WORKFLOW][generate_variable]: new variable: " + veda.Util.toJson(new_variable));
 
         return new_variable;
     }
@@ -556,10 +556,10 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         if (_task_result)
             task_result = new WorkItemResult(_task_result);
 
-        // print("[WORKFLOW][create_and_mapping_variables]: process=" + toJson (process));
-        // print("[WORKFLOW][create_and_mapping_variables]: task=" + toJson (task));
-        // print("[WORKFLOW][create_and_mapping_variables]: order=" + toJson (order));
-        // print("[WORKFLOW][create_and_mapping_variables]: task_result=" + toJson (task_result));
+        // print("[WORKFLOW][create_and_mapping_variables]: process=" + veda.Util.toJson (process));
+        // print("[WORKFLOW][create_and_mapping_variables]: task=" + veda.Util.toJson (task));
+        // print("[WORKFLOW][create_and_mapping_variables]: order=" + veda.Util.toJson (order));
+        // print("[WORKFLOW][create_and_mapping_variables]: task_result=" + veda.Util.toJson (task_result));
 
         for (var i = 0; i < mapping.length; i++)
         {
@@ -575,7 +575,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                 try
                 {
                     var res1 = eval(expression);
-                    //print("[WORKFLOW][create_and_mapping_variables]: res1=" + toJson(res1));
+                    //print("[WORKFLOW][create_and_mapping_variables]: res1=" + veda.Util.toJson(res1));
                     if (!res1) continue;
 
                     var mapToVariable_uri = getUri(map['v-wf:mapToVariable']);
@@ -622,7 +622,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
         }
 
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + getUris(mapping) + "' \n\nout = \n" + toJson(_trace_info));
+            traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + getUris(mapping) + "' \n\nout = \n" + veda.Util.toJson(_trace_info));
 
         return new_vars;
     }
@@ -727,11 +727,11 @@ function create_new_journal(ticket, new_journal_uri, parent_journal_uri, label, 
                 new_journal['v-wf:isTrace'] = newBool(true);
 
             put_individual(ticket, new_journal, _event_id);
-            //print ("create_new_journal, new_journal=", toJson (new_journal), ", ticket=", ticket);
+            //print ("create_new_journal, new_journal=", veda.Util.toJson (new_journal), ", ticket=", ticket);
         }
   else
   {
-            //print ("create_new_journal, journal already exists, exists_journal=", toJson (exists_journal), ", ticket=", ticket);
+            //print ("create_new_journal, journal already exists, exists_journal=", veda.Util.toJson (exists_journal), ", ticket=", ticket);
   }
 
         return new_journal_uri;
@@ -770,7 +770,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
                 }
                 logToJournal(ticket, journal_uri, new_journal_record);
 
-                //print("@@@ logToJournal[" + journal_uri + "], new_journal_record=" + toJson(new_journal_record));
+                //print("@@@ logToJournal[" + journal_uri + "], new_journal_record=" + veda.Util.toJson(new_journal_record));
 
             }
         }
@@ -877,7 +877,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
                   araa.push('ERR! individual [' + value.data + '] not contains rdfs:label, var.name=' + name);
                   continue;
                 }
-                //print("@@@43 inner_indv=", toJson (inner_indv), ", lang=", lang);
+                //print("@@@43 inner_indv=", veda.Util.toJson (inner_indv), ", lang=", lang);
                 value = getFirstValueUseLang(inner_indv['rdfs:label'], lang);
 
                 if (!value) {
@@ -894,7 +894,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
             }
             view[name] = araa;
           }
-          //print("@@@50 view=", toJson(view));
+          //print("@@@50 view=", veda.Util.toJson(view));
           var output_subject = Mustache.render(subject, view).replace (/&#x2F;/g, '/');
           var output_body = Mustache.render(body, view).replace (/&#x2F;/g, '/');
           new_message['v-s:subject'] = newStr (output_subject, lang);
@@ -903,7 +903,7 @@ function mapToMessage(map_container, ticket, _process, _task, _order, msg, journ
           new_message['v-s:hasMessageType'] = template['v-s:hasMessageType'];
           put_individual(ticket, new_message, _event_id);
         }
-        //print("@@@ mapToMessage=" + toJson(new_message));
+        //print("@@@ mapToMessage=" + veda.Util.toJson(new_message));
       }
     }
   } catch (e) {
@@ -1078,7 +1078,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
 
             if (parent_trace_journal_uri)
             {
-                traceToJournal(ticket, parent_trace_journal_uri, "new_process=", getUri(use_net), toJson(new_process));
+                traceToJournal(ticket, parent_trace_journal_uri, "new_process=", getUri(use_net), veda.Util.toJson(new_process));
                 new_process['v-wf:isTrace'] = newBool(true);
 
                 var trace_journal_uri = getTraceJournalUri(new_process_uri);
@@ -1117,7 +1117,7 @@ function get_properties_chain(var1, query, result_if_fail_search)
         return res;
 
     var doc;
-        //print('@@@get_properties_chain#1 var1=', toJson(var1), ", query=", toJson (query));
+        //print('@@@get_properties_chain#1 var1=', veda.Util.toJson(var1), ", query=", veda.Util.toJson (query));
     try
     {
     doc = get_individual(ticket, getUri(var1));
@@ -1125,12 +1125,12 @@ function get_properties_chain(var1, query, result_if_fail_search)
     if (doc)
         traversal(doc, query, 0, res);
 
-        //print('@@@get_properties_chain #2 res=', toJson(res));
+        //print('@@@get_properties_chain #2 res=', veda.Util.toJson(res));
 
   if (result_if_fail_search && (res == undefined || res.length == 0))
     res = result_if_fail_search;
 
-        //print('@@@get_properties_chain #3 res=', toJson(res));
+        //print('@@@get_properties_chain #3 res=', veda.Util.toJson(res));
     }
     catch (e)
     {
@@ -1144,7 +1144,7 @@ function traversal(indv, query, pos_in_path, result)
 {
     var condition = query[pos_in_path];
 
-    //print('@@@ traversal#0 condition=', toJson(condition), ", indv=", toJson(indv));
+    //print('@@@ traversal#0 condition=', veda.Util.toJson(condition), ", indv=", veda.Util.toJson(indv));
 
     var op_get;
     var op_go;
@@ -1170,7 +1170,7 @@ function traversal(indv, query, pos_in_path, result)
         {
             //print('@@@ traversal#2 ffs[i]=', ffs[i].data);
             var doc = get_individual(ticket, ffs[i].data);
-            //print('@@@ traversal#4 doc=', toJson(doc));
+            //print('@@@ traversal#4 doc=', veda.Util.toJson(doc));
             traversal(doc, query, pos_in_path + 1, result);
         }
     }
@@ -1191,9 +1191,9 @@ function traversal(indv, query, pos_in_path, result)
                 var A = indv[field];
                 if (A)
                 {
-                    //print("###1 A=", toJson(A));
+                    //print("###1 A=", veda.Util.toJson(A));
                     var B = op_eq[field];
-                    //print("###2 B=", toJson(B));
+                    //print("###2 B=", veda.Util.toJson(B));
 
                     for (var i in A)
                     {
@@ -1259,7 +1259,7 @@ function remove_empty_branches_from_journal(journal_uri)
             };
             remove_from_individual(ticket, remove_from_journal, _event_id);
 
-            //print("@@@@@@@@ parent_jrn=", toJson(parent_jrn), ", remove_from_journal=", toJson(remove_from_journal));
+            //print("@@@@@@@@ parent_jrn=", veda.Util.toJson(parent_jrn), ", remove_from_journal=", veda.Util.toJson(remove_from_journal));
             break;
           }
 
