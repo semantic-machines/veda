@@ -315,3 +315,85 @@ function revokeValue(ticket, scope, value, _event_id) {
     print(e.stack);
   }
 }
+
+/**
+ * General function for getNextValue method for numerators
+ *
+ * @param ticket
+ * @param scope - numerator scope
+ * @param FIRST_VALUE - first value in scope
+ * @returns
+ */
+function getNextValueSimple(ticket, scope, FIRST_VALUE)
+{
+  if (typeof scope === 'string')
+  {
+    try
+    {
+      if (typeof window === 'undefined') {
+        scope = get_individual(ticket, scope);
+      } else {
+        scope = new veda.IndividualModel(scope, false);
+      }
+    }
+    catch (e)
+    {
+      return ''+FIRST_VALUE;
+    }
+  }
+  if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'] || scope['v-s:numerationCommitedInterval'].length === 0)
+  {
+    return ''+FIRST_VALUE;
+  }
+  var max = 0;
+
+  if (typeof window === 'undefined')
+  {
+    scope['v-s:numerationCommitedInterval'].forEach(function(interval)
+    {
+      interval = get_individual(ticket, interval.data);
+      if (interval['v-s:numerationCommitedIntervalEnd'][0].data > max)
+      {
+        max = interval['v-s:numerationCommitedIntervalEnd'][0].data;
+      }
+    });
+  }
+  else
+  {
+    scope['v-s:numerationCommitedInterval'].forEach(function(interval)
+    {
+      interval = new veda.IndividualModel(interval.id, false);
+      if (interval['v-s:numerationCommitedIntervalEnd'][0] > max)
+      {
+        max = interval['v-s:numerationCommitedIntervalEnd'][0];
+      }
+    });
+  }
+  return ''+(max + 1);
+}
+
+function isNumerationValueAvailable(scope, value)
+{
+  if (typeof scope === 'string')
+  {
+    scope = new veda.IndividualModel(scope, false);
+  }
+  if (typeof window === 'undefined')
+  {
+    throw "not implemented";
+  }
+  else
+  {
+    if (typeof scope === 'undefined' || typeof scope['v-s:numerationCommitedInterval'] === 'undefined') return true;
+    for (var i = 0; i < scope['v-s:numerationCommitedInterval'].length; i++)
+    {
+      var interval = new veda.IndividualModel(scope['v-s:numerationCommitedInterval'][i].id, false);
+      if (interval['v-s:numerationCommitedIntervalBegin'][0] <= value && value <= interval['v-s:numerationCommitedIntervalEnd'][0])
+      {
+        return false;
+        //max = interval['v-s:numerationCommitedIntervalEnd'][0];
+      }
+    }
+    return true;
+  }
+}
