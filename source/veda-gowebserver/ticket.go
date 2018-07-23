@@ -43,7 +43,8 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return TicketExpired, ticket
 		}
 	} else {
-		//If not found, request it from tarantool
+
+		//If not found, request it from storage
 		rr := conn.GetTicket([]string{ticketKey}, false)
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
@@ -71,36 +72,31 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		ticket.Id = ticketKey
 		ticket.EndTime = ticket.StartTime + duration
 
-		//Save ticket in the cache
-		ticketCacheMutex.Lock()
-		ticketCache[ticketKey] = ticket
-		ticketCacheMutex.Unlock()
-	}
-
-	if areExternalUsers {
-		//If external users feature is enabled
-		log.Printf("check external user (%s)\n", ticket.UserURI)
-		//Check if ticket exists
-		_, ok := externalUsersTicketId[ticket.Id]
-		if !ok {
+		if areExternalUsers {
+			//If external users feature is enabled
+			log.Printf("getTicket::check external user (%s)\n", ticket.UserURI)
 			//If ticket not found then get user from tarantool and decode it
 			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
 			user := rr.GetIndv(0)
 			//Check its field v-s:origin
 
-			origin, ok := getFirstBool(user, "v-s:origin")
-			if !ok || (ok && origin == false) {
+			origin, ok := getFirstString(user, "v-s:origin")
+			if !ok || (ok && origin != "External User") {
 				//If this field not found or it contains false then return error code
 				log.Printf("ERR! user (%s) is not external\n", ticket.UserURI)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
-			} else if ok && origin == true {
+			} else if ok && origin == "External User" {
 				//Else store ticket to cache
 				log.Printf("user is external (%s)\n", ticket.UserURI)
-				externalUsersTicketId[ticket.UserURI] = true
 			}
 
 		}
+
+		//Save ticket in the cache
+		ticketCacheMutex.Lock()
+		ticketCache[ticketKey] = ticket
+		ticketCacheMutex.Unlock()
 
 	}
 

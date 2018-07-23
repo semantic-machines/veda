@@ -103,7 +103,7 @@ var attachmentsPath = "./data/files/"
 var areExternalUsers = false
 
 //externalUsersTicketId is map to stoer external users tickets
-var externalUsersTicketId map[string]bool
+//var externalUsersTicketId map[string]bool
 
 //cons is connection to traildb
 //var cons *tdb.TrailDBConstructor
@@ -293,7 +293,7 @@ func main() {
 	ticketCache = make(map[string]ticket)
 	ontologyCache = make(map[string]Individual)
 	mifCache = make(map[int]*ModuleInfoFile)
-	externalUsersTicketId = make(map[string]bool)
+//	externalUsersTicketId = make(map[string]bool)
 
 	//go monitorIndividualChanges()
 	go func() {
