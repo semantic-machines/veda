@@ -91,12 +91,6 @@ function compare(a, b)
   return result;
 }
 
-function sleep(usec)
-{
-  var endtime = new Date().getTime() + usec;
-  while (new Date().getTime() < endtime);
-}
-
 function get_property_chain(ticket, first, rest)
 {
   var doc;
