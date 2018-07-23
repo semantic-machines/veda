@@ -139,7 +139,7 @@ veda.Module(function (veda) { "use strict";
   function serializer (value) {
     if (typeof value === "number" ) {
       return {
-        type: isInteger(value) ? "Integer" : "Decimal",
+        type: veda.Util.isInteger(value) ? "Integer" : "Decimal",
         data: value
       };
     } else if (typeof value === "boolean") {
@@ -167,8 +167,6 @@ veda.Module(function (veda) { "use strict";
       return value;
     }
   }
-
-  function isInteger (n) { return n % 1 === 0; }
 
   // Special properties
   Object.defineProperty(proto, "id", {
