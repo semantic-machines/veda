@@ -1362,8 +1362,6 @@ veda.Module(function Util(veda) { "use strict";
       return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
     }
 
-    //print("INDIVIDUAL =", JSON.stringify(individual));
-
     try {
 
       var availableLanguages = get("v-ui:AvailableLanguage");
@@ -1396,7 +1394,7 @@ veda.Module(function Util(veda) { "use strict";
         return acc;
       }, []);
     } catch (err) {
-      //print(err, err.stack);
+      console.log("Complex label error", err, err.stack);
       return [];
     }
 
@@ -1409,7 +1407,6 @@ veda.Module(function Util(veda) { "use strict";
         if (i === length - 1) {
           if (!intermediate[property] || !intermediate[property].length) return "";
           return intermediate[property].reduce(function (acc, value) {
-            //print("VALUE =", JSON.stringify(value));
             if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
               var data = value.data;
               if (data instanceof Date) {
