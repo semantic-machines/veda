@@ -11,18 +11,6 @@ function hasValue(doc, prop, val)
   }).length);
 }
 
-function removeV(arr, what) {
-  var res = [];
-  print ("@b in=", veda.Util.toJson (arr));
-  for (var i = 0; i < arr.length; i++)
-  {
-    if (what.data != arr[i].data)
-      res = arr[i];
-  }
-  print ("@e out=", veda.Util.toJson (res));
-  return res;
-}
-
 function genUri () {
   var uid = guid(), re = /^\d/;
   return (re.test(uid) ? "d:a" + uid : "d:" + uid);
@@ -525,12 +513,12 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         {
           for (var key3 in process)
           {
-            out_data0_el_arr = removeV (out_data0_el_arr, process[key3]);
+            out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process[key3];});
           }
         }
         else
         {
-          out_data0_el_arr = removeV (out_data0_el_arr, process);
+          out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process;});
         }
 
         out_data0_el[name] = out_data0_el_arr;
