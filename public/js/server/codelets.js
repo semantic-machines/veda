@@ -377,7 +377,7 @@ function create_use_transformation(process, task)
                     var document = get_individual(task.ticket, getUri(src_doc_id));
                     if (document)
                     {
-                        var new_items = transformation(task.ticket, document, transform, null, null, newUri(process.src_data['@']));
+                        var new_items = veda.Util.transformation(task.ticket, document, transform, null, null, newUri(process.src_data['@']));
                         for (var i = 0; i < new_items.length; i++)
                         {
                             put_individual(ticket, new_items[i], _event_id);
@@ -429,7 +429,7 @@ function find_long_terms(ticket, uri, execute_script)
 
                     if (document)
                     {
-                        if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
+                        if ( hasValue(document, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
                         {
                             var hash = Sha256.hash(i_uri);
 

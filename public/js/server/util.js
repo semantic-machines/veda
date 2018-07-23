@@ -161,7 +161,7 @@ function loadVariablesUseField(ticket, field)
         {
             var indv = get_individual(ticket, uri);
 
-            if (is_exist(indv, 'rdf:type', 'v-s:Variable'))
+            if ( hasValue(indv, "rdf:type", {data: "v-s:Variable", type: "Uri"}) )
             {
                 var varName = getFirstValue(indv['v-s:variableName']);
                 var varValue = getStrings(indv['v-s:variableValue']);

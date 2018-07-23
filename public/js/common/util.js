@@ -1,880 +1,15 @@
 // Veda common utility functions
 "use strict";
 
-function hasValue(doc, prop, val)
+function hasValue(individual, property, value)
 {
-  var any = !!(doc && doc[prop] && doc[prop].length);
-  if (!val) return any;
-  return !!(any && doc[prop].filter(function(i)
-  {
-      return (i.type === val.type && i.data === val.data);
+  var any = !!(individual && individual[property] && individual[property].length);
+  if (!value) return any;
+  return !!(any && individual[property].filter( function(i) {
+      return (i.type === value.type && i.data === value.data);
   }).length);
 }
 
-function compare(a, b)
-{
-  if (typeof a === "function")
-    return a.toString() === b.toString();
-  else if (typeof a != "object" || typeof b != "object")
-    return a === b;
-
-  if (a instanceof Date)
-  {
-    return a.toString () == b.toString ();
-    //return a.valueOf() == b.valueOf();
-  }
-
-  var dl = Object.keys(a).length - Object.keys(b).length;
-  if (dl > 1 || dl < -1) return false;
-  var result = true;
-  for (var key in a)
-  {
-    var bb = b[key];
-    var aa = a[key];
-
-    var tbb = typeof bb;
-    var taa = typeof aa;
-
-    if (key == "v-s:updateCounter")
-      continue;
-
-    if (key == "type")
-    {
-      if (tbb == 'number' && taa == 'string')
-      {
-        if (bb == "Uri")
-            bb = 'Uri';
-        else if (bb == "String")
-            bb = 'String';
-        else if (bb == "Integer")
-            bb = 'Integer';
-        else if (bb == "Datetime")
-            bb = 'Datetime';
-        else if (bb == "Decimal")
-            bb = 'Decimal';
-        else if (bb == "Boolean")
-            bb = 'Boolean';
-      }
-      else if (taa == 'number' && tbb == 'string')
-      {
-        if (aa == "Uri")
-          aa = 'Uri';
-        else if (aa == "String")
-          aa = 'String';
-        else if (aa == "Integer")
-          aa = 'Integer';
-        else if (aa == "Datetime")
-          aa = 'Datetime';
-        else if (aa == "Decimal")
-          aa = 'Decimal';
-        else if (aa == "Boolean")
-          aa = 'Boolean';
-      }
-    }
-    else if(key == "lang")
-    {
-      if (tbb == 'number' && taa == 'string')
-      {
-        if (bb == 0)
-          bb = 'NONE';
-      }
-      else if (taa == 'number' && tbb == 'string')
-      {
-        if (aa == 0)
-          aa = 'NONE';
-      }
-    }
-    result &= compare(aa, bb);
-    if (!result)
-  return false;
-  }
-  return result;
-}
-
-function get_property_chain(ticket, first, rest)
-{
-  var doc;
-  doc = typeof first == "object" ? first : get_individual(ticket, first);
-
-  //  print ('@js ------------------');
-  //  print ('@js #1 doc=', veda.Util.toJson (doc));;
-
-  var doc_first = doc;
-  var field;
-
-  for (var i = 1; i < arguments.length; i++)
-  {
-    field = doc[arguments[i]];
-    if (field && (field[0].type == "Uri" || field[0].type == "Uri"))
-    {
-      doc = get_individual(ticket, field[0].data);
-      //      print ('@js #2 doc=', veda.Util.toJson (doc));;
-      if (!doc) break;
-    }
-  }
-
-  var res = {};
-
-  if (field !== undefined)
-  {
-    res.field = field;
-    res.first = doc_first;
-    res.last = doc;
-  }
-  return res;
-}
-
-function is_exist(individual, field, value)
-{
-  if (!individual)
-    return false;
-  var ff = individual[field];
-  if (ff)
-  {
-    for (var i = 0; i < ff.length; i++)
-    {
-      if (ff[i].data == value)
-        return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Трансформировать указанные индивидуалы по заданным правилам
- *
- * @param ticket сессионный билет
- * @param individuals один или несколько IndividualModel или их идентификаторов
- * @param transform применяемая трансформация
- * @param executor контекст исполнителя
- * @param work_order контекст рабочего задания
- * @returns {Array}
- */
-function transformation(ticket, individuals, transform, executor, work_order, process)
-{
-  try
-  {
-    var out_data0 = {};
-
-    if (Array.isArray(individuals) !== true)
-    {
-      individuals = [individuals];
-    }
-
-    var rules = transform['v-wf:transformRule'];
-
-    if (!rules || !rules.length)
-      return;
-
-    //print ("@B start transform");
-    var tmp_rules = [];
-    //print ("rules_in=", veda.Util.toJson (rules));
-    //print ("individuals=", veda.Util.toJson (individuals));
-    for (var i in rules)
-    {
-      var rul = get_individual(ticket, rules[i].data);
-      if (!rul)
-      {
-        print("not read rule [", veda.Util.toJson(rul), "]");
-        continue;
-      }
-      else
-        tmp_rules.push(rul);
-    }
-    rules = tmp_rules;
-
-    var out_data0_el = {};
-
-    /* PUT functions [BEGIN] */
-    var putFieldOfIndividFromElement = (function()
-    {
-      return function(name, field)
-      {
-        var rr = get_individual(ticket, getUri(element));
-        if (!rr)
-          return;
-
-        var out_data0_el_arr;
-
-        out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        out_data0_el_arr.push(rr[field]);
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putFieldOfObject = (function()
-    {
-      return function(name, field)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-        out_data0_el_arr.push(individual[field]);
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putUri = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Uri"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var setUri = function(name, value)
-    {
-      out_data0_el[name] = [
-      {
-        data: value,
-        type: "Uri"
-      }];
-    };
-
-    var putString = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "String"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var setString = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "String"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var setDatetime = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Datetime"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putDatetime = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Datetime"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putBoolean = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Boolean"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var setBoolean = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Boolean"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-
-    var putInteger = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Integer"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var setInteger = (function()
-    {
-      return function(name, value)
-      {
-        var out_data0_el_arr;
-
-        out_data0_el_arr = [];
-
-        out_data0_el_arr.push(
-        {
-          data: value,
-          type: "Integer"
-        });
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putExecutor = (function()
-    {
-      return function(name)
-      {
-        var out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        if (Array.isArray(executor) === true)
-        {
-          for (var key3 in executor)
-          {
-            out_data0_el_arr.push(executor[key3]);
-          }
-        }
-        else
-          out_data0_el_arr.push(executor);
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putWorkOrder = (function()
-    {
-      return function(name)
-      {
-        var out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        if (Array.isArray(work_order) === true)
-        {
-          for (var key3 in work_order)
-          {
-            out_data0_el_arr.push(work_order[key3]);
-          }
-        }
-        else
-          out_data0_el_arr.push(work_order);
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var putThisProcess = (function()
-    {
-      return function(name)
-      {
-        var out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        if (Array.isArray(process) === true)
-        {
-          for (var key3 in process)
-          {
-            out_data0_el_arr.push(process[key3]);
-          }
-        }
-        else
-          out_data0_el_arr.push(process);
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    var removeThisProcess = (function()
-    {
-      return function(name)
-      {
-        var out_data0_el_arr = out_data0_el[name];
-
-        if (!out_data0_el_arr)
-          out_data0_el_arr = [];
-
-        if (Array.isArray(process) === true)
-        {
-          for (var key3 in process)
-          {
-            out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process[key3];});
-          }
-        }
-        else
-        {
-          out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process;});
-        }
-
-        out_data0_el[name] = out_data0_el_arr;
-      };
-    })();
-
-    /* PUT functions [END] */
-
-    for (var key in individuals)
-    {
-      //print("#1 key=", key);
-      var individual = individuals[key];
-
-      //print("#1.1 key=", key);
-      var objectContentStrValue = (function()
-      {
-        return function(name, value)
-        {
-          if (individual[name])
-          {
-            var result = false;
-            for (var i in individual[name])
-            {
-              if (value === individual[name][i].data)
-              {
-                result = true;
-              }
-            }
-            return result;
-          }
-        };
-      })();
-
-      var iteratedObject = Object.keys(individual);
-
-      for (var key2 = 0; key2 < iteratedObject.length; key2++)
-      {
-        var element = individual[iteratedObject[key2]];
-
-        var putValue = (function()
-        {
-          return function(name)
-          {
-            var out_data0_el_arr = out_data0_el[name];
-
-            if (!out_data0_el_arr)
-              out_data0_el_arr = [];
-
-            if (iteratedObject[key2] == '@')
-            {
-              out_data0_el_arr.push(
-              {
-                data: element,
-                type: "Uri"
-              });
-            }
-            else
-            {
-              if (Array.isArray(element) === true)
-              {
-                for (var key3 in element)
-                {
-                  out_data0_el_arr.push(element[key3]);
-                }
-              }
-              else
-                out_data0_el_arr.push(element);
-            }
-
-            out_data0_el[name] = out_data0_el_arr;
-          };
-        })();
-
-        var putValueFrom = (function()
-        {
-          return function(name, path, transform)
-          {
-            var out_data0_el_arr = out_data0_el[name];
-            if (!out_data0_el_arr)
-              out_data0_el_arr = [];
-
-            var element_uri;
-
-            if (Array.isArray(element) === true)
-              element_uri = getUri (element);
-            else
-              element_uri = element.data ? element.data : element;
-
-            var curelem;
-
-            curelem = get_individual(ticket, element_uri);
-
-            for (var i = 0; i < path.length - 1; i++)
-            {
-              if (!curelem || !curelem[path[i]]) return;
-              var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
-              curelem = get_individual(ticket, uri);
-            }
-            if (!curelem || !curelem[path[path.length - 1]]) return;
-
-            out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
-
-            out_data0_el[name] = out_data0_el_arr;
-          };
-        })();
-
-        var putFrontValue = (function()
-        {
-          return function(name)
-          {
-            var out_data0_el_arr = out_data0_el[name];
-
-            if (!out_data0_el_arr)
-              out_data0_el_arr = [];
-            if (iteratedObject[key2] == '@')
-            {
-              out_data0_el_arr.unshift(
-              {
-                data: element,
-                type: "Uri"
-              });
-            }
-            else
-            {
-              if (Array.isArray(element) === true)
-              {
-                for (var key3 in element)
-                {
-                  out_data0_el_arr.unshift(element[key3]);
-                }
-              }
-              else
-                out_data0_el_arr.unshift(element);
-            }
-
-            out_data0_el[name] = out_data0_el_arr;
-          };
-        })();
-
-        var putElement = (function()
-        {
-          return function()
-          {
-            var name = iteratedObject[key2];
-            if (name == '@')
-              return;
-
-            var out_data0_el_arr = [];
-            out_data0_el_arr = out_data0_el[name];
-
-            if (!out_data0_el_arr)
-              out_data0_el_arr = [];
-
-            if (Array.isArray(element) === true)
-            {
-              for (var key3 in element)
-              {
-                out_data0_el_arr.push(element[key3]);
-              }
-            }
-            else
-              out_data0_el_arr.push(element);
-
-            out_data0_el[name] = out_data0_el_arr;
-          };
-        })();
-
-        /* Segregate functions [BEGIN] */
-        var contentName = (function()
-        {
-          return function(name)
-          {
-            return iteratedObject[key2] == name;
-          };
-        })();
-
-        var elementContentStrValue = (function()
-        {
-          return function(name, value)
-          {
-            if (iteratedObject[key2] !== name)
-              return false;
-            var str = element[0].data;
-            if (str == value)
-              return true;
-            else
-              return false;
-          };
-        })();
-        /* Segregate functions [END] */
-
-        var getElement = (function()
-        {
-          return function()
-          {
-            return element;
-          };
-        })();
-
-
-        // выполняем все rules
-        for (var key3 in rules)
-        {
-          var rule = rules[key3];
-          // 1. v-wf:segregateObject
-          var segregateObject = rule['v-wf:segregateObject'];
-
-          // 2. v-wf:segregateElement
-          var segregateElement = rule['v-wf:segregateElement'];
-          var grouping = rule['v-wf:grouping'];
-
-          var res = undefined;
-
-          if (segregateObject)
-          {
-            res = eval(segregateObject[0].data);
-            if (res == false)
-              continue;
-          }
-
-          if (segregateElement)
-          {
-            res = eval(segregateElement[0].data);
-            if (res == false)
-              continue;
-          }
-
-          // 3. v-wf:aggregate
-          var group_key;
-          if (!grouping)
-          {
-            out_data0_el = {};
-            out_data0_el['@'] = veda.Util.genUri() + "-tr";
-          }
-          else
-          {
-            var useExistsUid = false;
-            for (var i in grouping)
-            {
-              var gk = grouping[i].data;
-              if (gk == '@')
-                useExistsUid = true;
-              else
-                group_key = gk;
-            }
-
-            out_data0_el = out_data0[group_key];
-            if (!out_data0_el)
-            {
-              out_data0_el = {};
-              if (useExistsUid)
-                out_data0_el['@'] = individual['@'];
-              else
-                out_data0_el['@'] = veda.Util.genUri() + "-tr";
-            }
-          }
-
-          var agregate = rule['v-wf:aggregate'];
-          for (var i2 = 0; i2 < agregate.length; i2++)
-          {
-            eval(agregate[i2].data);
-          }
-
-          if (!grouping)
-          {
-            out_data0[out_data0_el['@']] = out_data0_el;
-          }
-          else
-          {
-            out_data0[group_key] = out_data0_el;
-          }
-        }
-      }
-    }
-
-    var out_data = [];
-    for (var key in out_data0)
-    {
-      out_data.push(out_data0[key]);
-    }
-
-    return out_data;
-  }
-  catch (e)
-  {
-    if (typeof window === "undefined")
-    {
-      print(e.stack);
-    }
-    else
-    {
-      console.log(e.stack);
-    }
-  }
-}
-
-
-/**
- * General function for getNextValue method for numerators
- *
- * @param ticket
- * @param scope - numerator scope
- * @param FIRST_VALUE - first value in scope
- * @returns
- */
-function getNextValueSimple(ticket, scope, FIRST_VALUE)
-{
-  if (typeof scope == 'string')
-  {
-    try
-    {
-      if (typeof window === 'undefined') {
-        scope = get_individual(ticket, scope);
-      } else {
-        scope = new veda.IndividualModel(scope, false);
-      }
-    }
-    catch (e)
-    {
-      return ''+FIRST_VALUE;
-    }
-  }
-  if (typeof scope === 'undefined' || !scope['v-s:numerationCommitedInterval'] || scope['v-s:numerationCommitedInterval'].length == 0)
-  {
-    return ''+FIRST_VALUE;
-  }
-  var max = 0;
-
-  if (typeof window === 'undefined')
-  {
-    scope['v-s:numerationCommitedInterval'].forEach(function(interval)
-    {
-      interval = get_individual(ticket, interval.data);
-      if (interval['v-s:numerationCommitedIntervalEnd'][0].data > max)
-      {
-        max = interval['v-s:numerationCommitedIntervalEnd'][0].data;
-      }
-    });
-  }
-  else
-  {
-    scope['v-s:numerationCommitedInterval'].forEach(function(interval)
-    {
-      interval = new veda.IndividualModel(interval.id, false);
-      if (interval['v-s:numerationCommitedIntervalEnd'][0] > max)
-      {
-        max = interval['v-s:numerationCommitedIntervalEnd'][0];
-      }
-    });
-  }
-  return ''+(max + 1);
-}
-
-function isNumerationValueAvailable(scope, value)
-{
-  if (typeof scope === 'string')
-  {
-    scope = new veda.IndividualModel(scope, false);
-  }
-  if (typeof window === 'undefined')
-  {
-    throw "not implemented";
-  }
-  else
-  {
-    if (typeof scope === 'undefined' || typeof scope['v-s:numerationCommitedInterval'] === 'undefined') return true;
-    for (var i = 0; i < scope['v-s:numerationCommitedInterval'].length; i++)
-    {
-      var interval = new veda.IndividualModel(scope['v-s:numerationCommitedInterval'][i].id, false);
-      if (interval['v-s:numerationCommitedIntervalBegin'][0] <= value && value <= interval['v-s:numerationCommitedIntervalEnd'][0])
-      {
-        return false;
-        //max = interval['v-s:numerationCommitedIntervalEnd'][0];
-      }
-    }
-    return true;
-  }
-}
 
 /////////////// rights
 
@@ -1282,6 +417,15 @@ veda.Module(function Util(veda) { "use strict";
 
 // ---------------------------------------------------------------------
 
+//  veda.Util.hasValue = function(individual, property, value)
+//  {
+//    var any = !!(individual && individual[property] && individual[property].length);
+//    if (!value) return any;
+//    return !!(any && individual[property].filter( function(i) {
+//        return (i.type === value.type && i.data === value.data);
+//    }).length);
+//  }
+
   veda.Util.toJson = function (value) {
     return JSON.stringify(value, null, 2);
   }
@@ -1450,7 +594,7 @@ veda.Module(function Util(veda) { "use strict";
   };
 
   veda.Util.applyTransform = function (individualList, transform) {
-    return transformation(veda.ticket, individualList, transform, null, null);
+    return veda.Util.transformation(veda.ticket, individualList, transform, null, null);
   };
 
   veda.Util.forSubIndividual = function (net, property, id, func) {
@@ -1522,7 +666,7 @@ veda.Module(function Util(veda) { "use strict";
     var allProps = Object.getOwnPropertyNames(flat)
       .map(function (property_uri) {
         if (property_uri === "@" || property_uri === "v-s:isDraft") { return; }
-        var values = flat[property_uri].sort(function compare(a, b) {
+        var values = flat[property_uri].sort(function (a, b) {
           return a.data < b.data ? - 1 : a.data === b.data ? 0 : 1;
         });
         var oneProp;
@@ -1626,5 +770,658 @@ veda.Module(function Util(veda) { "use strict";
     startForm.isSync(false);
     return startForm;
   };
+
+  /**
+   * Трансформировать указанные индивидуалы по заданным правилам
+   *
+   * @param ticket сессионный билет
+   * @param individuals один или несколько IndividualModel или их идентификаторов
+   * @param transform применяемая трансформация
+   * @param executor контекст исполнителя
+   * @param work_order контекст рабочего задания
+   * @returns {Array}
+   */
+  veda.Util.transformation = function (ticket, individuals, transform, executor, work_order, process)
+  {
+    try
+    {
+      var out_data0 = {};
+
+      if (Array.isArray(individuals) !== true)
+      {
+        individuals = [individuals];
+      }
+
+      var rules = transform['v-wf:transformRule'];
+
+      if (!rules || !rules.length)
+        return;
+
+      //print ("@B start transform");
+      var tmp_rules = [];
+      //print ("rules_in=", veda.Util.toJson (rules));
+      //print ("individuals=", veda.Util.toJson (individuals));
+      for (var i in rules)
+      {
+        var rul = get_individual(ticket, rules[i].data);
+        if (!rul)
+        {
+          print("not read rule [", veda.Util.toJson(rul), "]");
+          continue;
+        }
+        else
+          tmp_rules.push(rul);
+      }
+      rules = tmp_rules;
+
+      var out_data0_el = {};
+
+      /* PUT functions [BEGIN] */
+      var putFieldOfIndividFromElement = (function()
+      {
+        return function(name, field)
+        {
+          var rr = get_individual(ticket, getUri(element));
+          if (!rr)
+            return;
+
+          var out_data0_el_arr;
+
+          out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          out_data0_el_arr.push(rr[field]);
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putFieldOfObject = (function()
+      {
+        return function(name, field)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+              out_data0_el_arr = [];
+
+          out_data0_el_arr.push(individual[field]);
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putUri = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Uri"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var setUri = function(name, value)
+      {
+        out_data0_el[name] = [
+        {
+          data: value,
+          type: "Uri"
+        }];
+      };
+
+      var putString = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "String"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var setString = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "String"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var setDatetime = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Datetime"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putDatetime = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Datetime"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putBoolean = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Boolean"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var setBoolean = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Boolean"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+
+      var putInteger = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Integer"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var setInteger = (function()
+      {
+        return function(name, value)
+        {
+          var out_data0_el_arr;
+
+          out_data0_el_arr = [];
+
+          out_data0_el_arr.push(
+          {
+            data: value,
+            type: "Integer"
+          });
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putExecutor = (function()
+      {
+        return function(name)
+        {
+          var out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          if (Array.isArray(executor) === true)
+          {
+            for (var key3 in executor)
+            {
+              out_data0_el_arr.push(executor[key3]);
+            }
+          }
+          else
+            out_data0_el_arr.push(executor);
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putWorkOrder = (function()
+      {
+        return function(name)
+        {
+          var out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          if (Array.isArray(work_order) === true)
+          {
+            for (var key3 in work_order)
+            {
+              out_data0_el_arr.push(work_order[key3]);
+            }
+          }
+          else
+            out_data0_el_arr.push(work_order);
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var putThisProcess = (function()
+      {
+        return function(name)
+        {
+          var out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          if (Array.isArray(process) === true)
+          {
+            for (var key3 in process)
+            {
+              out_data0_el_arr.push(process[key3]);
+            }
+          }
+          else
+            out_data0_el_arr.push(process);
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      var removeThisProcess = (function()
+      {
+        return function(name)
+        {
+          var out_data0_el_arr = out_data0_el[name];
+
+          if (!out_data0_el_arr)
+            out_data0_el_arr = [];
+
+          if (Array.isArray(process) === true)
+          {
+            for (var key3 in process)
+            {
+              out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process[key3];});
+            }
+          }
+          else
+          {
+            out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process;});
+          }
+
+          out_data0_el[name] = out_data0_el_arr;
+        };
+      })();
+
+      /* PUT functions [END] */
+
+      for (var key in individuals)
+      {
+        //print("#1 key=", key);
+        var individual = individuals[key];
+
+        //print("#1.1 key=", key);
+        var objectContentStrValue = (function()
+        {
+          return function(name, value)
+          {
+            if (individual[name])
+            {
+              var result = false;
+              for (var i in individual[name])
+              {
+                if (value === individual[name][i].data)
+                {
+                  result = true;
+                }
+              }
+              return result;
+            }
+          };
+        })();
+
+        var iteratedObject = Object.keys(individual);
+
+        for (var key2 = 0; key2 < iteratedObject.length; key2++)
+        {
+          var element = individual[iteratedObject[key2]];
+
+          var putValue = (function()
+          {
+            return function(name)
+            {
+              var out_data0_el_arr = out_data0_el[name];
+
+              if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+              if (iteratedObject[key2] == '@')
+              {
+                out_data0_el_arr.push(
+                {
+                  data: element,
+                  type: "Uri"
+                });
+              }
+              else
+              {
+                if (Array.isArray(element) === true)
+                {
+                  for (var key3 in element)
+                  {
+                    out_data0_el_arr.push(element[key3]);
+                  }
+                }
+                else
+                  out_data0_el_arr.push(element);
+              }
+
+              out_data0_el[name] = out_data0_el_arr;
+            };
+          })();
+
+          var putValueFrom = (function()
+          {
+            return function(name, path, transform)
+            {
+              var out_data0_el_arr = out_data0_el[name];
+              if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+              var element_uri;
+
+              if (Array.isArray(element) === true)
+                element_uri = getUri (element);
+              else
+                element_uri = element.data ? element.data : element;
+
+              var curelem;
+
+              curelem = get_individual(ticket, element_uri);
+
+              for (var i = 0; i < path.length - 1; i++)
+              {
+                if (!curelem || !curelem[path[i]]) return;
+                var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
+                curelem = get_individual(ticket, uri);
+              }
+              if (!curelem || !curelem[path[path.length - 1]]) return;
+
+              out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
+
+              out_data0_el[name] = out_data0_el_arr;
+            };
+          })();
+
+          var putFrontValue = (function()
+          {
+            return function(name)
+            {
+              var out_data0_el_arr = out_data0_el[name];
+
+              if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+              if (iteratedObject[key2] == '@')
+              {
+                out_data0_el_arr.unshift(
+                {
+                  data: element,
+                  type: "Uri"
+                });
+              }
+              else
+              {
+                if (Array.isArray(element) === true)
+                {
+                  for (var key3 in element)
+                  {
+                    out_data0_el_arr.unshift(element[key3]);
+                  }
+                }
+                else
+                  out_data0_el_arr.unshift(element);
+              }
+
+              out_data0_el[name] = out_data0_el_arr;
+            };
+          })();
+
+          var putElement = (function()
+          {
+            return function()
+            {
+              var name = iteratedObject[key2];
+              if (name == '@')
+                return;
+
+              var out_data0_el_arr = [];
+              out_data0_el_arr = out_data0_el[name];
+
+              if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+              if (Array.isArray(element) === true)
+              {
+                for (var key3 in element)
+                {
+                  out_data0_el_arr.push(element[key3]);
+                }
+              }
+              else
+                out_data0_el_arr.push(element);
+
+              out_data0_el[name] = out_data0_el_arr;
+            };
+          })();
+
+          /* Segregate functions [BEGIN] */
+          var contentName = (function()
+          {
+            return function(name)
+            {
+              return iteratedObject[key2] == name;
+            };
+          })();
+
+          var elementContentStrValue = (function()
+          {
+            return function(name, value)
+            {
+              if (iteratedObject[key2] !== name)
+                return false;
+              var str = element[0].data;
+              if (str == value)
+                return true;
+              else
+                return false;
+            };
+          })();
+          /* Segregate functions [END] */
+
+          var getElement = (function()
+          {
+            return function()
+            {
+              return element;
+            };
+          })();
+
+
+          // выполняем все rules
+          for (var key3 in rules)
+          {
+            var rule = rules[key3];
+            // 1. v-wf:segregateObject
+            var segregateObject = rule['v-wf:segregateObject'];
+
+            // 2. v-wf:segregateElement
+            var segregateElement = rule['v-wf:segregateElement'];
+            var grouping = rule['v-wf:grouping'];
+
+            var res = undefined;
+
+            if (segregateObject)
+            {
+              res = eval(segregateObject[0].data);
+              if (res == false)
+                continue;
+            }
+
+            if (segregateElement)
+            {
+              res = eval(segregateElement[0].data);
+              if (res == false)
+                continue;
+            }
+
+            // 3. v-wf:aggregate
+            var group_key;
+            if (!grouping)
+            {
+              out_data0_el = {};
+              out_data0_el['@'] = veda.Util.genUri() + "-tr";
+            }
+            else
+            {
+              var useExistsUid = false;
+              for (var i in grouping)
+              {
+                var gk = grouping[i].data;
+                if (gk == '@')
+                  useExistsUid = true;
+                else
+                  group_key = gk;
+              }
+
+              out_data0_el = out_data0[group_key];
+              if (!out_data0_el)
+              {
+                out_data0_el = {};
+                if (useExistsUid)
+                  out_data0_el['@'] = individual['@'];
+                else
+                  out_data0_el['@'] = veda.Util.genUri() + "-tr";
+              }
+            }
+
+            var agregate = rule['v-wf:aggregate'];
+            for (var i2 = 0; i2 < agregate.length; i2++)
+            {
+              eval(agregate[i2].data);
+            }
+
+            if (!grouping)
+            {
+              out_data0[out_data0_el['@']] = out_data0_el;
+            }
+            else
+            {
+              out_data0[group_key] = out_data0_el;
+            }
+          }
+        }
+      }
+
+      var out_data = [];
+      for (var key in out_data0)
+      {
+        out_data.push(out_data0[key]);
+      }
+
+      return out_data;
+    }
+    catch (e)
+    {
+      if (typeof window === "undefined")
+      {
+        print(e.stack);
+      }
+      else
+      {
+        console.log(e.stack);
+      }
+    }
+  }
 
 });
