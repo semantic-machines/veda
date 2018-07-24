@@ -525,7 +525,7 @@ function onto_rename(ticket, document, execute_script)
         var is_update = false;
         var is_replace = false;
         var prev_doc_uri = document['@'];
-        var prev_doc = clone(document);
+        var prev_doc = veda.Util.clone(document);
         var from_2_to = {};
 
         for (var idx in rename_template)

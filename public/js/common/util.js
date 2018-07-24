@@ -10,9 +10,6 @@ function hasValue(individual, property, value)
   }).length);
 }
 
-
-/////////////// rights
-
 function newUri(uri)
 {
   return [{
@@ -115,14 +112,6 @@ function getUri(field)
   }
 }
 
-function getData(field)
-{
-  if (field && field.length > 0)
-  {
-    return field[0].data;
-  }
-}
-
 function getFirstValue(field)
 {
   if (field && field.length > 0)
@@ -148,8 +137,8 @@ function getFirstValueUseLang(field, lang)
   return null;
 }
 
-//
 
+///////////////// rights
 
 /// Создание
 var can_create = 1;
@@ -293,42 +282,6 @@ function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
   //print("ADD RIGHT:", veda.Util.toJson(permission));
   return [permission, res];
 }
-
-function clone(obj)
-{
-  var copy;
-
-  // Handle the 3 simple types, and null or undefined
-  if (null == obj || "object" != typeof obj) return obj;
-
-  // Handle Date
-  if (obj instanceof Date) {
-    copy = new Date();
-    copy.setTime(obj.getTime());
-    return copy;
-  }
-
-  // Handle Array
-  if (obj instanceof Array) {
-    copy = [];
-    for (var i = 0, len = obj.length; i < len; i++) {
-      copy[i] = clone(obj[i]);
-    }
-    return copy;
-  }
-
-  // Handle Object
-  if (obj instanceof Object) {
-    copy = {};
-    for (var attr in obj) {
-      if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-    }
-    return copy;
-  }
-
-  throw new Error("Unable to copy obj! Its type isn't supported.");
-}
-
 
 // Veda common utility functions----------------------------------------
 
@@ -1428,6 +1381,47 @@ veda.Module(function Util(veda) { "use strict";
       }
       return "";
     }
+  }
+
+  veda.Util.clone = function (obj) {
+    var copy;
+
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" !== typeof obj) {
+
+      return obj;
+
+    } else if (obj instanceof Date) {
+
+      // Handle Date
+      copy = new Date();
+      copy.setTime(obj.getTime());
+      return copy;
+
+    } else if (obj instanceof Array) {
+
+      // Handle Array
+      copy = [];
+      for (var i = 0, len = obj.length; i < len; i++) {
+        copy[i] = veda.Util.clone(obj[i]);
+      }
+      return copy;
+
+    } else if (obj instanceof Object) {
+
+      // Handle Object
+      copy = {};
+      for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = veda.Util.clone(obj[attr]);
+      }
+      return copy;
+
+    } else {
+
+      throw new Error("Unable to copy obj! Its type isn't supported.");
+
+    }
+
   }
 
 });
