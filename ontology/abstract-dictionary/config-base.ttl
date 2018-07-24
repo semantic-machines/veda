@@ -500,23 +500,36 @@ owner_properties.map(function (property_uri) {
     if (owner) {
       var owner_type = getUri(owner["rdf:type"]);
       if (owner_type === "v-s:Person" || owner_type === "v-s:Position") {
-        var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + owner_uri.split(':').join('_') + "_event2";
-        addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, right_uri);
+        var permission_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + owner_uri.split(':').join('_') + "_event2";
+        addPermission(permission_uri, owner_uri, doc_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
       } else if (owner_type === "v-s:Appointment") {
         var position_uri = getUri(owner["v-s:occupation"]);
         if (position_uri) {
-          var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + position_uri.split(':').join('_') + "_event2";
-          addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, right_uri);
+          var permission_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + position_uri.split(':').join('_') + "_event2";
+          addPermission(permission_uri, position_uri, doc_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
         }
         var person_uri = getUri(owner["v-s:employee"]);
         if (person_uri) {
-          var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + person_uri.split(':').join('_') + "_event2";
-          addRight(ticket, [can_read, can_update, can_delete], person_uri, doc_uri, right_uri);
+          var permission_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + person_uri.split(':').join('_') + "_event2";
+          addPermission(permission_uri, person_uri, doc_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
         }
       }
     }
   }
 });
+
+function addPermission(permission_uri, subject_uri, object_uri, rights) {
+  var permission = {
+    '@': permission_uri,
+    'rdf:type': newUri('v-s:PermissionStatement'),
+    'v-s:permissionObject': newUri(object_uri),
+    'v-s:permissionSubject': newUri(subject_uri)
+  };
+  rights.map(function (right) {
+    permission[right] = newBool(true);
+  });
+  put_individual(ticket, permission);
+}
   """ ;
 .
 
@@ -605,7 +618,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     }
     journal_record['v-s:actor'] = actor;
     logToJournal(ticket, journal_uri, journal_record);
-    addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
+    veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_record['@'], ["v-s:canRead"]);
   }
   else
   {
@@ -626,7 +639,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     };
     put_individual(ticket, new_journal, _event_id);
 
-    addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_uri);
+    veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_uri, ["v-s:canRead"]);
 
     var journal_record = newJournalRecord(new_journal['@']);
     if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
@@ -640,7 +653,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     }];
     journal_record['v-s:actor'] = actor;
     logToJournal(ticket, journal_uri, journal_record);
-    addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
+    veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_record['@'], ["v-s:canRead"]);
   }
 }
   """ ;

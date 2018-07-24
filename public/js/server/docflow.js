@@ -411,18 +411,18 @@ function prepare_work_order(ticket, document)
                                 if (employee)
                                 {
                                     //print("[WORKFLOW][WO2.2] employee=" + veda.Util.toJson(employee));
-                                    addRight(ticket, [can_read, can_update], employee[0].data, transform_result[i]['@']);
+                                    veda.Util.addRight(ticket, employee[0].data, transform_result[i]['@'], ["v-s:canRead", "v-s:canUpdate"]);
                                 }
                                 var position = executor['v-s:occupation'];
                                 if (position)
                                 {
                                     //print("[WORKFLOW][WO2.2] position=" + veda.Util.toJson(position));
-                                    addRight(ticket, [can_read, can_update], position[0].data, transform_result[i]['@']);
+                                    veda.Util.addRight(ticket, position[0].data, transform_result[i]['@'], ["v-s:canRead", "v-s:canUpdate"]);
                                 }
                             }
                             if (is_position)
                             {
-                                addRight(ticket, [can_read, can_update], executor['@'], transform_result[i]['@']);
+                                veda.Util.addRight(ticket, executor['@'], transform_result[i]['@'], ["v-s:canRead", "v-s:canUpdate"]);
                             }
                         }
                     }
@@ -966,7 +966,7 @@ function prepare_work_item(ticket, document)
             for (var i = 0; i < work_order_list.length; i++)
             {
                 put_individual(ticket, work_order_list[i], _event_id);
-                addRight(ticket, [can_read], "v-wf:WorkflowReadUser", work_order_list[i]['@']);
+                veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", work_order_list[i]['@'], ["v-s:canRead"]);
             }
 
         } // end [Task]
@@ -1164,7 +1164,7 @@ function prepare_process(ticket, document)
             data: new_variable['@'],
             type: "Uri"
           });
-          addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
+          veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_variable['@'], ["v-s:canRead"]);
         }
       }
     }
@@ -1318,7 +1318,7 @@ function prepare_start_form(ticket, document)
                 type: "Uri"
             });
 
-            addRight(ticket, [can_read], "v-wf:WorkflowReadUser", process_inVars[i]['@']);
+            veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", process_inVars[i]['@'], ["v-s:canRead"]);
         }
     }
 
@@ -1400,7 +1400,7 @@ function prepare_start_form(ticket, document)
 
     // возьмем автора формы и выдадим ему полные права на процесс
     if (author_uri)
-        addRight(ticket, [can_read, can_update, can_delete], author_uri, new_process_uri);
+        veda.Util.addRight(ticket, author_uri, new_process_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
 
-    addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_process_uri);
+    veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_process_uri, ["v-s:canRead"]);
 }

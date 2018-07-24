@@ -24,14 +24,14 @@ function change_rights_actor(process, task, rightset, actor)
         var doc_id = process.getInputVariable('docId');
         //print ("@JS doc_id=", veda.Util.toJson (doc_id));
         //print ("@JS rightset=", veda.Util.toJson (rightset));
-        var rset = [];
+        var allow_set = [];
         if (rightset[0].data.indexOf('r') >= 0)
         {
-            rset.push(can_read);
+            allow_set.push("v-s:canRead");
         }
         if (rightset[0].data.indexOf('u') >= 0)
         {
-            rset.push(can_update);
+            allow_set.push("v-s:canUpdate");
         }
 
         if (doc_id)
@@ -57,7 +57,7 @@ function change_rights_actor(process, task, rightset, actor)
                 var employee_uri = getUri(employee);
 
                 if (employee_uri)
-                    addRight(ticket, rset, employee_uri, getUri(doc_id));
+                    veda.Util.addRight(ticket, employee_uri, getUri(doc_id), allow_set);
                 else
                     print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
             }
@@ -76,7 +76,7 @@ function change_rights_actor(process, task, rightset, actor)
             {
                 var executor_uri = getUri(executor);
                 if (executor_uri)
-                    addRight(ticket, rset, executor_uri, getUri(doc_id));
+                    veda.Util.addRight(ticket, executor_uri, getUri(doc_id), allow_set);
                 else
                     print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
             }

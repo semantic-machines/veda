@@ -50,7 +50,7 @@ function create_work_item(ticket, process_uri, net_element_uri, parent_uri, _eve
 
         put_individual(ticket, new_work_item, _event_id);
 
-        addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_uri);
+        veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_uri, ["v-s:canRead"]);
 
         return new_uri;
     }
@@ -418,7 +418,7 @@ function store_items_and_set_minimal_rights(ticket, data)
                 type: "Uri"
             });
 
-            addRight(ticket, [can_read], "v-wf:WorkflowReadUser", data[i]['@']);
+            veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", data[i]['@'], ["v-s:canRead"]);
         }
         return ids;
     }
@@ -599,7 +599,7 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                                 data: new_variable['@'],
                                 type: "Uri"
                             });
-                            addRight(ticket, [can_read], "v-wf:WorkflowReadUser", new_variable['@']);
+                            veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_variable['@'], ["v-s:canRead"]);
 
                         }
                         else

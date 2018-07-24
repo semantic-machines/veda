@@ -128,87 +128,6 @@ function getFirstValueUseLang(field, lang)
   return null;
 }
 
-
-///////////////// rights
-
-/// Создание
-var can_create = 1;
-
-/// Чтение
-var can_read = 2;
-
-/// Изменеие
-var can_update = 4;
-
-/// Удаление
-var can_delete = 8;
-
-/// Запрет создания
-var cant_create = 16;
-
-/// Запрет чтения
-var cant_read = 32;
-
-/// Запрет обновления
-var cant_update = 64;
-
-/// Запрет удаления
-var cant_delete = 128;
-
-
-function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
-
-  if (subj_uri === undefined || obj_uri === undefined) {
-    var error = new Error();
-    if (typeof window === "undefined") {
-      print("ERR! addRight: INVALID ARGS IN");
-      print("subj_uri=", subj_uri);
-      print("obj_uri=", obj_uri);
-      print("Error stack:", error.stack);
-    } else {
-      console.log("ERR! addRight: INVALID ARGS IN");
-      console.log("subj_uri =", subj_uri);
-      console.log("obj_uri =", obj_uri);
-      console.log("Error stack:", error.stack);
-    }
-    return;
-  }
-
-  var uri = right_uri || veda.Util.genUri() + "-r";
-
-  var permission = {
-    '@': uri,
-    'rdf:type': newUri('v-s:PermissionStatement'),
-    'v-s:permissionObject': newUri(obj_uri),
-    'v-s:permissionSubject': newUri(subj_uri)
-  };
-
-  for (var i = 0; i < rights.length; i++) {
-    if (rights[i] === can_read) {
-      permission['v-s:canRead'] = newBool(true);
-    } else if (rights[i] === can_update) {
-      permission['v-s:canUpdate'] = newBool(true);
-    } else if (rights[i] === can_delete) {
-      permission['v-s:canDelete'] = newBool(true);
-    } else if (rights[i] === can_create) {
-      permission['v-s:canCreate'] = newBool(true);
-    } else if (rights[i] === cant_read) {
-      permission['v-s:canRead'] = newBool(false);
-    } else if (rights[i] === cant_update) {
-      permission['v-s:canUpdate'] = newBool(false);
-    } else if (rights[i] === cant_delete) {
-      permission['v-s:canDelete'] = newBool(false);
-    } else if (rights[i] === cant_create) {
-      permission['v-s:canCreate'] = newBool(false);
-    }
-  }
-
-  var res = put_individual(ticket, permission, typeof _event_id !== "undefined" ? _event_id : undefined);
-
-  //print("ADD RIGHT:", veda.Util.toJson(permission));
-  return [permission, res];
-}
-
 // Veda common utility functions----------------------------------------
 
 veda.Module(function Util(veda) { "use strict";
@@ -1385,6 +1304,37 @@ veda.Module(function Util(veda) { "use strict";
 
     var res = put_individual(ticket, new_membership);
     return [new_membership, res];
+  }
+
+  veda.Util.addRight = function (ticket, subj_uri, obj_uri, allow, deny) {
+
+    if (subj_uri === undefined || obj_uri === undefined) {
+      var error = new Error("veda.Util.addRight: INVALID ARGS");
+      console.log("subj_uri =", subj_uri);
+      console.log("obj_uri =", obj_uri);
+      console.log("Error stack:", error.stack);
+      return;
+    }
+
+    var uri = veda.Util.genUri() + "-r";
+
+    var permission = {
+      '@': uri,
+      'rdf:type': newUri('v-s:PermissionStatement'),
+      'v-s:permissionObject': newUri(obj_uri),
+      'v-s:permissionSubject': newUri(subj_uri)
+    };
+
+    (allow || []).forEach(function (right) {
+      permission[right] = newBool(true);
+    });
+
+    (deny || []).forEach(function (right) {
+      permission[right] = newBool(false);
+    });
+
+    var res = put_individual(ticket, permission);
+    return [permission, res];
   }
 
 });
