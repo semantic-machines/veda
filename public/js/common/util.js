@@ -1368,8 +1368,8 @@ veda.Module(function Util(veda) { "use strict";
       new_membership[right] = newBool(false);
     });
 
-    put_individual(ticket, new_membership);
-
+    var res = put_individual(ticket, new_membership);
+    return [new_membership, res];
   }
 
   veda.Util.removeFromGroup = function (ticket, group, resource) {
@@ -1383,8 +1383,8 @@ veda.Module(function Util(veda) { "use strict";
       'v-s:deleted': newBool(true)
     };
 
-    put_individual(ticket, new_membership);
-
+    var res = put_individual(ticket, new_membership);
+    return [new_membership, res];
   }
 
 });
