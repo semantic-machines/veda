@@ -80,12 +80,12 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		individual := make(map[string]interface{})
 		individual["@"] = uri
-		individual["rdf:type"] = map[string]interface{}{"data": "v-s:AppInfo", "type": "Uri"}
-		individual["v-s:created"] = map[string]interface{}{"data": time.Now().Format("2006-01-02T15:04:05Z"),
-			"type": "Datetime"}
-		individual["srv:queue"] = map[string]interface{}{"data": "srv:" + queueName, "type": "Uri"}
-		individual["srv:total_count"] = map[string]interface{}{"data": main_queue.count_pushed, "type": "Integer"}
-		individual["srv:current_count"] = map[string]interface{}{"data": main_cs.count_popped, "type": "Integer"}
+		individual["rdf:type"] = []map[string]interface{}{{"data": "v-s:AppInfo", "type": "Uri"}}
+		individual["v-s:created"] = []map[string]interface{}{{"data": time.Now().Format("2006-01-02T15:04:05Z"),
+			"type": "Datetime"}}
+		individual["srv:queue"] = []map[string]interface{}{{"data": "srv:" + queueName, "type": "Uri"}}
+		individual["srv:total_count"] = []map[string]interface{}{{"data": main_queue.count_pushed, "type": "Integer"}}
+		individual["srv:current_count"] = []map[string]interface{}{{"data": main_cs.count_popped, "type": "Integer"}}
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
 			log.Println("ERR! GET_INDIVIDUAL: #1 ENCODING INDIVIDUAL TO JSON ", err)
