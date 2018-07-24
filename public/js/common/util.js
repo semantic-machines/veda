@@ -155,71 +155,6 @@ var cant_update = 64;
 /// Запрет удаления
 var cant_delete = 128;
 
-function addToGroup(ticket, group, resource, rights, new_uri)
-{
-  if (new_uri)
-  {
-    var prev = get_individual(ticket, new_uri);
-    if (prev)
-    {
-      //print ("JS: GROUP ALREADY EXISTS");
-      return;
-    }
-  }
-
-  if (!new_uri)
-  new_uri = veda.Util.genUri() + "-gr";
-
-  var new_membership_uri = veda.Util.genUri() + "-mbh";
-  var new_membership = {
-    '@': new_membership_uri,
-    'rdf:type': newUri('v-s:Membership'),
-    'v-s:memberOf': newUri(group),
-    'v-s:resource': newUri(resource)
-  };
-
-  if (rights) {
-    for (var i = 0; i < rights.length; i++)
-    {
-      if (rights[i] === can_read) {
-        new_membership['v-s:canRead'] = newBool(true);
-      } else if (rights[i] === can_update) {
-        new_membership['v-s:canUpdate'] = newBool(true);
-      } else if (rights[i] === can_delete) {
-        new_membership['v-s:canDelete'] = newBool(true);
-      } else if (rights[i] === can_create) {
-        new_membership['v-s:canCreate'] = newBool(true);
-      } else if (rights[i] === cant_read) {
-        new_membership['v-s:canRead'] = newBool(false);
-      } else if (rights[i] === cant_update) {
-        new_membership['v-s:canUpdate'] = newBool(false);
-      } else if (rights[i] === cant_delete) {
-        new_membership['v-s:canDelete'] = newBool(false);
-      } else if (rights[i] === cant_create) {
-        new_membership['v-s:canCreate'] = newBool(false);
-      }
-    }
-  }
-
-  var res = put_individual(ticket, new_membership, typeof _event_id !== "undefined" ? _event_id : undefined);
-
-  return [new_membership, res];
-}
-
-function removeFromGroup(ticket, group, resource)
-{
-  var new_membership_uri = veda.Util.genUri() + "-mbh";
-  var new_membership = {
-    '@': new_membership_uri,
-    'rdf:type': newUri('v-s:Membership'),
-    'v-s:memberOf': newUri(group),
-    'v-s:resource': newUri(resource),
-    'v-s:deleted': newBool(true)
-  };
-  var res = put_individual(ticket, new_membership, typeof _event_id !== "undefined" ? _event_id : undefined);
-
-  return [new_membership, res];
-}
 
 function addRight(ticket, rights, subj_uri, obj_uri, right_uri) {
 
@@ -1412,6 +1347,43 @@ veda.Module(function Util(veda) { "use strict";
       throw new Error("Unable to copy obj! Its type isn't supported.");
 
     }
+
+  }
+
+  veda.Util.addToGroup = function (ticket, group, resource, allow, deny) {
+
+    var new_membership_uri = veda.Util.genUri() + "-mbh";
+    var new_membership = {
+      '@': new_membership_uri,
+      'rdf:type': newUri('v-s:Membership'),
+      'v-s:memberOf': newUri(group),
+      'v-s:resource': newUri(resource)
+    };
+
+    (allow || []).forEach(function (right) {
+      new_membership[right] = newBool(true);
+    });
+
+    (deny || []).forEach(function (right) {
+      new_membership[right] = newBool(false);
+    });
+
+    put_individual(ticket, new_membership);
+
+  }
+
+  veda.Util.removeFromGroup = function (ticket, group, resource) {
+
+    var new_membership_uri = veda.Util.genUri() + "-mbh";
+    var new_membership = {
+      '@': new_membership_uri,
+      'rdf:type': newUri('v-s:Membership'),
+      'v-s:memberOf': newUri(group),
+      'v-s:resource': newUri(resource),
+      'v-s:deleted': newBool(true)
+    };
+
+    put_individual(ticket, new_membership);
 
   }
 

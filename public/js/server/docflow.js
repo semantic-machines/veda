@@ -1277,7 +1277,7 @@ function prepare_start_form(ticket, document)
 
     // Include start form to processed document group
     if ( veda.Util.hasValue(document, "v-wf:processedDocument") ) {
-      addToGroup(ticket, getUri(document["v-wf:processedDocument"]), document["@"], [can_read]);
+      veda.Util.addToGroup(ticket, getUri(document["v-wf:processedDocument"]), document["@"], ["v-s:canRead"]);
     }
 
     var new_process_uri = veda.Util.genUri() + "-prs";
