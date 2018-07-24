@@ -7,14 +7,6 @@ var m_fanout_email = 8;
 var m_scripts = 16;
 var m_fanout_sql = 128;
 
-var _Uri = 'Uri';
-var _String = 'String';
-var _Integer = 'Integer';
-var _Datetime = 'Datetime';
-var _Decimal = 'Decimal';
-var _Bool = 'Boolean';
-var _Boolean = 'Boolean';
-
 function toJson(x)
 {
   return JSON.stringify(x, null, 2);
@@ -89,32 +81,32 @@ function compare(a, b)
     {
       if (tbb == 'number' && taa == 'string')
       {
-        if (bb == _Uri)
+        if (bb == "Uri")
             bb = 'Uri';
-        else if (bb == _String)
+        else if (bb == "String")
             bb = 'String';
-        else if (bb == _Integer)
+        else if (bb == "Integer")
             bb = 'Integer';
-        else if (bb == _Datetime)
+        else if (bb == "Datetime")
             bb = 'Datetime';
-        else if (bb == _Decimal)
+        else if (bb == "Decimal")
             bb = 'Decimal';
-        else if (bb == _Bool)
+        else if (bb == "Boolean")
             bb = 'Boolean';
       }
       else if (taa == 'number' && tbb == 'string')
       {
-        if (aa == _Uri)
+        if (aa == "Uri")
           aa = 'Uri';
-        else if (aa == _String)
+        else if (aa == "String")
           aa = 'String';
-        else if (aa == _Integer)
+        else if (aa == "Integer")
           aa = 'Integer';
-        else if (aa == _Datetime)
+        else if (aa == "Datetime")
           aa = 'Datetime';
-        else if (aa == _Decimal)
+        else if (aa == "Decimal")
           aa = 'Decimal';
-        else if (aa == _Bool)
+        else if (aa == "Boolean")
           aa = 'Boolean';
       }
     }
@@ -159,7 +151,7 @@ function get_property_chain(ticket, first, rest)
   for (var i = 1; i < arguments.length; i++)
   {
     field = doc[arguments[i]];
-    if (field && (field[0].type == "Uri" || field[0].type == _Uri))
+    if (field && (field[0].type == "Uri" || field[0].type == "Uri"))
     {
       doc = get_individual(ticket, field[0].data);
       //      print ('@js #2 doc=', toJson (doc));;
@@ -292,7 +284,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Uri
+          type: "Uri"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -304,7 +296,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
       out_data0_el[name] = [
       {
         data: value,
-        type: _Uri
+        type: "Uri"
       }];
     }
 
@@ -322,7 +314,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _String
+          type: "String"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -340,7 +332,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _String
+          type: "String"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -358,7 +350,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Datetime
+          type: "Datetime"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -379,7 +371,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Datetime
+          type: "Datetime"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -400,7 +392,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Bool
+          type: "Boolean"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -418,7 +410,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Bool
+          type: "Boolean"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -438,7 +430,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Integer
+          type: "Integer"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -456,7 +448,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
         out_data0_el_arr.push(
         {
           data: value,
-          type: _Integer
+          type: "Integer"
         });
 
         out_data0_el[name] = out_data0_el_arr;
@@ -604,7 +596,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               out_data0_el_arr.push(
               {
                 data: element,
-                type: _Uri
+                type: "Uri"
               });
             }
             else
@@ -670,7 +662,7 @@ function transformation(ticket, individuals, transform, executor, work_order, pr
               out_data0_el_arr.unshift(
               {
                 data: element,
-                type: _Uri
+                type: "Uri"
               });
             }
             else
@@ -936,7 +928,7 @@ function newUri(uri)
 {
   return [{
     data: uri,
-    type: _Uri
+    type: "Uri"
   }];
 }
 
@@ -944,7 +936,7 @@ function newStr(_data, _lang)
 {
   var value = {
     data: _data,
-    type: _String
+    type: "String"
   };
   if (_lang && _lang !== 'NONE')
     value.lang = _lang;
@@ -955,7 +947,7 @@ function newBool(_data)
 {
   return [{
     data: _data,
-    type: _Bool
+    type: "Boolean"
   }];
 }
 
@@ -963,7 +955,7 @@ function newInt(_data)
 {
   return [{
     data: _data,
-    type: _Integer
+    type: "Integer"
   }];
 }
 
@@ -971,7 +963,7 @@ function newDecimal(_data)
 {
   return [{
     data: _data,
-    type: _Decimal
+    type: "Decimal"
   }];
 }
 
@@ -979,7 +971,7 @@ function newDate(_data)
 {
   return [{
     data: _data,
-    type: _Datetime
+    type: "Datetime"
   }];
 }
 
@@ -1046,11 +1038,11 @@ function getFirstValue(field)
 {
   if (field && field.length > 0)
   {
-    if (field[0].type == _Integer)
+    if (field[0].type == "Integer")
     {
       return parseInt(field[0].data, 10);
     }
-    else if (field[0].type == _Datetime)
+    else if (field[0].type == "Datetime")
       return new Date(field[0].data);
 
     return field[0].data;
@@ -1261,9 +1253,8 @@ function complexLabel(individual) {
   individual = individual.properties || individual;
   var cache = {};
   cache[ individual["@"] ] = individual;
-  var ticket_id = typeof ticket !== "undefined" ? ticket : typeof veda.ticket !== "undefined" ? veda.ticket : undefined;
   function get (uri) {
-    return cache[uri] ? cache[uri] : cache[uri] = get_individual(ticket_id, uri);
+    return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
   }
 
   //print("INDIVIDUAL =", JSON.stringify(individual));

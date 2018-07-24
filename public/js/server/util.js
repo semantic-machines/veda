@@ -1,4 +1,4 @@
-// Server-side utility functions
+// Veda server utility functions
 "use strict";
 
 /////////////////////////////////////// JOURNAL
@@ -15,24 +15,24 @@ function getTraceJournalUri(object_uri)
 
 function newJournalRecord(journal_uri)
 {
-    var new_journal_record_uri = genUri() + "-jr";
+    var new_journal_record_uri = veda.Util.genUri() + "-jr";
 
     var new_journal_record = {
         '@': new_journal_record_uri,
         'rdf:type': [
         {
             data: 'v-s:JournalRecord',
-            type: _Uri
+            type: "Uri"
         }],
         'v-s:parentJournal': [
         {
             data: journal_uri,
-            type: _Uri
+            type: "Uri"
         }],
         'v-s:created': [
         {
             data: new Date(),
-            type: _Datetime
+            type: "Datetime"
         }]
     };
     return new_journal_record;
@@ -41,7 +41,7 @@ function newJournalRecord(journal_uri)
 function logToJournal(ticket, journal_uri, journal_record, jr_type)
 {
     //if (!jr_type)
-    //  print("@@@ logToJournal, new_journal_record=" + toJson(journal_record));
+    //  print("@@@ logToJournal, new_journal_record=" + veda.Util.toJson(journal_record));
 
     put_individual(ticket, journal_record, _event_id);
 
@@ -50,20 +50,20 @@ function logToJournal(ticket, journal_uri, journal_record, jr_type)
         'v-s:childRecord': [
         {
             data: journal_record['@'],
-            type: _Uri
+            type: "Uri"
         }]
     };
 
     //if (!jr_type)
-    //  print("@@@ logToJournal, add_to_journal = " + toJson(add_to_journal));
+    //  print("@@@ logToJournal, add_to_journal = " + veda.Util.toJson(add_to_journal));
 
     //var before = get_individual(ticket, journal_uri);
-    //print('BEFORE : '+toJson(before))
+    //print('BEFORE : '+veda.Util.toJson(before))
 
     add_to_individual(ticket, add_to_journal, _event_id);
 
     //var after = get_individual(ticket, journal_uri);
-    //print('AFTER : '+toJson(after))
+    //print('AFTER : '+veda.Util.toJson(after))
 }
 
 function traceToJournal(ticket, journal_uri, label, _data)
@@ -74,22 +74,22 @@ function traceToJournal(ticket, journal_uri, label, _data)
     journal_record['rdf:type'] = [
     {
         data: 'v-wf:TraceRecord',
-        type: _Uri
+        type: "Uri"
     }];
     journal_record['rdfs:label'] = [
     {
         data: label,
-        type: _String
+        type: "String"
     }];
     journal_record['rdfs:comment'] = [
     {
         data: _data,
-        type: _String
+        type: "String"
     }];
 
     logToJournal(ticket, journal_uri, journal_record, true);
 
-    //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + toJson(journal_record));
+    //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + veda.Util.toJson(journal_record));
 }
 
 function isTecnicalChange(newdoc, olddoc)
@@ -128,8 +128,8 @@ function isTecnicalChange(newdoc, olddoc)
             {
                 if (newdoc[key][item].data.valueOf() != olddoc[key][item].data.valueOf() && !isTechnicalAttribute(key, olddoc[key][item].data))
                 { // поменялось одно из значений в нетехническом атрибуте
-                    //print ('2 old:', toJson(olddoc));
-                    //print ('2 new:', toJson(newdoc));
+                    //print ('2 old:', veda.Util.toJson(olddoc));
+                    //print ('2 new:', veda.Util.toJson(newdoc));
                     //print (newdoc['@']+' x '+olddoc[key][item].data+' >2> '+newdoc[key][item].data+' : '+key);
                     return false;
                 }
@@ -161,7 +161,7 @@ function loadVariablesUseField(ticket, field)
         {
             var indv = get_individual(ticket, uri);
 
-            if (is_exist(indv, 'rdf:type', 'v-s:Variable'))
+            if ( hasValue(indv, "rdf:type", {data: "v-s:Variable", type: "Uri"}) )
             {
                 var varName = getFirstValue(indv['v-s:variableName']);
                 var varValue = getStrings(indv['v-s:variableValue']);
@@ -299,7 +299,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
   ) {
     if (!prev_state) prev_state = document;
     var actualId = document['@'];
-    var versionId = genUri() + "-vr";
+    var versionId = veda.Util.genUri() + "-vr";
 
     // Create new version
     var version = get_individual(ticket, document['@']);
@@ -311,19 +311,19 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     }
     version['v-s:actualVersion'] = [{
       data: document['@'],
-      type: _Uri
+      type: "Uri"
     }];
     version['v-s:nextVersion'] = [{
       data: actualId,
-      type: _Uri
+      type: "Uri"
     }];
     version['rdf:type'] = version['rdf:type'].concat(
       [{
         data: "v-s:Version",
-        type: _Uri
+        type: "Uri"
       }]
     );
-    version['v-s:created'] = [{data: new Date(), type: _Datetime}];
+    version['v-s:created'] = [{data: new Date(), type: "Datetime"}];
     version['v-s:edited'] = [];
     version['v-s:creator'] = newUri(user_uri);
     version['v-s:lastEditor'] = [];
@@ -347,7 +347,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
       var previous = get_individual(ticket, getUri(document['v-s:previousVersion']));
       previous['v-s:nextVersion'] = [{
         data: versionId,
-        type: _Uri
+        type: "Uri"
       }];
       put_individual(ticket, previous, _event_id);
     }
@@ -355,14 +355,14 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     // Update actual version
     document['v-s:previousVersion'] = [{
       data: versionId,
-      type: _Uri
+      type: "Uri"
     }];
     document['v-s:actualVersion'] = [{
       data: document['@'],
-      type: _Uri
+      type: "Uri"
     }];
     document['v-s:nextVersion'] = [];
-    document['v-s:edited'] = [{data: new Date(), type: _Datetime}];
+    document['v-s:edited'] = [{data: new Date(), type: "Datetime"}];
     document['v-s:lastEditor'] = newUri(user_uri);
     put_individual(ticket, document, _event_id);
   }
@@ -370,7 +370,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
 
 function recursiveCall(elem, path, ticket, _event_id) {
   if (path[elem['@']]) {
-    print('WARNING! Recursive path '+toJson(path)+' > '+elem['a']);
+    print('WARNING! Recursive path '+veda.Util.toJson(path)+' > '+elem['a']);
     return;
   }
 
@@ -408,7 +408,7 @@ function recursiveCall(elem, path, ticket, _event_id) {
 function set_err_on_indv (msg, indv, src)
 {
     var bugreport = {
-      '@' : genUri () + '-err',
+      '@' : veda.Util.genUri () + '-err',
       'rdf:type'     : newUri('v-s:BugReport'),
       'v-s:created'  : newDate (new Date()),
       'rdfs:comment' : newStr(src),
@@ -416,7 +416,7 @@ function set_err_on_indv (msg, indv, src)
       'v-s:resource': newUri (indv['@'])
     };
     put_individual(ticket, bugreport, _event_id);
-   
+
     var add_to_indv = {
         '@': indv['@'],
         'v-s:hasError': newUri (bugreport['@'])
@@ -429,7 +429,7 @@ function set_err_on_indv (msg, indv, src)
 function set_field_to_document (field_name, value, doc_id)
 {
     var set_in_document = {
-		'@': doc_id
+    '@': doc_id
     };
 
     set_in_document[field_name] = value;

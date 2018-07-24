@@ -548,7 +548,7 @@ if (parent_script_id) {
 var directory_uri = document['@'];
 var parents = document["v-s:parentUnit"];
 var children = document["v-s:childUnit"];
-var deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+var deleted = hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 
 if (parents) {
   parents.forEach(function (parent) {

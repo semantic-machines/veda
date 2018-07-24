@@ -12,6 +12,8 @@ import (
 const queueStatePrefix = "srv:queue-state-"
 
 func getIndividual(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
 	timestamp := time.Now().Unix()
 	var uri string
 	var ticketKey string
@@ -147,7 +149,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		individualJSON := rr.GetJson(0)
 
 		//log.Println("@ GET RESULT:",  uri, ", ", string(individualJSON))
-		
+
 		ctx.Write([]byte(individualJSON))
 
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, individualJSON, Ok, timestamp)
@@ -158,6 +160,9 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 }
 
 func getIndividuals(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
+
 	timestamp := time.Now().Unix()
 	var jsonData map[string]interface{}
 	var uris []string
@@ -252,7 +257,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	
+
 	individualsJSON, err := json.Marshal(individuals)
 	if err != nil {
 		log.Println("ERR! get individuals: ENCODING INDIVIDUALS JSON ", err)

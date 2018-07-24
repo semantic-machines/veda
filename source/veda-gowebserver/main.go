@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -49,6 +50,10 @@ type ticket struct {
 
 const (
 	tdbPath = "./data/trails/	"
+)
+var (
+	strContentType     = []byte("Content-Type")
+	strApplicationJSON = []byte("application/json")
 )
 
 //ticketCache is map to cache requested earlier tickets
@@ -103,7 +108,7 @@ var attachmentsPath = "./data/files/"
 var areExternalUsers = false
 
 //externalUsersTicketId is map to stoer external users tickets
-var externalUsersTicketId map[string]bool
+//var externalUsersTicketId map[string]bool
 
 //cons is connection to traildb
 //var cons *tdb.TrailDBConstructor
@@ -221,7 +226,14 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
 	}
 }
 
+func getGOMAXPROCS() int {
+	return runtime.GOMAXPROCS(0)
+}
+
 func main() {
+	fmt.Printf("ENV GOMAXPROCS is %d\n", getGOMAXPROCS())
+	runtime.GOMAXPROCS(1)
+	fmt.Printf("USE GOMAXPROCS is %d\n", getGOMAXPROCS())
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
@@ -293,7 +305,7 @@ func main() {
 	ticketCache = make(map[string]ticket)
 	ontologyCache = make(map[string]Individual)
 	mifCache = make(map[int]*ModuleInfoFile)
-	externalUsersTicketId = make(map[string]bool)
+	//	externalUsersTicketId = make(map[string]bool)
 
 	//go monitorIndividualChanges()
 	go func() {

@@ -22,8 +22,8 @@ function change_rights_actor(process, task, rightset, actor)
     {
         //print ("@JS change_rights_actor");
         var doc_id = process.getInputVariable('docId');
-        //print ("@JS doc_id=", toJson (doc_id));
-        //print ("@JS rightset=", toJson (rightset));
+        //print ("@JS doc_id=", veda.Util.toJson (doc_id));
+        //print ("@JS rightset=", veda.Util.toJson (rightset));
         var rset = [];
         if (rightset[0].data.indexOf('r') >= 0)
         {
@@ -37,21 +37,21 @@ function change_rights_actor(process, task, rightset, actor)
         if (doc_id)
         {
             //print ("@JS0 actor=", actor);
-            //print ("@JS1 process.getLocalVariable (" + actor + ")=", toJson(process.getLocalVariable (actor)));
-            //print ("@JS2 process.getExecutor()=", toJson(process.getExecutor()));
+            //print ("@JS1 process.getLocalVariable (" + actor + ")=", veda.Util.toJson(process.getLocalVariable (actor)));
+            //print ("@JS2 process.getExecutor()=", veda.Util.toJson(process.getExecutor()));
             var executor = (process.getLocalVariable(actor)) ? process.getLocalVariable(actor) : process.getExecutor();
-	    
-	    if (!executor)
-		executor = task.getInputVariable(actor);
 
-            //print ("@JS3 executor=", toJson(executor));
+      if (!executor)
+    executor = task.getInputVariable(actor);
+
+            //print ("@JS3 executor=", veda.Util.toJson(executor));
 
             var employee = get_properties_chain(executor, [
             {
                 $get: 'v-s:employee'
             }], undefined);
 
-            //print ("@JS4 employee=", toJson(employee));
+            //print ("@JS4 employee=", veda.Util.toJson(employee));
             if (employee)
             {
                 var employee_uri = getUri(employee);
@@ -59,7 +59,7 @@ function change_rights_actor(process, task, rightset, actor)
                 if (employee_uri)
                     addRight(ticket, rset, employee_uri, getUri(doc_id));
                 else
-                    print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+                    print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
             }
 
             executor = get_properties_chain(executor, [
@@ -78,7 +78,7 @@ function change_rights_actor(process, task, rightset, actor)
                 if (executor_uri)
                     addRight(ticket, rset, executor_uri, getUri(doc_id));
                 else
-                    print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+                    print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
             }
 
             //var instanceOf = getUri(process['v-wf:instanceOf']);
@@ -97,10 +97,10 @@ function restore_right(task)
 {
     try
     {
-        //print("[WORKFLOW]:restore_right, task=", toJson(task));
+        //print("[WORKFLOW]:restore_right, task=", veda.Util.toJson(task));
         //print("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
         var right = task.getInputVariable('originalRights');
-        //print("[WORKFLOW]:restore_right ", toJson(right));
+        //print("[WORKFLOW]:restore_right ", veda.Util.toJson(right));
         return [get_new_variable('result', newStr('Ok'))];
 
     }
@@ -122,7 +122,7 @@ function interrupt_process(ticket, process, _event_id)
 
 function change_process_status(ticket, process, status, _event_id)
 {
-    //    print('>>> '+toJson(process));
+    //    print('>>> '+veda.Util.toJson(process));
     var vars = process['v-wf:inVars'];
     if (!vars) return;
     for (var i = 0; i < vars.length; i++)
@@ -144,9 +144,9 @@ function change_process_status(ticket, process, status, _event_id)
 }
 
 function change_document_status(process, status)
-{   
-    
-    // print ("@JS setStatus=", toJson(process.getInputVariable('setStatus')));
+{
+
+    // print ("@JS setStatus=", veda.Util.toJson(process.getInputVariable('setStatus')));
     if ( status ) {
         var setStatus=process.getInputVariable('setStatus');
         if (setStatus && setStatus[0].data == true) {
@@ -159,7 +159,7 @@ function change_document_status(process, status)
                 if (status == 'v-s:StatusExecuted') {
                     set_in_document['v-s:dateFact'] = newDate(Date.now());
                 }
-                //print ("@JS set_in_document=", toJson(set_in_document));
+                //print ("@JS set_in_document=", veda.Util.toJson(set_in_document));
                 set_in_individual(process.ticket, set_in_document, _event_id);
             };
         }
@@ -226,9 +226,9 @@ function is_in_docflow_and_set_if_true(task)
             if (doc_id)
             {
                 var forProcess = getUri(task.src_data['v-wf:forProcess']);
-                //print("[Z1Z] := "+toJson(forProcess));
+                //print("[Z1Z] := "+veda.Util.toJson(forProcess));
                 var process = get_individual(task.ticket, forProcess);
-                //print("[Z2Z] := "+toJson(process));
+                //print("[Z2Z] := "+veda.Util.toJson(process));
                 if (process)
                 {
                     var instanceOf = getUri(process['v-wf:instanceOf']);
@@ -237,7 +237,7 @@ function is_in_docflow_and_set_if_true(task)
                     //print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
 
                     var in_doc_flow = get_individual(task.ticket, net_doc_id);
-                    //print("[Z3Z] := "+toJson(in_doc_flow));
+                    //print("[Z3Z] := "+veda.Util.toJson(in_doc_flow));
 
                     //                   if (in_doc_flow)
                     //                   {
@@ -253,7 +253,7 @@ function is_in_docflow_and_set_if_true(task)
                             'rdf:type': [
                             {
                                 data: 'v-wf:Variable',
-                                type: _Uri
+                                type: "Uri"
                             }]
                         };
                         put_individual(task.ticket, new_doc, _event_id);
@@ -262,7 +262,7 @@ function is_in_docflow_and_set_if_true(task)
                             '@': doc_id[0].data,
                             'v-wf:isProcess': newUri(process['@'])
                         };
-                        print('$ add_to_document >>' + toJson(add_to_document));
+                        print('$ add_to_document >>' + veda.Util.toJson(add_to_document));
                         add_to_individual(ticket, add_to_document, _event_id);
                     }
                 }
@@ -377,14 +377,14 @@ function create_use_transformation(process, task)
                     var document = get_individual(task.ticket, getUri(src_doc_id));
                     if (document)
                     {
-                        var new_items = transformation(task.ticket, document, transform, null, null, newUri(process.src_data['@']));
+                        var new_items = veda.Util.transformation(task.ticket, document, transform, null, null, newUri(process.src_data['@']));
                         for (var i = 0; i < new_items.length; i++)
                         {
                             put_individual(ticket, new_items[i], _event_id);
                             new_items_uri.push(
                             {
                                 data: new_items[i]['@'],
-                                type: _Uri
+                                type: "Uri"
                             });
                         }
                     }
@@ -429,7 +429,7 @@ function find_long_terms(ticket, uri, execute_script)
 
                     if (document)
                     {
-                        if (is_exist(document, 'rdf:type', 'v-s:Appointment'))
+                        if ( hasValue(document, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
                         {
                             var hash = Sha256.hash(i_uri);
 
@@ -507,7 +507,7 @@ function onto_rename(ticket, document, execute_script)
     //    print ('$$$$$$$$$$$$$$ script_onto_rename:doc= ' + document['@']);
     try
     {
-        //print ('$ script_onto_rename:execute_script= ' + toJson (execute_script));
+        //print ('$ script_onto_rename:execute_script= ' + veda.Util.toJson (execute_script));
         if (document['@'] === execute_script['@'])
             return;
 
@@ -568,7 +568,7 @@ function onto_rename(ticket, document, execute_script)
 
                     for (var from in from_2_to)
                     {
-                        if (value.type == _Uri || value.type == _String)
+                        if (value.type == "Uri" || value.type == "String")
                         {
                             var to = from_2_to[from];
                             var new_str = replace_word(value.data, from, to);
@@ -610,14 +610,14 @@ function onto_rename(ticket, document, execute_script)
             {
                 put_individual(ticket, document, "");
                 //print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
-                //            print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+                //            print('$ script_onto_rename:is_update, ' + veda.Util.toJson(prev_doc) + '->' + veda.Util.toJson(document));
             }
         }
 
         if (is_replace || is_update)
         {
             //            print('$ script_onto_rename:is_update, ' + prev_doc['@'] + '->' + document['@']);
-            //                        print('$ script_onto_rename:is_update, ' + toJson(prev_doc) + '->' + toJson(document));
+            //                        print('$ script_onto_rename:is_update, ' + veda.Util.toJson(prev_doc) + '->' + veda.Util.toJson(document));
         }
 
 
