@@ -243,12 +243,13 @@
     function feelMainInput(){
       var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
       mainInput.val(count);
-      summaryText.text(count);
+      summaryText.text(veda.Util.formatNumber(count));
       mainInput.change();
     }
     function feelPseudoInput(summaryTime){
+      summaryText.text(summaryTime);
+      summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );
       var days=0, hours=0, minutes=0;
-      summaryText.text(+summaryTime);
       if (summaryTime!=0){
         days=Math.floor(summaryTime/480);
         summaryTime=summaryTime-days*480;
