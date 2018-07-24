@@ -345,6 +345,17 @@ v-s:AddDateactions
   rdfs:label "Период действия документа"@ru ;
   rdfs:label "The period of validity of the document"@en ;
 .
+
+# ------------------------------------------------------------ПЕЧАТНАЯ_ФОРМА-----
+v-s:ContractorCategoryDecision_printBlank
+  rdf:type v-s:ReportsForClass ;
+  v-ui:forClass v-s:ContractorCategoryDecision ;
+  v-s:filePath "/reports/Contract/ContractorCategoryDecision_PrintBlank" ;
+  v-s:fileFormat "pdf";
+  rdfs:label "Печатная форма листа оценки"@ru ;
+  rdfs:label "ContractorCategoryDecision print blank"@en ;
+.
+
 #-------------Template-------------------------
 v-s:ContractorProfileTemplate
   rdf:type v-ui:ClassTemplate ;
