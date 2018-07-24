@@ -29,8 +29,8 @@
 
 function numerate(ticket, individual, super_classes, prev_state, _event_id) {
   try {
-    var deleted = hasValue( individual, "v-s:deleted", { data: true, type: "Boolean"} );
-    var prevDeleted = prev_state && hasValue( prev_state, "v-s:deleted", { data: true, type: "Boolean"} );
+    var deleted = veda.Util.hasValue( individual, "v-s:deleted", { data: true, type: "Boolean"} );
+    var prevDeleted = prev_state && veda.Util.hasValue( prev_state, "v-s:deleted", { data: true, type: "Boolean"} );
 
     individual['rdf:type'] && individual['rdf:type'].length && individual['rdf:type'].forEach(function (typeValue) {
       var type = get_individual(ticket, typeValue.data);

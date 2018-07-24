@@ -154,7 +154,7 @@ v-s:SimpleNumerationYear
   v-s:numerationScope """
   (function (ticket, individual) {
     var year;
-    if ( hasValue(individual, "v-s:registrationDate") ) {
+    if ( veda.Util.hasValue(individual, "v-s:registrationDate") ) {
       year = (typeof window === "object" ? individual["v-s:registrationDate"][0] : individual["v-s:registrationDate"][0].data).getFullYear();
     } else {
       year = new Date().getFullYear();

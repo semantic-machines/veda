@@ -161,7 +161,7 @@ function loadVariablesUseField(ticket, field)
         {
             var indv = get_individual(ticket, uri);
 
-            if ( hasValue(indv, "rdf:type", {data: "v-s:Variable", type: "Uri"}) )
+            if ( veda.Util.hasValue(indv, "rdf:type", {data: "v-s:Variable", type: "Uri"}) )
             {
                 var varName = getFirstValue(indv['v-s:variableName']);
                 var varValue = getStrings(indv['v-s:variableValue']);

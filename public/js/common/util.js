@@ -1,15 +1,6 @@
 // Veda common utility functions
 "use strict";
 
-function hasValue(individual, property, value)
-{
-  var any = !!(individual && individual[property] && individual[property].length);
-  if (!value) return any;
-  return !!(any && individual[property].filter( function(i) {
-      return (i.type === value.type && i.data === value.data);
-  }).length);
-}
-
 function newUri(uri)
 {
   return [{
@@ -291,14 +282,14 @@ veda.Module(function Util(veda) { "use strict";
 
 // ---------------------------------------------------------------------
 
-//  veda.Util.hasValue = function(individual, property, value)
-//  {
-//    var any = !!(individual && individual[property] && individual[property].length);
-//    if (!value) return any;
-//    return !!(any && individual[property].filter( function(i) {
-//        return (i.type === value.type && i.data === value.data);
-//    }).length);
-//  }
+  veda.Util.hasValue = function(individual, property, value)
+  {
+    var any = !!(individual && individual[property] && individual[property].length);
+    if (!value) return any;
+    return !!(any && individual[property].filter( function(i) {
+        return (i.type === value.type && i.data === value.data);
+    }).length);
+  }
 
   veda.Util.toJson = function (value) {
     return JSON.stringify(value, null, 2);
@@ -1327,7 +1318,7 @@ veda.Module(function Util(veda) { "use strict";
       return individual["rdf:type"].reduce(function (acc, typeValue) {
         var typeUri = typeValue.data;
         var type = get(typeUri);
-        if ( !type || !hasValue(type, "v-s:labelPattern") ) return;
+        if ( !type || !veda.Util.hasValue(type, "v-s:labelPattern") ) return;
         var pattern = type["v-s:labelPattern"][0].data;
         var result = languages.map(function (language) {
           var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
@@ -1371,7 +1362,7 @@ veda.Module(function Util(veda) { "use strict";
             }
           }, "");
         }
-        if ( hasValue(intermediate, property) ) {
+        if ( veda.Util.hasValue(intermediate, property) ) {
           var intermediateUri = intermediate[property][0].data;
           intermediate = get(intermediateUri);
           if (!intermediate) { return ""; }

@@ -1744,9 +1744,9 @@ put_individual(ticket, decision, _event_id);
 function getOk(property_uri, ok_uri) {
   var dep_decision_uri = getUri( decision[property_uri] ),
       dep_decision = dep_decision_uri ? get_individual( ticket, dep_decision_uri ) : undefined,
-      hasOk = dep_decision ? hasValue( dep_decision, ok_uri ) : undefined,
+      hasOk = dep_decision ? veda.Util.hasValue( dep_decision, ok_uri ) : undefined,
       ok = hasOk ? dep_decision[ok_uri][0].data : undefined ;
-  if ( dep_decision && hasValue(dep_decision, "v-s:created") && dep_decision["v-s:created"][0].data > maxDate ) {
+  if ( dep_decision && veda.Util.hasValue(dep_decision, "v-s:created") && dep_decision["v-s:created"][0].data > maxDate ) {
     maxDate = dep_decision["v-s:created"][0].data;
   }
   return ok; // undefined || true || false
@@ -1779,7 +1779,7 @@ v-s:Event_ContractCategoryRequestDecision_Department
 var decision_uri = getUri(document["v-s:backwardTarget"]),
     decision = decision_uri ? get_individual(ticket, decision_uri) : undefined;
 if (!decision) { return; }
-if ( hasValue(document, "v-s:created") ) {
+if ( veda.Util.hasValue(document, "v-s:created") ) {
   decision["v-s:date"] = document["v-s:created"];
 }
 put_individual(ticket, decision, _event_id);

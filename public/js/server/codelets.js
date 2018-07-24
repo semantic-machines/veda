@@ -429,7 +429,7 @@ function find_long_terms(ticket, uri, execute_script)
 
                     if (document)
                     {
-                        if ( hasValue(document, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
+                        if ( veda.Util.hasValue(document, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
                         {
                             var hash = Sha256.hash(i_uri);
 

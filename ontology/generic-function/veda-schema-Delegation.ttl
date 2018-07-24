@@ -432,7 +432,7 @@ var request_uri = document["@"],
     delegator_uri = getUri(document["v-s:delegator"]) || "",
     delegate_uri = getUri(document["v-s:delegate"]),
     position_uris = getUris(document["v-s:delegatedPosition"]),
-    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
+    request_deleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
     custom_label = document["rdfs:label"];
 
@@ -571,7 +571,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var isPremature = now < appointment["v-s:dateFrom"][0].data;
   var isActual = appointment["v-s:dateFrom"][0].data <= now && now <= appointment["v-s:dateTo"][0].data;
   var isOverdue = now > appointment["v-s:dateTo"][0].data;
-  var isDeleted = hasValue(appointment, "v-s:deleted", {data: true, type: "Boolean"});
+  var isDeleted = veda.Util.hasValue(appointment, "v-s:deleted", {data: true, type: "Boolean"});
 
   //print("[cfg:Event_Delegation]", "appointment =", appointment_uri, "| isPremature =", isPremature, "| isActual =", isActual, "| isOverdue =", isOverdue, "| isDeleted =", isDeleted );
 

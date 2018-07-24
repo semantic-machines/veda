@@ -2136,8 +2136,8 @@ v-wf:event_df1
  * super_classes = super classes of the document.
  */
 
-var toBeSent = hasValue(document, 'v-wf:hasStatusWorkflow', {data: 'v-wf:ToBeSent', type: "Uri"});
-var fromShedulerScript = hasValue(document, 'v-wf:fromShedulerScript', {data: true, type: "Boolean"});
+var toBeSent = veda.Util.hasValue(document, 'v-wf:hasStatusWorkflow', {data: 'v-wf:ToBeSent', type: "Uri"});
+var fromShedulerScript = veda.Util.hasValue(document, 'v-wf:fromShedulerScript', {data: true, type: "Boolean"});
 if ( (!parent_script_id || fromShedulerScript) && toBeSent) {
   prepare_start_form (ticket, document);
 }
@@ -2163,8 +2163,8 @@ v-wf:event_df2
  */
 
 //print("Event df2: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-var deleted = hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
-    stopped = hasValue(document, 'v-wf:isStopped', {data: true, type: "Boolean"}),
+var deleted = veda.Util.hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
+    stopped = veda.Util.hasValue(document, 'v-wf:isStopped', {data: true, type: "Boolean"}),
     triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
 
 if ( !deleted && !stopped && triggeredByWf ) {
@@ -2192,7 +2192,7 @@ v-wf:event_df3
  */
 
 //print("Event df3: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
-var deleted = hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
+var deleted = veda.Util.hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
     triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' ;
 
 if ( !deleted && triggeredByWf ) {
@@ -2220,8 +2220,8 @@ v-wf:event_df4
  * super_classes = super classes of the document.
  */
 
-var deleted = hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
-    enforce_processing = hasValue(document, 'v-wf:enforceProcessing', {data: true, type: "Boolean"}),
+var deleted = veda.Util.hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
+    enforce_processing = veda.Util.hasValue(document, 'v-wf:enforceProcessing', {data: true, type: "Boolean"}),
     triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
 
 //print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
@@ -2249,7 +2249,7 @@ v-wf:event_df5
  * super_classes = super classes of the document.
  */
 
-var deleted = hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"});
+var deleted = veda.Util.hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"});
 
 if ( !deleted ) {
     prepare_decision_form (ticket, document, prev_state);

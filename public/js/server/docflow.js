@@ -19,7 +19,7 @@ function prepare_decision_form(ticket, document, prev_state)
         if (!f_takenDecision && !f_prev_takenDecision)
             return;
 
-    var enforce_processing = hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: "Boolean"});
+    var enforce_processing = veda.Util.hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: "Boolean"});
     if (f_prev_takenDecision && !enforce_processing)
     {
       if (!f_takenDecision)
@@ -234,9 +234,9 @@ function prepare_work_order(ticket, document)
             }
             else
             {
-                var is_appointment = hasValue(executor, "rdf:type", {data: "v-s:Appointment", type: "Uri"});
-                var is_position = hasValue(executor, "rdf:type", {data: "v-s:Position", type: "Uri"});
-                var is_codelet = hasValue(executor, "rdf:type", {data: "v-s:Codelet", type: "Uri"});
+                var is_appointment = veda.Util.hasValue(executor, "rdf:type", {data: "v-s:Appointment", type: "Uri"});
+                var is_position = veda.Util.hasValue(executor, "rdf:type", {data: "v-s:Position", type: "Uri"});
+                var is_codelet = veda.Util.hasValue(executor, "rdf:type", {data: "v-s:Codelet", type: "Uri"});
 
                 if (is_codelet)
                 {
@@ -437,7 +437,7 @@ function prepare_work_order(ticket, document)
                     mapToMessage(net_element['v-wf:startingMessageMap'], ticket, _process, work_item, _work_order, null, journal_uri, trace_journal_uri, 'v-wf:startingMessageMap');
                 }
 
-                if ( (hasValue(executor, "rdf:type", {data: "v-wf:Net", type: "Uri"}) || f_useSubNet) && !is_codelet )
+                if ( (veda.Util.hasValue(executor, "rdf:type", {data: "v-wf:Net", type: "Uri"}) || f_useSubNet) && !is_codelet )
                 {
                     create_new_subprocess(ticket, f_useSubNet, f_executor, net_element, f_inVars, document, trace_journal_uri);
 
@@ -737,7 +737,7 @@ function prepare_work_item(ticket, document)
                     var i_net_element = get_individual(ticket, f_consistsOf[i].data);
                     if (!i_net_element) continue;
 
-                    if ( hasValue(i_net_element, "rdf:type", {data: "v-wf:Flow", type: "Uri"}) )
+                    if ( veda.Util.hasValue(i_net_element, "rdf:type", {data: "v-wf:Flow", type: "Uri"}) )
                     {
                         if (getUri(i_net_element["v-wf:flowsInto"]) == netElement['@'])
                         {
@@ -745,7 +745,7 @@ function prepare_work_item(ticket, document)
                             //print("[WORKFLOW][PW00.2] flow=", veda.Util.toJson (i_net_element));
                         }
                     }
-                    else if ( hasValue(i_net_element, "rdf:type", {data: "v-wf:Task", type: "Uri"}) )
+                    else if ( veda.Util.hasValue(i_net_element, "rdf:type", {data: "v-wf:Task", type: "Uri"}) )
                     {
                         var f_hasFlow = i_net_element['v-wf:hasFlow'];
                         if (f_hasFlow)
@@ -816,7 +816,7 @@ function prepare_work_item(ticket, document)
 
         var journal_uri;
 
-        if ( hasValue(netElement, "rdf:type", {data: "v-wf:Task", type: "Uri"}) )
+        if ( veda.Util.hasValue(netElement, "rdf:type", {data: "v-wf:Task", type: "Uri"}) )
         {
             journal_uri = create_new_subjournal(forProcess, work_item['@'], netElement['rdfs:label'], 'v-wf:WorkItemStarted');
 
@@ -853,7 +853,7 @@ function prepare_work_item(ticket, document)
                     }
                     else
                     {
-                        if ( hasValue(executor, "rdf:type", {data: "v-wf:ExecutorDefinition", type: "Uri"}) )
+                        if ( veda.Util.hasValue(executor, "rdf:type", {data: "v-wf:ExecutorDefinition", type: "Uri"}) )
                         {
                             // определение исполнителей посредством скрипта
 
@@ -970,7 +970,7 @@ function prepare_work_item(ticket, document)
             }
 
         } // end [Task]
-        else if ( hasValue(netElement, "rdf:type", {data: "v-wf:InputCondition", type: "Uri"}) || hasValue(netElement, "rdf:type", {data: "v-wf:Condition", type: "Uri"}) )
+        else if ( veda.Util.hasValue(netElement, "rdf:type", {data: "v-wf:InputCondition", type: "Uri"}) || veda.Util.hasValue(netElement, "rdf:type", {data: "v-wf:Condition", type: "Uri"}) )
         {
             if (netElement['@'] == 's-wf:InterlayerNet_ic') {
                 var set_in_document = {
@@ -981,7 +981,7 @@ function prepare_work_item(ticket, document)
             };
             is_goto_to_next_task = true;
         } // end [InputCondition]
-        else if ( hasValue(netElement, "rdf:type", {data: "v-wf:OutputCondition", type: "Uri"}) )
+        else if ( veda.Util.hasValue(netElement, "rdf:type", {data: "v-wf:OutputCondition", type: "Uri"}) )
         {
             if (trace_journal_uri)
                 traceToJournal(ticket, trace_journal_uri, "Is output condition ", "");
@@ -1124,8 +1124,8 @@ function prepare_work_item(ticket, document)
  */
 function prepare_process(ticket, document)
 {
-  var deleted = hasValue(document, 'v-s:deleted');
-  var completed = hasValue(document, 'v-wf:isCompleted');
+  var deleted = veda.Util.hasValue(document, 'v-s:deleted');
+  var completed = veda.Util.hasValue(document, 'v-wf:isCompleted');
   if (completed || deleted) { return; }
 
   var _process = document;
@@ -1187,7 +1187,7 @@ function prepare_process(ticket, document)
 
       ////print("[PP05.1] net_consistsOf=", veda.Util.toJson(net_consistsOf));
 
-      if ( hasValue(element, "rdf:type", {data: "v-wf:InputCondition", type: "Uri"}) )
+      if ( veda.Util.hasValue(element, "rdf:type", {data: "v-wf:InputCondition", type: "Uri"}) )
       {
         var work_item_uri = create_work_item(ticket, document['@'], element_uri, null, _event_id, trace_journal_uri);
 
@@ -1238,7 +1238,7 @@ function prepare_start_form(ticket, document)
       processedDocumentId = document['v-wf:processedDocument'][0].data;
       processedDocumentValue = document['v-wf:processedDocument'];
       var processedDocument = get_individual(ticket, processedDocumentId);
-      if ( hasValue(processedDocument, "rdf:type", { data: "v-wf:DecisionForm", type: "Uri" } ) ) {
+      if ( veda.Util.hasValue(processedDocument, "rdf:type", { data: "v-wf:DecisionForm", type: "Uri" } ) ) {
         processedDocumentId = processedDocument["v-wf:onDocument"] ? processedDocument["v-wf:onDocument"][0].data : processedDocument['@'];
         processedDocumentValue = processedDocument["v-wf:onDocument"] || [{ data: document['@'], type: "Uri" }];
         document['v-wf:processedDocument'] = processedDocumentValue;
@@ -1276,7 +1276,7 @@ function prepare_start_form(ticket, document)
     }
 
     // Include start form to processed document group
-    if ( hasValue(document, "v-wf:processedDocument") ) {
+    if ( veda.Util.hasValue(document, "v-wf:processedDocument") ) {
       addToGroup(ticket, getUri(document["v-wf:processedDocument"]), document["@"], [can_read]);
     }
 
@@ -1285,10 +1285,10 @@ function prepare_start_form(ticket, document)
     var creator_f = document['v-s:creator'];
 
     var author_uri;
-    if ( hasValue(document, "v-s:creator") ) {
+    if ( veda.Util.hasValue(document, "v-s:creator") ) {
       var creator_uri = document["v-s:creator"][0].data;
       var creator = get_individual(ticket, creator_uri);
-      if ( hasValue(creator, "v-s:employee") ) {
+      if ( veda.Util.hasValue(creator, "v-s:employee") ) {
         author_uri = creator["v-s:employee"][0].data;
       }
     }
