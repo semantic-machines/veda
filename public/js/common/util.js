@@ -1308,4 +1308,8 @@ veda.Module(function (veda) { "use strict";
     return null;
   };
 
+  veda.Util.mlstring = function (ruString, enString) {
+    return [{type: "String", data: ruString, lang: "RU"}, {type: "String", data: enString, lang: "EN"}];
+  };
+
 });

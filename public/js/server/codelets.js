@@ -50,7 +50,7 @@ veda.Module(function (veda) { "use strict";
 
               //print ("@JS3 executor=", veda.Util.toJson(executor));
 
-              var employee = get_properties_chain(executor, [
+              var employee = veda.Workflow.get_properties_chain(executor, [
               {
                   $get: 'v-s:employee'
               }], undefined);
@@ -66,7 +66,7 @@ veda.Module(function (veda) { "use strict";
                       print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
               }
 
-              executor = get_properties_chain(executor, [
+              executor = veda.Workflow.get_properties_chain(executor, [
               {
                   $get: 'v-s:occupation'
               }], executor);
@@ -89,7 +89,7 @@ veda.Module(function (veda) { "use strict";
               //var net_doc_id = instanceOf + "_" + doc_id[0].data;
               //print("[WORKFLOW]:down_right_and_store, find=", net_doc_id);
           }
-          return [get_new_variable('right', veda.Util.newStr('acl1'))];
+          return [veda.Workflow.get_new_variable('right', veda.Util.newStr('acl1'))];
       }
       catch (e)
       {
@@ -105,7 +105,7 @@ veda.Module(function (veda) { "use strict";
           //print("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
           var right = task.getInputVariable('originalRights');
           //print("[WORKFLOW]:restore_right ", veda.Util.toJson(right));
-          return [get_new_variable('result', veda.Util.newStr('Ok'))];
+          return [veda.Workflow.get_new_variable('result', veda.Util.newStr('Ok'))];
 
       }
       catch (e)
@@ -168,7 +168,7 @@ veda.Module(function (veda) { "use strict";
               };
           }
       };
-      return [get_new_variable('status', veda.Util.newStr(status))];
+      return [veda.Workflow.get_new_variable('status', veda.Util.newStr(status))];
   };
 
   veda.Codelet.is_exists_net_executor = function (process)
@@ -176,7 +176,7 @@ veda.Module(function (veda) { "use strict";
       try
       {
           var res = process.getExecutor() !== undefined;
-          return [get_new_variable('res', veda.Util.newBool(res))];
+          return [veda.Workflow.get_new_variable('res', veda.Util.newBool(res))];
       }
       catch (e)
       {
@@ -205,7 +205,7 @@ veda.Module(function (veda) { "use strict";
 
           }
 
-          return [get_new_variable('res', veda.Util.newUri(res))];
+          return [veda.Workflow.get_new_variable('res', veda.Util.newUri(res))];
       }
       catch (e)
       {
@@ -219,7 +219,7 @@ veda.Module(function (veda) { "use strict";
 
       // # 322
       //// # 285
-      //    return [get_new_variable('result', veda.Util.newUri(false))];
+      //    return [veda.Workflow.get_new_variable('result', veda.Util.newUri(false))];
 
       try
       {
@@ -274,7 +274,7 @@ veda.Module(function (veda) { "use strict";
 
           }
 
-          return [get_new_variable('result', veda.Util.newUri(res))];
+          return [veda.Workflow.get_new_variable('result', veda.Util.newUri(res))];
       }
       catch (e)
       {
@@ -320,7 +320,7 @@ veda.Module(function (veda) { "use strict";
               }
           }
 
-          return [get_new_variable('res', src_uri)];
+          return [veda.Workflow.get_new_variable('res', src_uri)];
       }
       catch (e)
       {
@@ -354,7 +354,7 @@ veda.Module(function (veda) { "use strict";
               }
           }
 
-          return [get_new_variable('res', src_uri)];
+          return [veda.Workflow.get_new_variable('res', src_uri)];
       }
       catch (e)
       {
@@ -397,7 +397,7 @@ veda.Module(function (veda) { "use strict";
               }
           }
 
-          return [get_new_variable('res', new_items_uri)];
+          return [veda.Workflow.get_new_variable('res', new_items_uri)];
       }
       catch (e)
       {
