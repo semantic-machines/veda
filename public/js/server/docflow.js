@@ -1044,7 +1044,7 @@ function prepare_work_item(ticket, document)
                 }]
             };
 
-            complete_process(ticket, _process, _event_id);
+            veda.Codelet.complete_process(ticket, _process, _event_id);
 
             add_to_individual(ticket, completeProcess, _event_id);
 

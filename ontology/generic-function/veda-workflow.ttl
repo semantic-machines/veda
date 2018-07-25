@@ -2300,7 +2300,7 @@ v-wf:ProcessStopEvent
       journal_record['rdfs:comment'] = pb['rdfs:label'];
 
       veda.Util.logToJournal(ticket, document['@']+'j', journal_record, true);
-      interrupt_process(ticket, document, _event_id);
+      veda.Codelet.interrupt_process(ticket, document, _event_id);
   }
 """ ;
 .
