@@ -165,7 +165,7 @@ v-s:SimpleNumerationYear
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, 1);
+  return veda.Numerator.getNextValueSimple(ticket, scope, 1);
 })
 """ ;
 .
@@ -183,7 +183,7 @@ v-s:SimpleNumeration
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, 1);
+  return veda.Numerator.getNextValueSimple(ticket, scope, 1);
 })
 """ ;
 .
@@ -201,7 +201,7 @@ v-s:YearNumeration8
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+  return veda.Numerator.getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
 })
 """ ;
 .
@@ -219,7 +219,7 @@ v-s:YearNumeration2_4
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, (parseInt(new Date().getFullYear().toString().substr(2,2), 10))*10000+1);
+  return veda.Numerator.getNextValueSimple(ticket, scope, (parseInt(new Date().getFullYear().toString().substr(2,2), 10))*10000+1);
 })
 """ ;
 .
@@ -237,7 +237,7 @@ v-s:YearNumeration2_6
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, (parseInt(new Date().getFullYear().toString().substr(2,2), 10))*1000000+1);
+  return veda.Numerator.getNextValueSimple(ticket, scope, (parseInt(new Date().getFullYear().toString().substr(2,2), 10))*1000000+1);
 })
 """ ;
 .
@@ -255,7 +255,7 @@ v-s:IdeaAndProjectsNumeration
 """ ;
   v-s:numerationGetNextValue """
 (function getNextValue(ticket, scope) {
-  return getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
+  return veda.Numerator.getNextValueSimple(ticket, scope, (new Date()).getFullYear()*10000+1);
 })
 """ ;
 .
@@ -281,7 +281,7 @@ v-s:NumerationEvent
   }
   // Get actual state
   document = get_individual(ticket, document["@"]);
-  var result = numerate(ticket, document, super_classes, prev_state, _event_id);
+  var result = veda.Numerator.numerate(ticket, document, super_classes, prev_state, _event_id);
 """
 .
 v-s:Permission1602021330
