@@ -1,5 +1,5 @@
 // Veda HTTP server functions
-veda.Module(function Backend(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   $.ajaxSetup ({
     dataType: "json",

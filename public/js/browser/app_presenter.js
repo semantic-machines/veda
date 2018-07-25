@@ -1,6 +1,6 @@
 // Veda application Presenter
 
-veda.Module(function AppPresenter(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   var storage = typeof localStorage !== "undefined" ? localStorage : {
     clear: function () {

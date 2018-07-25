@@ -1,6 +1,6 @@
 // Veda server utility functions
 
-veda.Module(function Util(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   veda.Util = veda.Util || {};
 

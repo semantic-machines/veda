@@ -1,6 +1,6 @@
 // Individual Presenter
 
-veda.Module(function IndividualPresenter(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   veda.IndividualModel.prototype.present = function (container, template, mode, extra) {
 
