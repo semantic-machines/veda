@@ -556,7 +556,7 @@ if (user_uri == 'cfg:VedaSystem') return; // #245
 
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
 {
-  create_version(ticket, document, prev_state, user_uri, _event_id);
+  veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
 }
 
 if (super_classes.indexOf('v-s:Journaling')>=0)
@@ -580,7 +580,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 
   if (!employee_uri) { return; }
 
-  var journal_uri = getJournalUri(document['@']);
+  var journal_uri = veda.Util.getJournalUri(document['@']);
   var exist_journal = get_individual(ticket, journal_uri);
 
   var user = get_individual(ticket, user_uri);
@@ -594,7 +594,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
   if (exist_journal)
   {
     // UPDATE DOCUMENT
-    var journal_record = newJournalRecord(journal_uri);
+    var journal_record = veda.Util.newJournalRecord(journal_uri);
     if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
     {
       journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
@@ -617,7 +617,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       }];
     }
     journal_record['v-s:actor'] = actor;
-    logToJournal(ticket, journal_uri, journal_record);
+    veda.Util.logToJournal(ticket, journal_uri, journal_record);
     veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_record['@'], ["v-s:canRead"]);
   }
   else
@@ -641,7 +641,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 
     veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_uri, ["v-s:canRead"]);
 
-    var journal_record = newJournalRecord(new_journal['@']);
+    var journal_record = veda.Util.newJournalRecord(new_journal['@']);
     if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
     {
       journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
@@ -652,7 +652,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       type: "Uri"
     }];
     journal_record['v-s:actor'] = actor;
-    logToJournal(ticket, journal_uri, journal_record);
+    veda.Util.logToJournal(ticket, journal_uri, journal_record);
     veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_record['@'], ["v-s:canRead"]);
   }
 }
@@ -1209,7 +1209,7 @@ if (parent_script_id) {
 document = get_individual(ticket, document["@"]);
 if ( veda.Util.hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: "Boolean"} ) || !prev_state ) {
   delete document['v-s:triggerVersionCreation'];
-  create_version(ticket, document, prev_state, user_uri, _event_id);
+  veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
 }
   """ ;
 .

@@ -512,7 +512,7 @@ function onto_rename(ticket, document, execute_script)
             return;
 
         var args_uris = execute_script['v-s:argument'];
-        var args = loadVariablesUseField(ticket, args_uris);
+        var args = veda.Util.loadVariablesUseField(ticket, args_uris);
 
         for (var idx in args_uris)
         {
@@ -571,7 +571,7 @@ function onto_rename(ticket, document, execute_script)
                         if (value.type == "Uri" || value.type == "String")
                         {
                             var to = from_2_to[from];
-                            var new_str = replace_word(value.data, from, to);
+                            var new_str = veda.Util.replace_word(value.data, from, to);
                             if (new_str !== value.data)
                             {
                                 is_update = true;
@@ -588,7 +588,7 @@ function onto_rename(ticket, document, execute_script)
                 {
                     var to = from_2_to[from];
                     //print ('values=', values, ', from=', from, ', to=', to);
-                    var new_str = replace_word(values, from, to);
+                    var new_str = veda.Util.replace_word(values, from, to);
                     if (new_str !== values)
                     {
                         is_replace = true;

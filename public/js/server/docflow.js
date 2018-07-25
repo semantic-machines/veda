@@ -24,13 +24,13 @@ function prepare_decision_form(ticket, document, prev_state)
     {
       if (!f_takenDecision)
       {
-        set_err_on_indv("attempt clear decision[" + veda.Util.getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
-              set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
+        veda.Util.set_err_on_indv("attempt clear decision[" + veda.Util.getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
+              veda.Util.set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
       }
       else if (f_takenDecision.length != f_prev_takenDecision.length || veda.Util.getUri(f_takenDecision) != veda.Util.getUri(f_prev_takenDecision))
       {
-        set_err_on_indv("attempt set another decision " + veda.Util.toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
-              set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
+        veda.Util.set_err_on_indv("attempt set another decision " + veda.Util.toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
+              veda.Util.set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
       }
       return;
     }
@@ -42,7 +42,7 @@ function prepare_decision_form(ticket, document, prev_state)
         var _work_order = get_individual(ticket, veda.Util.getUri(f_onWorkOrder));
         if (!_work_order)
         {
-            set_err_on_indv("WorkOrder[" + veda.Util.getUri(f_onWorkOrder) + "], not found", document, "prepare decision form");
+            veda.Util.set_err_on_indv("WorkOrder[" + veda.Util.getUri(f_onWorkOrder) + "], not found", document, "prepare decision form");
             return;
         }
 
@@ -59,7 +59,7 @@ function prepare_decision_form(ticket, document, prev_state)
         var work_item = get_individual(ticket, veda.Util.getUri(f_forWorkItem));
         if (!work_item)
         {
-            set_err_on_indv("invalid WorkOrder[" + veda.Util.getUri(f_onWorkOrder) + "], field v-wf:forWorkItem[" + veda.Util.getUri(f_forWorkItem) + "], not found", document, "prepare decision form");
+            veda.Util.set_err_on_indv("invalid WorkOrder[" + veda.Util.getUri(f_onWorkOrder) + "], field v-wf:forWorkItem[" + veda.Util.getUri(f_forWorkItem) + "], not found", document, "prepare decision form");
             return;
         }
 
@@ -68,7 +68,7 @@ function prepare_decision_form(ticket, document, prev_state)
         {
             if (wi_isCompleted[0].data === true)
             {
-        set_err_on_indv("WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
+        veda.Util.set_err_on_indv("WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
                 return;
             }
         }
@@ -78,7 +78,7 @@ function prepare_decision_form(ticket, document, prev_state)
         var _process = get_individual(ticket, forProcess_uri);
         if (!_process)
         {
-            set_err_on_indv("invalid WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], field v-wf:forProcess[" + veda.Util.getUri(forProcess) + "], not found", document, "prepare decision form");
+            veda.Util.set_err_on_indv("invalid WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], field v-wf:forProcess[" + veda.Util.getUri(forProcess) + "], not found", document, "prepare decision form");
             return;
         }
 
@@ -90,7 +90,7 @@ function prepare_decision_form(ticket, document, prev_state)
         var net_element = get_individual(ticket, veda.Util.getUri(f_forNetElement));
         if (!net_element)
         {
-            set_err_on_indv("invalid WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], field v-wf:forNetElement[" + veda.Util.getUri(f_forNetElement) + "], not found", document, "prepare decision form");
+            veda.Util.set_err_on_indv("invalid WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], field v-wf:forNetElement[" + veda.Util.getUri(f_forNetElement) + "], not found", document, "prepare decision form");
             return;
         }
 
@@ -99,14 +99,14 @@ function prepare_decision_form(ticket, document, prev_state)
         var transform_link = veda.Util.getUri(net_element['v-wf:completeDecisionTransform']);
         if (!transform_link)
         {
-            set_err_on_indv("invalid net_element[" + veda.Util.getUri(f_forNetElement) + "], field v-wf:completeDecisionTransform[" + transform_link + "], not found", document, "prepare decision form");
+            veda.Util.set_err_on_indv("invalid net_element[" + veda.Util.getUri(f_forNetElement) + "], field v-wf:completeDecisionTransform[" + transform_link + "], not found", document, "prepare decision form");
             return;
         }
 
         var transform = get_individual(ticket, transform_link);
         if (!transform)
         {
-            set_err_on_indv("invalid net_element[" + veda.Util.getUri(f_forNetElement) + "], field v-wf:completeDecisionTransform[" + transform_link + "], not found", document, "prepare decision form");
+            veda.Util.set_err_on_indv("invalid net_element[" + veda.Util.getUri(f_forNetElement) + "], field v-wf:completeDecisionTransform[" + transform_link + "], not found", document, "prepare decision form");
             return;
         }
 
@@ -121,13 +121,13 @@ function prepare_decision_form(ticket, document, prev_state)
 
         if (process_output_vars.length > 0)
         {
-            set_field_to_document ('v-wf:outVars', new_vars, _work_order['@']);
+            veda.Util.set_field_to_document ('v-wf:outVars', new_vars, _work_order['@']);
             _work_order['v-wf:outVars'] = new_vars;
 
-            set_field_to_document ('v-wf:isCompleted', veda.Util.newBool(true), document['@']);
+            veda.Util.set_field_to_document ('v-wf:isCompleted', veda.Util.newBool(true), document['@']);
 
             //print("[WORKFLOW][DF1].5 completedExecutorJournalMap");
-            mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order, null, getJournalUri(_work_order['@']));
+            mapToJournal(net_element['v-wf:completedExecutorJournalMap'], ticket, _process, work_item, _work_order, null, veda.Util.getJournalUri(_work_order['@']));
             //print("[WORKFLOW][DF1].6 completedExecutorJournalMap");
         }
     }
@@ -161,7 +161,7 @@ function prepare_work_order(ticket, document)
 
         var trace_journal_uri = create_new_trace_subjournal(f_forWorkItem, _work_order, "prepare_work_order:" + _work_order['@'], 'v-wf:WorkOrderStarted')
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", veda.Util.toJson(document));
+            veda.Util.traceToJournal(ticket, trace_journal_uri, "обработка рабочего задания", veda.Util.toJson(document));
 
         var journal_uri;
 
@@ -380,7 +380,7 @@ function prepare_work_order(ticket, document)
                     var transform_result = veda.Util.transformation(ticket, work_item_inVars, transform, f_executor, veda.Util.newUri(document['@']), forProcess);
 
                     if (trace_journal_uri)
-                        traceToJournal(ticket, trace_journal_uri, "v-wf:startDecisionTransform", "transform_result=" + veda.Util.toJson(transform_result));
+                        veda.Util.traceToJournal(ticket, trace_journal_uri, "v-wf:startDecisionTransform", "transform_result=" + veda.Util.toJson(transform_result));
 
                     var decisionFormList = [];
 
@@ -518,18 +518,18 @@ function prepare_work_order(ticket, document)
         else
         {
             if (trace_journal_uri)
-                traceToJournal(ticket, trace_journal_uri, "[WO4.0] не все задания выполнены", "stop. work_item_result" + veda.Util.toJson(work_item_result) + ", workOrderList=", veda.Util.toJson(workOrderList));
+                veda.Util.traceToJournal(ticket, trace_journal_uri, "[WO4.0] не все задания выполнены", "stop. work_item_result" + veda.Util.toJson(work_item_result) + ", workOrderList=", veda.Util.toJson(workOrderList));
         }
 
         // end //////////////// скрипт сборки результатов
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "[WO4] work_item_result", veda.Util.toJson(work_item_result));
+            veda.Util.traceToJournal(ticket, trace_journal_uri, "[WO4] work_item_result", veda.Util.toJson(work_item_result));
 
         var workItemList = [];
 
         if (is_goto_to_next_task)
         {
-            journal_uri = getJournalUri(_work_order['@']);
+            journal_uri = veda.Util.getJournalUri(_work_order['@']);
 
 
             // переход к новой задаче  prepare[[wo][wo][wo]] ----> new [wi]
@@ -595,7 +595,7 @@ function prepare_work_order(ticket, document)
                                 var res1 = eval(expression);
 
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", veda.Util.toJson(expression) + ", res =" + veda.Util.toJson(res1));
+                                    veda.Util.traceToJournal(ticket, trace_journal_uri, "in flow expression", veda.Util.toJson(expression) + ", res =" + veda.Util.toJson(res1));
 
                                 if (res1 === true)
                                 {
@@ -620,7 +620,7 @@ function prepare_work_order(ticket, document)
                             catch (e)
                             {
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "in flow expression", veda.Util.toJson(expression) + ", ", veda.Util.toJson(e.stack));
+                                    veda.Util.traceToJournal(ticket, trace_journal_uri, "in flow expression", veda.Util.toJson(expression) + ", ", veda.Util.toJson(e.stack));
 
                                 print(e.stack);
                             }
@@ -712,9 +712,9 @@ function prepare_work_item(ticket, document)
             {
               trace_journal_uri = get_trace_journal(document, _process)
                 if (trace_journal_uri)
-                    traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
+                    veda.Util.traceToJournal(ticket, trace_journal_uri, "prepare_work_item:completed, exit", work_item['@']);
 
-                remove_empty_branches_from_journal(getJournalUri(work_item['@']));
+                remove_empty_branches_from_journal(veda.Util.getJournalUri(work_item['@']));
 
                 return;
             }
@@ -821,7 +821,7 @@ function prepare_work_item(ticket, document)
             journal_uri = create_new_subjournal(forProcess, work_item['@'], netElement['rdfs:label'], 'v-wf:WorkItemStarted');
 
             if (trace_journal_uri)
-                traceToJournal(ticket, trace_journal_uri, "Is task");
+                veda.Util.traceToJournal(ticket, trace_journal_uri, "Is task");
 
             //* выполнить стартовый маппинг переменных
             var work_item__inVars = [];
@@ -849,7 +849,7 @@ function prepare_work_item(ticket, document)
                     if (!executor)
                     {
                         if (trace_journal_uri)
-                            traceToJournal(ticket, trace_journal_uri, "исполнитель не найден", " uri=[" + f_executor[i].data + "]");
+                            veda.Util.traceToJournal(ticket, trace_journal_uri, "исполнитель не найден", " uri=[" + f_executor[i].data + "]");
                     }
                     else
                     {
@@ -868,7 +868,7 @@ function prepare_work_item(ticket, document)
                                 var result = eval(expression);
 
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "определение исполнителя [" + expression + "]", "executors=" + veda.Util.toJson(result));
+                                    veda.Util.traceToJournal(ticket, trace_journal_uri, "определение исполнителя [" + expression + "]", "executors=" + veda.Util.toJson(result));
 
                                 if (result !== undefined && result.length > 0)
                                 {
@@ -886,14 +886,14 @@ function prepare_work_item(ticket, document)
                             catch (e)
                             {
                                 if (trace_journal_uri)
-                                    traceToJournal(ticket, trace_journal_uri, "исполнители не были определены [" + expression + "]", e.stack);
+                                    veda.Util.traceToJournal(ticket, trace_journal_uri, "исполнители не были определены [" + expression + "]", e.stack);
                             }
 
                         }
                         else
                         {
                             if (trace_journal_uri)
-                                traceToJournal(ticket, trace_journal_uri, "установлен исполнитель ", "executor=" + veda.Util.toJson(f_executor[i].data));
+                                veda.Util.traceToJournal(ticket, trace_journal_uri, "установлен исполнитель ", "executor=" + veda.Util.toJson(f_executor[i].data));
 
                             executor_list.push(f_executor[i]);
                         }
@@ -984,7 +984,7 @@ function prepare_work_item(ticket, document)
         else if ( veda.Util.hasValue(netElement, "rdf:type", {data: "v-wf:OutputCondition", type: "Uri"}) )
         {
             if (trace_journal_uri)
-                traceToJournal(ticket, trace_journal_uri, "Is output condition ", "");
+                veda.Util.traceToJournal(ticket, trace_journal_uri, "Is output condition ", "");
 
             //var process = new Context(_process, ticket);
             //process.print_variables('v-wf:inVars');
@@ -1132,7 +1132,7 @@ function prepare_process(ticket, document)
   var trace_journal_uri = get_trace_journal(document, _process);
 
   if (trace_journal_uri) {
-    traceToJournal(ticket, trace_journal_uri, "prepare_process", document['@']);
+    veda.Util.traceToJournal(ticket, trace_journal_uri, "prepare_process", document['@']);
   }
 
   var inVars = _process['v-wf:inVars'] || [];
@@ -1343,24 +1343,24 @@ function prepare_start_form(ticket, document)
 
     if (isTrace)
     {
-        trace_journal_uri = create_new_journal(ticket, getTraceJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label'], true);
+        trace_journal_uri = create_new_journal(ticket, veda.Util.getTraceJournalUri(new_process_uri), veda.Util.getJournalUri(processedDocumentId), _net['rdfs:label'], true);
 
         if (trace_journal_uri)
         {
-            traceToJournal(ticket, trace_journal_uri, "started new process", veda.Util.toJson(new_process));
+            veda.Util.traceToJournal(ticket, trace_journal_uri, "started new process", veda.Util.toJson(new_process));
             new_process['v-wf:traceJournal'] = veda.Util.newUri(trace_journal_uri);
         }
     }
 
     put_individual(ticket, new_process, _event_id);
 
-    create_new_journal(ticket, getJournalUri(new_process_uri), getJournalUri(processedDocumentId), _net['rdfs:label']);
+    create_new_journal(ticket, veda.Util.getJournalUri(new_process_uri), veda.Util.getJournalUri(processedDocumentId), _net['rdfs:label']);
 
     var jrId = veda.Util.genUri() + "-psr";
     var journalRecord = {
         '@': jrId,
         'rdf:type': veda.Util.newUri('v-s:ProcessStarted'),
-        'v-s:processJournal': veda.Util.newUri(getJournalUri(new_process_uri)),
+        'v-s:processJournal': veda.Util.newUri(veda.Util.getJournalUri(new_process_uri)),
         'v-wf:onProcess': veda.Util.newUri(new_process_uri),
         'v-s:onDocument': processedDocumentValue,
         'v-s:created': [

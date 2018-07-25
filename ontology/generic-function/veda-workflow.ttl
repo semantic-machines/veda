@@ -2279,12 +2279,12 @@ v-wf:ProcessStopEvent
       document['v-wf:isStopped'][0].data == true &&
       !prev_state['v-wf:isStopped']) {
     // Disable all active tasks
-    recursiveCall(document, {}, ticket, _event_id);
+    veda.Util.recursiveCall(document, {}, ticket, _event_id);
     // Add journal record to process
 
     var pb = get_individual(ticket, 'v-wf:ProcessStopped');
 
-    var journal_record = newJournalRecord(document['@']+'j');
+    var journal_record = veda.Util.newJournalRecord(document['@']+'j');
 
       journal_record['rdf:type'] = [
       {
@@ -2299,7 +2299,7 @@ v-wf:ProcessStopEvent
       journal_record['rdfs:label'] = pb['rdfs:label'];
       journal_record['rdfs:comment'] = pb['rdfs:label'];
 
-      logToJournal(ticket, document['@']+'j', journal_record, true);
+      veda.Util.logToJournal(ticket, document['@']+'j', journal_record, true);
       interrupt_process(ticket, document, _event_id);
   }
 """ ;

@@ -611,18 +611,18 @@ function create_and_mapping_variables(ticket, mapping, _process, _task, _order, 
                 catch (e)
                 {
                     if (trace_journal_uri)
-                        traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "err: expression: " + expression + "\n" + e.stack);
+                        veda.Util.traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "err: expression: " + expression + "\n" + e.stack);
                 }
             }
             else
             {
                 if (trace_journal_uri)
-                    traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "map not found :" + mapping[i].data);
+                    veda.Util.traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", "map not found :" + mapping[i].data);
             }
         }
 
         if (trace_journal_uri)
-            traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + veda.Util.getUris(mapping) + "' \n\nout = \n" + veda.Util.toJson(_trace_info));
+            veda.Util.traceToJournal(ticket, trace_journal_uri, "create_and_mapping_variables", trace_comment + " = '" + veda.Util.getUris(mapping) + "' \n\nout = \n" + veda.Util.toJson(_trace_info));
 
         return new_vars;
     }
@@ -760,7 +760,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
             journalVars = create_and_mapping_variables(ticket, map_container, _process, _task, _order, null, false, trace_journal_uri, trace_comment);
             if (journalVars)
             {
-                var new_journal_record = newJournalRecord(journal_uri);
+                var new_journal_record = veda.Util.newJournalRecord(journal_uri);
                 for (var idx = 0; idx < journalVars.length; idx++)
                 {
                     var jvar = journalVars[idx];
@@ -768,7 +768,7 @@ function mapToJournal(map_container, ticket, _process, _task, _order, msg, journ
                     var value = jvar['v-wf:variableValue'];
                     new_journal_record[name] = value;
                 }
-                logToJournal(ticket, journal_uri, new_journal_record);
+                veda.Util.logToJournal(ticket, journal_uri, new_journal_record);
 
                 //print("@@@ logToJournal[" + journal_uri + "], new_journal_record=" + veda.Util.toJson(new_journal_record));
 
@@ -953,13 +953,13 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
 
     if (is_trace == true)
     {
-        new_sub_journal_uri = getTraceJournalUri(el_uri);
-        parent_journal_uri = getTraceJournalUri(parent_uri);
+        new_sub_journal_uri = veda.Util.getTraceJournalUri(el_uri);
+        parent_journal_uri = veda.Util.getTraceJournalUri(parent_uri);
     }
     else
     {
-        new_sub_journal_uri = getJournalUri(el_uri);
-        parent_journal_uri = getJournalUri(parent_uri);
+        new_sub_journal_uri = veda.Util.getJournalUri(el_uri);
+        parent_journal_uri = veda.Util.getJournalUri(parent_uri);
     }
 
     var cj = get_individual(ticket, new_sub_journal_uri);
@@ -971,7 +971,7 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
     else
         create_new_journal(ticket, new_sub_journal_uri, parent_journal_uri, label, is_trace);
 
-    var journal_record = newJournalRecord(parent_journal_uri);
+    var journal_record = veda.Util.newJournalRecord(parent_journal_uri);
     journal_record['rdf:type'] = [
     {
         data: jtype,
@@ -993,7 +993,7 @@ function _create_new_subjournal(is_trace, parent_uri, el_uri, label, jtype)
         data: new_sub_journal_uri,
         type: "Uri"
     }];
-    logToJournal(ticket, parent_journal_uri, journal_record, true);
+    veda.Util.logToJournal(ticket, parent_journal_uri, journal_record, true);
 
     put_individual(ticket, journal_record, _event_id);
 
@@ -1005,7 +1005,7 @@ function get_trace_journal(document, process)
     var isTrace = document['v-wf:isTrace'];
     if (isTrace && veda.Util.getFirstValue(isTrace) == true)
     {
-        return getTraceJournalUri(process['@']);
+        return veda.Util.getTraceJournalUri(process['@']);
     }
     else
     {
@@ -1029,7 +1029,7 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
             use_net = f_executor;
 
         if (parent_trace_journal_uri)
-            traceToJournal(ticket, parent_trace_journal_uri, "[WO2.4] executor= " + veda.Util.getUri(f_executor) + " used net", veda.Util.getUri(use_net));
+            veda.Util.traceToJournal(ticket, parent_trace_journal_uri, "[WO2.4] executor= " + veda.Util.getUri(f_executor) + " used net", veda.Util.getUri(use_net));
 
         //var ctx = new Context(work_item, ticket);
         //ctx.print_variables ('v-wf:inVars');
@@ -1078,10 +1078,10 @@ function create_new_subprocess(ticket, f_useSubNet, f_executor, parent_net, f_in
 
             if (parent_trace_journal_uri)
             {
-                traceToJournal(ticket, parent_trace_journal_uri, "new_process=", veda.Util.getUri(use_net), veda.Util.toJson(new_process));
+                veda.Util.traceToJournal(ticket, parent_trace_journal_uri, "new_process=", veda.Util.getUri(use_net), veda.Util.toJson(new_process));
                 new_process['v-wf:isTrace'] = veda.Util.newBool(true);
 
-                var trace_journal_uri = getTraceJournalUri(new_process_uri);
+                var trace_journal_uri = veda.Util.getTraceJournalUri(new_process_uri);
                 if (trace_journal_uri)
                 {
                     create_new_journal(ticket, trace_journal_uri, null, _started_net['rdfs:label']);
