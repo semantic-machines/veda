@@ -648,7 +648,7 @@ private void reload_ext_scripts(Context ctx)
     g_ticket.data   = cast(char *)sticket;
     g_ticket.length = cast(int)sticket.length;
 
-    foreach (path; [ "./public/js/server/", "./public/js/common/" ])
+    foreach (path; [ "./public/js/common/", "./public/js/server/" ])
     {
 
         DirEntry[] oFiles = [];
