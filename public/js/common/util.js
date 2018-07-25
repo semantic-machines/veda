@@ -1,5 +1,4 @@
 // Veda common utility functions
-"use strict";
 
 veda.Module(function Util(veda) { "use strict";
 
