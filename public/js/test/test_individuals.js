@@ -2000,9 +2000,9 @@ for (i = 0; i < 1; i++)
         'rdf:type': newUri('v-s:Event'),
         'v-s:triggerByType': newUri('rdfs:Resource1'),
         'v-s:script': newStr('if (parent_script_id != "") return;' +
-            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
-            'document["v-s:test_ArArObj"]= [newDate(new Date("2017-02-03"))];' +
-            'document["v-s:test_Obj"]= newDate(new Date("2017-03-03"))[0];' +
+            'document["v-s:test_datetime0"]= veda.Util.newDate(new Date("2017-01-03"));' +
+            'document["v-s:test_ArArObj"]= [veda.Util.newDate(new Date("2017-02-03"))];' +
+            'document["v-s:test_Obj"]= veda.Util.newDate(new Date("2017-03-03"))[0];' +
             'put_individual(ticket, document, _event_id);'),
         'v-s:created': newDate(new Date()),
         'v-s:author': newUri(ticket_admin.user_uri)
