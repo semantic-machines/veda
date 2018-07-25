@@ -1703,7 +1703,7 @@ var isContractorOkSecurityDepSummary  = getOk("v-s:hasContractorCategoryDecision
     isContractorOkFinancialDepSummary = getOk("v-s:hasContractorCategoryDecisionFinancial", "v-s:isContractorOkFinancialDepSummary");
 
 if ( maxDate ) {
-  decision["v-s:date"] = newDate(maxDate);
+  decision["v-s:date"] = veda.Util.newDate(maxDate);
 }
 
 var filled_count = 0
@@ -1730,7 +1730,7 @@ switch (true) {
 }
 
 if ( isContractorOk !== undefined ) {
-  decision["v-s:isOrganizationOk"] = newBool(isContractorOk) ;
+  decision["v-s:isOrganizationOk"] = veda.Util.newBool(isContractorOk) ;
 } else {
   delete decision["v-s:isOrganizationOk"] ;
 }
@@ -1742,7 +1742,7 @@ put_individual(ticket, decision, _event_id);
 //print( "isContractorOk", isContractorOk );
 
 function getOk(property_uri, ok_uri) {
-  var dep_decision_uri = getUri( decision[property_uri] ),
+  var dep_decision_uri = veda.Util.getUri( decision[property_uri] ),
       dep_decision = dep_decision_uri ? get_individual( ticket, dep_decision_uri ) : undefined,
       hasOk = dep_decision ? veda.Util.hasValue( dep_decision, ok_uri ) : undefined,
       ok = hasOk ? dep_decision[ok_uri][0].data : undefined ;
@@ -1776,7 +1776,7 @@ v-s:Event_ContractCategoryRequestDecision_Department
  * super_classes = super classes of the document.
  */
 //print("************************** START **************************");
-var decision_uri = getUri(document["v-s:backwardTarget"]),
+var decision_uri = veda.Util.getUri(document["v-s:backwardTarget"]),
     decision = decision_uri ? get_individual(ticket, decision_uri) : undefined;
 if (!decision) { return; }
 if ( veda.Util.hasValue(document, "v-s:created") ) {

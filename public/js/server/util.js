@@ -163,8 +163,8 @@ function loadVariablesUseField(ticket, field)
 
             if ( veda.Util.hasValue(indv, "rdf:type", {data: "v-s:Variable", type: "Uri"}) )
             {
-                var varName = getFirstValue(indv['v-s:variableName']);
-                var varValue = getStrings(indv['v-s:variableValue']);
+                var varName = veda.Util.getFirstValue(indv['v-s:variableName']);
+                var varValue = veda.Util.getStrings(indv['v-s:variableValue']);
                 res[varName] = varValue;
             }
         }
@@ -325,7 +325,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     );
     version['v-s:created'] = [{data: new Date(), type: "Datetime"}];
     version['v-s:edited'] = [];
-    version['v-s:creator'] = newUri(user_uri);
+    version['v-s:creator'] = veda.Util.newUri(user_uri);
     version['v-s:lastEditor'] = [];
 
     put_individual(ticket, version, _event_id);
@@ -334,17 +334,17 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     var membership_uri = 'd:membership_' + versionId.split(':').join('_') + '_' + actualId.split(':').join('_');
     var membership = {
       '@' : membership_uri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:memberOf' : newUri(actualId),
-      'v-s:resource' : newUri(versionId),
-      'rdfs:comment' : newStr('создано: server script create_version ()'),
-      'v-s:canRead'  : newBool(true)
+      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf' : veda.Util.newUri(actualId),
+      'v-s:resource' : veda.Util.newUri(versionId),
+      'rdfs:comment' : veda.Util.newStr('создано: server script create_version ()'),
+      'v-s:canRead'  : veda.Util.newBool(true)
     };
     put_individual (ticket, membership, _event_id);
 
     // Update previous version
     if (document['v-s:previousVersion']) {
-      var previous = get_individual(ticket, getUri(document['v-s:previousVersion']));
+      var previous = get_individual(ticket, veda.Util.getUri(document['v-s:previousVersion']));
       previous['v-s:nextVersion'] = [{
         data: versionId,
         type: "Uri"
@@ -363,7 +363,7 @@ function create_version(ticket, document, prev_state, user_uri, _event_id) {
     }];
     document['v-s:nextVersion'] = [];
     document['v-s:edited'] = [{data: new Date(), type: "Datetime"}];
-    document['v-s:lastEditor'] = newUri(user_uri);
+    document['v-s:lastEditor'] = veda.Util.newUri(user_uri);
     put_individual(ticket, document, _event_id);
   }
 }
@@ -379,8 +379,8 @@ function recursiveCall(elem, path, ticket, _event_id) {
     elem['v-wf:decisionFormList'].forEach(function(dfae) {
       var df = get_individual(ticket, dfae.data)
       if (!df['v-wf:isCompleted'] || df['v-wf:isCompleted'][0].data == false) {
-        df['v-s:deleted'] = newBool(true);
-        df['v-wf:isStopped'] = newBool(true);
+        df['v-s:deleted'] = veda.Util.newBool(true);
+        df['v-wf:isStopped'] = veda.Util.newBool(true);
         put_individual(ticket, df, _event_id);
       }
     });
@@ -409,17 +409,17 @@ function set_err_on_indv (msg, indv, src)
 {
     var bugreport = {
       '@' : veda.Util.genUri () + '-err',
-      'rdf:type'     : newUri('v-s:BugReport'),
-      'v-s:created'  : newDate (new Date()),
-      'rdfs:comment' : newStr(src),
-      'v-s:errorMessage' : newStr (msg),
-      'v-s:resource': newUri (indv['@'])
+      'rdf:type'     : veda.Util.newUri('v-s:BugReport'),
+      'v-s:created'  : veda.Util.newDate (new Date()),
+      'rdfs:comment' : veda.Util.newStr(src),
+      'v-s:errorMessage' : veda.Util.newStr (msg),
+      'v-s:resource': veda.Util.newUri (indv['@'])
     };
     put_individual(ticket, bugreport, _event_id);
 
     var add_to_indv = {
         '@': indv['@'],
-        'v-s:hasError': newUri (bugreport['@'])
+        'v-s:hasError': veda.Util.newUri (bugreport['@'])
         };
     add_to_individual(ticket, add_to_indv, _event_id);
 

@@ -54,12 +54,12 @@ function change_rights_actor(process, task, rightset, actor)
             //print ("@JS4 employee=", veda.Util.toJson(employee));
             if (employee)
             {
-                var employee_uri = getUri(employee);
+                var employee_uri = veda.Util.getUri(employee);
 
                 if (employee_uri)
-                    veda.Util.addRight(ticket, employee_uri, getUri(doc_id), allow_set);
+                    veda.Util.addRight(ticket, employee_uri, veda.Util.getUri(doc_id), allow_set);
                 else
-                    print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+                    print("ERR! change_rights_actor: undefined employee_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
             }
 
             executor = get_properties_chain(executor, [
@@ -74,18 +74,18 @@ function change_rights_actor(process, task, rightset, actor)
 
             if (executor)
             {
-                var executor_uri = getUri(executor);
+                var executor_uri = veda.Util.getUri(executor);
                 if (executor_uri)
-                    veda.Util.addRight(ticket, executor_uri, getUri(doc_id), allow_set);
+                    veda.Util.addRight(ticket, executor_uri, veda.Util.getUri(doc_id), allow_set);
                 else
-                    print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
+                    print("ERR! change_rights_actor: undefined executor_uri, actor=[" + actor + "], executor=" + veda.Util.toJson(executor) + ", doc_id=" + veda.Util.getUri(doc_id) + ", process=" + process['@'] + ", task=" + task['@']);
             }
 
-            //var instanceOf = getUri(process['v-wf:instanceOf']);
+            //var instanceOf = veda.Util.getUri(process['v-wf:instanceOf']);
             //var net_doc_id = instanceOf + "_" + doc_id[0].data;
             //print("[WORKFLOW]:down_right_and_store, find=", net_doc_id);
         }
-        return [get_new_variable('right', newStr('acl1'))];
+        return [get_new_variable('right', veda.Util.newStr('acl1'))];
     }
     catch (e)
     {
@@ -101,7 +101,7 @@ function restore_right(task)
         //print("[WORKFLOW]:restore_right function RESTORE RIGHT IS NOT IMPLIMENTED");
         var right = task.getInputVariable('originalRights');
         //print("[WORKFLOW]:restore_right ", veda.Util.toJson(right));
-        return [get_new_variable('result', newStr('Ok'))];
+        return [get_new_variable('result', veda.Util.newStr('Ok'))];
 
     }
     catch (e)
@@ -136,7 +136,7 @@ function change_process_status(ticket, process, status, _event_id)
             if (doc['v-wf:isProcess'] && doc['v-wf:isProcess'][0].data == process['@'])
             {
                 delete doc['v-wf:isProcess'];
-                doc['v-wf:hasStatusWorkflow'] = newUri(status);
+                doc['v-wf:hasStatusWorkflow'] = veda.Util.newUri(status);
                 put_individual(ticket, doc, _event_id);
             }
         }
@@ -153,18 +153,18 @@ function change_document_status(process, status)
             var doc_id = process.getInputVariable('docId');
             if (doc_id) {
                 var set_in_document = {
-                    '@': getUri(doc_id)
+                    '@': veda.Util.getUri(doc_id)
                 };
-                set_in_document['v-s:hasStatus'] = newUri(status);
+                set_in_document['v-s:hasStatus'] = veda.Util.newUri(status);
                 if (status == 'v-s:StatusExecuted') {
-                    set_in_document['v-s:dateFact'] = newDate(Date.now());
+                    set_in_document['v-s:dateFact'] = veda.Util.newDate(Date.now());
                 }
                 //print ("@JS set_in_document=", veda.Util.toJson(set_in_document));
                 set_in_individual(process.ticket, set_in_document, _event_id);
             };
         }
     };
-    return [get_new_variable('status', newStr(status))];
+    return [get_new_variable('status', veda.Util.newStr(status))];
 }
 
 function is_exists_net_executor(process)
@@ -172,7 +172,7 @@ function is_exists_net_executor(process)
     try
     {
         var res = process.getExecutor() !== undefined;
-        return [get_new_variable('res', newBool(res))];
+        return [get_new_variable('res', veda.Util.newBool(res))];
     }
     catch (e)
     {
@@ -201,7 +201,7 @@ function get_type_of_docId(task)
 
         }
 
-        return [get_new_variable('res', newUri(res))];
+        return [get_new_variable('res', veda.Util.newUri(res))];
     }
     catch (e)
     {
@@ -215,7 +215,7 @@ function is_in_docflow_and_set_if_true(task)
 
     // # 322
     //// # 285
-    //    return [get_new_variable('result', newUri(false))];
+    //    return [get_new_variable('result', veda.Util.newUri(false))];
 
     try
     {
@@ -225,13 +225,13 @@ function is_in_docflow_and_set_if_true(task)
             var doc_id = task.getInputVariable('docId');
             if (doc_id)
             {
-                var forProcess = getUri(task.src_data['v-wf:forProcess']);
+                var forProcess = veda.Util.getUri(task.src_data['v-wf:forProcess']);
                 //print("[Z1Z] := "+veda.Util.toJson(forProcess));
                 var process = get_individual(task.ticket, forProcess);
                 //print("[Z2Z] := "+veda.Util.toJson(process));
                 if (process)
                 {
-                    var instanceOf = getUri(process['v-wf:instanceOf']);
+                    var instanceOf = veda.Util.getUri(process['v-wf:instanceOf']);
 
                     var net_doc_id = instanceOf + "_" + doc_id[0].data;
                     //print("[WORKFLOW]:is_in_docflow_and_set_if_true, find=", net_doc_id);
@@ -260,7 +260,7 @@ function is_in_docflow_and_set_if_true(task)
 
                         var add_to_document = {
                             '@': doc_id[0].data,
-                            'v-wf:isProcess': newUri(process['@'])
+                            'v-wf:isProcess': veda.Util.newUri(process['@'])
                         };
                         print('$ add_to_document >>' + veda.Util.toJson(add_to_document));
                         add_to_individual(ticket, add_to_document, _event_id);
@@ -270,7 +270,7 @@ function is_in_docflow_and_set_if_true(task)
 
         }
 
-        return [get_new_variable('result', newUri(res))];
+        return [get_new_variable('result', veda.Util.newUri(res))];
     }
     catch (e)
     {
@@ -298,10 +298,10 @@ function add_value_to_document(process, task)
 
             if (name_uri && value)
             {
-                src = get_individual(task.ticket, getUri(src_uri));
+                src = get_individual(task.ticket, veda.Util.getUri(src_uri));
                 if (src)
                 {
-                    name_uri = getUri(name_uri);
+                    name_uri = veda.Util.getUri(name_uri);
                     var ch_value = src[name_uri];
 
                     if (!ch_value)
@@ -340,10 +340,10 @@ function set_value_to_document(process, task)
 
             if (name_uri && value)
             {
-                src = get_individual(task.ticket, getUri(src_uri));
+                src = get_individual(task.ticket, veda.Util.getUri(src_uri));
                 if (src)
                 {
-                    name_uri = getUri(name_uri);
+                    name_uri = veda.Util.getUri(name_uri);
                     src[name_uri] = value;
                     put_individual(ticket, src, _event_id);
                 }
@@ -371,13 +371,13 @@ function create_use_transformation(process, task)
 
             if (transform_link)
             {
-                var transform = get_individual(task.ticket, getUri(transform_link));
+                var transform = get_individual(task.ticket, veda.Util.getUri(transform_link));
                 if (transform)
                 {
-                    var document = get_individual(task.ticket, getUri(src_doc_id));
+                    var document = get_individual(task.ticket, veda.Util.getUri(src_doc_id));
                     if (document)
                     {
-                        var new_items = veda.Util.transformation(task.ticket, document, transform, null, null, newUri(process.src_data['@']));
+                        var new_items = veda.Util.transformation(task.ticket, document, transform, null, null, veda.Util.newUri(process.src_data['@']));
                         for (var i = 0; i < new_items.length; i++)
                         {
                             put_individual(ticket, new_items[i], _event_id);

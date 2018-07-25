@@ -56,12 +56,12 @@ function numerate(ticket, individual, super_classes, prev_state, _event_id) {
           // update doc, commit number
           number = getNewValue(ticket, individual, rule, scope);
           commitValue(ticket, scope, number, _event_id);
-          individual[enumeratedProperty] = newStr( number.toString() );
+          individual[enumeratedProperty] = veda.Util.newStr( number.toString() );
           put_individual(ticket, individual, _event_id);
           //print("@3 update doc, commit number");
 
         } else if (!number && prevNumber) {
-          individual[enumeratedProperty] = newStr( prevNumber.toString() ); // Restore number
+          individual[enumeratedProperty] = veda.Util.newStr( prevNumber.toString() ); // Restore number
           put_individual(ticket, individual, _event_id);
         } else if (number && !prev_state) {
           // commit number

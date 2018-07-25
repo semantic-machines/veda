@@ -222,14 +222,14 @@ function createTaskCounter(owner) {
 
   var taskCounter = {
     "@": uri,
-    "rdf:type": newUri("v-ft:TaskCounter"),
-    "v-s:owner": newUri(owner),
-    "v-s:created": newDate(today),
-    "v-ft:inboxCount": newInt(inboxCount),
-    "v-ft:inboxWeekCount": newInt(inboxWeekCount),
-    "v-ft:outboxCount": newInt(outboxCount),
-    "v-ft:completedCount": newInt(completedCount),
-    "rdfs:label": newStr("создано автоматически в обработчике v-ft:Event_UpdateTaskCounter")
+    "rdf:type": veda.Util.newUri("v-ft:TaskCounter"),
+    "v-s:owner": veda.Util.newUri(owner),
+    "v-s:created": veda.Util.newDate(today),
+    "v-ft:inboxCount": veda.Util.newInt(inboxCount),
+    "v-ft:inboxWeekCount": veda.Util.newInt(inboxWeekCount),
+    "v-ft:outboxCount": veda.Util.newInt(outboxCount),
+    "v-ft:completedCount": veda.Util.newInt(completedCount),
+    "rdfs:label": veda.Util.newStr("создано автоматически в обработчике v-ft:Event_UpdateTaskCounter")
   };
   /*if (inboxCount + outboxCount + completedCount + inboxWeekCount) {
     print(

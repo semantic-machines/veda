@@ -1,140 +1,9 @@
 // Veda common utility functions
 "use strict";
 
-function newUri(uri)
-{
-  return [{
-    data: uri,
-    type: "Uri"
-  }];
-}
-
-function newStr(_data, _lang)
-{
-  var value = {
-    data: _data,
-    type: "String"
-  };
-  if (_lang && _lang !== 'NONE')
-    value.lang = _lang;
-  return [ value ];
-}
-
-function newBool(_data)
-{
-  return [{
-    data: _data,
-    type: "Boolean"
-  }];
-}
-
-function newInt(_data)
-{
-  return [{
-    data: _data,
-    type: "Integer"
-  }];
-}
-
-function newDecimal(_data)
-{
-  return [{
-    data: _data,
-    type: "Decimal"
-  }];
-}
-
-function newDate(_data)
-{
-  return [{
-    data: _data,
-    type: "Datetime"
-  }];
-}
-
-function addDay(_data, _days)
-{
-  if (!_data)
-    _data = new Date();
-
-  try
-  {
-    _data.setDate(_data.getDate() + _days);
-  }
-  catch (e)
-  {
-    print(e);
-  }
-
-  return _data;
-}
-
-function getStrings(field)
-{
-  var res = [];
-  if (field)
-  {
-    for (var i in field)
-    {
-      res.push(field[i].data);
-    }
-  }
-  return res;
-}
-
-function getUris(field)
-{
-  var res = [];
-  if (field)
-  {
-    for (var i in field)
-    {
-      res.push(field[i].data);
-    }
-  }
-  return res;
-}
-
-function getUri(field)
-{
-  if (field && field.length > 0)
-  {
-    return field[0].data;
-  }
-}
-
-function getFirstValue(field)
-{
-  if (field && field.length > 0)
-  {
-    if (field[0].type == "Integer")
-    {
-      return parseInt(field[0].data, 10);
-    }
-    else if (field[0].type == "Datetime")
-      return new Date(field[0].data);
-
-    return field[0].data;
-  }
-}
-
-function getFirstValueUseLang(field, lang)
-{
-  for (var i in field)
-  {
-    if (field[i].lang == lang)
-      return field[i].data;
-  }
-  return null;
-}
-
-// Veda common utility functions----------------------------------------
-
 veda.Module(function Util(veda) { "use strict";
 
   veda.Util = veda.Util || {};
-
-// ---------------------------------------------------------------------
 
   veda.Util.hasValue = function(individual, property, value)
   {
@@ -540,7 +409,7 @@ veda.Module(function Util(veda) { "use strict";
       {
         return function(name, field)
         {
-          var rr = get_individual(ticket, getUri(element));
+          var rr = get_individual(ticket, veda.Util.getUri(element));
           if (!rr)
             return;
 
@@ -931,7 +800,7 @@ veda.Module(function Util(veda) { "use strict";
               var element_uri;
 
               if (Array.isArray(element) === true)
-                element_uri = getUri (element);
+                element_uri = veda.Util.getUri (element);
               else
                 element_uri = element.data ? element.data : element;
 
@@ -1274,17 +1143,17 @@ veda.Module(function Util(veda) { "use strict";
     var new_membership_uri = veda.Util.genUri() + "-mbh";
     var new_membership = {
       '@': new_membership_uri,
-      'rdf:type': newUri('v-s:Membership'),
-      'v-s:memberOf': newUri(group),
-      'v-s:resource': newUri(resource)
+      'rdf:type': veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf': veda.Util.newUri(group),
+      'v-s:resource': veda.Util.newUri(resource)
     };
 
     (allow || []).forEach(function (right) {
-      new_membership[right] = newBool(true);
+      new_membership[right] = veda.Util.newBool(true);
     });
 
     (deny || []).forEach(function (right) {
-      new_membership[right] = newBool(false);
+      new_membership[right] = veda.Util.newBool(false);
     });
 
     var res = put_individual(ticket, new_membership);
@@ -1296,10 +1165,10 @@ veda.Module(function Util(veda) { "use strict";
     var new_membership_uri = veda.Util.genUri() + "-mbh";
     var new_membership = {
       '@': new_membership_uri,
-      'rdf:type': newUri('v-s:Membership'),
-      'v-s:memberOf': newUri(group),
-      'v-s:resource': newUri(resource),
-      'v-s:deleted': newBool(true)
+      'rdf:type': veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf': veda.Util.newUri(group),
+      'v-s:resource': veda.Util.newUri(resource),
+      'v-s:deleted': veda.Util.newBool(true)
     };
 
     var res = put_individual(ticket, new_membership);
@@ -1320,21 +1189,125 @@ veda.Module(function Util(veda) { "use strict";
 
     var permission = {
       '@': uri,
-      'rdf:type': newUri('v-s:PermissionStatement'),
-      'v-s:permissionObject': newUri(obj_uri),
-      'v-s:permissionSubject': newUri(subj_uri)
+      'rdf:type': veda.Util.newUri('v-s:PermissionStatement'),
+      'v-s:permissionObject': veda.Util.newUri(obj_uri),
+      'v-s:permissionSubject': veda.Util.newUri(subj_uri)
     };
 
     (allow || []).forEach(function (right) {
-      permission[right] = newBool(true);
+      permission[right] = veda.Util.newBool(true);
     });
 
     (deny || []).forEach(function (right) {
-      permission[right] = newBool(false);
+      permission[right] = veda.Util.newBool(false);
     });
 
     var res = put_individual(ticket, permission);
     return [permission, res];
+  }
+
+  veda.Util.newUri = function (uri) {
+    return [{
+      data: uri,
+      type: "Uri"
+    }];
+  }
+
+  veda.Util.newStr = function (_data, _lang) {
+    var value = {
+      data: _data,
+      type: "String"
+    };
+    if (_lang && _lang !== 'NONE') {
+      value.lang = _lang;
+    }
+    return [ value ];
+  }
+
+  veda.Util.newBool = function (_data) {
+    return [{
+      data: _data,
+      type: "Boolean"
+    }];
+  }
+
+  veda.Util.newInt = function (_data) {
+    return [{
+      data: _data,
+      type: "Integer"
+    }];
+  }
+
+  veda.Util.newDecimal = function (_data) {
+    return [{
+      data: _data,
+      type: "Decimal"
+    }];
+  }
+
+  veda.Util.newDate = function (_data) {
+    return [{
+      data: _data,
+      type: "Datetime"
+    }];
+  }
+
+  veda.Util.addDay = function (_data, _days) {
+    if (!_data) {
+      _data = new Date();
+    }
+    try {
+      _data.setDate(_data.getDate() + _days);
+    } catch (e) {
+      console.log(e);
+    }
+    return _data;
+  }
+
+  veda.Util.getStrings = function (property_value) {
+    var res = [];
+    if (property_value) {
+      for (var i in property_value) {
+        res.push(property_value[i].data);
+      }
+    }
+    return res;
+  }
+
+  veda.Util.getUris = function (property_value) {
+    var res = [];
+    if (property_value) {
+      for (var i in property_value) {
+        res.push(property_value[i].data);
+      }
+    }
+    return res;
+  }
+
+  veda.Util.getUri = function (property_value) {
+    if (property_value && property_value.length > 0) {
+      return property_value[0].data;
+    }
+  }
+
+  veda.Util.getFirstValue = function (property_value) {
+    if (property_value && property_value.length > 0) {
+      if (property_value[0].type == "Integer") {
+        return parseInt(property_value[0].data, 10);
+      } else if (property_value[0].type == "Datetime") {
+        return new Date(property_value[0].data);
+      }
+      return property_value[0].data;
+    }
+  }
+
+  veda.Util.getFirstValueUseLang = function (property_value, lang) {
+    for (var i in property_value) {
+      if (property_value[i].lang == lang) {
+        return property_value[i].data;
+      }
+    }
+    return null;
   }
 
 });

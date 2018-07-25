@@ -73,7 +73,7 @@ veda.Module(function (veda) { "use strict";
     this[uri] = individual;
     var temp = individual.toJson();
     if (this._[uri] === undefined) {
-      temp["v-s:created"] = newDate(new Date());
+      temp["v-s:created"] = veda.Util.newDate(new Date());
     };
     individual.isSync(false);
     this._[uri] = temp;
