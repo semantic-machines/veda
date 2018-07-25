@@ -10,7 +10,7 @@ veda.Module(function (veda) { "use strict";
       {
           "data": "-r--"
       }]);
-  }
+  };
 
   veda.Codelet.change_rights = function (process, task, rightset)
   {
@@ -18,7 +18,7 @@ veda.Module(function (veda) { "use strict";
       {
           "data": "-r--"
       }], 'actor');
-  }
+  };
 
   veda.Codelet.change_rights_actor = function (process, task, rightset, actor)
   {
@@ -95,7 +95,7 @@ veda.Module(function (veda) { "use strict";
       {
           print(e.stack);
       }
-  }
+  };
 
   veda.Codelet.restore_right = function (task)
   {
@@ -112,17 +112,17 @@ veda.Module(function (veda) { "use strict";
       {
           print(e.stack);
       }
-  }
+  };
 
   veda.Codelet.complete_process = function (ticket, process, _event_id)
   {
       veda.Codelet.change_process_status(ticket, process, 'v-wf:Completed', _event_id);
-  }
+  };
 
   veda.Codelet.interrupt_process = function (ticket, process, _event_id)
   {
       veda.Codelet.change_process_status(ticket, process, 'v-wf:Interrupted', _event_id);
-  }
+  };
 
   veda.Codelet.change_process_status = function (ticket, process, status, _event_id)
   {
@@ -145,7 +145,7 @@ veda.Module(function (veda) { "use strict";
               }
           }
       }
-  }
+  };
 
   veda.Codelet.change_document_status = function (process, status)
   {
@@ -169,7 +169,7 @@ veda.Module(function (veda) { "use strict";
           }
       };
       return [get_new_variable('status', veda.Util.newStr(status))];
-  }
+  };
 
   veda.Codelet.is_exists_net_executor = function (process)
   {
@@ -182,7 +182,7 @@ veda.Module(function (veda) { "use strict";
       {
           print(e.stack);
       }
-  }
+  };
 
   veda.Codelet.get_type_of_docId = function (task)
   {
@@ -212,7 +212,7 @@ veda.Module(function (veda) { "use strict";
           print(e.stack);
       }
 
-  }
+  };
 
   veda.Codelet.is_in_docflow_and_set_if_true = function (task)
   {
@@ -281,10 +281,10 @@ veda.Module(function (veda) { "use strict";
           print(e.stack);
       }
 
-  }
+  };
 
   veda.Codelet.distribution = function (process, task)
-  {}
+  {};
 
   veda.Codelet.add_value_to_document = function (process, task)
   {
@@ -326,7 +326,7 @@ veda.Module(function (veda) { "use strict";
       {
           print(e.stack);
       }
-  }
+  };
 
   veda.Codelet.set_value_to_document = function (process, task)
   {
@@ -360,7 +360,7 @@ veda.Module(function (veda) { "use strict";
       {
           print(e.stack);
       }
-  }
+  };
 
   veda.Codelet.create_use_transformation = function (process, task)
   {
@@ -404,7 +404,7 @@ veda.Module(function (veda) { "use strict";
           print(e.stack);
       }
 
-  }
+  };
 
   // скрипт поиска в документе uri > 64
   veda.Codelet.find_long_terms = function (ticket, uri, execute_script)
@@ -502,7 +502,7 @@ veda.Module(function (veda) { "use strict";
           }
 
       }
-  }
+  };
 
   // скрипт переименования онтологии
   veda.Codelet.onto_rename = function (ticket, document, execute_script)
@@ -636,6 +636,6 @@ veda.Module(function (veda) { "use strict";
               console.log(e.stack);
           }
       }
-  }
+  };
 
 });

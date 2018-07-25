@@ -10,11 +10,11 @@ veda.Module(function (veda) { "use strict";
     return !!(any && individual[property].filter( function(i) {
         return (i.type === value.type && i.data === value.data);
     }).length);
-  }
+  };
 
   veda.Util.toJson = function (value) {
     return JSON.stringify(value, null, 2);
-  }
+  };
 
   veda.Util.generate_passes = function (length, count) {
     var result = {};
@@ -24,7 +24,7 @@ veda.Module(function (veda) { "use strict";
       result[pass] = hash;
     }
     return result;
-  }
+  };
 
   function generate_pass (length) {
     var ranges = [[48, 57], [97, 122]];
@@ -35,11 +35,11 @@ veda.Module(function (veda) { "use strict";
       pass += String.fromCharCode(charcode);
     }
     return pass;
-  }
+  };
 
   function randomInRange(begin, end) {
     return Math.round(Math.random() * (end - begin) + begin);
-  }
+  };
 
   veda.Util.simpleHash = function (str) {
     var hash = 0, char;
@@ -141,7 +141,7 @@ veda.Module(function (veda) { "use strict";
     });
   };
 
-  veda.Util.isInteger = function (n) { return n % 1 === 0; }
+  veda.Util.isInteger = function (n) { return n % 1 === 0; };
 
   function zeroPref(n) {
     return n > 9 ? n : "0" + n;
@@ -1008,7 +1008,7 @@ veda.Module(function (veda) { "use strict";
         console.log(e.stack);
       }
     }
-  }
+  };
 
 
   /**
@@ -1093,7 +1093,7 @@ veda.Module(function (veda) { "use strict";
       }
       return "";
     }
-  }
+  };
 
   veda.Util.clone = function (obj) {
     var copy;
@@ -1134,7 +1134,7 @@ veda.Module(function (veda) { "use strict";
 
     }
 
-  }
+  };
 
   veda.Util.addToGroup = function (ticket, group, resource, allow, deny) {
 
@@ -1156,7 +1156,7 @@ veda.Module(function (veda) { "use strict";
 
     var res = put_individual(ticket, new_membership);
     return [new_membership, res];
-  }
+  };
 
   veda.Util.removeFromGroup = function (ticket, group, resource) {
 
@@ -1171,7 +1171,7 @@ veda.Module(function (veda) { "use strict";
 
     var res = put_individual(ticket, new_membership);
     return [new_membership, res];
-  }
+  };
 
   veda.Util.addRight = function (ticket, subj_uri, obj_uri, allow, deny) {
 
@@ -1202,14 +1202,14 @@ veda.Module(function (veda) { "use strict";
 
     var res = put_individual(ticket, permission);
     return [permission, res];
-  }
+  };
 
   veda.Util.newUri = function (uri) {
     return [{
       data: uri,
       type: "Uri"
     }];
-  }
+  };
 
   veda.Util.newStr = function (_data, _lang) {
     var value = {
@@ -1220,35 +1220,35 @@ veda.Module(function (veda) { "use strict";
       value.lang = _lang;
     }
     return [ value ];
-  }
+  };
 
   veda.Util.newBool = function (_data) {
     return [{
       data: _data,
       type: "Boolean"
     }];
-  }
+  };
 
   veda.Util.newInt = function (_data) {
     return [{
       data: _data,
       type: "Integer"
     }];
-  }
+  };
 
   veda.Util.newDecimal = function (_data) {
     return [{
       data: _data,
       type: "Decimal"
     }];
-  }
+  };
 
   veda.Util.newDate = function (_data) {
     return [{
       data: _data,
       type: "Datetime"
     }];
-  }
+  };
 
   veda.Util.addDay = function (_data, _days) {
     if (!_data) {
@@ -1260,7 +1260,7 @@ veda.Module(function (veda) { "use strict";
       console.log(e);
     }
     return _data;
-  }
+  };
 
   veda.Util.getStrings = function (property_value) {
     var res = [];
@@ -1270,7 +1270,7 @@ veda.Module(function (veda) { "use strict";
       }
     }
     return res;
-  }
+  };
 
   veda.Util.getUris = function (property_value) {
     var res = [];
@@ -1280,13 +1280,13 @@ veda.Module(function (veda) { "use strict";
       }
     }
     return res;
-  }
+  };
 
   veda.Util.getUri = function (property_value) {
     if (property_value && property_value.length > 0) {
       return property_value[0].data;
     }
-  }
+  };
 
   veda.Util.getFirstValue = function (property_value) {
     if (property_value && property_value.length > 0) {
@@ -1297,7 +1297,7 @@ veda.Module(function (veda) { "use strict";
       }
       return property_value[0].data;
     }
-  }
+  };
 
   veda.Util.getFirstValueUseLang = function (property_value, lang) {
     for (var i in property_value) {
@@ -1306,6 +1306,6 @@ veda.Module(function (veda) { "use strict";
       }
     }
     return null;
-  }
+  };
 
 });

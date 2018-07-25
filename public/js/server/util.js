@@ -7,12 +7,12 @@ veda.Module(function (veda) { "use strict";
   veda.Util.getJournalUri = function (object_uri)
   {
       return object_uri + "j";
-  }
+  };
 
   veda.Util.getTraceJournalUri = function (object_uri)
   {
       return object_uri + "t";
-  }
+  };
 
   veda.Util.newJournalRecord = function (journal_uri)
   {
@@ -37,7 +37,7 @@ veda.Module(function (veda) { "use strict";
           }]
       };
       return new_journal_record;
-  }
+  };
 
   veda.Util.logToJournal = function (ticket, journal_uri, journal_record, jr_type)
   {
@@ -65,7 +65,7 @@ veda.Module(function (veda) { "use strict";
 
       //var after = get_individual(ticket, journal_uri);
       //print('AFTER : '+veda.Util.toJson(after))
-  }
+  };
 
   veda.Util.traceToJournal = function (ticket, journal_uri, label, _data)
   {
@@ -91,7 +91,7 @@ veda.Module(function (veda) { "use strict";
       veda.Util.logToJournal(ticket, journal_uri, journal_record, true);
 
       //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + veda.Util.toJson(journal_record));
-  }
+  };
 
   veda.Util.isTecnicalChange = function (newdoc, olddoc)
   {
@@ -139,7 +139,7 @@ veda.Module(function (veda) { "use strict";
       }
 
       return true;
-  }
+  };
 
   veda.Util.isTechnicalAttribute = function (attName, oldvalue)
   {
@@ -150,7 +150,7 @@ veda.Module(function (veda) { "use strict";
       if (attName === 'v-s:hasDraft') return true;
       if (attName === 'v-wf:hasStatusWorkflow') return true;
       return false;
-  }
+  };
 
   veda.Util.loadVariablesUseField = function (ticket, field)
   {
@@ -171,7 +171,7 @@ veda.Module(function (veda) { "use strict";
           }
       }
       return res;
-  }
+  };
 
   veda.Util.isAlphaNumeric = function (src)
   {
@@ -182,7 +182,7 @@ veda.Module(function (veda) { "use strict";
           return true;
       else
           return false;
-  }
+  };
 
   veda.Util.replace_word = function (src, from, to)
   {
@@ -266,7 +266,7 @@ veda.Module(function (veda) { "use strict";
 
 
       return new_str;
-  }
+  };
 
   /**
    * Create document snapshot
@@ -367,7 +367,7 @@ veda.Module(function (veda) { "use strict";
       document['v-s:lastEditor'] = veda.Util.newUri(user_uri);
       put_individual(ticket, document, _event_id);
     }
-  }
+  };
 
   veda.Util.recursiveCall = function (elem, path, ticket, _event_id) {
     if (path[elem['@']]) {
@@ -404,7 +404,7 @@ veda.Module(function (veda) { "use strict";
         veda.Util.recursiveCall(get_individual(ticket, p.data), path, ticket, _event_id);
       });
     }
-  }
+  };
 
   veda.Util.set_err_on_indv = function (msg, indv, src)
   {
@@ -425,7 +425,7 @@ veda.Module(function (veda) { "use strict";
       add_to_individual(ticket, add_to_indv, _event_id);
 
       print("ERR! " + src + ':' +  msg);
-  }
+  };
 
   veda.Util.set_field_to_document = function (field_name, value, doc_id)
   {
@@ -435,6 +435,6 @@ veda.Module(function (veda) { "use strict";
 
       set_in_document[field_name] = value;
       set_in_individual(ticket, set_in_document, _event_id);
-  }
+  };
 
 });
