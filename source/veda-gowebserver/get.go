@@ -13,7 +13,7 @@ const queueStatePrefix = "srv:queue-state-"
 
 func getIndividual(ctx *fasthttp.RequestCtx) {
 
-	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now().Unix()
 	var uri string
 	var ticketKey string
@@ -161,7 +161,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 func getIndividuals(ctx *fasthttp.RequestCtx) {
 
-	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 
 	timestamp := time.Now().Unix()
 	var jsonData map[string]interface{}

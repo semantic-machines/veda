@@ -51,10 +51,6 @@ type ticket struct {
 const (
 	tdbPath = "./data/trails/	"
 )
-var (
-	strContentType     = []byte("Content-Type")
-	strApplicationJSON = []byte("application/json")
-)
 
 //ticketCache is map to cache requested earlier tickets
 var ticketCache map[string]ticket

@@ -11,7 +11,7 @@ import (
 //query function handle query request with fulltext search
 //query request redirects to fr-query module via socket
 func query(ctx *fasthttp.RequestCtx) {
-	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 
 	request := make([]interface{}, 8)
 	// request := make(map[string]interface{})
