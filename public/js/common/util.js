@@ -4,8 +4,7 @@ veda.Module(function Util(veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
-  veda.Util.hasValue = function(individual, property, value)
-  {
+  veda.Util.hasValue = function(individual, property, value) {
     var any = !!(individual && individual[property] && individual[property].length);
     if (!value) return any;
     return !!(any && individual[property].filter( function(i) {
@@ -1040,9 +1039,9 @@ veda.Module(function Util(veda) { "use strict";
       return individual["rdf:type"].reduce(function (acc, typeValue) {
         var typeUri = typeValue.data;
         var type = get(typeUri);
-        if ( !type || !veda.Util.hasValue(type, "v-s:labelPattern") ) return;
+        if ( !type || !veda.Util.hasValue(type, "v-s:labelPattern") ) { return acc; }
         var pattern = type["v-s:labelPattern"][0].data;
-        var result = languages.map(function (language) {
+        languages.forEach(function (language) {
           var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
             var chain = group.split(".");
             if (chain[0] === "@") {
@@ -1050,13 +1049,13 @@ veda.Module(function Util(veda) { "use strict";
             }
             return get_localized_chain.apply({}, [language].concat(chain));
           });
-          return {
+          var result = {
             data: replaced,
             type: "String",
             lang: language
           };
+          acc.push(result);
         });
-        acc.push(result);
         return acc;
       }, []);
     } catch (err) {
