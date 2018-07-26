@@ -54,6 +54,7 @@ v-s:ContractParticipant
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Contract participant"@en ;
   rdfs:label "Участник контракта"@ru ;
 .
