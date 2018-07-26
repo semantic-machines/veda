@@ -340,7 +340,7 @@ class XapianVQL
                                     {
                                         if ((indexOf(rs, '*') >= 0) && (rs[ 0 ] == '+' && !is_good_token(rs)))
                                         {
-                                            rs = rs.removechars("*");
+                                        	rs = replaceAll(rs, regex(r"[*]", "g"), "");
                                         }
 
                                         char[] query_str = rs.dup;

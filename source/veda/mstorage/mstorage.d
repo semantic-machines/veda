@@ -662,7 +662,7 @@ public string execute_json(string in_msg, Context ctx)
                 rc = flush_storage();
             else if (f_module_id == P_MODULE.acl_preparer)
                 rc = acl_module.flush(false);
-            else if (f_module_id == MODULE.fulltext_indexer)
+            else if (f_module_id == cast(P_MODULE)MODULE.fulltext_indexer)
                 flush_ext_module(f_module_id, wait_op_id);
 
             res[ "type" ]   = "OpResult";
