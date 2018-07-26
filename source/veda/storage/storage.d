@@ -25,12 +25,10 @@ public abstract class Storage
     abstract KeyValueDB get_tickets_storage_r();
     abstract KeyValueDB get_inividuals_storage_r();
 
-    import backtrace.backtrace, Backtrace = backtrace.backtrace;
     bool authorize(string uri, string user_uri, ubyte request_acess, bool is_check_for_reload)
     {
         if (user_uri is null)
         {
-            printPrettyTrace(stderr);
             return false;
         }
 

@@ -73,7 +73,6 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
     }
     catch (Throwable tr)
     {
-        //printPrettyTrace(stderr);
         try { log.trace("ERR! lmdb-srv request prepare %s", tr.msg); } catch (Throwable tr) {}
         return "ERR";
     }

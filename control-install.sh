@@ -76,7 +76,7 @@ fi
 # Get right version of DUB
 if ! dub --version | grep $DUB_VER ; then
     echo "--- INSTALL DUB ---"
-    wget http://code.dlang.org/files/dub-$DUB_VER-linux-x86_64.tar.gz
+    wget https://github.com/dlang/dub/releases/download/v$DUB_VER/dub-$DUB_VER-linux-x86_64.tar.gz
     tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz
     sudo cp ./dub /usr/bin/dub
     rm dub-$DUB_VER-linux-x86_64.tar.gz

@@ -10,8 +10,6 @@ module veda.onto.bj8individual.cbor8individual;
 
 private import std.outbuffer, std.stdio, std.string;
 private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang, veda.onto.bj8individual.cbor;
-//import backtrace.backtrace;
-//import Backtrace = backtrace.backtrace;
 
 string dummy;
 
@@ -279,7 +277,6 @@ public int cbor2individual(Individual *individual, string in_str)
     catch (Throwable ex)
     {
         writeln("ERR! cbor2individual ex=", ex.msg, ", in_str=", in_str);
-        //printPrettyTrace(stderr);
         //throw new Exception("invalid cbor");
         return -1;
     }

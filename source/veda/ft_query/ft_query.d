@@ -87,7 +87,6 @@ private nothrow string req_prepare(string request, Context context)
     }
     catch (Throwable tr)
     {
-        //printPrettyTrace(stderr);
         try { log.trace("ERR! ft_query request prepare %s", tr.msg); } catch (Throwable tr) {}
         return "ERR";
     }

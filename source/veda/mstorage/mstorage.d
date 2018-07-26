@@ -8,7 +8,7 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid;
-    import backtrace.backtrace, Backtrace = backtrace.backtrace, veda.util.properd;
+    import veda.util.properd;
     import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
@@ -161,8 +161,6 @@ void init(string node_id)
         node_id = "cfg:standart_node";
 
     log.trace("init_core: node_id=[%s]", node_id);
-
-    Backtrace.install(stderr);
 
     io_msg = new Logger("pacahon", "io", "mstorage");
 
@@ -773,7 +771,6 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
         }
         catch (Exception ex)
         {
-            //printPrettyTrace(stderr);
             log.trace("sys_ticket:EX!%s", ex.msg);
         }
 
