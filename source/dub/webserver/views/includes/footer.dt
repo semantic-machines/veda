@@ -1,7 +1,0 @@
-nav.navbar.navbar-fixed-bottom(role="navigation", style="min-height:20px")
-	footer
-		hr(style="margin:0px")
-		.container-fluid(style="background-color:white")
-			a(href="http://www.semantic-machines.com", title="Официальный сайт компании") &copy; "Смысловые машины", ООО.
-			| Лицензия / License
-			a(alt="GNU General Public License version 3 official text", href="http://www.gnu.org/licenses/gpl.html") GPLv3.

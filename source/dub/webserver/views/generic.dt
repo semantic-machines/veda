@@ -1,7 +1,0 @@
-!!! 5
-html(lang="en")
-	include includes/header
-	body(style="padding: 0px 0px 30px;")
-		include includes/menu
-		block content
-		include includes/footer
