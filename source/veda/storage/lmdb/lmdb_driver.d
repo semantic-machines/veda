@@ -543,7 +543,7 @@ public class LmdbDriver : KeyValueDB
             {
                 log.trace("ERR! MDB_INVALID! lmdb.find, key=%s", uri);
                 reopen();
-                core.thread.Thread.sleep(dur!("msecs")(10));
+                core_thread.sleep(dur!("msecs")(10));
                 return find(op_auth, user_uri, _uri);
             }
 

@@ -9,7 +9,7 @@ private
 {
     import core.stdc.time, core.stdc.stdio, core.stdc.string, std.outbuffer;
     import std.format, std.datetime, std.array : appender;
-    import std.stdio, std.datetime, std.concurrency;
+    import std.stdio, std.datetime, std.concurrency, std_file = std.file;
 }
 
 /// Процесс отвечающий за логгирование
@@ -239,7 +239,7 @@ private class LoggerQueue
         try
         {
         	auto path = "logs";
-            std.file.mkdir(path);
+            std_file.mkdir(path);
             writeln("create folder: ", path);
         }
         catch (Exception ex)
