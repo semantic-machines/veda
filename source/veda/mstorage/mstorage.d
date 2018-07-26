@@ -52,7 +52,7 @@ extern (C) void handleTermination2(int _signal)
 
     f_listen_exit = true;
 
-    thread_term();
+    //thread_term();
     Runtime.terminate();
 }
 
@@ -97,7 +97,7 @@ void main(char[][] args)
     exit(P_MODULE.subject_manager);
     exit(P_MODULE.ticket_manager);
 
-    thread_term();
+    //thread_term();
 }
 
 private void ws_interface(short ws_port)

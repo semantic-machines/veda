@@ -25,7 +25,7 @@ extern (C) void handleTermination(int _signal)
 
     f_listen_exit = true;
 
-    thread_term();
+    //thread_term();
     Runtime.terminate();
 }
 
