@@ -109,6 +109,10 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 	//Reqding client ticket key from request
 	ticketKey := string(ctx.Request.Header.Cookie("ticket"))
 
+	if len (ticketKey) == 0 {
+		ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+	}
+
 	uri := ""
 	//if roup parts len is 2 or more than save uri and go to reading file,
 	//else upload file from request context
