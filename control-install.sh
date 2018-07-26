@@ -43,18 +43,6 @@ for i in "${LIB_NAME[@]}"; do
 
 done
 
-#echo "--- INSTALL VIBE.D ---"
-#mkdir tmp
-#cd tmp
-#wget https://github.com/vibe-d/vibe.d/archive/v0.7.30.tar.gz
-#tar -xvzf v0.7.30.tar.gz
-#mkdir ~/.dub/packages/vibe-d-0.7.30
-#mkdir ~/.dub/packages/vibe-d-0.7.30/vibe-d
-#cp -r ./vibe.d-0.7.30/* ~/.dub/packages/vibe-d-0.7.30/vibe-d
-#cp ./../source/vibe-d/dub.json ~/.dub/packages/vibe-d-0.7.30/vibe-d
-#rm ~/.dub/packages/vibe-d-0.7.30/vibe-d/dub.sdl
-#cd ..
-
 sudo apt-get install build-essential
 
 ### RUST LANG ###
