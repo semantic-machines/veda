@@ -548,10 +548,10 @@ public class LmdbDriver : KeyValueDB
             }
 
             swA.stop();
-            long tA = cast(long)swA.peek().usecs;
+            long tA = cast(long)swA.peek().msecs;
 
-            if (tA > 1000)
-                log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
+            if (tA > 10)
+                log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d ms rc=%d", _uri, tA, rc);
                 
             read_count ++;    
         }catch (Exception ex)

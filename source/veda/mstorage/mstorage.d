@@ -1204,9 +1204,15 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
         {
             login = replaceAll(login, regex(r"[-]", "g"), " +");
 
-            Ticket       sticket         = sys_ticket(ctx);
-            Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'",
-                                                                         OptAuthorize.NO);
+            Ticket       sticket = sys_ticket(ctx);
+
+            string       query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+
+            Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, query, OptAuthorize.NO);
+
+            if (candidate_users.length == 0)
+                log.trace("ERR! trusted authenticate: not found candidate users, query=%s", query);
+
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource("v-s:owner").uri;
@@ -1215,19 +1221,19 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
 
                 ticket = create_new_ticket(user_id);
 
-                log.trace("trusted authenticate, result ticket=[%s]", ticket);
+                log.trace("INFO! trusted authenticate, result ticket=[%s]", ticket);
                 return ticket;
             }
         }
         else
         {
-            log.trace("ERR: trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
+            log.trace("ERR! trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
         }
     }
     else
-        log.trace("WARN: trusted authenticate: problem ticket [%s]", ticket);
+        log.trace("WARN! trusted authenticate: problem ticket [%s]", ticket);
 
-    log.trace("failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
+    log.trace("ERR! failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
     ticket.result = ResultCode.Authentication_Failed;
     return ticket;
