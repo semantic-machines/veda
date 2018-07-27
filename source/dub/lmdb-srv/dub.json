@@ -2,7 +2,6 @@
 	"name": "veda-lmdb-srv",
 	"description": "veda-lmdb-srv",
 	"dependencies": {
-		"backtrace-d": "0.1.2", 
 		"d-nanomsg": "0.2.0",
 		"msgpack-d": "1.0.0-beta.6",
 	},

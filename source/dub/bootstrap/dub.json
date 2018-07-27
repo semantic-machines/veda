@@ -2,7 +2,6 @@
 	"name": "veda-bootstrap",
 	"description": "veda-bootstrap",
 	"dependencies": {
-                "backtrace-d": "0.1.2"
  	},
         "license": "LGPL v3",
 	"sourcePaths":[
