@@ -11,7 +11,7 @@ private
     import veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
-    import veda.bind.libwebsocketd, veda.util.properd;
+    import veda.util.properd;
     import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage;
     import veda.storage.tarantool.tarantool_driver;
 }

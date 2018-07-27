@@ -165,27 +165,6 @@ else
     echo "--- TARANTOOL INSTALLED ---"
 fi
 
-### LIB WEBSOCKETS ###
-
-if ! ldconfig -p | grep libwebsockets; then
-    # make libwebsockets dependency
-    mkdir tmp
-    wget https://github.com/warmcat/libwebsockets/archive/v2.0.3.tar.gz -P tmp
-    cd tmp
-    tar -xvzf v2.0.3.tar.gz
-    cd libwebsockets-2.0.3
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-    sudo ldconfig
-    cd ..
-    cd ..
-    cd ..
-
-fi
-
 ### LIB NANOMSG ###
 
 if ! ldconfig -p | grep libnanomsg; then
