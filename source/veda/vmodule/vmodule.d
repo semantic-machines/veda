@@ -115,7 +115,7 @@ class VedaModule : VedaModuleBasic
 
     ~this()
     {
-        delete module_info;
+        module_info.destroy ();
     }
 
     private void open_perapare_batch_queue(bool is_open_exists_batch)
