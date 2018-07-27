@@ -6,7 +6,7 @@ module veda.storage.lmdb.lmdb_driver;
 
 private
 {
-    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
+    import std.stdio, std.file, std.datetime.stopwatch, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.storage.lmdb.lmdb_header, veda.common.type, veda.common.logger, veda.storage.common, veda.core.common.define;
 
     alias core.thread.Thread core_thread;
@@ -21,14 +21,14 @@ public class LmdbDriver : KeyValueDB
     public const string summ_hash_this_db_id;
     private BigInt      summ_hash_this_db;
     protected DBMode    mode;
-    public string      _path;
+    public string       _path;
     string              db_name;
     string              parent_thread_name;
     private long        last_op_id;
     long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
-	long				read_count;
+    long                read_count;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
@@ -460,8 +460,8 @@ public class LmdbDriver : KeyValueDB
         if (db_is_opened == false)
             open();
 
-		if (read_count > 100_000)
-			reopen();
+        if (read_count > 100_000)
+            reopen();
 
         if (uri is null || uri.length < 2)
             return null;
@@ -548,12 +548,12 @@ public class LmdbDriver : KeyValueDB
             }
 
             swA.stop();
-            long tA = cast(long)swA.peek().msecs;
+            long tA = cast(long)swA.peek.total !"msecs";
 
             if (tA > 10)
                 log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d ms rc=%d", _uri, tA, rc);
-                
-            read_count ++;    
+
+            read_count++;
         }catch (Exception ex)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);

@@ -5,6 +5,7 @@
 module veda.core.search.xapian_vql;
 
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm, std.regex, std.uni, utf = std.utf;
+import dt                                                                                                     = std.datetime.stopwatch;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
 import veda.core.search.vel;
@@ -340,7 +341,7 @@ class XapianVQL
                                     {
                                         if ((indexOf(rs, '*') >= 0) && (rs[ 0 ] == '+' && !is_good_token(rs)))
                                         {
-                                        	rs = replaceAll(rs, regex(r"[*]", "g"), "");
+                                            rs = replaceAll(rs, regex(r"[*]", "g"), "");
                                         }
 
                                         char[] query_str = rs.dup;
@@ -699,7 +700,7 @@ class XapianVQL
                                                               void delegate(string uri) prepare_element_event, bool trace, OptAuthorize op_auth
                                                               )
     {
-        StopWatch sw;
+        dt.StopWatch sw;
 
         sw.start;
 
@@ -711,18 +712,18 @@ class XapianVQL
         if (limit == 0)
             limit = 10000;
 
-        int       read_count = 0;
+        int          read_count = 0;
 
-        StopWatch sw_az;
+        dt.StopWatch sw_az;
 
-        byte      err;
+        byte         err;
 
         if (user_uri is null)
         {
             log.trace("exec_xapian_query_and_queue_authorize:user_uri is null");
             sr.result_code = ResultCode.Ticket_not_found;
             sw.stop;
-            sr.total_time = sw.peek().msecs();
+            sr.total_time = sw.peek.total !"msecs";
             return sr;
         }
 
@@ -742,7 +743,7 @@ class XapianVQL
 
             //            sr.err         = err;
             sw.stop;
-            sr.total_time = sw.peek().msecs();
+            sr.total_time = sw.peek.total !"msecs";
             return sr;
         }
 
@@ -771,7 +772,7 @@ class XapianVQL
                     log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
                     sw.stop;
-                    sr.total_time = sw.peek().msecs();
+                    sr.total_time = sw.peek.total !"msecs";
 
                     destroy_MSetIterator(it);
                     destroy_MSet(matches);
@@ -792,7 +793,7 @@ class XapianVQL
                     log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
                     sw.stop;
-                    sr.total_time = sw.peek().msecs();
+                    sr.total_time = sw.peek.total !"msecs";
 
                     destroy_MSetIterator(it);
                     destroy_MSet(matches);
@@ -848,8 +849,8 @@ class XapianVQL
         sr.result_code = ResultCode.OK;
         sr.cursor      = from + processed;
         sw.stop;
-        sr.total_time     = sw.peek().msecs();
-        sr.authorize_time = sw_az.peek().msecs();
+        sr.total_time     = sw.peek.total !"msecs";
+        sr.authorize_time = sw_az.peek.total !"msecs";
         sr.query_time     = sr.total_time - sr.authorize_time;
 
         return sr;

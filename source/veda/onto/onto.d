@@ -8,8 +8,8 @@ module veda.onto.onto;
 
 private
 {
-    import std.stdio, std.datetime, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
-    import std.algorithm, std.algorithm.mutation                                            : SwapStrategy;
+    import std.stdio, std.datetime.stopwatch, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
+    import std.algorithm, std.algorithm.mutation                                                      : SwapStrategy;
     import veda.onto.resource, veda.onto.individual;
     import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.type;
     import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
@@ -173,7 +173,7 @@ class Onto
 
         sw1.stop();
 
-        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", context.get_name, l_individuals.length, sw1.peek().usecs);
+        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", context.get_name, l_individuals.length, sw1.peek.total !"usecs");
 
 
         foreach (indv; l_individuals)
@@ -188,7 +188,7 @@ class Onto
         sw1.stop();
 
         //if (trace_msg[ 20 ] == 1)
-        log.trace_log_and_console("[%s] update hierarhy in mem, time=%d µs", context.get_name, sw1.peek().usecs);
+        log.trace_log_and_console("[%s] update hierarhy in mem, time=%d µs", context.get_name, sw1.peek.total !"usecs");
 
         //log.trace ("LOAD *** class *** \n%s", _class.toString());
         //log.trace ("LOAD *** property *** \n%s", _property.toString());
@@ -304,7 +304,7 @@ class Onto
         {
             superelementes[ elementz.uri ] = true;
             if (elementz.uri != look_cl)
-	            prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
+                prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);
         }
     }
 }
