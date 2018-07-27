@@ -8,7 +8,23 @@
 
     self.config = config;
     self.ticket = self.ticket || "";
-    self.cache = {};
+    self.cache = {
+      limit: 10000,
+      storage: {},
+      expire_storage = {},
+      add: function (key, obj, expires) {
+        if ( this.count < this.limit ) {
+          this.storage[key] = obj;
+          obj.expires = expires;
+        }
+      },
+      remove: function (key) {
+        return delete this.storage[key];
+      },
+      count: function () {
+        return Object.keys(this.storage).length;
+      }
+    };
     self.ontology = {};
 
     // Define Model functions
