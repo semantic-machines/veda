@@ -247,23 +247,25 @@
       mainInput.change();
     }
     function feelPseudoInput(summaryTime){
-      summaryText.text(summaryTime);
-      summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );
-      var days=0, hours=0, minutes=0;
-      if (summaryTime!=0){
-        days=Math.floor(summaryTime/480);
-        summaryTime=summaryTime-days*480;
+      if (summaryTime) {
+        summaryText.text(summaryTime);
+        summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );  
+        var days=0, hours=0, minutes=0;
         if (summaryTime!=0){
-          hours=Math.floor(summaryTime/60);
-          summaryTime=summaryTime-hours*60;
+          days=Math.floor(summaryTime/480);
+          summaryTime=summaryTime-days*480;
           if (summaryTime!=0){
-            minutes=summaryTime;
+            hours=Math.floor(summaryTime/60);
+            summaryTime=summaryTime-hours*60;
+            if (summaryTime!=0){
+              minutes=summaryTime;
+            }
           }
         }
+        pseudoInputs[0].value=days;
+        pseudoInputs[1].value=hours;
+        pseudoInputs[2].value=minutes;
       }
-      pseudoInputs[0].value=days;
-      pseudoInputs[1].value=hours;
-      pseudoInputs[2].value=minutes;
     }
     this.append(control);
     return this;
