@@ -270,7 +270,7 @@ string digestFile(Hash) (string filename) if (isDigest!Hash)
     auto   file   = File(filename);
     auto   result = digest!Hash(file.byChunk(4096 * 1024));
 
-    string str_res = toHexString(result);
+    string str_res = toHexString(result).dup;
 
     return str_res.dup;
 }

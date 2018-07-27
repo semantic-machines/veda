@@ -475,7 +475,7 @@ struct decimal
             byte sfp = cast(byte)ff[ 1 ].length;
 
             mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
-            exponent = -sfp;
+            exponent = cast(byte)(exponent - sfp);
         }
         else if (ff.length == 1)
         {
@@ -506,7 +506,7 @@ struct decimal
             ++count;
         }
         mantissa = cast(long)(num * pow(10L, count)) * sign;
-        exponent = -count;
+        exponent = cast(byte)(exponent - count);
     }
 
     /// вернуть double
