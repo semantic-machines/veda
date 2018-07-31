@@ -9,7 +9,6 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid;
     import veda.util.properd;
-    import veda.bind.libwebsocketd, veda.mstorage.wslink;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
@@ -32,6 +31,7 @@ Logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
+bool f_listen_exit = false;
 Logger io_msg;
 
 static this()
@@ -84,8 +84,7 @@ void main(char[][] args)
     foreach (key, value; tids)
         register(text(key), value);
 
-    spawn(&ws_interface, cast(short)8091);
-    //spawn (&ws_interface, cast(short)8092);
+	init(null);
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -98,58 +97,6 @@ void main(char[][] args)
     exit(P_MODULE.ticket_manager);
 
     //thread_term();
-}
-
-private void ws_interface(short ws_port)
-{
-    log.trace("start ws channel");
-    VedaServer veda_server = new VedaServer("127.0.0.1", ws_port, log);
-    init(null);
-    veda_server.listen(&ev_LWS_CALLBACK_GET_THREAD_ID, &ev_LWS_CALLBACK_CLIENT_WRITEABLE, &ev_LWS_CALLBACK_CLIENT_RECEIVE);
-}
-
-void ev_LWS_CALLBACK_GET_THREAD_ID(lws *wsi)
-{
-    //writeln ("server: ev_LWS_CALLBACK_GET_THREAD_ID");
-}
-
-void ev_LWS_CALLBACK_CLIENT_WRITEABLE(lws *wsi)
-{
-}
-
-void ev_LWS_CALLBACK_CLIENT_RECEIVE(lws *wsi, char[] msg, ResultCode rc)
-{
-    //stderr.writeln("server: ev_LWS_CALLBACK_CLIENT_RECEIVE msg=", msg);
-    string res;
-
-    if (rc == ResultCode.OK)
-    {
-        res = execute_json(cast(string)msg, l_context);
-    }
-    else
-    {
-        JSONValue jres;
-        jres[ "type" ]   = "OpResult";
-        jres[ "result" ] = rc;
-        jres[ "op_id" ]  = -1;
-
-        res = jres.toString();
-    }
-
-    websocket_write(wsi, res);
-}
-
-class VedaServer : WSClient
-{
-    ushort port;
-    string host;
-
-    this(string _host, ushort _port, Logger log)
-    {
-        host = _host;
-        port = _port;
-        super(host, port, "/ws", "module-name=mstorage", log);
-    }
 }
 
 void init(string node_id)

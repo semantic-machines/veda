@@ -151,13 +151,17 @@ func codeToJsonException(code ResultCode) []byte {
 
 //requestHandler passes request context pointer to handler according to request pass
 func requestHandler(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.Set("server", "nginx/1.8.1")
+	ctx.Response.Header.SetCanonical([]byte("server"), []byte("nginx/1.8.1"))
+
 	routeParts := strings.Split(string(ctx.Path()[:]), "/")
 	if len(routeParts) >= 2 && routeParts[1] == "files" {
 		//log.Printf("@len=%v arr=%v\n", len(routeParts), routeParts)
 		files(ctx, routeParts)
 		return
 	}
-
+	
 	switch string(ctx.Path()[:]) {
 	case "/get_individual":
 		getIndividual(ctx)

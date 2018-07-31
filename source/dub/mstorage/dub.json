@@ -3,13 +3,12 @@
 	"description": "veda-mstorage",
 	"dependencies": {
 		"pacahon_third_party": "1.0.15", 
-		"backtrace-d": "0.1.2",
                 "msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
 	},
 	"versions": ["isMStorage"],	
         "libs": [
-                    "websockets", "nanomsg", "tarantool"
+                    "nanomsg", "tarantool"
         ],
         "license": "LGPL v3",
 	"sourceFiles":[
@@ -17,7 +16,6 @@
     	    "../../lib64/liblmdb.a",
 	    "../../lib64/libxapiand.a",
     	    "../../veda/util/properd.d",
-    	    "../../veda/bind/libwebsocketd.d",
 	    "../../veda/bind/nano.d", 
 	    "../../veda/bind/xapian_d_header.d",
 	    "../../veda/util/tools.d",
@@ -50,11 +48,5 @@
 	    "name": "app",
 	    "docs": ["syntaxOnly"],
 	    "targetType": "executable"
-	},
-	{
-	    "name": "trace-app",
-	    "versions": ["trace_api_l1"],
-	    "targetType": "executable"
-	    
 	}]
 }

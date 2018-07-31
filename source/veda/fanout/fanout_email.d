@@ -115,7 +115,7 @@ class FanoutProcess : VedaModule
 
     override bool close()
     {
-        delete smtp_conn;
+        smtp_conn.destroy();
         return true;
     }
 
@@ -301,7 +301,7 @@ class FanoutProcess : VedaModule
 
             if (is_deleted == false)
             {
-                delete smtp_conn;
+                smtp_conn.destroy();
                 connect_to_smtp(context);
 
                 string    hasMessageType = new_indv.getFirstLiteral("v-s:hasMessageType");
