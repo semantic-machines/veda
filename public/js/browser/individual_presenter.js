@@ -45,14 +45,14 @@ veda.Module(function (veda) { "use strict";
       } else if (typeof template === "string") {
         var templateString = template;
         var uri = veda.Util.simpleHash(templateString).toString();
-        template = veda.cache[uri] ? veda.cache[uri] : new veda.IndividualModel({
+        template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
           "@": uri,
           "v-ui:template": [{data: templateString, type: "String"}]
         });
       } else if (template instanceof HTMLElement) {
         var templateString = template.outerHTML;
         var uri = veda.Util.simpleHash(templateString).toString();
-        template = veda.cache[uri] ? veda.cache[uri] : new veda.IndividualModel({
+        template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
           "@": uri,
           "v-ui:template": [{data: templateString, type: "String"}]
         });
@@ -448,7 +448,7 @@ veda.Module(function (veda) { "use strict";
     var abouts = [];
     $("[about]:not([rel] *):not([about] *)", wrapper).map( function () {
       var about_uri = $(this).attr("about");
-      if (about_uri !== "@" && !veda.cache[about_uri] ) {
+      if (about_uri !== "@" && !veda.cache.get(about_uri) ) {
         abouts.push(about_uri);
       }
     });
