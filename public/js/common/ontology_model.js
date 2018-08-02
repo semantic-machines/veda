@@ -57,15 +57,19 @@ veda.Module(function (veda) { "use strict";
     processOntology();
 
     // Auto update ontology on change
-    /*var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
-    var updateService = new veda.UpdateService();
-    updateService.subscribe(OntoVsn.id);
-    OntoVsn.on("afterReset", function () {
-      ontology = getOntology();
-      storage.ontology = JSON.stringify(ontology);
-      processOntology();
-      console.log("Ontology reloaded!", JSON.stringify(OntoVsn));
-    });*/
+    //var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
+    //var updateService = new veda.UpdateService();
+    //updateService.subscribe(OntoVsn.id);
+    //OntoVsn.on("afterReset", function () {
+    //  var delay = Math.round(Math.random() * 60000);
+    //  console.log("Ontology will reload in %d ms", delay);
+    //  setTimeout(function () {
+    //    ontology = getOntology();
+    //    storage.ontology = JSON.stringify(ontology);
+    //    processOntology();
+    //    console.log("Ontology reloaded!");
+    //  }, delay);
+    //});
 
     function processOntology () {
 
