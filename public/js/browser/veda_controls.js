@@ -249,7 +249,7 @@
     function feelPseudoInput(summaryTime){
       if (summaryTime) {
         summaryText.text(summaryTime);
-        summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );  
+        summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );
         var days=0, hours=0, minutes=0;
         if (summaryTime!=0){
           days=Math.floor(summaryTime/480);
@@ -1940,8 +1940,8 @@
     .then(function (results) {
       results = veda.Util.unique( results );
       var getList = results.filter( function (uri, index) {
-        if ( veda.cache[uri] ) {
-          result.push(veda.cache[uri]);
+        if ( veda.cache.get(uri) ) {
+          result.push(veda.cache.get(uri));
           return false;
         } else {
           return true;

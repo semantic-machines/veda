@@ -24,7 +24,7 @@ veda.Module(function (veda) { "use strict";
 
     // Define Model functions
     this._ = {
-      cache: typeof cache !== "undefined" ? cache : true,
+      cache: typeof cache === "boolean" ? cache : cache || true,
       init: typeof init !== "undefined" ? init : true,
       isNew: false,
       isSync: false
@@ -175,9 +175,9 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       var previous = this.properties && this.properties["@"];
-      if (previous && this._.cache && veda.cache[previous]) {
-        delete veda.cache[previous];
-        veda.cache[value] = this;
+      if (previous && this._.cache && veda.cache.get(previous)) {
+        veda.cache.remove(previous);
+        veda.cache.set(this, this._.cache);
       }
       this.properties["@"] = value;
       this.trigger("idChanged", value);
@@ -254,9 +254,9 @@ veda.Module(function (veda) { "use strict";
     this.trigger("beforeLoad");
     if (typeof uri === "string") {
       this.id = uri;
-      if (this._.cache && veda.cache[uri]) {
-        this.trigger("afterLoad", veda.cache[uri]);
-        return veda.cache[uri];
+      if (this._.cache && veda.cache.get(uri)) {
+        this.trigger("afterLoad", veda.cache.get(uri));
+        return veda.cache.get(uri);
       }
       try {
         this.isNew(false);
@@ -309,7 +309,7 @@ veda.Module(function (veda) { "use strict";
       this.isSync(false);
       this.id = veda.Util.genUri();
     }
-    if (this._.cache) veda.cache[this.id] = this;
+    if (this._.cache) veda.cache.set(this, this._.cache);
     if (this._.init) this.init();
     this.trigger("afterLoad", this);
     return this;
@@ -457,8 +457,8 @@ veda.Module(function (veda) { "use strict";
       try {
         this.undraft();
         remove_individual(veda.ticket, this.id);
-        if ( this._.cache && veda.cache && veda.cache[this.id] ) {
-          delete veda.cache[this.id];
+        if ( this._.cache && veda.cache && veda.cache.get(this.id) ) {
+          veda.cache.remove(this.id);
         }
       } catch (error) {
         var notify = veda.Notify ? new veda.Notify() : console.log;
@@ -737,10 +737,10 @@ veda.Module(function (veda) { "use strict";
       if ( key === "@" || (allowed_props.length && allowed_props.indexOf(key) < 0) ) return;
       data[key].map(function (value) {
         if (value.type !== "Uri") return;
-        if (!veda.cache[value.data]) {
+        if (!veda.cache.get(value.data)) {
           uris.push(value.data);
         } else if (depth !== 0) {
-          uris.push( prefetch.apply( veda.cache[value.data], [0].concat(allowed_props) ) );
+          uris.push( prefetch.apply( veda.cache.get(value.data), [0].concat(allowed_props) ) );
         }
       });
     });
@@ -749,10 +749,10 @@ veda.Module(function (veda) { "use strict";
       var result = get_individuals(veda.ticket, uris),
         res_map = result.map(function (value) {
           var obj;
-          if (!veda.cache[ value["@"] ]) {
+          if ( !veda.cache.get(value["@"]) ) {
             obj = new veda.IndividualModel(value);
           } else {
-            obj = veda.cache[ value["@"] ];
+            obj = veda.cache.get(value["@"]);
           }
           return prefetch.apply( obj, [0].concat(allowed_props) );
         });
