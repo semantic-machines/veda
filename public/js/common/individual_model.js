@@ -177,7 +177,7 @@ veda.Module(function (veda) { "use strict";
       var previous = this.properties && this.properties["@"];
       if (previous && this._.cache && veda.cache.get(previous)) {
         veda.cache.remove(previous);
-        veda.cache.add(this, this._.cache);
+        veda.cache.set(this, this._.cache);
       }
       this.properties["@"] = value;
       this.trigger("idChanged", value);
@@ -309,7 +309,7 @@ veda.Module(function (veda) { "use strict";
       this.isSync(false);
       this.id = veda.Util.genUri();
     }
-    if (this._.cache) veda.cache.add(this, this._.cache);
+    if (this._.cache) veda.cache.set(this, this._.cache);
     if (this._.init) this.init();
     this.trigger("afterLoad", this);
     return this;

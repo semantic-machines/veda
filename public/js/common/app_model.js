@@ -18,7 +18,7 @@
       get: function (key) {
         return this.storage[key];
       },
-      add: function (obj, expires) {
+      set: function (obj, expires) {
         var that = this;
         var count = this.count;
         var limit = this.limit;
