@@ -81,7 +81,7 @@
 
     self.logout = function() {
       self.user_uri = self.ticket = self.end_time = "";
-      self.cache = {};
+      self.cache.clear();
       self.status = "logout";
       self.trigger("logout");
     };
