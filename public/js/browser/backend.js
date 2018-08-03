@@ -43,6 +43,7 @@ veda.Module(function (veda) { "use strict";
        404: "Not found",
        422: "Unprocessable entity",
        429: "Too many requests",
+       469: "Password expired",
        470: "Ticket not found",
        471: "Ticket expired",
        472: "Not authorized",
@@ -170,7 +171,8 @@ veda.Module(function (veda) { "use strict";
     return call_server(params);
   };
 
-  window.authenticate = function (login, password) {
+  window.authenticate = function (login, password, secret) {
+    // TODO: Remove
     if (login == "VedaNTLMFilter")
         login = "cfg:Guest";
     var arg = arguments[0];
@@ -181,7 +183,8 @@ veda.Module(function (veda) { "use strict";
       async: isObj ? arg.async : false,
       data: {
         "login": isObj ? arg.login : login,
-        "password": isObj ? arg.password : password
+        "password": isObj ? arg.password : password,
+        "secret": isObj ? arg.secret : secret
       }
     };
     return call_server(params);

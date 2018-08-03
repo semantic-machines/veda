@@ -127,23 +127,27 @@ veda.Module(function (veda) { "use strict";
   });
 
   // Login invitation
-  var loginTmpl = $("#login-template").html();
-  var loginForm = $(loginTmpl);
-  var credentials = $(".credentials");
-  credentials.append(loginForm);
-  var errorMsg = $("#login-error", loginForm);
-  var submit = $("#submit", loginForm);
-  submit.click( function (e) {
+  var loginForm = $(".login-form");
+  var enterLoginPassword = $("#enter-login-password", loginForm);
+  var enterNewPassword = $("#enter-new-password", loginForm);
+  var loginFailedError = $("#login-failed-error", loginForm);
+  var passwordExpiredError = $("#password-expired-error", loginForm);
+  var newPasswordError = $("#password-expired-error", loginForm);
+
+  $("#submit-login-password", loginForm).click( function (e) {
     e.preventDefault();
+    loginFailedError.addClass("hidden");
+    passwordExpiredError.addClass("hidden");
     var login = $("#login", loginForm).val(),
       password = $("#password", loginForm).val(),
       hash = Sha256.hash(password),
       authResult;
     try {
       authResult = veda.login(login, hash);
-    } catch (ex1) {
-      console.log(ex1);
-      authResult = undefined;
+      //var err = new Error(); err.code = 469; throw err;
+    } catch (err) {
+      console.log(err);
+      authResult = err.code;
       if (ntlm) {
         var params = {
           type: "POST",
@@ -157,18 +161,56 @@ veda.Module(function (veda) { "use strict";
         try {
           authResult = $.ajax(params);
           authResult = JSON.parse( authResult.responseText );
-        } catch (ex2) {
-          console.log(ex2);
-          authResult = undefined;
+        } catch (err) {
+          console.log(err);
+          authResult = err.code;
         }
       }
     } finally {
-      if (authResult) {
-        errorMsg.addClass("hidden");
+      if (typeof authResult === "object") {
+        enterNewPassword.addClass("hidden");
+        passwordExpiredError.addClass("hidden");
+        enterLoginPassword.removeClass("hidden");
+        loginFailedError.addClass("hidden");
         veda.trigger("login:success", authResult);
-      } else {
-        errorMsg.removeClass("hidden");
-        veda.trigger("login:failed");
+      } else if ( authResult === 473 ) {
+        enterLoginPassword.removeClass("hidden");
+        loginFailedError.removeClass("hidden");
+        enterNewPassword.addClass("hidden");
+        passwordExpiredError.addClass("hidden");
+      } else if ( authResult === 469 ) {
+        enterNewPassword.removeClass("hidden");
+        passwordExpiredError.removeClass("hidden");
+        enterLoginPassword.addClass("hidden");
+        loginFailedError.addClass("hidden");
+      }
+    }
+  });
+
+  $("#submit-new-password", loginForm).click( function (e) {
+    e.preventDefault();
+    loginFailedError.addClass("hidden");
+    passwordExpiredError.addClass("hidden");
+    newPasswordError.addClass("hidden");
+    var login = $("#login", loginForm).val(),
+      password = $("#new-password", loginForm).val(),
+      secret = $("#secret", loginForm).val(),
+      hash = Sha256.hash(password),
+      authResult;
+    try {
+      authResult = veda.login(login, hash, secret);
+      //authResult = veda.login(login, hash);
+    } catch (err) {
+      console.log(err);
+      newPasswordError.removeClass("hidden");
+    } finally {
+      if (typeof authResult === "object") {
+        enterLoginPassword.removeClass("hidden");
+        enterNewPassword.addClass("hidden");
+        loginFailedError.addClass("hidden");
+        passwordExpiredError.addClass("hidden");
+        newPasswordError.addClass("hidden");
+        veda.trigger("login:success", authResult);
       }
     }
   });
@@ -176,9 +218,9 @@ veda.Module(function (veda) { "use strict";
   // NTLM auth using iframe
   var ntlmProvider = new veda.IndividualModel({uri: "cfg:NTLMAuthProvider", cache: true, init: false}),
     ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0],
-    iframe = $("<iframe>", {"class": "hidden"});
+    iframe;
   if ( ntlm ) {
-    iframe.appendTo(credentials);
+    iframe = $("<iframe>", {"class": "hidden"}).appendTo(loginForm);
   }
 
   veda.on("login:failed", function () {
@@ -190,7 +232,7 @@ veda.Module(function (veda) { "use strict";
     if ( ntlm ) {
       iframe.one("load", function () {
         try {
-          credentials.addClass("hidden");
+          loginForm.addClass("hidden");
           var body = iframe.contents().find("body"),
             ticket = $("#ticket", body).text(),
             user_uri = $("#user_uri", body).text(),
@@ -207,19 +249,19 @@ veda.Module(function (veda) { "use strict";
           }
         } catch (ex) {
           console.log(ex);
-          credentials.removeClass("hidden");
+          loginForm.removeClass("hidden");
         }
       });
       document.domain = document.domain;
       iframe.attr("src", ntlm);
     } else {
-      credentials.removeClass("hidden");
+      loginForm.removeClass("hidden");
     }
   });
 
   // Initialize application if ticket is valid
   veda.on("login:success", function (authResult) {
-    credentials.addClass("hidden");
+    loginForm.addClass("hidden");
     veda.user_uri = authResult.user_uri;
     veda.ticket = authResult.ticket;
     veda.end_time = authResult.end_time;
@@ -244,7 +286,7 @@ veda.Module(function (veda) { "use strict";
     delete storage.user_uri;
     delete storage.end_time;
     veda.Util.delCookie("ticket");
-    credentials.removeClass("hidden");
+    loginForm.removeClass("hidden");
   });
 
   // Load ontology

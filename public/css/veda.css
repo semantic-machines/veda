@@ -329,7 +329,7 @@ hr.black {
   float: right;
 }
 
-.credentials {
+.login-form {
   max-width: 330px;
   padding: 15px;
   margin-top: 10%;
@@ -337,15 +337,26 @@ hr.black {
   margin-right: auto;
 }
 
-.credentials input#login {
+.login-form input {
   margin-bottom: -1px;
+  margin-top: -1px;
+  border-radius: 0;
+  border-radius: 0;
+}
+
+.login-form input:first-of-type {
+  margin-bottom: -1px;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
-.credentials input#password {
+.login-form input:last-of-type {
   border-top-right-radius: 0;
   border-top-left-radius: 0;
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
 }
 
 #app-load-indicator {

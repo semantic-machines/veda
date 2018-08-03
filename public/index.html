@@ -44,7 +44,37 @@
   <body>
 
     <!-- Login form -->
-    <div class="hidden credentials"></div>
+    <div class="hidden login-form">
+      <form role="form">
+        <h3>Войдите / Sign in</h3>
+        <fieldset id="enter-login-password">
+          <input class="form-control input-lg" id="login" required="required" placeholder="login" type="text" name="login" autofocus="autofocus"/>
+          <input class="form-control input-lg" id="password" required="required" placeholder="password" type="password" name="password"/>
+          <br>
+          <button type="submit" id="submit-login-password" class="btn btn-lg btn-primary btn-block">Войти / Sign in</button>
+        </fieldset>
+        <fieldset id="enter-new-password" class="hidden">
+          <input class="form-control input-lg" id="new-password" required="required" placeholder="new password" type="password" name="new-password"/>
+          <!--input class="form-control input-lg" id="retype-new-password" required="required" placeholder="retype new password" type="password" name="retype-new-password"/-->
+          <input class="form-control input-lg" id="secret" required="required" placeholder="code from e-mail" type="text" name="secret"/>
+          <br>
+          <button type="submit" id="submit-new-password" class="btn btn-lg btn-primary btn-block">Войти / Sign in</button>
+        </fieldset>
+        <br>
+        <div id="login-failed-error" class="hidden">
+          <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
+          <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
+        </div>
+        <div id="password-expired-error" class="hidden">
+          <p><strong class="text-danger">Ошибка!</strong> Истекло время действия пароля. На вашу почту выслан временный код для смены пароля.</p>
+          <p><strong class="text-danger">Error!</strong> Password expired. Check your email for temporal secret code.</p>
+        </div>
+        <div id="new-password-error" class="hidden">
+          <p><strong class="text-danger">Ошибка!</strong> Новый пароль не принят. Повторите попытку с новым кодом.</p>
+          <p><strong class="text-danger">Error!</strong> New password was not accepted. Try with new secret code.</p>
+        </div>
+      </form>
+    </div>
 
     <!-- Autocomplete feature -->
     <iframe name="autocomplete-frame" style="display:none" src="about:blank"></iframe>
@@ -68,22 +98,6 @@
       <div class="alert alert-notify fade in" role="alert">
         <p class="note"><strong class="note-icon"></strong> <strong class="note-code"></strong> <strong class="note-name"></strong> <span class="note-message"></span></p>
       </div>
-    </script>
-
-    <!-- Login -->
-    <script type="html/template" id="login-template">
-      <form role="form">
-        <h3>Войдите / Sign in</h3>
-        <input class="form-control input-lg" id="login" required="required" placeholder="login" type="text" name="login" autofocus="autofocus"/>
-        <input class="form-control input-lg" id="password" required="required" placeholder="password" type="password" name="password"/>
-        <br>
-        <button type="submit" id="submit" class="btn btn-lg btn-primary btn-block">Войти / Sign in</button>
-        <br>
-        <div id="login-error" class="hidden">
-          <p><strong class="text-danger">Ошибка!</strong> Неверное имя пользователя или пароль.</p>
-          <p><strong class="text-danger">Error!</strong> Wrong login or password.</p>
-        </div>
-      </form>
     </script>
 
     <!-- Drafts template -->
