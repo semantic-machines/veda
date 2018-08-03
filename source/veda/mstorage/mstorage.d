@@ -7,7 +7,7 @@ private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
-           std.regex, std.uuid;
+           std.regex, std.uuid, std.random;
     import veda.util.properd;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
@@ -31,7 +31,7 @@ Logger log()
 }
 // ////// ////// ///////////////////////////////////////////
 
-bool f_listen_exit = false;
+bool   f_listen_exit = false;
 Logger io_msg;
 
 static this()
@@ -84,7 +84,7 @@ void main(char[][] args)
     foreach (key, value; tids)
         register(text(key), value);
 
-	init(null);
+    init(null);
 
     while (f_listen_exit == false)
         core.thread.Thread.sleep(dur!("seconds")(1000));
@@ -317,7 +317,9 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     return ticket;
 }
 
-private Ticket authenticate(Context ctx, string login, string password)
+auto rnd = Random(42);
+
+private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
     //StopWatch sw; sw.start;
 
@@ -351,22 +353,35 @@ private Ticket authenticate(Context ctx, string login, string password)
         if (user_id is null)
             continue;
 
-        string pass;
-        string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+        Individual iuser = get_individual(ctx, &sticket, user_id);
+
+        if (iuser.getStatus() != ResultCode.OK)
+        {
+            log.trace("ERR! authenticate:user %s not found", user_id);
+            continue;
+        }
+
+        string     pass;
+        string     usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+        long       edited;
+
+        Individual i_usesCredential;
         if (usesCredential_uri !is null)
         {
-            log.trace("authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-            Individual i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
-            pass = i_usesCredential.getFirstLiteral("v-s:password");
+            log.trace("INFO! authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
+            i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
+            pass             = i_usesCredential.getFirstLiteral("v-s:password");
+            edited           = i_usesCredential.getFirstInteger("v-s:dateFrom");
         }
         else
         {
             pass = user.getFirstLiteral("v-s:password");
 
-            Individual i_usesCredential;
             i_usesCredential.uri = user.uri ~ "-crdt";
             i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
             i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
+            edited = Clock.currTime().toUnixTime();
+            i_usesCredential.addResource("v-s:dateFrom", Resource(DataType.Datetime, edited));
 
             Transaction tnx;
             tnx.id            = -1;
@@ -376,7 +391,7 @@ private Ticket authenticate(Context ctx, string login, string password)
                                                  OptFreeze.NONE, OptAuthorize.YES,
                                                  OptTrace.NONE);
 
-            log.trace("authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
+            log.trace("INFO! authenticate: create v-s:Credential[%s], res=%s", i_usesCredential, op_res);
             user.addResource("v-s:usesCredential", Resource(DataType.Uri, i_usesCredential.uri));
             user.removeResource("v-s:password");
 
@@ -388,7 +403,81 @@ private Ticket authenticate(Context ctx, string login, string password)
                                                    OptAuthorize.YES,
                                                    OptTrace.NONE);
 
-            log.trace("authenticate: update user[%s], res=%s", user, op_res);
+            log.trace("INFO! authenticate: update user[%s], res=%s", user, op_res);
+        }
+
+        string origin = iuser.getFirstLiteral("v-s:origin");
+
+        //if (origin !is null && origin == "External User")
+        {
+            long now = Clock.currTime().toUnixTime();
+            if (now - edited > 60 * 24 * 60 * 60 * 1000)
+            {
+                log.trace("ERR! authenticate:password is old, > 60 days", user);
+                log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
+                ticket.result = ResultCode.Password_expired;
+
+                string old_secret = i_usesCredential.getFirstLiteral("secret");
+
+                if (old_secret != null)
+                {
+                    log.trace("ERR! authenticate:secret already exist, user=[%s]", iuser.uri);
+                    return ticket;
+                }
+
+                // generate new secret
+                auto n_secret = to!string(uniform(100000, 999999, rnd));
+                i_usesCredential.setResources("secret", [ Resource(DataType.String, n_secret) ]);
+
+                Transaction tnx;
+                tnx.id            = -1;
+                tnx.is_autocommit = true;
+                OpResult op_res = add_to_transaction(
+                                                     storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                     OptFreeze.NONE, OptAuthorize.YES,
+                                                     OptTrace.NONE);
+
+                if (op_res.result != ResultCode.OK)
+                {
+                    log.trace("ERR! authenticate:fail store new secret, user=[%s]", iuser.uri);
+                    return ticket;
+                }
+
+
+                string mailbox = user.getFirstLiteral("v-s:mailbox");
+
+                if (mailbox !is null && mailbox.length > 3)
+                {
+                    log.trace("INFO! authenticate:found mailbox [%s], user=[%s]", mailbox, iuser.uri);
+
+                    Individual mail_with_secret;
+
+                    mail_with_secret.uri = "d:mail_" ~ randomUUID().toString();
+
+                    mail_with_secret.addResource("rdf:type", Resource(DataType.Uri, "v-s:Email"));
+                    mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.Uri, "mailbox"));
+
+                    mail_with_secret.addResource("v-s:messageBody", Resource(DataType.String, "your secret code is " ~ n_secret));
+
+                    op_res = add_to_transaction(
+                                                storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &mail_with_secret, false, "",
+                                                OptFreeze.NONE, OptAuthorize.YES,
+                                                OptTrace.NONE);
+
+                    if (op_res.result != ResultCode.OK)
+                    {
+                        log.trace("ERR! authenticate:fail store email with new secret, user=[%s]", iuser.uri);
+                        return ticket;
+                    }
+                }
+                else
+                {
+                    log.trace("ERR! authenticate:mailbox not found, user=[%s]", iuser.uri);
+                }
+
+
+                return ticket;
+            }
         }
 
         if (pass !is null && pass == password)
@@ -398,8 +487,7 @@ private Ticket authenticate(Context ctx, string login, string password)
         }
     }
 
-    log.trace("authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-
+    log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
     ticket.result = ResultCode.Authentication_Failed;
 
     return ticket;
@@ -435,7 +523,12 @@ public string execute_json(string in_msg, Context ctx)
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
 
-            Ticket    ticket = authenticate(ctx, login.str, password.str);
+            string    secret = null;
+
+            if (auto p = "secret" in jsn)
+                secret = jsn[ "secret" ].str;
+
+            Ticket ticket = authenticate(ctx, login.str, password.str, secret);
 
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
@@ -1109,7 +1202,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
     Ticket ticket;
 
     //if (trace_msg[ T_API_60 ] == 1)
-    log.trace("trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
+    log.trace("INFO: request trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
     ticket.result = ResultCode.Authentication_Failed;
 

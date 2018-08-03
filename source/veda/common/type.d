@@ -178,6 +178,8 @@ public enum ResultCode
     /// 429
     Too_Many_Requests     = 429,
 
+    Password_expired	  = 469,
+
     /// 470
     Ticket_not_found      = 470,
 
