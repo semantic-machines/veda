@@ -16,6 +16,12 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	request["login"] = string(ctx.QueryArgs().Peek("login")[:])
 	request["password"] = string(ctx.QueryArgs().Peek("password")[:])
 
+	secret := ctx.QueryArgs().Peek("secret")
+
+	if secret != nil && len(secret) > 0 && len(secret) < 1024 {
+		request["secret"] = string(secret[:])
+	}
+
 	//encode request to json
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
@@ -81,7 +87,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 			ctx.SetStatusCode(int(NotAuthorized))
 		} else if ok && origin == "External User" {
 			//else set externals users ticket id to true valuse
-//			externalUsersTicketId[authResponse["user_uri"].(string)] = true
+			//			externalUsersTicketId[authResponse["user_uri"].(string)] = true
 			ctx.SetStatusCode(int(Ok))
 		} else {
 			ctx.SetStatusCode(int(Ok))

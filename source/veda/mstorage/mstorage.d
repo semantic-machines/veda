@@ -317,7 +317,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     return ticket;
 }
 
-private Ticket authenticate(Context ctx, string login, string password, string shared_secret)
+private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
     //StopWatch sw; sw.start;
 
@@ -461,12 +461,12 @@ public string execute_json(string in_msg, Context ctx)
             JSONValue login    = jsn[ "login" ];
             JSONValue password = jsn[ "password" ];
 
-            string    shared_secret = null;
+            string    secret = null;
 
-            if (auto p = "shared_secret" in jsn)
-                shared_secret = jsn[ "shared_secret" ].str;
+            if (auto p = "secret" in jsn)
+                secret = jsn[ "secret" ].str;
 
-            Ticket ticket = authenticate(ctx, login.str, password.str, shared_secret);
+            Ticket ticket = authenticate(ctx, login.str, password.str, secret);
 
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
