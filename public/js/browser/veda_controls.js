@@ -43,11 +43,11 @@
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
         try {
-          var start = field.selectionStart;
-          var end = field.selectionEnd;
+          var start_shift = field.selectionStart - field.value.length;
+          var end_shift = field.selectionEnd - field.value.length;
           field.value = value;
-          field.selectionStart = start;
-          field.selectionEnd = end;
+          field.selectionStart = value.length + start_shift;
+          field.selectionEnd = value.length + end_shift;
         } catch (ex) {
           field.value = value;
           console.log("selectionStart/End error:", property_uri, value, typeof value);
