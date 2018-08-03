@@ -7,7 +7,7 @@ private
 {
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
-           std.regex, std.uuid;
+           std.regex, std.uuid, std.random;
     import veda.util.properd;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
@@ -317,6 +317,8 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     return ticket;
 }
 
+auto rnd = Random(42);
+
 private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
     //StopWatch sw; sw.start;
@@ -359,22 +361,22 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             continue;
         }
 
-        string pass;
-        string usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
-        long   edited;
+        string     pass;
+        string     usesCredential_uri = user.getFirstLiteral("v-s:usesCredential");
+        long       edited;
 
+        Individual i_usesCredential;
         if (usesCredential_uri !is null)
         {
             log.trace("INFO! authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
-            Individual i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
-            pass   = i_usesCredential.getFirstLiteral("v-s:password");
-            edited = i_usesCredential.getFirstInteger("v-s:dateFrom");
+            i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
+            pass             = i_usesCredential.getFirstLiteral("v-s:password");
+            edited           = i_usesCredential.getFirstInteger("v-s:dateFrom");
         }
         else
         {
             pass = user.getFirstLiteral("v-s:password");
 
-            Individual i_usesCredential;
             i_usesCredential.uri = user.uri ~ "-crdt";
             i_usesCredential.addResource("rdf:type", Resource(DataType.Uri, "v-s:Credential"));
             i_usesCredential.addResource("v-s:password", Resource(DataType.String, pass));
@@ -406,14 +408,74 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
         string origin = iuser.getFirstLiteral("v-s:origin");
 
-        if (origin !is null && origin == "External User")
+        //if (origin !is null && origin == "External User")
         {
             long now = Clock.currTime().toUnixTime();
             if (now - edited > 60 * 24 * 60 * 60 * 1000)
             {
-                log.trace("ERR! password is old, > 60 days", user);
+                log.trace("ERR! authenticate:password is old, > 60 days", user);
                 log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
                 ticket.result = ResultCode.Password_expired;
+
+                string old_secret = i_usesCredential.getFirstLiteral("secret");
+
+                if (old_secret != null)
+                {
+                    log.trace("ERR! authenticate:secret already exist, user=[%s]", iuser.uri);
+                    return ticket;
+                }
+
+                // generate new secret
+                auto n_secret = to!string(uniform(100000, 999999, rnd));
+                i_usesCredential.setResources("secret", [ Resource(DataType.String, n_secret) ]);
+
+                Transaction tnx;
+                tnx.id            = -1;
+                tnx.is_autocommit = true;
+                OpResult op_res = add_to_transaction(
+                                                     storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                     OptFreeze.NONE, OptAuthorize.YES,
+                                                     OptTrace.NONE);
+
+                if (op_res.result != ResultCode.OK)
+                {
+                    log.trace("ERR! authenticate:fail store new secret, user=[%s]", iuser.uri);
+                    return ticket;
+                }
+
+
+                string mailbox = user.getFirstLiteral("v-s:mailbox");
+
+                if (mailbox !is null && mailbox.length > 3)
+                {
+                    log.trace("INFO! authenticate:found mailbox [%s], user=[%s]", mailbox, iuser.uri);
+
+                    Individual mail_with_secret;
+
+                    mail_with_secret.uri = "d:mail_" ~ randomUUID().toString();
+
+                    mail_with_secret.addResource("rdf:type", Resource(DataType.Uri, "v-s:Email"));
+                    mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.Uri, "mailbox"));
+
+                    mail_with_secret.addResource("v-s:messageBody", Resource(DataType.String, "your secret code is " ~ n_secret));
+
+                    op_res = add_to_transaction(
+                                                storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &mail_with_secret, false, "",
+                                                OptFreeze.NONE, OptAuthorize.YES,
+                                                OptTrace.NONE);
+
+                    if (op_res.result != ResultCode.OK)
+                    {
+                        log.trace("ERR! authenticate:fail store email with new secret, user=[%s]", iuser.uri);
+                        return ticket;
+                    }
+                }
+                else
+                {
+                    log.trace("ERR! authenticate:mailbox not found, user=[%s]", iuser.uri);
+                }
+
+
                 return ticket;
             }
         }
