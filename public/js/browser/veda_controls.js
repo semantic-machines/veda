@@ -552,11 +552,11 @@
           if ( value.language === lang || !value.language ) {
             try {
               if (that === document.activeElement) {
-                var start = that.selectionStart;
-                var end = that.selectionEnd;
+                var start_shift = that.selectionStart - that.value.length;
+                var end_shift = that.selectionEnd - that.value.length;
                 that.value = value;
-                that.selectionStart = start;
-                that.selectionEnd = end;
+                that.selectionStart = value.length + start_shift;
+                that.selectionEnd = value.length + end_shift;
               } else {
                 that.value = value;
               }
