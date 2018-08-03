@@ -230,7 +230,8 @@ v-s:RequestDelegationTemplate
     $("#positions", template).empty();
     if (values.length) {
       var delegator = individual["v-s:delegator"][0];
-      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')||('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'&&'v-s:deleted' == true)").result;
+      //var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "') || ('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "' && 'v-s:deleted' == true)").result;
+      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')").result;
       var appointments = get_individuals(veda.ticket, appointments_ids);
       var positions_ids = appointments.map(function (appointment_json) {
         var appointment = new veda.IndividualModel(appointment_json);
