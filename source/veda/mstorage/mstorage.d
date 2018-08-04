@@ -371,7 +371,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             log.trace("INFO! authenticate:found v-s:usesCredential, uri=%s", usesCredential_uri);
             i_usesCredential = get_individual(ctx, &sticket, usesCredential_uri);
             pass             = i_usesCredential.getFirstLiteral("v-s:password");
-            edited           = i_usesCredential.getFirstInteger("v-s:dateFrom");
+            edited           = i_usesCredential.getFirstDatetime("v-s:dateFrom");
         }
         else
         {
