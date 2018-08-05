@@ -9,7 +9,7 @@ export default class basic {
       .click('#password')
       .pressKey('ctrl+a delete')
       .typeText('#password', password)
-      .click('#submit')
+      .click('#submit-login-password')
       .wait(1000);
   }
 
