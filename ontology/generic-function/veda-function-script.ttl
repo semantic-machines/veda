@@ -66,6 +66,7 @@ v-s:PsRunAtUserScript
 v-s:UserScriptEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:UserScript ;
+  v-s:preventByType v-s:Operation ;
 #  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -78,16 +79,85 @@ v-s:UserScriptEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
-var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
+//var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
+//var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
+//
+//if (!toBeRun || runAt !== "Server") { return; }
+//
+//// preserve global print & console
+//var nativePrint = this.print;
+//var nativeConsole = this.console;
+//
+//// override global print & console
+//var print = function () {
+//  for (var i = 0; i < arguments.length; i++) {
+//    var arg = arguments[i] ;
+//    var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
+//    if (i === 0) {
+//      output += argString;
+//    } else {
+//      output += " " + argString;
+//    }
+//  }
+//  output += String.fromCharCode(13, 10);
+//}
+//this.print = print;
+//
+//var console = {
+//  log: print,
+//  error: print,
+//  info: print,
+//  time: function (timer) {
+//    this[timer] = new Date();
+//  },
+//  timeEnd: function (timer) {
+//    var delta = new Date() - this[timer];
+//    this.log(timer, delta, "msec");
+//  }
+//};
+//this.console = console;
+//
+//var output = "";
+//var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
+//if (script) {
+//  script = new Function (script);
+//  try {
+//    script();
+//  } catch (err) {
+//    print(err, err.stack);
+//  }
+//  document["v-s:output"] = [{
+//    data: output,
+//    lang: "NONE",
+//    type: "String"
+//  }];
+//  document["v-s:lastRun"] = [{
+//    data: new Date(),
+//    type: "Datetime"
+//  }];
+//  delete document["v-s:toBeRun"];
+//  put_individual(ticket, document, _event_id);
+//}
+//
+//// restore global print & console
+//this.print = nativePrint;
+//this.console = nativeConsole;
 
-if (!toBeRun || runAt !== "Server") { return; }
+
+var operation = new veda.IndividualModel(document);
+var toBeRun = operation["v-s:toBeRun"][0] ;
+var runAt = operation["v-s:runAt"][0];
+
+print("toBeRun", toBeRun, "runAt", runAt);
+
+if (!toBeRun || runAt != "Server") { return; }
 
 // preserve global print & console
 var nativePrint = this.print;
 var nativeConsole = this.console;
 
 // override global print & console
+var output = "";
 var print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
@@ -116,26 +186,23 @@ var console = {
 };
 this.console = console;
 
-var output = "";
-var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
+var script = operation["v-s:script"][0];
+
+
 if (script) {
-  script = new Function (script);
+  script = new Function ("veda", "input", script);
+  print("script fn =", script);
   try {
-    script();
+    script(veda, operation["v-s:input"]);
   } catch (err) {
     print(err, err.stack);
   }
-  document["v-s:output"] = [{
-    data: output,
-    lang: "NONE",
-    type: "String"
-  }];
-  document["v-s:lastRun"] = [{
-    data: new Date(),
-    type: "Datetime"
-  }];
-  delete document["v-s:toBeRun"];
-  put_individual(ticket, document, _event_id);
+  operation["v-s:output"] = [output];
+  operation["v-s:lastRun"] = [new Date()];
+  operation.clearValue("v-s:toBeRun");
+  print("111111111111111111111111111111111111111111111111111111111111111111111111");
+  operation.save();
+  print("222222222222222222222222222222222222222222222222222222222222222222222222");
 }
 
 // restore global print & console
@@ -304,8 +371,83 @@ v-s:PsRunAtOperation
 
 v-s:input
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Ввод"@ru ;
+  rdfs:label "Входные данные"@ru ;
   rdfs:label "Input"@en ;
   rdfs:domain v-s:Operation ;
   rdfs:range rdfs:Resource ;
+.
+
+v-s:OperationEvent
+  rdf:type v-s:Event ;
+  v-s:triggerByType v-s:Operation ;
+#  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+var operation = new veda.IndividualModel(document);
+var toBeRun = operation["v-s:toBeRun"][0] ;
+var runAt = operation["v-s:runAt"][0];
+
+if (!toBeRun || runAt !== "Server") { return; }
+
+// preserve global print & console
+var nativePrint = this.print;
+var nativeConsole = this.console;
+
+// override global print & console
+var output = "";
+var print = function () {
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i] ;
+    var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
+    if (i === 0) {
+      output += argString;
+    } else {
+      output += " " + argString;
+    }
+  }
+  output += String.fromCharCode(13, 10);
+}
+this.print = print;
+
+var console = {
+  log: print,
+  error: print,
+  info: print,
+  time: function (timer) {
+    this[timer] = new Date();
+  },
+  timeEnd: function (timer) {
+    var delta = new Date() - this[timer];
+    this.log(timer, delta, "msec");
+  }
+};
+this.console = console;
+
+var script = operation["v-s:script"][0];
+if (script) {
+  script = new Function ("veda", "input", script);
+  try {
+    script(veda, operation["v-s:input"]);
+  } catch (err) {
+    print(err, err.stack);
+  }
+  operation["v-s:output"] = [output];
+  operation["v-s:lastRun"] = [new Date()];
+  operation.clearValue("v-s:toBeRun");
+  operation.save();
+}
+
+// restore global print & console
+this.print = nativePrint;
+this.console = nativeConsole;
+"""
 .
