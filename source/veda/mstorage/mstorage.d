@@ -431,7 +431,14 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                     if (secret != old_secret)
                     {
                         log.trace("ERR! authenticate:send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
-                        ticket.result = Invalid_secret; 
+                        ticket.result = ResultCode.Invalid_secret;
+                        return ticket;
+                    }
+
+                    if (exist_password == password)
+                    {
+                        log.trace("ERR! authenticate:now password equal previous password, reject. user=[%s]", iuser.uri);
+                        ticket.result = ResultCode.Invalid_password;
                         return ticket;
                     }
 
@@ -456,9 +463,9 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 else
                 {
                     // generate new secret
-					auto rnd = Random(unpredictableSeed);                    
+                    auto rnd      = Random(unpredictableSeed);
                     auto n_secret = to!string(uniform(100000, 999999, rnd));
-                    
+
                     i_usesCredential.setResources("v-s:secret", [ Resource(DataType.String, n_secret) ]);
 
                     Transaction tnx;
