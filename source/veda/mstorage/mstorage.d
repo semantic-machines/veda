@@ -431,6 +431,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                     if (secret != old_secret)
                     {
                         log.trace("ERR! authenticate:send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
+                        ticket.result = Invalid_secret; 
                         return ticket;
                     }
 
