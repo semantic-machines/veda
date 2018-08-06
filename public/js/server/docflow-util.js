@@ -857,7 +857,7 @@ veda.Module(function (veda) { "use strict";
               lang = 'RU';
             }
             var view = {
-              "app_name": getAppName
+              "app_name": veda.Workflow.getAppName
             };
 
             for (var idx = 0; idx < messageVars.length; idx++) {
