@@ -326,8 +326,8 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     Ticket ticket;
     Ticket sticket = ctx.sys_ticket(true);
 
-    if (trace_msg[ T_API_70 ] == 1)
-        log.trace("authenticate, login=[%s] password=[%s]", login, password);
+    //if (trace_msg[ T_API_70 ] == 1)
+        log.trace("authenticate, login=[%s] password=[%s], secret=[%s]", login, password, secret);
 
     ticket.result = ResultCode.Authentication_Failed;
 
@@ -409,9 +409,15 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         string origin = iuser.getFirstLiteral("v-s:origin");
 
         //if (origin !is null && origin == "External User")
-        {
+        {        	
             long now = Clock.currTime().toUnixTime();
-            if (now - edited > 60 * 24 * 60 * 60 * 1000)
+            
+            stderr.writeln ("@now=", now);
+            stderr.writeln ("@edited=", edited);
+            stderr.writeln ("@delta=", now - edited);
+            stderr.writeln ("@60=", 60 * 24 * 60 * 60);
+            
+            if (now - edited > 60 * 24 * 60 * 60)
             {
                 log.trace("ERR! authenticate:password is old, > 60 days", user);
                 log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
