@@ -491,7 +491,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                         mail_with_secret.uri = "d:mail_" ~ randomUUID().toString();
 
                         mail_with_secret.addResource("rdf:type", Resource(DataType.Uri, "v-s:Email"));
-                        mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.Uri, "mailbox"));
+                        mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.String, mailbox));
 
                         mail_with_secret.addResource("v-s:messageBody", Resource(DataType.String, "your secret code is " ~ n_secret));
 
@@ -506,7 +506,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                             return ticket;
                         }
                         else
-                            log.trace("INFO! authenticate:send new secret [%s] to mailbox [%s], user=[%s]", n_secret, mailbox, iuser.uri);
+                            log.trace("INFO! authenticate:send [%s] new secret [%s] to mailbox [%s], user=[%s]", mail_with_secret.uri, n_secret, mailbox, iuser.uri);
                     }
                     else
                     {

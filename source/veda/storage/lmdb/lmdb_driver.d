@@ -550,7 +550,7 @@ public class LmdbDriver : KeyValueDB
             swA.stop();
             long tA = cast(long)swA.peek.total !"msecs";
 
-            if (tA > 10)
+            if (tA > 50)
                 log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d ms rc=%d", _uri, tA, rc);
 
             read_count++;

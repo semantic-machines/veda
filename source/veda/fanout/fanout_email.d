@@ -25,6 +25,7 @@ class FanoutProcess : VedaModule
 {
     MailSender smtp_conn;
     string     default_mail_sender;
+    bool       always_use_mail_sender;
     string     host;
     ushort     port;
 
@@ -325,7 +326,7 @@ class FanoutProcess : VedaModule
                     string from_label;
                     string email_from;
 
-                    if (senderMailbox is null || senderMailbox.length < 5)
+                    if (always_use_mail_sender == true || senderMailbox is null || senderMailbox.length < 5)
                     {
                         if (default_mail_sender !is null)
                             email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
@@ -546,7 +547,8 @@ class FanoutProcess : VedaModule
                                     continue;
                                 }
 
-                                default_mail_sender = connection.getFirstLiteral("v-s:mailSender");
+                                default_mail_sender    = connection.getFirstLiteral("v-s:mailSender");
+                                always_use_mail_sender = connection.getFirstBoolean("v-s:alwaysUseMailSender");
                             }
                             else
                                 log.trace("ERR! smtp server unavailable [%s] %s:%d", connection.uri, host, port);
