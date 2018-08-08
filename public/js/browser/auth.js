@@ -82,7 +82,7 @@ veda.Module(function (veda) { "use strict";
     try {
       authResult = veda.login(login, undefined, secret);
     } catch (error) {
-      handleLoginError(error)
+      handleLoginError(error);
     }
   });
 
@@ -93,6 +93,7 @@ veda.Module(function (veda) { "use strict";
     var passwordExpiredError = $("#password-expired-error", loginForm).addClass("hidden");
     var newPasswordError = $("#password-expired-error", loginForm).addClass("hidden");
     var invalidSecretError = $("#invalid-secret-error", loginForm).addClass("hidden");
+    var invalidPasswordError = $("#invalid-password-error", loginForm).addClass("hidden");
     var secretRequestInfo = $("#secret-request-info", loginForm).addClass("hidden");
     switch (error.code) {
       case 467: // Invalid password
@@ -108,6 +109,7 @@ veda.Module(function (veda) { "use strict";
         passwordExpiredError.removeClass("hidden");
         secretRequestInfo.removeClass("hidden");
         break;
+      case 472: // Not authorized
       case 473: // Authentication failed
         enterLoginPassword.removeClass("hidden");
         loginFailedError.removeClass("hidden");
@@ -122,6 +124,7 @@ veda.Module(function (veda) { "use strict";
     var passwordExpiredError = $("#password-expired-error", loginForm).addClass("hidden");
     var newPasswordError = $("#password-expired-error", loginForm).addClass("hidden");
     var invalidSecretError = $("#invalid-secret-error", loginForm).addClass("hidden");
+    var invalidPasswordError = $("#invalid-password-error", loginForm).addClass("hidden");
     var secretRequestInfo = $("#secret-request-info", loginForm).addClass("hidden");
     veda.trigger("login:success", authResult);
   }
