@@ -331,7 +331,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
     ticket.result = ResultCode.Authentication_Failed;
 
-    if (login == null || login.length < 3 || (secret != "?" && (password == null || password.length < 6)))
+    if (login == null || login.length < 3 || (secret != "?" && (password == null || password.length < 64)))
         return ticket;
 
     login = replaceAll(login, regex(r"[-]", "g"), " +");
@@ -505,7 +505,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
                         mail_with_secret.addResource("rdf:type", Resource(DataType.Uri, "v-s:Email"));
                         mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.String, mailbox));
-
+                        mail_with_secret.setResources("v-s:created", [ Resource(DataType.Datetime, Clock.currTime().toUnixTime()) ]);
                         mail_with_secret.addResource("v-s:messageBody", Resource(DataType.String, "your secret code is " ~ n_secret));
 
                         op_res = add_to_transaction(
@@ -531,7 +531,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             }
         }
 
-        if (exist_password !is null && exist_password == password)
+        if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
         {
             ticket = create_new_ticket(user_id);
             return ticket;
