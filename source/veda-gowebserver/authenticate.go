@@ -13,12 +13,24 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 
 	//fill request to veda-server
 	request["function"] = "authenticate"
-	request["login"] = string(ctx.QueryArgs().Peek("login")[:])
-	request["password"] = string(ctx.QueryArgs().Peek("password")[:])
-
+	login := string(ctx.QueryArgs().Peek("login")[:])
+	password := string(ctx.QueryArgs().Peek("password")[:])
 	secret := ctx.QueryArgs().Peek("secret")
 
-	if secret != nil && len(secret) > 0 && len(secret) < 1024 {
+	if len(login) < 3 {
+		ctx.SetStatusCode(int(NotAuthorized))
+		return
+	}
+
+	if len(secret) == 0 && len(password) < 64 {
+		ctx.SetStatusCode(int(NotAuthorized))
+		return
+	}
+
+	request["login"] = login
+	request["password"] = password
+
+	if len(secret) > 0 && len(secret) < 1024 {
 		request["secret"] = string(secret[:])
 	}
 
