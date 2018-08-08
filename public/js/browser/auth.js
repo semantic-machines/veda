@@ -105,6 +105,7 @@ veda.Module(function (veda) { "use strict";
         break;
       case 469: // Password expired
         enterNewPassword.removeClass("hidden");
+        passwordExpiredError.removeClass("hidden");
         secretRequestInfo.removeClass("hidden");
         break;
       case 473: // Authentication failed
