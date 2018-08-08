@@ -326,15 +326,20 @@ class FanoutProcess : VedaModule
                     string from_label;
                     string email_from;
 
-                    if (always_use_mail_sender == true || senderMailbox is null || senderMailbox.length < 5)
+                    if (always_use_mail_sender == true && senderMailbox !is null && senderMailbox.length > 5)
                     {
-                        if (default_mail_sender !is null)
-                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
-                        else
-                            email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                        email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
                     }
                     else
-                        email_from = senderMailbox;
+                    {
+                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+
+                        if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)
+                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+
+                        if ((email_from is null || email_from.length < 5) && senderMailbox !is null)
+                            email_from = senderMailbox;
+                    }
 
                     if (from_label is null || from_label.length == 0)
                         from_label = "Veda System";
