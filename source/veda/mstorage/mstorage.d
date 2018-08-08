@@ -437,14 +437,14 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (exist_password == password)
             {
                 log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
-                ticket.result = ResultCode.Invalid_password;
+                ticket.result = ResultCode.New_password_is_equal_to_old;
                 return ticket;
             }
 
             if (password == empty_Sha256_hash)
             {
                 log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
-                ticket.result = ResultCode.Invalid_password;
+                ticket.result = ResultCode.Empty_password;
                 return ticket;
             }
 
@@ -534,7 +534,8 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                         return ticket;
                     }
                     else
-                        log.trace("INFO! authenticate:send [%s] new secret [%s] to mailbox [%s], user=[%s]", mail_with_secret.uri, n_secret, mailbox, iuser.uri);
+                        log.trace("INFO! authenticate:send [%s] new secret [%s] to mailbox [%s], user=[%s]", mail_with_secret.uri, n_secret, mailbox,
+                                  iuser.uri);
                 }
                 else
                 {
@@ -850,7 +851,8 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             sys_ticket_link.addResource("rdf:type", Resource(DataType.Uri, "rdfs:Resource"));
             sys_ticket_link.addResource("v-s:resource", Resource(DataType.Uri, ticket.id));
 
-            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null, sys_ticket_link.serialize(), -1, null,
+            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null,
+                                       sys_ticket_link.serialize(), -1, null,
                                        -1, 0, OptFreeze.NONE,
                                        op_id);
 

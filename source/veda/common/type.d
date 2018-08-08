@@ -48,7 +48,7 @@ public struct Ticket
 /// id подсистем
 public enum SUBSYSTEM : ubyte
 {
-	NONE			  = 0,
+    NONE              = 0,
     STORAGE           = 1,
     ACL               = 2,
     FULL_TEXT_INDEXER = 4,
@@ -62,36 +62,36 @@ public enum SUBSYSTEM : ubyte
 public enum COMPONENT : ubyte
 {
     /// сохранение индивидуалов
-    subject_manager            = 1,
+    subject_manager  = 1,
 
     /// Индексирование прав
-    acl_preparer               = 2,
+    acl_preparer     = 2,
 
     /// Полнотекстовое индексирование
-    fulltext_indexer           = 4,
+    fulltext_indexer = 4,
 
     /// Отправка email
-    fanout_email               = 8,
+    fanout_email     = 8,
 
     /// исполнение скриптов, normal priority
-    scripts_main               = 16,
+    scripts_main     = 16,
 
     /// Выдача и проверка тикетов
-    ticket_manager             = 29,
+    ticket_manager   = 29,
 
     /// Выгрузка в sql, низкоприоритетное исполнение
-    fanout_sql_lp              = 30,
+    fanout_sql_lp    = 30,
 
     /// Выгрузка в sql, высокоприоритетное исполнение
-    fanout_sql_np              = 32,
+    fanout_sql_np    = 32,
 
     /// исполнение скриптов, low priority
-    scripts_lp                 = 33,
+    scripts_lp       = 33,
 
     //// long time run scripts
-    ltr_scripts                = 34,
+    ltr_scripts      = 34,
 
-	///////////////////////////////////////
+    ///////////////////////////////////////
 
     /// Сбор статистики
     statistic_data_accumulator = 35,
@@ -108,10 +108,10 @@ public enum COMPONENT : ubyte
 
     /// Загрузка из файлов
     file_reader                = 40,
-    
-    input_queue				   = 41,	
-    
-    user_modules_tool		   = 64
+
+    input_queue                = 41,
+
+    user_modules_tool          = 64
 }
 
 
@@ -132,18 +132,18 @@ public enum P_MODULE : ubyte
 /// id модулей обрабатывающих очередь
 public enum MODULE : ubyte
 {
-    ticket_manager   = COMPONENT.ticket_manager,
-    subject_manager  = COMPONENT.subject_manager,
-    acl_preparer     = COMPONENT.acl_preparer,
-    fulltext_indexer = COMPONENT.fulltext_indexer,
-    scripts_main     = COMPONENT.scripts_main,
-    scripts_lp       = COMPONENT.scripts_lp,
-    fanout_email     = COMPONENT.fanout_email,
+    ticket_manager    = COMPONENT.ticket_manager,
+    subject_manager   = COMPONENT.subject_manager,
+    acl_preparer      = COMPONENT.acl_preparer,
+    fulltext_indexer  = COMPONENT.fulltext_indexer,
+    scripts_main      = COMPONENT.scripts_main,
+    scripts_lp        = COMPONENT.scripts_lp,
+    fanout_email      = COMPONENT.fanout_email,
     user_modules_tool = COMPONENT.user_modules_tool,
-    ltr_scripts      = COMPONENT.ltr_scripts,
-    fanout_sql_np    = COMPONENT.fanout_sql_np,
-    fanout_sql_lp    = COMPONENT.fanout_sql_lp,
-    input_queue      = COMPONENT.input_queue
+    ltr_scripts       = COMPONENT.ltr_scripts,
+    fanout_sql_np     = COMPONENT.fanout_sql_np,
+    fanout_sql_lp     = COMPONENT.fanout_sql_lp,
+    input_queue       = COMPONENT.input_queue
 }
 
 /**
@@ -152,87 +152,96 @@ public enum MODULE : ubyte
 public enum ResultCode
 {
     /// 0
-    zero                  = 0,
+    zero                         = 0,
 
     /// 200
-    OK                    = 200,
+    OK                           = 200,
 
     /// 201
-    Created               = 201,
+    Created                      = 201,
 
     /// 204
-    No_Content            = 204,
+    No_Content                   = 204,
 
     /// 400
-    Bad_Request           = 400,
+    Bad_Request                  = 400,
 
     /// 403
-    Forbidden             = 403,
+    Forbidden                    = 403,
 
     /// 404
-    Not_Found             = 404,
+    Not_Found                    = 404,
 
     /// 422
-    Unprocessable_Entity  = 422,
+    Unprocessable_Entity         = 422,
 
     /// 429
-    Too_Many_Requests     = 429,
+    Too_Many_Requests            = 429,
 
-    Invalid_password	  = 467,
+    /// 465
+    Empty_password               = 465,
 
-    Invalid_secret		  = 468,
+    /// 466
+    New_password_is_equal_to_old = 466,
 
-    Password_expired	  = 469,
+    /// 467
+    Invalid_password             = 467,
+
+    /// 468
+    Invalid_secret               = 468,
+
+    /// 469
+    Password_expired             = 469,
 
     /// 470
-    Ticket_not_found      = 470,
+    Ticket_not_found             = 470,
 
     /// 471
-    Ticket_expired        = 471,
+    Ticket_expired               = 471,
 
     /// 472
-    Not_Authorized        = 472,
+    Not_Authorized               = 472,
 
     /// 473
-    Authentication_Failed = 473,
+    Authentication_Failed        = 473,
 
     /// 474
-    Not_Ready             = 474,
+    Not_Ready                    = 474,
 
     /// 475
-    Fail_Open_Transaction = 475,
+    Fail_Open_Transaction        = 475,
 
     /// 476
-    Fail_Commit           = 476,
+    Fail_Commit                  = 476,
 
     /// 477
-    Fail_Store            = 477,
+    Fail_Store                   = 477,
 
     /// 500
-    Internal_Server_Error = 500,
+    Internal_Server_Error        = 500,
 
     /// 501
-    Not_Implemented       = 501,
+    Not_Implemented              = 501,
 
     /// 503
-    Service_Unavailable   = 503,
+    Service_Unavailable          = 503,
 
-    Invalid_Identifier    = 904,
+    Invalid_Identifier           = 904,
 
     /// 999
-    DatabaseModifiedError = 999,
+    DatabaseModifiedError        = 999,
 
     /// 1021
-    Disk_Full             = 1021,
+    Disk_Full                    = 1021,
 
     /// 1022
-    Duplicate_Key         = 1022,
+    Duplicate_Key                = 1022,
 
     /// 1118
-    Size_too_large        = 1118,
+    Size_too_large               = 1118,
 
     /// 4000
-    Connect_Error         = 4000
+    Connect_Error                = 4000
 }
 
 enum OptFreeze
@@ -344,10 +353,10 @@ public enum INDV_OP : byte
     GET         = 2,
 
     /// Получить тикет
-    GET_TICKET = 3,
+    GET_TICKET  = 3,
 
     /// Авторизовать
-    AUTHORIZE = 8,
+    AUTHORIZE   = 8,
 
     /// Установить в
     SET_IN      = 45,
@@ -365,81 +374,81 @@ public enum INDV_OP : byte
 
 /// Команды используемые процессами
 /// Сохранить
-byte CMD_PUT          = 1;
+byte CMD_PUT         = 1;
 
 /// Найти
-byte CMD_FIND         = 2;
+byte CMD_FIND        = 2;
 
 /// Получить
-byte CMD_GET          = 2;
+byte CMD_GET         = 2;
 
 /// Проверить
-byte CMD_EXAMINE      = 4;
+byte CMD_EXAMINE     = 4;
 
 /// Авторизовать
-byte CMD_AUTHORIZE    = 8;
+byte CMD_AUTHORIZE   = 8;
 
 /// Коммит
-byte CMD_COMMIT       = 16;
+byte CMD_COMMIT      = 16;
 
-byte CMD_MSG          = 17;
+byte CMD_MSG         = 17;
 
 /// Конец данных
-byte CMD_END_DATA     = 32;
+byte CMD_END_DATA    = 32;
 
 /// Включить/выключить отладочные сообщения
-byte CMD_SET_TRACE    = 33;
+byte CMD_SET_TRACE   = 33;
 
 /// Выгрузить
-byte CMD_UNLOAD       = 34;
+byte CMD_UNLOAD      = 34;
 
 /// Перезагрузить
-byte CMD_RELOAD       = 40;
+byte CMD_RELOAD      = 40;
 
 /// Backup
-byte CMD_BACKUP       = 41;
+byte CMD_BACKUP      = 41;
 
 /// Остановить прием команд на изменение
-byte CMD_FREEZE       = 42;
+byte CMD_FREEZE      = 42;
 
 /// Возобновить прием команд на изменение
-byte CMD_UNFREEZE     = 43;
+byte CMD_UNFREEZE    = 43;
 
 /// Установить в
-byte CMD_SET_IN       = 45;
+byte CMD_SET_IN      = 45;
 
 /// Удалить
-byte CMD_DELETE       = 46;
+byte CMD_DELETE      = 46;
 
 /// Добавить в
-byte CMD_ADD_IN       = 47;
+byte CMD_ADD_IN      = 47;
 
 /// Убрать из
-byte CMD_REMOVE_FROM  = 48;
+byte CMD_REMOVE_FROM = 48;
 
 
-byte CMD_EXIT         = 49;
+byte CMD_EXIT        = 49;
 
 /// Установить
-byte CMD_SET          = 50;
+byte CMD_SET         = 50;
 
 /// Убрать
-byte CMD_REMOVE       = 51;
+byte CMD_REMOVE      = 51;
 
-byte CMD_START        = 52;
+byte CMD_START       = 52;
 
-byte CMD_STOP         = 53;
+byte CMD_STOP        = 53;
 
-byte CMD_RESUME       = 54;
+byte CMD_RESUME      = 54;
 
-byte CMD_PAUSE        = 55;
+byte CMD_PAUSE       = 55;
 
-byte CMD_WAIT         = 56;
+byte CMD_WAIT        = 56;
 
 /// Пустая комманда
-byte   CMD_NOP        = 64;
+byte   CMD_NOP       = 64;
 
-string nullz          = "00000000000000000000000000000000";
+string nullz         = "00000000000000000000000000000000";
 
 /// Десятичное число
 struct decimal
