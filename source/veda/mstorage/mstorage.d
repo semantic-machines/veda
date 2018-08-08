@@ -412,15 +412,28 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         {
             long now = Clock.currTime().toUnixTime();
 
+            bool is_request_new_password = false;
+
             if (now - edited > 60 * 24 * 60 * 60)
             {
-                log.trace("ERR! authenticate:password is old, > 60 days", user);
-                log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
+                log.trace("ERR! authenticate:password is old, > 60 days, user=%s", user.uri);
+                is_request_new_password = true;
+            }
+
+            if (secret == "?")
+            {
+                log.trace("ERR! authenticate:request for new password, user=%s", user.uri);
+                is_request_new_password = true;
+            }
+
+            if (is_request_new_password == true)
+            {
+                log.trace("ERR! authenticate:request new password, login=[%s] password=[%s] secret=[%s]", login, password, secret);
                 ticket.result = ResultCode.Password_expired;
 
                 string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
 
-                if (old_secret != null)
+                if (old_secret != null && secret.length > 5)
                 {
                     if (secret is null)
                     {
