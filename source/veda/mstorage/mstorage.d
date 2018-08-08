@@ -317,7 +317,8 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
     return ticket;
 }
 
-auto rnd = Random(42);
+auto         rnd               = Random(42);
+const string empty_Sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 
 private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
@@ -331,7 +332,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
     ticket.result = ResultCode.Authentication_Failed;
 
-    if (login == null || login.length < 3 || (secret != "?" && (password == null || password.length < 64)))
+    if (login == null || login.length < 3 || (secret != "?" && (password == null || password.length < 64 || password == empty_Sha256_hash)))
         return ticket;
 
     login = replaceAll(login, regex(r"[-]", "g"), " +");
@@ -433,6 +434,13 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (exist_password == password)
             {
                 log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
+                ticket.result = ResultCode.Invalid_password;
+                return ticket;
+            }
+
+            if (password == empty_Sha256_hash)
+            {
+                log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.Invalid_password;
                 return ticket;
             }
