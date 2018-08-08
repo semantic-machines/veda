@@ -409,6 +409,54 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         string origin = iuser.getFirstLiteral("v-s:origin");
 
         //if (origin !is null && origin == "External User")
+
+
+
+        if (secret !is null && secret.length > 5)
+        {
+            string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
+            if (old_secret is null || secret.length < 5)
+            {
+                log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
+                ticket.result = ResultCode.Invalid_secret;
+
+                return ticket;
+            }
+
+            if (secret != old_secret)
+            {
+                log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
+                ticket.result = ResultCode.Invalid_secret;
+                return ticket;
+            }
+
+            if (exist_password == password)
+            {
+                log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
+                ticket.result = ResultCode.Invalid_password;
+                return ticket;
+            }
+
+            // update password
+            i_usesCredential.setResources("v-s:password", [ Resource(DataType.String, password) ]);
+            edited = Clock.currTime().toUnixTime();
+            i_usesCredential.setResources("v-s:dateFrom", [ Resource(DataType.Datetime, edited) ]);
+            i_usesCredential.removeResource("v-s:secret");
+
+            Transaction tnx;
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            OpResult op_res = add_to_transaction(
+                                                 storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 OptFreeze.NONE, OptAuthorize.YES,
+                                                 OptTrace.NONE);
+
+            ticket = create_new_ticket(user_id);
+
+            log.trace("ERR! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
+            return ticket;
+        }
+        else
         {
             long now = Clock.currTime().toUnixTime();
 
@@ -485,65 +533,18 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
                 return ticket;
             }
-            else
+
+
+            if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
             {
-                if (secret !is null && secret.length > 5)
-                {
-                    string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
-                    if (old_secret is null || secret.length < 5)
-                    {
-                        log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
-                        ticket.result = ResultCode.Invalid_secret;
-
-                        return ticket;
-                    }
-
-                    if (secret != old_secret)
-                    {
-                        log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
-                        ticket.result = ResultCode.Invalid_secret;
-                        return ticket;
-                    }
-
-                    if (exist_password == password)
-                    {
-                        log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
-                        ticket.result = ResultCode.Invalid_password;
-                        return ticket;
-                    }
-
-                    // update password
-                    i_usesCredential.setResources("v-s:password", [ Resource(DataType.String, password) ]);
-                    edited = Clock.currTime().toUnixTime();
-                    i_usesCredential.setResources("v-s:dateFrom", [ Resource(DataType.Datetime, edited) ]);
-                    i_usesCredential.removeResource("v-s:secret");
-
-                    Transaction tnx;
-                    tnx.id            = -1;
-                    tnx.is_autocommit = true;
-                    OpResult op_res = add_to_transaction(
-                                                         storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
-                                                         OptFreeze.NONE, OptAuthorize.YES,
-                                                         OptTrace.NONE);
-
-                    ticket = create_new_ticket(user_id);
-
-                    log.trace("ERR! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
-                    return ticket;
-                }
+                ticket = create_new_ticket(user_id);
+                return ticket;
             }
-        }
-
-        if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
-        {
-            ticket = create_new_ticket(user_id);
-            return ticket;
         }
     }
 
     log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
     ticket.result = ResultCode.Authentication_Failed;
-
     return ticket;
 }
 
