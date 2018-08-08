@@ -200,6 +200,10 @@ class FanoutProcess : VedaModule
                     res ~= rr;
             }
         }
+        else
+        {
+            log.trace("ERR! extract_email: fail extract email from [%s], this not appointment or position", ap_uri);
+        }
 
         return res;
     }
@@ -316,12 +320,12 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
-                if ((from !is null || senderMailbox !is null) && (to !is null || recipientMailbox !is null))
+                if ((from !is null || senderMailbox !is null || default_mail_sender !is null) && (to !is null || recipientMailbox !is null))
                 {
                     string from_label;
                     string email_from;
 
-                    if (senderMailbox is null)
+                    if (senderMailbox is null || senderMailbox.length < 5)
                     {
                         if (default_mail_sender !is null)
                             email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
@@ -454,14 +458,20 @@ class FanoutProcess : VedaModule
                         //new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
                         //context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
                     }
-                    else
+
+                    if (email_from.length == 0)
                     {
-                        log.trace("WARN: push_to_smtp[%s]: fail extract_email from field from[%s] or to[%s]", new_indv.uri, from, to);
+                        log.trace("WARN: push_to_smtp[%s]: fail extract_email from field from[%s]", new_indv.uri, from);
+                    }
+
+                    if (rr_email_to.length == 0)
+                    {
+                        log.trace("WARN: push_to_smtp[%s]: fail extract_email from field to[%s]", new_indv.uri, to);
                     }
                 }
                 else
                 {
-                    log.trace("WARN: push_to_smtp[%s]: empty field from[%s] or to[%s]", new_indv.uri, from, to);
+                    log.trace("WARN: push_to_smtp[%s]: empty field (from[%s] or to[%s]", new_indv.uri, from, to);
                 }
             }
 

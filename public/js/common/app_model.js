@@ -66,8 +66,8 @@
     };
 
     // Define Model functions
-    self.login = function (username, password) {
-      var res = authenticate(username, password);
+    self.login = function (username, password, secret) {
+      var res = authenticate(username, password, secret);
       self.ticket = res.id;
       if (!self.ticket) return;
       self.user_uri = res.user_uri;
