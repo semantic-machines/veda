@@ -477,7 +477,11 @@ class FanoutProcess : VedaModule
                 }
                 else
                 {
-                    log.trace("WARN: push_to_smtp[%s]: empty field (from[%s] or to[%s]", new_indv.uri, from, to);
+                    if (from is null || from.length < 5)
+                        log.trace("WARN: push_to_smtp[%s]: empty or invalid field from[%s]", new_indv.uri, from);
+
+                    if (to is null || to.length < 5)
+                        log.trace("WARN: push_to_smtp[%s]: empty or invalid field to[%s]", new_indv.uri, to);
                 }
             }
 
