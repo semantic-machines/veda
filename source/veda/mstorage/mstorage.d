@@ -332,8 +332,14 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
     ticket.result = ResultCode.Authentication_Failed;
 
-    if (login == null || login.length < 3 || (secret != "?" && (password == null || password.length < 64 || password == empty_Sha256_hash)))
+    if (login == null || login.length < 3)
         return ticket;
+
+    if (secret !is null && secret.length > 5 && (password == null || password.length < 64 || password == empty_Sha256_hash))
+    {
+        ticket.result = ResultCode.Invalid_password;
+        return ticket;
+    }
 
     login = replaceAll(login, regex(r"[-]", "g"), " +");
 
@@ -410,13 +416,10 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         string origin = iuser.getFirstLiteral("v-s:origin");
 
         //if (origin !is null && origin == "External User")
-
-
-
         if (secret !is null && secret.length > 5)
         {
             string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
-            if (old_secret is null || secret.length < 5)
+            if (old_secret is null)
             {
                 log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
                 ticket.result = ResultCode.Invalid_secret;
