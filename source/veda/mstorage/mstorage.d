@@ -331,7 +331,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
     ticket.result = ResultCode.Authentication_Failed;
 
-    if (login == null || login.length < 1 || password == null || password.length < 6)
+    if (login == null || login.length < 3 || (secret != "?" && (password == null || password.length < 6)))
         return ticket;
 
     login = replaceAll(login, regex(r"[-]", "g"), " +");
