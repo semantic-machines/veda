@@ -554,6 +554,9 @@ cfg:Event_3
 
 if (user_uri == 'cfg:VedaSystem') return; // #245
 
+// Get latest document state
+document = get_individual(ticket, document["@"]);
+
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
 {
   veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
