@@ -319,6 +319,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
 
 auto         rnd               = Random(42);
 const string empty_Sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+public long  PASSWORD_LIFETIME;
 
 private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
@@ -469,14 +470,16 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         }
         else
         {
-            long now = Clock.currTime().toUnixTime();
-
             bool is_request_new_password = false;
 
-            if (now - edited > 60 * 24 * 60 * 60)
+            if (PASSWORD_LIFETIME > 0)
             {
-                log.trace("ERR! authenticate:password is old, > 60 days, user=%s", user.uri);
-                is_request_new_password = true;
+                long now = Clock.currTime().toUnixTime();
+                if (now - edited > PASSWORD_LIFETIME)
+                {
+                    log.trace("ERR! authenticate:password is old, lifetime > %d days, user=%s", PASSWORD_LIFETIME / 60 / 60 / 24, user.uri);
+                    is_request_new_password = true;
+                }
             }
 
             if (secret == "?")
