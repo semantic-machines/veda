@@ -336,7 +336,13 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     if (login == null || login.length < 3)
         return ticket;
 
-    if (secret !is null && secret.length > 5 && (password == null || password.length < 64 || password == empty_Sha256_hash))
+    if (secret !is null && secret.length > 5 && password == empty_Sha256_hash)
+    {
+        ticket.result = ResultCode.Empty_password;
+        return ticket;
+    }
+
+    if (secret !is null && secret.length > 5 && (password == null || password.length < 64))
     {
         ticket.result = ResultCode.Invalid_password;
         return ticket;
