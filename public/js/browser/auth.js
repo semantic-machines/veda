@@ -96,6 +96,8 @@ veda.Module(function (veda) { "use strict";
     var invalidPasswordError = $("#invalid-password-error", loginForm).addClass("hidden");
     var secretRequestInfo = $("#secret-request-info", loginForm).addClass("hidden");
     switch (error.code) {
+      case 465: // Empty password
+      case 466: // New password is equal to old
       case 467: // Invalid password
         enterNewPassword.removeClass("hidden");
         invalidPasswordError.removeClass("hidden");
