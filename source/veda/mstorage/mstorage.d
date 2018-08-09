@@ -12,7 +12,7 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
-    import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization;
 }
 
@@ -348,6 +348,12 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         return ticket;
     }
 
+    if (secret !is null && secret != "?" && secret.length < 6)
+    {
+        ticket.result = ResultCode.Invalid_secret;
+        return ticket;
+    }
+
     login = replaceAll(login, regex(r"[-]", "g"), " +");
 
     Individual[] candidate_users;
@@ -420,17 +426,17 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             log.trace("INFO! authenticate: update user[%s], res=%s", user, op_res);
         }
 
-        string origin = iuser.getFirstLiteral("v-s:origin");
+        string origin     = iuser.getFirstLiteral("v-s:origin");
+        string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
 
         //if (origin !is null && origin == "External User")
         if (secret !is null && secret.length > 5)
         {
-            string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
             if (old_secret is null)
             {
                 log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
                 ticket.result = ResultCode.Invalid_secret;
-
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
 
@@ -438,13 +444,27 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             {
                 log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
                 ticket.result = ResultCode.Invalid_secret;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
+
+
+            long now              = Clock.currTime().toUnixTime();
+            long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
+            if (now - prev_secret_date > 12 * 60 * 60)
+            {
+                ticket.result = ResultCode.Secret_expired;
+                log.trace("ERR! authenticate:request new password, secret expired, login=[%s] password=[%s] secret=[%s]", login, password,
+                          secret);
+                return ticket;
+            }
+
 
             if (exist_password == password)
             {
                 log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.New_password_is_equal_to_old;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
 
@@ -452,6 +472,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             {
                 log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.Empty_password;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
 
@@ -469,9 +490,17 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                                                  OptFreeze.NONE, OptAuthorize.YES,
                                                  OptTrace.NONE);
 
-            ticket = create_new_ticket(user_id);
+            if (op_res.result == ResultCode.OK)
+            {
+                ticket = create_new_ticket(user_id);
+                log.trace("INFO! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
+            }
+            else
+            {
+                ticket.result = ResultCode.Authentication_Failed;
+                log.trace("ERR! authenticate:fail store new password [%s] for user, user=[%s]", password, iuser.uri);
+            }
 
-            log.trace("ERR! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
             return ticket;
         }
         else
@@ -503,7 +532,21 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 auto rnd      = Random(unpredictableSeed);
                 auto n_secret = to!string(uniform(100000, 999999, rnd));
 
+                long now = Clock.currTime().toUnixTime();
+                if (old_secret !is null)
+                {
+                    long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
+                    if (now - prev_secret_date < 10 * 60)
+                    {
+                        ticket.result = ResultCode.Too_Many_Requests;
+                        log.trace("ERR! authenticate:request new password, to many request, login=[%s] password=[%s] secret=[%s]", login, password,
+                                  secret);
+                        return ticket;
+                    }
+                }
+
                 i_usesCredential.setResources("v-s:secret", [ Resource(DataType.String, n_secret) ]);
+                i_usesCredential.setResources("v-s:SecretDateFrom", [ Resource(DataType.Datetime, now) ]);
 
                 Transaction tnx;
                 tnx.id            = -1;
@@ -567,6 +610,29 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
     ticket.result = ResultCode.Authentication_Failed;
     return ticket;
+}
+
+private void remove_secret(ref Individual i_usesCredential, string user_uri, Storage storage, Ticket *sticket)
+{
+    string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
+
+    if (old_secret !is null)
+    {
+        i_usesCredential.removeResource("v-s:secret");
+
+        Transaction tnx;
+        tnx.id            = -1;
+        tnx.is_autocommit = true;
+        OpResult op_res = add_to_transaction(
+                                             storage.get_acl_client(), tnx, sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                             OptFreeze.NONE, OptAuthorize.YES,
+                                             OptTrace.NONE);
+
+        if (op_res.result != ResultCode.OK)
+        {
+            log.trace("ERR! authenticate:fail remove secret code for user, user=[%s]", user_uri);
+        }
+    }
 }
 
 public string execute_json(string in_msg, Context ctx)

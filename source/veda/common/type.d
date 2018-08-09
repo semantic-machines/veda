@@ -178,6 +178,9 @@ public enum ResultCode
     /// 429
     Too_Many_Requests            = 429,
 
+    /// 464
+    Secret_expired               = 464,
+
     /// 465
     Empty_password               = 465,
 
