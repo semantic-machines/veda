@@ -865,7 +865,7 @@ public class IndexerContext
     private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
     {
 //	writeln ("get_slot:", field);
-        int slot = key2slot.get(field, -1);
+        int slot = get_slot(key2slot, field);
 
         if (slot == -1)
         {

@@ -23,6 +23,28 @@ Logger log()
     return _log;
 }
 
+int get_slot(ref int[ string ] key2slot, string key)
+{
+    if (key.length < 1)
+        return -1;
+
+    if (key[ 0 ] == '#')
+    {
+        try
+        {
+            int slot = to!int (key[ 1..$ ]);
+            writefln("@ key=%s -> slot=%d", key, slot);
+            return slot;
+        }
+        catch (Throwable tr)
+        {
+            return -1;
+        }
+    }
+
+    return key2slot.get(key, -1);
+}
+
 public void subject2Ticket(ref Individual ticket, Ticket *tt)
 {
     string when;

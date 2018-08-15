@@ -47,7 +47,7 @@ class XapianVQL
                     else
                         asc_desc = true;
 
-                    int slot = key2slot.get(key, -1);
+                    int slot = get_slot(key2slot, key);
                     if (slot >= 0)
                     {
                         if (trace)
@@ -297,9 +297,9 @@ class XapianVQL
                         {
                             int slot;
                             if (rs !is null && rs[ 0 ] == '*' && is_good_token(rs))
-                                slot = key2slot.get(ls ~ "#F", -1);
+                                slot = get_slot(key2slot, ls ~ "#F");
                             else
-                                slot = key2slot.get(ls, -1);
+                                slot = get_slot(key2slot, ls);
 
                             //log.trace("@p slot=%d, predicate=%s", slot, ls);
 
@@ -589,7 +589,7 @@ class XapianVQL
                     //writeln("@p c_from=", c_from);
                     //writeln("@p c_to=", c_to);
 
-                    int slot = key2slot.get(token_L, -1);
+                    int slot = get_slot(key2slot, token_L);
 
                     query_r = new_Query_range(xapian_op.OP_VALUE_RANGE, slot, c_from, c_to, &err);
 
