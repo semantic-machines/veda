@@ -73,13 +73,15 @@ public class IndexerContext
         else
         {
             ff_key2slot_w = new File(file_name_key2slot, "r+");
-
+            long cur_size = getSize(file_name_key2slot);
             ff_key2slot_w.seek(0);
-            auto buf = ff_key2slot_w.rawRead(new char[ 100 * 1024 ]);
+            auto buf = ff_key2slot_w.rawRead(new char[ cur_size + 128 ]);
 
             //writefln("@indexer:init:data [%s]", cast(string)buf);
             ResultCode rc;
-            key2slot = deserialize_key2slot(cast(string)buf, rc);
+            key2slot           = deserialize_key2slot(cast(string)buf, rc);
+            last_size_key2slot = key2slot.length;
+
             //writeln("@indexer:init:key2slot", key2slot);
         }
 
@@ -844,6 +846,9 @@ public class IndexerContext
         string hash;
         string data = serialize_key2slot(key2slot, hash);
 
+        if (data.length == last_size_key2slot)
+            return;
+
         try
         {
             ff_key2slot_w.seek(0);
@@ -854,6 +859,8 @@ public class IndexerContext
             ff_key2slot_w.write('\n');
             ff_key2slot_w.write(data);
             ff_key2slot_w.flush();
+
+            last_size_key2slot = data.length;
         }
         catch (Throwable tr)
         {

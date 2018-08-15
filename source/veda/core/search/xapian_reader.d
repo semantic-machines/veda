@@ -117,7 +117,7 @@ class XapianReader : SearchReader
             {
                 last_size_key2slot = cur_size;
                 ff_key2slot_r.seek(0);
-                auto       buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
+                auto       buf = ff_key2slot_r.rawRead(new char[ cur_size + 128 ]);
                 ResultCode rc;
                 key2slot     = deserialize_key2slot(cast(string)buf, rc);
                 old_key2slot = key2slot;
@@ -136,13 +136,14 @@ class XapianReader : SearchReader
                             bool trace)
     {
         SearchResult sr;
-        
-        if (str_query.length > 0) 
+
+        if (str_query.length > 0)
         {
-        	if (str_query[0] == '@'){
-        		str_query = str_query[0..$];
-        		trace = true;
-        	}
+            if (str_query[ 0 ] == '@')
+            {
+                str_query = str_query[ 0..$ ];
+                trace     = true;
+            }
         }
 
         int[ string ] key2slot = read_key2slot();
