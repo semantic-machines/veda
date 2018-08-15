@@ -33,7 +33,6 @@ int get_slot(ref int[ string ] key2slot, string key)
         try
         {
             int slot = to!int (key[ 1..$ ]);
-            writefln("@ key=%s -> slot=%d", key, slot);
             return slot;
         }
         catch (Throwable tr)
