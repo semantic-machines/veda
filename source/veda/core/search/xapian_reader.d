@@ -136,6 +136,14 @@ class XapianReader : SearchReader
                             bool trace)
     {
         SearchResult sr;
+        
+        if (str_query.length > 0) 
+        {
+        	if (str_query[0] == '@'){
+        		str_query = str_query[0..$];
+        		trace = true;
+        	}
+        }
 
         int[ string ] key2slot = read_key2slot();
 
@@ -143,7 +151,6 @@ class XapianReader : SearchReader
             return sr;
 
         //log.trace ("@key2slot=%s", key2slot);
-        //log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
 
         XapianQuery query;
         TTA         tta = parse_expr(str_query);
