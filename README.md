@@ -14,9 +14,8 @@
   - Integrated LMDB database library. Key-value memory mapped storage (http://symas.com/mdb).
   - Integrated Xapian search engine library. Used for data indexing & querying (http://xapian.org).
   - Integrated V8 javascript engine library. Used for workflow execution engine and other server-side logic (https://code.google.com/p/v8).
-  - Vibe.d - high-level declarative REST and web application framework (http://vibed.org).
-  - nanomsg
-  - websockets    
+  - Fasthttp web server.
+  - Nanomsg - light-weight messaging protocol library.
 
 **4. Client components**
   - Bootstrap HTML, CSS, and JS framework for developing responsive, mobile first web applications (http://getbootstrap.com).
