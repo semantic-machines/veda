@@ -242,7 +242,7 @@ private Individual get_individual(Context ctx, Ticket *ticket, string uri)
         return individual;
     }
 
-    string individual_as_binobj = inividuals_storage_r.find(OptAuthorize.YES, ticket.user_uri, uri);
+    string individual_as_binobj = inividuals_storage_r.find(uri);
     if (individual_as_binobj !is null && individual_as_binobj.length > 1)
     {
 //                if (acl_client.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)

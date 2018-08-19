@@ -30,7 +30,7 @@ public class TarantoolDriver : KeyValueDB
         space_id   = _space_id;
     }
 
-    public string find(OptAuthorize op_auth, string user_uri, string uri)
+    public string find(string uri)
     {
         if (uri is null || uri.length < 2)
             return null;
@@ -109,7 +109,7 @@ public class TarantoolDriver : KeyValueDB
         }
     }
 
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id)
+    public ResultCode store(string in_key, string in_value, long op_id)
     {
         if (db_is_opened != true)
         {
@@ -149,7 +149,7 @@ public class TarantoolDriver : KeyValueDB
         return ResultCode.OK;
     }
 
-    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
+    public ResultCode remove(string in_key)
     {
         if (db_is_opened != true)
         {

@@ -15,7 +15,7 @@ enum DBMode
 
 public interface KeyValueDB
 {
-    public string find(OptAuthorize op_auth, string user_uri, string uri);
+    public string find(string uri);
 
     public long get_last_op_id();
     public void open();
@@ -25,6 +25,6 @@ public interface KeyValueDB
 
     public long count_entries();
 
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
-    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
+    public ResultCode store(string in_key, string in_value, long op_id);
+    public ResultCode remove(string in_key);
 }

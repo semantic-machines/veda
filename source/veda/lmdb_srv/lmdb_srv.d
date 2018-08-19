@@ -39,11 +39,11 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
         {
             if (rel[ 0 ] == "T")
             {
-                response = tickets_storage_r.find(OptAuthorize.NO, null, rel[ 1 ]);
+                response = tickets_storage_r.find(rel[ 1 ]);
             }
             else if (rel[ 0 ] == "I")
             {
-                response = inividuals_storage_r.find(OptAuthorize.NO, null, rel[ 1 ]);
+                response = inividuals_storage_r.find(rel[ 1 ]);
             }
             else
             {

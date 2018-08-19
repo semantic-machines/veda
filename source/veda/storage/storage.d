@@ -39,7 +39,7 @@ public abstract class Storage
 
     public string get_from_individual_storage(string user_id, string uri)
     {
-        string res = get_inividuals_storage_r.find(OptAuthorize.YES, user_id, uri);
+        string res = get_inividuals_storage_r.find(uri);
 
         if (res !is null && res.length < 10)
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
@@ -89,7 +89,7 @@ public abstract class Storage
 
     public Ticket *get_systicket_from_storage()
     {
-        string str_systicket_link = get_tickets_storage_r().find(OptAuthorize.NO, null, "systicket");
+        string str_systicket_link = get_tickets_storage_r().find("systicket");
         string systicket_id;
 
         if (str_systicket_link !is null)
@@ -135,7 +135,7 @@ public abstract class Storage
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = get_tickets_storage_r().find(OptAuthorize.NO, null, ticket_id);
+                string ticket_str = get_tickets_storage_r().find(ticket_id);
                 if (ticket_str !is null && ticket_str.length > 120)
                 {
                     tt = new Ticket;
