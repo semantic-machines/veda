@@ -329,7 +329,9 @@ v-s:PersonalInfoTemplate
       <div class="form-inline">
         <div class="form-group">
           <label about="v-s:phone" property="rdfs:label"></label>:
-          <span class="view -edit -search" about="@" property="v-s:phone"></span>
+          <span class="view -edit -search" about="@" rel="v-s:hasAccount">
+            <span class="view -edit -search" about="@" property="v-s:phone"></span>
+          </span>
           <veda-control property="v-s:phone" data-type="string" class="-view edit search"></veda-control>
         </div>
       </div>
