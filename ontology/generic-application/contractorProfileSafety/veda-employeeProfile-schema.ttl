@@ -1,0 +1,43 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-schema-EmployeeProfile>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология Веда. Досье сотрудника. Схема."@ru ;
+  rdfs:label "Veda ontology. EmployeeProfile. Schema."@en ;
+  v-s:loadPriority 20 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+###----------------------------------Досье сотрудника---------------------
+v-s:EmployeeProfile
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:label "Досье сотрудника"@ru ;
+  rdfs:label "Employee profile"@en ;
+  v-s:labelPattern "{@.v-s:creator}" ;
+.
+v-s:hasProfession
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид работ сотрудника"@ru ;
+  rdfs:label "Kind of work for Employee"@en ;
+  rdfs:range v-s:Profession ;
+  rdfs:domain v-s:EmployeeProfile ;
+.
+# ------------------------------------------------------------
+v-s:Profession
+  rdf:type owl:Class ;
+  rdfs:label "Профессия"@ru ;
+  rdfs:label "Profession list"@en ;
+  v-ui:hasTemplate v-ui:ClassNameLabelLinkTemplate ;
+.

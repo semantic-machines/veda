@@ -102,6 +102,13 @@ v-s:hasContractorProfile
   rdfs:range v-s:ContractorProfile ;
   rdfs:domain v-s:Organization ;
 .
+v-s:hasContractorProfileSafety
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Досье контрагента по безопасности"@ru ;
+  rdfs:label "Contractor profile safety"@en ;
+  rdfs:range v-s:ContractorProfileSafety ;
+  rdfs:domain v-s:Organization ;
+.
 
 # ------------------------------------------------------------
 v-s:Department
