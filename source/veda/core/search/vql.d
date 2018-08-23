@@ -69,22 +69,19 @@ class VQL
 
             Individual individual = Individual();
 
-            string     data = context.get_storage().get_from_individual_storage(user_uri, uri);
+            context.get_storage().get_obj_from_individual_storage(uri, individual);
 
-            if (data is null)
+            if (individual.getStatus() == ResultCode.Not_Found)
             {
                 log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
             }
+            else if (individual.getStatus() == ResultCode.OK)
+            {
+                individuals ~= individual;
+            }
             else
             {
-                if (individual.deserialize(data) > 0)
-                {
-                    individuals ~= individual;
-                }
-                else
-                {
-                    log.trace("ERR!:invalid individual=%s", uri);
-                }
+                log.trace("ERR!:invalid individual=%s", uri);
             }
         }
         dg = &collect_subject;
@@ -161,36 +158,39 @@ class VQL
                     res = res.init;
                     return;
                 }
-                string data = context.get_storage().get_from_individual_storage(user_uri, uri);
 
-                if (data is null)
+                Individual ind;
+                context.get_storage().get_obj_from_individual_storage(uri, ind);
+
+                if (ind.getStatus() == ResultCode.Not_Found)
                 {
                     log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), query_str);
                 }
+                else if (ind.getStatus() == ResultCode.OK)
+                {
+                    res ~= ind;
+                }
                 else
                 {
-                    Individual ind;
+                    //writeln("ERR! invalid individual=", uri);
+                    context.reopen_ro_individuals_storage_db();
 
-                    if (ind.deserialize(data) > 0)
+                    context.get_storage().get_obj_from_individual_storage(uri, ind);
+
+                    if (ind.getStatus() == ResultCode.OK)
                     {
                         res ~= ind;
                     }
                     else
                     {
-                        //writeln("ERR! invalid individual=", uri);
-                        context.reopen_ro_individuals_storage_db();
-                        data = context.get_storage().get_from_individual_storage(user_uri, uri);
-                        if (ind.deserialize(data) > 0)
-                        {
-                            res ~= ind;
-                        }
-                        else
-                        {
-                            log.trace("ERR! vql.get attempt 2, invalid individual=%s", uri);
-                        }
+                        log.trace("ERR! vql.get attempt 2, invalid individual=%s", uri);
                     }
                 }
+
+                log.trace("ERR!:invalid individual=%s", uri);
             }
+
+
             dg = &collect_subject;
 
             SearchResult sr = xr.get(user_uri, found_sections[ FILTER ], found_sections[ RETURN ], sort, 0, top, limit, dg, op_auth, null, trace);

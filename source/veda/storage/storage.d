@@ -37,7 +37,7 @@ public abstract class Storage
         return request_acess == res;
     }
 
-    public string get_from_individual_storage(string user_id, string uri)
+    public string get_binobj_from_individual_storage(string uri)
     {
         string res = get_inividuals_storage_r.get_binobj(uri);
 
@@ -45,6 +45,11 @@ public abstract class Storage
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
 
         return res;
+    }
+
+    public void get_obj_from_individual_storage(string uri, ref Individual indv)
+    {
+        get_inividuals_storage_r.get_individual(uri, indv);
     }
 
     private void reopen_ro_ticket_manager_db()
