@@ -37,31 +37,31 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
 
         if (rel.length == 2)
         {
+            Individual indv;
             if (rel[ 0 ] == "T")
             {
-                response = tickets_storage_r.find(rel[ 1 ]);
+                tickets_storage_r.get_individual(rel[ 1 ], indv);
             }
             else if (rel[ 0 ] == "I")
             {
-                response = inividuals_storage_r.find(rel[ 1 ]);
+                inividuals_storage_r.get_individual(rel[ 1 ], indv);
             }
             else
             {
                 return "{ERR:\"invalid query:" ~ request ~ "\"}";
             }
 
-            if (response == null || response.length == 0)
+			if (indv.getStatus() == ResultCode.Not_Found)
+			{
                 return "[]";
-
-            Individual indv;
-
-            if (indv.deserialize(response) > 0)
-            {
+			}
+			else if (indv.getStatus() == ResultCode.OK)
+			{
                 response = individual_to_json(indv).toString();
             }
             else
             {
-                return "{ERR:\"fail binobj to json:" ~ response ~ "\"}";
+                return "{ERR:\"fail indv to json:" ~ response ~ "\"}";
             }
         }
         else

@@ -285,7 +285,7 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
 
         RightSet new_right_set = new RightSet(log);
 
-        string   prev_data_str = storage.find(key);
+        string   prev_data_str = storage.get_binobj(key);
         if (prev_data_str !is null)
         {
             //log.trace("prev_data_str %s[%s]", rs.uri, prev_data_str);

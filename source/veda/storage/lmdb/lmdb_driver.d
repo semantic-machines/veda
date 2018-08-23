@@ -8,6 +8,7 @@ private
 {
     import std.stdio, std.file, std.datetime.stopwatch, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.storage.lmdb.lmdb_header, veda.common.type, veda.common.logger, veda.storage.common, veda.core.common.define;
+    import veda.onto.individual;
 
     alias core.thread.Thread core_thread;
 }
@@ -117,7 +118,7 @@ public class LmdbDriver : KeyValueDB
 
             if (rc == 0)
             {
-                string   data_str = find(summ_hash_this_db_id);
+                string   data_str = get_binobj(summ_hash_this_db_id);
 
                 string[] dataff = data_str.split(',');
                 string   hash_str;
@@ -453,7 +454,36 @@ public class LmdbDriver : KeyValueDB
         return count;
     }
 
-    public string find(string _uri)
+
+    public void get_individual(string uri, ref Individual individual)
+    {
+        string individual_as_binobj = get_binobj(uri);
+
+        if (individual_as_binobj is null)
+        {
+            individual.setStatus(ResultCode.Not_Found);
+            return;
+        }
+
+
+        if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+        {
+            if (individual.deserialize(individual_as_binobj) > 0)
+                individual.setStatus(ResultCode.OK);
+            else
+            {
+                individual.setStatus(ResultCode.Unprocessable_Entity);
+                writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
+            }
+        }
+        else
+        {
+            individual.setStatus(ResultCode.Unprocessable_Entity);
+            //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
+        }
+    }
+
+    public string get_binobj(string _uri)
     {
         string uri = _uri.idup;
 
@@ -496,7 +526,7 @@ public class LmdbDriver : KeyValueDB
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen();
-                return find(uri);
+                return get_binobj(uri);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
@@ -544,7 +574,7 @@ public class LmdbDriver : KeyValueDB
                 log.trace("ERR! MDB_INVALID! lmdb.find, key=%s", uri);
                 reopen();
                 core_thread.sleep(dur!("msecs")(10));
-                return find(_uri);
+                return get_binobj(_uri);
             }
 
             swA.stop();

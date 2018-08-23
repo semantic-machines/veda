@@ -14,6 +14,7 @@ private
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization;
+    import veda.onto.individual;
 }
 
 alias veda.storage.storage_manager ticket_storage_module;
@@ -242,31 +243,7 @@ private Individual get_individual(Context ctx, Ticket *ticket, string uri)
         return individual;
     }
 
-    string individual_as_binobj = inividuals_storage_r.find(uri);
-    if (individual_as_binobj !is null && individual_as_binobj.length > 1)
-    {
-//                if (acl_client.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
-        {
-            if (individual.deserialize(individual_as_binobj) > 0)
-                individual.setStatus(ResultCode.OK);
-            else
-            {
-                individual.setStatus(ResultCode.Unprocessable_Entity);
-                writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
-            }
-        }
-//                else
-//                {
-//                    if (trace_msg[ T_API_160 ] == 1)
-//                        log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
-//                    individual.setStatus(ResultCode.Not_Authorized);
-//                }
-    }
-    else
-    {
-        individual.setStatus(ResultCode.Unprocessable_Entity);
-        //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
-    }
+	inividuals_storage_r.get_individual(uri, individual);
 
     return individual;
 }
