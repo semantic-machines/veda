@@ -39,7 +39,7 @@ public abstract class Storage
 
     public string get_from_individual_storage(string user_id, string uri)
     {
-        string res = get_inividuals_storage_r.find(uri);
+        string res = get_inividuals_storage_r.get_binobj(uri);
 
         if (res !is null && res.length < 10)
             log.trace_log_and_console("ERR! get_individual_from_storage, found invalid BINOBJ, uri=%s", uri);
@@ -89,19 +89,17 @@ public abstract class Storage
 
     public Ticket *get_systicket_from_storage()
     {
-        string str_systicket_link = get_tickets_storage_r().find("systicket");
+        Individual indv_systicket_link;
+
+        get_tickets_storage_r().get_individual("systicket", indv_systicket_link);
+
         string systicket_id;
 
-        if (str_systicket_link !is null)
+        if (indv_systicket_link.getStatus == ResultCode.OK)
         {
-            Individual indv_systicket_link;
-
-            indv_systicket_link.deserialize(str_systicket_link);
-
             systicket_id = indv_systicket_link.getFirstLiteral("v-s:resource");
         }
-
-        if (systicket_id is null)
+        else
         {
             log.trace("SYSTICKET NOT FOUND");
         }
@@ -135,34 +133,28 @@ public abstract class Storage
                     this.reopen_ro_ticket_manager_db();
                 }
 
-                string ticket_str = get_tickets_storage_r().find(ticket_id);
-                if (ticket_str !is null && ticket_str.length > 120)
+                Individual ticket;
+                get_tickets_storage_r().get_individual(ticket_id, ticket);
+
+                if (ticket.getStatus() == ResultCode.OK)
                 {
                     tt = new Ticket;
-                    Individual ticket;
-
-                    if (ticket.deserialize(ticket_str) > 0)
-                    {
-                        subject2Ticket(ticket, tt);
-                        tt.result               = ResultCode.OK;
-                        user_of_ticket[ tt.id ] = tt;
-
-                        if (is_trace)
-                            log.trace("тикет найден в базе, id=%s", ticket_id);
-                    }
-                    else
-                    {
-                        tt.result = ResultCode.Unprocessable_Entity;
-                        log.trace("ERR! invalid individual=%s", ticket_str);
-                    }
+                    subject2Ticket(ticket, tt);
+                    tt.result               = ResultCode.OK;
+                    user_of_ticket[ tt.id ] = tt;
                 }
-                else
+                if (ticket.getStatus() == ResultCode.Not_Found)
                 {
                     tt        = new Ticket;
                     tt.result = ResultCode.Ticket_not_found;
 
                     if (is_trace)
                         log.trace("тикет не найден в базе, id=%s", ticket_id);
+                }
+                else
+                {
+                    tt.result = ResultCode.Unprocessable_Entity;
+                    log.trace("ERR! invalid individual, uri=%s", ticket_id);
                 }
             }
             else

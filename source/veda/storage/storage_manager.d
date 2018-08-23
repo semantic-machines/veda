@@ -340,7 +340,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         {
                             if (cmd == CMD_FIND)
                             {
-                                string res = storage.find(arg);
+                                string res = storage.get_binobj(arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
