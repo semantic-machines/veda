@@ -1062,7 +1062,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 int code = prev_indv.deserialize(prev_state);
                 if (code < 0)
                 {
-                    log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
+                    log.trace("ERR! add_to_transaction: invalid prev_state [%s], uri=%s", prev_state, indv.uri);
                     res.result = ResultCode.Unprocessable_Entity;
                     return res;
                 }

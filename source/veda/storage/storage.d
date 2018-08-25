@@ -148,7 +148,7 @@ public abstract class Storage
                     tt.result               = ResultCode.OK;
                     user_of_ticket[ tt.id ] = tt;
                 }
-                if (ticket.getStatus() == ResultCode.Not_Found)
+                else if (ticket.getStatus() == ResultCode.Not_Found)
                 {
                     tt        = new Ticket;
                     tt.result = ResultCode.Ticket_not_found;
@@ -158,8 +158,9 @@ public abstract class Storage
                 }
                 else
                 {
+                    tt        = new Ticket;
                     tt.result = ResultCode.Unprocessable_Entity;
-                    log.trace("ERR! invalid individual, uri=%s", ticket_id);
+                    log.trace("ERR! storage.get_ticket, invalid individual, uri=%s, errcode=%s", ticket_id, ticket.getStatus());
                 }
             }
             else
