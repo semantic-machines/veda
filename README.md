@@ -32,7 +32,7 @@
 
 **1. Install dependencies**
 ```sh
-$ sudo control-install.sh
+$ control-install.sh
 ```
 **2. Build & start veda**
 ```sh
