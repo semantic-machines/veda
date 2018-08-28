@@ -73,7 +73,7 @@ class VQL
 
             if (individual.getStatus() == ResultCode.Not_Found)
             {
-                log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), filter);
+                log.trace("ERR! FT:get Unable to find the object [%s] it should be, query=[%s]", uri, filter);
             }
             else if (individual.getStatus() == ResultCode.OK)
             {
@@ -81,7 +81,7 @@ class VQL
             }
             else
             {
-                log.trace("ERR!:invalid individual=%s", uri);
+                log.trace("ERR!: FT:get invalid individual=%s, status=%s, query=%s", uri, individual.getStatus(), filter);
             }
         }
         dg = &collect_subject;
@@ -164,7 +164,7 @@ class VQL
 
                 if (ind.getStatus() == ResultCode.Not_Found)
                 {
-                    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", text(uri), query_str);
+                    log.trace("ERR! Unable to find the object [%s] it should be, query=[%s]", uri, query_str);
                 }
                 else if (ind.getStatus() == ResultCode.OK)
                 {
@@ -172,7 +172,6 @@ class VQL
                 }
                 else
                 {
-                    //writeln("ERR! invalid individual=", uri);
                     context.reopen_ro_individuals_storage_db();
 
                     context.get_storage().get_obj_from_individual_storage(uri, ind);
@@ -183,11 +182,11 @@ class VQL
                     }
                     else
                     {
-                        log.trace("ERR! vql.get attempt 2, invalid individual=%s", uri);
+                        log.trace("ERR! FT:get attempt 2, invalid individual=%s", uri);
                     }
                 }
 
-                log.trace("ERR!:invalid individual=%s", uri);
+                //                log.trace("ERR!: FT:get invalid individual=%s, status=%s, query=%s", uri, individual.getStatus(), query_str);
             }
 
 

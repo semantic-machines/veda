@@ -155,6 +155,7 @@ class VedaModule : VedaModuleBasic
             log.trace("%s terminated", process_name);
             return;
         }
+        log.trace("[%s] start module %s", process_name, cast(SUBSYSTEM) module_id);
 
         context = create_context();
 
