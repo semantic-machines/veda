@@ -63,6 +63,18 @@ v-s:OrganizationUnitModel
     }, undefined);
   };
 
+  this.getChiefForEmployee = function (employeeId, depth) {
+    depth = depth || 0;
+    var self = this;
+    var employeeId = employeeId || this.id;
+    if ( (this.hasValue("v-s:hasChief") || depth > 16) && this["v-s:hasChief"][0].id != employeeId ) {
+      return this["v-s:hasChief"][0];
+    }
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || self.getChiefForEmployee.call(item, employeeId, depth + 1);
+    }, undefined);
+  };
+
   /**
    * @method
    * @param unit {String/veda.IndividualModel} Super unit uri or individual.
