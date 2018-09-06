@@ -170,12 +170,6 @@ v-s:TaskReceivedNotification
   rdfs:label "Уведомление о получении задачи"@ru ;
   rdfs:label "Task received notification"@en ;
 .
-v-s:PermissionsGrantedNotification
-  rdf:type v-s:MessageType ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Уведомление о получении прав"@ru ;
-  rdfs:label "Permissions granted notification"@en ;
-.
 v-s:OtherNotification
   rdf:type v-s:MessageType ;
   rdfs:subClassOf v-s:SystemThing ;
