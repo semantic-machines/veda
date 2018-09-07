@@ -60,7 +60,7 @@ v-s:OrganizationUnitModel
       return this["v-s:hasChief"][0];
     }
     return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || self.getChiefForEmployee.call(item, ChiefId, depth + 1);
+      return state || self.getChief.call(item, ChiefId, depth + 1);
     }, undefined);
   };
 
