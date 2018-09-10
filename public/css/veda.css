@@ -6,7 +6,7 @@ body {
 }
 
 .bg-default {
-  background-color: #f5f5f5;
+  background-color: #f5f6f8;
 }
 /*button up*/
 .go-up {
@@ -127,7 +127,7 @@ body {
 .sheet {
   position: relative;
   background-color: #fff;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid #ddd;
   padding: 20px!important;
 }

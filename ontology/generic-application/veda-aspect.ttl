@@ -42,6 +42,14 @@ v-s:BusinessAspect
   rdfs:label "Business aspect"@en ;
 .
 
+v-s:hasApplication
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Aspect ;
+  rdfs:range v-s:Application ;
+  rdfs:label "Приложение"@ru ;
+  rdfs:label "Application"@en ;
+.
+
 v-s:hasFavorite
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
