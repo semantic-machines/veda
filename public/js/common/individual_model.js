@@ -22,7 +22,7 @@ veda.Module(function (veda) { "use strict";
       uri       = uri.uri;
     }
 
-    // Define Model functions
+    // Init data
     this._ = {
       cache: typeof cache === "boolean" ? cache : cache || true,
       init: typeof init !== "undefined" ? init : true,
@@ -32,9 +32,11 @@ veda.Module(function (veda) { "use strict";
     this.properties = {};
     this.filtered = {};
 
+    // Attach event handlers
     this.on("rdf:type", this.init);
     this.on("beforeSave", beforeSaveHandler);
 
+    // Load from backend
     return self.load(uri);
   };
 
