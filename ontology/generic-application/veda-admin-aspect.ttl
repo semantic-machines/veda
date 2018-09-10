@@ -19,23 +19,14 @@
 # -- ИНДИВИДЫ START --
 
 v-s:AdministrationAspect
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:BusinessAspect ;
-  rdfs:label "Администрирование"@ru ;
-  rdfs:label "Administration"@en ;
-  rdfs:comment "Аспект администрирования"@ru ;
-  rdfs:comment "Administration aspect"@en ;
-  v-ui:hasTemplate v-ui:AdministrationAspectTemplate ;
-.
-
-v-s:AdministrationAspect1
-  rdf:type v-s:AdministrationAspect ;
+  rdf:type v-s:Aspect ;
   rdfs:label "Администрирование"@ru ;
   rdfs:label "Administration"@en ;
   rdfs:comment "All your base are belong to us ©" ;
   v-s:shortLabel "Администрирование"@ru ;
   v-s:shortLabel "Administration"@en ;
   v-s:hasImage v-s:AdministrationImage ;
+  v-ui:hasTemplate v-ui:AdministrationAspectTemplate ;
 .
 
 v-s:AdministrationImage
@@ -650,7 +641,7 @@ v-ui:AdministrationAspectTemplate
   v-ui:forClass v-s:AdministrationAspect ;
   v-ui:template """
 <div class="container sheet" style="position:relative;">
-  <h2 about="v-s:AdministrationAspect1" property="rdfs:label"></h2>
+  <h2 about="@" property="rdfs:label"></h2>
   <br>
   <ul id="admin-tabs" class="nav nav-pills" role="tablist">
     <li role="presentation"><a href="#Classes" aria-controls="Classes" role="tab" data-toggle="tab" about="v-s:ClassesBundle" property="rdfs:label"></a></li>
