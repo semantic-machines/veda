@@ -684,12 +684,6 @@ cfg:Event_4
  * super_classes = super classes of the document.
  */
 
-// First class event
-if (parent_script_id) {
-  // print("Not first class event. Exit.");
-  return;
-}
-
 var doc_uri = document['@'],
     deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 

@@ -78,7 +78,7 @@ veda.Module(function (veda) { "use strict";
         if (uri === "cfg:OntoVsn") { return; }
         var individual_json = ontology[uri];
         var type = individual_json["rdf:type"][0].data;
-        var individual = new veda.IndividualModel( individual_json, Date.now() + 1000 * 60 * 60 * 24 * 365 * 100, false );
+        var individual = new veda.IndividualModel( individual_json, 1, false );
 
         switch ( type ) {
           case "rdfs:Class" :

@@ -52,14 +52,15 @@ v-s:OrganizationUnitModel
    * @param unit {String/veda.IndividualModel} Super unit uri or individual.
    * @return {veda.IndividualModel | false }.
    */
-  this.getChief = function (depth) {
+  this.getChief = function (ChiefId, depth) {
     depth = depth || 0;
     var self = this;
-    if ( this.hasValue("v-s:hasChief") || depth > 16) {
+    var ChiefId = ChiefId || this.id;
+    if ( (this.hasValue("v-s:hasChief") || depth > 16) && this["v-s:hasChief"][0].id !== ChiefId ) {
       return this["v-s:hasChief"][0];
     }
     return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || self.getChief.call(item, depth + 1);
+      return state || self.getChief.call(item, ChiefId, depth + 1);
     }, undefined);
   };
 

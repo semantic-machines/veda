@@ -168,12 +168,12 @@ v-s:RequestDelegationTemplate
     <div class="col-md-3 col-xs-6">
       <em about="v-s:dateFrom" property="rdfs:label"></em>
       <div property="v-s:dateFrom" class="view -edit search"></div>
-      <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+      <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:dateTo" property="rdfs:label"></em>
       <div property="v-s:dateTo" class="view -edit search"></div>
-      <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+      <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
     </div>
   </div>
   <br>
@@ -426,16 +426,22 @@ if (parent_script_id) {
 
 var request_uri = document["@"],
     request_type = veda.Util.getUri(document["rdf:type"]),
-    dateFrom = document["v-s:dateFrom"],
-    dateTo = document["v-s:dateTo"],
+    requestDateFrom = new Date(document["v-s:dateFrom"][0].data),
+    requestDateTo = new Date(document["v-s:dateTo"][0].data),
     now = new Date(),
-    isActual = dateFrom[0].data <= now && now <= dateTo[0].data,
     delegator_uri = veda.Util.getUri(document["v-s:delegator"]) || "",
     delegate_uri = veda.Util.getUri(document["v-s:delegate"]),
     position_uris = veda.Util.getUris(document["v-s:delegatedPosition"]),
     request_deleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
     custom_label = document["rdfs:label"];
+
+requestDateFrom.setHours(0, 0, 0, 0);
+requestDateTo.setHours(23, 59, 59, 999);
+
+var isActual = requestDateFrom <= now && now <= requestDateTo,
+    dateFrom = veda.Util.newDate(requestDateFrom),
+    dateTo = veda.Util.newDate(requestDateTo);
 
 //print("[cfg:Event_Delegation] ************************** START **************************");
 //print("[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual);
