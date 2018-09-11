@@ -1,0 +1,25 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-ft: <http://semantic-machines.com/veda/veda-function-tasks/> .
+
+@prefix v-app: <http://semantic-machines.com/veda/veda-application/> .
+<http://semantic-machines.com/veda/veda-application>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология приложения системы Веда"@ru ;
+  rdfs:label "Veda system application ontology"@en ;
+#  owl:versionInfo "1.1" ;
+  v-s:loadPriority 9 ;
+.
+
+v-s:Application
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Aspect ;
+  rdfs:label "Приложение"@ru ;
+  rdfs:label "Application"@en ;
+.
