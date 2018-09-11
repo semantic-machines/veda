@@ -1,21 +1,26 @@
 package main
 
-//	"log"
-//	"time"
-
-//	"strconv"
-
-//	"encoding/json"
+import (
+	"encoding/json"
+	"log"
+	"strconv"
+	"time"
+)
 
 //	"github.com/google/uuid"
 //	"github.com/muller95/traildb-go"
 
 //trail stores data about request in traildb
 func trail(ticketId, userId, action string, args map[string]interface{}, result string, resultCode ResultCode, startTime int64) {
-	//	timestamp := time.Now().Unix()
 	if !isTrail {
 		return
 	}
+
+	timestamp := time.Now().Unix()
+	jsonArgs, _ := json.Marshal(args)
+	log.Printf("TRAIL: ticket=%s;user=%s;action=%s;args=%s;res=%s;code=%s;time=%s", ticketId, userId, action, string(jsonArgs), result,
+		string(codeToJsonException(resultCode)), strconv.FormatInt(timestamp-startTime, 10))
+
 	/*
 		if cons == nil {
 			var err error
