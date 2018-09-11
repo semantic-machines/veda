@@ -399,6 +399,12 @@ veda.Module(function (veda) { "use strict";
       self.attr("src", str.replace("@", individual.id));
     });
 
+    $("[style*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+      var self = $(this);
+      var style = self.attr("style");
+      self.attr("style", style.replace("@", individual.id));
+    });
+
     // Property value
     var props_ctrls = {};
     $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
