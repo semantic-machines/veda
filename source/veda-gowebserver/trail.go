@@ -18,8 +18,8 @@ func trail(ticketId, userId, action string, args map[string]interface{}, result 
 
 	timestamp := time.Now().Unix()
 	jsonArgs, _ := json.Marshal(args)
-	log.Printf("TRAIL: ticket=%s;user=%s;action=%s;args=%s;res=%s;code=%s;time=%s", ticketId, userId, action, string(jsonArgs), result,
-		string(codeToJsonException(resultCode)), strconv.FormatInt(timestamp-startTime, 10))
+	log.Printf("TRAIL:time=%s;ticket=%s;user=%s;action=%s;\nargs=%s;\nres=%s;\ncode=%s\n\n", strconv.FormatInt(timestamp-startTime, 10), ticketId, userId, action, string(jsonArgs), result,
+		string(codeToJsonException(resultCode)))
 
 	/*
 		if cons == nil {
