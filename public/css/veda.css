@@ -284,6 +284,24 @@ body {
   font-weight: 500;
   margin-bottom: 0.75rem; }
 
+.card-big .card-title {
+  padding: 0px 20px;
+  position: absolute;
+  z-index: 1001;
+  top: 0px;
+  bottom: inherit;
+  width: 100%;
+  display:inline-block;
+  background: rgba(0,0,0,.4);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.card-big .card-title * {
+  text-align: center;
+  text-shadow: 0px 2px 3px black;
+  color: white;
+}
+
 .card-subtitle {
   margin-top: -1.09375rem; }
 
@@ -413,6 +431,9 @@ body {
   background-position: center;
   background-repeat: no-repeat; }
 
+.card-big .card-post__image {
+  min-height: 300px; }
+
 .card-post__author-avatar {
   width: 2.8125rem;
   height: 2.8125rem;
@@ -455,7 +476,7 @@ body {
   text-transform: uppercase; }
 
 .card-post--1 .card-body {
-  padding-top: 2.1875rem; }
+  /*padding-top: 2.1875rem;*/ }
 
 .card-post--1.card-post--aside .card-body {
   padding: 1.5625rem 1.5625rem; }
