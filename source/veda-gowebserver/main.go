@@ -320,6 +320,7 @@ func main() {
 			ReadTimeout:  90 * time.Second,
 			WriteTimeout: 5 * time.Second,
 			MaxKeepaliveDuration: 100 * time.Second,
+			ReadBufferSize: 8 * 1024,
 		}
 		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {

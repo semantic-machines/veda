@@ -313,9 +313,9 @@ class XapianReader : SearchReader
             destroy_Query(query);
             destroy_MultiValueKeyMaker(sorter);
 
-            if (sr.total_time > 10_000)
+            if (sr.total_time > 5_000)
             {
-                log.trace("WARN! xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
+                log.trace("WARN! xapian::get, total_time (%d) > 5 sec, user=%s, query=%s, sr=%s", user_uri, sr.total_time, str_query, sr);
             }
 
             if (sr.result_code == ResultCode.DatabaseModifiedError)
@@ -424,7 +424,7 @@ class XapianReader : SearchReader
     {
         long cur_committed_op_id = get_info().committed_op_id;
 
-        log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
+        //log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
 
         foreach (el; using_dbqp.values)
         {
