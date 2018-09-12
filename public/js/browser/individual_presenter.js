@@ -487,6 +487,7 @@ veda.Module(function (veda) { "use strict";
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
           limit = relContainer.attr("data-limit") || Infinity,
+          more = relContainer.attr("data-more") || false,
           relTemplate,
           isAbout;
 
@@ -583,7 +584,7 @@ veda.Module(function (veda) { "use strict";
               rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
             }
             relContainer.children(".more").remove();
-            if (limit < values.length) {
+            if (limit < values.length && more) {
               relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
             }
           } else {
