@@ -252,6 +252,7 @@ body {
 
 /* VERTICAL CARD */
 .card {
+  margin-bottom: 30px;
   background-color: #fff;
   border: none;
   border-radius: 0.625rem;
@@ -424,7 +425,7 @@ body {
 
 .card-post__image {
   position: relative;
-  min-height: 10.3125rem;
+  min-height: 15.3125rem;
   border-top-left-radius: 0.625rem;
   border-top-right-radius: 0.625rem;
   background-size: cover;
@@ -432,7 +433,7 @@ body {
   background-repeat: no-repeat; }
 
 .card-big .card-post__image {
-  min-height: 300px; }
+  min-height: 350px; }
 
 .card-post__author-avatar {
   width: 2.8125rem;
