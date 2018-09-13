@@ -2,7 +2,7 @@ body {
   position: relative;
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
   color: #333;
-  background-color: #f0f0f0;
+  background-color: #f5f6f8;
 }
 
 .bg-default {
@@ -937,17 +937,16 @@ fieldset[disabled] .form-control {
   color: white;
 }
 .carousel-indicators {
-  bottom: -10px;
+  position: relative;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 0;
   padding: 10px 10px;
   width: inherit;
   margin-left: auto;
   margin-right: auto;
-  left: 0px;
-  right: 0px;
   background: rgba(0,0,0,.4);
-  z-index: 15;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
 }
 .carousel-indicators > li {
   display: inline-block;
