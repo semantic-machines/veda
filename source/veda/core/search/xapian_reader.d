@@ -315,7 +315,7 @@ class XapianReader : SearchReader
 
             if (sr.total_time > 5_000)
             {
-                log.trace("WARN! xapian::get, total_time (%d) > 5 sec, user=%s, query=%s, sr=%s", user_uri, sr.total_time, str_query, sr);
+                log.trace("WARN! xapian::get, total_time (%d) > 5 sec, user=%s, query=%s, sr=%s", sr.total_time, user_uri, str_query, sr);
             }
 
             if (sr.result_code == ResultCode.DatabaseModifiedError)
