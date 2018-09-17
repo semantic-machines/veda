@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //authenticate checks validity of login and password and gives user new ticket

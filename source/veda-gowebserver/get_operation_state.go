@@ -4,7 +4,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //getOperationState readds state of requested operation in requested module

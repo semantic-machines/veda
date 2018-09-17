@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 const queueStatePrefix = "srv:queue-state-"

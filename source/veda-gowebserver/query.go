@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/op/go-nanomsg"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //query function handle query request with fulltext search

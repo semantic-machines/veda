@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/op/go-nanomsg"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //ResultCode is type for representation of http codes

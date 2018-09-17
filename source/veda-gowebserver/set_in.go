@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //setInIndividual handles set_in_individual request

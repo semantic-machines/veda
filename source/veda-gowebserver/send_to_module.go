@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //sendToModule handles send_to_module request

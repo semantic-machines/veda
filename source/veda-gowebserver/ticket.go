@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 	//"strings"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 	"time"
 )
 
