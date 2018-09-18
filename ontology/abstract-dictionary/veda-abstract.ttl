@@ -530,6 +530,20 @@ v-s:initiator
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:initiatorDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Подразделение-инициатор"@ru ;
+  rdfs:label "Initiator department"@en ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:initiatorOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Организация-инициатор"@ru ;
+  rdfs:label "Initiator organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractual ;
+.
 v-s:stakeholder
   rdf:type owl:ObjectProperty ;
   rdfs:label "Заинтересованная сторона"@ru ;
