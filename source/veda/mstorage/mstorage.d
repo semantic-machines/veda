@@ -131,7 +131,7 @@ void init(string node_id)
 
         if (guest_ticket is null || guest_ticket.result == ResultCode.Ticket_not_found)
         {
-            create_new_ticket("cfg:Guest", "900000000", "guest");
+            create_new_ticket("guest", "cfg:Guest", "900000000", "guest");
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -243,12 +243,12 @@ private Individual get_individual(Context ctx, Ticket *ticket, string uri)
         return individual;
     }
 
-	inividuals_storage_r.get_individual(uri, individual);
+    inividuals_storage_r.get_individual(uri, individual);
 
     return individual;
 }
 
-private Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
+private Ticket create_new_ticket(string user_login, string user_id, string duration = "40000", string ticket_id = null)
 {
     Ticket     ticket;
     Individual new_ticket;
@@ -267,6 +267,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
         new_ticket.uri = new_id.toString();
     }
 
+    new_ticket.resources[ ticket__login ] ~= Resource(user_login);
     new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
     new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
     new_ticket.resources[ ticket__duration ] ~= Resource(duration);
@@ -288,7 +289,8 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
         user_of_ticket[ ticket.id ] = new Ticket(ticket);
     }
 
-    log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
+    log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
+                                                                                                                                  UTC()).toISOExtString(),
               SysTime(ticket.end_time, UTC()).toISOExtString());
 
     return ticket;
@@ -348,7 +350,23 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     {
         string user_id = user.getFirstResource("v-s:owner").uri;
         if (user_id is null)
+        {
+            log.trace("ERR! authenticate:user id is null, user_indv=%s", user);
             continue;
+        }
+
+        string user_login = user.getFirstResource("v-s:login").data;
+        if (user_login is null)
+        {
+            log.trace("ERR! authenticate:user login is null, user_indv=%s", user);
+            continue;
+        }
+
+        if (icmp(user_login, login) != 0)
+        {
+            log.trace("ERR! authenticate:user login [%s] not equal request login [%s]", user_login, login);
+            continue;
+        }
 
         Individual iuser = get_individual(ctx, &sticket, user_id);
 
@@ -469,7 +487,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
             if (op_res.result == ResultCode.OK)
             {
-                ticket = create_new_ticket(user_id);
+                ticket = create_new_ticket(login, user_id);
                 log.trace("INFO! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
             }
             else
@@ -578,7 +596,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
             if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
             {
-                ticket = create_new_ticket(user_id);
+                ticket = create_new_ticket(login, user_id);
                 return ticket;
             }
         }
@@ -652,6 +670,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
             res[ "user_uri" ] = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
             res[ "result" ]   = ticket.result;
             res[ "end_time" ] = ticket.end_time;
 
@@ -667,6 +686,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
             res[ "user_uri" ] = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
             res[ "result" ]   = ticket.result;
             res[ "end_time" ] = ticket.end_time;
         }
@@ -895,7 +915,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
     {
         try
         {
-            ticket = create_new_ticket("cfg:VedaSystem", "90000000");
+            ticket = create_new_ticket("veda", "cfg:VedaSystem", "90000000");
 
             long       op_id;
             Individual sys_ticket_link;
@@ -1373,10 +1393,11 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource("v-s:owner").uri;
+                string f_login = user.getFirstResource("v-s:login").data;
                 if (user_id is null)
                     continue;
 
-                ticket = create_new_ticket(user_id);
+                ticket = create_new_ticket(f_login, user_id);
 
                 log.trace("INFO! trusted authenticate, result ticket=[%s]", ticket);
                 return ticket;
