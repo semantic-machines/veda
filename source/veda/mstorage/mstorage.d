@@ -243,7 +243,7 @@ private Individual get_individual(Context ctx, Ticket *ticket, string uri)
         return individual;
     }
 
-	inividuals_storage_r.get_individual(uri, individual);
+    inividuals_storage_r.get_individual(uri, individual);
 
     return individual;
 }
@@ -289,7 +289,8 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
         user_of_ticket[ ticket.id ] = new Ticket(ticket);
     }
 
-    log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
+    log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
+                                                                                                                                  UTC()).toISOExtString(),
               SysTime(ticket.end_time, UTC()).toISOExtString());
 
     return ticket;
@@ -350,6 +351,16 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         string user_id = user.getFirstResource("v-s:owner").uri;
         if (user_id is null)
             continue;
+
+        string user_login = user.getFirstResource("v-s:login").uri;
+        if (user_login is null)
+            continue;
+
+        if (user_login != login)
+        {
+            log.trace("ERR! authenticate:user login [%s] not equal request login [%s]", user_login, login);
+            continue;
+        }
 
         Individual iuser = get_individual(ctx, &sticket, user_id);
 
