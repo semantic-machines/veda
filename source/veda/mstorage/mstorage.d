@@ -350,13 +350,19 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     {
         string user_id = user.getFirstResource("v-s:owner").uri;
         if (user_id is null)
+        {
+            log.trace("ERR! authenticate:user id is null, user_indv=%s", user);
             continue;
+        }
 
-        string user_login = user.getFirstResource("v-s:login").uri;
+        string user_login = user.getFirstResource("v-s:login").data;
         if (user_login is null)
+        {
+            log.trace("ERR! authenticate:user login is null, user_indv=%s", user);
             continue;
+        }
 
-        if (user_login != login)
+        if (icmp(user_login, login) != 0)
         {
             log.trace("ERR! authenticate:user login [%s] not equal request login [%s]", user_login, login);
             continue;

@@ -20,7 +20,7 @@ public const string veda_schema__Membership          = "v-s:Membership";
 
 public const string rdf__type        = "rdf:type";
 public const string rdfs__subClassOf = "rdfs:subClassOf";
-public const string ticket__Ticket   = "ticket:Ticket";
+public const string ticket__Ticket   = "ticket:ticket";
 public const string ticket__accessor = "ticket:accessor";
 public const string ticket__login = "ticket:login";
 public const string ticket__when     = "ticket:when";
