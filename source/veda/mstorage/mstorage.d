@@ -670,6 +670,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
             res[ "user_uri" ] = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
             res[ "result" ]   = ticket.result;
             res[ "end_time" ] = ticket.end_time;
 
@@ -685,6 +686,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
             res[ "user_uri" ] = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
             res[ "result" ]   = ticket.result;
             res[ "end_time" ] = ticket.end_time;
         }
@@ -1391,7 +1393,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource("v-s:owner").uri;
-                string f_login = user.getFirstResource("v-s:login").uri;
+                string f_login = user.getFirstResource("v-s:login").data;
                 if (user_id is null)
                     continue;
 

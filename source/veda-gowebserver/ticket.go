@@ -19,6 +19,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 	if ticketKey == "" || ticketKey == "systicket" {
 		ticketKey = "guest"
 		ticket.Id = "guest"
+		ticket.UserLogin = "guest"
 		ticket.UserURI = "cfg:Guest"
 		ticket.result = Ok
 		return Ok, ticket
