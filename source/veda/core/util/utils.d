@@ -50,6 +50,7 @@ public void subject2Ticket(ref Individual ticket, Ticket *tt)
     long   duration;
 
     tt.id       = ticket.uri;
+    tt.user_login = ticket.getFirstLiteral(ticket__login);
     tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
     when        = ticket.getFirstLiteral(ticket__when);
     string dd = ticket.getFirstLiteral(ticket__duration);

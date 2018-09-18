@@ -57,7 +57,7 @@ public abstract class Storage
         get_tickets_storage_r().reopen();
     }
 
-    public Ticket create_new_ticket(string user_id, string duration, string ticket_id, bool is_trace = false)
+    public Ticket create_new_ticket(string user_login, string user_id, string duration, string ticket_id, bool is_trace = false)
     {
         if (is_trace)
             log.trace("create_new_ticket, ticket__accessor=%s", user_id);
@@ -79,6 +79,7 @@ public abstract class Storage
             new_ticket.uri = new_id.toString();
         }
 
+        new_ticket.resources[ ticket__login ] ~= Resource(user_login);
         new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
@@ -177,7 +178,7 @@ public abstract class Storage
 
                     if (ticket_id == "guest")
                     {
-                        Ticket guest_ticket = create_new_ticket("cfg:Guest", "900000000", "guest");
+                        Ticket guest_ticket = create_new_ticket("guest", "cfg:Guest", "900000000", "guest");
                         tt = &guest_ticket;
                     }
                     else

@@ -20,6 +20,9 @@ public struct Ticket
     /// Uri пользователя
     string     user_uri;
 
+    /// login пользователя
+    string     user_login;
+
     /// Код результата, если тикет не валидный != ResultCode.Ok
     ResultCode result;
 

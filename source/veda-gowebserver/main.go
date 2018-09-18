@@ -43,6 +43,7 @@ const (
 type ticket struct {
 	Id        string
 	UserURI   string
+	UserLogin string
 	result    ResultCode
 	StartTime int64
 	EndTime   int64
