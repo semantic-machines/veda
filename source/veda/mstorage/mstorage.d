@@ -333,10 +333,8 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         return ticket;
     }
 
-    login = replaceAll(login, regex(r"[-]", "g"), " +");
-
     Individual[] candidate_users;
-    string       query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+    string       query = "'" ~ veda_schema__login ~ "' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
 
     ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
     auto storage = ctx.get_storage();

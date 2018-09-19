@@ -49,7 +49,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		rr := conn.GetTicket([]string{ticketKey}, false)
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
-			log.Println("ERR! ON GET TICKET")
+			log.Printf("ERR! GET TICKET, ticket=%s, err=%v\n", ticketKey, rr.CommonRC)
 			return InternalServerError, ticket
 		}
 
@@ -85,7 +85,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			origin, ok := getFirstString(user, "v-s:origin")
 			if !ok || (ok && origin != "External User") {
 				//If this field not found or it contains false then return error code
-				log.Printf("ERR! user (%s) is not external\n", ticket.UserURI)
+				log.Printf("ERR! user (%s) is not external, user_indv=%v\n", ticket.UserURI, user)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
 			} else if ok && origin == "External User" {
