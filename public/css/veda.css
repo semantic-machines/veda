@@ -252,6 +252,7 @@ body {
 
 /* VERTICAL CARD */
 .card {
+  width: 100%;
   margin-bottom: 30px;
   background-color: #fff;
   border: none;

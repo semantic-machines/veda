@@ -500,11 +500,11 @@ v-s:AspectTemplate
 <div class="container" style="position:relative;">
   <h1 property="rdfs:label" class="text-center"></h1>
   <br>
-  <div class="row" about="@" rel="v-s:hasApplication">
-    <div class="col-md-4 col-sm-6">
-      <div about="@" data-template="v-s:ApplicationSmallCardTemplate"></div>
+  <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-wrap: wrap;">
+    <div class="col-md-4 col-sm-6" style="display: flex;">
+      <div about="@" data-template="v-s:ApplicationSmallCardTemplate" style="display: flex; width:100%;"></div>
     </div>
-  </div>
+  <div>
 </div>
   """ ;
 .
