@@ -34,7 +34,7 @@ v-s:ApplicationSmallCardTemplate
     <div class="card-post__image" style="background-image: url('/files/@');"></div>
   </a>
   <div class="card-body">
-    <h4 class="card-title margin-md">
+    <h4 class="card-title margin-md text-center">
       <a href="#/@" property="rdfs:label"></a>
       <br>
       <small property="rdfs:comment"></small>

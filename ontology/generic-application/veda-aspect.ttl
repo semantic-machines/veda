@@ -493,8 +493,8 @@ v-s:PersonalPreferencesSpecification1
 
 v-s:AspectTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон аспекта развития и реконструкции"@ru ;
-  rdfs:label "Template for Development and reconstruction aspect"@en ;
+  rdfs:label "Шаблон аспекта"@ru ;
+  rdfs:label "Aspect template"@en ;
   v-ui:forClass v-s:Aspect ;
   v-ui:template """
 <div class="container" style="position:relative;">
