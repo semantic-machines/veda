@@ -83,7 +83,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	//check if external users feature is enabled
 	if areExternalUsers {
 		//loging about external user authentication checl
-		log.Printf("authenticate:check external login (%v)\n", request["login"])
+		log.Printf("authenticate:check external login (%v), auth_response=%v\n", request["login"], authResponse)
 		//sending get request to storage
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
 		user := rr.GetIndv(0)
@@ -91,7 +91,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 
 		if !ok || (ok && origin != "External User") {
 			//if v-s:origin not found or value is false than return NotAuthorized
-			log.Printf("ERR! login (%v) is not external\n", request["login"])
+			log.Printf("ERR! login (%v) is not external, user_indv=%v\n", request["login"], user)
 			authResponse["end_time"] = 0
 			authResponse["id"] = ""
 			authResponse["user_uri"] = ""
