@@ -373,7 +373,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(user_uri, query_str, null, null, top, limit, res, op_auth, false);
+            _vql.query(user_uri, query_str, null, null, top, limit, res, op_auth, false);
             return res;
         }
         finally
@@ -447,7 +447,7 @@ class PThreadContext : Context
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.get(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+        sr = _vql.query(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
 
         return sr;
     }

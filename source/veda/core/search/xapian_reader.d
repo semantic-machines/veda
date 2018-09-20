@@ -15,7 +15,7 @@ protected byte err;
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 interface SearchReader
 {
-    public SearchResult get(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
+    public SearchResult query(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
                             bool trace);
 
@@ -131,7 +131,7 @@ class XapianReader : SearchReader
         return key2slot;
     }
 
-    public SearchResult get(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
+    public SearchResult query(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
                             bool trace)
     {

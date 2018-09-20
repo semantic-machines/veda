@@ -336,7 +336,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     Individual[] candidate_users;
     string       query = "'" ~ veda_schema__login ~ "' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
 
-    ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    ctx.get_vql().query(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
     auto storage = ctx.get_storage();
     if (storage is null)
     {
