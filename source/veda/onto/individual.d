@@ -408,4 +408,15 @@ public struct Individual
 
         return str_hash;
     }
+
+    public long count_values()
+    {
+        long count;
+
+        foreach (vv; resources.values)
+        {
+            count += vv.length;
+        }
+        return count;
+    }
 }

@@ -554,6 +554,9 @@ cfg:Event_3
 
 if (user_uri == 'cfg:VedaSystem') return; // #245
 
+// Get latest document state
+document = get_individual(ticket, document["@"]);
+
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
 {
   veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
@@ -680,12 +683,6 @@ cfg:Event_4
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-
-// First class event
-if (parent_script_id) {
-  // print("Not first class event. Exit.");
-  return;
-}
 
 var doc_uri = document['@'],
     deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });

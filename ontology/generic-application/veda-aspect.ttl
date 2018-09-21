@@ -23,6 +23,7 @@ v-s:Aspect
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Аспект"@ru ;
   rdfs:label "Aspect"@en ;
+  v-ui:hasTemplate v-s:AspectTemplate ;
 .
 
 v-s:PersonalAspect
@@ -40,6 +41,14 @@ v-s:BusinessAspect
   rdfs:subClassOf v-s:Aspect ;
   rdfs:label "Деловой аспект"@ru ;
   rdfs:label "Business aspect"@en ;
+.
+
+v-s:hasApplication
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Aspect ;
+  rdfs:range v-s:Application ;
+  rdfs:label "Приложение"@ru ;
+  rdfs:label "Application"@en ;
 .
 
 v-s:hasFavorite
@@ -329,7 +338,9 @@ v-s:PersonalInfoTemplate
       <div class="form-inline">
         <div class="form-group">
           <label about="v-s:phone" property="rdfs:label"></label>:
-          <span class="view -edit -search" about="@" property="v-s:phone"></span>
+          <span class="view -edit -search" about="@" rel="v-s:hasAccount">
+            <span class="view -edit -search" about="@" property="v-s:phone"></span>
+          </span>
           <veda-control property="v-s:phone" data-type="string" class="-view edit search"></veda-control>
         </div>
       </div>
@@ -478,4 +489,22 @@ v-s:PersonalPreferencesSpecification1
   v-ui:forClass v-ui:Preferences ;
   v-ui:forProperty v-ui:preferredLanguage ;
   v-ui:minCardinality "1"^^xsd:nonNegativeInteger ;
+.
+
+v-s:AspectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон аспекта"@ru ;
+  rdfs:label "Aspect template"@en ;
+  v-ui:forClass v-s:Aspect ;
+  v-ui:template """
+<div class="container" style="position:relative;">
+  <h1 property="rdfs:label" class="text-center"></h1>
+  <br>
+  <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-wrap: wrap;">
+    <div class="col-md-4 col-sm-6" style="display: flex;">
+      <div about="@" data-template="v-s:ApplicationSmallCardTemplate" style="display: flex; width:100%;"></div>
+    </div>
+  <div>
+</div>
+  """ ;
 .

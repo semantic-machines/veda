@@ -58,6 +58,13 @@ func configWebServer() {
 				lmdbServiceURL = paramVal
 			case "ft_query_service_url":
 				queryServiceURL = paramVal
+			case "webserver_trace":
+				boolVal, err := strconv.ParseBool(paramVal)
+				if err != nil {
+					log.Printf("ERR! ON PARSING BOOL IN CONFIG ON LINE %d\n", count)
+					continue
+				}
+				isTrail = boolVal
 
 			default:
 				continue

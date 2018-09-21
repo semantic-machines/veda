@@ -243,7 +243,7 @@
     function feelMainInput(){
       var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
       mainInput.val(count);
-      summaryText.text(veda.Util.formatNumber(count));
+      summaryText.text(veda.Util.formatValue(count));
       mainInput.change();
     }
     function feelPseudoInput(summaryTime){

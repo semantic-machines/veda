@@ -100,7 +100,7 @@ public string individual2msgpack(ref Individual in_obj)
     // this concatinate created copy ?
     ubyte[] res = write_individual(in_obj);
 
-    return cast(string)(res);
+    return cast(string)res;
 }
 
 /////////////////////////////////////////////////////////////////////

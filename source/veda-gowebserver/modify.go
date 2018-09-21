@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/op/go-nanomsg"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //modifyIndividual sends request to veda server

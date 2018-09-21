@@ -58,21 +58,28 @@ private nothrow string req_prepare(string request, Context context)
 
                 if (ticket !is null)
                 {
-                    try
+                    if (ticket.user_uri is null || ticket.user_uri.length == 0)
                     {
-                        res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
+                        context.get_logger.trace("ERR! user not found in ticket object, ticket_id=%s, ticket=%s", _ticket, ticket);
                     }
-                    catch (Throwable tr)
+                    else
                     {
-                        context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort,
-                                                 _databases, _from, _top,
-                                                 _limit);
+                        try
+                        {
+                            res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
+                        }
+                        catch (Throwable tr)
+                        {
+                            context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
+                            context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort,
+                                                     _databases, _from, _top,
+                                                     _limit);
+                        }
                     }
                 }
                 else
                 {
-                    context.get_logger.trace("ERR! ticket is null: ticket_id = %s", _ticket);
+                    context.get_logger.trace("ERR! ticket not fount: ticket_id = %s", _ticket);
                 }
 
                 //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);

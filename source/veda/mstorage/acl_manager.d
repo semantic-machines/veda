@@ -285,7 +285,7 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
 
         RightSet new_right_set = new RightSet(log);
 
-        string   prev_data_str = storage.find(OptAuthorize.NO, null, key);
+        string   prev_data_str = storage.get_binobj(key);
         if (prev_data_str !is null)
         {
             //log.trace("prev_data_str %s[%s]", rs.uri, prev_data_str);
@@ -316,7 +316,7 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
         if (new_record.length == 0)
             new_record = "X";
 
-        ResultCode res = storage.put(OptAuthorize.NO, null, key, new_record, op_id);
+        ResultCode res = storage.store(key, new_record, op_id);
 
         //log.trace("[acl index] (%s) new right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
     }

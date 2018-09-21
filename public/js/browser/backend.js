@@ -43,6 +43,8 @@ veda.Module(function (veda) { "use strict";
        404: "Not found",
        422: "Unprocessable entity",
        429: "Too many requests",
+       465: "Empty password",
+       466: "New password is equal to old",
        467: "Invalid password",
        468: "Invalid secret",
        469: "Password expired",

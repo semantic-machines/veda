@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 	"log"
 	"time"
 )

@@ -373,7 +373,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.get(user_uri, query_str, null, null, top, limit, res, op_auth, false);
+            _vql.query(user_uri, query_str, null, null, top, limit, res, op_auth, false);
             return res;
         }
         finally
@@ -447,7 +447,7 @@ class PThreadContext : Context
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.get(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+        sr = _vql.query(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
 
         return sr;
     }
@@ -470,31 +470,16 @@ class PThreadContext : Context
 
         try
         {
-            string individual_as_binobj = storage.get_from_individual_storage(ticket.user_uri, uri);
-            if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+            storage.get_obj_from_individual_storage(uri, individual);
+            if (individual.getStatus() == ResultCode.OK)
             {
-                if (opt_authorize == OptAuthorize.NO ||
-                    storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
-                {
-                    if (individual.deserialize(individual_as_binobj) > 0)
-                        individual.setStatus(ResultCode.OK);
-                    else
-                    {
-                        individual.setStatus(ResultCode.Unprocessable_Entity);
-                        writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
-                    }
-                }
-                else
+                if (!(opt_authorize == OptAuthorize.NO ||
+                      storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read))
                 {
                     if (trace_msg[ T_API_160 ] == 1)
                         log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
                     individual.setStatus(ResultCode.Not_Authorized);
                 }
-            }
-            else
-            {
-                individual.setStatus(ResultCode.Unprocessable_Entity);
-                //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
             }
 
             return individual;
@@ -525,20 +510,19 @@ class PThreadContext : Context
             {
                 if (storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
                 {
-                    Individual individual           = Individual.init;
-                    string     individual_as_binobj = storage.get_from_individual_storage(ticket.user_uri, uri);
+                    Individual individual = Individual.init;
 
-                    if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+                    storage.get_obj_from_individual_storage(uri, individual);
+                    if (individual.getStatus() == ResultCode.OK)
                     {
-                        if (individual.deserialize(individual_as_binobj) > 0)
-                            res ~= individual;
-                        else
-                        {
-                            Individual indv;
-                            indv.uri = uri;
-                            indv.setStatus(ResultCode.Unprocessable_Entity);
-                            res ~= indv;
-                        }
+                        res ~= individual;
+                    }
+                    else
+                    {
+                        Individual indv;
+                        indv.uri = uri;
+                        indv.setStatus(ResultCode.Unprocessable_Entity);
+                        res ~= indv;
                     }
                 }
             }

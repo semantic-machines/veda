@@ -399,6 +399,12 @@ veda.Module(function (veda) { "use strict";
       self.attr("src", str.replace("@", individual.id));
     });
 
+    $("[style*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+      var self = $(this);
+      var style = self.attr("style");
+      self.attr("style", style.replace("@", individual.id));
+    });
+
     // Property value
     var props_ctrls = {};
     $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
@@ -481,6 +487,7 @@ veda.Module(function (veda) { "use strict";
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
           limit = relContainer.attr("data-limit") || Infinity,
+          more = relContainer.attr("data-more") || false,
           relTemplate,
           isAbout;
 
@@ -577,7 +584,7 @@ veda.Module(function (veda) { "use strict";
               rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
             }
             relContainer.children(".more").remove();
-            if (limit < values.length) {
+            if (limit < values.length && more) {
               relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
             }
           } else {

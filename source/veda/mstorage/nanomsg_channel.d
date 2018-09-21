@@ -42,6 +42,13 @@ void nanomsg_channel(string thread_name)
         if (context is null)
             context = PThreadContext.create_new("cfg:standart_node", thread_name, log, null);
 
+        long luplft = context.get_configuration().getFirstInteger("cfg:user_password_lifetime");
+
+        if (luplft > 0)
+            PASSWORD_LIFETIME = luplft * 24 * 60 * 60;
+//		else
+//			PASSWORD_LIFETIME = 60 * 24 * 60 * 60;
+
         // SEND ready
         receive((Tid tid_response_reciever)
                 {

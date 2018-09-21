@@ -24,9 +24,9 @@
         var limit = this.limit;
         var delta = this.delta;
         if ( count >= limit ) {
-          var keys = Object.keys(this.expire).sort();
-          for (var i = 0; limit - count < delta; i++) {
-            var key = keys[ i ];
+          var keys = Object.keys(this.expire);
+          // First key is for ontology objects
+          for (var i = 1, key; (key = keys[i]) && (limit - count < delta); i++) {
             this.expire[ key ] = this.expire[ key ].filter(function (obj) {
               if (limit - count >= delta) { return true; }
               delete that.storage[ obj.id ];

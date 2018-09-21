@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 	"log"
 )
 

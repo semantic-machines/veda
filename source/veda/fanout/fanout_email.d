@@ -25,6 +25,7 @@ class FanoutProcess : VedaModule
 {
     MailSender smtp_conn;
     string     default_mail_sender;
+    bool       always_use_mail_sender;
     string     host;
     ushort     port;
 
@@ -325,15 +326,20 @@ class FanoutProcess : VedaModule
                     string from_label;
                     string email_from;
 
-                    if (senderMailbox is null || senderMailbox.length < 5)
+                    if (always_use_mail_sender == true && senderMailbox !is null && senderMailbox.length > 5)
                     {
-                        if (default_mail_sender !is null)
-                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
-                        else
-                            email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                        email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
                     }
                     else
-                        email_from = senderMailbox;
+                    {
+                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+
+                        if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)
+                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+
+                        if ((email_from is null || email_from.length < 5) && senderMailbox !is null)
+                            email_from = senderMailbox;
+                    }
 
                     if (from_label is null || from_label.length == 0)
                         from_label = "Veda System";
@@ -471,7 +477,11 @@ class FanoutProcess : VedaModule
                 }
                 else
                 {
-                    log.trace("WARN: push_to_smtp[%s]: empty field (from[%s] or to[%s]", new_indv.uri, from, to);
+                    if (from is null || from.length < 5)
+                        log.trace("WARN: push_to_smtp[%s]: empty or invalid field from[%s]", new_indv.uri, from);
+
+                    if (to is null || to.length < 5)
+                        log.trace("WARN: push_to_smtp[%s]: empty or invalid field to[%s]", new_indv.uri, to);
                 }
             }
 
@@ -546,7 +556,8 @@ class FanoutProcess : VedaModule
                                     continue;
                                 }
 
-                                default_mail_sender = connection.getFirstLiteral("v-s:mailSender");
+                                default_mail_sender    = connection.getFirstLiteral("v-s:mailSender");
+                                always_use_mail_sender = connection.getFirstBoolean("v-s:alwaysUseMailSender");
                             }
                             else
                                 log.trace("ERR! smtp server unavailable [%s] %s:%d", connection.uri, host, port);

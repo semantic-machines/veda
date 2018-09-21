@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/op/go-nanomsg"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //ResultCode is type for representation of http codes
@@ -43,6 +43,7 @@ const (
 type ticket struct {
 	Id        string
 	UserURI   string
+	UserLogin string
 	result    ResultCode
 	StartTime int64
 	EndTime   int64
@@ -320,6 +321,7 @@ func main() {
 			ReadTimeout:  90 * time.Second,
 			WriteTimeout: 5 * time.Second,
 			MaxKeepaliveDuration: 100 * time.Second,
+			ReadBufferSize: 8 * 1024,
 		}
 		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {

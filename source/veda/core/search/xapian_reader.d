@@ -15,7 +15,7 @@ protected byte err;
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 interface SearchReader
 {
-    public SearchResult get(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
+    public SearchResult query(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
                             bool trace);
 
@@ -117,7 +117,7 @@ class XapianReader : SearchReader
             {
                 last_size_key2slot = cur_size;
                 ff_key2slot_r.seek(0);
-                auto       buf = ff_key2slot_r.rawRead(new char[ 100 * 1024 ]);
+                auto       buf = ff_key2slot_r.rawRead(new char[ cur_size + 128 ]);
                 ResultCode rc;
                 key2slot     = deserialize_key2slot(cast(string)buf, rc);
                 old_key2slot = key2slot;
@@ -131,11 +131,20 @@ class XapianReader : SearchReader
         return key2slot;
     }
 
-    public SearchResult get(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
+    public SearchResult query(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
                             void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
                             bool trace)
     {
         SearchResult sr;
+
+        if (str_query.length > 0)
+        {
+            if (str_query[ 0 ] == '@')
+            {
+                str_query = str_query[ 0..$ ];
+                trace     = true;
+            }
+        }
 
         int[ string ] key2slot = read_key2slot();
 
@@ -143,7 +152,6 @@ class XapianReader : SearchReader
             return sr;
 
         //log.trace ("@key2slot=%s", key2slot);
-        //log.trace("[Q:%X] query [%s]", cast(void *)str_query, str_query);
 
         XapianQuery query;
         TTA         tta = parse_expr(str_query);
@@ -305,9 +313,9 @@ class XapianReader : SearchReader
             destroy_Query(query);
             destroy_MultiValueKeyMaker(sorter);
 
-            if (sr.total_time > 10_000)
+            if (sr.total_time > 5_000)
             {
-                log.trace("WARN! xapian::get, total_time > 10 sec, query=%s, sr=%s", str_query, sr);
+                log.trace("WARN! xapian::get, total_time (%d) > 5 sec, user=%s, query=%s, sr=%s", sr.total_time, user_uri, str_query, sr);
             }
 
             if (sr.result_code == ResultCode.DatabaseModifiedError)
@@ -416,7 +424,7 @@ class XapianReader : SearchReader
     {
         long cur_committed_op_id = get_info().committed_op_id;
 
-        log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
+        //log.trace("reopen_db, prev committed_op_id=%d, now committed_op_id=%d", committed_op_id, cur_committed_op_id);
 
         foreach (el; using_dbqp.values)
         {

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //authenticate checks validity of login and password and gives user new ticket
@@ -13,12 +13,24 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 
 	//fill request to veda-server
 	request["function"] = "authenticate"
-	request["login"] = string(ctx.QueryArgs().Peek("login")[:])
-	request["password"] = string(ctx.QueryArgs().Peek("password")[:])
-
+	login := string(ctx.QueryArgs().Peek("login")[:])
+	password := string(ctx.QueryArgs().Peek("password")[:])
 	secret := ctx.QueryArgs().Peek("secret")
 
-	if secret != nil && len(secret) > 0 && len(secret) < 1024 {
+	if len(login) < 3 {
+		ctx.SetStatusCode(int(NotAuthorized))
+		return
+	}
+
+	if len(secret) == 0 && len(password) < 64 {
+		ctx.SetStatusCode(int(NotAuthorized))
+		return
+	}
+
+	request["login"] = login
+	request["password"] = password
+
+	if len(secret) > 0 && len(secret) < 1024 {
 		request["secret"] = string(secret[:])
 	}
 
@@ -71,7 +83,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	//check if external users feature is enabled
 	if areExternalUsers {
 		//loging about external user authentication checl
-		log.Printf("authenticate:check external user (%v)\n", authResponse["user_uri"])
+		log.Printf("authenticate:check external login (%v), auth_response=%v\n", request["login"], authResponse)
 		//sending get request to storage
 		rr := conn.Get(false, "cfg:VedaSystem", []string{authResponse["user_uri"].(string)}, false, false)
 		user := rr.GetIndv(0)
@@ -79,7 +91,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 
 		if !ok || (ok && origin != "External User") {
 			//if v-s:origin not found or value is false than return NotAuthorized
-			log.Printf("ERR! user (%v) is not external\n", authResponse["user_uri"])
+			log.Printf("ERR! login (%v) is not external, user_indv=%v\n", request["login"], user)
 			authResponse["end_time"] = 0
 			authResponse["id"] = ""
 			authResponse["user_uri"] = ""

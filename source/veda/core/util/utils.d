@@ -6,7 +6,7 @@ module veda.core.util.utils;
 
 private
 {
-    import core.stdc.stdio, core.stdc.string, core.sys.posix.time;
+    import core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency, std.digest.crc;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
     import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates;
@@ -23,12 +23,34 @@ Logger log()
     return _log;
 }
 
+int get_slot(ref int[ string ] key2slot, string key)
+{
+    if (key.length < 1)
+        return -1;
+
+    if (key[ 0 ] == '#')
+    {
+        try
+        {
+            int slot = to!int (key[ 1..$ ]);
+            return slot;
+        }
+        catch (Throwable tr)
+        {
+            return -1;
+        }
+    }
+
+    return key2slot.get(key, -1);
+}
+
 public void subject2Ticket(ref Individual ticket, Ticket *tt)
 {
     string when;
     long   duration;
 
     tt.id       = ticket.uri;
+    tt.user_login = ticket.getFirstLiteral(ticket__login);
     tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
     when        = ticket.getFirstLiteral(ticket__when);
     string dd = ticket.getFirstLiteral(ticket__duration);
@@ -211,11 +233,11 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
         {
             if (record.length != 2)
             {
-                writeln("ERR! key2slot, invalid record=", record);
+                stderr.writeln("ERR! key2slot, invalid record=", record);
                 rc = ResultCode.Unprocessable_Entity;
                 return key2slot;
             }
-            //	writeln ("@&2 record=[", record, "]");
+            //stderr.writeln ("@&2 record=[", record, "]");
 
             if (idx > 0)
                 key2slot[ record[ 0 ] ] = record[ 1 ];
@@ -225,7 +247,7 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
     }
     catch (Throwable tr)
     {
-        writeln("ERR! key2slot err=", tr.msg);
+        stderr.writeln("ERR! key2slot err=", tr.msg);
         rc = ResultCode.Unprocessable_Entity;
     }
 

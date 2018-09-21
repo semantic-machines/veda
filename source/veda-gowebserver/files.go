@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 	"io"
 	"io/ioutil"
 	"log"

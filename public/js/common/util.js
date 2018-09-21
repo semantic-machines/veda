@@ -1,5 +1,13 @@
 // Veda common utility functions
 
+function newUri(uri)
+{
+  return [{
+    data: uri,
+    type: "Uri"
+  }];
+}
+
 veda.Module(function (veda) { "use strict";
 
   veda.Util = veda.Util || {};

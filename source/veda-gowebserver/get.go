@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 const queueStatePrefix = "srv:queue-state-"
@@ -39,7 +39,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	rc, ticket := getTicket(ticketKey)
 	if rc != Ok {
-		log.Println("ERR! GET TICKET: GET_INDIVIDUAL ", rc)
+		log.Println("ERR! GET_INDIVIDUAL: GET TICKET ", rc)
 		log.Println("\t@REQUEST BODY ", string(ctx.Request.Body()))
 		log.Println("\t@getIndividual: ticket=", ticketKey, ", uri=", uri)
 		ctx.Response.SetStatusCode(int(rc))

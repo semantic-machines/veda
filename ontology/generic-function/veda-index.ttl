@@ -121,6 +121,7 @@ vdi:index_4
   vdi:indexed_field v-s:lastName ;
   vdi:indexed_field v-s:middleName ;
   vdi:indexed_field v-s:hasAccount ;
+  vdi:indexed_field v-s:tabNumber ;
 .
 vdi:index_5
   rdf:type vdi:ClassIndex ;

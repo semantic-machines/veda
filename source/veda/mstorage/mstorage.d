@@ -12,8 +12,9 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.core.search.vql;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
-    import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel;
+    import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization;
+    import veda.onto.individual;
 }
 
 alias veda.storage.storage_manager ticket_storage_module;
@@ -130,7 +131,7 @@ void init(string node_id)
 
         if (guest_ticket is null || guest_ticket.result == ResultCode.Ticket_not_found)
         {
-            create_new_ticket("cfg:Guest", "900000000", "guest");
+            create_new_ticket("guest", "cfg:Guest", "900000000", "guest");
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,36 +243,12 @@ private Individual get_individual(Context ctx, Ticket *ticket, string uri)
         return individual;
     }
 
-    string individual_as_binobj = inividuals_storage_r.find(OptAuthorize.YES, ticket.user_uri, uri);
-    if (individual_as_binobj !is null && individual_as_binobj.length > 1)
-    {
-//                if (acl_client.authorize(uri, ticket, Access.can_read, true, null, null) == Access.can_read)
-        {
-            if (individual.deserialize(individual_as_binobj) > 0)
-                individual.setStatus(ResultCode.OK);
-            else
-            {
-                individual.setStatus(ResultCode.Unprocessable_Entity);
-                writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
-            }
-        }
-//                else
-//                {
-//                    if (trace_msg[ T_API_160 ] == 1)
-//                        log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
-//                    individual.setStatus(ResultCode.Not_Authorized);
-//                }
-    }
-    else
-    {
-        individual.setStatus(ResultCode.Unprocessable_Entity);
-        //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
-    }
+    inividuals_storage_r.get_individual(uri, individual);
 
     return individual;
 }
 
-private Ticket create_new_ticket(string user_id, string duration = "40000", string ticket_id = null)
+private Ticket create_new_ticket(string user_login, string user_id, string duration = "40000", string ticket_id = null)
 {
     Ticket     ticket;
     Individual new_ticket;
@@ -290,6 +267,7 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
         new_ticket.uri = new_id.toString();
     }
 
+    new_ticket.resources[ ticket__login ] ~= Resource(user_login);
     new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
     new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
     new_ticket.resources[ ticket__duration ] ~= Resource(duration);
@@ -311,13 +289,16 @@ private Ticket create_new_ticket(string user_id, string duration = "40000", stri
         user_of_ticket[ ticket.id ] = new Ticket(ticket);
     }
 
-    log.trace("create new ticket %s, user=%s, start=%s, end=%s", ticket.id, ticket.user_uri, SysTime(ticket.start_time, UTC()).toISOExtString(),
+    log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
+                                                                                                                                  UTC()).toISOExtString(),
               SysTime(ticket.end_time, UTC()).toISOExtString());
 
     return ticket;
 }
 
-auto rnd = Random(42);
+auto         rnd               = Random(42);
+const string empty_Sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+public long  PASSWORD_LIFETIME;
 
 private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
@@ -331,15 +312,31 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
     ticket.result = ResultCode.Authentication_Failed;
 
-    if (login == null || login.length < 1 || password == null || password.length < 6)
+    if (login == null || login.length < 3)
         return ticket;
 
-    login = replaceAll(login, regex(r"[-]", "g"), " +");
+    if (secret !is null && secret.length > 5 && password == empty_Sha256_hash)
+    {
+        ticket.result = ResultCode.Empty_password;
+        return ticket;
+    }
+
+    if (secret !is null && secret.length > 5 && (password == null || password.length < 64))
+    {
+        ticket.result = ResultCode.Invalid_password;
+        return ticket;
+    }
+
+    if (secret !is null && secret != "?" && secret.length < 6)
+    {
+        ticket.result = ResultCode.Invalid_secret;
+        return ticket;
+    }
 
     Individual[] candidate_users;
-    string       query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+    string       query = "'" ~ veda_schema__login ~ "' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
 
-    ctx.get_vql().get(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    ctx.get_vql().query(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
     auto storage = ctx.get_storage();
     if (storage is null)
     {
@@ -351,7 +348,23 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     {
         string user_id = user.getFirstResource("v-s:owner").uri;
         if (user_id is null)
+        {
+            log.trace("ERR! authenticate:user id is null, user_indv=%s", user);
             continue;
+        }
+
+        string user_login = user.getFirstResource("v-s:login").data;
+        if (user_login is null)
+        {
+            log.trace("ERR! authenticate:user login is null, user_indv=%s", user);
+            continue;
+        }
+
+        if (icmp(user_login, login) != 0)
+        {
+            log.trace("ERR! authenticate:user login [%s] not equal request login [%s]", user_login, login);
+            continue;
+        }
 
         Individual iuser = get_individual(ctx, &sticket, user_id);
 
@@ -406,129 +419,213 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             log.trace("INFO! authenticate: update user[%s], res=%s", user, op_res);
         }
 
-        string origin = iuser.getFirstLiteral("v-s:origin");
+        string origin     = iuser.getFirstLiteral("v-s:origin");
+        string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
 
         //if (origin !is null && origin == "External User")
+        if (secret !is null && secret.length > 5)
         {
-            long now = Clock.currTime().toUnixTime();
-
-            if (now - edited > 60 * 24 * 60 * 60)
+            if (old_secret is null)
             {
-                log.trace("ERR! authenticate:password is old, > 60 days", user);
-                log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
+                log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
+                ticket.result = ResultCode.Invalid_secret;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
+                return ticket;
+            }
+
+            if (secret != old_secret)
+            {
+                log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
+                ticket.result = ResultCode.Invalid_secret;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
+                return ticket;
+            }
+
+
+            long now              = Clock.currTime().toUnixTime();
+            long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
+            if (now - prev_secret_date > 12 * 60 * 60)
+            {
+                ticket.result = ResultCode.Secret_expired;
+                log.trace("ERR! authenticate:request new password, secret expired, login=[%s] password=[%s] secret=[%s]", login, password,
+                          secret);
+                return ticket;
+            }
+
+
+            if (exist_password == password)
+            {
+                log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
+                ticket.result = ResultCode.New_password_is_equal_to_old;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
+                return ticket;
+            }
+
+            if (password == empty_Sha256_hash)
+            {
+                log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
+                ticket.result = ResultCode.Empty_password;
+                remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
+                return ticket;
+            }
+
+            // update password
+            i_usesCredential.setResources("v-s:password", [ Resource(DataType.String, password) ]);
+            edited = Clock.currTime().toUnixTime();
+            i_usesCredential.setResources("v-s:dateFrom", [ Resource(DataType.Datetime, edited) ]);
+            i_usesCredential.removeResource("v-s:secret");
+
+            Transaction tnx;
+            tnx.id            = -1;
+            tnx.is_autocommit = true;
+            OpResult op_res = add_to_transaction(
+                                                 storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                 OptFreeze.NONE, OptAuthorize.YES,
+                                                 OptTrace.NONE);
+
+            if (op_res.result == ResultCode.OK)
+            {
+                ticket = create_new_ticket(login, user_id);
+                log.trace("INFO! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
+            }
+            else
+            {
+                ticket.result = ResultCode.Authentication_Failed;
+                log.trace("ERR! authenticate:fail store new password [%s] for user, user=[%s]", password, iuser.uri);
+            }
+
+            return ticket;
+        }
+        else
+        {
+            bool is_request_new_password = false;
+
+            if (PASSWORD_LIFETIME > 0)
+            {
+                long now = Clock.currTime().toUnixTime();
+                if (now - edited > PASSWORD_LIFETIME)
+                {
+                    log.trace("ERR! authenticate:password is old, lifetime > %d days, user=%s", PASSWORD_LIFETIME / 60 / 60 / 24, user.uri);
+                    is_request_new_password = true;
+                }
+            }
+
+            if (secret == "?")
+            {
+                log.trace("ERR! authenticate:request for new password, user=%s", user.uri);
+                is_request_new_password = true;
+            }
+
+            if (is_request_new_password == true)
+            {
+                log.trace("ERR! authenticate:request new password, login=[%s] password=[%s] secret=[%s]", login, password, secret);
                 ticket.result = ResultCode.Password_expired;
 
-                string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
+                // generate new secret
+                auto rnd      = Random(unpredictableSeed);
+                auto n_secret = to!string(uniform(100000, 999999, rnd));
 
-                if (old_secret != null)
+                long now = Clock.currTime().toUnixTime();
+                if (old_secret !is null)
                 {
-                    if (secret is null)
+                    long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
+                    if (now - prev_secret_date < 10 * 60)
                     {
-                        log.trace("ERR! authenticate:secret already exist, user=[%s]", iuser.uri);
+                        ticket.result = ResultCode.Too_Many_Requests;
+                        log.trace("ERR! authenticate:request new password, to many request, login=[%s] password=[%s] secret=[%s]", login, password,
+                                  secret);
                         return ticket;
                     }
-
-                    if (secret != old_secret)
-                    {
-                        log.trace("ERR! authenticate:send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
-                        ticket.result = ResultCode.Invalid_secret;
-                        return ticket;
-                    }
-
-                    if (exist_password == password)
-                    {
-                        log.trace("ERR! authenticate:now password equal previous password, reject. user=[%s]", iuser.uri);
-                        ticket.result = ResultCode.Invalid_password;
-                        return ticket;
-                    }
-
-                    // update password
-                    i_usesCredential.setResources("v-s:password", [ Resource(DataType.String, password) ]);
-                    edited = Clock.currTime().toUnixTime();
-                    i_usesCredential.setResources("v-s:dateFrom", [ Resource(DataType.Datetime, edited) ]);
-                    i_usesCredential.removeResource("v-s:secret");
-
-                    Transaction tnx;
-                    tnx.id            = -1;
-                    tnx.is_autocommit = true;
-                    OpResult op_res = add_to_transaction(
-                                                         storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
-                                                         OptFreeze.NONE, OptAuthorize.YES,
-                                                         OptTrace.NONE);
-
-                    ticket = create_new_ticket(user_id);
-
-                    log.trace("ERR! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
                 }
-                else
+
+                i_usesCredential.setResources("v-s:secret", [ Resource(DataType.String, n_secret) ]);
+                i_usesCredential.setResources("v-s:SecretDateFrom", [ Resource(DataType.Datetime, now) ]);
+
+                Transaction tnx;
+                tnx.id            = -1;
+                tnx.is_autocommit = true;
+                OpResult op_res = add_to_transaction(
+                                                     storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                                     OptFreeze.NONE, OptAuthorize.YES,
+                                                     OptTrace.NONE);
+
+                if (op_res.result != ResultCode.OK)
                 {
-                    // generate new secret
-                    auto rnd      = Random(unpredictableSeed);
-                    auto n_secret = to!string(uniform(100000, 999999, rnd));
+                    log.trace("ERR! authenticate:fail store new secret, user=[%s]", iuser.uri);
+                    return ticket;
+                }
 
-                    i_usesCredential.setResources("v-s:secret", [ Resource(DataType.String, n_secret) ]);
+                string mailbox = user.getFirstLiteral("v-s:mailbox");
 
-                    Transaction tnx;
-                    tnx.id            = -1;
-                    tnx.is_autocommit = true;
-                    OpResult op_res = add_to_transaction(
-                                                         storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &i_usesCredential, false, "",
-                                                         OptFreeze.NONE, OptAuthorize.YES,
-                                                         OptTrace.NONE);
+                if (mailbox !is null && mailbox.length > 3)
+                {
+                    Individual mail_with_secret;
+
+                    mail_with_secret.uri = "d:mail_" ~ randomUUID().toString();
+
+                    mail_with_secret.addResource("rdf:type", Resource(DataType.Uri, "v-s:Email"));
+                    mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.String, mailbox));
+                    mail_with_secret.setResources("v-s:created", [ Resource(DataType.Datetime, Clock.currTime().toUnixTime()) ]);
+                    mail_with_secret.addResource("v-s:messageBody", Resource(DataType.String, "your secret code is " ~ n_secret));
+
+                    op_res = add_to_transaction(
+                                                storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &mail_with_secret, false, "",
+                                                OptFreeze.NONE, OptAuthorize.YES,
+                                                OptTrace.NONE);
 
                     if (op_res.result != ResultCode.OK)
                     {
-                        log.trace("ERR! authenticate:fail store new secret, user=[%s]", iuser.uri);
+                        log.trace("ERR! authenticate:fail store email with new secret, user=[%s]", iuser.uri);
                         return ticket;
                     }
-
-                    string mailbox = user.getFirstLiteral("v-s:mailbox");
-
-                    if (mailbox !is null && mailbox.length > 3)
-                    {
-                        Individual mail_with_secret;
-
-                        mail_with_secret.uri = "d:mail_" ~ randomUUID().toString();
-
-                        mail_with_secret.addResource("rdf:type", Resource(DataType.Uri, "v-s:Email"));
-                        mail_with_secret.addResource("v-s:recipientMailbox", Resource(DataType.Uri, "mailbox"));
-
-                        mail_with_secret.addResource("v-s:messageBody", Resource(DataType.String, "your secret code is " ~ n_secret));
-
-                        op_res = add_to_transaction(
-                                                    storage.get_acl_client(), tnx, &sticket, INDV_OP.PUT, &mail_with_secret, false, "",
-                                                    OptFreeze.NONE, OptAuthorize.YES,
-                                                    OptTrace.NONE);
-
-                        if (op_res.result != ResultCode.OK)
-                        {
-                            log.trace("ERR! authenticate:fail store email with new secret, user=[%s]", iuser.uri);
-                            return ticket;
-                        }
-                        else
-                            log.trace("INFO! authenticate:send new secret [%s] to mailbox [%s], user=[%s]", n_secret, mailbox, iuser.uri);
-                    }
                     else
-                    {
-                        log.trace("ERR! authenticate:mailbox not found, user=[%s]", iuser.uri);
-                    }
+                        log.trace("INFO! authenticate:send [%s] new secret [%s] to mailbox [%s], user=[%s]", mail_with_secret.uri, n_secret, mailbox,
+                                  iuser.uri);
                 }
+                else
+                {
+                    log.trace("ERR! authenticate:mailbox not found, user=[%s]", iuser.uri);
+                }
+
 
                 return ticket;
             }
-        }
 
-        if (exist_password !is null && exist_password == password)
-        {
-            ticket = create_new_ticket(user_id);
-            return ticket;
+
+            if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
+            {
+                ticket = create_new_ticket(login, user_id);
+                return ticket;
+            }
         }
     }
 
     log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
     ticket.result = ResultCode.Authentication_Failed;
-
     return ticket;
+}
+
+private void remove_secret(ref Individual i_usesCredential, string user_uri, Storage storage, Ticket *sticket)
+{
+    string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
+
+    if (old_secret !is null)
+    {
+        i_usesCredential.removeResource("v-s:secret");
+
+        Transaction tnx;
+        tnx.id            = -1;
+        tnx.is_autocommit = true;
+        OpResult op_res = add_to_transaction(
+                                             storage.get_acl_client(), tnx, sticket, INDV_OP.PUT, &i_usesCredential, false, "",
+                                             OptFreeze.NONE, OptAuthorize.YES,
+                                             OptTrace.NONE);
+
+        if (op_res.result != ResultCode.OK)
+        {
+            log.trace("ERR! authenticate:fail remove secret code for user, user=[%s]", user_uri);
+        }
+    }
 }
 
 public string execute_json(string in_msg, Context ctx)
@@ -571,6 +668,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
             res[ "user_uri" ] = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
             res[ "result" ]   = ticket.result;
             res[ "end_time" ] = ticket.end_time;
 
@@ -586,6 +684,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]     = "ticket";
             res[ "id" ]       = ticket.id;
             res[ "user_uri" ] = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
             res[ "result" ]   = ticket.result;
             res[ "end_time" ] = ticket.end_time;
         }
@@ -814,7 +913,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
     {
         try
         {
-            ticket = create_new_ticket("cfg:VedaSystem", "90000000");
+            ticket = create_new_ticket("veda", "cfg:VedaSystem", "90000000");
 
             long       op_id;
             Individual sys_ticket_link;
@@ -822,7 +921,8 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             sys_ticket_link.addResource("rdf:type", Resource(DataType.Uri, "rdfs:Resource"));
             sys_ticket_link.addResource("v-s:resource", Resource(DataType.Uri, ticket.id));
 
-            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null, sys_ticket_link.serialize(), -1, null,
+            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null,
+                                       sys_ticket_link.serialize(), -1, null,
                                        -1, 0, OptFreeze.NONE,
                                        op_id);
 
@@ -980,7 +1080,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 int code = prev_indv.deserialize(prev_state);
                 if (code < 0)
                 {
-                    log.trace("ERR! add_to_transaction: invalid prev_state [%s]", prev_state);
+                    log.trace("ERR! add_to_transaction: invalid prev_state [%s], uri=%s", prev_state, indv.uri);
                     res.result = ResultCode.Unprocessable_Entity;
                     return res;
                 }
@@ -1291,10 +1391,11 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
             foreach (user; candidate_users)
             {
                 string user_id = user.getFirstResource("v-s:owner").uri;
+                string f_login = user.getFirstResource("v-s:login").data;
                 if (user_id is null)
                     continue;
 
-                ticket = create_new_ticket(user_id);
+                ticket = create_new_ticket(f_login, user_id);
 
                 log.trace("INFO! trusted authenticate, result ticket=[%s]", ticket);
                 return ticket;

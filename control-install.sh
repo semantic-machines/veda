@@ -3,7 +3,7 @@
 
 DMD_VER=2.080.0
 DUB_VER=1.5.0
-GO_VER=go1.10.3
+GO_VER=go1.11
 MSGPUCK_VER=2.0
 TARANTOOL_VER=2.0
 
@@ -123,7 +123,7 @@ fi
 go get github.com/itiu/lmdb-go/lmdb
 
 #fasthttp
-go get -v github.com/valyala/fasthttp
+go get -v github.com/itiu/fasthttp
 
 #go-nanomsg
 go get -v github.com/op/go-nanomsg
