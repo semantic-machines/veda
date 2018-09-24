@@ -18,39 +18,30 @@ veda.Module(function (veda) { "use strict";
     e.preventDefault();
     var login = $("#login", loginForm).val(),
       password = $("#password", loginForm).val(),
-      hash = Sha256.hash(password),
-      authResult;
+      hash = Sha256.hash(password);
 
-    if (ntlm) {
-      var params = {
-        type: "POST",
-        url: ntlm + "ad/",
-        data: {
-          "login": login,
-          "password": password
-        },
-        async: false
-      };
-      try {
-        authResult = $.ajax(params);
-        authResult = JSON.parse( authResult.responseText );
-        return veda.trigger("login:success", authResult);
-      } catch (error) {
-        console.log("manual ntlm auth failed", error);
-      }
-    }
-    try {
-      authResult = veda.login(login, hash);
-    } catch (error) {
-      console.log("veda auth failed", error);
-      authResult = error;
-    } finally {
-      if (authResult instanceof Error) {
-        handleLoginError(authResult);
-      } else {
-        handleLoginSuccess(authResult);
-      }
-    }
+    // Try internal authentication
+    veda.login(login, hash)
+      // Try ntlm authentication
+      .catch(function (error) {
+        console.log(error);
+        if (ntlm) {
+          var params = {
+            type: "POST",
+            url: ntlm + "ad/",
+            data: {
+              "login": login,
+              "password": password
+            },
+            async: true
+          };
+          return $.ajax(params);
+        } else {
+          throw new Error("No ntlm");
+        }
+      })
+      .then(handleLoginSuccess)
+      .catch(handleLoginError);
   });
 
   $("#submit-new-password", loginForm).click( function (e) {
@@ -58,32 +49,21 @@ veda.Module(function (veda) { "use strict";
     var login = $("#login", loginForm).val(),
       password = $("#new-password", loginForm).val(),
       secret = $("#secret", loginForm).val(),
-      hash = Sha256.hash(password),
-      authResult;
-    try {
-      authResult = veda.login(login, hash, secret);
-    } catch (error) {
-      console.log("password change failed", error);
-      authResult = error;
-    } finally {
-      if (authResult instanceof Error) {
-        handleLoginError(authResult);
-      } else {
-        handleLoginSuccess(authResult);
-      }
-    }
+      hash = Sha256.hash(password);
+
+    veda.login(login, hash, secret)
+      .then(handleLoginSuccess)
+      .catch(handleLoginError);
   });
 
   $("#forgot-password, #request-secret", loginForm).click( function (e) {
     e.preventDefault();
     var login = $("#login", loginForm).val(),
-      secret = "?",
-      authResult;
-    try {
-      authResult = veda.login(login, undefined, secret);
-    } catch (error) {
-      handleLoginError(error);
-    }
+      secret = "?";
+
+    veda.login(login, hash, secret)
+      .then(handleLoginSuccess)
+      .catch(handleLoginError);
   });
 
   function handleLoginError(error) {
@@ -132,12 +112,15 @@ veda.Module(function (veda) { "use strict";
   }
 
   // NTLM auth using iframe
-  var ntlmProvider = new veda.IndividualModel({uri: "cfg:NTLMAuthProvider", cache: true, init: false}),
-    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0],
-    iframe;
-  if ( ntlm ) {
-    iframe = $("<iframe>", {"class": "hidden"}).appendTo(loginForm);
-  }
+  var ntlm;
+  var iframe = $("<iframe>", {"class": "hidden"});
+  var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
+  ntlmProvider.load().then(function (ntlmProvider) {
+    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
+    if (ntlm) {
+      iframe.appendTo(credentials);
+    }
+  });
 
   veda.on("login:failed", function () {
     $("#app").empty();
@@ -204,24 +187,32 @@ veda.Module(function (veda) { "use strict";
     loginForm.removeClass("hidden");
   });
 
-  try {
-    // Check if ticket in storage is valid
+  // Init application
+  veda.init().then(function () {
+    // Check if ticket in cookies is valid
     var ticket = storage.ticket,
         user_uri = storage.user_uri,
-        end_time = storage.end_time && ( new Date() < new Date(parseInt(storage.end_time)) ) ? storage.end_time : undefined ;
-
-    if ( ticket && user_uri && end_time && is_ticket_valid(ticket) ) {
+        end_time = ( new Date() < new Date(parseInt(storage.end_time)) ) && storage.end_time;
+    if (ticket && user_uri && end_time) {
+      return veda.Backend.is_ticket_valid(ticket);
+    } else {
+      veda.trigger("login:failed");
+      throw new Error("Auth expired");
+    }
+  }).then(function (valid) {
+    if (valid) {
       veda.trigger("login:success", {
-        ticket: ticket,
-        user_uri: user_uri,
-        end_time: end_time
+        ticket: storage.ticket,
+        user_uri: storage.user_uri,
+        end_time: storage.end_time
       });
     } else {
       veda.trigger("login:failed");
+      throw new Error("Auth expired");
     }
-  } catch (ex) {
-    console.log(ex);
+  }).catch(function (error) {
+    console.log( new Error("Auth expired") );
     veda.trigger("login:failed");
-  }
+  });
 
 });
