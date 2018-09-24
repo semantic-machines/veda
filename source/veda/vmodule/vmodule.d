@@ -25,7 +25,7 @@ extern (C) void handleTermination(int _signal)
 
     f_listen_exit = true;
 
-    thread_term();
+    //thread_term();
     Runtime.terminate();
 }
 
@@ -115,7 +115,7 @@ class VedaModule : VedaModuleBasic
 
     ~this()
     {
-        delete module_info;
+        module_info.destroy ();
     }
 
     private void open_perapare_batch_queue(bool is_open_exists_batch)
@@ -155,6 +155,7 @@ class VedaModule : VedaModuleBasic
             log.trace("%s terminated", process_name);
             return;
         }
+        log.trace("[%s] start module %s", process_name, cast(SUBSYSTEM) module_id);
 
         context = create_context();
 

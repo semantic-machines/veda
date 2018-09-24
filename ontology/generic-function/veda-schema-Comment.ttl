@@ -19,6 +19,7 @@ v-s:Comment
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Комментарий "@ru ;
   rdfs:label "Comment"@en ;
   v-ui:hasTemplate v-s:SingleCommentTemplate ;
@@ -164,6 +165,34 @@ v-s:SingleCommentTemplate
     <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
     <br>
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete"></span>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:EmbeddedSingleCommentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Comment ;
+  rdfs:label "Embedded шаблон для класса v-s:Comment"@ru ;
+  rdfs:label "Embedded template for v-s:Comment class"@en ;
+  v-ui:template """
+<script>
+  $(".action", template).click(function (e) {
+    e.preventDefault();
+    template.trigger(this.id);
+  });
+</script>
+<div class="panel panel-default" style="margin-top: 20px">
+  <div class="panel-body">
+    <em about="rdfs:comment" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="3" property="rdfs:label" class="-view edit -search"></veda-control>
+    <em about="v-s:attachment" property="rdfs:label">Вложение</em>
+    <div rel="v-s:attachment" data-template="v-ui:FileTemplate" data-embedded="true"></div>
+    <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search"></veda-control>
+    <em about="v-s:linkedObject" property="rdfs:label">Вложение</em>
+    <div rel="v-s:linkedObject" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+    <veda-control data-type="link" rel="v-s:linkedObject" class="-view edit -search fulltext"></veda-control>
   </div>
 </div>
   """ ;

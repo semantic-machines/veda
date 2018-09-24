@@ -4,7 +4,6 @@
 module veda.fanout.fanout_email;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
-private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
@@ -24,9 +23,11 @@ void main(char[][] args)
 
 class FanoutProcess : VedaModule
 {
-    string     database_name;
-
     MailSender smtp_conn;
+    string     default_mail_sender;
+    bool       always_use_mail_sender;
+    string     host;
+    ushort     port;
 
     this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
@@ -43,13 +44,21 @@ class FanoutProcess : VedaModule
         //    log.trace("[%s]: end prepare", new_indv.uri);
         //}
 
+        if (host is null)
+        {
+            // addr to smpt server not set, skip message
+
+            committed_op_id = op_id;
+            return ResultCode.OK;
+        }
+
         ResultCode res;
 
         try
         {
-            if (smtp_conn is null)
+            if (host !is null && smtp_conn is null)
             {
-	            log.trace("ERR! connect to smtp server not exist, reconnect", );
+                log.trace("ERR! connect to smtp server %s:%d not exist, reconnect", host, port);
                 connect_to_smtp(context);
             }
 
@@ -107,7 +116,7 @@ class FanoutProcess : VedaModule
 
     override bool close()
     {
-        delete smtp_conn;
+        smtp_conn.destroy();
         return true;
     }
 
@@ -191,6 +200,10 @@ class FanoutProcess : VedaModule
                 foreach (rr; tmp_res)
                     res ~= rr;
             }
+        }
+        else
+        {
+            log.trace("ERR! extract_email: fail extract email from [%s], this not appointment or position", ap_uri);
         }
 
         return res;
@@ -293,7 +306,7 @@ class FanoutProcess : VedaModule
 
             if (is_deleted == false)
             {
-                delete smtp_conn;
+                smtp_conn.destroy();
                 connect_to_smtp(context);
 
                 string    hasMessageType = new_indv.getFirstLiteral("v-s:hasMessageType");
@@ -308,15 +321,25 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
-                if ((from !is null || senderMailbox !is null) && (to !is null || recipientMailbox !is null))
+                if ((from !is null || senderMailbox !is null || default_mail_sender !is null) && (to !is null || recipientMailbox !is null))
                 {
                     string from_label;
                     string email_from;
 
-                    if (senderMailbox is null)
-                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                    if (always_use_mail_sender == true && senderMailbox !is null && senderMailbox.length > 5)
+                    {
+                        email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+                    }
                     else
-                        email_from = senderMailbox;
+                    {
+                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+
+                        if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)
+                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+
+                        if ((email_from is null || email_from.length < 5) && senderMailbox !is null)
+                            email_from = senderMailbox;
+                    }
 
                     if (from_label is null || from_label.length == 0)
                         from_label = "Veda System";
@@ -441,14 +464,24 @@ class FanoutProcess : VedaModule
                         //new_indv.addResource("rdfs:label", Resource("email, from:" ~ email_from ~ ", to:" ~ email_to));
                         //context.put_individual(&sticket, new_indv.uri, new_indv, false, "fanout");
                     }
-                    else
+
+                    if (email_from.length == 0)
                     {
-                        log.trace("WARN: push_to_smtp[%s]: fail extract_email from field from[%s] or to[%s]", new_indv.uri, from, to);
+                        log.trace("WARN: push_to_smtp[%s]: fail extract_email from field from[%s]", new_indv.uri, from);
+                    }
+
+                    if (rr_email_to.length == 0)
+                    {
+                        log.trace("WARN: push_to_smtp[%s]: fail extract_email from field to[%s]", new_indv.uri, to);
                     }
                 }
                 else
                 {
-                    log.trace("WARN: push_to_smtp[%s]: empty field from[%s] or to[%s]", new_indv.uri, from, to);
+                    if (from is null || from.length < 5)
+                        log.trace("WARN: push_to_smtp[%s]: empty or invalid field from[%s]", new_indv.uri, from);
+
+                    if (to is null || to.length < 5)
+                        log.trace("WARN: push_to_smtp[%s]: empty or invalid field to[%s]", new_indv.uri, to);
                 }
             }
 
@@ -471,7 +504,9 @@ class FanoutProcess : VedaModule
             Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:send_an_email_individual_by_event", Resources.init);
+
             log.trace("connect_to_smtp:found gates: %s", gates);
+
             foreach (gate; gates)
             {
                 Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
@@ -484,8 +519,8 @@ class FanoutProcess : VedaModule
                         try
                         {
                             log.trace("found connect to smtp [%s]", connection);
-                            auto host = connection.getFirstLiteral("v-s:host");
-                            auto port = cast(ushort)connection.getFirstInteger("v-s:port");
+                            host      = connection.getFirstLiteral("v-s:host");
+                            port      = cast(ushort)connection.getFirstInteger("v-s:port");
                             smtp_conn = new MailSender(host, port);
                             if (smtp_conn is null)
                             {
@@ -500,7 +535,7 @@ class FanoutProcess : VedaModule
                                 SmtpReply result = smtp_conn.connect();
                                 if (!result.success)
                                 {
-                                    log.trace("fail connection to smtp server [%s] %s:%d", connection.uri, host, port);
+                                    log.trace("ERR! fail connection to smtp server [%s] %s:%d", connection.uri, host, port);
                                     smtp_conn = null;
                                     continue;
                                 }
@@ -516,13 +551,16 @@ class FanoutProcess : VedaModule
 
                                 if (!result.success)
                                 {
-                                    log.trace("fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);
+                                    log.trace("ERR! fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);
                                     smtp_conn = null;
                                     continue;
                                 }
+
+                                default_mail_sender    = connection.getFirstLiteral("v-s:mailSender");
+                                always_use_mail_sender = connection.getFirstBoolean("v-s:alwaysUseMailSender");
                             }
                             else
-                                log.trace("smtp server unavailable [%s] %s:%d", connection.uri, host, port);
+                                log.trace("ERR! smtp server unavailable [%s] %s:%d", connection.uri, host, port);
                         }
                         catch (Throwable ex)
                         {
@@ -540,9 +578,11 @@ class FanoutProcess : VedaModule
         }
         catch (Throwable ex)
         {
-            printPrettyTrace(stdout);
             log.trace("ERR! fanout.connect_to_smtp# LINE:[%s], FILE:[%s], MSG:[%s], %s", ex.line, ex.file, ex.msg, ex.toString);
         }
+
+        if (host is null)
+            log.trace("WARN! not found configuration for connection to smtp server");
     }
 }
 

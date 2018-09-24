@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 	"io"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 	"unicode/utf8"
@@ -109,6 +110,10 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 	//Reqding client ticket key from request
 	ticketKey := string(ctx.Request.Header.Cookie("ticket"))
 
+	if len(ticketKey) == 0 {
+		ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+	}
+
 	uri := ""
 	//if roup parts len is 2 or more than save uri and go to reading file,
 	//else upload file from request context
@@ -163,8 +168,12 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		}
 
 		//Return file to client
-		ctx.Response.Header.Set("Content-Disposition", "attachment; filename="+fileName)
+		eFileName := url.PathEscape(fileName)
+		ctx.Response.Header.Set("Content-Disposition", "attachment; filename*=UTF-8''"+eFileName)
+		//		ctx.Response.Header.SetCanonical([]byte("Content-Disposition"), []byte("attachment; filename=*=UTF-8''"+fileName))
 		//ctx.SendFile(filePathStr)
-		fasthttp.ServeFileUncompressed(ctx, filePathStr)
+		//fasthttp.ServeFileUncompressed(ctx, filePathStr)
+		fasthttp.ServeFileBytesUncompressed(ctx, []byte(filePathStr))
+		//		ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/octet-stream"))
 	}
 }

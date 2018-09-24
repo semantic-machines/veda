@@ -5,7 +5,7 @@ import (
 	"log"
 	"strconv"
 	//"strings"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 	"time"
 )
 
@@ -19,6 +19,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 	if ticketKey == "" || ticketKey == "systicket" {
 		ticketKey = "guest"
 		ticket.Id = "guest"
+		ticket.UserLogin = "guest"
 		ticket.UserURI = "cfg:Guest"
 		ticket.result = Ok
 		return Ok, ticket
@@ -43,11 +44,12 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			return TicketExpired, ticket
 		}
 	} else {
-		//If not found, request it from tarantool
+
+		//If not found, request it from storage
 		rr := conn.GetTicket([]string{ticketKey}, false)
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
-			log.Println("ERR! ON GET TICKET")
+			log.Printf("ERR! GET TICKET, ticket=%s, err=%v\n", ticketKey, rr.CommonRC)
 			return InternalServerError, ticket
 		}
 
@@ -61,6 +63,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		var duration int64
 
 		ticket.UserURI, _ = getFirstString(individual, "ticket:accessor")
+		ticket.UserLogin, _ = getFirstString(individual, "ticket:login")
 		tt, _ := getFirstString(individual, "ticket:when")
 		mask := "2006-01-02T15:04:05.00000000"
 		startTime, _ := time.Parse(mask[0:len(tt)], tt)
@@ -71,36 +74,31 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		ticket.Id = ticketKey
 		ticket.EndTime = ticket.StartTime + duration
 
-		//Save ticket in the cache
-		ticketCacheMutex.Lock()
-		ticketCache[ticketKey] = ticket
-		ticketCacheMutex.Unlock()
-	}
-
-	if areExternalUsers {
-		//If external users feature is enabled
-		log.Printf("check external user (%s)\n", ticket.UserURI)
-		//Check if ticket exists
-		_, ok := externalUsersTicketId[ticket.Id]
-		if !ok {
+		if areExternalUsers {
+			//If external users feature is enabled
+			log.Printf("getTicket::check external user (%s)\n", ticket.UserURI)
 			//If ticket not found then get user from tarantool and decode it
 			rr := conn.Get(false, "cfg:VedaSystem", []string{ticket.UserURI}, false, false)
 			user := rr.GetIndv(0)
 			//Check its field v-s:origin
 
-			origin, ok := getFirstBool(user, "v-s:origin")
-			if !ok || (ok && origin == false) {
+			origin, ok := getFirstString(user, "v-s:origin")
+			if !ok || (ok && origin != "External User") {
 				//If this field not found or it contains false then return error code
-				log.Printf("ERR! user (%s) is not external\n", ticket.UserURI)
+				log.Printf("ERR! user (%s) is not external, user_indv=%v\n", ticket.UserURI, user)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
-			} else if ok && origin == true {
+			} else if ok && origin == "External User" {
 				//Else store ticket to cache
 				log.Printf("user is external (%s)\n", ticket.UserURI)
-				externalUsersTicketId[ticket.UserURI] = true
 			}
 
 		}
+
+		//Save ticket in the cache
+		ticketCacheMutex.Lock()
+		ticketCache[ticketKey] = ticket
+		ticketCacheMutex.Unlock()
 
 	}
 
@@ -133,7 +131,6 @@ func isTicketValid(ctx *fasthttp.RequestCtx) {
 
 //getTicketTrusted handles get_ticket_trusted request
 func getTicketTrusted(ctx *fasthttp.RequestCtx) {
-	log.Println("@GET TICKET TRUSTED")
 	var ticketKey, login string
 
 	//Read params from request context
@@ -170,6 +167,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	getTicketResponse["end_time"] = responseJSON["end_time"]
 	getTicketResponse["id"] = responseJSON["id"]
 	getTicketResponse["user_uri"] = responseJSON["user_uri"]
+	getTicketResponse["user_login"] = responseJSON["user_login"]
 	getTicketResponse["result"] = responseJSON["result"]
 
 	//Encoding json response and retiurn to client
@@ -179,6 +177,8 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
+
+	log.Printf("INFO: get ticket trusted, ticket=%s, login=%s, result=%s", ticketKey, login, string (getTicketResponseBuf))
 
 	ctx.SetStatusCode(int(responseJSON["result"].(float64)))
 	ctx.Write(getTicketResponseBuf)

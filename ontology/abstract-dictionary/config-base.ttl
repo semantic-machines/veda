@@ -469,15 +469,15 @@ if (parent_script_id) {
 
 var doc_uri = document['@'],
   isDefinedBy = document['rdfs:isDefinedBy'],
-  isGroup = getUri(document['rdf:type']) === "v-s:Group";
+  isGroup = veda.Util.getUri(document['rdf:type']) === "v-s:Group";
 if ( !isDefinedBy || isGroup) return;
 var uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + 'cfg_TTLResourcesGroup',
   membership = {
     '@' : uri,
-    'rdf:type'     : newUri('v-s:Membership'),
-    'v-s:memberOf' : newUri('cfg:TTLResourcesGroup'),
-    'v-s:resource' : newUri(doc_uri),
-    'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_1')
+    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+    'v-s:memberOf' : veda.Util.newUri('cfg:TTLResourcesGroup'),
+    'v-s:resource' : veda.Util.newUri(doc_uri),
+    'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике cfg:Event_1')
   };
 put_individual(ticket, membership, _event_id);
 //log_trace(uri);
@@ -513,29 +513,42 @@ var doc_uri = document['@'],
     owner_properties = ["v-s:owner", "v-s:author", "v-s:publisher", "v-s:creator"];
 
 owner_properties.map(function (property_uri) {
-  var owner_uri = getUri( document[property_uri] );
+  var owner_uri = veda.Util.getUri( document[property_uri] );
   if (owner_uri && owner_uri !== "cfg:VedaSystem") {
     var owner = get_individual(ticket, owner_uri);
     if (owner) {
-      var owner_type = getUri(owner["rdf:type"]);
+      var owner_type = veda.Util.getUri(owner["rdf:type"]);
       if (owner_type === "v-s:Person" || owner_type === "v-s:Position") {
-        var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + owner_uri.split(':').join('_') + "_event2";
-        addRight(ticket, [can_read, can_update, can_delete], owner_uri, doc_uri, right_uri);
+        var permission_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + owner_uri.split(':').join('_') + "_event2";
+        addPermission(permission_uri, owner_uri, doc_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
       } else if (owner_type === "v-s:Appointment") {
-        var position_uri = getUri(owner["v-s:occupation"]);
+        var position_uri = veda.Util.getUri(owner["v-s:occupation"]);
         if (position_uri) {
-          var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + position_uri.split(':').join('_') + "_event2";
-          addRight(ticket, [can_read, can_update, can_delete], position_uri, doc_uri, right_uri);
+          var permission_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + position_uri.split(':').join('_') + "_event2";
+          addPermission(permission_uri, position_uri, doc_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
         }
-        var person_uri = getUri(owner["v-s:employee"]);
+        var person_uri = veda.Util.getUri(owner["v-s:employee"]);
         if (person_uri) {
-          var right_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + person_uri.split(':').join('_') + "_event2";
-          addRight(ticket, [can_read, can_update, can_delete], person_uri, doc_uri, right_uri);
+          var permission_uri = "d:right_" + doc_uri.split(':').join('_') + "_" + person_uri.split(':').join('_') + "_event2";
+          addPermission(permission_uri, person_uri, doc_uri, ["v-s:canRead", "v-s:canUpdate", "v-s:canDelete"]);
         }
       }
     }
   }
 });
+
+function addPermission(permission_uri, subject_uri, object_uri, rights) {
+  var permission = {
+    '@': permission_uri,
+    'rdf:type': veda.Util.newUri('v-s:PermissionStatement'),
+    'v-s:permissionObject': veda.Util.newUri(object_uri),
+    'v-s:permissionSubject': veda.Util.newUri(subject_uri)
+  };
+  rights.map(function (right) {
+    permission[right] = veda.Util.newBool(true);
+  });
+  put_individual(ticket, permission);
+}
   """ ;
 .
 
@@ -560,21 +573,24 @@ cfg:Event_3
 
 if (user_uri == 'cfg:VedaSystem') return; // #245
 
+// Get latest document state
+document = get_individual(ticket, document["@"]);
+
 if (super_classes.indexOf('v-s:AutomaticallyVersioned')>=0)
 {
-  create_version(ticket, document, prev_state, user_uri, _event_id);
+  veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
 }
 
 if (super_classes.indexOf('v-s:Journaling')>=0)
 {
-  var publisher_uri = getUri(document['v-s:creator']);
+  var publisher_uri = veda.Util.getUri(document['v-s:creator']);
   if (!publisher_uri) { return; }
 
   var publisher = get_individual(ticket, publisher_uri);
   if (!publisher) { return; }
 
   var employee_uri;
-  if ( hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: _Uri}) )
+  if ( veda.Util.hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
   {
     employee_uri = publisher['v-s:employee'];
     if (!employee_uri) { return; }
@@ -586,21 +602,21 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
 
   if (!employee_uri) { return; }
 
-  var journal_uri = getJournalUri(document['@']);
+  var journal_uri = veda.Util.getJournalUri(document['@']);
   var exist_journal = get_individual(ticket, journal_uri);
 
   var user = get_individual(ticket, user_uri);
 
-  var actor_uri = hasValue(user, 'v-s:defaultAppointment') ? getUri(user['v-s:defaultAppointment']) :
-                  hasValue(user, 'v-s:hasAppointment') ? getUri(user['v-s:hasAppointment']) :
+  var actor_uri = veda.Util.hasValue(user, 'v-s:defaultAppointment') ? veda.Util.getUri(user['v-s:defaultAppointment']) :
+                  veda.Util.hasValue(user, 'v-s:hasAppointment') ? veda.Util.getUri(user['v-s:hasAppointment']) :
                   user_uri;
 
-  var actor = newUri(actor_uri);
+  var actor = veda.Util.newUri(actor_uri);
 
   if (exist_journal)
   {
     // UPDATE DOCUMENT
-    var journal_record = newJournalRecord(journal_uri);
+    var journal_record = veda.Util.newJournalRecord(journal_uri);
     if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
     {
       journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
@@ -611,7 +627,7 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       journal_record['rdf:type'] = [
       {
         data: 'v-s:DocumentDeleted',
-        type: _Uri
+        type: "Uri"
       }];
     }
     else
@@ -619,12 +635,12 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       journal_record['rdf:type'] = [
       {
         data: 'v-s:DocumentUpdated',
-        type: _Uri
+        type: "Uri"
       }];
     }
     journal_record['v-s:actor'] = actor;
-    logToJournal(ticket, journal_uri, journal_record);
-    addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
+    veda.Util.logToJournal(ticket, journal_uri, journal_record);
+    veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_record['@'], ["v-s:canRead"]);
   }
   else
   {
@@ -634,20 +650,20 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
       'rdf:type': [
       {
         data: 'v-s:Journal',
-        type: _Uri
+        type: "Uri"
       }],
       'v-s:onDocument': [
       {
         data: document['@'],
-        type: _Uri
+        type: "Uri"
       }],
       'v-s:actor': actor
     };
     put_individual(ticket, new_journal, _event_id);
 
-    addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_uri);
+    veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_uri, ["v-s:canRead"]);
 
-    var journal_record = newJournalRecord(new_journal['@']);
+    var journal_record = veda.Util.newJournalRecord(new_journal['@']);
     if (document['v-s:actualVersion'] && document['v-s:actualVersion'][0].data == document['@'])
     {
       journal_record['v-s:documentVersion'] = document['v-s:previousVersion'];
@@ -655,11 +671,11 @@ if (super_classes.indexOf('v-s:Journaling')>=0)
     journal_record['rdf:type'] = [
     {
       data: 'v-s:DocumentCreated',
-      type: _Uri
+      type: "Uri"
     }];
     journal_record['v-s:actor'] = actor;
-    logToJournal(ticket, journal_uri, journal_record);
-    addRight(ticket, [can_read], 'cfg:AllUsersGroup', journal_record['@']);
+    veda.Util.logToJournal(ticket, journal_uri, journal_record);
+    veda.Util.addRight(ticket, 'cfg:AllUsersGroup', journal_record['@'], ["v-s:canRead"]);
   }
 }
   """ ;
@@ -687,17 +703,11 @@ cfg:Event_4
  * super_classes = super classes of the document.
  */
 
-// First class event
-if (parent_script_id) {
-  // print("Not first class event. Exit.");
-  return;
-}
-
 var doc_uri = document['@'],
-    deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+    deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 
-if ( hasValue(document, "v-s:parentUnit") ) {
-  var parents = getUris( document["v-s:parentUnit"] );
+if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
+  var parents = veda.Util.getUris( document["v-s:parentUnit"] );
   parents.map(function (parent_uri) {
     var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
     if (deleted) {
@@ -706,10 +716,10 @@ if ( hasValue(document, "v-s:parentUnit") ) {
     } else {
       var membership = {
         '@' : uri,
-        'rdf:type'     : newUri("v-s:Membership"),
-        'v-s:resource' : newUri(doc_uri),
-        'v-s:memberOf' : newUri(parent_uri),
-        'rdfs:comment' : newStr("выдан cfg:Event_4")
+        'rdf:type'     : veda.Util.newUri("v-s:Membership"),
+        'v-s:resource' : veda.Util.newUri(doc_uri),
+        'v-s:memberOf' : veda.Util.newUri(parent_uri),
+        'rdfs:comment' : veda.Util.newStr("выдан cfg:Event_4")
       };
       put_individual (ticket, membership, _event_id);
       print("membership added", uri);
@@ -717,9 +727,9 @@ if ( hasValue(document, "v-s:parentUnit") ) {
   });
 }
 
-if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: _Uri }) ) {
-  var person_uri = getUri(document['v-s:employee']),
-      position_uri = getUri(document['v-s:occupation']);
+if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "Uri" }) ) {
+  var person_uri = veda.Util.getUri(document['v-s:employee']),
+      position_uri = veda.Util.getUri(document['v-s:occupation']);
 
   if (!person_uri || !position_uri) return;
 
@@ -730,10 +740,10 @@ if ( hasValue(document, "rdf:type", { data: "v-s:Appointment", type: _Uri }) ) {
   } else {
     var membership = {
       '@' : uri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:resource' : newUri(person_uri),
-      'v-s:memberOf' : newUri(position_uri),
-      'rdfs:comment' : newStr('создано автоматически в обработчике cfg:Event_4'),
+      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+      'v-s:resource' : veda.Util.newUri(person_uri),
+      'v-s:memberOf' : veda.Util.newUri(position_uri),
+      'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике cfg:Event_4'),
     };
     put_individual (ticket, membership, _event_id);
     print("membership added", uri);
@@ -768,20 +778,20 @@ if (parent_script_id) {
 }
 
 var doc_uri = document["@"],
-    deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean}),
+    deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean"}),
     uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + "cfg_AllUsersGroup",
     membership;
 
 if (doc_uri === "cfg:Guest") { return; }
 
 // Manage accounts (delete or restore)
-var accounts_uris = getUris(document["v-s:hasAccount"]);
+var accounts_uris = veda.Util.getUris(document["v-s:hasAccount"]);
 accounts_uris.map(function (account_uri) {
   var account = get_individual(ticket, account_uri);
   if (account) {
-    var account_deleted = hasValue(account, "v-s:deleted", { data: true, type: _Boolean});
+    var account_deleted = veda.Util.hasValue(account, "v-s:deleted", { data: true, type: "Boolean"});
     if (deleted !== account_deleted) {
-      account["v-s:deleted"] = newBool( deleted );
+      account["v-s:deleted"] = veda.Util.newBool( deleted );
       put_individual (ticket, account, _event_id);
     }
   }
@@ -793,19 +803,19 @@ membership = get_individual(ticket, uri);
 if (!membership) {
   membership = {
     "@" : uri,
-    "rdf:type"     : newUri("v-s:Membership"),
-    "v-s:resource" : newUri(doc_uri),
-    "v-s:memberOf" : newUri("cfg:AllUsersGroup"),
-    "rdfs:comment" : newStr("выдан cfg:Event_5"),
-    "v-s:deleted"  : newBool( deleted )
+    "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+    "v-s:resource" : veda.Util.newUri(doc_uri),
+    "v-s:memberOf" : veda.Util.newUri("cfg:AllUsersGroup"),
+    "rdfs:comment" : veda.Util.newStr("выдан cfg:Event_5"),
+    "v-s:deleted"  : veda.Util.newBool( deleted )
   };
   put_individual (ticket, membership, _event_id);
   return;
 }
 
-var membership_deleted = hasValue(membership, "v-s:deleted", { data: true, type: _Boolean});
+var membership_deleted = veda.Util.hasValue(membership, "v-s:deleted", { data: true, type: "Boolean"});
 if (deleted !== membership_deleted) {
-  membership["v-s:deleted"] = newBool( deleted );
+  membership["v-s:deleted"] = veda.Util.newBool( deleted );
   put_individual (ticket, membership, _event_id);
 }
   """ ;
@@ -851,8 +861,8 @@ if (parent_script_id) {
 // Update ontology vsn
 var vsn = {
   "@" : "cfg:OntoVsn",
-  "rdf:type"  : newUri("rdfs:Resource"),
-  "rdf:value" : newStr( guid() )
+  "rdf:type"  : veda.Util.newUri("rdfs:Resource"),
+  "rdf:value" : veda.Util.newStr( veda.Util.guid() )
 };
 put_individual (ticket, vsn, _event_id);
 
@@ -865,10 +875,10 @@ if (membership) { return; }
 
 membership = {
   '@' : uri,
-  'rdf:type'     : newUri('v-s:Membership'),
-  'v-s:memberOf' : newUri('cfg:OntologyGroup'),
-  'v-s:resource' : newUri(doc_uri),
-  'rdfs:comment' : newStr('выдан cfg:Event_6')
+  'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+  'v-s:memberOf' : veda.Util.newUri('cfg:OntologyGroup'),
+  'v-s:resource' : veda.Util.newUri(doc_uri),
+  'rdfs:comment' : veda.Util.newStr('выдан cfg:Event_6')
 };
 put_individual (ticket, membership, _event_id);
   """ ;
@@ -899,7 +909,7 @@ if (parent_document_id && parent_document_id === document['@']) {
 }
 
 var doc_uri = document["@"],
-  _classes = getUris( document["rdf:type"] );
+  _classes = veda.Util.getUris( document["rdf:type"] );
 
 _classes.map(function (class_uri) {
   var class_group_uri = class_uri + '_group', // uri группы индивидов класса
@@ -907,10 +917,10 @@ _classes.map(function (class_uri) {
 
   var membership = {
     '@' : uri,
-    'rdf:type'     : newUri('v-s:Membership'),
-    'v-s:memberOf' : newUri(class_group_uri),
-    'v-s:resource' : newUri(doc_uri),
-    'rdfs:comment' : newStr('создано cfg:Event_7')
+    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+    'v-s:memberOf' : veda.Util.newUri(class_group_uri),
+    'v-s:resource' : veda.Util.newUri(doc_uri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_7')
   };
   put_individual (ticket, membership, _event_id);
 });
@@ -949,23 +959,23 @@ if (parent_document_id && parent_document_id === document['@']) {
 var _class = document,
   class_uri = _class["@"],
   class_group_uri = class_uri + "_group",
-  class_deleted = hasValue(_class, "v-s:deleted", { data: true, type: _Boolean } ),
+  class_deleted = veda.Util.hasValue(_class, "v-s:deleted", { data: true, type: "Boolean" } ),
   class_group = get_individual(ticket, class_group_uri);
 
 if ( !class_group ) {
   var class_group = {
     '@' : class_group_uri,
-    'rdf:type'     : newUri('v-s:Group'),
-    'rdfs:label' : newStr("Группа индивидов класса " + class_uri),
-    'rdfs:comment' : newStr('создано cfg:Event_8')
+    'rdf:type'     : veda.Util.newUri('v-s:Group'),
+    'rdfs:label' : veda.Util.newStr("Группа индивидов класса " + class_uri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_8')
   };
   put_individual (ticket, class_group, _event_id);
   //print("cfg:Event_8 class group", class_group_uri);
 }
 
-if ( !hasValue(_class, "rdfs:subClassOf") ) { return; }
+if ( !veda.Util.hasValue(_class, "rdfs:subClassOf") ) { return; }
 
-var _super_classes = getUris( _class["rdfs:subClassOf"] );
+var _super_classes = veda.Util.getUris( _class["rdfs:subClassOf"] );
 
 _super_classes.map(function (super_uri) {
   if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
@@ -978,10 +988,10 @@ _super_classes.map(function (super_uri) {
   if (!membership) {
     membership = {
       '@' : uri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:memberOf' : newUri(super_uri),
-      'v-s:resource' : newUri(class_uri),
-      'rdfs:comment' : newStr('1. создано cfg:Event_8')
+      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf' : veda.Util.newUri(super_uri),
+      'v-s:resource' : veda.Util.newUri(class_uri),
+      'rdfs:comment' : veda.Util.newStr('1. создано cfg:Event_8')
     }
     put_individual (ticket, membership, _event_id);
     //print('cfg:Event_8 membership (class -> superclass)', uri);
@@ -995,10 +1005,10 @@ _super_classes.map(function (super_uri) {
   if (!membership) {
     membership = {
       '@' : uri,
-      'rdf:type'     : newUri('v-s:Membership'),
-      'v-s:memberOf' : newUri(super_group_uri),
-      'v-s:resource' : newUri(class_group_uri),
-      'rdfs:comment' : newStr('2. создано cfg:Event_8')
+      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf' : veda.Util.newUri(super_group_uri),
+      'v-s:resource' : veda.Util.newUri(class_group_uri),
+      'rdfs:comment' : veda.Util.newStr('2. создано cfg:Event_8')
     };
     put_individual (ticket, membership, _event_id);
   }
@@ -1033,8 +1043,8 @@ if (parent_script_id) {
 }
 
 var doc_uri = document["@"],
-  parent_uri = getUri( document["v-s:parent"] ),
-  deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean});
+  parent_uri = veda.Util.getUri( document["v-s:parent"] ),
+  deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean"});
 
 if (!parent_uri) { return; }
 
@@ -1045,10 +1055,10 @@ if (deleted) {
 } else {
   var membership = {
     '@' : membership_uri,
-    'rdf:type'     : newUri('v-s:Membership'),
-    'v-s:memberOf' : newUri(parent_uri),
-    'v-s:resource' : newUri(doc_uri),
-    'rdfs:comment' : newStr('создано cfg:Event_9')
+    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+    'v-s:memberOf' : veda.Util.newUri(parent_uri),
+    'v-s:resource' : veda.Util.newUri(doc_uri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_9')
   };
   put_individual (ticket, membership, _event_id);
 }
@@ -1058,10 +1068,10 @@ if (deleted) {
   Object.keys(document).map(function (property_uri) {
     if (property_uri === "@") { return; }
     document[property_uri].map(function (value) {
-      if (value.type !== _Uri) { return; }
+      if (value.type !== "Uri") { return; }
       var embedded = get_individual(ticket, value.data);
-      if (embedded && hasValue(embedded, "v-s:parent", {data: doc_uri, type: _Uri}) && !hasValue(embedded, "v-s:deleted", {data: true, type: _Boolean}) ) {
-        embedded["v-s:deleted"] = newBool(true);
+      if (embedded && veda.Util.hasValue(embedded, "v-s:parent", {data: doc_uri, type: "Uri"}) && !veda.Util.hasValue(embedded, "v-s:deleted", {data: true, type: "Boolean"}) ) {
+        embedded["v-s:deleted"] = veda.Util.newBool(true);
         put_individual (ticket, embedded, _event_id);
         //print("embedded deleted:", embedded["@"]);
       }
@@ -1089,10 +1099,10 @@ cfg:Event_10
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-if ( document['v-wf:isTrace'] || getUri(document['rdf:type']) === 'v-wf:TraceRecord' ) { return; }
+if ( document['v-wf:isTrace'] || veda.Util.getUri(document['rdf:type']) === 'v-wf:TraceRecord' ) { return; }
 
 var this_uri = document['@'],
-    group_uri = getUri(document["v-s:onDocument"]) || getUri(document["v-s:parentJournal"]) || getUri(document["v-wf:onProcess"]);
+    group_uri = veda.Util.getUri(document["v-s:onDocument"]) || veda.Util.getUri(document["v-s:parentJournal"]) || veda.Util.getUri(document["v-wf:onProcess"]);
 
 if (!group_uri) { return; }
 
@@ -1100,11 +1110,11 @@ var membership_uri = 'd:membership_' + this_uri.split(':').join('_') + '_' + gro
 
 var membership = {
   '@' : membership_uri,
-  'rdf:type'     : newUri('v-s:Membership'),
-  'v-s:resource' : newUri(this_uri),
-  'v-s:memberOf' : newUri(group_uri),
-  'rdfs:comment' : newStr('создано cfg:Event_10'),
-  'v-s:canRead'  : newBool(true)
+  'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+  'v-s:resource' : veda.Util.newUri(this_uri),
+  'v-s:memberOf' : veda.Util.newUri(group_uri),
+  'rdfs:comment' : veda.Util.newStr('создано cfg:Event_10'),
+  'v-s:canRead'  : veda.Util.newBool(true)
 };
 put_individual (ticket, membership, _event_id);
 //print('cfg:Event_10 journal membership', uri);
@@ -1132,7 +1142,7 @@ cfg:Event_11
  * super_classes = super classes of the document.
  */
 var this_uri = document['@'],
-    group_uri = getUri(document["v-wf:forProcess"]) || getUri(document["v-wf:forWorkItem"]) || getUri(document["v-wf:onWorkOrder"]) || getUri(document["v-wf:parentWorkOrder"]);
+    group_uri = veda.Util.getUri(document["v-wf:forProcess"]) || veda.Util.getUri(document["v-wf:forWorkItem"]) || veda.Util.getUri(document["v-wf:onWorkOrder"]) || veda.Util.getUri(document["v-wf:parentWorkOrder"]);
 
 if (!group_uri) { return; }
 
@@ -1140,11 +1150,11 @@ var membership_uri = 'd:membership_' + this_uri.split(':').join('_') + '_' + gro
 
 var membership = {
   '@' : membership_uri,
-  'rdf:type'     : newUri('v-s:Membership'),
-  'v-s:resource' : newUri(this_uri),
-  'v-s:memberOf' : newUri(group_uri),
-  'rdfs:comment' : newStr('создано cfg:Event_11'),
-  'v-s:canRead'  : newBool(true)
+  'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+  'v-s:resource' : veda.Util.newUri(this_uri),
+  'v-s:memberOf' : veda.Util.newUri(group_uri),
+  'rdfs:comment' : veda.Util.newStr('создано cfg:Event_11'),
+  'v-s:canRead'  : veda.Util.newBool(true)
 };
 put_individual (ticket, membership, _event_id);
 //print('cfg:Event_11 process membership', uri);
@@ -1168,18 +1178,18 @@ cfg:Event_12
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-var process_uri = getUri(document['v-wf:onProcess']),
-    doc_journal_uri = getUri(document['v-s:onDocument']) + "j";
+var process_uri = veda.Util.getUri(document['v-wf:onProcess']),
+    doc_journal_uri = veda.Util.getUri(document['v-s:onDocument']) + "j";
 
 var membership_uri = 'd:membership_' + process_uri.split(':').join('_') + '_' + doc_journal_uri.split(':').join('_');
 
 var membership = {
   '@' : membership_uri,
-  'rdf:type'     : newUri('v-s:Membership'),
-  'v-s:memberOf' : newUri(doc_journal_uri),
-  'v-s:resource' : newUri(process_uri),
-  'rdfs:comment' : newStr('создано cfg:Event_12'),
-  'v-s:canRead'  : newBool(true)
+  'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+  'v-s:memberOf' : veda.Util.newUri(doc_journal_uri),
+  'v-s:resource' : veda.Util.newUri(process_uri),
+  'rdfs:comment' : veda.Util.newStr('создано cfg:Event_12'),
+  'v-s:canRead'  : veda.Util.newBool(true)
 };
 put_individual (ticket, membership, _event_id);
 //print('cfg:Event_12 process membership', uri);
@@ -1213,9 +1223,9 @@ if (parent_script_id) {
 
 // Get actual state
 document = get_individual(ticket, document["@"]);
-if ( hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: _Boolean} ) || !prev_state ) {
+if ( veda.Util.hasValue( document, 'v-s:triggerVersionCreation', {data: true, type: "Boolean"} ) || !prev_state ) {
   delete document['v-s:triggerVersionCreation'];
-  create_version(ticket, document, prev_state, user_uri, _event_id);
+  veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
 }
   """ ;
 .
@@ -1244,14 +1254,14 @@ cfg:Event_15
     return;
   }
 
-  var linkDeleted = hasValue( document, "v-s:deleted", {data: true, type: _Boolean} ),
+  var linkDeleted = veda.Util.hasValue( document, "v-s:deleted", {data: true, type: "Boolean"} ),
       linkUri = document["@"],
-      linkToUri = getUri(document["v-s:to"]),
-      linkFromUri = getUri(document["v-s:from"]),
+      linkToUri = veda.Util.getUri(document["v-s:to"]),
+      linkFromUri = veda.Util.getUri(document["v-s:from"]),
       linkTo = get_individual(ticket, linkToUri),
       linkFrom = get_individual(ticket, linkFromUri),
       containsThisLink,
-      mutualMembership = hasValue( document, "v-s:mutualMembership", {data: true, type: _Boolean} ),
+      mutualMembership = veda.Util.hasValue( document, "v-s:mutualMembership", {data: true, type: "Boolean"} ),
       membershipToFromUri = "d:link_membership_" + linkToUri.split(":").join("_") + "_" + linkFromUri.split(":").join("_"),
       membershipFromToUri = "d:link_membership_" + linkFromUri.split(":").join("_") + "_" + linkToUri.split(":").join("_"),
       membershipToFrom,
@@ -1259,26 +1269,26 @@ cfg:Event_15
 
   membershipToFrom = {
     '@' : membershipToFromUri,
-    'rdf:type'     : newUri('v-s:Membership'),
-    'v-s:memberOf' : newUri(linkFromUri),
-    'v-s:resource' : newUri(linkToUri),
-    'rdfs:comment' : newStr('создано cfg:Event_15'),
-    'v-s:canRead'  : newBool(true)
+    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+    'v-s:memberOf' : veda.Util.newUri(linkFromUri),
+    'v-s:resource' : veda.Util.newUri(linkToUri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_15'),
+    'v-s:canRead'  : veda.Util.newBool(true)
   };
 
   membershipFromTo = {
     '@' : membershipFromToUri,
-    'rdf:type'     : newUri('v-s:Membership'),
-    'v-s:memberOf' : newUri(linkToUri),
-    'v-s:resource' : newUri(linkFromUri),
-    'rdfs:comment' : newStr('создано cfg:Event_15'),
-    'v-s:canRead'  : newBool(true)
+    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+    'v-s:memberOf' : veda.Util.newUri(linkToUri),
+    'v-s:resource' : veda.Util.newUri(linkFromUri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_15'),
+    'v-s:canRead'  : veda.Util.newBool(true)
   };
 
   if (linkTo) {
-    containsThisLink = hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: _Uri });
+    containsThisLink = veda.Util.hasValue(linkTo, "v-s:hasLink", { data: linkUri, type: "Uri" });
     if (!containsThisLink && !linkDeleted) {
-      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).concat({type: _Uri, data: linkUri});
+      linkTo["v-s:hasLink"] = ( linkTo["v-s:hasLink"] || [] ).concat({type: "Uri", data: linkUri});
       put_individual(ticket, linkTo, _event_id);
     } else if (containsThisLink && linkDeleted) {
       linkTo["v-s:hasLink"] = linkTo["v-s:hasLink"].filter(function (link) {
@@ -1288,9 +1298,9 @@ cfg:Event_15
     }
   }
   if (linkFrom) {
-    containsThisLink = hasValue(linkFrom, "v-s:hasLink", { data: linkUri, type: _Uri });
+    containsThisLink = veda.Util.hasValue(linkFrom, "v-s:hasLink", { data: linkUri, type: "Uri" });
     if (!containsThisLink && !linkDeleted) {
-      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).concat({type: _Uri, data: linkUri});
+      linkFrom["v-s:hasLink"] = ( linkFrom["v-s:hasLink"] || [] ).concat({type: "Uri", data: linkUri});
       put_individual(ticket, linkFrom, _event_id);
     } else if (containsThisLink && linkDeleted) {
       linkFrom["v-s:hasLink"] = linkFrom["v-s:hasLink"].filter(function (link) {
@@ -1334,13 +1344,13 @@ cfg:Event_16
   }
 
   var backwardLinkUri = document["@"],
-      backwardPropertyUri = getUri(document["v-s:backwardProperty"]),
-      backwardTargetUris = getUris(document["v-s:backwardTarget"]),
-      backwardReplaceUris = getUris(document["v-s:backwardReplace"]),
+      backwardPropertyUri = veda.Util.getUri(document["v-s:backwardProperty"]),
+      backwardTargetUris = veda.Util.getUris(document["v-s:backwardTarget"]),
+      backwardReplaceUris = veda.Util.getUris(document["v-s:backwardReplace"]),
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
-      isDeleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+      isDeleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 
   //expected equal backwardPropery and backwardReplaceUris for all backwardTargets
   for (var i = 0; i < backwardTargetUris.length; i++) {
@@ -1357,10 +1367,10 @@ cfg:Event_16
       } else {
         var membership = {
           '@' : membershipUri,
-          'rdf:type'     : newUri('v-s:Membership'),
-          'v-s:memberOf' : newUri(backwardTargetUri),
-          'v-s:resource' : newUri(backwardLinkUri),
-          'rdfs:comment' : newStr('создано cfg:Event_16')
+          'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+          'v-s:memberOf' : veda.Util.newUri(backwardTargetUri),
+          'v-s:resource' : veda.Util.newUri(backwardLinkUri),
+          'rdfs:comment' : veda.Util.newStr('создано cfg:Event_16')
         };
         if (canRead) {
           membership["v-s:canRead"] = canRead;
@@ -1372,7 +1382,7 @@ cfg:Event_16
           membership["v-s:canDelete"] = canDelete;
         }
         if (isDeleted) {
-          membership['v-s:deleted'] = newBool(true);
+          membership['v-s:deleted'] = veda.Util.newBool(true);
         }
         put_individual(ticket, membership, _event_id);
       }
@@ -1386,11 +1396,11 @@ cfg:Event_16
         });
       }
     } else if (backwardPropertyUri) {
-      var alreadyThere = hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: _Uri });
+      var alreadyThere = veda.Util.hasValue(backwardTarget, backwardPropertyUri, { data: backwardLinkUri, type: "Uri" });
       //print( "BL already there =", alreadyThere );
       if ( !alreadyThere ) {
         backwardTarget[backwardPropertyUri] = backwardTarget[backwardPropertyUri] || [];
-        backwardTarget[backwardPropertyUri].push({type: _Uri, data: backwardLinkUri});
+        backwardTarget[backwardPropertyUri].push({type: "Uri", data: backwardLinkUri});
       }
     }
     backwardReplaceUris.map(function (replaceUri) {
@@ -1462,7 +1472,7 @@ cfg:Event_Notify_Task
   v-s:disabled true ;
   v-s:script """
 var task_id = document["@"],
-    to = getUri(document["v-wf:to"]);
+    to = veda.Util.getUri(document["v-wf:to"]);
 //print("cfg:Event_17", "caught", "task", task_id, "to", to);
   """ ;
 .
@@ -1474,8 +1484,8 @@ cfg:Event_Notify_Comment
   v-s:disabled true ;
   v-s:script """
 var comment_id = document["@"],
-    comment_target = getUri(document["v-s:backwardTarget"]),
-    stakeholder = getUri(comment_target["v-s:author"]);
+    comment_target = veda.Util.getUri(document["v-s:backwardTarget"]),
+    stakeholder = veda.Util.getUri(comment_target["v-s:author"]);
 //print("cfg:Event_18", "caught", "comment", comment_id, "target", comment_target);
   """ ;
 .

@@ -6,8 +6,9 @@ module veda.storage.lmdb.lmdb_driver;
 
 private
 {
-    import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
+    import std.stdio, std.file, std.datetime.stopwatch, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
     import veda.storage.lmdb.lmdb_header, veda.common.type, veda.common.logger, veda.storage.common, veda.core.common.define;
+    import veda.onto.individual;
 
     alias core.thread.Thread core_thread;
 }
@@ -21,14 +22,14 @@ public class LmdbDriver : KeyValueDB
     public const string summ_hash_this_db_id;
     private BigInt      summ_hash_this_db;
     protected DBMode    mode;
-    public string      _path;
+    public string       _path;
     string              db_name;
     string              parent_thread_name;
     private long        last_op_id;
     long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
-    int                 max_count_record_in_memory = 10_000;
+    long                read_count;
 
     /// конструктор
     this(string _path_, DBMode _mode, string _parent_thread_name, Logger _log)
@@ -113,9 +114,11 @@ public class LmdbDriver : KeyValueDB
             else
                 db_is_open[ _path ] = true;
 
+            read_count = 0;
+
             if (rc == 0)
             {
-                string   data_str = find(OptAuthorize.NO, null, summ_hash_this_db_id);
+                string   data_str = get_binobj(summ_hash_this_db_id);
 
                 string[] dataff = data_str.split(',');
                 string   hash_str;
@@ -170,7 +173,7 @@ public class LmdbDriver : KeyValueDB
         return rc;
     }
 
-    public ResultCode put(OptAuthorize op_auth, string user_uri, string in_key, string in_value, long op_id)
+    public ResultCode store(string in_key, string in_value, long op_id)
     {
         if (db_is_opened == false)
             open();
@@ -226,7 +229,7 @@ public class LmdbDriver : KeyValueDB
                 growth_db(env, txn);
 
                 // retry
-                return put(op_auth, user_uri, _key, value, op_id);
+                return store(_key, value, op_id);
             }
             if (rc != 0)
             {
@@ -242,7 +245,7 @@ public class LmdbDriver : KeyValueDB
                 growth_db(env, null);
 
                 // retry
-                return put(op_auth, user_uri, _key, value, op_id);
+                return store(_key, value, op_id);
             }
 
             if (rc != 0)
@@ -264,7 +267,7 @@ public class LmdbDriver : KeyValueDB
         }
     }
 
-    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key)
+    public ResultCode remove(string in_key)
     {
         if (db_is_opened == false)
             open();
@@ -313,7 +316,7 @@ public class LmdbDriver : KeyValueDB
                 growth_db(env, txn);
 
                 // retry
-                return remove(op_auth, user_uri, _key);
+                return remove(_key);
             }
             if (rc != 0)
             {
@@ -330,7 +333,7 @@ public class LmdbDriver : KeyValueDB
                 growth_db(env, null);
 
                 // retry
-                return remove(op_auth, user_uri, _key);
+                return remove(_key);
             }
 
             if (rc != 0)
@@ -359,7 +362,7 @@ public class LmdbDriver : KeyValueDB
             //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
             if (mode == DBMode.RW && last_op_id > committed_last_op_id)
             {
-                put(OptAuthorize.NO, null, summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
+                store(summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
                 committed_last_op_id = last_op_id;
             }
 
@@ -451,12 +454,44 @@ public class LmdbDriver : KeyValueDB
         return count;
     }
 
-    public string find(OptAuthorize op_auth, string user_uri, string _uri)
+
+    public void get_individual(string uri, ref Individual individual)
+    {
+        string individual_as_binobj = get_binobj(uri);
+
+        if (individual_as_binobj is null)
+        {
+            individual.setStatus(ResultCode.Not_Found);
+            return;
+        }
+
+
+        if (individual_as_binobj !is null && individual_as_binobj.length > 1)
+        {
+            if (individual.deserialize(individual_as_binobj) > 0)
+                individual.setStatus(ResultCode.OK);
+            else
+            {
+                individual.setStatus(ResultCode.Unprocessable_Entity);
+                writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
+            }
+        }
+        else
+        {
+            individual.setStatus(ResultCode.Unprocessable_Entity);
+            //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
+        }
+    }
+
+    public string get_binobj(string _uri)
     {
         string uri = _uri.idup;
 
         if (db_is_opened == false)
             open();
+
+        if (read_count > 100_000)
+            reopen();
 
         if (uri is null || uri.length < 2)
             return null;
@@ -491,7 +526,7 @@ public class LmdbDriver : KeyValueDB
             {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen();
-                return find(op_auth, user_uri, uri);
+                return get_binobj(uri);
             }
             else if (rc == MDB_BAD_RSLOT)
             {
@@ -538,15 +573,17 @@ public class LmdbDriver : KeyValueDB
             {
                 log.trace("ERR! MDB_INVALID! lmdb.find, key=%s", uri);
                 reopen();
-                core.thread.Thread.sleep(dur!("msecs")(10));
-                return find(op_auth, user_uri, _uri);
+                core_thread.sleep(dur!("msecs")(10));
+                return get_binobj(_uri);
             }
 
             swA.stop();
-            long tA = cast(long)swA.peek().usecs;
+            long tA = cast(long)swA.peek.total !"msecs";
 
-            if (tA > 1000)
-                log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d µs rc=%d", _uri, tA, rc);
+            if (tA > 50)
+                log.trace("WARN! SLOWLY READ! lmdb.find.mdb_get %s FINISH %d ms rc=%d", _uri, tA, rc);
+
+            read_count++;
         }catch (Exception ex)
         {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, ex.msg);

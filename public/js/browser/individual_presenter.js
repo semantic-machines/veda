@@ -44,8 +44,20 @@ veda.Module(function (veda) { "use strict";
             template = template["v-ui:template"][0].toString();
             return renderTemplate(individual, container, template, mode, extra);
           });
+        } else if (typeof template === "string") {
+          var templateString = template;
+          var uri = veda.Util.simpleHash(templateString).toString();
+          template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
+            "@": uri,
+            "v-ui:template": [{data: templateString, type: "String"}]
+          });
         } else if (template instanceof HTMLElement) {
-          template = template.outerHTML;
+          var templateString = template.outerHTML;
+          var uri = veda.Util.simpleHash(templateString).toString();
+          template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
+            "@": uri,
+            "v-ui:template": [{data: templateString, type: "String"}]
+          });
         }
         return renderTemplate(individual, container, template, mode, extra);
       } else {
@@ -354,6 +366,12 @@ veda.Module(function (veda) { "use strict";
       self.attr("src", str.replace("@", individual.id));
     });
 
+    $("[style*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+      var self = $(this);
+      var style = self.attr("style");
+      self.attr("style", style.replace("@", individual.id));
+    });
+
     // Property value
     var props_ctrls = {};
     $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
@@ -399,6 +417,7 @@ veda.Module(function (veda) { "use strict";
           rel_inline_template = relContainer.html().trim(),
           rel_template_uri = relContainer.attr("data-template"),
           limit = relContainer.attr("data-limit") || Infinity,
+          more = relContainer.attr("data-more") || false,
           relTemplate,
           isAbout;
 
@@ -491,7 +510,7 @@ veda.Module(function (veda) { "use strict";
           }
           Promise.all(templatesPromises).then(function (renderedTemplates) {
             relContainer.append(renderedTemplates);
-            if (limit < values.length) {
+            if (limit < values.length && more) {
               relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
             }
           });

@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //removeFromIndividual function handler remove_from_individual request

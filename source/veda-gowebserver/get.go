@@ -6,12 +6,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 const queueStatePrefix = "srv:queue-state-"
 
 func getIndividual(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now().Unix()
 	var uri string
 	var ticketKey string
@@ -37,7 +39,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 	rc, ticket := getTicket(ticketKey)
 	if rc != Ok {
-		log.Println("ERR! GET TICKET: GET_INDIVIDUAL ", rc)
+		log.Println("ERR! GET_INDIVIDUAL: GET TICKET ", rc)
 		log.Println("\t@REQUEST BODY ", string(ctx.Request.Body()))
 		log.Println("\t@getIndividual: ticket=", ticketKey, ", uri=", uri)
 		ctx.Response.SetStatusCode(int(rc))
@@ -78,12 +80,12 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 		individual := make(map[string]interface{})
 		individual["@"] = uri
-		individual["rdf:type"] = map[string]interface{}{"data": "v-s:AppInfo", "type": "Uri"}
-		individual["v-s:created"] = map[string]interface{}{"data": time.Now().Format("2006-01-02T15:04:05Z"),
-			"type": "Datetime"}
-		individual["srv:queue"] = map[string]interface{}{"data": "srv:" + queueName, "type": "Uri"}
-		individual["srv:total_count"] = map[string]interface{}{"data": main_queue.count_pushed, "type": "Integer"}
-		individual["srv:current_count"] = map[string]interface{}{"data": main_cs.count_popped, "type": "Integer"}
+		individual["rdf:type"] = []map[string]interface{}{{"data": "v-s:AppInfo", "type": "Uri"}}
+		individual["v-s:created"] = []map[string]interface{}{{"data": time.Now().Format("2006-01-02T15:04:05Z"),
+			"type": "Datetime"}}
+		individual["srv:queue"] = []map[string]interface{}{{"data": "srv:" + queueName, "type": "Uri"}}
+		individual["srv:total_count"] = []map[string]interface{}{{"data": main_queue.count_pushed, "type": "Integer"}}
+		individual["srv:current_count"] = []map[string]interface{}{{"data": main_cs.count_popped, "type": "Integer"}}
 		individualJSON, err := json.Marshal(individual)
 		if err != nil {
 			log.Println("ERR! GET_INDIVIDUAL: #1 ENCODING INDIVIDUAL TO JSON ", err)
@@ -147,7 +149,7 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		individualJSON := rr.GetJson(0)
 
 		//log.Println("@ GET RESULT:",  uri, ", ", string(individualJSON))
-		
+
 		ctx.Write([]byte(individualJSON))
 
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, individualJSON, Ok, timestamp)
@@ -158,6 +160,9 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 }
 
 func getIndividuals(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
+
 	timestamp := time.Now().Unix()
 	var jsonData map[string]interface{}
 	var uris []string
@@ -252,7 +257,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 			return
 		}
 	}
-	
+
 	individualsJSON, err := json.Marshal(individuals)
 	if err != nil {
 		log.Println("ERR! get individuals: ENCODING INDIVIDUALS JSON ", err)

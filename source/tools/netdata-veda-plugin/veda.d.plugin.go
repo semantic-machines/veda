@@ -171,7 +171,7 @@ func main() {
     		cs_scripts_lp.get_info()
     		cs_CCUS.get_info()
 
-		main_queue.get_info ()
+		main_queue.get_info (main_queue.chunk)
 
 		fmt.Println("BEGIN netdata.plugin_veda_queue_scripts_main")
 		fmt.Printf("SET queue_fanout_email0=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)

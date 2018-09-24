@@ -4,7 +4,6 @@
 module veda.fanout.fanout_sql_lp;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
-//private import backtrace.backtrace, Backtrace = backtrace.backtrace;
 private import mysql.d;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;

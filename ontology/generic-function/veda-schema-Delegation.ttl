@@ -168,12 +168,12 @@ v-s:RequestDelegationTemplate
     <div class="col-md-3 col-xs-6">
       <em about="v-s:dateFrom" property="rdfs:label"></em>
       <div property="v-s:dateFrom" class="view -edit search"></div>
-      <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+      <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
     </div>
     <div class="col-md-3 col-xs-6">
       <em about="v-s:dateTo" property="rdfs:label"></em>
       <div property="v-s:dateTo" class="view -edit search"></div>
-      <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+      <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
     </div>
   </div>
   <br>
@@ -230,7 +230,8 @@ v-s:RequestDelegationTemplate
     $("#positions", template).empty();
     if (values.length) {
       var delegator = individual["v-s:delegator"][0];
-      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')||('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "'&&'v-s:deleted' == true)").result;
+      //var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "') || ('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "' && 'v-s:deleted' == true)").result;
+      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')").result;
       var appointments = get_individuals(veda.ticket, appointments_ids);
       var positions_ids = appointments.map(function (appointment_json) {
         var appointment = new veda.IndividualModel(appointment_json);
@@ -424,17 +425,23 @@ if (parent_script_id) {
 }
 
 var request_uri = document["@"],
-    request_type = getUri(document["rdf:type"]),
-    dateFrom = document["v-s:dateFrom"],
-    dateTo = document["v-s:dateTo"],
+    request_type = veda.Util.getUri(document["rdf:type"]),
+    requestDateFrom = new Date(document["v-s:dateFrom"][0].data),
+    requestDateTo = new Date(document["v-s:dateTo"][0].data),
     now = new Date(),
-    isActual = dateFrom[0].data <= now && now <= dateTo[0].data,
-    delegator_uri = getUri(document["v-s:delegator"]) || "",
-    delegate_uri = getUri(document["v-s:delegate"]),
-    position_uris = getUris(document["v-s:delegatedPosition"]),
-    request_deleted = hasValue(document, "v-s:deleted", {data: true, type: _Boolean}),
+    delegator_uri = veda.Util.getUri(document["v-s:delegator"]) || "",
+    delegate_uri = veda.Util.getUri(document["v-s:delegate"]),
+    position_uris = veda.Util.getUris(document["v-s:delegatedPosition"]),
+    request_deleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
     custom_label = document["rdfs:label"];
+
+requestDateFrom.setHours(0, 0, 0, 0);
+requestDateTo.setHours(23, 59, 59, 999);
+
+var isActual = requestDateFrom <= now && now <= requestDateTo,
+    dateFrom = veda.Util.newDate(requestDateFrom),
+    dateTo = veda.Util.newDate(requestDateTo);
 
 //print("[cfg:Event_Delegation] ************************** START **************************");
 //print("[cfg:Event_Delegation]", "delegator =", delegator_uri, "| delegate =", delegate_uri, "| from =", dateFrom[0].data.toISOString(), "| to =", dateTo[0].data.toISOString(), "| positions =", JSON.stringify(position_uris), "| isActual =", isActual);
@@ -449,8 +456,8 @@ var allDelegated = get_individual(ticket, "cfg:AllDelegatedAppointments");
 if (!allDelegated) {
   allDelegated = {
     "@": "cfg:AllDelegatedAppointments",
-    "rdf:type": newUri("rdfs:Resource"),
-    "rdfs:label": newStr("All delegated appointments (cfg:Event_Delegation)")
+    "rdf:type": veda.Util.newUri("rdfs:Resource"),
+    "rdfs:label": veda.Util.newStr("All delegated appointments (cfg:Event_Delegation)")
   };
 }
 allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
@@ -480,30 +487,30 @@ position_uris.map(function (position_uri) {
       });
     } catch (error) {
       //print(error);
-      appointment_label = newStr(uri);
+      appointment_label = veda.Util.newStr(uri);
     }
   }
 
   if ( !appointment ) {
     appointment = {
       "@": uri,
-      "rdf:type": newUri("v-s:Appointment"),
+      "rdf:type": veda.Util.newUri("v-s:Appointment"),
       "rdfs:label": custom_label || appointment_label,
-      "v-s:employee": newUri(delegate_uri),
-      "v-s:occupation": newUri(position_uri),
+      "v-s:employee": veda.Util.newUri(delegate_uri),
+      "v-s:occupation": veda.Util.newUri(position_uri),
       "v-s:dateFrom": dateFrom,
       "v-s:dateTo": dateTo,
-      "v-s:official": newBool(true),
-      "v-s:origin": newStr(request_type === "v-s:RequestDelegationUser" ? "user" : "admin"),
-      "v-s:deleted": newBool(!isActual),
-      "rdfs:comment": newStr("создано cfg:Event_Delegation")
+      "v-s:official": veda.Util.newBool(true),
+      "v-s:origin": veda.Util.newStr(request_type === "v-s:RequestDelegationUser" ? "user" : "admin"),
+      "v-s:deleted": veda.Util.newBool(!isActual),
+      "rdfs:comment": veda.Util.newStr("создано cfg:Event_Delegation")
     };
     //print("[cfg:Event_Delegation] new appointment created", uri);
   } else {
     // Update dates
     appointment["v-s:dateFrom"] = dateFrom;
     appointment["v-s:dateTo"] = dateTo;
-    appointment["v-s:deleted"] = newBool(!isActual);
+    appointment["v-s:deleted"] = veda.Util.newBool(!isActual);
     //print("[cfg:Event_Delegation] appointment dates updated", uri, "| isActual =", isActual);
   }
 
@@ -512,7 +519,7 @@ position_uris.map(function (position_uri) {
   });
 
   if ( request_deleted ) {
-    appointment["v-s:deleted"] = newBool(true);
+    appointment["v-s:deleted"] = veda.Util.newBool(true);
     delegate = get_individual(ticket, delegate_uri);
     delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
     delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"].filter( function (item) {
@@ -525,7 +532,7 @@ position_uris.map(function (position_uri) {
     //print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
     put_individual(ticket, delegate, _event_id);
   } else {
-    allDelegated["rdf:value"].push({ data: uri, type: _Uri });
+    allDelegated["rdf:value"].push({ data: uri, type: "Uri" });
   }
 
   //print("[cfg:Event_Delegation] appointment =", JSON.stringify(appointment));
@@ -535,7 +542,7 @@ position_uris.map(function (position_uri) {
     document["v-s:createdAppointment"] = document["v-s:createdAppointment"].filter( function (item) {
     return item.data !== uri;
   });
-  document["v-s:createdAppointment"].push( newUri(uri) );
+  document["v-s:createdAppointment"].push( veda.Util.newUri(uri) );
 });
 
 // Update request
@@ -558,8 +565,8 @@ var now = new Date(), allDelegated = get_individual(ticket, "cfg:AllDelegatedApp
 if (!allDelegated) {
   allDelegated = {
     "@": "cfg:AllDelegatedAppointments",
-    "rdf:type": newUri("rdfs:Resource"),
-    "rdfs:label": newStr("All delegated appointments (cfg:Event_Delegation)")
+    "rdf:type": veda.Util.newUri("rdfs:Resource"),
+    "rdfs:label": veda.Util.newStr("All delegated appointments (cfg:Event_Delegation)")
   };
 }
 allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
@@ -571,7 +578,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var isPremature = now < appointment["v-s:dateFrom"][0].data;
   var isActual = appointment["v-s:dateFrom"][0].data <= now && now <= appointment["v-s:dateTo"][0].data;
   var isOverdue = now > appointment["v-s:dateTo"][0].data;
-  var isDeleted = hasValue(appointment, "v-s:deleted", {data: true, type: _Boolean});
+  var isDeleted = veda.Util.hasValue(appointment, "v-s:deleted", {data: true, type: "Boolean"});
 
   //print("[cfg:Event_Delegation]", "appointment =", appointment_uri, "| isPremature =", isPremature, "| isActual =", isActual, "| isOverdue =", isOverdue, "| isDeleted =", isDeleted );
 
@@ -581,12 +588,12 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
       appointment["v-s:deleted"] = [];
       put_individual(ticket, appointment, _event_id);
       //print("[cfg:Event_Delegation] appointment became actual & restored", appointment_uri);
-      delegate_uri = getUri( appointment["v-s:employee"] );
+      delegate_uri = veda.Util.getUri( appointment["v-s:employee"] );
       delegate = get_individual(ticket, delegate_uri);
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"].filter( function (item) {
         return item.data !== appointment_uri;
-      }).concat({data: appointment_uri, type: _Uri});
+      }).concat({data: appointment_uri, type: "Uri"});
       put_individual(ticket, delegate, _event_id);
       //print("[cfg:Event_Delegation] delegate updated - actual appointment added", delegate_uri);
     }
@@ -596,7 +603,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   } else if ( isOverdue ) {
 
     if ( !isDeleted ) {
-      delegate_uri = getUri( appointment["v-s:employee"] );
+      delegate_uri = veda.Util.getUri( appointment["v-s:employee"] );
       delegate = get_individual(ticket, delegate_uri);
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
       delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"].filter( function (item) {
@@ -606,7 +613,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
       delegate["v-s:defaultAppointment"] = delegate["v-s:defaultAppointment"].filter( function (item) {
         return item.data !== appointment_uri;
       });
-      appointment["v-s:deleted"] = newBool(true);
+      appointment["v-s:deleted"] = veda.Util.newBool(true);
       put_individual(ticket, appointment, _event_id);
       //print("[cfg:Event_Delegation] overdue appointment deleted", appointment_uri);
       put_individual(ticket, delegate, _event_id);
@@ -618,7 +625,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   } else if (isPremature) {
     if ( !isDeleted ) {
       // Mark premature appointment as deleted
-      appointment["v-s:deleted"] = newBool(true);
+      appointment["v-s:deleted"] = veda.Util.newBool(true);
       put_individual(ticket, appointment, _event_id);
       //print("[cfg:Event_Delegation] premature appointment deleted", appointment_uri);
     }

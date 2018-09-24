@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/op/go-nanomsg"
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //ResultCode is type for representation of http codes
@@ -42,6 +43,7 @@ const (
 type ticket struct {
 	Id        string
 	UserURI   string
+	UserLogin string
 	result    ResultCode
 	StartTime int64
 	EndTime   int64
@@ -103,7 +105,7 @@ var attachmentsPath = "./data/files/"
 var areExternalUsers = false
 
 //externalUsersTicketId is map to stoer external users tickets
-var externalUsersTicketId map[string]bool
+//var externalUsersTicketId map[string]bool
 
 //cons is connection to traildb
 //var cons *tdb.TrailDBConstructor
@@ -150,13 +152,17 @@ func codeToJsonException(code ResultCode) []byte {
 
 //requestHandler passes request context pointer to handler according to request pass
 func requestHandler(ctx *fasthttp.RequestCtx) {
+
+	ctx.Response.Header.Set("server", "nginx/1.8.1")
+	ctx.Response.Header.SetCanonical([]byte("server"), []byte("nginx/1.8.1"))
+
 	routeParts := strings.Split(string(ctx.Path()[:]), "/")
 	if len(routeParts) >= 2 && routeParts[1] == "files" {
 		//log.Printf("@len=%v arr=%v\n", len(routeParts), routeParts)
 		files(ctx, routeParts)
 		return
 	}
-
+	
 	switch string(ctx.Path()[:]) {
 	case "/get_individual":
 		getIndividual(ctx)
@@ -221,7 +227,14 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
 	}
 }
 
+func getGOMAXPROCS() int {
+	return runtime.GOMAXPROCS(0)
+}
+
 func main() {
+	fmt.Printf("ENV GOMAXPROCS is %d\n", getGOMAXPROCS())
+	runtime.GOMAXPROCS(1)
+	fmt.Printf("USE GOMAXPROCS is %d\n", getGOMAXPROCS())
 
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
@@ -293,13 +306,22 @@ func main() {
 	ticketCache = make(map[string]ticket)
 	ontologyCache = make(map[string]Individual)
 	mifCache = make(map[int]*ModuleInfoFile)
-	externalUsersTicketId = make(map[string]bool)
+	//	externalUsersTicketId = make(map[string]bool)
 
 	//go monitorIndividualChanges()
 	go func() {
 		h := fasthttp.Server{
 			Handler:            requestHandler,
 			MaxRequestBodySize: 10 * 1024 * 1024 * 1024,
+
+			// These timeouts trigger high iowait without the CL 34784
+			// if many requests are sent over more than 100K
+			// keep-alive http connections.
+
+			ReadTimeout:  90 * time.Second,
+			WriteTimeout: 5 * time.Second,
+			MaxKeepaliveDuration: 100 * time.Second,
+			ReadBufferSize: 8 * 1024,
 		}
 		err = h.ListenAndServe("0.0.0.0:" + webserverPort)
 		if err != nil {

@@ -7,7 +7,7 @@ var veda = {};
   veda.Module = riot.observable(function(arg) {
 
     // veda.Module(fn) --> add a new module
-    if (typeof arg == 'function') {
+    if (typeof arg === "function") {
 
       veda.Module.on("ready", arg);
 

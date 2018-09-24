@@ -144,6 +144,17 @@ public struct Individual
         return default_value;
     }
 
+    long getFirstDatetime(string predicate, long default_value = 0)
+    {
+        Resources rss;
+
+        rss = resources.get(predicate, rss);
+        if (rss.length > 0 && rss[ 0 ].type == DataType.Datetime)
+            return rss[ 0 ].get!long;
+
+        return default_value;
+    }
+
     bool getFirstBoolean(string predicate, bool default_value = false)
     {
         Resources rss;
@@ -396,5 +407,16 @@ public struct Individual
         string str_hash = crcHexString(hash.finish());
 
         return str_hash;
+    }
+
+    public long count_values()
+    {
+        long count;
+
+        foreach (vv; resources.values)
+        {
+            count += vv.length;
+        }
+        return count;
     }
 }

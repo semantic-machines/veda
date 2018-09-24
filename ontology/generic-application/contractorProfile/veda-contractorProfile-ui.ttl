@@ -1,0 +1,1796 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-contractorProfile-ui>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Досье контрагента. Интерфейс."@ru ;
+  rdfs:label "Veda system ontology. ContractorProfile. UI."@en ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+
+v-s:PsattachOrganizationProperties
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachOrganizationProperties;
+  v-ui:tooltip "Реквизиты организации"@ru ;
+  v-ui:tooltip "Organization properties"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachCertificateRegistrationLegal
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachCertificateRegistrationLegal ;
+  v-ui:tooltip "Свидетельство о государственной регистрации юридического лица. Свидетельство налогового (компетентного) органа (в соответствии с Соглашением об избежании двойного налогообложения) о регистрации контрагента в качестве налогоплательщика по месту нахождения его основной деятельности с проставленным апостилем и переводом на русский язык"@ru ;
+  v-ui:tooltip "Certificate of state registration of legal entities"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachCertificateTaxRegistration
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachCertificateTaxRegistration;
+  v-ui:tooltip "Свидетельство о постановке на налоговый учет"@ru ;
+  v-ui:tooltip "Certificate of tax registration"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachExcerptFromEGRUL
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachExcerptFromEGRUL ;
+  v-ui:tooltip "Выписка из ЕГРЮЛ (актуальная на момент формирования досье контрагента)"@ru ;
+  v-ui:tooltip "Extract from EGRUL (correct at the time of formation of the dossier of the counterparty)"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachDocSpecialTaxSystem
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachDocSpecialTaxSystem ;
+  v-ui:tooltip "Сведения (письмо) о применении специальных налоговых режимов (ЕНВД, УСН и т.п.)"@ru ;
+  v-ui:tooltip "Information about the application of special tax regimes."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachAppointingOrder
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachAppointingOrder;
+  v-ui:tooltip "Документы о назначении директора и главного бухгалтера"@ru ;
+  v-ui:tooltip "Documents on the appointment of the director and chief accountant."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachWarrant
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachWarrant;
+  v-ui:tooltip "Документы (доверенности, приказы и др.), подтверждающие полномочия лиц на подписание договоров, счетов-фактур, ТТН (ТОРГ-12) и других документов с заверенными подписями лиц, уполномоченных на подписание документов"@ru ;
+  v-ui:tooltip "Documents Confirming the authority of persons to sign contracts, invoices, TTN (TORG-12) and other documents with the certified signatures of the persons authorized to sign documents."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachDocConfirmUseForestryEquipment
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachDocConfirmUseForestryEquipment;
+  v-ui:tooltip "Документы, подтверждающие право собственности и/или пользования лесозаготовительной техникой для оказания услуг (паспорта самоходных машин, договор аренды, договор на оказание услуг и/или др.)"@ru ;
+  v-ui:tooltip "Documents lesozagovitelnuyu technique."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachDocConfirmUseWood
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachDocConfirmUseWood;
+  v-ui:tooltip "Документы, подтверждающие право собственности на поставляемую лесопродукцию (договор купли-продажи лесных насаждений, договор аренды лесных участков)"@ru ;
+  v-ui:tooltip "Documents for timber."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachDocConfirmUseTransport
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachDocConfirmUseTransport;
+  v-ui:tooltip "Документы, подтверждающие право собственности и/или пользования транспортными средствами для оказания услуг (ПТС на собственные и арендованные транспортные средства, договор аренды транспортных средств, договор на оказание услуг и/или др."@ru ;
+  v-ui:tooltip "Documents the service."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsttachSubcontractorInteraction
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachSubcontractorInteraction;
+  v-ui:tooltip "Схема взаимодействия с субподрядчиками и т.п. третьими лицами, привлеченными контрагентом к выполнению договорных обязательств с описанием их функционала (письмо)."@ru ;
+  v-ui:tooltip "Working with subcontractors scheme."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachSubcontract
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachSubcontract;
+  v-ui:tooltip "Договоры с субподрядчиками и т.п. третьими лицами, привлеченными контрагентом к выполнению договорных обязательств или  Реестр таких договоров с субподрядчиками, третьими лицами (с указанием наименования третьего лица, ИНН, юридического адреса, № и даты договора, вида работ, услуг)."@ru ;
+  v-ui:tooltip "Subcontract."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachDocConfirmUseAddresses
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachDocConfirmUseAddresses;
+  v-ui:tooltip "Документы, подтверждающие основания для использования контрагентом юридического адреса, адреса фактического места нахождения (например, договор аренды и т.п.)"@ru ;
+  v-ui:tooltip "Documents proving grounds for the counterparty of the legal address"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachInsurancePayments
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachInsurancePayments;
+  v-ui:tooltip "1-ый лист Расчета РСВ-1 ПФР  или  Сведения о среднесписочной численности работников  КНД 1110018  или иной аналогичный расчет, содержащий сведения о среднесписочной численности работников(на последнюю отчетную дату с отметкой ПФ РФ/налоговогооргана о получении)"@ru ;
+  v-ui:tooltip "Calculation of insurance premiums to the Pension Fund of Russia"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachTaxDeclaration
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachTaxDeclaration;
+  v-ui:tooltip "Налоговые декларации по НДС на последнюю отчетную дату с отметкой налогового органа о получении"@ru ;
+  v-ui:tooltip "Tax returns"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachAccountBalance
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachAccountBalance;
+  v-ui:tooltip "Бухгалтерский баланс и отчет о финансовых результатах на последнюю отчетную дату с отметкой налогового органа о получении"@ru ;
+  v-ui:tooltip "Balance sheet"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachTaxReport
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachTaxReport;
+  v-ui:tooltip "Справка налогового органа о состоянии расчетов с бюджетом"@ru ;
+  v-ui:tooltip "Help fiscal body on the status of settlements with the budget"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachLicense
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachLicense;
+  v-ui:tooltip "Лицензия или другой документ (например, Свидетельство СРО и т.п.), удостоверяющий право на осуществление данного вида деятельности (если деятельность подлежит лицензированию или иной форме регулирования)"@ru ;
+  v-ui:tooltip "License"@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachSignatureSample
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachSignatureSample;
+  v-ui:tooltip "Банковская карточка с образцами подписей."@ru ;
+  v-ui:tooltip "Bank card with samples of signatures."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachOrganizationProperties
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachOrganizationProperties;
+  v-ui:tooltip "Свидетельство налогового (компетентного) органа (в соответствии с Соглашением об избежании двойного налогообложения) о регистрации контрагента в качестве налогоплательщика по месту нахождения его основной деятельности с проставленным апостилем и переводом на русский язык."@ru ;
+  v-ui:tooltip "Details of the organization."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PsattachOtherDoc
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:attachOtherDoc;
+  v-ui:tooltip "Иные документы и сведения, предусмотренные пунктом 3.3 настоящей Инструкции."@ru ;
+  v-ui:tooltip "Other documents."@en ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+.
+v-s:PshasClassifierOKVED
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:hasClassifierOKVED;
+  v-ui:treeRoot  d:46f5101930b84318a2729e325a3bbe11;
+  v-ui:treeRoot  d:db173864f36b40b6a8c0aa54698993e5;
+  v-ui:treeRoot  d:e231e61f533d4efca26f8f4dcb89d526;
+  v-ui:treeRoot  d:03b99870220c4298bbb5205d4baef223;
+  v-ui:treeRoot  d:2bfd5785f27d404d91f9ea0c6776be0b;
+  v-ui:treeRoot  d:a6cbc433502a435facc0101d3011dd57;
+  v-ui:treeRoot  d:de3025d1094c462583c2768330138016;
+  v-ui:treeRoot  d:7d5ed218d3594d1bad1c795b4dd5b72c;
+  v-ui:treeRoot  d:a6481e4b18a649faac50e06a041b7c6e;
+  v-ui:treeRoot  d:2bf1c3d5d7c24c00b9d21a316f593d59;
+  v-ui:treeRoot  d:750324185e0f4754a3a166c7477c025d;
+  v-ui:treeRoot  d:c3faddd518fb4fe1b7239c5b77c3ebae;
+  v-ui:treeRoot  d:8e847f9c954a41ad91ce75a1b9fe5965;
+  v-ui:treeRoot  d:82e994b8848c40fe8b649acffff1ff06;
+  v-ui:treeRoot  d:f2fed1092af94be484fb7f9fd72c765c;
+  v-ui:treeRoot  d:ede091781b2f4cb6bfaadbd9f13be0e0;
+  v-ui:treeRoot  d:69291c45bd304e6f8203f9ef2a6a1f77;
+  v-ui:treeRoot  d:a96a921db73d4d6aa80a7f51ca0a4789;
+  v-ui:treeRoot  d:570d8b83f2604204834bbe0f724ad1fe;
+  v-ui:treeRoot  d:7f654ba3a8b041f3a928aca9985a9029;
+  v-ui:treeRoot  d:fb77ef1adefc41769b9f4bdb6d6124a2;
+  v-ui:treeInProperty v-s:hasParentLink ;
+  v-ui:treeAllowedClass v-s:ClassifierOKVED ;
+  v-ui:treeSelectableClass v-s:ClassifierOKVED ;
+  v-ui:treeDisplayedProperty rdfs:label ;
+  v-ui:treeDisplayedProperty v-s:registrationNumber ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:placeholder "Выберите вид деятельности ОКВЭД"@ru ;
+  v-ui:placeholder "Select the type of activity OKVED"@en ;
+ .
+v-s:PsContractorProfileMailbox
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractorProfile ;
+  v-ui:forProperty v-s:mailbox ;
+  v-ui:tooltip "E-mail генерального директора или руководителя финансовой службы."@ru ;
+  v-ui:tooltip "E-mail the general manager or head of finance department"@en ;
+  rdfs:label "Спецификация к свойству v-s:mailbox для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Spec for property v-s:mailbox for class v-s:ContractorProfile"@en ;
+.
+  v-s:PshasClassifierCountry
+    rdf:type v-ui:PropertySpecification ;
+    v-ui:forClass v-s:ContractorProfile ;
+    v-ui:forProperty v-s:hasClassifierCountry;
+    v-ui:forProperty v-s:hasClassifierLegalForm;
+    v-ui:forProperty v-s:isDirectManufacturer;
+    v-ui:forProperty v-s:isSpecialTax;
+    v-ui:minCardinality 1 ;
+    v-ui:maxCardinality 1 ;
+   .
+
+  v-s:PshasContractorInteractionCategoryZapros
+    rdf:type v-ui:DatatypePropertySpecification ;
+    v-ui:forClass v-s:ContractorCategoryRequest ;
+    v-ui:forProperty v-s:hasContractorInteractionCategory ;
+    v-ui:minCardinality 1 ;
+    v-ui:maxCardinality 1 ;
+    rdfs:label "Specification Legal Department summary"@en ;
+    rdfs:label "Спецификация к свойству hasContractorInteractionCategory for class v-s:ContractorCategoryRequest"@en ;
+  .
+  v-s:PsContractorCategoryRequestexpectedValueOfContract
+    rdf:type v-ui:PropertySpecification ;
+    v-ui:forClass  v-s:ContractorCategoryRequest;
+    v-ui:forProperty v-s:expectedValueOfContract;
+    v-ui:minCardinality 1 ;
+    v-ui:maxCardinality 1 ;
+    rdfs:label "Спецификация к свойству v-s:expectedValueOfContract для класса v-s:expectedValueOfContract"@ru ;
+    rdfs:label "Spec for property v-s:expectedValueOfContract for class v-s:expectedValueOfContract"@en ;
+   .
+
+v-s:hasClassifierOKVEDFORContractorCategoryRequest
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass  v-s:ContractorCategoryRequest;
+  v-ui:forProperty v-s:hasClassifierOKVED;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100;
+  v-ui:placeholder "Выберите вид деятельности ОКВЭД"@ru ;
+  v-ui:placeholder "Select the type of activity OKVED"@en ;
+  rdfs:label "Спецификация к свойству v-s:hasClassifierOKVED для класса v-s:ContractorCategoryRequest"@ru ;
+  rdfs:label "Spec for property v-s:hasClassifierOKVED for class v-s:ContractorCategoryRequest"@en ;
+ .
+v-s:PsIsContractorOkSecurityDepSummary
+  rdf:type v-ui:DatatypePropertySpecification ;
+  v-ui:forClass v-s:ContractorCategoryDecisionSecurity ;
+  v-ui:forProperty v-s:isContractorOkSecurityDepSummary ;
+  v-ui:defaultValue "false"^^xsd:boolean ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "Спецификация заключения СБ положительное?"@ru ;
+  rdfs:label "Specification Security department summary"@en ;
+.
+v-s:PsIsContractorOkLegalDepSummary
+  rdf:type v-ui:DatatypePropertySpecification ;
+  v-ui:forClass v-s:ContractorCategoryDecisionLegal ;
+  v-ui:forProperty v-s:isContractorOkLegalDepSummary ;
+  v-ui:defaultValue "false"^^xsd:boolean ;
+  v-ui:minCardinality 1 ;
+  rdfs:label "Спецификация заключения ЮРО положительное?"@ru ;
+  rdfs:label "Specification Legal Department summary"@en ;
+.
+v-s:PsIsContractorOkFinancialDepSummary
+  rdf:type v-ui:DatatypePropertySpecification;
+  v-ui:forClass v-s:ContractorCategoryDecisionFinancial;
+  v-ui:forProperty v-s:isContractorOkFinancialDepSummary;
+  v-ui:minCardinality 1 ;
+  v-ui:defaultValue "false"^^xsd:boolean ;
+  rdfs:label "Заключение Бухгалтерии?"@ru ;
+  rdfs:label "Specification Resolution Financial"@en ;
+.
+
+#--------------Строки--------------------------------------
+
+v-s:AddOKVEDName
+  rdf:type v-s:Bundle ;
+  rdfs:label "Возможные виды деятельности компании по выписке из ЕГРЮЛ"@ru ;
+  rdfs:label "Possible activities of the company"@en ;
+.
+v-s:AddOKVEDNameCoordinated
+  rdf:type v-s:Bundle ;
+  rdfs:label "Согласованние видов деятельности компании"@ru ;
+  rdfs:label "Coordinated activities of the company"@en ;
+.
+v-s:AddOKVEDNameRequested
+  rdf:type v-s:Bundle ;
+  rdfs:label "Проверяемые виды деятельности для Mondi, включая субподряд"@ru ;
+  rdfs:label "Coordinated activities of the company"@en ;
+.
+v-s:AddRegistrNamberReestr
+  rdf:type v-s:Bundle ;
+  rdfs:label "Регистрационный номер контрагента"@ru ;
+  rdfs:label "Registration number of the counterparty"@en ;
+.
+v-s:AddDateactions
+  rdf:type v-s:Bundle ;
+  rdfs:label "Период действия документа"@ru ;
+  rdfs:label "The period of validity of the document"@en ;
+.
+
+# ------------------------------------------------------------ПЕЧАТНАЯ_ФОРМА-----
+v-s:ContractorCategoryDecision_printBlank
+  rdf:type v-s:ReportsForClass ;
+  v-ui:forClass v-s:ContractorCategoryDecision ;
+  v-s:filePath "/reports/Contract/ContractorCategoryDecision_PrintBlank" ;
+  v-s:fileFormat "pdf";
+  rdfs:label "Печатная форма листа оценки"@ru ;
+  rdfs:label "ContractorCategoryDecision print blank"@en ;
+.
+
+#-------------Template-------------------------
+v-s:ContractorProfileTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorProfile ;
+  rdfs:label "Шаблон для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Template for v-s:ContractorProfile class"@en ;
+  v-ui:template """
+<script>
+  var props = [
+    "v-s:attachOrganizationProperties",
+    "v-s:attachCertificateRegistrationLegal",
+    "v-s:attachExcerptFromEGRUL",
+    "v-s:attachCertificateTaxRegistration",
+    "v-s:attachAppointingOrder",
+    "v-s:attachWarrant",
+    "v-s:attachSignatureSample",
+    "v-s:attachLicense",
+    "v-s:attachTaxReport",
+    "v-s:attachAccountBalance",
+    "v-s:attachTaxDeclaration",
+    "v-s:attachDocConfirmUseAddresses",
+    "v-s:attachDocSpecialTaxSystem",
+    "v-s:attachInsurancePayments",
+    "v-s:attachSubcontract",
+    "v-s:attachSubcontractorInteraction",
+    "v-s:attachDocConfirmUseTransport",
+    "v-s:attachDocConfirmUseWood",
+    "v-s:attachDocConfirmUseForestryEquipment",
+    "v-s:attachOtherDoc"
+  ];
+  var files = $(".files", template),
+      relNameTmpl = $(".rel-name", template).get(0).outerHTML,
+      relValueTmpl = $(".rel-value", template).get(0).outerHTML;
+  $(".rel-name, .rel-value", template).remove();
+  props.map(function (property_uri) {
+    var relName = $(relNameTmpl);
+    relName.find("strong").attr("about", property_uri);
+    relName.find("veda-control").attr("rel", property_uri);
+    var relValue = $(relValueTmpl).attr("rel", property_uri);
+    files.append(relName, relValue);
+  });
+
+  //# sourceURL=v-s:ContractorProfileTemplate_pre
+</script>
+<div class="container sheet">
+   <h2>
+    <span about="v-s:ContractorProfile" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+  <br>
+  <div>
+    <div about="@" rel="v-s:backwardTarget">
+      <span>
+        <span about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span about="@" data-template="v-ui:ClassNameLabelTemplate"></span>
+      </span>
+    </div>
+  </div>
+  <br>
+  <table class="table table-bordered">
+    <thead class="result-header">
+      <tr>
+        <th  colspan="5" about="v-s:ContractorCategoryRequest" property="rdfs:label"></th>
+      </tr>
+      <tr class="active">
+        <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+        <th about="v-s:hasContractorInteractionCategory" property="rdfs:label"></th>
+        <th about="v-s:date" property="rdfs:label"></th>
+        <th about="v-s:isOrganizationOk" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasContractorCategoryRequest" >
+      <tr>
+        <td width="1%"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+        <td width="50%">
+          <div about="@" rel="v-s:hasContractorInteractionCategory" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+        </td>
+        <td width="20%" rel="v-s:hasContractorCategoryDecision">
+          <div>
+            <div property="v-s:date" class="view -edit -search"></div>
+          </div>
+        </td>
+        <td width="30%" rel="v-s:hasContractorCategoryDecision">
+          <div>
+            <veda-control  property="v-s:isOrganizationOk" data-type="boolean"></veda-control>
+          </div>
+          <script>
+              if( individual.hasValue("v-s:isOrganizationOk", true) ) {
+                template.closest("tr").addClass("success");
+              } else if ( individual.hasValue("v-s:isOrganizationOk", false) ) {
+                template.closest("tr").addClass("danger");
+              } else {
+                template.closest("tr").addClass("warning");
+              }
+          </script>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="view -edit -search clearfix">
+    <button class="btn btn-success pull-right" id="add-contractorCategoryRequest" >
+      <span class="glyphicon glyphicon-search"></span>
+      <span about="v-s:ContractorCategoryRequest" property="rdfs:label"></span>
+    </button>
+  </div>
+  <br>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th colspan="3" about="v-s:AddOKVEDName" property="rdfs:label"></th>
+      </tr>
+      <tr class="active">
+        <th about="rdfs:label" property="rdfs:label"></th>
+        <th about="v-s:description" property="rdfs:label"></th>
+        <th about="v-s:registrationNumber" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasClassifierOKVED">
+      <tr>
+        <td property="rdfs:label" class="view edit -search"></td>
+        <td property="v-s:description" class="view edit -search"></td>
+        <td property="v-s:registrationNumber" class="view edit -search"></td>
+      </tr>
+    </tbody>
+    <tfoot class="-view edit -search"><tr><td colspan="3">
+      <br>
+        <veda-control data-type="link" rel="v-s:hasClassifierOKVED" class="-view edit search fulltext tree"></veda-control>
+    </td></tr></tfoot>
+  </table>
+
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:isDirectManufacturer" data-type="boolean"></veda-control>
+      <em about="v-s:isDirectManufacturer" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:isSpecialTax" data-type="boolean"></veda-control>
+      <em about="v-s:isSpecialTax" property="rdfs:label"></em>
+
+    </label>
+  </div>
+
+  <em about="v-s:organizationProperties" property="rdfs:label"></em>
+  <div property="v-s:organizationProperties" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:organizationProperties" class="-view edit search"></veda-control>
+
+  <em about="v-s:contactInfo" property="rdfs:label"></em>
+  <div property="v-s:contactInfo" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contactInfo" class="-view edit search"></veda-control>
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-s:mailbox" property="rdfs:label"></em>
+      <div property="v-s:mailbox" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:phone" property="rdfs:label"></em>
+      <div property="v-s:phone" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:phone" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:fax" property="rdfs:label"></em>
+      <div property="v-s:fax" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:fax" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <table class="table table-bordered files">
+    <thead>
+      <tr>
+        <th rowspan="2" width="30%" about="v-s:fileName" property="rdfs:label"></th>
+        <th rowspan="2" width="20%" about="rdfs:comment" property="rdfs:label"></th>
+        <th colspan="2" width="20%" about="v-s:AddDateactions" property="rdfs:label"></th>
+        <th rowspan="2" width="20%" about="v-s:creator" property="rdfs:label"></th>
+      </tr>
+      <tr>
+        <th  width="15%" about="v-s:dateFrom" property="rdfs:label"></th>
+        <th  width="15%" about="v-s:dateTo" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody class="rel-name">
+      <tr class="active">
+        <td colspan="5">
+          <strong about="" property="rdfs:label"></strong>
+          <veda-control style="display:inline-block;margin-left:10px" rel="" data-type="file" class="-view edit -search"></veda-control>
+        </td>
+      </tr>
+    </tbody>
+    <tbody class="rel-value" rel="" data-embedded="true">
+      <tr>
+        <td>
+          <span id="icon" class="label label-primary"></span>
+          <a href="/files/@">
+            <span about="@" property="v-s:fileName"></span>
+          </a>
+        </td>
+        <td>
+          <span property="rdfs:comment" class="view -edit -search"></span>
+          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+        </td>
+        <td>
+          <div property="v-s:dateFrom" class="view -edit -search"></div>
+          <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+        </td>
+        <td>
+          <div property="v-s:dateTo" class="view -edit -search"></div>
+          <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+        </td>
+        <td><span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span> <span about="@" property="v-s:created"></span></td>
+      </tr>
+      <script>
+        var fn = individual["v-s:fileName"][0],
+          idx = fn.lastIndexOf("."),
+          ext = fn.substr(idx + 1);
+        $("span#icon", template).text(ext);
+        //# sourceURL=v-s:ContractorProfileFileTemplate
+      </script>
+    </tbody>
+  </table>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
+  </div>
+</div>
+<script>
+  $("#add-contractorCategoryRequest", template).click(function () {
+    var _class = new veda.IndividualModel("v-s:ContractorCategoryRequest"),
+        request = new veda.IndividualModel(),
+        tmpl = "v-s:ContractorCategoryRequestTemplate";
+    request["rdf:type"] = [_class];
+    request["v-s:backwardTarget"] = [individual];
+    request["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorCategoryRequest")];
+    request["v-s:canRead"] = [ true ];
+    riot.route( ["#", request.id, "#main", tmpl, "edit"].join("/") );
+  });
+  //# sourceURL=v-s:ContractorProfileTemplate_post
+</script>
+  """ ;
+.
+
+v-s:ContractorCategoryRequestTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorCategoryRequest ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryRequest"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryRequest class"@en ;
+  v-ui:template """
+<script>
+  var hideAndshowsubContractorOf = $("#hideAndshowsubContractorOf", template);
+
+  individual.on("v-s:hasContractorInteractionCategory", handler);
+  template.one("remove", function () {
+    individual.off("v-s:hasContractorInteractionCategory", handler);
+  });
+  function handler() {
+    if ((individual.hasValue('v-s:hasContractorInteractionCategory') && individual['v-s:hasContractorInteractionCategory'][0].id === 'd:eb16f1abb93f44d89ae0492710ad4631')) {
+      hideAndshowsubContractorOf.show();
+    } else {
+      hideAndshowsubContractorOf.hide();
+    }
+  }
+  handler();
+  //кнопка активна если итоговая оценка отрицательная
+  if ( individual.hasValue("v-s:hasContractorCategoryDecision") && individual["v-s:hasContractorCategoryDecision"][0]["v-s:isOrganizationOk"][0] === false ) {
+    $(".action#save_and_start_process2", template).removeAttr("disabled");
+  } else {
+    $(".action#save_and_start_process2", template).attr("disabled", "disabled");
+  }
+</script>
+<div>
+  <div class="container sheet">
+    <div class="row">
+      <div class ="col-md-9 col-sm-7">
+        <h2>
+          <span about="v-s:ContractorCategoryRequest" property="rdfs:label"></span><br>
+          <small about="@" property="rdfs:label"></small>
+        </h2>
+      <span about="@" data-template="v-ui:RabbitHole"></span>
+      </div>
+      <div class="col-md-3 col-sm-5">
+        <br>
+        <h4>
+          <span class="label label-danger">
+            <span about="v-s:contractorCategory" property="rdfs:label"></span>:
+            <span about="@" property="v-s:contractorCategory"></span>
+          </span>
+        </h4>
+      </div>
+    </div>
+
+    <hr class="margin-sm">
+    <div class="row">
+      <div class="col-md-9 col-sm-7">
+        <em about="v-s:hasContractorInteractionCategory" property="rdfs:label"></em>
+        <div rel="v-s:hasContractorInteractionCategory" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasContractorInteractionCategory" class="-view edit search fulltext dropdown"></veda-control>
+        <br>
+        <div id="hideAndshowsubContractorOf">
+          <br>
+          <table class="table table-bordered">
+            <thead class="result-header">
+              <tr>
+                <th  colspan="3" about="v-s:subContractorOf" property="rdfs:label"></th>
+              </tr>
+              <tr class="active">
+                <th about="rdfs:label" property="rdfs:label"></th>
+                <th about="v-s:taxId" property="rdfs:label"></th>
+                <th about="v-s:legalAddress" property="rdfs:label"></th>
+              </tr>
+            </thead>
+            <tbody rel="v-s:subContractorOf" >
+              <tr>
+                <td>
+                  <div about="@" property="rdfs:label" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+                </td>
+                <td>
+                  <div about="@" property="v-s:taxId" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+                </td>
+                <td>
+                  <div>
+                    <div property="v-s:legalAddress" class="view -edit -search"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot class="-view edit -search"><tr><td colspan="3">
+              <br>
+              <veda-control data-type="link" rel="v-s:subContractorOf" class="-view edit search fulltext"></veda-control>
+            </td></tr></tfoot>
+          </table>
+        </div>
+
+        <em about="v-s:expectedValueOfContract" class="view edit -search" property="rdfs:label"></em>
+        <div about="@" rel="v-s:expectedValueOfContract" class="view edit -search" data-template="v-s:PriceTemplate" data-embedded="true"></div>
+        <veda-control data-type="link" rel="v-s:expectedValueOfContract" class="-view edit -search create"></veda-control>
+
+        <em about="rdfs:comment" property="rdfs:label"></em>
+        <div property="rdfs:comment" class="view -edit -search"></div>
+        <veda-control data-type="text" property="rdfs:comment" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-md-3 col-sm-5">
+        <br>
+        <div rel="v-s:hasContractorCategoryDecision"  data-template="v-s:ContractorCategoryDecisionEmbeddedTemplate"></div>
+        <div id="new-ContractorCategoryDecision" class="view -edit -search clearfix">
+          <button class="btn btn-success pull-right" id="add-ContractorCategoryDecision">
+            <span class="glyphicon glyphicon-zoom-in"></span>
+            <span about="v-s:ContractorCategoryDecision" property="rdfs:label"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div about="@" rel="v-s:backwardTarget" data-embedded="true" data-template="v-s:DosieEmbeddedTemplate"></div>
+
+    <hr>
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <!-- BUTTONS -->
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
+    </div>
+  </div>
+  <br>
+  <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
+  <br>
+  <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+</div>
+<script>
+  $("#add-ContractorCategoryDecision", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:ContractorCategoryDecision"),
+        decision = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:ContractorCategoryDecisionTemplate");
+    decision["rdf:type"] = [_class];
+    decision["v-s:backwardTarget"] = [individual];
+    decision["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorCategoryDecision")];
+    decision["v-s:canRead"] = [ true ];
+    decision.present(cntr, tmpl, "edit");
+    decision.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    decision.one("afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+  var _class = new veda.IndividualModel("v-s:ContractorCategoryDecision");
+  var hasRights = _class.rights.hasValue("v-s:canCreate", true);
+
+  individual.on("v-s:hasContractorCategoryDecision", handler);
+  template.one("remove", function () {
+    individual.off("v-s:hasContractorCategoryDecision", handler);
+  });
+  function handler() {
+    if (!hasRights) {
+      $("#add-ContractorCategoryDecision", template).prop("disabled", true);
+    }
+    if(individual.hasValue("v-s:hasContractorCategoryDecision")){
+      $("#add-ContractorCategoryDecision", template).hide();
+    } else {
+        $("#add-ContractorCategoryDecision", template).show();
+      }
+  }
+  handler();
+
+  individual.on("afterReset", processHandler);
+  processHandler();
+  template.one("remove", function () {
+     individual.off("afterReset", processHandler);
+  });
+
+  //# sourceURL=v-s:ContractorCategoryRequestTemplate
+</script>
+    """ ;
+.
+
+v-s:PriceTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Price внутри v-s:ContractorCategoryRequest"@ru ;
+  rdfs:label "Template for v-s:Price class in v-s:ContractorCategoryRequest"@en ;
+  v-ui:template """
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-s:sum" property="rdfs:label" class="margin-sm"></em>
+        <span property="v-s:sum" class="view -edit search"></span>
+        <veda-control data-type="decimal" property="v-s:sum" class="-view edit search"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="v-s:hasCurrency" property="rdfs:label" class="margin-sm"></em>
+        <span rel="v-s:hasCurrency" class="view -edit search" data-template="v-ui:LabelTemplate"></span>
+        <veda-control data-type="link" rel="v-s:hasCurrency" class="-view edit search fulltext dropdown"></veda-control>
+      </div>
+      <div class="col-md-3 view edit -search">
+        <em about="v-s:sumRuble" property="rdfs:label" class="margin-sm"></em>
+        <span about="@" property="v-s:sumRuble" class="view edit -search"></span>
+      </div>
+      <div class="col-md-3 view edit -search">
+        <em about="v-s:date" property="rdfs:label" class="margin-sm"></em>
+        <span about="@" property="v-s:date" class="view edit -search"></span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  individual.on("propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("propertyModified", handler);
+  });
+
+  function handler(property_uri) {
+    if ( (property_uri === "v-s:sum" || property_uri === "v-s:hasCurrency") && (individual.hasValue("v-s:sum") && individual.hasValue("v-s:hasCurrency")) ) {
+      var CER_uri = query({
+        ticket: veda.ticket,
+        query: "'rdf:type'==='v-s:CurrencyExchangeRate' && 'v-s:hasCurrencySource'=='" + individual["v-s:hasCurrency"][0].id + "' && 'v-s:hasCurrencyTarget'=='d:currency_rub' && 'v-s:hasCurrencyExchangeRatePurpose'=='v-s:CER_Purpose_current'",
+        sort: "'v-s:date' asc",
+        top: 1,
+        async: true
+      }).then(function (result) {
+        var CER_uri = result.result[0];
+        if (CER_uri) {
+          var CER = new veda.IndividualModel(CER_uri);
+          var rate = CER["v-s:rate"][0];
+          individual["v-s:sumRuble"] = [ individual["v-s:sum"][0] * rate ];
+          individual["v-s:date"] = [ new Date() ];
+        } else {
+          individual["v-s:sumRuble"] = [];
+          individual["v-s:date"] = [];
+        }
+      });
+    }
+  }
+
+  //# sourceURL=v-s:PriceTemplate_post
+</script>
+  """ ;
+.
+
+v-s:DosieEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Вложенный шаблон для класса v-s:ContractorProfile"@ru ;
+  rdfs:label "Template embedded for v-s:ContractorProfile class"@en ;
+  v-ui:template """
+<script>
+  var props = [
+    "v-s:attachOrganizationProperties",
+    "v-s:attachCertificateRegistrationLegal",
+    "v-s:attachExcerptFromEGRUL",
+    "v-s:attachCertificateTaxRegistration",
+    "v-s:attachAppointingOrder",
+    "v-s:attachWarrant",
+    "v-s:attachSignatureSample",
+    "v-s:attachLicense",
+    "v-s:attachTaxReport",
+    "v-s:attachAccountBalance",
+    "v-s:attachTaxDeclaration",
+    "v-s:attachDocConfirmUseAddresses",
+    "v-s:attachDocSpecialTaxSystem",
+    "v-s:attachInsurancePayments",
+    "v-s:attachSubcontract",
+    "v-s:attachSubcontractorInteraction",
+    "v-s:attachDocConfirmUseTransport",
+    "v-s:attachDocConfirmUseWood",
+    "v-s:attachDocConfirmUseForestryEquipment",
+    "v-s:attachOtherDoc"
+  ];
+  var files = $(".files", template),
+      relNameTmpl = files.children(".rel-name").remove(),
+      relValueTmpl = files.children(".rel-value").remove();
+  props.map(function (property_uri) {
+    var relName = relNameTmpl.clone();
+    relName.find("strong").attr("about", property_uri);
+    relName.find("veda-control").attr("rel", property_uri);
+    var relValue = relValueTmpl.clone().attr("rel", property_uri);
+    files.append(relName, relValue);
+  });
+
+  // VALIDATION
+  var categories = {
+    1: [
+      "v-s:attachCertificateRegistrationLegal"
+    ],
+    2: [
+      "v-s:attachCertificateRegistrationLegal"
+    ],
+    3: [
+      "v-s:attachCertificateRegistrationLegal",
+      "v-s:attachCertificateTaxRegistration",
+      "v-s:attachExcerptFromEGRUL",
+      "v-s:attachAppointingOrder",
+      "v-s:attachWarrant"
+    ],
+    4: [
+      "v-s:attachCertificateRegistrationLegal",
+      "v-s:attachCertificateTaxRegistration",
+      "v-s:attachExcerptFromEGRUL",
+      "v-s:attachAppointingOrder",
+      "v-s:attachWarrant",
+      "v-s:attachTaxReport",
+      "v-s:attachAccountBalance",
+      "v-s:attachInsurancePayments",
+      "v-s:attachDocConfirmUseAddresses",
+      "v-s:attachDocSpecialTaxSystem",
+
+    ],
+    5: [
+      "v-s:attachCertificateRegistrationLegal",
+      "v-s:attachCertificateTaxRegistration",
+      "v-s:attachExcerptFromEGRUL",
+      "v-s:attachAppointingOrder",
+      "v-s:attachWarrant",
+      "v-s:attachTaxReport",
+      "v-s:attachAccountBalance",
+      "v-s:attachInsurancePayments",
+      "v-s:attachDocConfirmUseAddresses",
+
+    ],
+    6: [],
+    7: [],
+    s1: [
+      "v-s:attachDocConfirmUseTransport"
+    ],
+    s2: [
+      "v-s:attachDocConfirmUseWood",
+      "v-s:attachDocConfirmUseForestryEquipment"
+    ],
+
+  };
+
+  template.on("validate", function () {
+    var result = {};
+    if ( individual.hasValue("v-s:lastContractorCategory") ) {
+      var category = categories[ individual["v-s:lastContractorCategory"][0] ];
+      category.reduce(function (acc, property_uri) {
+        acc.state = ( typeof acc.state === "undefined" ? true : acc.state );
+        acc[property_uri] = checkMinCardinality(property_uri);
+        return acc;
+      }, result);
+    }
+    if (individual.hasValue("v-s:dateFromFact") && individual["v-s:dateFromFact"][0].getFullYear() === (new Date()).getFullYear()) {
+      result["v-s:attachAccountBalance"] = {
+        state: true,
+        cause: []
+      };
+    }
+    if ( individual.hasValue("v-s:lastContractorCategorySpecial") ) {
+      var special_category = [];
+      if (individual["v-s:lastContractorCategorySpecial"][0] & 1) {
+        special_category = special_category.concat(categories.s1);
+      }
+      if (individual["v-s:lastContractorCategorySpecial"][0] & 2) {
+        special_category = special_category.concat(categories.s2);
+      }
+      special_category.reduce(function (acc, property_uri) {
+        acc.state = ( typeof acc.state === "undefined" ? true : acc.state );
+        acc[property_uri] = checkMinCardinality(property_uri);
+        return acc;
+      }, result);
+    }
+    template.trigger("validated", result);
+  });
+
+  function checkMinCardinality (property_uri) {
+    var state = individual.hasValue(property_uri);
+    var cause = ["v-ui:minCardinality"];
+    return {state: state, cause: cause};
+  }
+
+  //# sourceURL=v-s:DosieEmbeddedTemplate_pre
+</script>
+<div>
+  <h2>
+    <span about="v-s:ContractorProfile" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <br>
+  <div>
+    <span about="@" rel="v-s:backwardTarget" data-template="v-ui:IconModalTemplate"></span> <span about="@" rel="v-s:backwardTarget" data-template="v-ui:ClassNameLabelTemplate"></span>
+  </div>
+  <br class="view -edit -search">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th colspan="3" about="v-s:AddOKVEDName" property="rdfs:label"></th>
+      </tr>
+      <tr class="active">
+        <th about="rdfs:label" property="rdfs:label"></th>
+        <th about="v-s:description" property="rdfs:label"></th>
+        <th about="v-s:registrationNumber" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasClassifierOKVED" >
+      <tr>
+        <td property="rdfs:label" class="view edit -search"></td>
+        <td property="v-s:description" class="view edit -search"></td>
+        <td property="v-s:registrationNumber" class="view edit -search"></td>
+      </tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">
+      <veda-control data-type="link" rel="v-s:hasClassifierOKVED" class="-view edit search fulltext" data-template="{individual['v-s:registrationNumber'][0] + ' - ' + individual['rdfs:label'][0]}"></veda-control>
+    </td></tr></tfoot>
+  </table>
+  <em about="v-s:LegalEntityExistencePeriodBundle" property="rdfs:label"></em>
+  <div class="row">
+    <div class="col-md-3">
+      <div property="v-s:dateFromFact" class="view -edit -search"></div>
+      <veda-control property="v-s:dateFromFact" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-3">
+      <div property="v-s:dateToFact" class="view -edit -search"></div>
+      <veda-control property="v-s:dateToFact" data-type="dateTime" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <em about="v-s:organizationProperties" property="rdfs:label"></em>
+  <div property="v-s:organizationProperties" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:organizationProperties" class="-view edit search"></veda-control>
+
+  <em about="v-s:contactInfo" property="rdfs:label"></em>
+  <div property="v-s:contactInfo" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contactInfo" class="-view edit search"></veda-control>
+  <div class="row">
+    <div class="col-md-4">
+      <em about="v-s:mailbox" property="rdfs:label"></em>
+      <div property="v-s:mailbox" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:phone" property="rdfs:label"></em>
+      <div property="v-s:phone" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:phone" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-4">
+      <em about="v-s:fax" property="rdfs:label"></em>
+      <div property="v-s:fax" class="view -edit -search"></div>
+      <veda-control data-type="string" property="v-s:fax" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <table class="table table-bordered files">
+    <thead>
+      <tr>
+        <th rowspan="2" width="30%" about="v-s:fileName" property="rdfs:label"></th>
+        <th rowspan="2" width="20%" about="rdfs:comment" property="rdfs:label"></th>
+        <th colspan="2" width="20%" about="v-s:AddDateactions" property="rdfs:label"></th>
+        <th rowspan="2" width="20%" about="v-s:creator" property="rdfs:label"></th>
+      </tr>
+      <tr>
+        <th  width="15%" about="v-s:dateFrom" property="rdfs:label"></th>
+        <th  width="15%" about="v-s:dateTo" property="rdfs:label"></th>
+      </tr>
+    </thead>
+    <tbody class="rel-name">
+      <tr class="active">
+        <td colspan="5">
+          <strong about="" property="rdfs:label"></strong>
+          <veda-control style="display:inline-block;margin-left:10px" rel="" data-type="file" class="-view edit -search"></veda-control>
+        </td>
+      </tr>
+    </tbody>
+    <tbody class="rel-value" rel="" data-embedded="true">
+      <tr>
+        <td>
+          <span id="icon" class="label label-primary"></span>
+          <a href="/files/@">
+            <span about="@" property="v-s:fileName"></span>
+          </a>
+        </td>
+        <td>
+          <span property="rdfs:comment" class="view -edit -search"></span>
+          <veda-control data-type="string" property="rdfs:comment" class="-view edit search"></veda-control>
+        </td>
+        <td>
+          <div property="v-s:dateFrom" class="view -edit -search"></div>
+          <veda-control property="v-s:dateFrom" data-type="dateTime" class="-view edit search"></veda-control>
+        </td>
+        <td>
+          <div property="v-s:dateTo" class="view -edit -search"></div>
+          <veda-control property="v-s:dateTo" data-type="dateTime" class="-view edit search"></veda-control>
+        </td>
+        <td><span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span> <span about="@" property="v-s:created"></span></td>
+      </tr>
+      <script>
+        var fn = individual["v-s:fileName"][0],
+          idx = fn.lastIndexOf("."),
+          ext = fn.substr(idx + 1);
+        $("span#icon", template).text(ext);
+        //# sourceURL=v-s:ContractorProfileFileTemplate
+      </script>
+    </tbody>
+  </table>
+</div>
+<script>
+  $('#save_and_start_process', template).on('click', function () {
+     veda.Util.send(individual, template, 's-wf:complexRouteTransform');
+  });
+
+  //# sourceURL=v-s:DosieEmbeddedTemplate_post
+</script>
+
+    """ ;
+.
+
+v-s:ContractorCategoryDecisionTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorCategoryDecision ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecision"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
+  v-ui:template """
+<script>
+  var decisionContractorCategoryState = $("#decisionContractorCategoryState", template);
+
+  individual.on("v-s:isOrganizationOk", handler);
+  template.one("remove", function () {
+    individual.off("v-s:isOrganizationOk", handler);
+  });
+  function handler(values) {
+    if (values[0] === true) {
+      decisionContractorCategoryState.removeClass("alert-danger alert-warning").addClass("alert-success");
+    } else if (values[0] === false) {
+      decisionContractorCategoryState.removeClass("alert-success alert-warning").addClass("alert-danger");
+    } else {
+      decisionContractorCategoryState.removeClass("alert-success alert-danger").addClass("alert-warning");
+    }
+  }
+  handler(individual["v-s:isOrganizationOk"]);
+
+  //# sourceURL=v-s:ContractorCategoryDecisionTemplate_pre
+</script>
+<div class="container sheet">
+  <h2>
+    <span about="v-s:ContractorCategoryDecision" property="rdfs:label"></span><br>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+  <br>
+  <div id="decisionContractorCategoryState" class="alert">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="checkbox">
+          <label>
+            <veda-control property="v-s:isOrganizationOk" data-type="boolean"></veda-control>
+            <span><strong about="v-s:isOrganizationOk" property="rdfs:label"></strong> <span property="v-s:date" class="view -edit search"></span></span>
+          </label>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <veda-control property="v-s:date" data-type="dateTime" class="-view edit search"></veda-control>
+      </div>
+    </div>
+  </div>
+  <div rel="v-s:hasContractorCategoryDecisionSecurity" class="view edit -search" data-template="v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate"></div>
+  <div rel="v-s:hasContractorCategoryDecisionLegal" class="view edit -search" data-template="v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate"></div>
+  <div rel="v-s:hasContractorCategoryDecisionFinancial" class="view edit -search" data-template="v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate"></div>
+  <div class="row">
+    <div class="clearfix view -edit -search col-md-3 col-md-offset-9" >
+      <button id="add-ContractorCategoryDecisionSecurity" class="btn btn-success btn-block" about="v-s:hasContractorCategoryDecisionSecurity" property="rdfs:label"></button>
+      <button id="add-ContractorCategoryDecisionLegal" class="btn btn-success btn-block" about="v-s:hasContractorCategoryDecisionLegal" property="rdfs:label"></button>
+      <button id="add-ContractorCategoryDecisionFinancial" class="btn btn-success btn-block" about="v-s:hasContractorCategoryDecisionFinancial" property="rdfs:label"></button>
+    </div>
+  </div>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    <button type="button" class="action btn btn-info view -edit -search" id="createReport" about="v-s:PrintBlank" property="rdfs:label"/>
+  </div>
+</div>
+<script>
+  $('#createReport', template).on('click', function (e) {
+    e.preventDefault();
+    veda.Util.createReport(individual, 'v-s:ContractorCategoryDecision_printBlank');
+  });
+
+  $("#add-ContractorCategoryDecisionSecurity", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity"),
+        ContractorCategoryDecisionSecurity = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurityTemplate");
+    ContractorCategoryDecisionSecurity["rdf:type"] = [_class];
+    ContractorCategoryDecisionSecurity["v-s:backwardTarget"] = [individual];
+    ContractorCategoryDecisionSecurity["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorCategoryDecisionSecurity")];
+    ContractorCategoryDecisionSecurity.present(cntr, tmpl, "edit");
+    ContractorCategoryDecisionSecurity.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    ContractorCategoryDecisionSecurity.one("afterSave", function () {
+      modal.modal("hide").remove();
+    });
+    template.one("remove", function () {
+      modal.modal("hide");
+    });
+  });
+
+  $("#add-ContractorCategoryDecisionLegal", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal"),
+        ContractorCategoryDecisionLegal = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegalTemplate");
+    ContractorCategoryDecisionLegal["rdf:type"] = [_class];
+    ContractorCategoryDecisionLegal["v-s:backwardTarget"] = [individual];
+    ContractorCategoryDecisionLegal["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorCategoryDecisionLegal")];
+    ContractorCategoryDecisionLegal.present(cntr, tmpl, "edit");
+    ContractorCategoryDecisionLegal.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    ContractorCategoryDecisionLegal.one("afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+  $("#add-ContractorCategoryDecisionFinancial", template).click(function () {
+    var modal = $("#notification-modal-template").html();
+    modal = $(modal);
+    modal.modal({"show": false});
+    $("body").append(modal);
+    modal.modal("show");
+    template.one("remove", function () {
+      modal.modal("hide").remove();
+    });
+    var cntr = $(".modal-body", modal),
+        _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial"),
+        ContractorCategoryDecisionFinancial = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancialTemplate");
+    ContractorCategoryDecisionFinancial["rdf:type"] = [_class];
+    ContractorCategoryDecisionFinancial["v-s:backwardTarget"] = [individual];
+    ContractorCategoryDecisionFinancial["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasContractorCategoryDecisionFinancial")];
+    ContractorCategoryDecisionFinancial.present(cntr, tmpl, "edit");
+    ContractorCategoryDecisionFinancial.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    ContractorCategoryDecisionFinancial.one("afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+
+  var _classSecurity = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity");
+  var hasRightsSecurity = _classSecurity.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
+  individual.on("propertyModified", handlerSecurity);
+  template.one("remove", function () {
+    individual.off("propertyModified", handlerSecurity);
+  });
+  function handlerSecurity(property_uri, values) {
+    if (property_uri === "v-s:hasContractorCategoryDecisionSecurity" && (individual.hasValue("v-s:hasContractorCategoryDecisionSecurity") || !hasRightsSecurity)) {
+      $("#add-ContractorCategoryDecisionSecurity", template).remove();
+    }
+  }
+  handlerSecurity("v-s:hasContractorCategoryDecisionSecurity", individual["v-s:hasContractorCategoryDecisionSecurity"]);
+
+  var _classLegal = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal");
+  var hasRightsLegal = _classLegal.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
+  individual.on("propertyModified", handlerLegal);
+  template.one("remove", function () {
+    individual.off("propertyModified", handlerLegal);
+  });
+  function handlerLegal(property_uri, values) {
+    if (property_uri === "v-s:hasContractorCategoryDecisionLegal" && (individual.hasValue("v-s:hasContractorCategoryDecisionLegal") || !hasRightsLegal)) {
+      $("#add-ContractorCategoryDecisionLegal", template).remove();
+    }
+  }
+  handlerLegal("v-s:hasContractorCategoryDecisionLegal", individual["v-s:hasContractorCategoryDecisionLegal"]);
+
+  var _classFinancial = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial");
+  var hasRightsFinancial = _classFinancial.rights.hasValue("v-s:canCreate", true) && individual.rights.hasValue("v-s:canUpdate", true);
+  individual.on("propertyModified", handlerFinancial);
+  template.one("remove", function () {
+    individual.off("propertyModified", handlerFinancial);
+  });
+  function handlerFinancial(property_uri, values) {
+    if (property_uri === "v-s:hasContractorCategoryDecisionFinancial" && (individual.hasValue("v-s:hasContractorCategoryDecisionFinancial") || !hasRightsFinancial)) {
+      $("#add-ContractorCategoryDecisionFinancial", template).remove();
+    }
+  }
+  handlerFinancial("v-s:hasContractorCategoryDecisionFinancial", individual["v-s:hasContractorCategoryDecisionFinancial"]);
+
+  if (!(hasRightsSecurity || hasRightsLegal || hasRightsFinancial)){
+    $("#createReport", template).remove();
+  };
+
+  //# sourceURL=v-s:ContractorCategoryDecisionTemplate_post
+</script>
+   """ ;
+.
+
+v-s:ContractorCategoryDecisionSecurityTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorCategoryDecisionSecurity ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecisionSecurity"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecisionSecurity class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:ContractorCategoryDecisionSecurity" property="rdfs:label"></span><br>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+
+  <em about="v-s:contractorFrequentFounder" property="rdfs:label"></em>
+  <div property="v-s:contractorFrequentFounder" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contractorFrequentFounder" class="-view edit search"></veda-control>
+
+  <em about="v-s:contractorAdverseJudgments" property="rdfs:label"></em>
+  <div property="v-s:contractorAdverseJudgments" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contractorAdverseJudgments" class="-view edit search"></veda-control>
+
+  <em about="v-s:contractorZeroTaxReporting" property="rdfs:label"></em>
+  <div property="v-s:contractorZeroTaxReporting" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contractorZeroTaxReporting" class="-view edit search"></veda-control>
+
+  <em about="v-s:contractorOtherSecurityRisk" property="rdfs:label"></em>
+  <div property="v-s:contractorOtherSecurityRisk" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contractorOtherSecurityRisk" class="-view edit search"></veda-control>
+
+  <em about="v-s:contractorAssetsInspection" property="rdfs:label"></em>
+  <div property="v-s:contractorAssetsInspection" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contractorAssetsInspection" class="-view edit search"></veda-control>
+
+  <em about="v-s:contractorSecurityDepSummary" property="rdfs:label"></em>
+  <div about="@"  class="view edit -search" data-template="v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate" data-embedded="true"></div>
+
+  <em about="v-s:attachment" property="rdfs:label"></em>
+  <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+  <veda-control data-type="file"  rel="v-s:attachment" class="-view edit -search"></veda-control>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  $("#descriptionClose", template).remove();
+</script>
+ """ ;
+.
+
+v-s:ContractorCategoryDecisionSecurityEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecisionSecurity"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecisionSecurity class"@en ;
+  v-ui:template """
+<div class="input-group">
+  <span class="input-group-addon">
+    <veda-control property="v-s:isContractorOkSecurityDepSummary" data-type="boolean"></veda-control>
+  </span>
+  <div class="panel panel-default" style="margin-bottom: 0px" >
+    <div class="panel-body">
+      <h4 class="margin-sm">
+        <span id="TaxModalTemplete" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span about="v-s:isContractorOkSecurityDepSummary" property="rdfs:label"></span>
+      </h4>
+      <div property="v-s:contractorSecurityDepSummary" class="view -edit"></div>
+      <veda-control data-type="text" property="v-s:contractorSecurityDepSummary" class="-view edit "></veda-control>
+    </div>
+  </div>
+</div>
+
+<script>
+    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity");
+   if ( !_class.rights.hasValue("v-s:canCreate", true)){
+   $("#SecurityModalTemplete", template).remove()
+  }
+
+</script>
+ """ ;
+.
+
+v-s:ContractorCategoryDecisionLegalTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorCategoryDecisionLegal ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecisionLegal"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecisionLegal class"@en ;
+  v-ui:template """
+<div class="container sheet">
+<br>
+  <h2>
+    <span about="v-s:ContractorCategoryDecisionLegal" property="rdfs:label"></span><br>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+  <em about="v-s:contractorOtherLegalRisk" property="rdfs:label"></em>
+  <div property="v-s:contractorOtherLegalRisk" class="view -edit -search"></div>
+  <veda-control data-type="text" property="v-s:contractorOtherLegalRisk" class="-view edit search"></veda-control>
+  <em about="v-s:contractorLegalDepSummary" property="rdfs:label"></em>
+  <div about="@"  class="view edit -search" data-template="v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate" data-embedded="true"></div>
+  <em about="v-s:attachment" property="rdfs:label"></em>
+  <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+  <veda-control data-type="file"  rel="v-s:attachment" class="-view edit -search"></veda-control>
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  $("#descriptionClose", template).remove();
+</script>
+ """ ;
+.
+
+v-s:ContractorCategoryDecisionLegalEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecisionLegal"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecisionLegal class"@en ;
+  v-ui:template """
+<div class="input-group">
+  <span class="input-group-addon">
+    <veda-control property="v-s:isContractorOkLegalDepSummary" data-type="boolean"></veda-control>
+  </span>
+  <div class="panel panel-default" style="margin-bottom: 0px" >
+    <div class="panel-body">
+      <h4 class="margin-sm">
+        <span id="TaxModalTemplete" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span about="v-s:contractorLegalDepSummary" property="rdfs:label"></span>
+      </h4>
+      <div property="v-s:contractorLegalDepSummary" class="view -edit"></div>
+      <veda-control data-type="text" property="v-s:contractorLegalDepSummary" class="-view edit "></veda-control>
+    </div>
+  </div>
+</div>
+<script>
+    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal");
+   if ( !_class.rights.hasValue("v-s:canCreate", true)){
+   $("#LegalModalTemplete", template).remove()
+  }
+
+</script>
+ """ ;
+.
+
+v-s:ContractorCategoryDecisionFinancialTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:ContractorCategoryDecisionFinancial ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecisionFinancial"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecisionFinancial class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:ContractorCategoryDecisionFinancial" property="rdfs:label"></span><br>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <span about="@" data-template="v-ui:RabbitHole"></span>
+  <hr>
+  <em about="v-s:contractorFinancialDepSummary" property="rdfs:label"></em>
+  <div about="@"  class="view edit -search" data-template="v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate" data-embedded="true"></div>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  $("#descriptionClose", template).remove();
+</script>
+   """ ;
+.
+
+v-s:ContractorCategoryDecisionFinancialEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecisionFinancial"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecisionFinancial class"@en ;
+  v-ui:template """
+<div class="input-group">
+  <span class="input-group-addon">
+    <veda-control property="v-s:isContractorOkFinancialDepSummary" data-type="boolean"></veda-control>
+  </span>
+  <div class="panel panel-default" style="margin-bottom: 0px" >
+    <div class="panel-body">
+      <h4 class="margin-sm">
+        <span id="TaxModalTemplete" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span about="v-s:contractorFinancialDepSummary" property="rdfs:label"></span>
+      </h4>
+      <div property="v-s:contractorFinancialDepSummary" class="view -edit"></div>
+      <veda-control data-type="text" property="v-s:contractorFinancialDepSummary" class="-view edit "></veda-control>
+    </div>
+  </div>
+</div>
+<script>
+    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial");
+   if ( !_class.rights.hasValue("v-s:canCreate", true)){
+   $("#LegalModalTemplete", template).remove()
+  }
+
+</script>
+  """ ;
+.
+
+v-s:ContractorCategoryDecisionEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecision"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
+  v-ui:template """
+<script>
+    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecision");
+  if ( !_class.rights.hasValue("v-s:canCreate", true) ) {
+    $("#AddResolution", template).remove();
+  }
+
+  var decisionContractorCategoryEmbeddedState = $("#decisionContractorCategoryEmbeddedState", template);
+
+  individual.on("propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("propertyModified", handler);
+  });
+  function handler(property_uri, values) {
+    if (property_uri === "v-s:isOrganizationOk") {
+      if (values[0] === true) {
+        decisionContractorCategoryEmbeddedState.removeClass("panel-danger panel-warning").addClass("panel-success");
+      } else if (values[0] === false) {
+        decisionContractorCategoryEmbeddedState.removeClass("panel-success panel-warning").addClass("panel-danger");
+      } else {
+        decisionContractorCategoryEmbeddedState.removeClass("panel-success panel-danger").addClass("panel-warning");
+      }
+    }
+  }
+  handler("v-s:isOrganizationOk", individual["v-s:isOrganizationOk"]);
+</script>
+<div>
+  <div id="decisionContractorCategoryEmbeddedState" class="panel">
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        <span><a href="#/@" class="glyphicon glyphicon-search"></a></span>
+        <span about="v-s:ContractorCategoryDecision" property="rdfs:label" class="panel-title"> </span>
+      </h3>
+    </div>
+    <div class="panel-body">
+      <div class="checkbox">
+        <label>
+          <veda-control property="v-s:isOrganizationOk" data-type="boolean"></veda-control>
+          <strong about="v-s:isOrganizationOk" property="rdfs:label"></strong>
+          <span property="v-s:date" class="view -edit search"></span>
+        </label>
+      </div>
+      <div class="checkbox" rel="v-s:hasContractorCategoryDecisionSecurity">
+        <label>
+          <veda-control property="v-s:isContractorOkSecurityDepSummary" data-type="boolean"></veda-control>
+          <span><strong about="v-s:isContractorOkSecurityDepSummary" property="rdfs:label"></strong> </span>
+        </label>
+      </div>
+      <div class="checkbox" rel="v-s:hasContractorCategoryDecisionLegal">
+        <label>
+          <veda-control property="v-s:isContractorOkLegalDepSummary" data-type="boolean"></veda-control>
+          <span><strong about="v-s:isContractorOkLegalDepSummary" property="rdfs:label"></strong> </span>
+        </label>
+      </div>
+      <div class="checkbox" rel="v-s:hasContractorCategoryDecisionFinancial">
+        <label>
+          <veda-control property="v-s:isContractorOkFinancialDepSummary" data-type="boolean"></veda-control>
+          <span><strong about="v-s:isContractorOkFinancialDepSummary" property="rdfs:label"></strong> </span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+
+
+v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:ContractorCategoryDecision"@ru ;
+  rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
+  v-ui:template """
+<script>
+  try {
+    var types = {
+      "v-s:ContractorCategoryDecisionSecurity": {
+        ok: "v-s:isContractorOkSecurityDepSummary",
+        summary: "v-s:contractorSecurityDepSummary"
+      },
+      "v-s:ContractorCategoryDecisionLegal": {
+        ok: "v-s:isContractorOkLegalDepSummary",
+        summary: "v-s:contractorLegalDepSummary"
+      },
+      "v-s:ContractorCategoryDecisionFinancial": {
+        ok: "v-s:isContractorOkFinancialDepSummary",
+        summary: "v-s:contractorFinancialDepSummary"
+      }
+    };
+
+    var type = individual["rdf:type"][0].id;
+    var ok = types[type].ok;
+    var summary = types[type].summary;
+
+    function checkHandler(property_uri) {
+      if (property_uri === ok) {
+        if ( individual.hasValue(ok, true) ) {
+          template.addClass("panel-success").removeClass("panel-warning").removeClass("panel-danger");
+        } else if ( individual.hasValue(ok, false) ) {
+          template.removeClass("panel-success").removeClass("panel-warning").addClass("panel-danger");
+        } else {
+          template.removeClass("panel-success").addClass("panel-warning").removeClass("panel-danger");
+        }
+      }
+    }
+    individual.on("propertyModified", checkHandler);
+    template.one("remove", function () {
+      individual.off("propertyModified", checkHandler);
+    });
+    checkHandler(ok);
+
+    $(".ok-property", template).attr("property", ok);
+    $(".summary-about", template).attr("about", summary);
+    $(".summary-property", template).attr("property", summary);
+  } catch (error) {
+    console.log(error);
+  }
+//# sourceURL=v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate_pre
+</script>
+<div class="panel panel-horizontal">
+  <div class="panel-heading">
+    <veda-control class="ok-property" data-type="boolean"></veda-control>
+  </div>
+  <div class="panel-body">
+    <h4 id="descriptionClose" class="margin-sm">
+      <span about="@" data-template="v-ui:IconModalTemplate"></span>
+      <span class="summary-about" property="rdfs:label"></span>
+    </h4>
+    <div class="view -edit summary-property"></div>
+    <veda-control data-type="text" rows="4" class="-view edit summary-property"></veda-control>
+  </div>
+</div>
+   """ ;
+.
+
+
+# ------------------------------------------------------------ Серверные скрипты --
+
+# GH #289 (4)
+# Создать серверный скрипт, обрабатывающий сохранение индивидов класса v-s:ContractorCategoryDecision.
+# Заполнить поле v-s:isOrganizationOk, если
+# 4.1. Если заполнены хотя бы два из трех галочки в Резолюциях, и они одинаковые, то v-s:isOrganizationOk = их значение.
+# 4.2. Если заполнены хотя бы два из трех галочки в Резолюциях, и они разные, то v-s:isOrganizationOk = значению в СЭБ.
+# 4.3. Если заполнены все трех галочки в Резолюциях, то v-s:isOrganizationOk = значению по большинству.
+# 4.4. Если заполнены менее 2-х галочек в Резолюциях, то v-s:isOrganizationOk = значению в СЭБ.
+# Обрабатываемые галочки это поля
+# v-s:isContractorOkSecurityDepSummary из поля v-s:hasContractorCategoryDecisionSecurity   +
+# v-s:isContractorOkLegalDepSummary из поля v-s:hasContractorCategoryDecisionLegal
+# v-s:isContractorOkFinancialDepSummary из поля v-s:hasContractorCategoryDecisionFinancial +
+
+v-s:Event_ContractCategoryRequestDecision
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки v-s:ContractorCategoryDecision" ;
+  rdfs:comment "Скрипт обработки v-s:ContractorCategoryDecision" ;
+  v-s:triggerByType v-s:ContractorCategoryDecision ;
+  v-s:preventByType v-s:Version ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var decision = document;
+
+//print("************************** START **************************");
+
+var maxDate = 0;
+
+var isContractorOkSecurityDepSummary  = getOk("v-s:hasContractorCategoryDecisionSecurity", "v-s:isContractorOkSecurityDepSummary"),
+    isContractorOkFinancialDepSummary = getOk("v-s:hasContractorCategoryDecisionFinancial", "v-s:isContractorOkFinancialDepSummary");
+
+if ( maxDate ) {
+  decision["v-s:date"] = veda.Util.newDate(maxDate);
+}
+
+var filled_count = 0
+    + (isContractorOkFinancialDepSummary === undefined ? 0 : 1);
+
+var ok_sum = 0
+    + (isContractorOkFinancialDepSummary === undefined ? 0 : isContractorOkFinancialDepSummary ? 1 : -1);
+
+var isContractorOk = isContractorOkSecurityDepSummary;
+switch (true) {
+  case filled_count < 2 :
+  case filled_count === 2 && ok_sum === 0 :
+    isContractorOk = isContractorOkSecurityDepSummary;
+    //print("1", "filled_count", filled_count, "ok_sum", ok_sum, "isContractorOk = isContractorOkSecurityDepSummary");
+    break;
+  case filled_count >= 2 && ok_sum > 0 :
+    isContractorOk = true;
+    //print("2", "filled_count", filled_count, "ok_sum", ok_sum, "isContractorOk = true");
+    break;
+  case filled_count >= 2 && ok_sum < 0 :
+    isContractorOk = false;
+    //print("3", "filled_count", filled_count, "ok_sum", ok_sum, "isContractorOk = false");
+    break;
+}
+
+if ( isContractorOk !== undefined ) {
+  decision["v-s:isOrganizationOk"] = veda.Util.newBool(isContractorOk) ;
+} else {
+  delete decision["v-s:isOrganizationOk"] ;
+}
+put_individual(ticket, decision, _event_id);
+
+//print( "decision =", JSON.stringify(decision) );
+//print( "isContractorOkSecurityDepSummary", isContractorOkSecurityDepSummary );
+//print( "isContractorOkFinancialDepSummary", isContractorOkFinancialDepSummary );
+//print( "isContractorOk", isContractorOk );
+
+function getOk(property_uri, ok_uri) {
+  var dep_decision_uri = veda.Util.getUri( decision[property_uri] ),
+      dep_decision = dep_decision_uri ? get_individual( ticket, dep_decision_uri ) : undefined,
+      hasOk = dep_decision ? veda.Util.hasValue( dep_decision, ok_uri ) : undefined,
+      ok = hasOk ? dep_decision[ok_uri][0].data : undefined ;
+  if ( dep_decision && veda.Util.hasValue(dep_decision, "v-s:created") && dep_decision["v-s:created"][0].data > maxDate ) {
+    maxDate = dep_decision["v-s:created"][0].data;
+  }
+  return ok; // undefined || true || false
+}
+
+//print("*************************** END ***************************");
+  """ ;
+.
+
+v-s:Event_ContractCategoryRequestDecision_Department
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обновляет v-s:ContractorCategoryDecision при сохранении отдельного решения департамента" ;
+  rdfs:comment "Скрипт обновляет v-s:ContractorCategoryDecision при сохранении отдельного решения департамента" ;
+  v-s:triggerByType v-s:ContractorCategoryDecisionSecurity ;
+  v-s:triggerByType v-s:ContractorCategoryDecisionFinancial ;
+  v-s:preventByType v-s:Version ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+//print("************************** START **************************");
+var decision_uri = veda.Util.getUri(document["v-s:backwardTarget"]),
+    decision = decision_uri ? get_individual(ticket, decision_uri) : undefined;
+if (!decision) { return; }
+if ( veda.Util.hasValue(document, "v-s:created") ) {
+  decision["v-s:date"] = document["v-s:created"];
+}
+put_individual(ticket, decision, _event_id);
+//print("*************************** END ***************************");
+  """ ;
+.
+

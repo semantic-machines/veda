@@ -548,7 +548,7 @@ if (parent_script_id) {
 var directory_uri = document['@'];
 var parents = document["v-s:parentUnit"];
 var children = document["v-s:childUnit"];
-var deleted = hasValue(document, "v-s:deleted", { data: true, type: _Boolean });
+var deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
 
 if (parents) {
   parents.forEach(function (parent) {
@@ -559,10 +559,10 @@ if (parents) {
     } else {
       var membership = {
         '@' : membership_uri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(parent_uri),
-        'v-s:resource' : newUri(directory_uri),
-        'rdfs:comment' : newStr('создано автоматически в обработчике v-s:Directory_Event')
+        'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+        'v-s:memberOf' : veda.Util.newUri(parent_uri),
+        'v-s:resource' : veda.Util.newUri(directory_uri),
+        'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике v-s:Directory_Event')
       };
       print("this directory -> parent directory:", directory_uri, "->", parent_uri);
       put_individual(ticket, membership, _event_id);
@@ -579,10 +579,10 @@ if (children) {
     } else {
       var membership = {
         '@' : membership_uri,
-        'rdf:type'     : newUri('v-s:Membership'),
-        'v-s:memberOf' : newUri(directory_uri),
-        'v-s:resource' : newUri(child_uri),
-        'rdfs:comment' : newStr('создано автоматически в обработчике v-s:Directory_Event')
+        'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+        'v-s:memberOf' : veda.Util.newUri(directory_uri),
+        'v-s:resource' : veda.Util.newUri(child_uri),
+        'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике v-s:Directory_Event')
       };
       print("children -> this directory:", child_uri, "->", directory_uri);
       put_individual(ticket, membership, _event_id);

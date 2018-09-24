@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/valyala/fasthttp"
+	"github.com/itiu/fasthttp"
 )
 
 //addToIndividual handler routes request to veda-server and returns veda-server response

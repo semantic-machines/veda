@@ -523,6 +523,20 @@ v-s:initiator
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:initiatorDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Подразделение-инициатор"@ru ;
+  rdfs:label "Initiator department"@en ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:initiatorOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Организация-инициатор"@ru ;
+  rdfs:label "Initiator organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractual ;
+.
 v-s:stakeholder
   rdf:type owl:ObjectProperty ;
   rdfs:label "Заинтересованная сторона"@ru ;
@@ -696,6 +710,13 @@ v-s:supportSpecialistOfContract
   rdfs:label "Специалист по сопровождению"@ru ;
   rdfs:label "Support specialist"@en ;
   rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:hasContractScale
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Масштабы сделки"@ru ;
+  rdfs:label "Contract scale"@en ;
+  rdfs:range v-s:ContractScale ;
   rdfs:domain v-s:Contractual ;
 .
 # ------------------------------------------------------------ СПЕЦИФИКАЦИИ --

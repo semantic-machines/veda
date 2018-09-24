@@ -1,4 +1,0 @@
-nav.navbar.navbar-inverse(role="navigation")
-	.container-fluid
-		a.navbar-brand(href="/#/")
-			img(src="/img/veda-logo.png", style="position:relative; top:-3px")

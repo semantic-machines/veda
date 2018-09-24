@@ -1,0 +1,33 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+
+<http://semantic-machines.com/veda/veda-individual-ContractorInteractionCategory>
+  rdf:type owl:Ontology ;
+  v-s:loadPriority 10 ;
+.
+
+
+d:vjzbfrdisyancv1wld9q2945lw
+  a v-s:ContractorInteractionCategory;
+  rdfs:label "Прекращение взаимодействия (блокировка)"^^xsd:string;
+  v-s:updateCounter "1"^^xsd:integer;
+.
+d:x388fh75br63m7iqwj22gq9i6m
+  a v-s:ContractorInteractionCategory;
+  rdfs:label "Субподрядная организация"^^xsd:string;
+  v-s:updateCounter "1"^^xsd:integer;
+.
+d:ajixr7bjg1t1atczlellb0kwyo
+  a v-s:ContractorInteractionCategory;
+  rdfs:label "Периодические закупки"^^xsd:string;
+  v-s:updateCounter "1"^^xsd:integer ;
+.
+d:hf73rbjvd25z70lem1yv0584h1
+  a v-s:ContractorInteractionCategory;
+  rdfs:label "Продажа"^^xsd:string;
+  v-s:updateCounter "1"^^xsd:integer ;
+.

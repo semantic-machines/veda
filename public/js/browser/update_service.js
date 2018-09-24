@@ -4,7 +4,7 @@
 */
 
 
-veda.Module(function UpdateService(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   veda.UpdateService = function () {
 

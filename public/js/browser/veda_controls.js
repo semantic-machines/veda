@@ -43,11 +43,11 @@
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
         try {
-          var start = field.selectionStart;
-          var end = field.selectionEnd;
+          var start_shift = field.selectionStart - field.value.length;
+          var end_shift = field.selectionEnd - field.value.length;
           field.value = value;
-          field.selectionStart = start;
-          field.selectionEnd = end;
+          field.selectionStart = value.length + start_shift;
+          field.selectionEnd = value.length + end_shift;
         } catch (ex) {
           field.value = value;
           console.log("selectionStart/End error:", property_uri, value, typeof value);
@@ -243,26 +243,29 @@
     function feelMainInput(){
       var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
       mainInput.val(count);
-      summaryText.text(count);
+      summaryText.text(veda.Util.formatValue(count));
       mainInput.change();
     }
     function feelPseudoInput(summaryTime){
-      var days=0, hours=0, minutes=0;
-      summaryText.text(+summaryTime);
-      if (summaryTime!=0){
-        days=Math.floor(summaryTime/480);
-        summaryTime=summaryTime-days*480;
+      if (summaryTime) {
+        summaryText.text(summaryTime);
+        summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );
+        var days=0, hours=0, minutes=0;
         if (summaryTime!=0){
-          hours=Math.floor(summaryTime/60);
-          summaryTime=summaryTime-hours*60;
+          days=Math.floor(summaryTime/480);
+          summaryTime=summaryTime-days*480;
           if (summaryTime!=0){
-            minutes=summaryTime;
+            hours=Math.floor(summaryTime/60);
+            summaryTime=summaryTime-hours*60;
+            if (summaryTime!=0){
+              minutes=summaryTime;
+            }
           }
         }
+        pseudoInputs[0].value=days;
+        pseudoInputs[1].value=hours;
+        pseudoInputs[2].value=minutes;
       }
-      pseudoInputs[0].value=days;
-      pseudoInputs[1].value=hours;
-      pseudoInputs[2].value=minutes;
     }
     this.append(control);
     return this;
@@ -549,11 +552,11 @@
           if ( value.language === lang || !value.language ) {
             try {
               if (that === document.activeElement) {
-                var start = that.selectionStart;
-                var end = that.selectionEnd;
+                var start_shift = that.selectionStart - that.value.length;
+                var end_shift = that.selectionEnd - that.value.length;
                 that.value = value;
-                that.selectionStart = start;
-                that.selectionEnd = end;
+                that.selectionStart = value.length + start_shift;
+                that.selectionEnd = value.length + end_shift;
               } else {
                 that.value = value;
               }
@@ -1964,8 +1967,8 @@
     .then(function (results) {
       results = veda.Util.unique( results );
       var getList = results.filter( function (uri, index) {
-        if ( veda.cache[uri] ) {
-          result.push(veda.cache[uri]);
+        if ( veda.cache.get(uri) ) {
+          result.push(veda.cache.get(uri));
           return false;
         } else {
           return true;

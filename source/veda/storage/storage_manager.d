@@ -11,7 +11,7 @@ private
     import veda.storage.binlog_tools, veda.util.module_info;
     import veda.core.search.vel, veda.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
-    import veda.bind.libwebsocketd, veda.util.properd;
+    import veda.util.properd;
     import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage;
     import veda.storage.tarantool.tarantool_driver;
 }
@@ -340,7 +340,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         {
                             if (cmd == CMD_FIND)
                             {
-                                string res = storage.find(OptAuthorize.NO, null, arg);
+                                string res = storage.get_binobj(arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
                                 return;
@@ -365,7 +365,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                             {
                                 if (ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(OptAuthorize.NO, null, ti.uri) == ResultCode.OK)
+                                    if (storage.remove(ti.uri) == ResultCode.OK)
                                         rc = ResultCode.OK;
                                     else
                                         rc = ResultCode.Fail_Store;
@@ -378,7 +378,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 {
                                     string new_hash;
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
-                                    if (storage.put(OptAuthorize.NO, ti.user_uri, ti.uri, ti.new_binobj, op_id) == ResultCode.OK)
+                                    if (storage.store(ti.uri, ti.new_binobj, op_id) == ResultCode.OK)
                                     {
                                         rc = ResultCode.OK;
                                         op_id++;

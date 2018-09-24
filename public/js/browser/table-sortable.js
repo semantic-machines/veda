@@ -35,43 +35,30 @@
           rows.detach().appendTo(tbody);
         });
 
-        function orderAsc (a, b) {
-          var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
-          var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
-          if ( !isNaN(valueA) ) {
-            valueA = parseFloat(valueA);
-            valueB = parseFloat(valueB);
-          } else if ( !isNaN( Date.parse( valueA.split(".").reverse().join("-") ) ) ) {
-            valueA = Date.parse( valueA.split(".").reverse().join("-") );
-            valueB = Date.parse( valueB.split(".").reverse().join("-") );
-          }
-          if ( valueA < valueB ) {
-            return -1;
-          } else if ( valueA == valueB ) {
-            return 0;
-          } else {
-            return 1;
+        var orderAsc = order(function (a,b) {return a < b;});
+        var orderDesc = order(function (a,b) {return a > b;});
+
+        function order (compare) {
+          return function (a, b) {
+            var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
+            var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
+            if ( !isNaN(valueA) ) {
+              valueA = parseFloat(valueA);
+              valueB = parseFloat(valueB);
+            } else if ( !isNaN( Date.parse( valueA.split(".").reverse().join("-") ) ) ) {
+              valueA = Date.parse( valueA.split(".").reverse().join("-") );
+              valueB = Date.parse( valueB.split(".").reverse().join("-") );
+            }
+            if ( compare(valueA, valueB) ) {
+              return -1;
+            } else if ( valueA == valueB ) {
+              return 0;
+            } else {
+              return 1;
+            }
           }
         }
 
-        function orderDesc (a, b) {
-          var valueA = $(a).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
-          var valueB = $(b).children(":nth-child(" + (index + 1) + ")").text().toLowerCase().trim();
-          if ( !isNaN(valueA) ) {
-            valueA = parseFloat(valueA);
-            valueB = parseFloat(valueB);
-          } else if ( !isNaN( Date.parse( valueA.split(".").reverse().join("-") ) ) ) {
-            valueA = Date.parse( valueA.split(".").reverse().join("-") );
-            valueB = Date.parse( valueB.split(".").reverse().join("-") );
-          }
-          if ( valueA > valueB ) {
-            return -1;
-          } else if ( valueA == valueB ) {
-            return 0;
-          } else {
-            return 1;
-          }
-        }
       });
 
       clicked.click();

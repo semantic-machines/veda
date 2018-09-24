@@ -2782,8 +2782,7 @@ v-ui:Graph
   function addInLinks (id, queryStr) {
     var q = queryStr || "'*'=='{id}'";
     q = q.replace("{id}", id);
-    var s = query(veda.ticket, q);
-    s.result.forEach(function (uri) {
+    query(veda.ticket, q).result.forEach(function (uri) {
       var res = new veda.IndividualModel(uri);
       addNode(res);
       var to = id;

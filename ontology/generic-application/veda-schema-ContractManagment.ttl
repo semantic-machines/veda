@@ -54,6 +54,7 @@ v-s:ContractParticipant
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:BackwardLink ;
   rdfs:label "Contract participant"@en ;
   rdfs:label "Участник контракта"@ru ;
 .
@@ -137,30 +138,6 @@ v-s:LockedReason
   rdfs:label "Причина блокировки"@ru ;
 .
 
-# ------------------------------------------------------------
-v-s:ContractorProfile
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:subClassOf v-s:Deliverable2 ;
-  rdfs:subClassOf v-s:ClassifiedRus ;
-  rdfs:subClassOf v-s:Journaling ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:AutomaticallyVersioned ;
-  rdfs:subClassOf v-s:Labeled;
-  v-s:labelPattern "{@.v-s:backwardTarget.v-s:shortLabel}"^^xsd:string;
-  rdfs:label "Досье контрагента"@ru ;
-  rdfs:label "Contractor profile"@en ;
-  v-ui:hasTemplate mnd-s:ContractorProfileTemplate ;
-.
-# ------------------------------------------------------------
-v-s:ContractorProfileFile
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:File ;
-  rdfs:subClassOf v-s:Temporal ;
-  rdfs:label "Файл досье контрагента"@ru ;
-  rdfs:label "Contractor profile file"@en ;
-.
 # ------------------------------------------------------------
 v-s:InternalAccountingDocument
   rdf:type owl:Class ;

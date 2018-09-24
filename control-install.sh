@@ -1,9 +1,9 @@
 #!/bin/bash
 # скрипт устанавливает среду для последующей компиляции, берет исходники зависимостей из github, но не собирает
 
-DMD_VER=2.073.2
-DUB_VER=1.2.0
-GO_VER=go1.10.1
+DMD_VER=2.080.0
+DUB_VER=1.5.0
+GO_VER=go1.11
 MSGPUCK_VER=2.0
 TARANTOOL_VER=2.0
 
@@ -43,18 +43,6 @@ for i in "${LIB_NAME[@]}"; do
 
 done
 
-#echo "--- INSTALL VIBE.D ---"
-#mkdir tmp
-#cd tmp
-#wget https://github.com/vibe-d/vibe.d/archive/v0.7.30.tar.gz
-#tar -xvzf v0.7.30.tar.gz
-#mkdir ~/.dub/packages/vibe-d-0.7.30
-#mkdir ~/.dub/packages/vibe-d-0.7.30/vibe-d
-#cp -r ./vibe.d-0.7.30/* ~/.dub/packages/vibe-d-0.7.30/vibe-d
-#cp ./../source/vibe-d/dub.json ~/.dub/packages/vibe-d-0.7.30/vibe-d
-#rm ~/.dub/packages/vibe-d-0.7.30/vibe-d/dub.sdl
-#cd ..
-
 sudo apt-get install build-essential
 
 ### RUST LANG ###
@@ -88,7 +76,7 @@ fi
 # Get right version of DUB
 if ! dub --version | grep $DUB_VER ; then
     echo "--- INSTALL DUB ---"
-    wget http://code.dlang.org/files/dub-$DUB_VER-linux-x86_64.tar.gz
+    wget https://github.com/dlang/dub/releases/download/v$DUB_VER/dub-$DUB_VER-linux-x86_64.tar.gz
     tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz
     sudo cp ./dub /usr/bin/dub
     rm dub-$DUB_VER-linux-x86_64.tar.gz
@@ -135,13 +123,11 @@ fi
 go get github.com/itiu/lmdb-go/lmdb
 
 #fasthttp
-go get -v github.com/valyala/fasthttp
+go get -v github.com/itiu/fasthttp
 
 #go-nanomsg
 go get -v github.com/op/go-nanomsg
 
-#traildb-go
-go get github.com/traildb/traildb-go
 go get github.com/tarantool/go-tarantool
 go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
@@ -179,27 +165,6 @@ else
     echo "--- TARANTOOL INSTALLED ---"
 fi
 
-### LIB WEBSOCKETS ###
-
-if ! ldconfig -p | grep libwebsockets; then
-    # make libwebsockets dependency
-    mkdir tmp
-    wget https://github.com/warmcat/libwebsockets/archive/v2.0.3.tar.gz -P tmp
-    cd tmp
-    tar -xvzf v2.0.3.tar.gz
-    cd libwebsockets-2.0.3
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-    sudo ldconfig
-    cd ..
-    cd ..
-    cd ..
-
-fi
-
 ### LIB NANOMSG ###
 
 if ! ldconfig -p | grep libnanomsg; then
@@ -223,38 +188,6 @@ if ! ldconfig -p | grep libnanomsg; then
     cd ..
     cd ..
 
-fi
-
-### LIB TRAILDB ###
-
-if ! ldconfig -p | grep libtraildb; then
-    echo "--- INSTALL LIB TRAILDB ---"
-    sudo apt-get install -y libarchive-dev pkg-config
-    sudo apt-get remove -y libjudydebian1
-    sudo apt-get remove -y libjudy-dev
-
-    mkdir tmp
-    cd tmp
-
-    wget https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudy-dev_1.0.5-5_amd64.deb \
-     https://mirrors.kernel.org/ubuntu/pool/universe/j/judy/libjudydebian1_1.0.5-5_amd64.deb
-    sudo dpkg -i libjudy-dev_1.0.5-5_amd64.deb libjudydebian1_1.0.5-5_amd64.deb
-
-
-    wget https://github.com/traildb/traildb/archive/0.5.tar.gz -P tmp
-    cd tmp
-    tar -xvzf 0.5.tar.gz
-
-    cd traildb-0.5
-    ./waf configure
-    ./waf build
-    sudo ./waf install
-    sudo ldconfig
-    cd ..
-    cd ..
-    cd ..
-else
-    echo "--- LIB TRAILDB INSTALLED ---"
 fi
 
 ### LIB RAPTOR ###
@@ -318,30 +251,6 @@ else
     echo "--- LIBTARANTOOL INSTALLED ---"
 fi
 
-if ! ldconfig -p | grep libmdbx; then
-    echo "--- INSTALL LIBMDBX ---"
-    TTC=24a8bdec49ee360bf0412631ff8931de91e109fc
-
-    mkdir tmp
-    cd tmp
-
-    wget https://github.com/leo-yuriev/libmdbx/archive/$TTC.tar.gz -P .
-    tar -xvzf $TTC.tar.gz
-
-    cd libmdbx-$TTC
-
-    make
-
-    cp src/tools/*.1 ./
-
-    sudo make install
-    sudo ldconfig
-
-    cd ..
-
-else
-    echo "--- LIBMDBX INSTALLED ---"
-fi
     cd $INSTALL_PATH
     cd source/authorization
     cargo build --release

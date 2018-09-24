@@ -2,6 +2,7 @@ module veda.storage.common;
 
 import std.conv, std.datetime, std.uuid;
 import veda.common.logger, veda.common.type;
+import veda.onto.individual;
 
 /// Режим работы хранилища
 enum DBMode
@@ -15,7 +16,8 @@ enum DBMode
 
 public interface KeyValueDB
 {
-    public string find(OptAuthorize op_auth, string user_uri, string uri);
+    public string get_binobj(string uri);
+    public void get_individual(string uri, ref Individual indv);
 
     public long get_last_op_id();
     public void open();
@@ -25,6 +27,6 @@ public interface KeyValueDB
 
     public long count_entries();
 
-    public ResultCode put(OptAuthorize op_auth, string user_id, string in_key, string in_value, long op_id);
-    public ResultCode remove(OptAuthorize op_auth, string user_uri, string in_key);
+    public ResultCode store(string in_key, string in_value, long op_id);
+    public ResultCode remove(string in_key);
 }

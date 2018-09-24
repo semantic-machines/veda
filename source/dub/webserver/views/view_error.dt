@@ -1,8 +1,0 @@
-extends generic
-
-block content
-	.container-fluid
-		h1 An error has occured. We are really sorry about that!
-		h2 Error code: #{error.code}
-		p Error message: #{error.message}
-		p Error debug: #{error.debugMessage}

@@ -345,7 +345,7 @@ v-s:Clear
   rdf:type v-s:Menu ;
   rdfs:label "Очистить данные"@ru ;
   rdfs:label "Clear data"@en ;
-  v-s:staticLink "javascript:location.reload(veda.Util.clearStorage())"^^xsd:string ;
+  v-s:staticLink "javascript:location.reload( localStorage.clear() )"^^xsd:string ;
 .
 v-s:Exit
   rdf:type v-s:Menu ;
@@ -357,5 +357,5 @@ v-s:Administration
   rdf:type v-s:Menu ;
   rdfs:label "Администрование"@ru ;
   rdfs:label "Administration"@en ;
-  v-s:objectLink v-s:AdministrationAspect1 ;
+  v-s:objectLink v-s:AdministrationAspect ;
 .

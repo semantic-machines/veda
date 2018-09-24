@@ -43,7 +43,7 @@ td:script_find_long_terms
   rdf:type v-s:Codelet ;
   v-s:script
   """
-    find_long_terms (ticket, uri, execute_script);
+    veda.Codelet.find_long_terms (ticket, uri, execute_script);
   """;
 .
 
@@ -415,24 +415,10 @@ td:AleksandraKhvostikova
   v-ui:hasPreferences td:AleksandraKhvostikova_pref ;
   rdfs:label "Администратор1"@ru ;
   rdfs:label "Administrator1"@en ;
-  v-s:hasAppointment td:AleksandraKhvostikova-Analyst1 ;
   v-s:hasImage td:khvostiaImage;
   v-s:owner td:AleksandraKhvostikova ;
 .
-td:AleksandraKhvostikova-Analyst1
-  rdf:type v-s:Appointment ;
-  v-s:author td:AleksandraKhvostikova-Analyst ;
-  v-s:created "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:employee td:AleksandraKhvostikova ;
-  v-s:occupation td:Analyst1 ;
-  v-s:official "true"^^xsd:boolean ;
-  v-s:published "2014-01-30T15:35:11"^^xsd:dateTime ;
-  v-s:startTime "2014-01-30T15:35:11"^^xsd:dateTime ;
-  rdfs:label "Администратор1 : Аналитик"@ru ;
-  rdfs:label "Administrator1 : Analyst"@en ;
-  v-s:parentUnit td:ApplicationDevelopmentGroup ;
-  v-s:origin "Internal User" ;
-.
+
 
 td:ValeriyBushenev
   rdf:type v-s:Person ;

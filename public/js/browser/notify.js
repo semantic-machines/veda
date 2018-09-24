@@ -1,6 +1,6 @@
 // Notification module
 
-veda.Module(function Notify(veda) { "use strict";
+veda.Module(function (veda) { "use strict";
 
   veda.Notify = function () {
     // Singleton pattern

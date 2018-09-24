@@ -26,7 +26,6 @@ addons:
 install:
   - ./control-install.sh&>install.log 
   - source $HOME/.cargo/env
-  - dub -v fetch vibe-d --version=0.7.30
 #  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
   - go version

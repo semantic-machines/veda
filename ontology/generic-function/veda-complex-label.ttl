@@ -47,7 +47,7 @@ v-s:LabelEvent
 // Get actual state
 document = get_individual(ticket, document["@"]);
 var prev_label = document["rdfs:label"] || [];
-var new_label = complexLabel(document);
+var new_label = veda.Util.complexLabel(document);
 var prev_label_json = JSON.stringify( prev_label );
 var new_label_json = JSON.stringify( new_label );
 print("prev_label_json", prev_label_json);

@@ -375,6 +375,7 @@ type Queue struct {
 	hash   hash.Hash32
 }
 
+
 func NewQueue(_name string, _mode Mode) *Queue {
 	p := new(Queue)
 

@@ -518,7 +518,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
                 }
 
                 if (icb is null)
-                    icb = g_context.get_storage().get_from_individual_storage(null, uri);
+                    icb = g_context.get_storage().get_binobj_from_individual_storage(uri);
 
                 if (icb !is null)
                 {
@@ -648,7 +648,7 @@ private void reload_ext_scripts(Context ctx)
     g_ticket.data   = cast(char *)sticket;
     g_ticket.length = cast(int)sticket.length;
 
-    foreach (path; [ "./public/js/server/", "./public/js/common/" ])
+    foreach (path; [ "./public/js/common/", "./public/js/server/" ])
     {
 
         DirEntry[] oFiles = [];

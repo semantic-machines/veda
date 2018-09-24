@@ -1283,7 +1283,7 @@ v-fs:AttributiveSearchModel
 
         var prefetch = [];
         resultDelta.map(function (uri) {
-          if ( !veda.cache[uri] ) {
+          if ( !veda.cache.get(uri) ) {
             prefetch.push( uri );
           }
         });

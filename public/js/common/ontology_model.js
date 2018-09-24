@@ -142,7 +142,7 @@ veda.Module(function (veda) { "use strict";
     // Allocate ontology objects
     var ontologyPromises = Object.keys(ontology).map( function (uri) {
       var ontologyIndividualJson = ontology[uri];
-      return new veda.IndividualModel( ontologyIndividualJson, true, false ).load();
+      return new veda.IndividualModel( ontologyIndividualJson, 1, false ).load();
     });
     return Promise.all(ontologyPromises).then(function (ontology) {
       ontology.map( function (individual) {

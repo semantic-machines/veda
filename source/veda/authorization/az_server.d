@@ -4,7 +4,7 @@ module veda.authorization.az_server;
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.atomic;
-import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string, std.datetime;
+import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json, std.string, std.datetime.stopwatch;
 import kaleidic.nanomsg.nano, commando, veda.util.properd, veda.core.common.define;
 import veda.common.logger, veda.authorization.authorization, veda.common.type, veda.util.queue;
 
@@ -292,7 +292,7 @@ void main(string[] args)
                 }
 
                 sw.stop();
-                long t = cast(long)sw.peek().seconds;
+                long t = cast(long)sw.peek.total !"seconds";
                 writefln("UNLOAD AZ RESULT: total time %d sec, count skipped=%d", t, count - count_prepared);
             }
         }

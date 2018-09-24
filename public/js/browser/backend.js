@@ -38,6 +38,11 @@ veda.Module(function Backend(veda) { "use strict";
        404: "Not found",
        422: "Unprocessable entity",
        429: "Too many requests",
+       465: "Empty password",
+       466: "New password is equal to old",
+       467: "Invalid password",
+       468: "Invalid secret",
+       469: "Password expired",
        470: "Ticket not found",
        471: "Ticket expired",
        472: "Not authorized",
@@ -82,7 +87,15 @@ veda.Module(function Backend(veda) { "use strict";
       var xhr = new XMLHttpRequest();
       xhr.onload = function () {
         if (this.status == 200) {
-          resolve( JSON.parse(this.response) );
+          resolve(
+            JSON.parse(
+              this.response,
+              function (key, value) {
+              return key === "data" && this.type === "Datetime" ? new Date(value) :
+                     key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? parseFloat(value) : value;
+              }
+            )
+          );
         } else {
           var error = new BackendError(this);
           reject(error);
@@ -169,7 +182,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   };
 
-  veda.Backend.authenticate = function authenticate(login, password) {
+  veda.Backend.authenticate = function authenticate(login, password, secret) {
     if (login == "VedaNTLMFilter")
         login = "cfg:Guest";
     var arg = arguments[0];
@@ -179,7 +192,8 @@ veda.Module(function Backend(veda) { "use strict";
       url: "authenticate",
       data: {
         "login": isObj ? arg.login : login,
-        "password": isObj ? arg.password : password
+        "password": isObj ? arg.password : password,
+        "secret": isObj ? arg.secret : secret
       }
     };
     return call_server(params);

@@ -121,7 +121,9 @@ class IndexerProperty
 //            context.vql().reopen_db();
             Ticket       sticket = context.sys_ticket();
 
-            Individual[] l_individuals = context.get_individuals_via_query(sticket.user_uri, "'rdf:type' === 'vdi:ClassIndex'", OptAuthorize.NO, 10000, 10000);
+            Individual[] l_individuals =
+                context.get_individuals_via_query(sticket.user_uri, "'rdf:type' === 'vdi:ClassIndex'", OptAuthorize.NO, 10000,
+                                                  10000);
 
             foreach (indv; l_individuals)
             {

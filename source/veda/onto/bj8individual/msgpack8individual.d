@@ -10,8 +10,6 @@ module veda.onto.bj8individual.msgpack8individual;
 private import msgpack;
 private import std.outbuffer, std.stdio, std.string, std.conv;
 private import veda.common.type, veda.onto.resource, veda.onto.individual, veda.onto.lang;
-import backtrace.backtrace;
-import Backtrace = backtrace.backtrace;
 
 string          dummy;
 ubyte[]         buff;
@@ -102,7 +100,7 @@ public string individual2msgpack(ref Individual in_obj)
     // this concatinate created copy ?
     ubyte[] res = write_individual(in_obj);
 
-    return cast(string)(res);
+    return cast(string)res;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -275,7 +273,6 @@ public int msgpack2individual(ref Individual individual, string in_str)
         catch (Throwable ex)
         {
             stderr.writeln("ERR! msgpack2individual ex=", ex.msg, ", in_str=", in_str);
-            printPrettyTrace(stderr);
             //throw new Exception("invalid binobj");
             return -1;
         }

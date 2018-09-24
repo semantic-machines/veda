@@ -192,11 +192,11 @@ function test_success_update(assert, ticket, ethalon_indv, reopen)
     try
     {
         Backend.put_individual(ticket.id, ethalon_indv, reopen);
-	assert.ok(true);
+  assert.ok(true);
     }
     catch (e)
     {
-	assert.ok(false);
+  assert.ok(false);
     }
 }
 
@@ -208,11 +208,11 @@ function test_fail_update(assert, ticket, ethalon_indv, reopen)
     try
     {
         Backend.put_individual(ticket.id, ethalon_indv, reopen);
-	assert.ok(false);
+  assert.ok(false);
     }
     catch (e)
     {
-	assert.ok(true);
+  assert.ok(true);
     }
 }
 
@@ -1021,23 +1021,23 @@ for (i = 0; i < 1; i++)
             //#5
             assert.ok(compare(data.length, 2));
 
-	    try
-	    {
-        	data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + "'", undefined, undefined, true).result;
-	    } 
-	    catch (e)
-	    {
-        	assert.ok(true);
-	    }
+      try
+      {
+          data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + "'", undefined, undefined, true).result;
+      }
+      catch (e)
+      {
+          assert.ok(true);
+      }
 
-	    try
-	    {
-        	data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + " t1'", undefined, undefined, true).result;
-	    } 
-	    catch (e)
-	    {
-        	assert.ok(true);
-	    }
+      try
+      {
+          data = Backend.query(ticket_user1.id, "'v-s:test_field1' === '" + test_data_uid + " t1'", undefined, undefined, true).result;
+      }
+      catch (e)
+      {
+          assert.ok(true);
+      }
 
             data = Backend.query(ticket_user1.id, "'v-s:test_field' === '" + test_data_uid + "' || 'v-s:test_field' === 'AAA" + test_data_uid + "'", undefined, undefined, true).result;
 
@@ -1108,11 +1108,11 @@ for (i = 0; i < 1; i++)
                 'v-s:author': [
                 {
                     data: 'td:ValeriyBushenev-Programmer2',
-                    type: _Uri
+                    type: "Uri"
                 },
                 {
                     data: 'td:test-q',
-                    type: _Uri
+                    type: "Uri"
                 }]
             };
 
@@ -1126,15 +1126,15 @@ for (i = 0; i < 1; i++)
                 'v-s:author': [
                 {
                     data: 'td:ValeriyBushenev-Programmer1',
-                    type: _Uri
+                    type: "Uri"
                 },
                 {
                     data: 'td:ValeriyBushenev-Programmer2',
-                    type: _Uri
+                    type: "Uri"
                 },
                 {
                     data: 'td:test-q',
-                    type: _Uri
+                    type: "Uri"
                 }],
                 'v-s:test_field': newStr('test data', 'EN')
             };
@@ -2000,9 +2000,9 @@ for (i = 0; i < 1; i++)
         'rdf:type': newUri('v-s:Event'),
         'v-s:triggerByType': newUri('rdfs:Resource1'),
         'v-s:script': newStr('if (parent_script_id != "") return;' +
-            'document["v-s:test_datetime0"]= newDate(new Date("2017-01-03"));' +
-            'document["v-s:test_ArArObj"]= [newDate(new Date("2017-02-03"))];' +
-            'document["v-s:test_Obj"]= newDate(new Date("2017-03-03"))[0];' +
+            'document["v-s:test_datetime0"]= veda.Util.newDate(new Date("2017-01-03"));' +
+            'document["v-s:test_ArArObj"]= [veda.Util.newDate(new Date("2017-02-03"))];' +
+            'document["v-s:test_Obj"]= veda.Util.newDate(new Date("2017-03-03"))[0];' +
             'put_individual(ticket, document, _event_id);'),
         'v-s:created': newDate(new Date()),
         'v-s:author': newUri(ticket_admin.user_uri)
@@ -2156,7 +2156,7 @@ QUnit.test(
             var ticket_user2 = get_user2_ticket();
             assert.ok(ticket_user2.id.length > 0);
 
-			var ticket_admin = get_admin_ticket();
+      var ticket_admin = get_admin_ticket();
             assert.ok(ticket_admin.id.length > 0);
 
             var new_test_doc1_uri = "test31:" + guid();
@@ -2204,15 +2204,15 @@ QUnit.test(
             test_fail_update(assert, ticket_user1, new_test_doc1);
             test_success_update(assert, ticket_user2, new_test_doc1);
 
-	    // disable permission with filter 
-	    new_permission1['v-s:deleted'] = newBool (true);
+      // disable permission with filter
+      new_permission1['v-s:deleted'] = newBool (true);
             res1 = Backend.put_individual(ticket_admin.id, new_permission1);
 
             Backend.wait_module(m_acl, res1.op_id);
             test_fail_update(assert, ticket_user2, new_test_doc1);
 
-	    // disable filter 
-	    new_permission_filter['v-s:deleted'] = newBool (true);
+      // disable filter
+      new_permission_filter['v-s:deleted'] = newBool (true);
             var res2 = Backend.put_individual(ticket_admin.id, new_permission_filter);
             Backend.wait_module(m_acl, res2.op_id);
 
@@ -2263,12 +2263,12 @@ QUnit.test(
     QUnit.test("#041 test Backend.put_individuals (user1 stores three individuals)", function(assert)
     {
         var ticket_user1 = get_user1_ticket();
-    
+
         //#1
         assert.ok(ticket_user1.id.length > 0);
-        
+
         var new_test_doc1_uri_1 = "test21_1:" + guid();
-        
+
         var test_data_uid = guid();
         var test_data = 'testdata ' + test_data_uid;
 
