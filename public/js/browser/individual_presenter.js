@@ -33,33 +33,25 @@ veda.Module(function (veda) { "use strict";
 
       if (template) {
         if (template instanceof veda.IndividualModel) {
-          return template.load().then(function (template) {
-            template = template["v-ui:template"][0].toString();
-            return renderTemplate(individual, container, template, mode, extra);
-          });
         // if template is uri
         } else if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
           template = new veda.IndividualModel(template);
-          return template.load().then(function (template) {
-            template = template["v-ui:template"][0].toString();
-            return renderTemplate(individual, container, template, mode, extra);
-          });
-        } else if (typeof template === "string") {
-          var templateString = template;
-          var uri = veda.Util.simpleHash(templateString).toString();
-          template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
-            "@": uri,
-            "v-ui:template": [{data: templateString, type: "String"}]
-          });
-        } else if (template instanceof HTMLElement) {
-          var templateString = template.outerHTML;
+        } else {
+          if (typeof template === "string") {
+            var templateString = template;
+          } else if (template instanceof HTMLElement) {
+            var templateString = template.outerHTML;
+          }
           var uri = veda.Util.simpleHash(templateString).toString();
           template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
             "@": uri,
             "v-ui:template": [{data: templateString, type: "String"}]
           });
         }
-        return renderTemplate(individual, container, template, mode, extra);
+        return template.load().then(function (template) {
+          template = template["v-ui:template"][0].toString();
+          return renderTemplate(individual, container, template, mode, extra);
+        });
       } else {
         var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
         if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
