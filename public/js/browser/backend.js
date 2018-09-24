@@ -92,7 +92,7 @@ veda.Module(function Backend(veda) { "use strict";
               this.response,
               function (key, value) {
               return key === "data" && this.type === "Datetime" ? new Date(value) :
-                     key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? parseFloat(value) : value;
+                     key === "data" && this.type === "Decimal" ? parseFloat(value) : value;
               }
             )
           );
@@ -119,7 +119,7 @@ veda.Module(function Backend(veda) { "use strict";
         xhr.open(method, url, true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         var payload = JSON.stringify(data, function (key, value) {
-          return key === "data" && (this.type === "Decimal" || this.type === _Decimal) ? value.toString() : value;
+          return key === "data" && this.type === "Decimal" ? value.toString() : value;
         });
         xhr.send(payload);
       }
