@@ -32,7 +32,9 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	ticketKey = jsonData["ticket"].(string)
+	if jsonData["ticket"] != nil {
+	    ticketKey = jsonData["ticket"].(string)
+	}
 
 	if jsonData["assigned_subsystems"] != nil {
 		aa := jsonData["assigned_subsystems"].(json.Number)
