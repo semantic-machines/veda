@@ -81,14 +81,17 @@ v-s:UserScriptEvent
  */
 var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
 var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
+var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
 
-if (!toBeRun || runAt !== "Server") { return; }
+if (!script || !toBeRun || runAt !== "Server") { return; }
 
 // preserve global print & console
 var nativePrint = this.print;
 var nativeConsole = this.console;
 
 // override global print & console
+
+var output = "";
 var printer = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
@@ -117,94 +120,27 @@ var console = {
 };
 this.console = console;
 
-var output = "";
-var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
-if (script) {
-  script = new Function (script);
-  try {
-    script();
-  } catch (err) {
-    print(err, err.stack);
-  }
-  document["v-s:output"] = [{
-    data: output,
-    lang: "NONE",
-    type: "String"
-  }];
-  document["v-s:lastRun"] = [{
-    data: new Date(),
-    type: "Datetime"
-  }];
-  delete document["v-s:toBeRun"];
-  put_individual(ticket, document, _event_id);
+script = new Function (script);
+try {
+  script();
+} catch (err) {
+  print(err, err.stack);
 }
+document["v-s:output"] = [{
+  data: output,
+  lang: "NONE",
+  type: "String"
+}];
+document["v-s:lastRun"] = [{
+  data: new Date(),
+  type: "Datetime"
+}];
+delete document["v-s:toBeRun"];
+put_individual(ticket, document, _event_id);
 
 // restore global print & console
 this.print = nativePrint;
 this.console = nativeConsole;
-
-//var operation = new veda.IndividualModel(document);
-//var toBeRun = operation["v-s:toBeRun"][0];
-//var runAt = operation["v-s:runAt"][0];
-//var now = new Date();
-//
-//print("toBeRun", toBeRun, "runAt", runAt);
-//print("now", now);
-//
-//if (!toBeRun || runAt != "Server") { return; }
-//
-//// preserve global print & console
-//var nativePrint = this.print;
-//var nativeConsole = this.console;
-//
-//// override global print & console
-//var output = "";
-//var printer = function () {
-//  for (var i = 0; i < arguments.length; i++) {
-//    var arg = arguments[i] ;
-//    var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
-//    if (i === 0) {
-//      output += argString;
-//    } else {
-//      output += " " + argString;
-//    }
-//  }
-//  output += String.fromCharCode(13, 10);
-//};
-//this.print = printer;
-//
-//var console = {
-//  log: printer,
-//  error: printer,
-//  info: printer,
-//  time: function (timer) {
-//    this[timer] = new Date();
-//  },
-//  timeEnd: function (timer) {
-//    var delta = new Date() - this[timer];
-//    this.log(timer, delta, "msec");
-//  }
-//};
-//this.console = console;
-//
-//var script = operation["v-s:script"][0];
-//
-//if (script) {
-//  script = new Function ("veda", "input", script);
-//  try {
-//    script(veda, operation["v-s:input"]);
-//  } catch (err) {
-//    print(err, err.stack);
-//  }
-//  operation["v-s:lastRun"] = [ now ];
-//  operation.clearValue("v-s:toBeRun");
-//  operation["v-s:output"] = [ output ];
-//  operation.save();
-//}
-//
-//// restore global print & console
-//this.print = nativePrint;
-//this.console = nativeConsole;
 """
 .
 
@@ -389,11 +325,15 @@ v-s:OperationEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-var operation = new veda.IndividualModel(document);
-var toBeRun = operation["v-s:toBeRun"][0] ;
-var runAt = operation["v-s:runAt"][0];
 
-if (!toBeRun || runAt !== "Server") { return; }
+var operation = new veda.IndividualModel(document);
+var toBeRun = operation["v-s:toBeRun"][0];
+var runAt = operation["v-s:runAt"][0];
+var script = operation["v-s:script"][0];
+var input = operation["v-s:input"];
+var now = new Date();
+
+if (!script || !toBeRun || runAt != "Server") { return; }
 
 // preserve global print & console
 var nativePrint = this.print;
@@ -401,7 +341,7 @@ var nativeConsole = this.console;
 
 // override global print & console
 var output = "";
-var print = function () {
+var printer = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
     var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
@@ -412,13 +352,13 @@ var print = function () {
     }
   }
   output += String.fromCharCode(13, 10);
-}
-this.print = print;
+};
+this.print = printer;
 
 var console = {
-  log: print,
-  error: print,
-  info: print,
+  log: printer,
+  error: printer,
+  info: printer,
   time: function (timer) {
     this[timer] = new Date();
   },
@@ -429,19 +369,16 @@ var console = {
 };
 this.console = console;
 
-var script = operation["v-s:script"][0];
-if (script) {
-  script = new Function ("veda", "input", script);
-  try {
-    script(veda, operation["v-s:input"]);
-  } catch (err) {
-    print(err, err.stack);
-  }
-  operation["v-s:output"] = [output];
-  operation["v-s:lastRun"] = [new Date()];
-  operation.clearValue("v-s:toBeRun");
-  operation.save();
+script = new Function ("veda", "input", script);
+try {
+  script(veda, input);
+} catch (err) {
+  print(err, err.stack);
 }
+operation["v-s:lastRun"] = [ now ];
+operation.clearValue("v-s:toBeRun");
+operation["v-s:output"] = [ output ];
+operation.save();
 
 // restore global print & console
 this.print = nativePrint;
