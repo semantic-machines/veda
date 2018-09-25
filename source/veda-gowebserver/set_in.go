@@ -26,7 +26,10 @@ func setInIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	ticketKey = jsonData["ticket"].(string)
+	if jsonData["ticket"] != nil {
+	    ticketKey = jsonData["ticket"].(string)
+	}
+
 	assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
 	eventID = jsonData["event_id"].(string)
 

@@ -180,7 +180,9 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 
 	jsonArgs := map[string]interface{}{"uris": jsonData["uris"]}
 
-	ticketKey = jsonData["ticket"].(string)
+	if jsonData["ticket"] != nil {
+	    ticketKey = jsonData["ticket"].(string)
+	}
 
 	rc, ticket := getTicket(ticketKey)
 	if rc != Ok {

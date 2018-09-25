@@ -27,7 +27,9 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	ticketKey = jsonData["ticket"].(string)
+	if jsonData["ticket"] != nil {
+	    ticketKey = jsonData["ticket"].(string)
+	}
 
 	if jsonData["assigned_subsystems"] != nil {
 		assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
