@@ -90,9 +90,7 @@ var nativePrint = this.print;
 var nativeConsole = this.console;
 
 // override global print & console
-
-var output = "";
-var printer = function () {
+var _print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
     var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
@@ -104,12 +102,12 @@ var printer = function () {
   }
   output += String.fromCharCode(13, 10);
 }
-this.print = printer;
+this.print = _print;
 
-var console = {
-  log: printer,
-  error: printer,
-  info: printer,
+var _console = {
+  log: _print,
+  error: _print,
+  info: _print,
   time: function (timer) {
     this[timer] = new Date();
   },
@@ -118,7 +116,7 @@ var console = {
     this.log(timer, delta, "msec");
   }
 };
-this.console = console;
+this.console = _console;
 
 script = new Function (script);
 try {
@@ -222,7 +220,7 @@ v-s:UserScriptTemplate
 
   var nativeConsole = window.console;
   var nativePrint = window.print;
-  var print = function () {
+  var _print = function () {
     var output = individual["v-s:output"][0] || "";
     for (var i = 0; i < arguments.length; i++) {
       var arg = arguments[i] ;
@@ -236,8 +234,10 @@ v-s:UserScriptTemplate
     output += String.fromCharCode(13, 10);
     individual["v-s:output"] = [output];
   }
-  var console = {
-    log: print,
+  var _console = {
+    log: _print,
+    error: _print,
+    info: _print,
     time: function (timer) {
       this[timer] = new Date();
     },
@@ -247,8 +247,8 @@ v-s:UserScriptTemplate
     }
   };
 
-  window.console = console;
-  window.print = print;
+  window.console = _console;
+  window.print = _print;
   template.one("remove", function () {
     window.console = nativeConsole;
     window.print = nativePrint;
