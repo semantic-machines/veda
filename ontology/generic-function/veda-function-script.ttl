@@ -31,6 +31,7 @@ v-s:output
   rdfs:label "Вывод"@ru ;
   rdfs:label "Output"@en ;
   rdfs:domain v-s:UserScript ;
+  rdfs:domain v-s:Operation ;
   rdfs:range xsd:string ;
 .
 
@@ -90,6 +91,7 @@ var nativePrint = this.print;
 var nativeConsole = this.console;
 
 // override global print & console
+var output = "";
 var _print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
@@ -280,39 +282,63 @@ v-s:UserScriptTemplate
 
 # --------------------------User operations-----------------------------
 
-v-s:Operation
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:UserScript ;
-  rdfs:label "Операция"@ru ;
-  rdfs:label "Operation"@en ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
+v-s:OperationClass
+  rdf:type rdfs:Class ;
+  rdfs:label "Класс операций"@ru ;
+  rdfs:label "Operations class"@en ;
+  rdfs:comment "The class of operation classes." ;
+  rdfs:subClassOf rdfs:Class ;
 .
 
-v-s:PsRunAtOperation
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:runAt для класса v-s:Operation"@ru ;
-  rdfs:label "v-s:runAt property specification for v-s:Operation class"@en ;
-  v-ui:forClass v-s:Operation ;
-  v-ui:forProperty v-s:runAt ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:defaultValue "Browser" ;
-  v-ui:optionValue "Browser" ;
-  v-ui:optionValue "Server" ;
+v-s:implementation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Реализация"@ru ;
+  rdfs:label "Implementation"@en ;
+  rdfs:domain v-s:OperationClass ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:Operation
+  rdf:type owl:Class ;
+  rdfs:label "Операция"@ru ;
+  rdfs:label "Operation"@en ;
 .
 
 v-s:input
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Входные данные"@ru ;
+  rdf:type rdf:Property ;
+  rdfs:label "Вход"@ru ;
   rdfs:label "Input"@en ;
   rdfs:domain v-s:Operation ;
   rdfs:range rdfs:Resource ;
 .
 
+v-s:inputQuery
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Входной запрос"@ru ;
+  rdfs:label "Input query"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:OperationDelete
+  rdf:type v-s:OperationClass ;
+  rdfs:subClassOf v-s:Operation ;
+  rdfs:label "Класс операций удаления"@ru ;
+  rdfs:label "Delete operations class"@en ;
+  v-s:implementation """
+  """ ;
+.
+
+v-s:OperationDelete1
+  rdf:type v-s:OperationDelete ;
+  rdfs:label "Операция удаления 1"@ru ;
+  rdfs:label "Delete operation 1"@en ;
+.
+
+
 v-s:OperationEvent
   rdf:type v-s:Event ;
-  v-s:triggerByType v-s:Operation ;
+  v-s:triggerByType v-s:OperationRequest ;
 #  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -341,7 +367,7 @@ var nativeConsole = this.console;
 
 // override global print & console
 var output = "";
-var printer = function () {
+var _print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
     var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
@@ -353,12 +379,12 @@ var printer = function () {
   }
   output += String.fromCharCode(13, 10);
 };
-this.print = printer;
+this.print = _print;
 
-var console = {
-  log: printer,
-  error: printer,
-  info: printer,
+var _console = {
+  log: _print,
+  error: _print,
+  info: _print,
   time: function (timer) {
     this[timer] = new Date();
   },
@@ -367,7 +393,7 @@ var console = {
     this.log(timer, delta, "msec");
   }
 };
-this.console = console;
+this.console = _console;
 
 script = new Function ("veda", "input", script);
 try {
