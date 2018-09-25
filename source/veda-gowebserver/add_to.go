@@ -26,8 +26,14 @@ func addToIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	ticketKey = jsonData["ticket"].(string)
-	assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	if jsonData["ticket"] != nil {
+	    ticketKey = jsonData["ticket"].(string)
+	}
+
+	if jsonData["assigned_subsystems"] != nil {
+	    assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	}
+
 	eventID = jsonData["event_id"].(string)
 
 	//request ticket with the given key and check its validity
