@@ -54,8 +54,8 @@ class VedaModuleBasic
     Consumer[]     main_cs;
     //Consumer       main_cs_prefetch;
 
-    Queue          prepare_batch_queue;
-    Consumer       prepare_batch_cs;
+    Queue    prepare_batch_queue;
+    Consumer prepare_batch_cs;
 }
 
 class VedaModule : VedaModuleBasic
@@ -115,7 +115,7 @@ class VedaModule : VedaModuleBasic
 
     ~this()
     {
-        module_info.destroy ();
+        module_info.destroy();
     }
 
     private void open_perapare_batch_queue(bool is_open_exists_batch)
@@ -155,7 +155,7 @@ class VedaModule : VedaModuleBasic
             log.trace("%s terminated", process_name);
             return;
         }
-        log.trace("[%s] start module %s", process_name, cast(SUBSYSTEM) module_id);
+        log.trace("[%s] start module %s", process_name, cast(SUBSYSTEM)module_id);
 
         context = create_context();
 
@@ -248,7 +248,7 @@ class VedaModule : VedaModuleBasic
 
     // if return [false] then, no commit prepared message, and repeate
     abstract ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id);
+                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped);
 
     abstract bool configure();
     abstract bool close();
@@ -327,7 +327,7 @@ class VedaModule : VedaModuleBasic
         }
         main_cs_prefetch.sync();
     }
-*/
+ */
     /+private int priority(string user_uri)
        {
         stderr.writefln("basic user uri %s", user_uri);
@@ -336,6 +336,9 @@ class VedaModule : VedaModuleBasic
 
     private void prepare_queue(string msg)
     {
+        long count_popped = 0;
+        long count_pushed = 0;
+
         main_queue.close();
         main_queue.open();
 
@@ -348,6 +351,9 @@ class VedaModule : VedaModuleBasic
             //configuration_found_in_queue();
 
             string data = main_cs[ i ].pop();
+
+            count_pushed = main_queue.count_pushed;
+            count_popped = main_cs[ i ].count_popped;
 
             if (data is null && (i + 1 < main_cs.length))
             {
@@ -380,7 +386,7 @@ class VedaModule : VedaModuleBasic
 
                         try
                         {
-                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1);
+                            rc = prepare(INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1, count_pushed, count_popped);
                         }
                         catch (Throwable tr)
                         {
@@ -484,7 +490,8 @@ class VedaModule : VedaModuleBasic
 
             try
             {
-                ResultCode res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id);
+                ResultCode res = prepare(cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
+                                         count_popped);
 
                 if (res == ResultCode.OK)
                 {
