@@ -220,6 +220,8 @@ class ScriptProcess : VedaModule
             ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var super_classes = get_env_str_var ('$super_classes');"
+            ~ "var queue_elements_count = get_env_num_var ('$queue_elements_count');"
+            ~ "var queue_elements_processed = get_env_num_var ('$queue_elements_processed');"
             ~ "var _event_id = '?';";
 
         before_vars =
@@ -275,8 +277,8 @@ class ScriptProcess : VedaModule
         vql.reopen_db();
 
         vql.query(sticket.user_uri,
-                "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                res, OptAuthorize.NO, false);
+                  "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
+                  res, OptAuthorize.NO, false);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
