@@ -59,6 +59,9 @@ class ScriptProcess : VedaModule
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
 
+        g_count_pushed = count_pushed;
+        g_count_popped = count_popped;
+
         string    individual_id = new_indv.uri;
 
         bool      prepare_if_is_script = false;
