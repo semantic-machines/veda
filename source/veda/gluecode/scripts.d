@@ -56,6 +56,9 @@ class ScriptProcess : VedaModule
         if (script_vm is null)
             return ResultCode.Not_Ready;
 
+	if (src != "?" && queue_name != src)
+            return ResultCode.OK;
+
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
 
