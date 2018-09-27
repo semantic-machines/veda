@@ -51,13 +51,16 @@ class ScriptProcess : VedaModule
 
     override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id,
-                                long op_id)
+                                long op_id, long count_pushed, long count_popped)
     {
         if (script_vm is null)
             return ResultCode.Not_Ready;
 
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
+
+        g_count_pushed = count_pushed;
+        g_count_popped = count_popped;
 
         string    individual_id = new_indv.uri;
 
@@ -220,6 +223,8 @@ class ScriptProcess : VedaModule
             ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var super_classes = get_env_str_var ('$super_classes');"
+            ~ "var queue_elements_count = get_env_num_var ('$queue_elements_count');"
+            ~ "var queue_elements_processed = get_env_num_var ('$queue_elements_processed');"
             ~ "var _event_id = '?';";
 
         before_vars =
@@ -275,8 +280,8 @@ class ScriptProcess : VedaModule
         vql.reopen_db();
 
         vql.query(sticket.user_uri,
-                "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                res, OptAuthorize.NO, false);
+                  "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
+                  res, OptAuthorize.NO, false);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
