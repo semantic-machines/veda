@@ -130,7 +130,7 @@ class ScriptProcess : VedaModule
 
             if (script.compiled_script !is null)
             {
-				if (src == "?" && script.run_at != g_vm_id)
+				if (src == "?" && script.run_at != vm_id)
 					continue;
 				
                 //log.trace("look script:%s", script_id);
@@ -140,8 +140,8 @@ class ScriptProcess : VedaModule
                     continue;
                 }
 
-                if (script.run_at != vm_id)
-                    continue;
+                //if (script.run_at != vm_id)
+                //    continue;
 
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
