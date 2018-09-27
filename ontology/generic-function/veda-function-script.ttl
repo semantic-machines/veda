@@ -282,22 +282,6 @@ v-s:UserScriptTemplate
 
 # --------------------------User operations-----------------------------
 
-v-s:OperationClass
-  rdf:type rdfs:Class ;
-  rdfs:label "Класс операций"@ru ;
-  rdfs:label "Operations class"@en ;
-  rdfs:comment "The class of operation classes." ;
-  rdfs:subClassOf rdfs:Class ;
-.
-
-v-s:implementation
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Реализация"@ru ;
-  rdfs:label "Implementation"@en ;
-  rdfs:domain v-s:OperationClass ;
-  rdfs:range rdfs:Resource ;
-.
-
 v-s:Operation
   rdf:type owl:Class ;
   rdfs:label "Операция"@ru ;
@@ -320,25 +304,29 @@ v-s:inputQuery
   rdfs:range rdfs:Resource ;
 .
 
-v-s:OperationDelete
-  rdf:type v-s:OperationClass ;
+v-s:OperationTest
+  rdf:type owl:Class ;
   rdfs:subClassOf v-s:Operation ;
-  rdfs:label "Класс операций удаления"@ru ;
-  rdfs:label "Delete operations class"@en ;
-  v-s:implementation """
+  rdfs:label "Класс тестовой операций"@ru ;
+  rdfs:label "Test operationclass"@en ;
+  v-ui:hasModel v-s:OperationTestModel ;
+.
+
+v-s:OperationTestModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель класса операций тест"@ru ;
+  rdfs:label "Test operation class model"@en ;
+  v-s:script """
+this.fn = function () {
+  this["rdfs:comment"] = ["!!!TEST SUCCESS!!!"] ;
+  this.save();
+};
   """ ;
 .
 
-v-s:OperationDelete1
-  rdf:type v-s:OperationDelete ;
-  rdfs:label "Операция удаления 1"@ru ;
-  rdfs:label "Delete operation 1"@en ;
-.
-
-
 v-s:OperationEvent
   rdf:type v-s:Event ;
-  v-s:triggerByType v-s:OperationRequest ;
+  v-s:triggerByType v-s:Operation ;
 #  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -353,6 +341,7 @@ v-s:OperationEvent
  */
 
 var operation = new veda.IndividualModel(document);
+
 var toBeRun = operation["v-s:toBeRun"][0];
 var runAt = operation["v-s:runAt"][0];
 var script = operation["v-s:script"][0];
