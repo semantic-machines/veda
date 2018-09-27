@@ -318,7 +318,7 @@ v-s:OperationTemplate
         <strong about="v-s:lastRun" property="rdfs:label"></strong> <span about="@" property="v-s:lastRun"></span>
       </div>
       <div>
-        <strong about="v-s:inputQuery" property="rdfs:label"></strong> <span about="@" property="v-s:lastRun" class="view -edit -search"></span>
+        <strong about="v-s:inputQuery" property="rdfs:label"></strong> <span about="@" property="v-s:inputQuery" class="view -edit -search"></span>
         <veda-control data-type="string" property="v-s:inputQuery" class="-view edit search margin-sm"></veda-control>
       </div>
       <div>
@@ -471,9 +471,33 @@ v-s:OperationTest1
   rdfs:label "Test operation 1"@en ;
   rdfs:comment "Тестовая операция 1 комментарий"@ru ;
   rdfs:comment "Test operation 1 comment"@en ;
-  v-s:input cfg:Administrator ;
-  v-s:input cfg:Administrator_aspect ;
-  v-s:input cfg:Administrator_pref ;
+#  v-s:inputQuery "'rdf:type' == 'v-s:Person'  && 'rdfs:label' == 'Дмитр*'" ;
+  v-s:inputQuery "'*'=='owl*' || '*'=='rdf*'" ;
+.
+
+v-s:OperationEvent2
+  rdf:type v-s:Event ;
+  v-s:triggerByType v-s:Operation ;
+#  v-s:runAt "V8.LowPriority" ;
+  v-s:disabled true ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var operation = new veda.IndividualModel(document),
+if ( !operation.hasValue("v-s:hasStatus") || operation.hasValue("v-s:hasStatus", "v-s:StatusStopped") || operation.hasValue("v-s:hasStatus", "v-s:StatusExecuted") ) {
+  return ;
+}
+put_individual(ticket, document);
+  """ ;
 .
 
 v-s:OperationEvent
@@ -492,24 +516,22 @@ v-s:OperationEvent
  * super_classes = super classes of the document.
  */
 
-//return;
-
 var operation = new veda.IndividualModel(document),
-    status = operation["v-s:hasStatus"][0],
     inputQuery = operation["v-s:inputQuery"][0],
     input = operation["v-s:input"],
-    inputCursor = operation["v-s:inputCursor"][0],
-    progress = operation["v-s:progress"][0],
+    inputCursor = operation["v-s:inputCursor"][0] || 0,
+    progress = operation["v-s:progress"][0] || 0,
     now = new Date(),
-    max_queued = 20;
+    max_queued = 10,
+    to_process = 1500;
 
 // Stop execution
-if ( status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
+if ( !operation.hasValue("v-s:hasStatus") || operation.hasValue("v-s:hasStatus", "v-s:StatusStopped") || operation.hasValue("v-s:hasStatus", "v-s:StatusExecuted") ) {
   return ;
 }
 
 // First run with query specified
-if ( status === "v-s:StatusStarted" && individual.hasValue("v-s:inputQuery") && !individual.hasValue("v-s:inputCursor") && !individual.hasValue("v-s:input") ) {
+if ( operation.hasValue("v-s:hasStatus", "v-s:StatusStarted") && operation.hasValue("v-s:inputQuery") && !operation.hasValue("v-s:input") ) {
   var inputUris = query(veda.ticket, inputQuery).result;
   var inputValues = inputUris.map(function (value_uri) {
     return {
@@ -520,10 +542,14 @@ if ( status === "v-s:StatusStarted" && individual.hasValue("v-s:inputQuery") && 
   set_in_individual(veda.ticket, {
     "@": operation.id,
     "v-s:input": inputValues,
-    "v-s:inputCursor": veda.Util.newInt(0)
+    "v-s:inputCursor": veda.Util.newInt(0),
+    "v-s:hasStatus": inputValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
   });
   return;
 }
+
+console.log("QUEUED", queue_elements_count - queue_elements_processed);
+
 
 // Postpone execution at high load
 if ( queue_elements_count - queue_elements_processed > max_queued ) {
@@ -535,11 +561,17 @@ if ( queue_elements_count - queue_elements_processed > max_queued ) {
 }
 
 // Execute input portion
-var i;
-for (i = inputCursor; i < inputCursor + max_queued; i++) {
-  operation.fn(input[i]);
+for (var i = inputCursor, max = inputCursor + to_process, inputValue; (i < max) && (inputValue = input[i]); i++) {
+  try {
+    operation.fn(inputValue);
+  } catch (error) {
+    console.log(i, "Error processing individual", inputValue.id);
+    console.log(error, error.stack);
+    continue;
+  }
 }
 inputCursor = i;
+console.log("inputCursor", inputCursor);
 
 if (inputCursor > 0 && input.length > 0) {
   progress = Math.floor( (inputCursor / input.length) * 100 ) ;
@@ -548,6 +580,7 @@ if (inputCursor > 0 && input.length > 0) {
 } else if (inputCursor === 0 && input.length === 0) {
   progress = 100 ;
 }
+console.log("progress", progress);
 
 set_in_individual(veda.ticket, {
   "@": operation.id,
