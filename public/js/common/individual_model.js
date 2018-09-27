@@ -322,9 +322,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual to database
    */
   proto.save = function() {
-    var self = this;
     // Do not save individual to server if nothing changed
     if (this.isSync()) { return this; }
+    var self = this;
     this.trigger("beforeSave");
     Object.keys(this.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
