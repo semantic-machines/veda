@@ -329,7 +329,7 @@ v-s:OperationTemplate
         <veda-control data-type="link" rel="v-s:input" class="-view edit search fulltext margin-sm"></veda-control>
       </div>
       <div>
-        <strong about="v-s:inputCursor" property="rdfs:label"></strong> <span about="@" property="v-s:inputCursor"></span><span>%</span>
+        <strong about="v-s:inputCursor" property="rdfs:label"></strong> <span about="@" property="v-s:inputCursor"></span>
       </div>
     </div>
     <div class="col-md-8">
@@ -378,7 +378,32 @@ v-s:OperationTemplate
     });
   });
 
-  //# sourceURL=v-s:OperationTemplate_post
+  statusHandler();
+  individual.on("v-s:hasStatus", statusHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasStatus", statusHandler);
+  });
+  individual.on("v-s:hasStatus", statusHandler);
+
+  function statusHandler () {
+    if (
+      individual.hasValue("v-s:hasStatus", "v-s:StatusStarted")
+      || individual.hasValue("v-s:hasStatus", "v-s:StatusPostponed")
+      || individual.hasValue("v-s:hasStatus", "v-s:StatusExecution")
+    ) {
+      $(".action#run", template).attr("disabled", "disabled");
+      $(".action#stop", template).removeAttr("disabled", "disabled");
+    } else if (
+      !individual.hasValue("v-s:hasStatus")
+      || individual.hasValue("v-s:hasStatus", "v-s:StatusExecuted")
+      || individual.hasValue("v-s:hasStatus", "v-s:StatusStopped")
+    ) {
+      $(".action#run", template).removeAttr("disabled", "disabled");
+      $(".action#stop", template).attr("disabled", "disabled");
+    }
+  }
+
+//# sourceURL=v-s:OperationTemplate_post
 </script>
   """ ;
 .
@@ -433,6 +458,7 @@ v-s:OperationTestModel
   rdfs:label "Test operation class model"@en ;
   v-s:script """
 this.fn = function (individual) {
+  console.log(typeof individual, typeof individual.id);
   individual["rdfs:comment"] = this["rdfs:comment"] ;
   individual.save();
 };
@@ -465,6 +491,9 @@ v-s:OperationEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
+//return;
+
 var operation = new veda.IndividualModel(document),
     status = operation["v-s:hasStatus"][0],
     inputQuery = operation["v-s:inputQuery"][0],
@@ -480,7 +509,7 @@ if ( status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
 }
 
 // First run with query specified
-if ( status === "v-s:StatusStarted" && individual.hasValue("v-s:inputQuery") && !individual.hasValue("v-s:inputCursor") ) {
+if ( status === "v-s:StatusStarted" && individual.hasValue("v-s:inputQuery") && !individual.hasValue("v-s:inputCursor") && !individual.hasValue("v-s:input") ) {
   var inputUris = query(veda.ticket, inputQuery).result;
   var inputValues = inputUris.map(function (value_uri) {
     return {
@@ -506,14 +535,14 @@ if ( queue_elements_count - queue_elements_processed > max_queued ) {
 }
 
 // Execute input portion
-var i = inputCursor;
-for (; i < inputCursor + max_queued; i++) {
+var i;
+for (i = inputCursor; i < inputCursor + max_queued; i++) {
   operation.fn(input[i]);
 }
 inputCursor = i;
 
 if (inputCursor > 0 && input.length > 0) {
-  progress = Math.floor( (input.length / inputCursor) * 100 ) ;
+  progress = Math.floor( (inputCursor / input.length) * 100 ) ;
 } else if (inputCursor === 0 && input.length > 0) {
   progress = 0 ;
 } else if (inputCursor === 0 && input.length === 0) {
@@ -526,12 +555,5 @@ set_in_individual(veda.ticket, {
   "v-s:inputCursor": veda.Util.newInt(inputCursor),
   "v-s:progress": veda.Util.newInt(progress)
 });
-
-//v-s:StatusStarted
-//v-s:StatusStopped
-//v-s:StatusPostponed
-//v-s:StatusExecution
-//v-s:StatusExecuted
-
 """
 .
