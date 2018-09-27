@@ -89,7 +89,7 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
     return rc;
 }
 
-public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze,
+public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze,
                        out long op_id)
 {
     ResultCode rc;
@@ -97,7 +97,7 @@ public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, immutable 
 
     if (tid != Tid.init)
     {
-        send(tid, opt_request, _ti, tnx_id, opt_freeze, thisTid);
+        send(tid, src, opt_request, _ti, tnx_id, opt_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -110,7 +110,7 @@ public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, immutable 
     return rc;
 }
 
-public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
+public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
                        string new_binobj,
                        long update_counter,
                        string event_id, long tnx_id, long assigned_subsystems, OptFreeze opt_freeze,
@@ -124,7 +124,7 @@ public ResultCode save(P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cm
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
                                                                   false, assigned_subsystems);
 
-        send(tid, opt_request, [ ti ], tnx_id, opt_freeze, thisTid);
+        send(tid, src, opt_request, [ ti ], tnx_id, opt_freeze, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -346,7 +346,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 return;
                             }
                         },
-                        (OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
+                        (string src, OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.Not_Ready;
                             if (tiz.length == 0)
@@ -426,6 +426,11 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                                 tnx_id = op_id;
 
                                             imm.addResource("tnx_id", Resource(tnx_id));
+                                            
+                                            if (src is null || src == "")
+	                                            src = "?";
+	                                            
+                                            imm.addResource("src", Resource(src));
 
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));

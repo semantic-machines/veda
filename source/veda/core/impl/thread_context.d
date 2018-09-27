@@ -535,7 +535,7 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
+    public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
@@ -581,6 +581,7 @@ class PThreadContext : Context
                 req_body[ "individuals" ]         = [ individual_to_json(*indv) ];
                 req_body[ "assigned_subsystems" ] = assigned_subsystems;
                 req_body[ "event_id" ]            = event_id;
+                req_body[ "src" ]                 = src;
                 req_body[ "tnx_id" ]              = tnx_id;
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
@@ -692,7 +693,7 @@ class PThreadContext : Context
                 long update_counter = item.new_indv.getFirstInteger("v-s:updateCounter", -1);
 
                 rc =
-                    this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                    this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
                                 opt_authorize).result;
 
                 if (rc == ResultCode.Internal_Server_Error)
@@ -713,7 +714,7 @@ class PThreadContext : Context
                         }
                         this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
 
-                        rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                        rc = this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
                                          opt_authorize).result;
 
                         if (rc != ResultCode.Internal_Server_Error)

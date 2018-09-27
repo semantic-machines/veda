@@ -277,7 +277,7 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
 
     long       op_id;
     ResultCode rc =
-        ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
+        ticket_storage_module.save(null, P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, new_ticket.uri, null, ss_as_binobj, -1, null,
                                    -1, 0,
                                    OptFreeze.NONE,
                                    op_id);
@@ -665,12 +665,12 @@ public string execute_json(string in_msg, Context ctx)
 
             Ticket ticket = authenticate(ctx, login.str, password.str, secret);
 
-            res[ "type" ]     = "ticket";
-            res[ "id" ]       = ticket.id;
-            res[ "user_uri" ] = ticket.user_uri;
+            res[ "type" ]       = "ticket";
+            res[ "id" ]         = ticket.id;
+            res[ "user_uri" ]   = ticket.user_uri;
             res[ "user_login" ] = ticket.user_login;
-            res[ "result" ]   = ticket.result;
-            res[ "end_time" ] = ticket.end_time;
+            res[ "result" ]     = ticket.result;
+            res[ "end_time" ]   = ticket.end_time;
 
             //log.trace("authenticate: res=%s", res);
         }
@@ -681,12 +681,12 @@ public string execute_json(string in_msg, Context ctx)
 
             Ticket    ticket = get_ticket_trusted(ctx, ticket_id.str, login.str);
 
-            res[ "type" ]     = "ticket";
-            res[ "id" ]       = ticket.id;
-            res[ "user_uri" ] = ticket.user_uri;
+            res[ "type" ]       = "ticket";
+            res[ "id" ]         = ticket.id;
+            res[ "user_uri" ]   = ticket.user_uri;
             res[ "user_login" ] = ticket.user_login;
-            res[ "result" ]   = ticket.result;
-            res[ "end_time" ] = ticket.end_time;
+            res[ "result" ]     = ticket.result;
+            res[ "end_time" ]   = ticket.end_time;
         }
         else if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
         {
@@ -697,10 +697,15 @@ public string execute_json(string in_msg, Context ctx)
 
             long       assigned_subsystems = jassigned_modules.integer();
 
-            JSONValue  event_id       = jsn[ "event_id" ];
-            long       transaction_id = 0;
+            JSONValue  event_id = jsn[ "event_id" ];
 
-            Ticket     *ticket = ctx.get_storage().get_ticket(_ticket.str, false);
+            string     src = null;
+            if (auto p = "src" in jsn)
+                src = jsn[ "src" ].str;
+
+            long   transaction_id = 0;
+
+            Ticket *ticket = ctx.get_storage().get_ticket(_ticket.str, false);
 
             if (sfn == "put")
             {
@@ -712,6 +717,7 @@ public string execute_json(string in_msg, Context ctx)
 
                     Transaction tnx;
                     tnx.id            = transaction_id;
+                    tnx.src           = src;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems,
@@ -736,6 +742,7 @@ public string execute_json(string in_msg, Context ctx)
 
                     Transaction tnx;
                     tnx.id            = transaction_id;
+                    tnx.src           = src;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.ADD_IN, &individual,
@@ -758,6 +765,7 @@ public string execute_json(string in_msg, Context ctx)
 
                     Transaction tnx;
                     tnx.id            = transaction_id;
+                    tnx.src           = src;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.SET_IN, &individual,
@@ -780,6 +788,7 @@ public string execute_json(string in_msg, Context ctx)
 
                     Transaction tnx;
                     tnx.id            = transaction_id;
+                    tnx.src           = src;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual,
@@ -803,6 +812,7 @@ public string execute_json(string in_msg, Context ctx)
 
                     Transaction tnx;
                     tnx.id            = transaction_id;
+                    tnx.src           = src;
                     tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_storage().get_acl_client(), tnx, ticket, INDV_OP.REMOVE, &individual,
@@ -921,7 +931,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
             sys_ticket_link.addResource("rdf:type", Resource(DataType.Uri, "rdfs:Resource"));
             sys_ticket_link.addResource("v-s:resource", Resource(DataType.Uri, ticket.id));
 
-            ticket_storage_module.save(P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null,
+            ticket_storage_module.save(null, P_MODULE.ticket_manager, OptAuthorize.NO, INDV_OP.PUT, null, sys_ticket_link.uri, null,
                                        sys_ticket_link.serialize(), -1, null,
                                        -1, 0, OptFreeze.NONE,
                                        op_id);
@@ -976,7 +986,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         if (items.length > 0)
         {
-            rc = indv_storage_thread.save(P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+            rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
 
             log.trace("commit: rc=%s", rc);
 
@@ -1178,13 +1188,13 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
                                              res.op_id);
 
                 if (res.result == ResultCode.OK)
                 {
                     res.result =
-                        indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
                                                  res.op_id);
                 }
             }
@@ -1219,7 +1229,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.save(P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
                                              res.op_id);
             }
             else

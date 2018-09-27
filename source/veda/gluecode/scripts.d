@@ -49,7 +49,7 @@ class ScriptProcess : VedaModule
     }
 
 
-    override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed, long count_popped)
     {
@@ -164,15 +164,16 @@ class ScriptProcess : VedaModule
                                     if (count_sckip > 0)
                                         count_sckip--;
  */
-                    log.trace("start: %s %s %d %s", script_id, individual_id, op_id, event_id);
+                    log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
                     tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
+                    tnx.src			  = queue_name;	
                     ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
-                    log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
+                    //log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
                     foreach (item; tnx.get_queue())
                     {
                         log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
