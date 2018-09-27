@@ -7,6 +7,7 @@
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
 
 <http://semantic-machines.com/veda/veda-function-script>
   rdf:type owl:Ontology ;
@@ -48,6 +49,7 @@ v-s:lastRun
   rdfs:label "Последний запуск"@ru ;
   rdfs:label "Last run"@en ;
   rdfs:domain v-s:UserScript ;
+  rdfs:domain v-s:Operation ;
   rdfs:range xsd:dateTime ;
 .
 
@@ -284,8 +286,112 @@ v-s:UserScriptTemplate
 
 v-s:Operation
   rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Операция"@ru ;
   rdfs:label "Operation"@en ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:StopBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Остановить"@ru ;
+  rdfs:label "Stop"@en ;
+.
+
+v-s:OperationTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Operation ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
+  <div class="row">
+    <div class="col-md-4">
+      <div>
+        <strong about="v-s:hasStatus" property="rdfs:label"></strong> <span about="@" rel="v-s:hasStatus" data-template="v-ui:StatusTemplate"></span>
+      </div>
+      <div>
+        <strong about="v-s:progress" property="rdfs:label"></strong> <span about="@" property="v-s:progress"></span><span>%</span>
+      </div>
+      <div>
+        <strong about="v-s:lastRun" property="rdfs:label"></strong> <span about="@" property="v-s:lastRun"></span>
+      </div>
+      <div>
+        <strong about="v-s:inputQuery" property="rdfs:label"></strong> <span about="@" property="v-s:lastRun" class="view -edit -search"></span>
+        <veda-control data-type="string" property="v-s:inputQuery" class="-view edit search margin-sm"></veda-control>
+      </div>
+      <div>
+        <strong about="v-s:input" property="rdfs:label"></strong>
+        <ul rel="v-s:input" class="view edit search" data-limit="5" data-more="true">
+          <li about="@" data-template="v-ui:LabelTemplate"></li>
+        </ul>
+        <veda-control data-type="link" rel="v-s:input" class="-view edit search fulltext margin-sm"></veda-control>
+      </div>
+      <div>
+        <strong about="v-s:inputCursor" property="rdfs:label"></strong> <span about="@" property="v-s:inputCursor"></span><span>%</span>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <em about="v-s:output" property="rdfs:label" class="view edit -search"></em>
+      <pre about="@" property="v-s:output" class="view edit -search" style="height:300px; overflow:auto"></pre>
+    </div>
+  </div>
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <div class="actions view edit -search clearfix">
+    <div class="pull-right">
+      <button type="button" class="action btn btn-success view -edit -search" id="run" about="v-s:RunBundle" property="rdfs:label"/>
+      <button type="button" class="action btn btn-danger view -edit -search" id="stop" about="v-s:StopBundle" property="rdfs:label"/>
+      <button type="button" class="action btn btn-default -view edit -search" id="clear" about="v-s:ClearBundle" property="rdfs:label"/>
+    </div>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
+  </div>
+</div>
+<script>
+  $(".action#run", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data: "v-s:StatusStarted"
+      }]
+    });
+  });
+  $(".action#stop", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data: "v-s:StatusStopped"
+      }]
+    });
+  });
+  $(".action#clear", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:output": [{
+        type: "String",
+        data: ""
+      }]
+    });
+  });
+
+  //# sourceURL=v-s:OperationTemplate_post
+</script>
+  """ ;
+.
+
+# v-s:hasStatus
+# v-s:output
+
+v-s:inputQuery
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Входной запрос"@ru ;
+  rdfs:label "Input query"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:string ;
 .
 
 v-s:input
@@ -296,20 +402,29 @@ v-s:input
   rdfs:range rdfs:Resource ;
 .
 
-v-s:inputQuery
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Входной запрос"@ru ;
-  rdfs:label "Input query"@en ;
+v-s:inputCursor
+  rdf:type rdf:Property ;
+  rdfs:label "Указатель входа"@ru ;
+  rdfs:label "Input cursor"@en ;
   rdfs:domain v-s:Operation ;
-  rdfs:range rdfs:Resource ;
+  rdfs:range xsd:integer ;
+.
+
+v-s:progress
+  rdf:type rdf:Property ;
+  rdfs:label "Прогресс"@ru ;
+  rdfs:label "Progress"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:integer ;
 .
 
 v-s:OperationTest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Operation ;
   rdfs:label "Класс тестовой операций"@ru ;
-  rdfs:label "Test operationclass"@en ;
+  rdfs:label "Test operation class"@en ;
   v-ui:hasModel v-s:OperationTestModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 v-s:OperationTestModel
@@ -317,11 +432,22 @@ v-s:OperationTestModel
   rdfs:label "Модель класса операций тест"@ru ;
   rdfs:label "Test operation class model"@en ;
   v-s:script """
-this.fn = function () {
-  this["rdfs:comment"] = ["!!!TEST SUCCESS!!!"] ;
-  this.save();
+this.fn = function (individual) {
+  individual["rdfs:comment"] = this["rdfs:comment"] ;
+  individual.save();
 };
   """ ;
+.
+
+v-s:OperationTest1
+  rdf:type v-s:OperationTest ;
+  rdfs:label "Тестовая операция 1"@ru ;
+  rdfs:label "Test operation 1"@en ;
+  rdfs:comment "Тестовая операция 1 комментарий"@ru ;
+  rdfs:comment "Test operation 1 comment"@en ;
+  v-s:input cfg:Administrator ;
+  v-s:input cfg:Administrator_aspect ;
+  v-s:input cfg:Administrator_pref ;
 .
 
 v-s:OperationEvent
@@ -339,64 +465,73 @@ v-s:OperationEvent
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+var operation = new veda.IndividualModel(document),
+    status = operation["v-s:hasStatus"][0],
+    inputQuery = operation["v-s:inputQuery"][0],
+    input = operation["v-s:input"],
+    inputCursor = operation["v-s:inputCursor"][0],
+    progress = operation["v-s:progress"][0],
+    now = new Date(),
+    max_queued = 20;
 
-var operation = new veda.IndividualModel(document);
-
-var toBeRun = operation["v-s:toBeRun"][0];
-var runAt = operation["v-s:runAt"][0];
-var script = operation["v-s:script"][0];
-var input = operation["v-s:input"];
-var now = new Date();
-
-if (!script || !toBeRun || runAt != "Server") { return; }
-
-// preserve global print & console
-var nativePrint = this.print;
-var nativeConsole = this.console;
-
-// override global print & console
-var output = "";
-var _print = function () {
-  for (var i = 0; i < arguments.length; i++) {
-    var arg = arguments[i] ;
-    var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
-    if (i === 0) {
-      output += argString;
-    } else {
-      output += " " + argString;
-    }
-  }
-  output += String.fromCharCode(13, 10);
-};
-this.print = _print;
-
-var _console = {
-  log: _print,
-  error: _print,
-  info: _print,
-  time: function (timer) {
-    this[timer] = new Date();
-  },
-  timeEnd: function (timer) {
-    var delta = new Date() - this[timer];
-    this.log(timer, delta, "msec");
-  }
-};
-this.console = _console;
-
-script = new Function ("veda", "input", script);
-try {
-  script(veda, input);
-} catch (err) {
-  print(err, err.stack);
+// Stop execution
+if ( status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
+  return ;
 }
-operation["v-s:lastRun"] = [ now ];
-operation.clearValue("v-s:toBeRun");
-operation["v-s:output"] = [ output ];
-operation.save();
 
-// restore global print & console
-this.print = nativePrint;
-this.console = nativeConsole;
+// First run with query specified
+if ( status === "v-s:StatusStarted" && individual.hasValue("v-s:inputQuery") && !individual.hasValue("v-s:inputCursor") ) {
+  var inputUris = query(veda.ticket, inputQuery).result;
+  var inputValues = inputUris.map(function (value_uri) {
+    return {
+      type: "Uri",
+      data: value_uri
+    };
+  });
+  set_in_individual(veda.ticket, {
+    "@": operation.id,
+    "v-s:input": inputValues,
+    "v-s:inputCursor": veda.Util.newInt(0)
+  });
+  return;
+}
+
+// Postpone execution at high load
+if ( queue_elements_count - queue_elements_processed > max_queued ) {
+  set_in_individual(veda.ticket, {
+    "@": operation.id,
+    "v-s:hasStatus": veda.Util.newUri("v-s:StatusPostponed")
+  });
+  return;
+}
+
+// Execute input portion
+var i = inputCursor;
+for (; i < inputCursor + max_queued; i++) {
+  operation.fn(input[i]);
+}
+inputCursor = i;
+
+if (inputCursor > 0 && input.length > 0) {
+  progress = Math.floor( (input.length / inputCursor) * 100 ) ;
+} else if (inputCursor === 0 && input.length > 0) {
+  progress = 0 ;
+} else if (inputCursor === 0 && input.length === 0) {
+  progress = 100 ;
+}
+
+set_in_individual(veda.ticket, {
+  "@": operation.id,
+  "v-s:hasStatus": progress === 100 ? veda.Util.newUri("v-s:StatusExecuted") : veda.Util.newUri("v-s:StatusExecution"),
+  "v-s:inputCursor": veda.Util.newInt(inputCursor),
+  "v-s:progress": veda.Util.newInt(progress)
+});
+
+//v-s:StatusStarted
+//v-s:StatusStopped
+//v-s:StatusPostponed
+//v-s:StatusExecution
+//v-s:StatusExecuted
+
 """
 .
