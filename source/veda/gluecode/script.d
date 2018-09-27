@@ -86,8 +86,8 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
             if (script.run_at is null)
                 script.run_at = "main";
 
-            if (script.run_at != g_vm_id)
-                return;
+            //if (script.run_at != g_vm_id)
+            //    return;
 
             if (trace)
                 log.trace("compile script.id=%s, text=%s", script.id, script.str_script);

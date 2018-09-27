@@ -56,7 +56,7 @@ class ScriptProcess : VedaModule
         if (script_vm is null)
             return ResultCode.Not_Ready;
 
-	if (src != "?" && queue_name != src)
+		if (src != "?" && queue_name != src)
             return ResultCode.OK;
 
         //writeln ("#prev_indv=", prev_indv);
@@ -130,6 +130,9 @@ class ScriptProcess : VedaModule
 
             if (script.compiled_script !is null)
             {
+				if (src == "?" && script.run_at != g_vm_id)
+					continue;
+				
                 //log.trace("look script:%s", script_id);
                 if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
                 {
