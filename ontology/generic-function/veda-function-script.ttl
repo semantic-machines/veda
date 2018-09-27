@@ -335,10 +335,9 @@ v-s:OperationDelete1
   rdfs:label "Delete operation 1"@en ;
 .
 
-
 v-s:OperationEvent
   rdf:type v-s:Event ;
-  v-s:triggerByType v-s:OperationRequest ;
+  v-s:triggerByType v-s:Operation ;
 #  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
