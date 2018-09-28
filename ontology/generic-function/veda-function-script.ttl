@@ -458,9 +458,7 @@ v-s:OperationTestModel
   rdfs:label "Test operation class model"@en ;
   v-s:script """
 this.fn = function (individual) {
-  console.log(typeof individual, typeof individual.id);
-  individual["rdfs:comment"] = this["rdfs:comment"] ;
-  individual.save();
+  console.log("Processed individual", individual.id);
 };
   """ ;
 .
@@ -504,6 +502,7 @@ v-s:OperationEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Operation ;
 #  v-s:runAt "V8.LowPriority" ;
+  v-s:unsafe true ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -523,7 +522,7 @@ var operation = new veda.IndividualModel(document),
     progress = operation["v-s:progress"][0] || 0,
     now = new Date(),
     max_queued = 10,
-    to_process = 1500;
+    to_process = 10;
 
 // Stop execution
 if ( !operation.hasValue("v-s:hasStatus") || operation.hasValue("v-s:hasStatus", "v-s:StatusStopped") || operation.hasValue("v-s:hasStatus", "v-s:StatusExecuted") ) {
@@ -543,13 +542,11 @@ if ( operation.hasValue("v-s:hasStatus", "v-s:StatusStarted") && operation.hasVa
     "@": operation.id,
     "v-s:input": inputValues,
     "v-s:inputCursor": veda.Util.newInt(0),
+    "v-s:lastRun": veda.Util.newDate(now),
     "v-s:hasStatus": inputValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
   });
   return;
 }
-
-console.log("QUEUED", queue_elements_count - queue_elements_processed);
-
 
 // Postpone execution at high load
 if ( queue_elements_count - queue_elements_processed > max_queued ) {
