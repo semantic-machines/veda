@@ -49,14 +49,16 @@ class ScriptProcess : VedaModule
     }
 
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
                                 string event_id, long transaction_id,
-                                long op_id, long count_pushed, long count_popped)
+                                long op_id, long count_pushed,
+                                long count_popped)
     {
         if (script_vm is null)
             return ResultCode.Not_Ready;
 
-		if (src != "?" && queue_name != src)
+        if (src != "?" && queue_name != src)
             return ResultCode.OK;
 
         //writeln ("#prev_indv=", prev_indv);
@@ -130,11 +132,15 @@ class ScriptProcess : VedaModule
 
             if (script.compiled_script !is null)
             {
-				if (src == "?" && script.run_at != vm_id)
-					continue;
-				
+                if (src == "?" && script.run_at != vm_id)
+                    continue;
+
                 //log.trace("look script:%s", script_id);
-                if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
+                if (script.unsafe == true)
+                {
+                    log.trace("WARN! this script is UNSAFE!, %s", script_id);
+                }
+                else if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
                 {
                     //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                     continue;
@@ -176,7 +182,7 @@ class ScriptProcess : VedaModule
                     script.compiled_script.run();
                     tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
-                    tnx.src			  = queue_name;	
+                    tnx.src           = queue_name;
                     ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
                     //log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
