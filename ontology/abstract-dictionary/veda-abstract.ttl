@@ -1113,7 +1113,13 @@ v-s:hasClassifierSectionOfProjectDocumentation
   rdfs:range v-s:ClassifierSectionOfProjectDocumentation ;
   rdfs:domain v-s:ClassifiedRus ;
 .
-
+v-s:hasClassifierMarkOfWorkingDrawingsSet
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Марка комплекта рабочих чертежей"@ru ;
+  rdfs:label "Mark of working drawings set"@en ;
+  rdfs:range v-s:ClassifierMarkOfWorkingDrawingsSet ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
 ### ------------------------------------------------------------
 v-s:Maintained
   rdf:type owl:Class ;

@@ -22,9 +22,9 @@ public struct SearchResult
     int        estimated;
     int        processed;
     long       cursor;
-    long 	   total_time;
-    long	   query_time;
-    long	   authorize_time;			
+    long       total_time;
+    long       query_time;
+    long       authorize_time;
     ResultCode result_code = ResultCode.Not_Ready;
 }
 
@@ -54,7 +54,7 @@ interface Context
 
     public VQL get_vql();
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
+    public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
     public Individual[] get_individuals_via_query(string user_uri, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);

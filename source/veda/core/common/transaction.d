@@ -100,6 +100,7 @@ struct Transaction
         immutable(TransactionItem)[] immutable_queue;
     }
 
+    string      src;
     bool        is_autocommit = true;
     long        id;
     ResultCode  rc;
