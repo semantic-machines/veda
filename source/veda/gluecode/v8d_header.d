@@ -417,7 +417,7 @@ extern (C++) long get_env_num_var(const char *_var_name, int _var_name_length)
 
         if (var_name == "$queue_elements_count")
         {
-            return g_count_popped;
+            return g_count_pushed;
         }
         else if (var_name == "$queue_elements_processed")
         {
