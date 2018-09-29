@@ -8,6 +8,7 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 
 <http://semantic-machines.com/veda/veda-function-script>
   rdf:type owl:Ontology ;
@@ -287,6 +288,7 @@ v-s:UserScriptTemplate
 v-s:Operation
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Операция"@ru ;
   rdfs:label "Operation"@en ;
   v-ui:hasTemplate v-s:OperationTemplate ;
@@ -315,7 +317,10 @@ v-s:OperationTemplate
         <strong about="v-s:progress" property="rdfs:label"></strong> <span about="@" property="v-s:progress"></span><span>%</span>
       </div>
       <div>
-        <strong about="v-s:lastRun" property="rdfs:label"></strong> <span about="@" property="v-s:lastRun"></span>
+        <strong about="v-s:dateFrom" property="rdfs:label"></strong> <span about="@" property="v-s:dateFrom"></span>
+      </div>
+      <div>
+        <strong about="v-s:duration" property="rdfs:label"></strong> <span about="@" property="v-s:duration"></span> <span>sec</span>
       </div>
       <div>
         <strong about="v-s:inputQuery" property="rdfs:label"></strong> <span about="@" property="v-s:inputQuery" class="view -edit -search"></span>
@@ -408,6 +413,9 @@ v-s:OperationTemplate
   """ ;
 .
 
+# v-s:dateFrom
+# v-s:dateTo
+# v-s:duration
 # v-s:hasStatus
 # v-s:output
 
@@ -458,7 +466,8 @@ v-s:OperationTestModel
   rdfs:label "Test operation class model"@en ;
   v-s:script """
 this.fn = function (individual) {
-  console.log("Processed individual", individual.id);
+  individual.isSync(false);
+  individual.save();
 };
   """ ;
 .
@@ -473,36 +482,12 @@ v-s:OperationTest1
   v-s:inputQuery "'*'=='owl*' || '*'=='rdf*'" ;
 .
 
-v-s:OperationEvent2
-  rdf:type v-s:Event ;
-  v-s:triggerByType v-s:Operation ;
-#  v-s:runAt "V8.LowPriority" ;
-  v-s:disabled true ;
-  v-s:script """
-/* Available variables:
- * ticket = superuser ticket
- * document = captured document
- * user_uri = user whose actions triggered event
- * prev_state = previous state of the captured document
- * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_script_id = id of the parent script that triggered this event.
- * parent_document_id = id of the document that triggered this event.
- * super_classes = super classes of the document.
- */
-
-var operation = new veda.IndividualModel(document),
-if ( !operation.hasValue("v-s:hasStatus") || operation.hasValue("v-s:hasStatus", "v-s:StatusStopped") || operation.hasValue("v-s:hasStatus", "v-s:StatusExecuted") ) {
-  return ;
-}
-put_individual(ticket, document);
-  """ ;
-.
-
 v-s:OperationEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Operation ;
 #  v-s:runAt "V8.LowPriority" ;
   v-s:unsafe true ;
+  v-s:disabled true ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -521,6 +506,7 @@ var operation = new veda.IndividualModel(document),
     inputCursor = operation["v-s:inputCursor"][0] || 0,
     progress = operation["v-s:progress"][0] || 0,
     now = new Date(),
+    dateFrom = operation["v-s:dateFrom"][0] || now,
     max_queued = 100,
     to_process = 100;
 
@@ -542,7 +528,7 @@ if ( operation.hasValue("v-s:hasStatus", "v-s:StatusStarted") && operation.hasVa
     "@": operation.id,
     "v-s:input": inputValues,
     "v-s:inputCursor": veda.Util.newInt(0),
-    "v-s:lastRun": veda.Util.newDate(now),
+    "v-s:dateFrom": veda.Util.newDate(now),
     "v-s:hasStatus": inputValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
   });
   return;
@@ -550,12 +536,15 @@ if ( operation.hasValue("v-s:hasStatus", "v-s:StatusStarted") && operation.hasVa
 
 // Postpone execution at high load
 if ( queue_elements_count - queue_elements_processed > max_queued ) {
+  console.log("Queue busy", queue_elements_count - queue_elements_processed);
   set_in_individual(veda.ticket, {
     "@": operation.id,
-    "v-s:hasStatus": veda.Util.newUri("v-s:StatusPostponed")
+    "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+    "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 ))
   });
   return;
 }
+
 
 // Execute input portion
 for (var i = inputCursor, max = inputCursor + to_process, inputValue; (i < max) && (inputValue = input[i]); i++) {
@@ -568,7 +557,6 @@ for (var i = inputCursor, max = inputCursor + to_process, inputValue; (i < max) 
   }
 }
 inputCursor = i;
-console.log("inputCursor", inputCursor);
 
 if (inputCursor > 0 && input.length > 0) {
   progress = Math.floor( (inputCursor / input.length) * 100 ) ;
@@ -577,13 +565,131 @@ if (inputCursor > 0 && input.length > 0) {
 } else if (inputCursor === 0 && input.length === 0) {
   progress = 100 ;
 }
-console.log("progress", progress);
 
-set_in_individual(veda.ticket, {
+var to_set = {
   "@": operation.id,
-  "v-s:hasStatus": progress === 100 ? veda.Util.newUri("v-s:StatusExecuted") : veda.Util.newUri("v-s:StatusExecution"),
+  "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+  "v-s:progress": veda.Util.newInt(progress),
+  "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 )),
   "v-s:inputCursor": veda.Util.newInt(inputCursor),
-  "v-s:progress": veda.Util.newInt(progress)
-});
+};
+if (progress === 100) {
+  to_set["v-s:hasStatus"] = veda.Util.newUri("v-s:StatusExecuted");
+}
+set_in_individual(veda.ticket, to_set);
+"""
+.
+
+v-s:OperationEvent2
+  rdf:type v-s:Event ;
+  v-s:triggerByType v-s:Operation ;
+#  v-s:runAt "V8.LowPriority" ;
+  v-s:unsafe true ;
+#  v-s:disabled true ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+console.log("@0");
+
+var operation = document,
+    inputQuery = operation["v-s:inputQuery"] && operation["v-s:inputQuery"][0].data || "",
+    input = operation["v-s:input"],
+    inputCursor = operation["v-s:inputCursor"] && operation["v-s:inputCursor"][0].data || 0,
+    progress = operation["v-s:progress"] && operation["v-s:progress"][0].data || 0,
+    status = operation["v-s:hasStatus"] && operation["v-s:hasStatus"][0].data || "",
+    now = new Date(),
+    dateFrom = operation["v-s:dateFrom"] && operation["v-s:dateFrom"][0].data || now,
+    operation_type_uri = operation["rdf:type"][0].data,
+    operation_type = get_individual(veda.ticket, operation_type_uri),
+    operation_model_uri = operation_type["v-ui:hasModel"][0].data,
+    operation_model = get_individual(veda.ticket, operation_model_uri),
+    operation_model_src = operation_model["v-s:script"][0].data,
+    max_queued = 100,
+    to_process = 100;
+
+
+// Stop execution
+if ( !status || status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
+  return ;
+}
+
+console.log("@1");
+
+// First run with query specified
+if ( status === "v-s:StatusStarted" && inputQuery && !input ) {
+  console.log("@2");
+  var inputUris = query(veda.ticket, inputQuery).result;
+  console.log("@3");
+  var inputValues = inputUris.map(function (value_uri) {
+    return {
+      type: "Uri",
+      data: value_uri
+    };
+  });
+  set_in_individual(veda.ticket, {
+    "@": operation["@"],
+    "v-s:input": inputValues,
+    "v-s:inputCursor": veda.Util.newInt(0),
+    "v-s:dateFrom": veda.Util.newDate(now),
+    "v-s:hasStatus": inputValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
+  });
+  console.log("@4");
+  return;
+}
+
+// Postpone execution at high load
+if ( queue_elements_count - queue_elements_processed > max_queued ) {
+  console.log("Queue busy", queue_elements_count - queue_elements_processed);
+  set_in_individual(veda.ticket, {
+    "@": operation["@"],
+    "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+    "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 ))
+  });
+  return;
+}
+
+// Execute input portion
+var operation_model_fn = new Function(operation_model_src);
+operation_model_fn.call(operation);
+
+for (var i = inputCursor, max = inputCursor + to_process, inputValue; (i < max) && (inputValue = input[i]); i++) {
+  try {
+    operation.fn(inputValue);
+  } catch (error) {
+    console.log(i, "Error processing individual", inputValue.id);
+    console.log(error, error.stack);
+    continue;
+  }
+}
+inputCursor = i;
+
+if (inputCursor > 0 && input.length > 0) {
+  progress = Math.floor( (inputCursor / input.length) * 100 ) ;
+} else if (inputCursor === 0 && input.length > 0) {
+  progress = 0 ;
+} else if (inputCursor === 0 && input.length === 0) {
+  progress = 100 ;
+}
+
+var to_set = {
+  "@": operation["@"],
+  "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+  "v-s:progress": veda.Util.newInt(progress),
+  "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 )),
+  "v-s:inputCursor": veda.Util.newInt(inputCursor),
+};
+if (progress === 100) {
+  to_set["v-s:hasStatus"] = veda.Util.newUri("v-s:StatusExecuted");
+}
+set_in_individual(veda.ticket, to_set);
 """
 .
