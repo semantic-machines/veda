@@ -107,8 +107,6 @@ public enum COMPONENT : ubyte
 
     n_channel                  = 38,
 
-    webserver                  = 39,
-
     /// Загрузка из файлов
     file_reader                = 40,
 
@@ -129,7 +127,6 @@ public enum P_MODULE : ubyte
     print_statistic            = COMPONENT.print_statistic,
     file_reader                = COMPONENT.file_reader,
     n_channel                  = COMPONENT.n_channel,
-    webserver                  = COMPONENT.webserver
 }
 
 /// id модулей обрабатывающих очередь

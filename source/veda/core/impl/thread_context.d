@@ -265,12 +265,6 @@ class PThreadContext : Context
             set_global_systicket(ticket);
         }
 
-        version (WebServer)
-        {
-            ticket = *(storage.get_systicket_from_storage());
-            set_global_systicket(ticket);
-        }
-
         return ticket;
     }
 
@@ -640,18 +634,6 @@ class PThreadContext : Context
                 res = info.committed_op_id;
             else
                 res = info.op_id;
-        }
-
-        version (WebServer)
-        {
-            if (module_id == MODULE.subject_manager)
-                this.reopen_ro_individuals_storage_db();
-
-            if (module_id == MODULE.acl_preparer)
-                this.reopen_ro_acl_storage_db();
-
-            if (module_id == MODULE.fulltext_indexer)
-                this.reopen_ro_fulltext_indexer_db();
         }
 
         log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);

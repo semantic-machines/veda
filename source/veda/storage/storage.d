@@ -84,12 +84,6 @@ public abstract class Storage
         new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
         new_ticket.resources[ ticket__duration ] ~= Resource(duration);
 
-        version (WebServer)
-        {
-            subject2Ticket(new_ticket, &ticket);
-            user_of_ticket[ ticket.id ] = new Ticket(ticket);
-        }
-
         return ticket;
     }
 
