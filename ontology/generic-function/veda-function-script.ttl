@@ -521,8 +521,8 @@ var operation = new veda.IndividualModel(document),
     inputCursor = operation["v-s:inputCursor"][0] || 0,
     progress = operation["v-s:progress"][0] || 0,
     now = new Date(),
-    max_queued = 10,
-    to_process = 10;
+    max_queued = 100,
+    to_process = 100;
 
 // Stop execution
 if ( !operation.hasValue("v-s:hasStatus") || operation.hasValue("v-s:hasStatus", "v-s:StatusStopped") || operation.hasValue("v-s:hasStatus", "v-s:StatusExecuted") ) {
