@@ -1685,7 +1685,7 @@ v-fs:AttributiveSearchInlineTemplate
     <div class="search-form"></div>
     <br>
     <div class="search-actions clearfix">
-      <button class="btn btn-primary search-button" about="v-fs:Find" property="rdfs:label"></button>
+      <button class="btn btn-primary search-button" id="search-button" about="v-fs:Find" property="rdfs:label"></button>
       <span class="results-load-buttons">
         <button class="more-results btn btn-primary hidden" about="v-fs:MoreResults" property="rdfs:label"></button>
         <button class="all-results btn btn-warning hidden" about="v-fs:AllResults" property="rdfs:label"></button>
@@ -1772,7 +1772,7 @@ v-fs:AttributiveSearchInlineTemplate
   var self = individual,
       searchBlankContainer = $(".search-form", template),
       searchResultContainer = $(".search-result", template),
-      searchButton = $(".search-button", template),
+      searchButton = $("#search-button.search-button", template),
       moreResults = $(".more-results", template),
       allResults = $(".all-results", template),
       noMoreResults = $(".no-more-results", template),
@@ -1919,19 +1919,19 @@ v-fs:AttributiveSearchInlineTemplate
 
   // Search handler
   function searchHandler() {
-    var $this = $(this);
-    toggleSpin($this);
+    var searchButtons = $(".search-button", template);
+    toggleSpin(searchButtons);
     self.search()
       .then(renderResult)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
           scrollTo(self.scroll);
         }
-        toggleSpin($this);
+        toggleSpin(searchButtons);
       })
       .catch(function (error) {
         console.log(error);
-        toggleSpin($this);
+        toggleSpin(searchButtons);
       });
   }
 
@@ -2211,7 +2211,7 @@ v-fs:FulltextBlankTemplate
     <div class="input-group">
       <veda-control property="*" data-type="string"></veda-control>
       <span class="input-group-btn">
-        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
+        <button class="btn btn-primary search-button" id="custom-search-button" type="button" about="v-fs:Find" property="rdfs:label"></button>
       </span>
     </div>
     <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
@@ -2225,8 +2225,8 @@ v-fs:FulltextBlankTemplate
   </div>
 </div>
 <script>
-  var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
-  var customFind = $(".custom-find", template);
+  var find = container.siblings(".search-actions").find("#search-button.search-button").addClass("hidden");
+  var customFind = $("#custom-search-button.search-button", template);
   customFind.click(function () {
     if ( $("input", template).val() ) {
       find.click();
