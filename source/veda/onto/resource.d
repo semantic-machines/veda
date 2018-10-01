@@ -76,6 +76,8 @@ struct Resource
     /// InfoByte
     byte     info = -1;
 
+	int		 order;
+
     /// Язык
     LANG     lang = LANG.NONE;
 
