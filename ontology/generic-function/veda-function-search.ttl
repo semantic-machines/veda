@@ -2011,6 +2011,43 @@ v-fs:AttributiveSearchInlineTemplate
     });
   });
 
+  // Select results
+  self.selected = self.selected || {};
+  var toggleSelectAll = searchResultContainer.find(".toggle-select-all");
+  searchResultContainer.on("click", ".toggle-select", toggleSelect);
+  toggleSelectAll.click(function () {
+    var selectedL = Object.keys(self.selected).length;
+    var resultsL = resultContainer.children().length;
+    if ( resultsL !== 0 && selectedL !== 0 && resultsL !== selectedL ) {
+      searchResultContainer.find(".toggle-select:checked").click();
+    } else if ( resultsL !== 0 && selectedL === 0) {
+      searchResultContainer.find(".toggle-select").click();
+    } else if ( resultsL !== 0 && selectedL !== 0 && resultsL === selectedL) {
+      searchResultContainer.find(".toggle-select").click();
+    }
+  });
+
+  function toggleSelect() {
+    var $this = $(this);
+    var result_uri = $this.closest("[resource]").attr("resource");
+    if ( $this.is(":checked") ) {
+      self.selected[result_uri] = true;
+    } else {
+      delete self.selected[result_uri];
+    }
+    var selectedL = Object.keys(self.selected).length;
+    var resultsL = resultContainer.children().length;
+    if ( resultsL !== 0 && resultsL === selectedL ) {
+      toggleSelectAll.prop("checked", true);
+      toggleSelectAll.prop("indeterminate", false);
+    } else if ( resultsL !== 0 && selectedL !== 0 && resultsL !== selectedL ) {
+      toggleSelectAll.prop("indeterminate", true);
+    } else if ( selectedL === 0 ) {
+      toggleSelectAll.prop("indeterminate", false);
+      toggleSelectAll.prop("checked", false);
+    }
+  }
+
   // Render result
   function renderResult(resultDelta) {
 
@@ -2049,6 +2086,8 @@ v-fs:AttributiveSearchInlineTemplate
       if (serialNumber === self.marked + 1) {
         tmpl.addClass("warning");
       }
+      tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
+
       setTimeout(function () {
         $("td", tmpl).each( function () {
           var text = this.innerText || this.textContent;
