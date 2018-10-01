@@ -70,8 +70,7 @@ v-s:PsRunAtUserScript
 v-s:UserScriptEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:UserScript ;
-  v-s:preventByType v-s:Operation ;
-#  v-s:runAt "V8.LowPriority" ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -333,15 +332,15 @@ v-s:OperationTemplate
         <strong about="v-s:duration" property="rdfs:label"></strong> <span about="@" property="v-s:duration"></span> <span>sec</span>
       </div>
       <div>
-        <strong about="v-s:inputQuery" property="rdfs:label"></strong> <span about="@" property="v-s:inputQuery" class="view -edit -search"></span>
-        <veda-control data-type="string" property="v-s:inputQuery" class="-view edit search margin-sm"></veda-control>
+        <strong about="v-s:dataQuery" property="rdfs:label"></strong> <span about="@" property="v-s:dataQuery" class="view -edit -search"></span>
+        <veda-control data-type="string" property="v-s:dataQuery" class="-view edit search margin-sm"></veda-control>
       </div>
       <div>
-        <strong about="v-s:input" property="rdfs:label"></strong>
-        <ul rel="v-s:input" class="view edit search" data-limit="5" data-more="true">
+        <strong about="v-s:data" property="rdfs:label"></strong>
+        <ul rel="v-s:data" class="view edit search" data-limit="5" data-more="true">
           <li about="@" data-template="v-ui:LabelTemplate"></li>
         </ul>
-        <veda-control data-type="link" rel="v-s:input" class="-view edit search fulltext margin-sm"></veda-control>
+        <veda-control data-type="link" rel="v-s:data" class="-view edit search fulltext margin-sm"></veda-control>
       </div>
       <div>
         <strong about="v-s:processed" property="rdfs:label"></strong> <span about="@" property="v-s:processed"></span>
@@ -449,7 +448,7 @@ v-s:OperationTemplate
 # v-s:hasStatus
 # v-s:output
 
-v-s:inputQuery
+v-s:dataQuery
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Входной запрос"@ru ;
   rdfs:label "Input query"@en ;
@@ -457,7 +456,7 @@ v-s:inputQuery
   rdfs:range xsd:string ;
 .
 
-v-s:input
+v-s:data
   rdf:type rdf:Property ;
   rdfs:label "Вход"@ru ;
   rdfs:label "Input"@en ;
@@ -509,16 +508,15 @@ v-s:OperationTest1
   rdfs:label "Test operation 1"@en ;
   rdfs:comment "Тестовая операция 1 комментарий"@ru ;
   rdfs:comment "Test operation 1 comment"@en ;
-#  v-s:inputQuery "'rdf:type' == 'v-s:Person'  && 'rdfs:label' == 'Дмитр*'" ;
-  v-s:inputQuery "'*'=='rdfs*'" ;
+#  v-s:dataQuery "'rdf:type' == 'v-s:Person'  && 'rdfs:label' == 'Дмитр*'" ;
+  v-s:dataQuery "'*'=='owl*'" ;
 .
 
 v-s:OperationEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Operation ;
-#  v-s:runAt "V8.LowPriority" ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:unsafe true ;
-#  v-s:disabled true ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -533,8 +531,8 @@ v-s:OperationEvent
 
 var operation_uri = document["@"],
     operation = get_individual(veda.ticket, operation_uri),
-    inputQuery = operation["v-s:inputQuery"] && operation["v-s:inputQuery"][0].data || "",
-    input = operation["v-s:input"],
+    dataQuery = operation["v-s:dataQuery"] && operation["v-s:dataQuery"][0].data || "",
+    data = operation["v-s:data"],
     processed = operation["v-s:processed"] && operation["v-s:processed"][0].data || 0,
     progress = operation["v-s:progress"] && operation["v-s:progress"][0].data || 0,
     status = operation["v-s:hasStatus"] && operation["v-s:hasStatus"][0].data || "",
@@ -546,7 +544,8 @@ var operation_uri = document["@"],
     operation_model = get_individual(veda.ticket, operation_model_uri),
     operation_model_src = operation_model["v-s:script"][0].data,
     max_queued = 100,
-    to_process = 10;
+    to_process = 30,
+    stop_signal_received = prev_state["v-s:hasStatus"] && prev_state["v-s:hasStatus"][0].data === "v-s:StatusStopped" && status === "v-s:StatusExecution" ;
 
 // Stop execution
 if ( !status || status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
@@ -554,46 +553,46 @@ if ( !status || status === "v-s:StatusStopped" || status === "v-s:StatusExecuted
 }
 
 // First run with query specified
-if ( status === "v-s:StatusStarted" && inputQuery && !input ) {
-  var inputUris = query(veda.ticket, inputQuery).result;
-  var inputValues = inputUris.map(function (value_uri) {
+if ( status === "v-s:StatusStarted" && dataQuery && !data ) {
+  var dataUris = query(veda.ticket, dataQuery).result;
+  var dataValues = dataUris.map(function (valueUri) {
     return {
       type: "Uri",
-      data: value_uri
+      data: valueUri
     };
   });
   set_in_individual(veda.ticket, {
     "@": operation["@"],
-    "v-s:input": inputValues,
+    "v-s:data": dataValues,
     "v-s:processed": veda.Util.newInt(0),
     "v-s:dateFrom": veda.Util.newDate(now),
-    "v-s:hasStatus": inputValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
+    "v-s:hasStatus": dataValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
   });
   return;
 }
 
 // Restart with query specified
-if ( status === "v-s:StatusRestarted" && inputQuery ) {
-  var inputUris = query(veda.ticket, inputQuery).result;
-  var inputValues = inputUris.map(function (value_uri) {
+if ( status === "v-s:StatusRestarted" && dataQuery ) {
+  var dataUris = query(veda.ticket, dataQuery).result;
+  var dataValues = dataUris.map(function (valueUri) {
     return {
       type: "Uri",
-      data: value_uri
+      data: valueUri
     };
   });
   set_in_individual(veda.ticket, {
     "@": operation["@"],
-    "v-s:input": inputValues,
+    "v-s:data": dataValues,
     "v-s:processed": veda.Util.newInt(0),
     "v-s:dateFrom": veda.Util.newDate(now),
-    "v-s:hasStatus": inputValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted"),
+    "v-s:hasStatus": dataValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted"),
     "v-s:output": veda.Util.newStr("")
   });
   return;
 }
 
-// Restart with input specified
-if ( status === "v-s:StatusRestarted" && input ) {
+// Restart with data specified
+if ( status === "v-s:StatusRestarted" && data ) {
   set_in_individual(veda.ticket, {
     "@": operation["@"],
     "v-s:processed": veda.Util.newInt(0),
@@ -609,7 +608,7 @@ if ( queue_elements_count - queue_elements_processed > max_queued ) {
   console.log("Queue busy", queue_elements_count - queue_elements_processed);
   set_in_individual(veda.ticket, {
     "@": operation["@"],
-    "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+    "v-s:hasStatus": stop_signal_received ? veda.Util.newUri("v-s:StatusStopped") : veda.Util.newUri("v-s:StatusExecution"),
     "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 ))
   });
   return;
@@ -649,26 +648,26 @@ var _console = {
 };
 this.console = _console;
 
-// Process input portion
+// Process data portion
 var operation_model_fn = new Function(operation_model_src);
 operation_model_fn.call(operation);
 
-for (var i = processed, max = processed + to_process, value_uri; (i < max) && input[i] && (value_uri = input[i].data); i++) {
+for (var i = processed, max = processed + to_process, valueUri; (i < max) && data[i] && (valueUri = data[i].data); i++) {
   try {
-    operation.fn(value_uri);
+    operation.fn(valueUri);
   } catch (error) {
-    console.log(i, "Error processing individual", value_uri);
+    console.log(i, "Error processing individual", valueUri);
     console.log(error, error.stack);
     continue;
   }
 }
 processed = i;
 
-if (processed > 0 && input.length > 0) {
-  progress = Math.floor( (processed / input.length) * 100 ) ;
-} else if (processed === 0 && input.length > 0) {
+if (processed > 0 && data.length > 0) {
+  progress = Math.floor( (processed / data.length) * 100 ) ;
+} else if (processed === 0 && data.length > 0) {
   progress = 0 ;
-} else if (processed === 0 && input.length === 0) {
+} else if (processed === 0 && data.length === 0) {
   progress = 100 ;
 }
 
@@ -676,7 +675,7 @@ var _output = operation["v-s:output"] ? operation["v-s:output"][0].data : "";
 
 var to_set = {
   "@": operation["@"],
-  "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+  "v-s:hasStatus": stop_signal_received ? veda.Util.newUri("v-s:StatusStopped") : veda.Util.newUri("v-s:StatusExecution"),
   "v-s:progress": veda.Util.newInt(progress),
   "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 )),
   "v-s:processed": veda.Util.newInt(processed),
