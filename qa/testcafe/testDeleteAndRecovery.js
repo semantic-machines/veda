@@ -25,7 +25,7 @@ import { Selector, t } from 'testcafe';
       .click('#delete')
       .click('li[about="v-fs:FulltextSearch"]')
       .typeText('veda-control[property="*"] input.form-control', query)
-      .click('div.input-group span.input-group-btn button.btn-primary.custom-find')
+      .click('div.input-group span.input-group-btn #custom-search-button.custom-find')
       .click('div.results a.glyphicon.glyphicon-search.deleted[typeof="v-wf:StartForm"]')
       .click('p#deleted-alert-msg button#deleted-alert-recover')
       .click('li[about="v-fs:FulltextSearch"]')
@@ -34,6 +34,6 @@ import { Selector, t } from 'testcafe';
       .click('veda-control[property="*"] input.form-control')
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="*"] input.form-control', timeStamp)
-      .click('div.input-group span.input-group-btn button.btn-primary.custom-find')
+      .click('div.input-group span.input-group-btn #custom-search-button.custom-find')
       .expect(Selector('small.stats-top.pull-right span[property="v-fs:estimated"]').innerText).eql('1');
   });
