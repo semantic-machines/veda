@@ -483,16 +483,16 @@ v-s:progress
 v-s:OperationTest
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Operation ;
-  rdfs:label "Класс тестовой операций"@ru ;
-  rdfs:label "Test operation class"@en ;
+  rdfs:label "Тестовая операция"@ru ;
+  rdfs:label "Test operation"@en ;
   v-ui:hasModel v-s:OperationTestModel ;
   v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
 v-s:OperationTestModel
   rdf:type v-ui:ClassModel ;
-  rdfs:label "Модель класса операций тест"@ru ;
-  rdfs:label "Test operation class model"@en ;
+  rdfs:label "Модель тестовой операций"@ru ;
+  rdfs:label "Test operation model"@en ;
   v-s:script """
 this.fn = function (individual_uri) {
   console.log("Processing", individual_uri);
@@ -506,8 +506,6 @@ v-s:OperationTest1
   rdf:type v-s:OperationTest ;
   rdfs:label "Тестовая операция 1"@ru ;
   rdfs:label "Test operation 1"@en ;
-  rdfs:comment "Тестовая операция 1 комментарий"@ru ;
-  rdfs:comment "Test operation 1 comment"@en ;
 #  v-s:dataQuery "'rdf:type' == 'v-s:Person'  && 'rdfs:label' == 'Дмитр*'" ;
   v-s:dataQuery "'*'=='owl*'" ;
 .
