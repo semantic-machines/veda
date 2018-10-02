@@ -13,9 +13,6 @@ public abstract class Storage
 
     Logger log;
 
-    //abstract public ResultCode update(P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze, out long op_id);
-    abstract public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true);
-
     /**
        Количество индивидуалов в базе данных
      */
