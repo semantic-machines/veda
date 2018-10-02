@@ -1611,19 +1611,38 @@ v-fs:SelectedResultsActionsTemplate
   selectedHandler();
 
   $(".dropdown-toggle", template).one("click", function () {
-    var opContainer = $(".dropdown-menu", template);
+    var dropdown = $(".dropdown-menu", template);
     query({
       ticket: veda.ticket,
-      query: "'rdf:type' == 'v-s:Operation'",
+      query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'",
       async: true
     }).then(function (response) {
+      if (self.hasValue("v-fs:applicableOperation") && response.result.length) {
+        dropdown.append("<li role='separator' class='divider'></li>");
+      }
       response.result.forEach(function (operation_uri) {
         var operation = new veda.IndividualModel(operation_uri);
-        operation.present(opContainer, "<li><a about='@' href='#' property='rdfs:label'></a></li>");
+        operation.present(dropdown, "<li><a about='@' href='#' property='rdfs:label'></a></li>");
       });
     });
   });
 
+  $(".dropdown-menu", template).on("click", "[resource]", function (e) {
+    e.preventDefault();
+    var operationClassUri = $(this).attr("resource"),
+        operationClass = new veda.IndividualModel(operationClassUri),
+        operation = new veda.IndividualModel(),
+        operationContainer = $(".operation-container", template).empty();
+    operation["rdf:type"] = [ operationClass ];
+    operation["v-s:data"] = Object.keys(self.selected).map(function (value_uri) {
+      return new veda.IndividualModel(value_uri);
+    });
+    operation["v-s:hasStatus"] = [ new veda.IndividualModel("v-s:StatusStarted") ];
+    operation.present(operationContainer, "v-s:OperationStatusTemplate");
+    operation.save();
+  });
+
+//# sourceURL=v-fs:SelectedResultsActionsTemplate_pre
 </script>
 <div class="btn-group">
   <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -1632,6 +1651,7 @@ v-fs:SelectedResultsActionsTemplate
   <ul class="dropdown-menu" about="@" rel="v-fs:applicableOperation">
     <li><a about="@" href="#" property="rdfs:label"></a></li>
   </ul>
+  <div class="pull-left operation-container margin-md-h"></div>
 </div>
   """ ;
 .
@@ -2371,6 +2391,7 @@ v-fs:FulltextResultTemplate
 <table class="table table-bordered table-condensed">
   <thead class="result-header">
     <tr>
+      <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th width="5%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
@@ -2381,6 +2402,7 @@ v-fs:FulltextResultTemplate
   </thead>
   <tbody class="result-container">
     <tr>
+      <td width="1%"><input type="checkbox" class="toggle-select"></td>
       <td class="serial-number"></td>
       <td about="@"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></td>
