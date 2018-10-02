@@ -303,6 +303,119 @@ v-s:Operation
   v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
+v-s:GenericOperation
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Operation ;
+  rdfs:label "Общая операция"@ru ;
+  rdfs:label "Generic operation"@en ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+# v-s:dateFrom
+# v-s:dateTo
+# v-s:duration
+# v-s:hasStatus
+# v-s:output
+
+v-s:dataQuery
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Запрос данных"@ru ;
+  rdfs:label "Data query"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:string ;
+.
+
+v-s:data
+  rdf:type rdf:Property ;
+  rdfs:label "Данные"@ru ;
+  rdfs:label "Data"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:processed
+  rdf:type rdf:Property ;
+  rdfs:label "Обработано"@ru ;
+  rdfs:label "Processed"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:integer ;
+.
+
+v-s:progress
+  rdf:type rdf:Property ;
+  rdfs:label "Прогресс"@ru ;
+  rdfs:label "Progress"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:integer ;
+.
+
+v-s:OperationDelete
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:GenericOperation ;
+  rdfs:label "Удалить"@ru ;
+  rdfs:label "Delete"@en ;
+  v-ui:hasModel v-s:OperationDeleteModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationDeleteModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции удаления"@ru ;
+  rdfs:label "Delete operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  set_in_individual(veda.ticket, {
+    "@": individual_uri,
+    "v-s:deleted": veda.Util.newBool(true)
+  });
+};
+  """ ;
+.
+
+v-s:OperationRestore
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:GenericOperation ;
+  rdfs:label "Восстановить"@ru ;
+  rdfs:label "Restore"@en ;
+  v-ui:hasModel v-s:OperationRestoreModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationRestoreModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции восстановления"@ru ;
+  rdfs:label "Restore operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  remove_from_individual(veda.ticket, {
+    "@": individual_uri,
+    "v-s:deleted": veda.Util.newBool(true)
+  });
+};
+  """ ;
+.
+
+v-s:OperationUpdate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Operation ;
+  rdfs:label "Обновить"@ru ;
+  rdfs:label "Update"@en ;
+  v-ui:hasModel v-s:OperationUpdateModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationUpdateModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции обновления"@ru ;
+  rdfs:label "Update operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  var individual = get_individual(veda.ticket, individual_uri);
+  put_individual(veda.ticket, individual);
+};
+  """ ;
+.
+
 v-s:StopBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Остановить"@ru ;
@@ -447,21 +560,6 @@ v-s:OperationStatusTemplate
   rdfs:label "Шаблон для класса v-s:Operation"@ru ;
   rdfs:label "Template for v-s:Operation class"@en ;
   v-ui:template """
-<div class="container sheet">
-  <div class="clearfix">
-    <h6 class="pull-left">
-      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
-    </h6>
-    <div class="progress pull-left" style="display: inline-block; height: 22px; width:70px; margin-top:5px; margin-left:5px;">
-      <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; padding-top:2px;">
-        <strong about="@" property="v-s:progress"></strong><strong>%</strong>
-      </div>
-    </div>
-    <button class="action btn btn-xs btn-success pull-left" id="start" style="margin-top:5px; margin-left:5px;"><span class="glyphicon glyphicon-play"></span></button>
-    <button class="action btn btn-xs btn-info pull-left" id="restart" style="margin-top:5px; margin-left:5px;"><span class="glyphicon glyphicon-repeat"></span></button>
-    <button class="action btn btn-xs btn-danger pull-left" id="stop" style="margin-top:5px; margin-left:5px;"><span class="glyphicon glyphicon-stop"></span></button>
-  </div>
-</div>
 <script>
   $(".action#stop, .action#restart", template).click(function () {
     set_in_individual(veda.ticket, {
@@ -537,77 +635,22 @@ v-s:OperationStatusTemplate
     }
   }
 
-//# sourceURL=v-s:OperationTemplate_post
+//# sourceURL=v-s:OperationStatusTemplate_pre
 </script>
+<div class="pull-left">
+  <h5 class="pull-left margin-sm">
+    <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+  </h5>
+  <div class="progress pull-left" style="display: inline-block; height: 22px; width:70px; margin:0 5px;">
+    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; padding-top:2px;">
+      <strong about="@" property="v-s:progress"></strong><strong>%</strong>
+    </div>
+  </div>
+  <button class="action btn btn-xs btn-success pull-left" id="start"><span class="glyphicon glyphicon-play"></span></button>
+  <button class="action btn btn-xs btn-info pull-left" id="restart"><span class="glyphicon glyphicon-repeat"></span></button>
+  <button class="action btn btn-xs btn-danger pull-left" id="stop"><span class="glyphicon glyphicon-stop"></span></button>
+</div>
   """ ;
-.
-
-# v-s:dateFrom
-# v-s:dateTo
-# v-s:duration
-# v-s:hasStatus
-# v-s:output
-
-v-s:dataQuery
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Запрос данных"@ru ;
-  rdfs:label "Data query"@en ;
-  rdfs:domain v-s:Operation ;
-  rdfs:range xsd:string ;
-.
-
-v-s:data
-  rdf:type rdf:Property ;
-  rdfs:label "Данные"@ru ;
-  rdfs:label "Data"@en ;
-  rdfs:domain v-s:Operation ;
-  rdfs:range rdfs:Resource ;
-.
-
-v-s:processed
-  rdf:type rdf:Property ;
-  rdfs:label "Обработано"@ru ;
-  rdfs:label "Processed"@en ;
-  rdfs:domain v-s:Operation ;
-  rdfs:range xsd:integer ;
-.
-
-v-s:progress
-  rdf:type rdf:Property ;
-  rdfs:label "Прогресс"@ru ;
-  rdfs:label "Progress"@en ;
-  rdfs:domain v-s:Operation ;
-  rdfs:range xsd:integer ;
-.
-
-v-s:OperationTest
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Operation ;
-  rdfs:label "Тестовая операция"@ru ;
-  rdfs:label "Test operation"@en ;
-  v-ui:hasModel v-s:OperationTestModel ;
-  v-ui:hasTemplate v-s:OperationTemplate ;
-.
-
-v-s:OperationTestModel
-  rdf:type v-ui:ClassModel ;
-  rdfs:label "Модель тестовой операций"@ru ;
-  rdfs:label "Test operation model"@en ;
-  v-s:script """
-this.fn = function (individual_uri) {
-  console.log("Processing", individual_uri);
-  var individual = get_individual(veda.ticket, individual_uri);
-  put_individual(veda.ticket, individual);
-};
-  """ ;
-.
-
-v-s:OperationTest1
-  rdf:type v-s:OperationTest ;
-  rdfs:label "Тестовая операция 1"@ru ;
-  rdfs:label "Test operation 1"@en ;
-#  v-s:dataQuery "'rdf:type' == 'v-s:Person'  && 'rdfs:label' == 'Дмитр*'" ;
-  v-s:dataQuery "'*'=='rdfs:*'" ;
 .
 
 v-s:OperationEvent
@@ -643,7 +686,7 @@ var operation_uri = document["@"],
     operation_model_src = operation_model["v-s:script"][0].data,
     max_queued = 100,
     to_process = 30,
-    stop_signal_received = prev_state["v-s:hasStatus"] && prev_state["v-s:hasStatus"][0].data === "v-s:StatusStopped" && status === "v-s:StatusExecution" ;
+    stop_signal_received = prev_state && prev_state["v-s:hasStatus"] && prev_state["v-s:hasStatus"][0].data === "v-s:StatusStopped" && status === "v-s:StatusExecution" ;
 
 // Stop execution
 if ( !status || status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
