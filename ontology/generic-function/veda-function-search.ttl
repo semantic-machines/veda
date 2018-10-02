@@ -1966,6 +1966,7 @@ v-fs:AttributiveSearchInlineTemplate
   function formHandler () {
     self.search()
       .then(renderResult)
+      .then(clearSelected)
       .then(function () {
         scrollTo(self.scroll);
       });
@@ -1989,6 +1990,7 @@ v-fs:AttributiveSearchInlineTemplate
     toggleSpin(searchButtons);
     self.search()
       .then(renderResult)
+      .then(clearSelected)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
           scrollTo(self.scroll);
@@ -2019,6 +2021,7 @@ v-fs:AttributiveSearchInlineTemplate
   function moreResultsHandler() {
     return self.search( self["v-fs:cursor"][0] )
       .then(renderResult)
+      .then(setToggleSelectAll)
       .catch(function (error) {
         console.log(error);
       });
@@ -2085,15 +2088,14 @@ v-fs:AttributiveSearchInlineTemplate
   toggleSelectAll.click(function () {
     var selectedL = Object.keys(self.selected).length;
     var resultsL = resultContainer.children().length;
-    if ( resultsL !== 0 && selectedL !== 0 && resultsL !== selectedL ) {
-      searchResultContainer.find(".toggle-select:checked").click();
+    if ( resultsL !== 0 && selectedL !== 0 && (resultsL !== selectedL || resultsL === selectedL) ) {
+      clearSelected();
     } else if ( resultsL !== 0 && selectedL === 0) {
-      searchResultContainer.find(".toggle-select").click();
-    } else if ( resultsL !== 0 && selectedL !== 0 && resultsL === selectedL) {
-      searchResultContainer.find(".toggle-select").click();
+      selectAll();
     }
+    setToggleSelectAll();
   });
-  function checkToggleSelectAll() {
+  function setToggleSelectAll() {
     var selectedL = Object.keys(self.selected).length;
     var resultsL = resultContainer.children().length;
     if ( resultsL !== 0 && resultsL === selectedL ) {
@@ -2107,6 +2109,20 @@ v-fs:AttributiveSearchInlineTemplate
     }
     self.trigger("selected");
   }
+  function clearSelected() {
+    self.selected = {};
+    searchResultContainer.find(".toggle-select:checked").prop("checked", false);
+    setToggleSelectAll();
+  }
+  function selectAll() {
+    self.selected = {};
+    searchResultContainer.find(".toggle-select")
+      .prop("checked", true)
+      .each(function () {
+        var result_uri = $(this).closest("[resource]").attr("resource");
+        self.selected[result_uri] = true;
+      });
+  }
   function toggleSelect() {
     var $this = $(this);
     var result_uri = $this.closest("[resource]").attr("resource");
@@ -2115,7 +2131,7 @@ v-fs:AttributiveSearchInlineTemplate
     } else {
       delete self.selected[result_uri];
     }
-    checkToggleSelectAll()
+    setToggleSelectAll()
   }
 
   // Render result
@@ -2198,7 +2214,7 @@ v-fs:AttributiveSearchInlineTemplate
   // Show results on load if they are available (e.g. if we came back)
   if ( self.hasValue("v-fs:searchResult") ) {
     renderResult( self["v-fs:searchResult"] );
-    checkToggleSelectAll();
+    setToggleSelectAll();
     if ( location.hash.indexOf(individual.id) >= 0 ) {
       scrollTo(self.scroll);
     }
@@ -2206,6 +2222,7 @@ v-fs:AttributiveSearchInlineTemplate
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
     self.search()
       .then(renderResult)
+      .then(clearSelected)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
           scrollTo(self.scroll);
