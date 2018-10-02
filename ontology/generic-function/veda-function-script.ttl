@@ -337,7 +337,7 @@ v-s:OperationTemplate
       </div>
       <div>
         <strong about="v-s:data" property="rdfs:label"></strong>
-        <ul rel="v-s:data" class="view edit search" data-limit="5" data-more="true">
+        <ul style="display: inline-block;" rel="v-s:data" class="view edit search" data-limit="0" data-more="true">
           <li about="@" data-template="v-ui:LabelTemplate"></li>
         </ul>
         <veda-control data-type="link" rel="v-s:data" class="-view edit search fulltext margin-sm"></veda-control>
@@ -441,6 +441,106 @@ v-s:OperationTemplate
 </script>
   """ ;
 .
+v-s:OperationStatusTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Operation ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <div class="clearfix">
+    <h6 class="pull-left">
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+    </h6>
+    <div class="progress pull-left" style="display: inline-block; height: 22px; width:70px; margin-top:5px; margin-left:5px;">
+      <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; padding-top:2px;">
+        <strong about="@" property="v-s:progress"></strong><strong>%</strong>
+      </div>
+    </div>
+    <button class="action btn btn-xs btn-success pull-left" id="start" style="margin-top:5px; margin-left:5px;"><span class="glyphicon glyphicon-play"></span></button>
+    <button class="action btn btn-xs btn-info pull-left" id="restart" style="margin-top:5px; margin-left:5px;"><span class="glyphicon glyphicon-repeat"></span></button>
+    <button class="action btn btn-xs btn-danger pull-left" id="stop" style="margin-top:5px; margin-left:5px;"><span class="glyphicon glyphicon-stop"></span></button>
+  </div>
+</div>
+<script>
+  $(".action#stop, .action#restart", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data:
+          this.id === "stop" ? "v-s:StatusStopped" :
+          this.id === "restart" ? "v-s:StatusRestarted" : ""
+      }]
+    });
+  });
+  $(".action#start", template).click(function () {
+    if (individual.isNew()) {
+      individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
+      individual.save();
+    } else {
+      set_in_individual(veda.ticket, {
+        "@": individual.id,
+        "v-s:hasStatus": [{
+          type: "Uri",
+          data: "v-s:StatusStarted"
+        }]
+      });
+    }
+  });
+
+  statusHandler();
+  individual.on("v-s:hasStatus", statusHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasStatus", statusHandler);
+  });
+  individual.on("v-s:hasStatus", statusHandler);
+
+  progressHandler();
+  individual.on("v-s:progress", progressHandler);
+  template.one("remove", function () {
+    individual.off("v-s:progress", progressHandler);
+  });
+  individual.on("v-s:hasStatus", progressHandler);
+
+  function progressHandler () {
+    var progress = individual.hasValue("v-s:progress") && individual["v-s:progress"][0] || 0;
+    $(".progress-bar", template).css({"width": progress + "%"});
+  }
+  function statusHandler () {
+    var start = $(".action#start", template),
+        stop = $(".action#stop", template),
+        restart = $(".action#restart", template),
+        progressBar = $(".progress-bar", template),
+        status = individual.hasValue("v-s:hasStatus") ? individual["v-s:hasStatus"][0].id : undefined;
+
+    switch (status) {
+      case "v-s:StatusStarted":
+      case "v-s:StatusExecution":
+        start.addClass("hidden");
+        stop.removeClass("hidden");
+        restart.addClass("hidden");
+        progressBar.addClass("progress-bar-success active").removeClass("progress-bar-danger");
+        break;
+      case "v-s:StatusExecuted":
+        start.addClass("hidden");
+        stop.addClass("hidden");
+        restart.removeClass("hidden");
+        progressBar.addClass("progress-bar-success").removeClass("progress-bar-danger active");
+        break;
+      default:
+        start.removeClass("hidden");
+        stop.addClass("hidden");
+        restart.addClass("hidden");
+        progressBar.addClass("progress-bar-danger").removeClass("progress-bar-success active");
+        break;
+    }
+  }
+
+//# sourceURL=v-s:OperationTemplate_post
+</script>
+  """ ;
+.
 
 # v-s:dateFrom
 # v-s:dateTo
@@ -450,16 +550,16 @@ v-s:OperationTemplate
 
 v-s:dataQuery
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Входной запрос"@ru ;
-  rdfs:label "Input query"@en ;
+  rdfs:label "Запрос данных"@ru ;
+  rdfs:label "Data query"@en ;
   rdfs:domain v-s:Operation ;
   rdfs:range xsd:string ;
 .
 
 v-s:data
   rdf:type rdf:Property ;
-  rdfs:label "Вход"@ru ;
-  rdfs:label "Input"@en ;
+  rdfs:label "Данные"@ru ;
+  rdfs:label "Data"@en ;
   rdfs:domain v-s:Operation ;
   rdfs:range rdfs:Resource ;
 .
@@ -507,7 +607,7 @@ v-s:OperationTest1
   rdfs:label "Тестовая операция 1"@ru ;
   rdfs:label "Test operation 1"@en ;
 #  v-s:dataQuery "'rdf:type' == 'v-s:Person'  && 'rdfs:label' == 'Дмитр*'" ;
-  v-s:dataQuery "'*'=='owl*'" ;
+  v-s:dataQuery "'*'=='rdfs:*'" ;
 .
 
 v-s:OperationEvent
