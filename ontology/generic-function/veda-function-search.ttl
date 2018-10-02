@@ -2015,6 +2015,7 @@ v-fs:AttributiveSearchInlineTemplate
   self.selected = self.selected || {};
   var toggleSelectAll = searchResultContainer.find(".toggle-select-all");
   searchResultContainer.on("click", ".toggle-select", toggleSelect);
+
   toggleSelectAll.click(function () {
     var selectedL = Object.keys(self.selected).length;
     var resultsL = resultContainer.children().length;
@@ -2026,7 +2027,6 @@ v-fs:AttributiveSearchInlineTemplate
       searchResultContainer.find(".toggle-select").click();
     }
   });
-
   function toggleSelect() {
     var $this = $(this);
     var result_uri = $this.closest("[resource]").attr("resource");
