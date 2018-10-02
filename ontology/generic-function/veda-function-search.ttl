@@ -1106,6 +1106,14 @@ v-fs:AttributiveSearch
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
+v-fs:applicableOperation
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Применимая операция"@ru ;
+  rdfs:label "Applicable operation"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range v-s:Operation ;
+.
+
 v-fs:searchBlankTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:label "Шаблон формы поиска"@ru ;
@@ -1574,6 +1582,60 @@ v-fs:AttributiveSearchTemplate
   """ ;
 .
 
+v-fs:PerformOperation
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выполнить операцию"@ru ;
+  rdfs:label "Perform operation"@en ;
+.
+
+v-fs:SelectedResultsActionsTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:template """
+<script>
+  var self = this;
+  function selectedHandler() {
+    var selectedL = self.selected && Object.keys(self.selected).length || 0;
+    if (!selectedL) {
+      template.addClass("hidden");
+    } else {
+      template.removeClass("hidden");
+    }
+  }
+  self.on("selected", selectedHandler);
+  template.one("remove", function () {
+    self.off("selected", selectedHandler);
+  });
+  selectedHandler();
+
+  $(".dropdown-toggle", template).one("click", function () {
+    var opContainer = $(".dropdown-menu", template);
+    query({
+      ticket: veda.ticket,
+      query: "'rdf:type' == 'v-s:Operation'",
+      async: true
+    }).then(function (response) {
+      response.result.forEach(function (operation_uri) {
+        var operation = new veda.IndividualModel(operation_uri);
+        operation.present(opContainer, "<li><a about='@' href='#' property='rdfs:label'></a></li>");
+      });
+    });
+  });
+
+</script>
+<div class="btn-group">
+  <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" about="@" rel="v-fs:applicableOperation">
+    <li><a about="@" href="#" property="rdfs:label"></a></li>
+  </ul>
+</div>
+  """ ;
+.
+
 v-fs:AttributiveSearchInlineTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
@@ -1710,6 +1772,7 @@ v-fs:AttributiveSearchInlineTemplate
     <div class="result-heading">
       <h3 class="clearfix">
         <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
+        <div class="pull-left margin-md-h" about="@" data-template="v-fs:SelectedResultsActionsTemplate"></div>
         <small class="stats-top pull-right" style="color:black">
           <span about="v-fs:estimated" property="rdfs:label"></span>
           <span about="@" property="v-fs:estimated" class="badge"></span>&nbsp;&nbsp;
@@ -1900,23 +1963,6 @@ v-fs:AttributiveSearchInlineTemplate
     });
   }
 
-  // Show results on load if they are available (e.g. if we came back)
-  if ( self.hasValue("v-fs:searchResult") ) {
-    renderResult( self["v-fs:searchResult"] );
-    if ( location.hash.indexOf(individual.id) >= 0 ) {
-      scrollTo(self.scroll);
-    }
-  // Search on load
-  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
-    self.search()
-      .then(renderResult)
-      .then(function () {
-        if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo(self.scroll);
-        }
-      });
-  }
-
   // Search handler
   function searchHandler() {
     var searchButtons = $(".search-button", template);
@@ -2027,14 +2073,7 @@ v-fs:AttributiveSearchInlineTemplate
       searchResultContainer.find(".toggle-select").click();
     }
   });
-  function toggleSelect() {
-    var $this = $(this);
-    var result_uri = $this.closest("[resource]").attr("resource");
-    if ( $this.is(":checked") ) {
-      self.selected[result_uri] = true;
-    } else {
-      delete self.selected[result_uri];
-    }
+  function checkToggleSelectAll() {
     var selectedL = Object.keys(self.selected).length;
     var resultsL = resultContainer.children().length;
     if ( resultsL !== 0 && resultsL === selectedL ) {
@@ -2046,6 +2085,17 @@ v-fs:AttributiveSearchInlineTemplate
       toggleSelectAll.prop("indeterminate", false);
       toggleSelectAll.prop("checked", false);
     }
+    self.trigger("selected");
+  }
+  function toggleSelect() {
+    var $this = $(this);
+    var result_uri = $this.closest("[resource]").attr("resource");
+    if ( $this.is(":checked") ) {
+      self.selected[result_uri] = true;
+    } else {
+      delete self.selected[result_uri];
+    }
+    checkToggleSelectAll()
   }
 
   // Render result
@@ -2123,6 +2173,24 @@ v-fs:AttributiveSearchInlineTemplate
       $el.addClass("disabled");
       $("<i class='fa fa-spinner fa-pulse fa-lg fa-fw'></i>").appendTo(el);
     }
+  }
+
+  // Show results on load if they are available (e.g. if we came back)
+  if ( self.hasValue("v-fs:searchResult") ) {
+    renderResult( self["v-fs:searchResult"] );
+    checkToggleSelectAll();
+    if ( location.hash.indexOf(individual.id) >= 0 ) {
+      scrollTo(self.scroll);
+    }
+  // Search on load
+  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
+    self.search()
+      .then(renderResult)
+      .then(function () {
+        if ( location.hash.indexOf(individual.id) >= 0 ) {
+          scrollTo(self.scroll);
+        }
+      });
   }
 
   //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
