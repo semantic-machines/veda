@@ -34,7 +34,7 @@ class PThreadContext : Context
 
     private            string[ string ] prefix_map;
 
-    private VQL        _vql;
+    private Search        _vql;
 
     private Storage    storage;
 
@@ -240,7 +240,7 @@ class PThreadContext : Context
 
         ctx.get_configuration();
 
-        ctx._vql = new VQL(ctx);
+        ctx._vql = new XapianSearch(ctx);
 
         ctx.onto = new Onto(ctx);
         ctx.onto.load();
@@ -379,7 +379,7 @@ class PThreadContext : Context
         }
     }
 
-    public VQL get_vql()
+    public Search get_vql()
     {
         return _vql;
     }

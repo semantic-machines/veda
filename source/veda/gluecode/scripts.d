@@ -13,7 +13,7 @@ class ScriptProcess : VedaModule
 {
     private ScriptsWorkPlace wpl;
 
-    private VQL              vql;
+    private Search           vql;
     private string           empty_uid;
     private string           vars_for_event_script;
     private string           vars_for_codelet_script;
@@ -217,7 +217,7 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        vql       = new VQL(context);
+        vql       = new XapianSearch(context);
         script_vm = get_ScriptVM(context);
 
         if (script_vm !is null)
