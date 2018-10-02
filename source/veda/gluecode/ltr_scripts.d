@@ -75,7 +75,7 @@ Onto             onto;
 Context          context;
 ScriptsWorkPlace _wpl;
 
-VQL              vql;
+Search              vql;
 string           empty_uid;
 string           vars_for_codelet_script;
 
@@ -105,7 +105,7 @@ private void ltrs_thread(string parent_url)
         ~ "var user_uri = get_env_str_var ('$user');"
         ~ "var execute_script = get_individual (ticket, '$execute_script');";
 
-    vql = new VQL(context);
+    vql = new XapianSearch(context);
 
     script_vm = get_ScriptVM(context);
 

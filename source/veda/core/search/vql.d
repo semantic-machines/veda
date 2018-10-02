@@ -22,7 +22,23 @@ static const int SOURCE    = 5;
 
 static const int XAPIAN = 2;
 
-class VQL
+interface Search
+{
+    public void reopen_db();
+    public bool close_db();
+
+    public int query(string user_uri, string filter, string freturn, string sort, int top, int limit,
+                   ref Individual[] individuals, OptAuthorize op_auth, bool trace);
+    
+    public SearchResult query(string user_uri, string filter, string freturn, string sort, int from, int top, int limit,
+                            void delegate(string uri) prepare_element_event,
+                            OptAuthorize op_auth, bool trace);    	
+    
+    public int query(string user_uri, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace);
+    
+}
+
+class XapianSearch : Search
 {
     private string[]     sections;
     private bool[]       section_is_found;
