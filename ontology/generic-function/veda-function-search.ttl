@@ -1637,11 +1637,12 @@ v-fs:SelectedResultsActionsTemplate
     operation["v-s:data"] = Object.keys(self.selected).map(function (value_uri) {
       return new veda.IndividualModel(value_uri);
     });
-    operation["v-s:hasStatus"] = [ new veda.IndividualModel("v-s:StatusStarted") ];
-    operation.present(operationContainer, "v-s:OperationStatusTemplate");
-    operation.save();
+    var modal = veda.Util.showSmallModal(operation);
+    modal.on("click", ".action#start", function () {
+      operation.present(operationContainer, "v-s:OperationStatusTemplate");
+      modal.modal("hide").remove();
+    });
   });
-
 //# sourceURL=v-fs:SelectedResultsActionsTemplate_pre
 </script>
 <div class="btn-group">

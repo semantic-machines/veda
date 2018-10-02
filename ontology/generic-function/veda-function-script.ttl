@@ -628,11 +628,17 @@ v-s:OperationStatusTemplate
         break;
     }
   }
+
+  $(".show-operation-modal", template).click(function (e) {
+    e.preventDefault();
+    veda.Util.showSmallModal(individual);
+  })
+
 //# sourceURL=v-s:OperationStatusTemplate_pre
 </script>
 <div class="pull-left">
   <h5 class="pull-left margin-sm">
-    <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+    <a class="show-operation-modal text-muted" href="#" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>
   </h5>
   <div class="pull-left" about="@" data-template="v-s:OperationProgressTemplate"></div>
   <button class="action btn btn-xs btn-success pull-left" id="start"><span class="glyphicon glyphicon-play"></span></button>
