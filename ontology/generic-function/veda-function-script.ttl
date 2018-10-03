@@ -443,8 +443,9 @@ v-s:OperationHeaderTemplate
 <div>
   <div class="clearfix">
     <h4 class="pull-left margin-sm" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h4>
-    <div class="pull-left margin-md-h" style="margin-top:8px;" about="@" data-template="v-s:OperationProgressTemplate"></div>
+    <div class="pull-left margin-md-h" style="margin-top:5px;" about="@" data-template="v-s:OperationProgressTemplate"></div>
   </div>
+  <hr class="margin-md" />
   <div class="row margin-md">
     <div class="col-sm-6" style="border-right: 1px solid #eee;">
       <!--em about="v-s:dataQuery" property="rdfs:label"></em>
