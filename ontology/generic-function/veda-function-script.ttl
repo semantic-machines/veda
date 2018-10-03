@@ -442,16 +442,13 @@ v-s:OperationHeaderTemplate
   v-ui:template """
 <div>
   <div class="clearfix">
-    <h3 class="pull-left margin-sm">
-      <span about="v-s:Operation" property="rdfs:label"></span>:
-      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
-    </h3>
+    <h4 class="pull-left margin-sm" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h4>
     <div class="pull-left margin-md-h" style="margin-top:8px;" about="@" data-template="v-s:OperationProgressTemplate"></div>
   </div>
   <div class="row margin-md">
     <div class="col-sm-6" style="border-right: 1px solid #eee;">
-      <em about="v-s:dataQuery" property="rdfs:label"></em>
-      <span about="@" property="v-s:dataQuery"></span>
+      <!--em about="v-s:dataQuery" property="rdfs:label"></em>
+      <div style="overflow:auto;" about="@" property="v-s:dataQuery"></div-->
       <em about="v-s:dateFrom" property="rdfs:label"></em>
       <span about="@" property="v-s:dateFrom"></span>
       <em about="v-s:duration" property="rdfs:label"></em>

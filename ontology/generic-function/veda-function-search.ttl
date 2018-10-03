@@ -1646,7 +1646,7 @@ v-fs:SelectedResultsActionsTemplate
         operation = new veda.IndividualModel(),
         operationContainer = $(".operation-container", template).empty();
     operation["rdf:type"] = [ operationClass ];
-    operation["v-s:dataQuery"] = self["v-fs:query"];
+    //operation["v-s:dataQuery"] = self["v-fs:query"];
     operation["v-s:data"] = Object.keys(self.selected).map(function (value_uri) {
       return new veda.IndividualModel(value_uri);
     });
