@@ -10,7 +10,7 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.util.module_info, veda.storage.common, veda.storage.storage;
+               veda.common.logger, veda.core.common.transaction, veda.search.vql, veda.util.module_info, veda.storage.common, veda.storage.storage;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;

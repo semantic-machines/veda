@@ -2,14 +2,14 @@
  * VQL executor
  */
 
-module veda.core.search.vql;
+module veda.search.vql;
 
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
     import veda.util.container, veda.common.logger, veda.core.util.utils;
     import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates, veda.common.type;
-    import veda.core.search.vel, veda.core.search.xapian_reader;
+    import veda.search.vel, veda.search.xapian_reader;
     import veda.onto.individual;
 }
 
@@ -28,14 +28,13 @@ interface Search
     public bool close_db();
 
     public int query(string user_uri, string filter, string freturn, string sort, int top, int limit,
-                   ref Individual[] individuals, OptAuthorize op_auth, bool trace);
-    
+                     ref Individual[] individuals, OptAuthorize op_auth, bool trace);
+
     public SearchResult query(string user_uri, string filter, string freturn, string sort, int from, int top, int limit,
-                            void delegate(string uri) prepare_element_event,
-                            OptAuthorize op_auth, bool trace);    	
-    
+                              void delegate(string uri) prepare_element_event,
+                              OptAuthorize op_auth, bool trace);
+
     public int query(string user_uri, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace);
-    
 }
 
 class XapianSearch : Search
@@ -70,7 +69,7 @@ class XapianSearch : Search
     }
 
     public int query(string user_uri, string filter, string freturn, string sort, int top, int limit,
-                   ref Individual[] individuals, OptAuthorize op_auth, bool trace)
+                     ref Individual[] individuals, OptAuthorize op_auth, bool trace)
     {
         int                       res_count;
 
@@ -109,8 +108,8 @@ class XapianSearch : Search
     }
 
     public SearchResult query(string user_uri, string filter, string freturn, string sort, int from, int top, int limit,
-                            void delegate(string uri) prepare_element_event,
-                            OptAuthorize op_auth, bool trace)
+                              void delegate(string uri) prepare_element_event,
+                              OptAuthorize op_auth, bool trace)
     {
         string[]                  res;
 

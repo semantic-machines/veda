@@ -2,13 +2,13 @@
  *     XAPIAN READER
  */
 
-module veda.core.search.xapian_reader;
+module veda.search.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.common.type;
 import veda.core.common.log_msg, veda.common.logger;
-import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
+import veda.search.vel, veda.search.xapian_vql, veda.search.indexer_property, veda.util.module_info;
 
 protected byte err;
 
@@ -16,8 +16,8 @@ protected byte err;
 interface SearchReader
 {
     public SearchResult query(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
-                            bool trace);
+                              void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
+                              bool trace);
 
     public void reopen_dbs();
 }
@@ -132,8 +132,8 @@ class XapianReader : SearchReader
     }
 
     public SearchResult query(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
-                            bool trace)
+                              void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
+                              bool trace)
     {
         SearchResult sr;
 

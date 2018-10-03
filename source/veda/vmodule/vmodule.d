@@ -7,7 +7,7 @@ private
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger, veda.core.search.vql;
+    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger, veda.search.vql;
 }
 
 bool   f_listen_exit = false;
