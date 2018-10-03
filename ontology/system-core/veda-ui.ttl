@@ -966,7 +966,7 @@ v-ui:LabelTemplate
   <span class="label-template" about="@" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-      template.children().first().text(individual.id);
+      template.text(individual.id);
     }
     if (individual.is("v-s:Appointment") || individual.is("v-s:Person") || individual.is("v-s:Position")) {
       template.popover({

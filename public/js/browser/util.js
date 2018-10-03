@@ -287,4 +287,16 @@ veda.Module(function (veda) { "use strict";
     return modal;
   };
 
+  veda.Util.showSmallModal = function (individual, template, mode) {
+    var modal = $( $("#minimal-modal-template").html() );
+    modal.modal();
+    $("body").append(modal);
+    var container = $(".modal-body", modal);
+    individual.present(container, template, mode);
+    $(".action#cancel", modal).click(function () {
+      modal.modal("hide").remove();
+    });
+    return modal;
+  };
+
 });

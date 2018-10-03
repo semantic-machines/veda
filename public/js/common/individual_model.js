@@ -264,8 +264,15 @@ veda.Module(function (veda) { "use strict";
         this.isNew(false);
         this.isSync(true);
         this.properties = get_individual(veda.ticket, uri);
-      } catch (e) {
-        if (e.code === 422 || e.code === 404) {
+        // server-side work-around
+        // TODO: harmonize client-side & server-side backend functions
+        if (this.properties === undefined) {
+          var _error =  new Error();
+          _error.code = 422;
+          throw _error;
+        }
+      } catch (error) {
+        if (error.code === 422 || error.code === 404) {
           this.isNew(true);
           this.isSync(false);
           this.properties = {
@@ -276,7 +283,7 @@ veda.Module(function (veda) { "use strict";
               {type: "String", data: "Object does not exist", lang: "EN"}
             ]
           };
-        } else if (e.code === 472) {
+        } else if (error.code === 472) {
           this.isNew(false);
           this.isSync(true);
           this.properties = {
@@ -287,7 +294,7 @@ veda.Module(function (veda) { "use strict";
               {type: "String", data: "Insufficient rights", lang: "EN"}
             ]
           };
-        } else if (e.code === 470 || e.code === 471) {
+        } else if (error.code === 470 || error.code === 471) {
           this.isNew(false);
           this.isSync(true);
           this.trigger("afterLoad", this);
@@ -322,9 +329,9 @@ veda.Module(function (veda) { "use strict";
    * Save current individual to database
    */
   proto.save = function() {
-    var self = this;
     // Do not save individual to server if nothing changed
     if (this.isSync()) { return this; }
+    var self = this;
     this.trigger("beforeSave");
     Object.keys(this.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
@@ -712,7 +719,7 @@ veda.Module(function (veda) { "use strict";
    */
   proto.toString = function () {
     //return this["rdf:type"][0]["rdfs:label"].join(", ") + ": " + ( this["rdfs:label"] ? this["rdfs:label"].join(", ") : this.id );
-    return this.hasValue("rdfs:label") ? this["rdfs:label"].join(" ") : this["rdf:type"][0]["rdfs:label"].join(" ") + ": " + this.id ;
+    return this.hasValue("rdfs:label") ? this["rdfs:label"].join(" ") : this.hasValue("rdf:type") ? this["rdf:type"][0].toString() + ": " + this.id : this.id ;
   };
 
   /**

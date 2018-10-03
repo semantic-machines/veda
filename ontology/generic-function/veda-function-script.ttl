@@ -7,6 +7,8 @@
 @prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix vdi: <http://semantic-machines.com/veda/veda-index/> .
 
 <http://semantic-machines.com/veda/veda-function-script>
   rdf:type owl:Ontology ;
@@ -31,6 +33,7 @@ v-s:output
   rdfs:label "Вывод"@ru ;
   rdfs:label "Output"@en ;
   rdfs:domain v-s:UserScript ;
+  rdfs:domain v-s:Operation ;
   rdfs:range xsd:string ;
 .
 
@@ -47,6 +50,7 @@ v-s:lastRun
   rdfs:label "Последний запуск"@ru ;
   rdfs:label "Last run"@en ;
   rdfs:domain v-s:UserScript ;
+  rdfs:domain v-s:Operation ;
   rdfs:range xsd:dateTime ;
 .
 
@@ -66,7 +70,7 @@ v-s:PsRunAtUserScript
 v-s:UserScriptEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:UserScript ;
-#  v-s:runAt "V8.LowPriority" ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -80,14 +84,16 @@ v-s:UserScriptEvent
  */
 var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
 var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
+var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
 
-if (!toBeRun || runAt !== "Server") { return; }
+if (!script || !toBeRun || runAt !== "Server") { return; }
 
 // preserve global print & console
 var nativePrint = this.print;
 var nativeConsole = this.console;
 
 // override global print & console
+var output = "";
 var _print = function () {
   for (var i = 0; i < arguments.length; i++) {
     var arg = arguments[i] ;
@@ -116,27 +122,23 @@ var _console = {
 };
 this.console = _console;
 
-var output = "";
-var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
-if (script) {
-  script = new Function (script);
-  try {
-    script();
-  } catch (err) {
-    print(err, err.stack);
-  }
-  document["v-s:output"] = [{
-    data: output,
-    lang: "NONE",
-    type: "String"
-  }];
-  document["v-s:lastRun"] = [{
-    data: new Date(),
-    type: "Datetime"
-  }];
-  delete document["v-s:toBeRun"];
-  put_individual(ticket, document, _event_id);
+script = new Function (script);
+try {
+  script();
+} catch (err) {
+  print(err, err.stack);
 }
+document["v-s:output"] = [{
+  data: output,
+  lang: "NONE",
+  type: "String"
+}];
+document["v-s:lastRun"] = [{
+  data: new Date(),
+  type: "Datetime"
+}];
+delete document["v-s:toBeRun"];
+put_individual(ticket, document, _event_id);
 
 // restore global print & console
 this.print = nativePrint;
@@ -148,6 +150,16 @@ v-s:RunBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Запустить"@ru ;
   rdfs:label "Run"@en ;
+.
+v-s:StartBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Запустить"@ru ;
+  rdfs:label "Start"@en ;
+.
+v-s:RestartBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Перезапустить"@ru ;
+  rdfs:label "Restart"@en ;
 .
 v-s:ClearBundle
   rdf:type v-s:Bundle ;
@@ -285,29 +297,598 @@ v-s:UserScriptTemplate
 v-s:Operation
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:UserScript ;
+  rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Операция"@ru ;
   rdfs:label "Operation"@en ;
   v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
-v-s:PsRunAtOperation
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:runAt для класса v-s:Operation"@ru ;
-  rdfs:label "v-s:runAt property specification for v-s:Operation class"@en ;
-  v-ui:forClass v-s:Operation ;
-  v-ui:forProperty v-s:runAt ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:defaultValue "Browser" ;
-  v-ui:optionValue "Browser" ;
-  v-ui:optionValue "Server" ;
+v-s:GenericOperation
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Operation ;
+  rdfs:label "Общая операция"@ru ;
+  rdfs:label "Generic operation"@en ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
 .
 
-v-s:input
+# v-s:dateFrom
+# v-s:dateTo
+# v-s:duration
+# v-s:hasStatus
+# v-s:output
+
+v-s:dataQuery
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Ввод"@ru ;
-  rdfs:label "Input"@en ;
+  rdfs:label "Запрос"@ru ;
+  rdfs:label "Query"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:string ;
+.
+
+v-s:data
+  rdf:type rdf:Property ;
+  rdfs:label "Данные"@ru ;
+  rdfs:label "Data"@en ;
   rdfs:domain v-s:Operation ;
   rdfs:range rdfs:Resource ;
 .
+
+v-s:processed
+  rdf:type rdf:Property ;
+  rdfs:label "Обработано"@ru ;
+  rdfs:label "Processed"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:integer ;
+.
+
+v-s:progress
+  rdf:type rdf:Property ;
+  rdfs:label "Прогресс"@ru ;
+  rdfs:label "Progress"@en ;
+  rdfs:domain v-s:Operation ;
+  rdfs:range xsd:integer ;
+.
+
+v-s:OperationDelete
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:GenericOperation ;
+  rdfs:label "Удалить"@ru ;
+  rdfs:label "Delete"@en ;
+  v-ui:hasModel v-s:OperationDeleteModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationDeleteModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции удаления"@ru ;
+  rdfs:label "Delete operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  set_in_individual(veda.ticket, {
+    "@": individual_uri,
+    "v-s:deleted": veda.Util.newBool(true)
+  });
+};
+  """ ;
+.
+
+v-s:OperationRestore
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:GenericOperation ;
+  rdfs:label "Восстановить"@ru ;
+  rdfs:label "Restore"@en ;
+  v-ui:hasModel v-s:OperationRestoreModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationRestoreModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции восстановления"@ru ;
+  rdfs:label "Restore operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  remove_from_individual(veda.ticket, {
+    "@": individual_uri,
+    "v-s:deleted": veda.Util.newBool(true)
+  });
+};
+  """ ;
+.
+
+v-s:OperationUpdate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Operation ;
+  rdfs:label "Обновить"@ru ;
+  rdfs:label "Update"@en ;
+  v-ui:hasModel v-s:OperationUpdateModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationUpdateModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции обновления"@ru ;
+  rdfs:label "Update operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  var individual = get_individual(veda.ticket, individual_uri);
+  put_individual(veda.ticket, individual);
+};
+  """ ;
+.
+
+v-s:StopBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Остановить"@ru ;
+  rdfs:label "Stop"@en ;
+.
+
+v-s:OperationTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Operation ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <div about="@" data-template="v-s:OperationHeaderTemplate"></div>
+  <div about="@" data-template="v-s:OperationFooterTemplate"></div>
+</div>
+  """ ;
+.
+
+v-s:OperationHeaderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<div>
+  <div class="clearfix">
+    <h3 class="pull-left margin-sm">
+      <span about="v-s:Operation" property="rdfs:label"></span>:
+      <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+    </h3>
+    <div class="pull-left margin-md-h" style="margin-top:8px;" about="@" data-template="v-s:OperationProgressTemplate"></div>
+  </div>
+  <div class="row margin-md">
+    <div class="col-sm-6" style="border-right: 1px solid #eee;">
+      <em about="v-s:dataQuery" property="rdfs:label"></em>
+      <span about="@" property="v-s:dataQuery"></span>
+      <em about="v-s:dateFrom" property="rdfs:label"></em>
+      <span about="@" property="v-s:dateFrom"></span>
+      <em about="v-s:duration" property="rdfs:label"></em>
+      <span about="@" property="v-s:duration"></span> sec
+      <em about="v-s:processed" property="rdfs:label"></em>
+      <span about="@" property="v-s:processed"></span>
+      <em about="v-s:creator" property="rdfs:label"></em>
+      <span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
+    </div>
+    <div class="col-sm-6" style="border-left: 1px solid #eee; margin-left: -1px;">
+      <em about="v-s:data" property="rdfs:label"></em>
+      <ul rel="v-s:data" class="view edit search" data-limit="5" data-more="true">
+        <li about="@" data-template="v-ui:LabelTemplate"></li>
+      </ul>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:OperationFooterTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Operation ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<script>
+  $(".action#start", template).click(function () {
+    if (individual.isNew()) {
+      individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
+      individual.save();
+    } else {
+      set_in_individual(veda.ticket, {
+        "@": individual.id,
+        "v-s:hasStatus": [{
+          type: "Uri",
+          data: "v-s:StatusStarted"
+        }]
+      });
+    }
+  });
+  $(".action#stop", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data: "v-s:StatusStopped"
+      }]
+    });
+  });
+  $(".action#restart", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data: "v-s:StatusRestarted"
+      }],
+      "v-s:output": [{
+        type: "String",
+        data: ""
+      }],
+      "v-s:progress": [{
+        type: "Integer",
+        data: 0
+      }]
+    });
+  });
+
+  statusHandler();
+  individual.on("v-s:hasStatus", statusHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasStatus", statusHandler);
+  });
+  individual.on("v-s:hasStatus", statusHandler);
+
+  function statusHandler () {
+    var start = $(".action#start", template),
+        stop = $(".action#stop", template),
+        restart = $(".action#restart", template),
+        status = individual.hasValue("v-s:hasStatus") ? individual["v-s:hasStatus"][0].id : undefined;
+
+    switch (status) {
+      case "v-s:StatusStarted":
+      case "v-s:StatusExecution":
+        start.addClass("hidden");
+        stop.removeClass("hidden");
+        restart.addClass("hidden");
+        break;
+      case "v-s:StatusExecuted":
+        start.addClass("hidden");
+        stop.addClass("hidden");
+        restart.removeClass("hidden");
+        break;
+      default:
+        start.removeClass("hidden");
+        stop.addClass("hidden");
+        restart.addClass("hidden");
+        break;
+    }
+  }
+//# sourceURL=v-s:OperationFooterTemplate_pre
+</script>
+<div class="actions view edit -search clearfix">
+  <div class="pull-left">
+    <button type="button" class="action btn btn-success view -edit -search" id="start" about="v-s:StartBundle" property="rdfs:label"/>
+    <button type="button" class="action btn btn-info view -edit -search" id="restart" about="v-s:RestartBundle" property="rdfs:label"/>
+    <button type="button" class="action btn btn-danger view -edit -search" id="stop" about="v-s:StopBundle" property="rdfs:label"/>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:OperationStatusTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Operation ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<script>
+  $(".action#start", template).click(function () {
+    if (individual.isNew()) {
+      individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
+      individual.save();
+    } else {
+      set_in_individual(veda.ticket, {
+        "@": individual.id,
+        "v-s:hasStatus": [{
+          type: "Uri",
+          data: "v-s:StatusStarted"
+        }]
+      });
+    }
+  });
+  $(".action#stop", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data: "v-s:StatusStopped"
+      }]
+    });
+  });
+  $(".action#restart", template).click(function () {
+    set_in_individual(veda.ticket, {
+      "@": individual.id,
+      "v-s:hasStatus": [{
+        type: "Uri",
+        data: "v-s:StatusRestarted"
+      }],
+      "v-s:output": [{
+        type: "String",
+        data: ""
+      }],
+      "v-s:progress": [{
+        type: "Integer",
+        data: 0
+      }]
+    });
+  });
+
+  statusHandler();
+  individual.on("v-s:hasStatus", statusHandler);
+  template.one("remove", function () {
+    individual.off("v-s:hasStatus", statusHandler);
+  });
+  individual.on("v-s:hasStatus", statusHandler);
+
+  function statusHandler () {
+    var start = $(".action#start", template),
+        stop = $(".action#stop", template),
+        restart = $(".action#restart", template),
+        status = individual.hasValue("v-s:hasStatus") ? individual["v-s:hasStatus"][0].id : undefined;
+
+    switch (status) {
+      case "v-s:StatusStarted":
+      case "v-s:StatusExecution":
+        start.addClass("hidden");
+        stop.removeClass("hidden");
+        restart.addClass("hidden");
+        break;
+      case "v-s:StatusExecuted":
+        start.addClass("hidden");
+        stop.addClass("hidden");
+        restart.removeClass("hidden");
+        break;
+      default:
+        start.removeClass("hidden");
+        stop.addClass("hidden");
+        restart.addClass("hidden");
+        break;
+    }
+  }
+
+  $(".show-operation-modal", template).click(function (e) {
+    e.preventDefault();
+    veda.Util.showSmallModal(individual);
+  })
+
+//# sourceURL=v-s:OperationStatusTemplate_pre
+</script>
+<div class="pull-left">
+  <h5 class="pull-left margin-sm">
+    <a class="show-operation-modal text-muted" href="#" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></a>
+  </h5>
+  <div class="pull-left" about="@" data-template="v-s:OperationProgressTemplate"></div>
+  <button class="action btn btn-xs btn-success pull-left" id="start"><span class="glyphicon glyphicon-play"></span></button>
+  <button class="action btn btn-xs btn-info pull-left" id="restart"><span class="glyphicon glyphicon-repeat"></span></button>
+  <button class="action btn btn-xs btn-danger pull-left" id="stop"><span class="glyphicon glyphicon-stop"></span></button>
+</div>
+  """ ;
+.
+
+v-s:OperationProgressTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Operation ;
+  rdfs:label "Шаблон для класса v-s:Operation"@ru ;
+  rdfs:label "Template for v-s:Operation class"@en ;
+  v-ui:template """
+<script>
+  progressHandler();
+  individual.on("v-s:progress", progressHandler);
+  template.one("remove", function () {
+    individual.off("v-s:progress", progressHandler);
+  });
+  individual.on("v-s:hasStatus", progressHandler);
+
+  function progressHandler () {
+    var progress = individual.hasValue("v-s:progress") && individual["v-s:progress"][0] || 0;
+    $(".progress-bar", template).css({"width": progress + "%"});
+  }
+  function statusHandler () {
+    var progressBar = $(".progress-bar", template),
+        status = individual.hasValue("v-s:hasStatus") ? individual["v-s:hasStatus"][0].id : undefined;
+    switch (status) {
+      case "v-s:StatusStarted":
+      case "v-s:StatusExecution":
+        progressBar.addClass("progress-bar-success active").removeClass("progress-bar-danger");
+        break;
+      case "v-s:StatusExecuted":
+        progressBar.addClass("progress-bar-success").removeClass("progress-bar-danger active");
+        break;
+      default:
+        progressBar.addClass("progress-bar-danger").removeClass("progress-bar-success active");
+        break;
+    }
+  }
+//# sourceURL=v-s:OperationProgressTemplate_pre
+</script>
+<div class="pull-left">
+  <div class="progress pull-left" style="display: inline-block; height: 22px; width:100px; margin:0 5px;">
+    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; padding-top:2px;">
+      <strong about="@" property="v-s:progress"></strong><strong>%</strong>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:OperationEvent
+  rdf:type v-s:Event ;
+  v-s:triggerByType v-s:Operation ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:unsafe true ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var operation_uri = document["@"],
+    operation = get_individual(veda.ticket, operation_uri),
+    dataQuery = operation["v-s:dataQuery"] && operation["v-s:dataQuery"][0].data || "",
+    data = operation["v-s:data"],
+    processed = operation["v-s:processed"] && operation["v-s:processed"][0].data || 0,
+    progress = operation["v-s:progress"] && operation["v-s:progress"][0].data || 0,
+    status = operation["v-s:hasStatus"] && operation["v-s:hasStatus"][0].data || "",
+    now = new Date(),
+    dateFrom = operation["v-s:dateFrom"] && operation["v-s:dateFrom"][0].data,
+    operation_type_uri = operation["rdf:type"][0].data,
+    operation_type = get_individual(veda.ticket, operation_type_uri),
+    operation_model_uri = operation_type["v-ui:hasModel"][0].data,
+    operation_model = get_individual(veda.ticket, operation_model_uri),
+    operation_model_src = operation_model["v-s:script"][0].data,
+    max_queued = 100,
+    to_process = 30,
+    stop_signal_received = prev_state && prev_state["v-s:hasStatus"] && prev_state["v-s:hasStatus"][0].data === "v-s:StatusStopped" && status === "v-s:StatusExecution" ;
+
+// Stop execution
+if ( !status || status === "v-s:StatusStopped" || status === "v-s:StatusExecuted" ) {
+  return ;
+}
+
+// First run with query specified
+if ( status === "v-s:StatusStarted" && dataQuery && !data ) {
+  var dataUris = query(veda.ticket, dataQuery).result;
+  var dataValues = dataUris.map(function (valueUri) {
+    return {
+      type: "Uri",
+      data: valueUri
+    };
+  });
+  set_in_individual(veda.ticket, {
+    "@": operation["@"],
+    "v-s:data": dataValues,
+    "v-s:processed": veda.Util.newInt(0),
+    "v-s:dateFrom": veda.Util.newDate(now),
+    "v-s:hasStatus": dataValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted")
+  });
+  return;
+}
+
+/*// Restart with query specified
+if ( status === "v-s:StatusRestarted" && dataQuery ) {
+  var dataUris = query(veda.ticket, dataQuery).result;
+  var dataValues = dataUris.map(function (valueUri) {
+    return {
+      type: "Uri",
+      data: valueUri
+    };
+  });
+  set_in_individual(veda.ticket, {
+    "@": operation["@"],
+    "v-s:data": dataValues,
+    "v-s:processed": veda.Util.newInt(0),
+    "v-s:dateFrom": veda.Util.newDate(now),
+    "v-s:hasStatus": dataValues.length ? veda.Util.newUri("v-s:StatusExecution") : veda.Util.newUri("v-s:StatusExecuted"),
+    "v-s:output": veda.Util.newStr("")
+  });
+  return;
+}*/
+
+// Restart with data specified
+if ( status === "v-s:StatusRestarted" && data ) {
+  set_in_individual(veda.ticket, {
+    "@": operation["@"],
+    "v-s:processed": veda.Util.newInt(0),
+    "v-s:dateFrom": veda.Util.newDate(now),
+    "v-s:hasStatus": veda.Util.newUri("v-s:StatusExecution"),
+    "v-s:output": veda.Util.newStr("")
+  });
+  return;
+}
+
+// Postpone execution at high load
+if ( queue_elements_count - queue_elements_processed > max_queued ) {
+  console.log("Queue busy", queue_elements_count - queue_elements_processed);
+  set_in_individual(veda.ticket, {
+    "@": operation["@"],
+    "v-s:hasStatus": stop_signal_received ? veda.Util.newUri("v-s:StatusStopped") : veda.Util.newUri("v-s:StatusExecution"),
+    "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 )),
+    "v-s:dateFrom": veda.Util.newDate(dateFrom || now)
+  });
+  return;
+}
+
+// preserve global print & console
+var nativePrint = this.print;
+var nativeConsole = this.console;
+
+// override global print & console
+var output = "";
+var _print = function () {
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i] ;
+    var argString = typeof arg !== "undefined" ? arg.toString() : "undefined" ;
+    if (i === 0) {
+      output += argString;
+    } else {
+      output += " " + argString;
+    }
+  }
+  output += String.fromCharCode(13, 10);
+}
+this.print = _print;
+
+var _console = {
+  log: _print,
+  error: _print,
+  info: _print,
+  time: function (timer) {
+    this[timer] = new Date();
+  },
+  timeEnd: function (timer) {
+    var delta = new Date() - this[timer];
+    this.log(timer, delta, "msec");
+  }
+};
+this.console = _console;
+
+// Process data portion
+var operation_model_fn = new Function(operation_model_src);
+operation_model_fn.call(operation);
+
+for (var i = processed, max = processed + to_process, valueUri; (i < max) && data[i] && (valueUri = data[i].data); i++) {
+  try {
+    operation.fn(valueUri);
+  } catch (error) {
+    console.log(i, "Error processing individual", valueUri);
+    console.log(error, error.stack);
+    continue;
+  }
+}
+processed = i;
+
+if (processed > 0 && data.length > 0) {
+  progress = Math.floor( (processed / data.length) * 100 ) ;
+} else if (processed === 0 && data.length > 0) {
+  progress = 0 ;
+} else if (processed === 0 && data.length === 0) {
+  progress = 100 ;
+}
+
+var _output = operation["v-s:output"] ? operation["v-s:output"][0].data : "";
+
+var to_set = {
+  "@": operation["@"],
+  "v-s:hasStatus": stop_signal_received ? veda.Util.newUri("v-s:StatusStopped") : veda.Util.newUri("v-s:StatusExecution"),
+  "v-s:progress": veda.Util.newInt(progress),
+  "v-s:processed": veda.Util.newInt(processed),
+  "v-s:output": veda.Util.newStr(_output + output),
+  "v-s:dateFrom": veda.Util.newDate(dateFrom || now),
+  "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 ))
+};
+if (progress === 100) {
+  to_set["v-s:hasStatus"] = veda.Util.newUri("v-s:StatusExecuted");
+}
+set_in_individual(veda.ticket, to_set);
+
+// restore global print & console
+this.print = nativePrint;
+this.console = nativeConsole;
+"""
+.
+

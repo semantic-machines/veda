@@ -26,6 +26,18 @@ veda.Module(function (veda) { "use strict";
 
     var self = this;
 
+    this.reload = function () {
+      ontologies = {},
+      datatypes = {},
+      classes = {},
+      properties = {},
+      specifications = {},
+      classTree = {};
+      ontology = getOntology();
+      storage.ontology = JSON.stringify(ontology);
+      processOntology();
+    }
+
     var ontology,
         ontologies = {},
         datatypes = {},
