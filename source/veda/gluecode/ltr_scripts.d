@@ -98,7 +98,8 @@ private void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", log, parent_url);
+    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
+    context.set_vql (new XapianSearch(context));
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"

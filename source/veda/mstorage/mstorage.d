@@ -116,7 +116,9 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", log, null);
+        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", null, log);
+        core_context.set_vql (new XapianSearch(core_context));
+        
         l_context    = core_context;
 
         sticket = sys_ticket(core_context);
