@@ -10,7 +10,7 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.core.search.vql;
 
 
 // ////// Logger ///////////////////////////////////////////
@@ -103,7 +103,8 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = PThreadContext.create_new(process_name, "file_reader", log, parent_url);
+    Context context = PThreadContext.create_new(process_name, "file_reader", parent_url, log);
+    context.set_vql (new XapianSearch(context));
     sticket = context.sys_ticket();
 
     while (sticket.result != ResultCode.OK)

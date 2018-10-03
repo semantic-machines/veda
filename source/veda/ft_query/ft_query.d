@@ -6,7 +6,7 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
+import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define, veda.core.search.vql;
 
 static this()
 {
@@ -155,7 +155,8 @@ void main(string[] args)
     int     sock;
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
     Ticket  systicket;
-    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", log, null);
+    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
+    ctx.set_vql (new XapianSearch(ctx));
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)

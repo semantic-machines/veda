@@ -212,7 +212,7 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new(string _node_id, string context_name, Logger _log, string _main_module_url)
+    public static Context create_new(string _node_id, string context_name, string _main_module_url, Logger _log)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -239,11 +239,6 @@ class PThreadContext : Context
         ctx.name = context_name;
 
         ctx.get_configuration();
-
-        ctx._vql = new XapianSearch(ctx);
-
-        ctx.onto = new Onto(ctx);
-        ctx.onto.load();
 
         ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
 
@@ -294,6 +289,11 @@ class PThreadContext : Context
                 local_count_onto_update = g_count_onto_update;
                 onto.load();
             }
+        } 
+        else
+        {
+	        onto = new Onto(this);
+	        onto.load();        	
         }
 
         return onto;
@@ -318,7 +318,11 @@ class PThreadContext : Context
             return onto.get_individuals;
         }
         else
-            return (Individual[ string ]).init;
+        {
+	        onto = new Onto(this);
+	        onto.load();        	
+            return onto.get_individuals;
+        }
     }
 
     ref string[ string ] get_prefix_map()
@@ -377,6 +381,11 @@ class PThreadContext : Context
             if (trace_msg[ T_API_140 ] == 1)
                 log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
         }
+    }
+
+    public void set_vql(Search in_vql)
+    {
+        _vql = in_vql;
     }
 
     public Search get_vql()
