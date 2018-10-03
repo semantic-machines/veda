@@ -2345,7 +2345,6 @@ v-fs:FulltextSearch
   v-fs:searchBlank v-fs:FulltextBlank ;
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
-  v-fs:applicableOperation v-s:OperationUpdate ;
 .
 
 v-fs:FulltextBlank
