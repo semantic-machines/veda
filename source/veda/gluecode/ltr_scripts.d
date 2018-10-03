@@ -13,7 +13,7 @@ private
     import veda.common.logger, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.search.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;

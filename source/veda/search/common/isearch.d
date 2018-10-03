@@ -2,7 +2,7 @@
  * VQL executor
  */
 
-module veda.search.isearch;
+module veda.search.common.isearch;
 
 private
 {

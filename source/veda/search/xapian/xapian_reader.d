@@ -8,7 +8,7 @@ import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.common.type;
 import veda.core.common.log_msg, veda.common.logger;
-import veda.search.isearch, veda.search.vel, veda.search.xapian.xapian_vql, veda.search.indexer_property, veda.util.module_info;
+import veda.search.common.isearch, veda.search.common.vel, veda.search.common.indexer_property, veda.search.xapian.xapian_vql, veda.util.module_info;
 
 protected byte err;
 

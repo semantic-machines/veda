@@ -4,7 +4,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.vmodule.vmodule, veda.search.vel, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.vmodule.vmodule, veda.gluecode.script, veda.gluecode.v8d_header;
 private import veda.gluecode.scripts;
 
 int main(string[] args)
