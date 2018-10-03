@@ -1652,8 +1652,11 @@ v-fs:SelectedResultsActionsTemplate
     });
     var modal = veda.Util.showSmallModal(operation);
     modal.on("click", ".action#start", function () {
-      self.operation = operation;
-      operation.present(operationContainer, "v-s:OperationStatusTemplate");
+      if (self.operation !== operation) {
+        self.operation = operation;
+        operationContainer.empty();
+        operation.present(operationContainer, "v-s:OperationStatusTemplate");
+      }
       modal.on("hidden.bs.modal", function () {
         modal.modal("hide").remove();
       });
