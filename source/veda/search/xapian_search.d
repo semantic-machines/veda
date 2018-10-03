@@ -2,7 +2,7 @@
  * VQL executor
  */
 
-module veda.search.vql;
+module veda.search.xapian_search;
 
 private
 {
