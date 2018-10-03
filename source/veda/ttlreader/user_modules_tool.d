@@ -9,7 +9,7 @@ private import url, std.uuid, std.json, std.process;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.util.raptor2individual;
-private import veda.vmodule.vmodule;
+private import veda.vmodule.vmodule, veda.search.isearch;
 
 void user_modules_tool_thread()
 {

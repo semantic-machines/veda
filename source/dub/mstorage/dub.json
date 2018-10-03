@@ -35,6 +35,7 @@
 	"sourcePaths":[
 	    "../../veda/mstorage", 
 	    "../../veda/common", 
+	    "../../veda/search",  
 	    "../../veda/core",  
 	    "../../veda/onto", 
             "../../veda/onto/bj8individual",

@@ -8,7 +8,7 @@ import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algor
 import dt                                                                                                     = std.datetime.stopwatch;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
-import veda.search.vel;
+import veda.search.isearch, veda.search.vel;
 import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
 
 

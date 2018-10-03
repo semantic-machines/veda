@@ -9,7 +9,7 @@ private
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
     import veda.util.container, veda.common.logger, veda.core.util.utils;
     import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates, veda.common.type;
-    import veda.search.vel, veda.search.xapian_reader;
+    import veda.search.isearch, veda.search.vel, veda.search.xapian_reader;
     import veda.onto.individual;
 }
 
@@ -21,21 +21,6 @@ static const int AUTHORIZE = 4;
 static const int SOURCE    = 5;
 
 static const int XAPIAN = 2;
-
-interface Search
-{
-    public void reopen_db();
-    public bool close_db();
-
-    public int query(string user_uri, string filter, string freturn, string sort, int top, int limit,
-                     ref Individual[] individuals, OptAuthorize op_auth, bool trace);
-
-    public SearchResult query(string user_uri, string filter, string freturn, string sort, int from, int top, int limit,
-                              void delegate(string uri) prepare_element_event,
-                              OptAuthorize op_auth, bool trace);
-
-    public int query(string user_uri, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace);
-}
 
 class XapianSearch : Search
 {

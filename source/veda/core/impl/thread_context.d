@@ -14,7 +14,7 @@ private
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
-    import veda.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
+    import veda.search.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
     import veda.storage.lmdb.lmdb_storage;
     import veda.storage.tarantool.tarantool_storage;
 

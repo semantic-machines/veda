@@ -17,7 +17,7 @@
             "../../veda/onto/bj8individual",
             "../../veda/util",
             "../../veda/core/impl",
-            "../../veda/core/search",
+            "../../veda/search",
             "../../veda/core/common",
             "../../veda/vmodule",
             "../../veda/storage/lmdb",
