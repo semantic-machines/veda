@@ -480,18 +480,8 @@ v-s:OperationFooterTemplate
   v-ui:template """
 <script>
   $(".action#start", template).click(function () {
-    if (individual.isNew()) {
-      individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
-      individual.save();
-    } else {
-      set_in_individual(veda.ticket, {
-        "@": individual.id,
-        "v-s:hasStatus": [{
-          type: "Uri",
-          data: "v-s:StatusStarted"
-        }]
-      });
-    }
+    individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
+    individual.save();
   });
   $(".action#stop", template).click(function () {
     set_in_individual(veda.ticket, {
@@ -503,21 +493,10 @@ v-s:OperationFooterTemplate
     });
   });
   $(".action#restart", template).click(function () {
-    set_in_individual(veda.ticket, {
-      "@": individual.id,
-      "v-s:hasStatus": [{
-        type: "Uri",
-        data: "v-s:StatusRestarted"
-      }],
-      "v-s:output": [{
-        type: "String",
-        data: ""
-      }],
-      "v-s:progress": [{
-        type: "Integer",
-        data: 0
-      }]
-    });
+    individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusRestarted")];
+    individual["v-s:output"] = [""];
+    individual["v-s:progress"] = [0];
+    individual.save();
   });
 
   statusHandler();
@@ -572,18 +551,8 @@ v-s:OperationStatusTemplate
   v-ui:template """
 <script>
   $(".action#start", template).click(function () {
-    if (individual.isNew()) {
-      individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
-      individual.save();
-    } else {
-      set_in_individual(veda.ticket, {
-        "@": individual.id,
-        "v-s:hasStatus": [{
-          type: "Uri",
-          data: "v-s:StatusStarted"
-        }]
-      });
-    }
+    individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
+    individual.save();
   });
   $(".action#stop", template).click(function () {
     set_in_individual(veda.ticket, {
@@ -595,21 +564,10 @@ v-s:OperationStatusTemplate
     });
   });
   $(".action#restart", template).click(function () {
-    set_in_individual(veda.ticket, {
-      "@": individual.id,
-      "v-s:hasStatus": [{
-        type: "Uri",
-        data: "v-s:StatusRestarted"
-      }],
-      "v-s:output": [{
-        type: "String",
-        data: ""
-      }],
-      "v-s:progress": [{
-        type: "Integer",
-        data: 0
-      }]
-    });
+    individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusRestarted")];
+    individual["v-s:output"] = [""];
+    individual["v-s:progress"] = [0];
+    individual.save();
   });
 
   statusHandler();
@@ -672,11 +630,13 @@ v-s:OperationProgressTemplate
   v-ui:template """
 <script>
   progressHandler();
+  statusHandler();
   individual.on("v-s:progress", progressHandler);
+  individual.on("v-s:hasStatus", statusHandler);
   template.one("remove", function () {
     individual.off("v-s:progress", progressHandler);
+    individual.off("v-s:hasStatus", statusHandler);
   });
-  individual.on("v-s:hasStatus", progressHandler);
 
   function progressHandler () {
     var progress = individual.hasValue("v-s:progress") && individual["v-s:progress"][0] || 0;
@@ -702,7 +662,7 @@ v-s:OperationProgressTemplate
 </script>
 <div class="pull-left">
   <div class="progress pull-left" style="display: inline-block; height: 22px; width:100px; margin:0 5px;">
-    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; padding-top:2px;">
+    <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%; padding-top:2px;">
       <strong about="@" property="v-s:progress"></strong><strong>%</strong>
     </div>
   </div>
