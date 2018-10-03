@@ -240,9 +240,6 @@ class PThreadContext : Context
 
         ctx.get_configuration();
 
-        ctx.onto = new Onto(ctx);
-        ctx.onto.load();
-
         ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
 
         return ctx;
@@ -292,6 +289,11 @@ class PThreadContext : Context
                 local_count_onto_update = g_count_onto_update;
                 onto.load();
             }
+        } 
+        else
+        {
+	        onto = new Onto(this);
+	        onto.load();        	
         }
 
         return onto;
@@ -316,7 +318,11 @@ class PThreadContext : Context
             return onto.get_individuals;
         }
         else
-            return (Individual[ string ]).init;
+        {
+	        onto = new Onto(this);
+	        onto.load();        	
+            return onto.get_individuals;
+        }
     }
 
     ref string[ string ] get_prefix_map()
