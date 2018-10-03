@@ -2,7 +2,7 @@
  * VQL -> xapian
  */
 
-module veda.search.xapian_vql;
+module veda.search.xapian.xapian_vql;
 
 import std.string, std.concurrency, std.stdio, std.datetime, std.conv, std.algorithm, std.regex, std.uni, utf = std.utf;
 import dt                                                                                                     = std.datetime.stopwatch;

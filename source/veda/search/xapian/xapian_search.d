@@ -2,14 +2,14 @@
  * VQL executor
  */
 
-module veda.search.xapian_search;
+module veda.search.xapian.xapian_search;
 
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
     import veda.util.container, veda.common.logger, veda.core.util.utils;
     import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates, veda.common.type;
-    import veda.search.isearch, veda.search.vel, veda.search.xapian_reader;
+    import veda.search.isearch, veda.search.vel, veda.search.xapian.xapian_reader;
     import veda.onto.individual;
 }
 

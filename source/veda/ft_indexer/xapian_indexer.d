@@ -12,7 +12,7 @@ private import veda.core.util.utils, veda.common.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 private import veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg,
                veda.core.impl.thread_context;
-private import veda.search.vel, veda.search.xapian_vql, veda.search.indexer_property;
+private import veda.search.vel, veda.search.xapian.xapian_vql, veda.search.indexer_property;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
