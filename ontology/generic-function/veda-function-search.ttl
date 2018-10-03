@@ -1613,24 +1613,35 @@ v-fs:SelectedResultsActionsTemplate
 
   $(".dropdown-toggle", template).one("click", function () {
     var dropdown = $(".dropdown-menu", template);
+    var operationTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>"
+    function renderOperation(operation) {
+      var renderedOperation = operation.present(dropdown, operationTemplate);
+      if ( !operation.rights.hasValue("v-s:canCreate", true) ) {
+        renderedOperation.addClass("disabled");
+      }
+    }
+    var applicableOperations = self["v-fs:applicableOperation"];
+    applicableOperations.forEach(renderOperation);
     query({
       ticket: veda.ticket,
       query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'",
       async: true
     }).then(function (response) {
-      if (self.hasValue("v-fs:applicableOperation") && response.result.length) {
+      if ( dropdown.children().length && response.result.length ) {
         dropdown.append("<li role='separator' class='divider'></li>");
       }
-      response.result.forEach(function (operation_uri) {
+      return response.result.map(function (operation_uri) {
         var operation = new veda.IndividualModel(operation_uri);
-        operation.present(dropdown, "<li><a about='@' href='#' property='rdfs:label'></a></li>");
+        renderOperation(operation);
       });
     });
   });
 
   $(".dropdown-menu", template).on("click", "[resource]", function (e) {
     e.preventDefault();
-    var operationClassUri = $(this).attr("resource"),
+    var $this = $(this);
+    if ( $this.hasClass("disabled") ) { return; }
+    var operationClassUri = $this.attr("resource"),
         operationClass = new veda.IndividualModel(operationClassUri),
         operation = new veda.IndividualModel(),
         operationContainer = $(".operation-container", template).empty();
@@ -1641,6 +1652,7 @@ v-fs:SelectedResultsActionsTemplate
     });
     var modal = veda.Util.showSmallModal(operation);
     modal.on("click", ".action#start", function () {
+      self.operation = operation;
       operation.present(operationContainer, "v-s:OperationStatusTemplate");
       modal.on("hidden.bs.modal", function () {
         modal.modal("hide").remove();
@@ -1653,11 +1665,16 @@ v-fs:SelectedResultsActionsTemplate
   <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" about="@" rel="v-fs:applicableOperation">
-    <li><a about="@" href="#" property="rdfs:label"></a></li>
-  </ul>
+  <ul class="dropdown-menu operations"></ul>
   <div class="pull-left operation-container margin-md-h"></div>
 </div>
+<script>
+  if (this.operation) {
+    var operationContainer = $(".operation-container", template);
+    this.operation.present(operationContainer, "v-s:OperationStatusTemplate");
+  }
+//# sourceURL=v-fs:SelectedResultsActionsTemplate_post
+</script>
   """ ;
 .
 
@@ -2328,6 +2345,7 @@ v-fs:FulltextSearch
   v-fs:searchBlank v-fs:FulltextBlank ;
   v-fs:searchBlankTemplate v-fs:FulltextBlankTemplate ;
   v-fs:searchResultTemplate v-fs:FulltextResultTemplate ;
+  v-fs:applicableOperation v-s:OperationUpdate ;
 .
 
 v-fs:FulltextBlank
