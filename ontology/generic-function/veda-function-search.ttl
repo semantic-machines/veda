@@ -1273,6 +1273,7 @@ v-fs:AttributiveSearchModel
       queryString.push( self["v-fs:fulltextQuery"][0] )
     }
     queryString = queryString.join(" && ");
+    self["v-fs:query"] = [ queryString ];
     if ( queryString ) {
       return query({
         ticket: veda.ticket,
@@ -1634,13 +1635,16 @@ v-fs:SelectedResultsActionsTemplate
         operation = new veda.IndividualModel(),
         operationContainer = $(".operation-container", template).empty();
     operation["rdf:type"] = [ operationClass ];
+    operation["v-s:dataQuery"] = self["v-fs:query"];
     operation["v-s:data"] = Object.keys(self.selected).map(function (value_uri) {
       return new veda.IndividualModel(value_uri);
     });
     var modal = veda.Util.showSmallModal(operation);
     modal.on("click", ".action#start", function () {
       operation.present(operationContainer, "v-s:OperationStatusTemplate");
-      modal.modal("hide").remove();
+      modal.on("hidden.bs.modal", function () {
+        modal.modal("hide").remove();
+      });
     });
   });
 //# sourceURL=v-fs:SelectedResultsActionsTemplate_pre

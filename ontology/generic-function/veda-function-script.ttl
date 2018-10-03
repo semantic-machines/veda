@@ -319,8 +319,8 @@ v-s:GenericOperation
 
 v-s:dataQuery
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Запрос данных"@ru ;
-  rdfs:label "Data query"@en ;
+  rdfs:label "Запрос"@ru ;
+  rdfs:label "Query"@en ;
   rdfs:domain v-s:Operation ;
   rdfs:range xsd:string ;
 .
@@ -448,10 +448,23 @@ v-s:OperationHeaderTemplate
     </h3>
     <div class="pull-left margin-md-h" style="margin-top:8px;" about="@" data-template="v-s:OperationProgressTemplate"></div>
   </div>
-  <em about="v-s:data" property="rdfs:label"></em>
-  <ul rel="v-s:data" class="view edit search" data-limit="5" data-more="true">
-    <li about="@" data-template="v-ui:LabelTemplate"></li>
-  </ul>
+  <div class="row">
+  <div class="col-sm-6" style="border-right: 1px solid #eee;">
+    <em about="v-s:dataQuery" property="rdfs:label"></em>
+    <span about="@" property="v-s:dataQuery"></span>
+    <em about="v-s:dateFrom" property="rdfs:label"></em>
+    <span about="@" property="v-s:dateFrom"></span>
+    <em about="v-s:duration" property="rdfs:label"></em>
+    <span about="@" property="v-s:duration"></span>
+    <em about="v-s:processed" property="rdfs:label"></em>
+    <span about="@" property="v-s:processed"></span>
+  </div>
+  <div class="col-sm-6" style="border-left: 1px solid #eee; margin-left: -1px;">
+    <em about="v-s:data" property="rdfs:label"></em>
+    <ul rel="v-s:data" class="view edit search" data-limit="5" data-more="true">
+      <li about="@" data-template="v-ui:LabelTemplate"></li>
+    </ul>
+  </div>
 </div>
   """ ;
 .
@@ -719,7 +732,7 @@ var operation_uri = document["@"],
     progress = operation["v-s:progress"] && operation["v-s:progress"][0].data || 0,
     status = operation["v-s:hasStatus"] && operation["v-s:hasStatus"][0].data || "",
     now = new Date(),
-    dateFrom = operation["v-s:dateFrom"] && operation["v-s:dateFrom"][0].data || now,
+    dateFrom = operation["v-s:dateFrom"] && operation["v-s:dateFrom"][0].data,
     operation_type_uri = operation["rdf:type"][0].data,
     operation_type = get_individual(veda.ticket, operation_type_uri),
     operation_model_uri = operation_type["v-ui:hasModel"][0].data,
@@ -753,7 +766,7 @@ if ( status === "v-s:StatusStarted" && dataQuery && !data ) {
   return;
 }
 
-// Restart with query specified
+/*// Restart with query specified
 if ( status === "v-s:StatusRestarted" && dataQuery ) {
   var dataUris = query(veda.ticket, dataQuery).result;
   var dataValues = dataUris.map(function (valueUri) {
@@ -771,7 +784,7 @@ if ( status === "v-s:StatusRestarted" && dataQuery ) {
     "v-s:output": veda.Util.newStr("")
   });
   return;
-}
+}*/
 
 // Restart with data specified
 if ( status === "v-s:StatusRestarted" && data ) {
@@ -791,7 +804,8 @@ if ( queue_elements_count - queue_elements_processed > max_queued ) {
   set_in_individual(veda.ticket, {
     "@": operation["@"],
     "v-s:hasStatus": stop_signal_received ? veda.Util.newUri("v-s:StatusStopped") : veda.Util.newUri("v-s:StatusExecution"),
-    "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 ))
+    "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 )),
+    "v-s:dateFrom": veda.Util.newDate(dateFrom || now)
   });
   return;
 }
@@ -859,9 +873,10 @@ var to_set = {
   "@": operation["@"],
   "v-s:hasStatus": stop_signal_received ? veda.Util.newUri("v-s:StatusStopped") : veda.Util.newUri("v-s:StatusExecution"),
   "v-s:progress": veda.Util.newInt(progress),
-  "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 )),
   "v-s:processed": veda.Util.newInt(processed),
   "v-s:output": veda.Util.newStr(_output + output),
+  "v-s:dateFrom": veda.Util.newDate(dateFrom || now),
+  "v-s:duration": veda.Util.newInt(Math.round( (now - dateFrom) / 1000 ))
 };
 if (progress === 100) {
   to_set["v-s:hasStatus"] = veda.Util.newUri("v-s:StatusExecuted");
