@@ -19,6 +19,7 @@
 	    "../../veda/core/impl", 
 	    "../../veda/search/common", 
 	    "../../veda/search/xapian", 
+	    "../../veda/search/ft_query",
 	    "../../veda/core/common",
             "../../veda/storage/lmdb",
             "../../veda/storage/tarantool"

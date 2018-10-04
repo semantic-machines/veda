@@ -13,13 +13,6 @@ private
     import veda.onto.individual;
 }
 
-static const int RETURN    = 0;
-static const int FILTER    = 1;
-static const int SORT      = 2;
-static const int RENDER    = 3;
-static const int AUTHORIZE = 4;
-static const int SOURCE    = 5;
-
 static const int XAPIAN = 2;
 
 class XapianSearch : Search
