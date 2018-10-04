@@ -1,5 +1,5 @@
 /**
- * filltext query module
+ * filltext query service
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
