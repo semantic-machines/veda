@@ -320,7 +320,7 @@ v-s:OrganizationTemplate
       <div class="col-md-8">
         <em about="v-s:hasClassifierLegalForm" property="rdfs:label"></em>
         <div rel="v-s:hasClassifierLegalForm" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="v-s:hasClassifierLegalForm" class="-view edit search fulltext dropdown"></veda-control>
+        <veda-control data-type="link" rel="v-s:hasClassifierLegalForm" class="-view edit search fulltext"></veda-control>
       </div>
     </div>
     <hr class="view -edit -search">
