@@ -66,7 +66,7 @@ private nothrow string req_prepare(string request, Context context)
                     {
                         try
                         {
-                            res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, null, OptAuthorize.YES, false);
+                            res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
                         }
                         catch (Throwable tr)
                         {

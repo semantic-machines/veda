@@ -6,7 +6,7 @@ module veda.search.xapian.xapian_search;
 
 private
 {
-    import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string, std.concurrency;
+    import std.string, std.stdio, std.conv, std.outbuffer, core.stdc.string;
     import veda.util.container, veda.common.logger, veda.core.util.utils;
     import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates, veda.common.type;
     import veda.search.common.isearch, veda.search.common.vel, veda.search.xapian.xapian_reader;
@@ -69,14 +69,13 @@ class XapianSearch : Search
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.query(user_uri, filter, sort, db_names, 0, top, limit, dg, op_auth, null, trace);
+        SearchResult sr = xr.query(user_uri, filter, sort, db_names, 0, top, limit, dg, op_auth, trace);
         res_count = sr.count;
 
         return res_count;
     }
 
-    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
-                              void delegate(string uri) prepare_element_event,
+    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,                              
                               OptAuthorize op_auth, bool trace)
     {
         string[]                  res;
@@ -93,12 +92,11 @@ class XapianSearch : Search
         }
         dg = &collect_subject;
 
-        SearchResult sr = xr.query(user_uri, filter, sort, db_names, from, top, limit, dg, op_auth, prepare_element_event, trace);
+        SearchResult sr = xr.query(user_uri, filter, sort, db_names, from, top, limit, dg, op_auth, trace);
 
         if (sr.result_code == ResultCode.OK)
             sr.result = res;
 
         return sr;
     }
-
 }

@@ -443,14 +443,14 @@ class PThreadContext : Context
     }
 
     public SearchResult get_individuals_ids_via_query(string user_uri, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth, bool trace)
+                                                      OptAuthorize op_auth, bool trace)
     {
         SearchResult sr;
 
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.query(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+        sr = _vql.query(user_uri, query_str, sort_str, db_str, from, top, limit, op_auth, trace);
 
         return sr;
     }

@@ -466,8 +466,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
             return null;
         }
 
-        SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO,
-                                                                  false);
+        SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, OptAuthorize.NO, false);
 
         JSONValue jres;
         jres[ "result" ]         = sr.result;

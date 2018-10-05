@@ -27,8 +27,5 @@ interface Search
     public int query(string user_uri, string filter, string sort, string db_names, int top, int limit,
                      ref Individual[] individuals, OptAuthorize op_auth, bool trace);
 
-    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
-                              void delegate(string uri) prepare_element_event,
-                              OptAuthorize op_auth, bool trace);
-
+    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit, OptAuthorize op_auth, bool trace);
 }

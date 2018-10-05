@@ -1,6 +1,6 @@
 module veda.search.ft_query.ft_query_client;
 
-import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.outbuffer, std.algorithm : remove;
+import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.outbuffer;
 import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.common.logger;
 import kaleidic.nanomsg.nano, veda.util.properd;
 import veda.search.common.isearch, veda.search.common.vel;
@@ -49,8 +49,7 @@ class FTQueryClient : Search
     }
 
 
-    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
-                              void delegate(string uri) prepare_element_event,
+    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,                              
                               OptAuthorize op_auth, bool trace)
     {
         if (is_ready == false)
@@ -58,6 +57,29 @@ class FTQueryClient : Search
 
         return SearchResult.init;
     }
+
+/*
+	private void reqres (ref SearchResult res)
+JSONValue query;
+            res[ "type" ]       = "ticket";
+            res[ "id" ]         = ticket.id;
+            res[ "user_uri" ]   = ticket.user_uri;
+            res[ "user_login" ] = ticket.user_login;
+            res[ "result" ]     = ticket.result;
+            res[ "end_time" ]   = ticket.end_time;
+
+                string _ticket    = jsn.array[ 0 ].str;
+                string _query     = jsn.array[ 1 ].str;
+                string _sort      = jsn.array[ 2 ].str;
+                string _databases = jsn.array[ 3 ].str;
+                bool   _reopen    = false;
+                if (jsn.array[ 4 ].type == JSON_TYPE.TRUE)
+                    _reopen = true;
+
+                int    _top   = cast(int)jsn.array[ 5 ].integer;
+                int    _limit = cast(int)jsn.array[ 6 ].integer;
+                int    _from  = cast(int)jsn.array[ 7 ].integer;
+*/
 
     private int get_sock_2_ft_query()
     {
