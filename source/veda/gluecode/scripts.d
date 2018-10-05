@@ -291,10 +291,7 @@ class ScriptProcess : VedaModule
         }
 
         vql.reopen_db();
-
-        vql.query(sticket.user_uri,
-                  "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                  res, OptAuthorize.NO, false);
+        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, res, OptAuthorize.NO, false);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);

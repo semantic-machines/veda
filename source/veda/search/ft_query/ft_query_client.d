@@ -19,7 +19,7 @@ class FTQueryClient : Search
         {
             string[ string ] properties;
             properties   = readProperties("./veda.properties");
-            ft_query_url = properties.as!(string)("ft_query_service_urll") ~ "\0";
+            ft_query_url = properties.as!(string)("ft_query_service_url") ~ "\0";
 
             if (get_sock_2_ft_query() >= 0)
                 is_ready = true;
@@ -39,7 +39,7 @@ class FTQueryClient : Search
         return true;
     }
 
-    public int query(string user_uri, string filter, string freturn, string sort, int top, int limit,
+    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit,
                      ref Individual[] individuals, OptAuthorize op_auth, bool trace)
     {
         if (is_ready == false)
@@ -49,7 +49,7 @@ class FTQueryClient : Search
     }
 
 
-    public SearchResult query(string user_uri, string filter, string freturn, string sort, int from, int top, int limit,
+    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
                               void delegate(string uri) prepare_element_event,
                               OptAuthorize op_auth, bool trace)
     {
@@ -58,15 +58,6 @@ class FTQueryClient : Search
 
         return SearchResult.init;
     }
-
-    public int query(string user_uri, string query_str, ref Individual[] res, OptAuthorize op_auth, bool trace)
-    {
-        if (is_ready == false)
-            connect();
-
-        return -1;
-    }
-
 
     private int get_sock_2_ft_query()
     {
