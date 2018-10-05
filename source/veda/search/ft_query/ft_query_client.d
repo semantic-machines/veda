@@ -4,14 +4,22 @@ import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.jso
 import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.common.logger;
 import kaleidic.nanomsg.nano, veda.util.properd;
 import veda.search.common.isearch, veda.search.common.vel;
+import veda.core.common.context;
 
 private int sock_ft_query = -1;
 
 class FTQueryClient : Search
 {
-    private Logger log;
-    private string ft_query_url;
-    private bool   is_ready = false;
+    private Context context;
+    private Logger  log;
+    private string  ft_query_url;
+    private bool    is_ready = false;
+
+    this(Context _context)
+    {
+        context = _context;
+        log     = context.get_logger();
+    }
 
     private void connect()
     {
@@ -45,7 +53,32 @@ class FTQueryClient : Search
         if (is_ready == false)
             connect();
 
-        return -1;
+        SearchResult res;
+        int          from = 0;
+
+        reqres(res, user_uri, filter, sort, db_names, from, top, limit, op_auth, trace);
+
+        foreach (uri; res.result)
+        {
+            Individual individual = Individual();
+
+            context.get_storage().get_obj_from_individual_storage(uri, individual);
+
+            if (individual.getStatus() == ResultCode.Not_Found)
+            {
+                log.trace("ERR! FT:get Unable to find the object [%s] it should be, query=[%s]", uri, filter);
+            }
+            else if (individual.getStatus() == ResultCode.OK)
+            {
+                individuals ~= individual;
+            }
+            else
+            {
+                log.trace("ERR!: FT:get invalid individual=%s, status=%s, query=%s", uri, individual.getStatus(), filter);
+            }
+        }
+
+        return cast(int)individuals.length;
     }
 
 
@@ -55,7 +88,11 @@ class FTQueryClient : Search
         if (is_ready == false)
             connect();
 
-        return SearchResult.init;
+        SearchResult res;
+
+        reqres(res, user_uri, filter, sort, db_names, from, top, limit, op_auth, trace);
+
+        return res;
     }
 
 
@@ -119,9 +156,19 @@ class FTQueryClient : Search
                         return;
                     }
 
-///
+                    JSONValue[] ids_json = jres[ "result" ].array;
+                    sr_res.result = new string[ ids_json.length ];
+                    foreach (idx, id; ids_json)
+                    {
+                        sr_res.result[ idx ] = id.str;
+                    }
 
-///
+                    sr_res.count       = cast(int)jres[ "count" ].integer;
+                    sr_res.estimated   = cast(int)jres[ "estimated" ].integer;
+                    sr_res.processed   = cast(int)jres[ "processed" ].integer;
+                    sr_res.cursor      = cast(int)jres[ "cursor" ].integer;
+                    sr_res.result_code = cast(ResultCode)jres[ "result_code" ].integer;
+
                     nn_freemsg(buf);
                 }
             }
