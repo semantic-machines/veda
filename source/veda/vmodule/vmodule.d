@@ -163,8 +163,9 @@ class VedaModule : VedaModuleBasic
         if (context is null)
         {
             context = PThreadContext.create_new("cfg:standart_node", process_name, main_module_url, log);
-	        context.set_vql (new XapianSearch(context));            
-        }    
+            //context.set_vql (new XapianSearch(context));
+            context.set_vql(new FTQueryClient(context));
+        }
 
         if (node == Individual.init)
             node = context.get_configuration();

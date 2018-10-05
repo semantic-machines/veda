@@ -103,7 +103,7 @@ class FTQueryClient : Search
         string    rep;
 
         req.array =
-        [ JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(false), JSONValue(from), JSONValue(top), JSONValue(limit) ];
+        [ JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(false), JSONValue(top), JSONValue(limit), JSONValue(from) ];
 
         try
         {
@@ -144,7 +144,7 @@ class FTQueryClient : Search
                     int bytes = res;
 
                     rep = to!string(buf);
-                    //log.trace("N_CHANNEL recv (%s)", rep);
+                    log.trace("N_CHANNEL recv (%s)", rep);
 
                     JSONValue jres;
 

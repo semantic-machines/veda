@@ -95,7 +95,7 @@ private nothrow string req_prepare(string request, Context context)
                     }
                 }
 
-                //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
+                //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query, _sort, _databases, _from, _top, _limit);
             }
         }
 
