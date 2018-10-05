@@ -6,7 +6,8 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define, veda.search.common.isearch, veda.search.xapian.xapian_search;
+import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define, veda.search.common.isearch,
+       veda.search.xapian.xapian_search;
 
 static this()
 {
@@ -53,33 +54,45 @@ private nothrow string req_prepare(string request, Context context)
                 int    _limit = cast(int)jsn.array[ 6 ].integer;
                 int    _from  = cast(int)jsn.array[ 7 ].integer;
 
-                Ticket *ticket;
-                ticket = context.get_storage().get_ticket(_ticket, false);
+                string user_uri;
 
-                if (ticket !is null)
+                if (_ticket !is null && _ticket.length > 5)
                 {
-                    if (ticket.user_uri is null || ticket.user_uri.length == 0)
+                    if (_ticket[ 0 ] == 'U' && _ticket[ 1 ] == 'U' && _ticket[ 2 ] == '=')
                     {
-                        context.get_logger.trace("ERR! user not found in ticket object, ticket_id=%s, ticket=%s", _ticket, ticket);
+                        // в данном случае вместо тикета передается id пользователя
+                        user_uri = _ticket[ 3..$ ];
                     }
                     else
                     {
-                        try
+                        Ticket *ticket;
+                        ticket = context.get_storage().get_ticket(_ticket, false);
+                        if (ticket is null)
                         {
-                            res = context.get_individuals_ids_via_query(ticket.user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
+                            context.get_logger.trace("ERR! ticket not fount: ticket_id = %s", _ticket);
                         }
-                        catch (Throwable tr)
+                        else
                         {
-                            context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                            context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort,
-                                                     _databases, _from, _top,
-                                                     _limit);
+                            if (ticket.user_uri is null || ticket.user_uri.length == 0)
+                                context.get_logger.trace("ERR! user not found in ticket object, ticket_id=%s, ticket=%s", _ticket, ticket);
+                            else
+                                user_uri = ticket.user_uri;
                         }
                     }
                 }
-                else
+
+                if (user_uri !is null)
                 {
-                    context.get_logger.trace("ERR! ticket not fount: ticket_id = %s", _ticket);
+                    try
+                    {
+                        res = context.get_individuals_ids_via_query(user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
+                    }
+                    catch (Throwable tr)
+                    {
+                        context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
+                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query, _sort,
+                                                 _databases, _from, _top, _limit);
+                    }
                 }
 
                 //context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", ticket.user_uri, _query, _sort, _databases, _from, _top, _limit);
@@ -156,7 +169,7 @@ void main(string[] args)
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
     Ticket  systicket;
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
-    ctx.set_vql (new XapianSearch(ctx));
+    ctx.set_vql(new XapianSearch(ctx));
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)

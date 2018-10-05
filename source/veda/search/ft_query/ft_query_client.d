@@ -49,7 +49,7 @@ class FTQueryClient : Search
     }
 
 
-    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,                              
+    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
                               OptAuthorize op_auth, bool trace)
     {
         if (is_ready == false)
@@ -58,65 +58,15 @@ class FTQueryClient : Search
         return SearchResult.init;
     }
 
-/*
-	private void reqres (ref SearchResult res)
-JSONValue query;
-            res[ "type" ]       = "ticket";
-            res[ "id" ]         = ticket.id;
-            res[ "user_uri" ]   = ticket.user_uri;
-            res[ "user_login" ] = ticket.user_login;
-            res[ "result" ]     = ticket.result;
-            res[ "end_time" ]   = ticket.end_time;
 
-                string _ticket    = jsn.array[ 0 ].str;
-                string _query     = jsn.array[ 1 ].str;
-                string _sort      = jsn.array[ 2 ].str;
-                string _databases = jsn.array[ 3 ].str;
-                bool   _reopen    = false;
-                if (jsn.array[ 4 ].type == JSON_TYPE.TRUE)
-                    _reopen = true;
-
-                int    _top   = cast(int)jsn.array[ 5 ].integer;
-                int    _limit = cast(int)jsn.array[ 6 ].integer;
-                int    _from  = cast(int)jsn.array[ 7 ].integer;
-*/
-
-    private int get_sock_2_ft_query()
+    private void reqres(ref SearchResult sr_res, string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
+                        OptAuthorize op_auth, bool trace)
     {
-        if (sock_ft_query >= 0)
-            return sock_ft_query;
+        JSONValue req;
+        string    rep;
 
-        sock_ft_query = nn_socket(AF_SP, NN_REQ);
-        if (sock_ft_query < 0)
-        {
-            log.trace("ERR! cannot create socket");
-            return -1;
-        }
-        else if (nn_connect(sock_ft_query, cast(char *)ft_query_url) < 0)
-        {
-            log.trace("ERR! cannot connect socket to %s", ft_query_url);
-            return -1;
-        }
-        else
-        {
-            log.trace("success connect %s", ft_query_url);
-            return sock_ft_query;
-        }
-    }
-
-    private OpResult[] reqrep_json_2_ft_query(ref JSONValue jreq)
-    {
-        string req = jreq.toString();
-
-        return reqrep_binobj_2_ft_query(req);
-    }
-
-    private OpResult[] reqrep_binobj_2_ft_query(string req)
-    {
-        string     rep;
-        int        res;
-
-        OpResult[] ress;
+        req.array =
+        [ JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(false), JSONValue(from), JSONValue(top), JSONValue(limit) ];
 
         try
         {
@@ -124,9 +74,10 @@ JSONValue query;
 
             if (sock >= 0)
             {
-                char *buf = cast(char *)0;
+                char   *buf = cast(char *)0;
 
-                res = nn_send(sock, cast(char *)req, req.length, 0);
+                string sreq = req.toString();
+                int    res  = nn_send(sock, cast(char *)sreq, sreq.length, 0);
 
                 if (res < 0)
                 {
@@ -158,34 +109,19 @@ JSONValue query;
                     rep = to!string(buf);
                     //log.trace("N_CHANNEL recv (%s)", rep);
 
-                    JSONValue jres = parseJSON(rep);
+                    JSONValue jres;
 
-                    if (jres[ "type" ].str == "OpResult")
+                    try { jres = parseJSON(rep); }
+                    catch (Throwable tr)
                     {
-                        if ("data" in jres)
-                        {
-                            JSONValue data = jres[ "data" ];
-                            if (data !is JSONValue.init)
-                            {
-                                foreach (ii; data.array)
-                                {
-                                    OpResult ores;
-
-                                    ores.op_id  = ii[ "op_id" ].integer;
-                                    ores.result = cast(ResultCode)ii[ "result" ].integer;
-                                    ress ~= ores;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            OpResult ores;
-                            ores.op_id  = jres[ "op_id" ].integer;
-                            ores.result = cast(ResultCode)jres[ "result" ].integer;
-                            ress ~= ores;
-                        }
+                        nn_freemsg(buf);
+                        log.trace("ERR! ft_query_client: fail parse response=%s, err=%s", rep, tr.msg);
+                        return;
                     }
 
+///
+
+///
                     nn_freemsg(buf);
                 }
             }
@@ -194,18 +130,7 @@ JSONValue query;
                 log.trace("ERR! N_CHANNEL: invalid socket");
             }
 
-            if (ress.length == 0)
-            {
-                log.trace("ERR! reqrep_json_2_ft_query, empty result, sock=%d", sock);
-                log.trace("req: (%s)", req);
-                log.trace("rep: (%s)", rep);
-                OpResult ores;
-                ores.op_id  = -1;
-                ores.result = ResultCode.Internal_Server_Error;
-                return [ ores ];
-            }
-
-            return ress;
+            return;
         }
         catch (Throwable tr)
         {
@@ -213,15 +138,30 @@ JSONValue query;
             log.trace("req: %s", req);
             log.trace("rep: %s", rep);
 
-            if (ress.length == 0)
-            {
-                OpResult ores;
-                ores.op_id  = -1;
-                ores.result = ResultCode.Internal_Server_Error;
-                return [ ores ];
-            }
+            return;
+        }
+    }
 
-            return ress;
+    private int get_sock_2_ft_query()
+    {
+        if (sock_ft_query >= 0)
+            return sock_ft_query;
+
+        sock_ft_query = nn_socket(AF_SP, NN_REQ);
+        if (sock_ft_query < 0)
+        {
+            log.trace("ERR! cannot create socket");
+            return -1;
+        }
+        else if (nn_connect(sock_ft_query, cast(char *)ft_query_url) < 0)
+        {
+            log.trace("ERR! cannot connect socket to %s", ft_query_url);
+            return -1;
+        }
+        else
+        {
+            log.trace("success connect %s", ft_query_url);
+            return sock_ft_query;
         }
     }
 }

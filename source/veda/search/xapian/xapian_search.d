@@ -75,7 +75,7 @@ class XapianSearch : Search
         return res_count;
     }
 
-    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,                              
+    public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit,
                               OptAuthorize op_auth, bool trace)
     {
         string[]                  res;
