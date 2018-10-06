@@ -51,6 +51,8 @@ private nothrow string req_prepare(string request, Context context)
                 if (jsn.array[ 4 ].type == JSON_TYPE.TRUE)
                     _reopen = true;
 
+_reopen = true;
+
                 int    _top   = cast(int)jsn.array[ 5 ].integer;
                 int    _limit = cast(int)jsn.array[ 6 ].integer;
                 int    _from  = cast(int)jsn.array[ 7 ].integer;

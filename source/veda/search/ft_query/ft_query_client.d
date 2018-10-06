@@ -103,7 +103,7 @@ class FTQueryClient : Search
     {
         JSONValue req;
         string    rep;
-is_reopen = true;
+
         req.array =
         [
             JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(is_reopen), JSONValue(top),
