@@ -13,7 +13,8 @@ class FTQueryClient : Search
     private Context context;
     private Logger  log;
     private string  ft_query_url;
-    private bool    is_ready = false;
+    private bool    is_ready  = false;
+    private bool    is_reopen = false;
 
     this(Context _context)
     {
@@ -40,6 +41,7 @@ class FTQueryClient : Search
 
     public void reopen_db()
     {
+        is_reopen = true;
     }
 
     public bool close_db()
@@ -103,7 +105,9 @@ class FTQueryClient : Search
         string    rep;
 
         req.array =
-        [ JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(false), JSONValue(top), JSONValue(limit), JSONValue(from) ];
+        [ JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(is_reopen), JSONValue(top), JSONValue(limit),
+          JSONValue(from) ];
+        is_reopen = false;
 
         try
         {
@@ -144,7 +148,7 @@ class FTQueryClient : Search
                     int bytes = res;
 
                     rep = to!string(buf);
-                    log.trace("N_CHANNEL recv (%s)", rep);
+                    //log.trace("N_CHANNEL recv (%s)", rep);
 
                     JSONValue jres;
 
