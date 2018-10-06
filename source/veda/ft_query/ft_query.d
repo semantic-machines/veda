@@ -91,7 +91,7 @@ _reopen = true;
                         if (_reopen)
                             context.reopen_ro_fulltext_indexer_db();
 
-                        res = context.get_individuals_ids_via_query(user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
+                        res = context.get_individuals_ids_via_query(user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.NO, false);
                     }
                     catch (Throwable tr)
                     {
