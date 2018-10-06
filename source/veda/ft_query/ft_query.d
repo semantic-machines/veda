@@ -6,7 +6,8 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define, veda.search.common.isearch,
+import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define,
+       veda.search.common.isearch,
        veda.search.xapian.xapian_search;
 
 static this()
@@ -85,13 +86,18 @@ private nothrow string req_prepare(string request, Context context)
                 {
                     try
                     {
+                        if (_reopen)
+                            context.reopen_ro_fulltext_indexer_db();
+
                         res = context.get_individuals_ids_via_query(user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
                     }
                     catch (Throwable tr)
                     {
                         context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query, _sort,
-                                                 _databases, _from, _top, _limit);
+                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query,
+                                                 _sort,
+                                                 _databases, _from, _top,
+                                                 _limit);
                     }
                 }
 
