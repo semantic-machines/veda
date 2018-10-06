@@ -41,7 +41,6 @@ class FTQueryClient : Search
 
     public void reopen_db()
     {
-        is_reopen = true;
     }
 
     public bool close_db()
