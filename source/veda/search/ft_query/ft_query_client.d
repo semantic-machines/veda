@@ -14,7 +14,7 @@ class FTQueryClient : Search
     private Logger  log;
     private string  ft_query_url;
     private bool    is_ready  = false;
-    private bool    is_reopen = false;
+    private bool    is_reopen = true;
 
     this(Context _context)
     {
@@ -105,9 +105,11 @@ class FTQueryClient : Search
         string    rep;
 
         req.array =
-        [ JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(is_reopen), JSONValue(top), JSONValue(limit),
-          JSONValue(from) ];
-        is_reopen = false;
+        [
+            JSONValue("UU=" ~ user_uri), JSONValue(filter), JSONValue(sort), JSONValue(db_names), JSONValue(is_reopen), JSONValue(top),
+            JSONValue(limit),
+            JSONValue(from)
+        ];
 
         try
         {
@@ -174,6 +176,8 @@ class FTQueryClient : Search
                     sr_res.result_code = cast(ResultCode)jres[ "result_code" ].integer;
 
                     nn_freemsg(buf);
+
+                    is_reopen = false;
                 }
             }
             else
