@@ -56,7 +56,7 @@ private nothrow string req_prepare(string request, Context context)
 
                 string user_uri;
 
-                if (_ticket !is null && _ticket.length > 5)
+                if (_ticket !is null && _ticket.length > 3)
                 {
                     if (_ticket[ 0 ] == 'U' && _ticket[ 1 ] == 'U' && _ticket[ 2 ] == '=')
                     {
