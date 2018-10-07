@@ -217,7 +217,8 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        vql       = new XapianSearch(context);
+        //vql       = new XapianSearch(context);
+		vql = context.get_vql();
         script_vm = get_ScriptVM(context);
 
         if (script_vm !is null)
