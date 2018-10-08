@@ -276,13 +276,15 @@ veda.Module(function (veda) { "use strict";
 
       var result = {};
       var ontology_uris = query(veda.ticket, q).result;
-      var ontology_individuals = get_individuals(veda.ticket, ontology_uris);
-      ontology_individuals.map( function (item) {
-        result[ item["@"] ] = item;
-      });
+      while (ontology_uris.length) {
+        var portion_uris = ontology_uris.splice(0, 500);
+        var portion_individuals = get_individuals(veda.ticket, portion_uris);
+        portion_individuals.map( function (item) {
+          result[ item["@"] ] = item;
+        });
+      }
       return result;
     }
-
   };
 
 });
