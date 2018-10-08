@@ -355,6 +355,8 @@ class ScriptProcess : VedaModule
 
     override bool configure()
     {
+        log.trace("use configuration: %s", node);
+
         return true;
     }
 
@@ -365,6 +367,9 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
+        context.set_vql (new XapianSearch(context));
+        //context.set_vql(new FTQueryClient(context));
+
         return true;
     }
 

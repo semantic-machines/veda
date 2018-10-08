@@ -8,7 +8,7 @@ private
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
-    import veda.search.xapian.xapian_search, veda.search.ft_query.ft_query_client;
+    import veda.search.ft_query.ft_query_client;
 }
 
 bool   f_listen_exit = false;
@@ -161,11 +161,7 @@ class VedaModule : VedaModuleBasic
         context = create_context();
 
         if (context is null)
-        {
             context = PThreadContext.create_new("cfg:standart_node", process_name, main_module_url, log);
-            context.set_vql (new XapianSearch(context));
-            //context.set_vql(new FTQueryClient(context));
-        }
 
         if (node == Individual.init)
             node = context.get_configuration();

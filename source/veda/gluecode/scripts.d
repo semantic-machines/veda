@@ -217,8 +217,11 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        //vql       = new XapianSearch(context);
-		vql = context.get_vql();
+
+        context.set_vql (new XapianSearch(context));
+        //context.set_vql(new FTQueryClient(context));
+
+	vql = context.get_vql();
         script_vm = get_ScriptVM(context);
 
         if (script_vm !is null)
@@ -230,6 +233,8 @@ class ScriptProcess : VedaModule
     override bool configure()
     {
         log.trace("configure scripts");
+
+        log.trace("use configuration: %s", node);
 
         vars_for_event_script =
             "var user_uri = get_env_str_var ('$user');"

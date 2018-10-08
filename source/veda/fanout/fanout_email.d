@@ -6,7 +6,7 @@ module veda.fanout.fanout_email;
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import veda.common.logger, veda.core.impl.thread_context;
+private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
 private import veda.core.common.context, veda.util.tools;
 private import veda.vmodule.vmodule;
 
@@ -104,6 +104,9 @@ class FanoutProcess : VedaModule
 
     override bool open()
     {
+        context.set_vql (new XapianSearch(context));
+        //context.set_vql(new FTQueryClient(context));
+
         connect_to_smtp(context);
         return true;
     }
@@ -111,6 +114,7 @@ class FanoutProcess : VedaModule
     override bool configure()
     {
         log.trace("use configuration: %s", node);
+
         return true;
     }
 
