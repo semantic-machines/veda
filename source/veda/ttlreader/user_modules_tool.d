@@ -7,7 +7,7 @@ module veda.ttlreader.user_modules_tool;
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread, std.net.curl, std.algorithm;
 private import url, std.uuid, std.json, std.process;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
+private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
 private import veda.core.common.context, veda.util.tools, veda.util.raptor2individual;
 private import veda.vmodule.vmodule, veda.search.common.isearch;
 
@@ -1016,8 +1016,8 @@ class UserModulesTool : VedaModule
 
     override bool open()
     {
-        context.set_vql (new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
+        //context.set_vql (new XapianSearch(context));
+        context.set_vql(new FTQueryClient(context));
 
         return true;
     }

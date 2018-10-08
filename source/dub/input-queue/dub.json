@@ -17,7 +17,6 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
             "../../veda/search/common",
-            "../../veda/search/xapian",
             "../../veda/search/ft_query",
 	    "../../veda/core/common",
             "../../veda/storage/lmdb",
@@ -26,9 +25,7 @@
         "sourceFiles":[
             "../../lib64/libauthorization.a",
 	    "../../lib64/liblmdb.a",
-	    "../../lib64/libxapiand.a", 
 	    "../../veda/util/properd.d",
-	    "../../veda/bind/xapian_d_header.d",
 	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
 	    "../../veda/util/tools.d",

@@ -8,9 +8,9 @@ import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
-import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual;
+import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.search.xapian.xapian_search;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool;
 
 
 // ////// Logger ///////////////////////////////////////////
@@ -104,7 +104,10 @@ void main(char[][] args)
     ubyte[] out_data;
 
     Context context = PThreadContext.create_new(process_name, "file_reader", parent_url, log);
-    context.set_vql (new XapianSearch(context));
+
+    //context.set_vql (new XapianSearch(context));
+    context.set_vql(new FTQueryClient(context));
+
     sticket = context.sys_ticket();
 
     while (sticket.result != ResultCode.OK)
