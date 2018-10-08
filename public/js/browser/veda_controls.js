@@ -94,7 +94,7 @@
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
-        container: control,
+        container: "body",
         trigger: "manual",
         animation: false
       });
@@ -347,7 +347,7 @@
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "auto left",
-        container: control,
+        container: "body",
         trigger: "manual",
         animation: false
       });
@@ -597,7 +597,7 @@
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
-        container: control,
+        container: "body",
         trigger: "manual",
         animation: false
       });
@@ -844,7 +844,7 @@
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "top",
-        container: control,
+        container: "body",
         trigger: "hover",
         animation: false
       });
@@ -961,8 +961,8 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
-        container: control,
+        placement: "left",
+        container: "body",
         trigger: "hover",
         animation: false
       });
@@ -1089,8 +1089,8 @@
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
-        placement: "bottom",
-        container: control,
+        placement: "left",
+        container: "body",
         trigger: "hover",
         animation: false
       });
@@ -1164,7 +1164,7 @@
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
-        container: control,
+        container: "body",
         trigger: "manual",
         animation: false
       });
@@ -1889,7 +1889,7 @@
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "top",
-        container: control,
+        container: "body",
         trigger: "manual",
         animation: false
       });
