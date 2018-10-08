@@ -1,4 +1,4 @@
-// Veda application Presenter
+// Veda application presenter
 
 veda.Module(function (veda) { "use strict";
 
@@ -152,8 +152,5 @@ veda.Module(function (veda) { "use strict";
     }
     return value || null;
   }
-
-  // Load ontology
-  veda.init();
 
 });
