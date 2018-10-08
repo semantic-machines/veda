@@ -1627,19 +1627,22 @@ v-fs:SelectedResultsActionsTemplate
 
   $(".dropdown-toggle", template).one("click", function () {
     var dropdown = $(".dropdown-menu", template);
-    var operationTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>"
+    var operationTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>";
+    var operationDisabledTemplate = "<li class='disabled'><a about='@' href='#' property='rdfs:label'></a></li>";
     function renderOperation(operation) {
-      var renderedOperation = operation.present(dropdown, operationTemplate);
-      if ( !operation.rights.hasValue("v-s:canCreate", true) ) {
-        renderedOperation.addClass("disabled");
-      }
+      operation.rights
+        .then(function (rights) {
+          return rights.hasValue("v-s:canCreate", true) ? operationTemplate : operationDisabledTemplate ;
+        })
+        .then(function (templateString) {
+          operation.present(dropdown, operationTemplate)
+        });
     }
     var applicableOperations = self["v-fs:applicableOperation"];
     applicableOperations.forEach(renderOperation);
-    query({
+    veda.Backend.query({
       ticket: veda.ticket,
-      query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'",
-      async: true
+      query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'"
     }).then(function (response) {
       if ( dropdown.children().length && response.result.length ) {
         dropdown.append("<li role='separator' class='divider'></li>");
