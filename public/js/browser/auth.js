@@ -1,4 +1,4 @@
-// Veda application Presenter
+// Veda application authentication
 
 veda.Module(function (veda) { "use strict";
 
