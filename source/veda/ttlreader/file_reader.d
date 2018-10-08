@@ -8,7 +8,7 @@ import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
-import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual;
+import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
        veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool;
 
@@ -103,7 +103,11 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = PThreadContext.create_new(process_name, "file_reader", log, parent_url);
+    Context context = PThreadContext.create_new(process_name, "file_reader", parent_url, log);
+
+    //context.set_vql (new XapianSearch(context));
+    context.set_vql(new FTQueryClient(context));
+
     sticket = context.sys_ticket();
 
     while (sticket.result != ResultCode.OK)
@@ -114,7 +118,7 @@ void main(char[][] args)
     }
 
     string[] uris =
-        context.get_individuals_ids_via_query(sticket.user_uri, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, null, OptAuthorize.NO, false).result;
+        context.get_individuals_ids_via_query(sticket.user_uri, "'rdfs:isDefinedBy.isExists' == true", null, null, 0, 100000, 100000, OptAuthorize.NO, false).result;
     log.tracec("INFO: found %d individuals containing [rdfs:isDefinedBy]", uris.length);
 
     if (need_remove_ontology)
@@ -131,17 +135,17 @@ void main(char[][] args)
 
             Individual individual;
             individual.uri = uri;
-            context.update(-1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+            context.update(null, -1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         }
 
-        uris = context.get_individuals_ids_via_query(sticket.user_uri, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, null, OptAuthorize.NO, false).result;
+        uris = context.get_individuals_ids_via_query(sticket.user_uri, "'rdf:type' == 'v-s:TTLFile'", null, null, 0, 1000, 1000, OptAuthorize.NO, false).result;
         foreach (uri; uris)
         {
             log.tracec("WARN: [%s] WILL BE REMOVED", uri);
 
             Individual individual;
             individual.uri = uri;
-            context.update(-1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+            context.update(null, -1, &sticket, INDV_OP.REMOVE, &individual, "ttl-reader", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         }
 
         wait_complete_operations(context, res.op_id);
@@ -244,7 +248,7 @@ void main(char[][] args)
         new_indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
         new_indv.addResource("rdfs:label", Resource("RELOAD ONTOLOGY"));
 
-        OpResult res = context.update(-1, &sticket, INDV_OP.PUT, &new_indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+        OpResult res = context.update(null, -1, &sticket, INDV_OP.PUT, &new_indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
         wait_complete_operations(context, res.op_id);
         log.tracec("WARN: RELOAD ONTO FINISH !!!! VEDA SYSTEM NEED RESTART");
@@ -449,7 +453,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
 								if (prev_update_counter > 0)
 									indv.addResource("v-s:updateCounter", Resource (prev_update_counter));
 
-                                ResultCode res = context.update(-1, &sticket, INDV_OP.PUT, &indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
+                                ResultCode res = context.update(null, -1, &sticket, INDV_OP.PUT, &indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
 
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
@@ -576,7 +580,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 //            }
 //            catch (Exception ex) {}
 
-        OpResult orc = context.update(-1, &sticket, INDV_OP.PUT, &indv_ttl_file, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+        OpResult orc = context.update(null, -1, &sticket, INDV_OP.PUT, &indv_ttl_file, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
         //context.reopen_ro_subject_storage_db ();
         if (trace_msg[ 33 ] == 1)
             log.trace("[%s] prepare_list end", filename);

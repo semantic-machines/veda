@@ -1099,6 +1099,20 @@ v-s:hasClassifierLegalForm
   rdfs:range v-s:ClassifierLegalForm ;
   rdfs:domain v-s:ClassifiedRus ;
 .
+v-s:hasClassifierSectionOfProjectDocumentation
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Раздел проектной документации"@ru ;
+  rdfs:label "Section of project documentation"@en ;
+  rdfs:range v-s:ClassifierSectionOfProjectDocumentation ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
+v-s:hasClassifierMarkOfWorkingDrawingsSet
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Марка комплекта рабочих чертежей"@ru ;
+  rdfs:label "Mark of working drawings set"@en ;
+  rdfs:range v-s:ClassifierMarkOfWorkingDrawingsSet ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
 ### ------------------------------------------------------------
 v-s:Maintained
   rdf:type owl:Class ;

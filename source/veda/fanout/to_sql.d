@@ -6,7 +6,7 @@ module veda.fanout.to_sql;
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import mysql.d;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import veda.common.logger, veda.core.impl.thread_context;
+private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
 private import veda.core.common.context, veda.util.tools;
 private import veda.vmodule.vmodule;
 
@@ -23,8 +23,8 @@ public class FanoutProcess : VedaModule
         super(_subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
     {
         ResultCode rc;
 
@@ -64,6 +64,9 @@ public class FanoutProcess : VedaModule
 
     override bool open()
     {
+        //context.set_vql (new XapianSearch(context));
+        context.set_vql(new FTQueryClient(context));
+
         connect_to_mysql(context);
         return true;
     }
@@ -71,6 +74,7 @@ public class FanoutProcess : VedaModule
     override bool configure()
     {
         log.trace("use configuration: %s", node);
+
         return true;
     }
 

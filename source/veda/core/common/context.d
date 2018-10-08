@@ -10,23 +10,10 @@ module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
 private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.core.search.vql, veda.util.module_info, veda.storage.common, veda.storage.storage;
+               veda.common.logger, veda.core.common.transaction, veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;
-
-public struct SearchResult
-{
-    string[]   result;
-    int        count;
-    int        estimated;
-    int        processed;
-    long       cursor;
-    long 	   total_time;
-    long	   query_time;
-    long	   authorize_time;			
-    ResultCode result_code = ResultCode.Not_Ready;
-}
 
 interface Context
 {
@@ -52,9 +39,10 @@ interface Context
 
     public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES);
 
-    public VQL get_vql();
-
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
+    public Search get_vql();
+    public void set_vql(Search in_vql);
+    
+    public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
     public Individual[] get_individuals_via_query(string user_uri, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);
@@ -85,8 +73,7 @@ interface Context
                 список авторизованных uri
      */
     public SearchResult get_individuals_ids_via_query(string user_id, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth,
-                                                      bool trace);
+                                                      OptAuthorize op_auth, bool trace);
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_individuals_storage_db();

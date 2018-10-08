@@ -2125,6 +2125,7 @@ v-wf:event_df1
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -2151,6 +2152,7 @@ v-wf:event_df2
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:Process ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -2180,6 +2182,7 @@ v-wf:event_df3
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkItem ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -2209,6 +2212,7 @@ v-wf:event_df4
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkOrder ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -2238,6 +2242,7 @@ v-wf:event_df5
   rdfs:isDefinedBy v-wf: ;
   v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -2265,6 +2270,7 @@ v-wf:ProcessStopEvent
   rdfs:label "Скрипт включает процесс в группу журнала документа." ;
   rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
   v-s:triggerByType v-wf:Process ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket

@@ -43,7 +43,7 @@ v-s:InternalDocumentRegistryResultTemplate
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="11" about="v-s:InternalDocument" property="rdfs:label"></th>
+      <th colspan="12" about="v-s:InternalDocument" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
@@ -57,6 +57,7 @@ v-s:InternalDocumentRegistryResultTemplate
       <th class="orderby" data-orderby="v-s:theme"><span about="v-s:theme" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:content"><span about="v-s:content" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:attachment"><span about="v-s:attachment" property="rdfs:label"></span></th>
     </tr>
   </thead>
   <tbody class="result-container">
@@ -72,6 +73,7 @@ v-s:InternalDocumentRegistryResultTemplate
       <td property="v-s:theme"></td>
       <td property="v-s:content"></td>
       <td property="rdfs:comment"></td>
+      <td rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
     </tr>
   </tbody>
 </table>

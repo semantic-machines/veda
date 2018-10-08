@@ -5,7 +5,7 @@ module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
-import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction;
+import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction, veda.search.common.isearch;
 import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
@@ -32,6 +32,9 @@ string  g_event_id;
 
 _Buff   tmp_individual;
 _Buff   tmp;
+
+long    g_count_pushed;
+long    g_count_popped;
 
 //_Buff      g_script_result;
 //_Buff      g_script_out;
@@ -405,6 +408,31 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     }
 }
 
+extern (C++) long get_env_num_var(const char *_var_name, int _var_name_length)
+{
+    //writeln("@V8: get_env_str_var");
+    try
+    {
+        string var_name = cast(string)_var_name[ 0.._var_name_length ];
+
+        if (var_name == "$queue_elements_count")
+        {
+            return g_count_pushed;
+        }
+        else if (var_name == "$queue_elements_processed")
+        {
+            return g_count_popped;
+        }
+
+        return 0;
+    }
+    finally
+    {
+        //writeln ("@p:v8d end read_individual");
+    }
+}
+
+
 extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
                           const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit)
 {
@@ -438,9 +466,9 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
             return null;
         }
 
-        SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, null, OptAuthorize.NO, false);
+        SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, OptAuthorize.NO, false);
 
-        JSONValue    jres;
+        JSONValue jres;
         jres[ "result" ]         = sr.result;
         jres[ "count" ]          = sr.count;
         jres[ "estimated" ]      = sr.estimated;
@@ -650,23 +678,27 @@ private void reload_ext_scripts(Context ctx)
 
     foreach (path; [ "./public/js/common/", "./public/js/server/" ])
     {
-
         DirEntry[] oFiles = [];
 
-        auto seq = path ~ ".seq";
+        auto       seq = path ~ ".seq";
 
-        if (seq.exists) {
-            auto seqFile = File(seq);
+        if (seq.exists)
+        {
+            auto seqFile   = File(seq);
             auto fileNames = seqFile.byLine();
-            foreach (fileName; fileNames) {
-              fileName = path ~ fileName;
-              if (fileName.exists) {
-                DirEntry fileEntry = DirEntry(cast(string)fileName);
-                oFiles ~= fileEntry;
-              }
+            foreach (fileName; fileNames)
+            {
+                fileName = path ~ fileName;
+                if (fileName.exists)
+                {
+                    DirEntry fileEntry = DirEntry(cast(string)fileName);
+                    oFiles ~= fileEntry;
+                }
             }
-        } else {
-          oFiles = dirEntries(path, SpanMode.depth).array;
+        }
+        else
+        {
+            oFiles = dirEntries(path, SpanMode.depth).array;
         }
 
         foreach (o; oFiles)

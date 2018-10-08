@@ -17,9 +17,9 @@
 	    "../../veda/onto/bj8individual",  
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
-	    "../../veda/core/search", 
+	    "../../veda/search/common", 
+	    "../../veda/search/ft_query",
 	    "../../veda/core/common",
-
             "../../veda/storage/lmdb",
             "../../veda/storage/tarantool"
 	],

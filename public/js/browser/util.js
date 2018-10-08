@@ -287,9 +287,26 @@ veda.Module(function (veda) { "use strict";
     var container = $(".modal-body", modal);
     individual.present(container, template, mode);
     $(".action#cancel", modal).click(function () {
-      modal.modal("hide").remove();
+      modal.modal("hide");
+    });
+    modal.on("hidden.bs.modal", function () {
+      modal.remove();
     });
     return modal;
   };
 
+  veda.Util.showSmallModal = function (individual, template, mode) {
+    var modal = $( $("#minimal-modal-template").html() );
+    modal.modal();
+    $("body").append(modal);
+    var container = $(".modal-body", modal);
+    individual.present(container, template, mode);
+    $(".action#cancel", modal).click(function () {
+      modal.modal("hide");
+    });
+    modal.on("hidden.bs.modal", function () {
+      modal.remove();
+    });
+    return modal;
+  };
 });

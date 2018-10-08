@@ -936,7 +936,7 @@ v-ui:LabelTemplate
   <span class="label-template" about="@" property="rdfs:label"></span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
-      template.children().first().text(individual.id);
+      template.text(individual.id);
     }
     if (individual.is("v-s:Appointment") || individual.is("v-s:Person") || individual.is("v-s:Position")) {
       template.popover({
@@ -1043,6 +1043,30 @@ v-ui:IconModalTemplate
   });
   //# sourceURL=v-ui:IconModalTemplate
 </script>
+  """ ;
+.
+
+v-ui:GenericModalTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения в модальном окне"@ru ;
+  rdfs:label "Generic modal template"@en ;
+  v-ui:template """
+<script>
+  var lbl = $(".lbl", template);
+  var labelUri = container.data("label");
+  var modalTemplate = container.data("modal-template");
+  if (labelUri) {
+    lbl.attr({"about": labelUri, "property": "rdfs:label"});
+  }
+  template.click(function () {
+    veda.Util.showModal(individual, modalTemplate);
+  });
+  //# sourceURL=v-ui:GenericModalTemplate_pre
+</script>
+<button class="btn btn-link btn-sm">
+  <span class="glyphicon glyphicon-zoom-in"></span>
+  <span class="lbl"></span>
+</button>
   """ ;
 .
 
@@ -1704,7 +1728,16 @@ v-ui:SimplifiedJournalTemplate
             $(".docflow-button", template).remove();
           };
           if ( this.hasValue("v-wf:isCompleted", false) ) {
-            var notAuthor = (veda.appointment["v-s:employee"][0] != individual["v-wf:from"][0]) && (veda.appointment["v-s:occupation"][0] != individual["v-wf:from"][1]);
+            var currentEmployee = veda.appointment["v-s:employee"][0];
+            var currentOcuppation = veda.appointment["v-s:occupation"][0];
+            var targetEmployee = individual["v-wf:from"][0];
+            var targetOccupation = individual["v-wf:from"][1]
+
+            var canRevoke = currentEmployee == targetEmployee && currentOcuppation == targetOccupation;
+            if (!canRevoke) {
+              var queryString = " 'rdf:type'==='v-s:Appointment' && 'v-s:occupation'=='"+ targetOccupation.id +"' && 'v-s:employee' == '"+ currentEmployee.id +"'";
+              canRevoke = query(veda.ticket, queryString).result.length > 0 ;
+            }
             var notDirect = !this.hasValue("v-wf:isDirectTask", true);
 
             //------ Для плавного перехода между версиями
@@ -1718,7 +1751,7 @@ v-ui:SimplifiedJournalTemplate
             };
             //------
 
-            if (notAuthor || notDirect) {
+            if (!canRevoke || notDirect) {
               $(".docflow-button", template).remove();
               return;
             };
@@ -2021,6 +2054,7 @@ v-ui:DeepSelectBundle
   rdfs:label "Выбрать вглубь"@ru ;
   rdfs:label "Deep select"@en ;
 .
+
 v-ui:TreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для древовоидных структур"@ru ;

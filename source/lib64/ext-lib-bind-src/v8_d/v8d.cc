@@ -68,6 +68,8 @@ bool uris_commit_and_next(const char *_consumer_id, int _consumer_id_length, boo
 _Buff *
 get_env_str_var(const char *_var_name, int _var_name_length);
 
+uint32_t get_env_num_var(const char *_var_name, int _var_name_length);
+
 _Buff *
 query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
       const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit);
@@ -144,6 +146,24 @@ GetEnvStrVariable(const v8::FunctionCallbackInfo<v8::Value>& args)
         Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
         args.GetReturnValue().Set(oo);
     }
+}
+
+void
+GetEnvNumVariable(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    Isolate *isolate = args.GetIsolate();
+
+    if (args.Length() != 1)
+    {
+        isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
+        return;
+    }
+
+    v8::String::Utf8Value str(args[ 0 ]);
+    const char            *var_name = ToCString(str);
+    uint32_t res      = get_env_num_var(var_name, str.length());
+
+    args.GetReturnValue().Set(res);
 }
 
 std::string prepare_str_list_element(std::string data, std::string::size_type b_p, std::string::size_type e_p)
@@ -710,6 +730,9 @@ WrappedContext::WrappedContext ()
 
     global->Set(v8::String::NewFromUtf8(isolate_, "get_env_str_var"),
                 v8::FunctionTemplate::New(isolate_, GetEnvStrVariable));
+
+    global->Set(v8::String::NewFromUtf8(isolate_, "get_env_num_var"),
+                v8::FunctionTemplate::New(isolate_, GetEnvNumVariable));
 
     global->Set(v8::String::NewFromUtf8(isolate_, "query"),
                 v8::FunctionTemplate::New(isolate_, Query));

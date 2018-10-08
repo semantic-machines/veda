@@ -2,13 +2,13 @@
  *     XAPIAN READER
  */
 
-module veda.core.search.xapian_reader;
+module veda.search.xapian.xapian_reader;
 
 import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.container.slist;
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.core.common.define, veda.core.common.know_predicates, veda.core.common.context, veda.common.type;
 import veda.core.common.log_msg, veda.common.logger;
-import veda.core.search.vel, veda.core.search.xapian_vql, veda.core.search.indexer_property, veda.util.module_info;
+import veda.search.common.isearch, veda.search.common.vel, veda.search.common.indexer_property, veda.search.xapian.xapian_vql, veda.util.module_info;
 
 protected byte err;
 
@@ -16,8 +16,7 @@ protected byte err;
 interface SearchReader
 {
     public SearchResult query(string user_uri, string str_query, string str_sort, string db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
-                            bool trace);
+                              void delegate(string uri) add_out_element, OptAuthorize op_auth, bool trace);
 
     public void reopen_dbs();
 }
@@ -132,8 +131,7 @@ class XapianReader : SearchReader
     }
 
     public SearchResult query(string user_uri, string str_query, string str_sort, string _db_names, int from, int top, int limit,
-                            void delegate(string uri) add_out_element, OptAuthorize op_auth, void delegate(string uri) prepare_element_event,
-                            bool trace)
+                              void delegate(string uri) add_out_element, OptAuthorize op_auth, bool trace)
     {
         SearchResult sr;
 
@@ -291,23 +289,14 @@ class XapianReader : SearchReader
                 return sr;
             }
 
-            if (prepare_element_event !is null)
-                prepare_element_event("");
-
             XapianMultiValueKeyMaker sorter = xpnvql.get_sorter(str_sort, key2slot, trace);
-
-            if (prepare_element_event !is null)
-                prepare_element_event("");
 
             xapian_enquire.set_query(query, &err);
             if (sorter !is null)
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
 
-            if (prepare_element_event !is null)
-                prepare_element_event("");
-
             sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
-                                                              context, prepare_element_event, trace, op_auth);
+                                                              context, trace, op_auth);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);

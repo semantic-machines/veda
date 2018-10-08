@@ -2,7 +2,7 @@ module veda.mstorage.nanomsg_channel;
 
 import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.path, std.json;
 import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.onto.onto, veda.core.impl.thread_context, veda.core.common.define;
-import kaleidic.nanomsg.nano, veda.mstorage.server;
+import kaleidic.nanomsg.nano, veda.mstorage.server, veda.search.xapian.xapian_search;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -40,7 +40,10 @@ void nanomsg_channel(string thread_name)
         log.trace("success bind to %s", url);
 
         if (context is null)
-            context = PThreadContext.create_new("cfg:standart_node", thread_name, log, null);
+        {
+            context = PThreadContext.create_new("cfg:standart_node", thread_name, null, log);
+            context.set_vql (new XapianSearch(context));
+        }    
 
         long luplft = context.get_configuration().getFirstInteger("cfg:user_password_lifetime");
 

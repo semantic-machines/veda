@@ -160,10 +160,22 @@ class Consumer
 
     public void close()
     {
-        ff_info_pop_w.flush();
-        ff_info_pop_w.close();
-        ff_info_pop_r.close();
+        if (ff_info_pop_w !is null)
+        {
+            ff_info_pop_w.flush();
+            ff_info_pop_w.close();
+        }
+
+        if (ff_info_pop_r !is null)
+            ff_info_pop_r.close();
     }
+
+    public void reopen()
+    {
+        close();
+        open();
+    }
+
 
     public void remove()
     {
@@ -195,6 +207,9 @@ class Consumer
     public bool get_info()
     {
         if (!queue.isReady)
+            return false;
+
+        if (ff_info_pop_r is null)
             return false;
 
         ff_info_pop_r.seek(0);
@@ -241,7 +256,7 @@ class Consumer
             count_popped  = to!uint (ch[ 4 ]);
         }
 
-        log.trace("get_info:%s", text(this));
+        //log.trace("get_info:%s", text(this));
 
         return true;
     }

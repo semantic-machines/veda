@@ -241,6 +241,26 @@ v-s:UserScriptRegistryBlank
   v-fc:targetType v-s:UserScript ;
 .
 
+# -- ОПЕРАЦИИ --
+
+v-s:OperationRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Все операции"@ru ;
+  rdfs:label "All operations"@en ;
+  v-fs:searchBlank v-s:OperationRegistryBlank ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+  v-fs:searchOnLoad true;
+  v-fs:sortOrder "'rdfs:label' asc";
+.
+v-s:OperationRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Все операции"@ru ;
+  rdfs:label "All operations"@en ;
+  v-fc:targetType owl:Class ;
+  rdfs:subClassOf v-s:Operation ;
+.
+
 
 # -- МОДУЛИ --
 
@@ -618,8 +638,8 @@ v-s:RightsManagementBundle
 .
 v-s:ScriptsBundle
   rdf:type v-s:Bundle ;
-  rdfs:label "Скрипты"@ru ;
-  rdfs:label "Scripts"@en ;
+  rdfs:label "Скрипты и операции"@ru ;
+  rdfs:label "Scripts & operations"@en ;
 .
 
 v-s:ModulesBundle
@@ -744,12 +764,24 @@ v-ui:AdministrationAspectTemplate
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Scripts">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <span about="v-s:UserScriptRegistry" property="rdfs:label"></span>
-          <a href="#/v-s:UserScriptBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <span about="v-s:UserScriptRegistry" property="rdfs:label"></span>
+              <a href="#/v-s:UserScriptBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+            </div>
+            <div class="panel-body" about="v-s:UserScriptRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
         </div>
-        <div class="panel-body" about="v-s:UserScriptRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <span about="v-s:OperationRegistry" property="rdfs:label"></span>
+            </div>
+            <div class="panel-body" about="v-s:OperationRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
       </div>
     </div>
 

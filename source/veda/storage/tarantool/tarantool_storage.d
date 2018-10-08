@@ -67,11 +67,6 @@ public class TarantoolStorage : Storage
         return inividuals_storage_r;
     }
 
-    override public string find(OptAuthorize op_auth, string user_uri, string uri, bool return_value = true)
-    {
-        return null;
-    }
-
     override long count_individuals()
     {
         return get_inividuals_storage_r().count_entries();

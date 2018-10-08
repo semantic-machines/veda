@@ -7,13 +7,13 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.vmodule.vmodule, veda.core.search.vel, veda.core.search.vql, veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client, veda.gluecode.script, veda.gluecode.v8d_header;
 
 class ScriptProcess : VedaModule
 {
     private ScriptsWorkPlace wpl;
 
-    private VQL              vql;
+    private Search           vql;
     private string           empty_uid;
     private string           vars_for_event_script;
     private string           vars_for_codelet_script;
@@ -49,15 +49,23 @@ class ScriptProcess : VedaModule
     }
 
 
-    override ResultCode prepare(INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
                                 string event_id, long transaction_id,
-                                long op_id)
+                                long op_id, long count_pushed,
+                                long count_popped)
     {
         if (script_vm is null)
             return ResultCode.Not_Ready;
 
+        if (src != "?" && queue_name != src)
+            return ResultCode.OK;
+
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
+
+        g_count_pushed = count_pushed;
+        g_count_popped = count_popped;
 
         string    individual_id = new_indv.uri;
 
@@ -124,15 +132,22 @@ class ScriptProcess : VedaModule
 
             if (script.compiled_script !is null)
             {
+                if (src == "?" && script.run_at != vm_id)
+                    continue;
+
                 //log.trace("look script:%s", script_id);
-                if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
+                if (script.unsafe == true)
+                {
+                    log.trace("WARN! this script is UNSAFE!, %s", script_id);
+                }
+                else if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
                 {
                     //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                     continue;
                 }
 
-                if (script.run_at != vm_id)
-                    continue;
+                //if (script.run_at != vm_id)
+                //    continue;
 
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
@@ -161,15 +176,16 @@ class ScriptProcess : VedaModule
                                     if (count_sckip > 0)
                                         count_sckip--;
  */
-                    log.trace("start: %s %s %d %s", script_id, individual_id, op_id, event_id);
+                    log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
                     tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
+                    tnx.src           = queue_name;
                     ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
-                    log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
+                    //log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
                     foreach (item; tnx.get_queue())
                     {
                         log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
@@ -201,7 +217,10 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        vql       = new VQL(context);
+        //context.set_vql (new XapianSearch(context));
+        context.set_vql(new FTQueryClient(context));
+
+	vql = context.get_vql();
         script_vm = get_ScriptVM(context);
 
         if (script_vm !is null)
@@ -214,12 +233,16 @@ class ScriptProcess : VedaModule
     {
         log.trace("configure scripts");
 
+        log.trace("use configuration: %s", node);
+
         vars_for_event_script =
             "var user_uri = get_env_str_var ('$user');"
             ~ "var parent_script_id = get_env_str_var ('$parent_script_id');"
             ~ "var parent_document_id = get_env_str_var ('$parent_document_id');"
             ~ "var prev_state = get_individual (ticket, '$prev_state');"
             ~ "var super_classes = get_env_str_var ('$super_classes');"
+            ~ "var queue_elements_count = get_env_num_var ('$queue_elements_count');"
+            ~ "var queue_elements_processed = get_env_num_var ('$queue_elements_processed');"
             ~ "var _event_id = '?';";
 
         before_vars =
@@ -273,10 +296,7 @@ class ScriptProcess : VedaModule
         }
 
         vql.reopen_db();
-
-        vql.query(sticket.user_uri,
-                "return { 'v-s:script'} filter { 'rdf:type' === 'v-s:Event'}",
-                res, OptAuthorize.NO, false);
+        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, res, OptAuthorize.NO, false);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);

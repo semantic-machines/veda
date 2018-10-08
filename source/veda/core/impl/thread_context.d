@@ -14,7 +14,7 @@ private
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
-    import veda.core.search.vql, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
+    import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
     import veda.storage.lmdb.lmdb_storage;
     import veda.storage.tarantool.tarantool_storage;
 
@@ -34,7 +34,7 @@ class PThreadContext : Context
 
     private            string[ string ] prefix_map;
 
-    private VQL        _vql;
+    private Search        _vql;
 
     private Storage    storage;
 
@@ -212,7 +212,7 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new(string _node_id, string context_name, Logger _log, string _main_module_url)
+    public static Context create_new(string _node_id, string context_name, string _main_module_url, Logger _log)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -240,11 +240,6 @@ class PThreadContext : Context
 
         ctx.get_configuration();
 
-        ctx._vql = new VQL(ctx);
-
-        ctx.onto = new Onto(ctx);
-        ctx.onto.load();
-
         ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
 
         return ctx;
@@ -260,12 +255,6 @@ class PThreadContext : Context
         Ticket ticket = get_global_systicket();
 
         version (isModule)
-        {
-            ticket = *(storage.get_systicket_from_storage());
-            set_global_systicket(ticket);
-        }
-
-        version (WebServer)
         {
             ticket = *(storage.get_systicket_from_storage());
             set_global_systicket(ticket);
@@ -300,6 +289,11 @@ class PThreadContext : Context
                 local_count_onto_update = g_count_onto_update;
                 onto.load();
             }
+        } 
+        else
+        {
+	        onto = new Onto(this);
+	        onto.load();        	
         }
 
         return onto;
@@ -324,7 +318,11 @@ class PThreadContext : Context
             return onto.get_individuals;
         }
         else
-            return (Individual[ string ]).init;
+        {
+	        onto = new Onto(this);
+	        onto.load();        	
+            return onto.get_individuals;
+        }
     }
 
     ref string[ string ] get_prefix_map()
@@ -385,7 +383,12 @@ class PThreadContext : Context
         }
     }
 
-    public VQL get_vql()
+    public void set_vql(Search in_vql)
+    {
+        _vql = in_vql;
+    }
+
+    public Search get_vql()
     {
         return _vql;
     }
@@ -440,14 +443,14 @@ class PThreadContext : Context
     }
 
     public SearchResult get_individuals_ids_via_query(string user_uri, string query_str, string sort_str, string db_str, int from, int top, int limit,
-                                                      void delegate(string uri) prepare_element_event, OptAuthorize op_auth, bool trace)
+                                                      OptAuthorize op_auth, bool trace)
     {
         SearchResult sr;
 
         if ((query_str.indexOf("==") > 0 || query_str.indexOf("&&") > 0 || query_str.indexOf("||") > 0) == false)
             query_str = "'*' == '" ~ query_str ~ "'";
 
-        sr = _vql.query(user_uri, query_str, sort_str, db_str, from, top, limit, prepare_element_event, op_auth, trace);
+        sr = _vql.query(user_uri, query_str, sort_str, db_str, from, top, limit, op_auth, trace);
 
         return sr;
     }
@@ -535,7 +538,7 @@ class PThreadContext : Context
         }
     }
 
-    public OpResult update(long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
+    public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
@@ -581,6 +584,7 @@ class PThreadContext : Context
                 req_body[ "individuals" ]         = [ individual_to_json(*indv) ];
                 req_body[ "assigned_subsystems" ] = assigned_subsystems;
                 req_body[ "event_id" ]            = event_id;
+                req_body[ "src" ]                 = src;
                 req_body[ "tnx_id" ]              = tnx_id;
 
                 //log.trace("[%s] add_to_transaction: (isModule), req=(%s)", name, req_body.toString());
@@ -641,18 +645,6 @@ class PThreadContext : Context
                 res = info.op_id;
         }
 
-        version (WebServer)
-        {
-            if (module_id == MODULE.subject_manager)
-                this.reopen_ro_individuals_storage_db();
-
-            if (module_id == MODULE.acl_preparer)
-                this.reopen_ro_acl_storage_db();
-
-            if (module_id == MODULE.fulltext_indexer)
-                this.reopen_ro_fulltext_indexer_db();
-        }
-
         log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);
 
         return res;
@@ -692,7 +684,7 @@ class PThreadContext : Context
                 long update_counter = item.new_indv.getFirstInteger("v-s:updateCounter", -1);
 
                 rc =
-                    this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                    this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
                                 opt_authorize).result;
 
                 if (rc == ResultCode.Internal_Server_Error)
@@ -713,7 +705,7 @@ class PThreadContext : Context
                         }
                         this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
 
-                        rc = this.update(in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                        rc = this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
                                          opt_authorize).result;
 
                         if (rc != ResultCode.Internal_Server_Error)

@@ -2,7 +2,7 @@
  * indexer property
  */
 
-module veda.core.search.indexer_property;
+module veda.search.common.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.common.log_msg;

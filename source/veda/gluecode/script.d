@@ -24,6 +24,7 @@ struct ScriptInfo
     bool[ string ] dependency;
     Script compiled_script;
     string run_at;
+    bool unsafe;
 }
 
 class ScriptsWorkPlace
@@ -80,14 +81,15 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
             ScriptInfo script = ScriptInfo.init;
             script.id         = ss.uri;
             script.str_script = str_script;
-
+            
+            script.unsafe = ss.getFirstBoolean("v-s:unsafe", false);
             script.run_at = ss.getFirstLiteral("v-s:runAt");
 
             if (script.run_at is null)
                 script.run_at = "main";
 
-            if (script.run_at != g_vm_id)
-                return;
+            //if (script.run_at != g_vm_id)
+            //    return;
 
             if (trace)
                 log.trace("compile script.id=%s, text=%s", script.id, script.str_script);

@@ -353,13 +353,10 @@ veda.Module(function (veda) { "use strict";
    * Save current individual to database
    */
   proto.save = function() {
+    // Do not save individual to server if nothing changed
+    if (this.isSync()) { return Promise.resolve(this); }
     var self = this;
     this.trigger("beforeSave");
-    // Do not save individual to server if nothing changed
-    if (this.isSync()) {
-      this.trigger("afterSave");
-      return Promise.resolve(this);
-    }
     Object.keys(this.properties).reduce(function (acc, property_uri) {
       if (property_uri === "@") return acc;
       acc[property_uri] = acc[property_uri].filter(function (item) {
@@ -744,13 +741,8 @@ veda.Module(function (veda) { "use strict";
    * @return {String} String representation of individual.
    */
   proto.toString = function () {
-    if ( this.hasValue("rdfs:label") ) {
-      return this.get("rdfs:label").join(" ");
-    } else if ( this.hasValue("rdf:type") ) {
-      return this.get("rdf:type")[0].get("rdfs:label").join(" ");
-    } else {
-      return this.id;
-    }
+    //return this["rdf:type"][0]["rdfs:label"].join(", ") + ": " + ( this["rdfs:label"] ? this["rdfs:label"].join(", ") : this.id );
+    return this.hasValue("rdfs:label") ? this.get("rdfs:label").join(" ") : this.hasValue("rdf:type") ? this.get("rdf:type")[0].toString() + ": " + this.id : this.id ;
   };
 
   /**
