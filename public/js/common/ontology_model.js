@@ -118,7 +118,16 @@ veda.Module(function (veda) { "use strict";
           "'rdf:type' === 'v-ui:ClassModel'";
       return veda.Backend.query(veda.ticket, query).then(function (query_results) {
         var ontology_uris = query_results.result;
-        return veda.Backend.get_individuals(veda.ticket, ontology_uris);
+        var portions = [], portion;
+        while (ontology_uris.length) {
+          portion = ontology_uris.splice(0, 500);
+          portions.push( veda.Backend.get_individuals(veda.ticket, portion) );
+        }
+        return Promise.all(portions);
+      }).then(function (portions) {
+        return portions.reduce(function (acc, portion) {
+          return acc.concat(portion);
+        }, []);
       });
     }).then(function (ontology_individuals) {
       ontology_individuals.forEach( function (item) {
