@@ -2,7 +2,7 @@
 	"name": "veda-ft-indexer",
 	"description": "veda-ft-indexer",
 	"dependencies": {
-		"pacahon_third_party": "1.0.15", 
+		"xapian-d": "1.0.0", 
 		"d-nanomsg": "0.2.0",
                 "msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
@@ -37,7 +37,6 @@
     	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
     	    "../../lib64/liblmdb.a",
-	    "../../lib64/libxapiand.a",
     	    "../../veda/util/tools.d",
     	    "../../veda/util/queue.d",
     	    "../../veda/util/container.d",

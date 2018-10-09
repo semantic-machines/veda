@@ -2,7 +2,6 @@
 	"name": "veda-ttlreader",
 	"description": "veda-ttlreader",
 	"dependencies": {
-	    "pacahon_third_party": "1.0.15", 
 	    "d-nanomsg": "0.2.0",
 	    "libasync": "0.8.2",
 	    "urld": "2.0.1",

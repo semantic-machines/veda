@@ -2,7 +2,6 @@
 	"name": "veda-fanout-sql-lp",
 	"description": "veda-fanout-sql-lp",
 	"dependencies": {
-		"pacahon_third_party": "1.0.15", 
 		"mysql-d": "0.3.3",
 		"d-nanomsg": "0.2.0",
                 "msgpack-d": "1.0.0-beta.6",
@@ -25,9 +24,7 @@
         "sourceFiles":[
             "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
-	    "../../lib64/libxapiand.a", 
     	    "../../veda/util/properd.d",
-	    "../../veda/bind/xapian_d_header.d",
     	    "../../veda/bind/nano.d",
  	    "../../veda/core/util/utils.d",
     	    "../../veda/util/tools.d",

@@ -2,7 +2,7 @@
 	"name": "veda-ft-query",
 	"description": "veda-ft-query",
 	"dependencies": {
-		"pacahon_third_party": "1.0.15", 
+                "xapian-d": "1.0.0",
 		"d-nanomsg": "0.2.0",
 		"msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
@@ -24,7 +24,6 @@
 	],
         "sourceFiles":[
             "../../lib64/libauthorization.a",
-	    "../../lib64/libxapiand.a", 
     	    "../../lib64/liblmdb.a",
     	    "../../veda/authorization/right_set.d",
             "../../veda/authorization/cache.d",
