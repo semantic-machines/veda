@@ -1031,9 +1031,9 @@
 
     populate();
 
-    individual.on(property_uri, handler);
+    individual.on(property_uri, changeHandler);
     this.one("remove", function () {
-      individual.off(property_uri, handler);
+      individual.off(property_uri, changeHandler);
     });
 
     if (template) {
@@ -1093,7 +1093,7 @@
       });
     }
 
-    function handler() {
+    function changeHandler() {
       $("input", control).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);

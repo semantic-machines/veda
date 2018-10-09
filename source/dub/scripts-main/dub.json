@@ -2,7 +2,8 @@
 	"name": "veda-scripts-main",
 	"description": "veda-scripts-main",
 	"dependencies": {
-		"pacahon_third_party": "1.0.15", 
+		"xapian-d": "1.0.0", 
+		"pacahon_third_party": "1.0.16", 
 		"d-nanomsg": "0.2.0",
         	"msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
@@ -16,6 +17,7 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
             "../../veda/search/common",
+            "../../veda/search/xapian",
             "../../veda/search/ft_query",
             "../../veda/storage/lmdb",
             "../../veda/storage/tarantool",
@@ -25,7 +27,6 @@
             "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
     	    "../../lib64/libv8d.a", 
-	    "../../lib64/libxapiand.a",
     	    "../../veda/authorization/right_set.d",
             "../../veda/authorization/az_client.d",
             "../../veda/authorization/cache.d",
