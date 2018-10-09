@@ -13,7 +13,7 @@ private
     import veda.common.logger, veda.core.impl.thread_context;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.search.common.isearch, veda.search.ft_query.ft_query_client, veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -99,11 +99,9 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
-	
-    //context.set_vql (new XapianSearch(context));
-    context.set_vql(new FTQueryClient(context));
+    context.set_vql (new XapianSearch(context));
 
-    vql = context.get_vql ();
+	vql = context.get_vql ();
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
@@ -369,8 +367,8 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql (new XapianSearch(context));
-        context.set_vql(new FTQueryClient(context));
+        context.set_vql (new XapianSearch(context));
+        //context.set_vql(new FTQueryClient(context));
 
         return true;
     }
