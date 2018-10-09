@@ -14,11 +14,11 @@ veda.Module(function (veda) { "use strict";
         container = $(container).empty();
       }
 
-      if (container.prop("id") === "main") { container.hide(); }
+      //if (container.prop("id") === "main") { container.hide(); }
 
       template = present(this, container, template, mode, extra);
 
-      if (container.prop("id") === "main") { container.show("fade", 250); }
+      //if (container.prop("id") === "main") { container.show("fade", 250); }
 
     } catch (err) {
       console.log(err);
@@ -125,12 +125,12 @@ veda.Module(function (veda) { "use strict";
     container.append(renderedTemplate);
 
     // Timeout to wait all related individuals to render
-    setTimeout(function () {
+    //setTimeout(function () {
       renderedTemplate.trigger(mode);
       if (postScript) {
         postScript.call(individual, veda, individual, container, renderedTemplate, mode, extra);
       }
-    }, 0);
+    //}, 0);
 
     // Watch individual updates on server
     var updateService = new veda.UpdateService();
@@ -554,7 +554,7 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       });
 
-      var values = about.get(rel_uri), rendered = {}, counter = 0;
+      var values = about.get(rel_uri);
 
       if (isEmbedded) {
         embeddedHandler(values);
@@ -573,36 +573,17 @@ veda.Module(function (veda) { "use strict";
       // Re-render link property if its' values were changed
       function propertyModifiedHandler (values, limit_param) {
         limit = limit_param || limit;
-        ++counter;
-        try {
-          if (values.length) {
-            for (var i = 0, value; i < limit && i < values.length; i++) {
-              value = values[i];
-              if (value.id in rendered) {
-                rendered[value.id].cnt = counter;
-                continue;
-              }
-              var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
-              rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
-            }
-            relContainer.children(".more").remove();
-            if (limit < values.length && more) {
-              relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
-            }
-          } else {
-            relContainer.empty();
+        var appended = $();
+        for (var i = 0, value, renderedRelation; i < limit && (value = values[i]); i++) {
+          renderedRelation = relContainer.children("[resource='" + veda.Util.escape4$( value.id ) + "']");
+          if ( !renderedRelation.length ) {
+            renderedRelation = renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
           }
-        } catch (error) {
-          if (error instanceof TypeError) {
-            var notify = veda.Notify ? new veda.Notify() : function () {};
-            notify("warning", {name: "Error", message: "Attribute undefined: " + rel_uri});
-          }
+          appended = appended.add(renderedRelation);
         }
-        // Remove rendered templates for removed values
-        for (var i in rendered) {
-          if (rendered[i].cnt === counter) continue;
-          rendered[i].tmpl.remove();
-          delete rendered[i];
+        relContainer.children().not(appended).remove();
+        if (limit < values.length && more) {
+          relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
         }
       }
 
