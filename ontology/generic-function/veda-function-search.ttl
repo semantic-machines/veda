@@ -466,14 +466,6 @@ v-fs:FulltextRequestTemplate
     query = $("#query", template),
     form = new veda.IndividualModel();
 
-  // Autofocus on query field
-  params.on("shown.bs.tab", function () {
-    if (!self.hasValue("v-fs:attributiveQuery")) {
-      query.trigger("veda_focus");
-    }
-  });
-  params.trigger("shown.bs.tab");
-
   // Enter on query field triggers search
   submit.click( function (e) {
     e.preventDefault();
@@ -778,14 +770,6 @@ v-fs:AttributiveRequestTemplate
     customHead = $("thead#custom-head", template),
     clearCustom = $("#clear-custom", template),
     head, rest, tmpl;
-
-  // Autofocus on query field
-  params.on("shown.bs.tab", function () {
-    if (!self.hasValue("v-fs:attributiveQuery")) {
-      $("#fulltext", template).trigger("veda_focus");
-    }
-  });
-  params.trigger("shown.bs.tab");
 
   // Enter on query field triggers search
   find.click( function (e) {

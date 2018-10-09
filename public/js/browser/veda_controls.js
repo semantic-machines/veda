@@ -76,11 +76,6 @@
       }
     }
 
-    this.on("veda_focus", function (e) {
-      input.trigger("focus");
-      e.stopPropagation();
-    });
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
@@ -378,11 +373,6 @@
       change(value);
     });
 
-    this.on("veda_focus", function (e) {
-      input.trigger("focus");
-      e.stopPropagation();
-    });
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "search") {
@@ -568,15 +558,6 @@
         });
       });
     }
-
-    this.on("veda_focus", function (e, value) {
-      input.each(function () {
-        if ( value.language === this.lang || !value.language ) {
-          $(this).trigger("focus");
-        }
-      });
-      e.stopPropagation();
-    });
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
