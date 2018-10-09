@@ -47,9 +47,6 @@ interface Context
 
     public Individual[] get_individuals_via_query(string user_uri, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);
 
-
-    public Individual[ string ] get_onto_as_map_individuals();
-
     /**
        Проверить сессионный билет
      */

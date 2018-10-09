@@ -304,27 +304,6 @@ class PThreadContext : Context
         return name;
     }
 
-    public Individual[ string ] get_onto_as_map_individuals()
-    {
-        if (onto !is null)
-        {
-            long g_count_onto_update = get_count_onto_update();
-            if (g_count_onto_update > local_count_onto_update)
-            {
-                local_count_onto_update = g_count_onto_update;
-                onto.load();
-            }
-
-            return onto.get_individuals;
-        }
-        else
-        {
-	        onto = new Onto(this);
-	        onto.load();        	
-            return onto.get_individuals;
-        }
-    }
-
     ref string[ string ] get_prefix_map()
     {
         return prefix_map;
