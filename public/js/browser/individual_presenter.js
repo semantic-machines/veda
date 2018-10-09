@@ -107,33 +107,31 @@ veda.Module(function (veda) { "use strict";
     if (post_render_src) {
       post_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + post_render_src);
     }
+    if (pre_render) {
+      pre_render.call(individual, veda, individual, container, template, mode, extra);
+    }
+    return processTemplate(individual, container, template, mode).then(function (processedTemplate) {
 
-    return Promise
-      .resolve(pre_render ? pre_render.call(individual, veda, individual, container, template, mode, extra) : undefined)
-      .then(function () {
+      processedTemplate.trigger(mode);
 
-        template = processTemplate(individual, container, template, mode);
+      if (post_render) {
+        post_render.call(individual, veda, individual, container, processedTemplate, mode, extra);
+      }
 
-        template.trigger(mode);
-
-        if (post_render) {
-          post_render.call(individual, veda, individual, container, template, mode, extra);
-        }
-
-        // Watch server-side updates
-        var updateService = new veda.UpdateService();
-        updateService.subscribe(individual.id);
-        template.one("remove", function () {
-          updateService.unsubscribe(individual.id);
-        });
-
-        return template;
-
-      }).catch(function (error) {
-
-        console.log(error);
-
+      // Watch server-side updates
+      var updateService = new veda.UpdateService();
+      updateService.subscribe(individual.id);
+      processedTemplate.one("remove", function () {
+        updateService.unsubscribe(individual.id);
       });
+
+      return processedTemplate;
+
+    }).catch(function (error) {
+
+      console.log(error);
+
+    });
   }
 
   function preProcess(templateString) {
@@ -175,14 +173,14 @@ veda.Module(function (veda) { "use strict";
     });
 
     // Unwrapped templates support
-    var wrapper = $("<div>").append(template);
 
-    var view = $(".view", wrapper);
-    var edit = $(".edit", wrapper);
-    var search = $(".search", wrapper);
-    var _view = $(".-view", wrapper);
-    var _edit = $(".-edit", wrapper);
-    var _search = $(".-search", wrapper);
+
+    var view = template.find(".view").addBack(".view");
+    var edit = template.find(".edit").addBack(".edit");
+    var search = template.find(".search").addBack(".search");
+    var _view = template.find(".-view").addBack(".-view");
+    var _edit = template.find(".-edit").addBack(".-edit");
+    var _search = template.find(".-search").addBack(".-search");
 
     // Apply mode to template to show/hide elements in different modes
     function modeHandler (e) {
@@ -346,19 +344,19 @@ veda.Module(function (veda) { "use strict";
     // Process RDFa compliant template
 
     // Special (not RDFa)
-    $("[href*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+    template.find("[href*='@']:not([rel] *):not([about] *)").addBack("[href*='@']:not([rel] *):not([about] *)").map( function () {
       var self = $(this);
       var str = self.attr("href");
       self.attr("href", str.replace("@", individual.id));
     });
 
-    $("[src*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+    template.find("[src*='@']:not([rel] *):not([about] *)").addBack("[src*='@']:not([rel] *):not([about] *)").map( function () {
       var self = $(this);
       var str = self.attr("src");
       self.attr("src", str.replace("@", individual.id));
     });
 
-    $("[style*='@']:not([rel] *):not([about] *)", wrapper).map( function () {
+    template.find("[style*='@']:not([rel] *):not([about] *)").addBack("[style*='@']:not([rel] *):not([about] *)").map( function () {
       var self = $(this);
       var style = self.attr("style");
       self.attr("style", style.replace("@", individual.id));
@@ -366,7 +364,7 @@ veda.Module(function (veda) { "use strict";
 
     // Property value
     var props_ctrls = {};
-    $("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)", wrapper).map( function () {
+    template.find("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)").map( function () {
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
           spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
@@ -400,7 +398,7 @@ veda.Module(function (veda) { "use strict";
     });
 
     // Related resources & about resources
-    $("[rel]:not(veda-control):not([rel] *):not([about] *)", wrapper).map( function () {
+    var rels = template.find("[rel]:not(veda-control):not([rel] *):not([about] *)").addBack("[rel]:not(veda-control):not([rel] *):not([about] *)").map( function () {
       var relContainer = $(this),
           about = relContainer.attr("about"),
           rel_uri = relContainer.attr("rel"),
@@ -475,7 +473,7 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       });
 
-      about.load().then(function (about) {
+      return about.load().then(function (about) {
 
         var values = about.get(rel_uri);
 
@@ -487,11 +485,11 @@ veda.Module(function (veda) { "use strict";
           });
         }
 
-        propertyModifiedHandler(values, limit);
         about.on(rel_uri, propertyModifiedHandler);
         template.one("remove", function () {
           about.off(rel_uri, propertyModifiedHandler);
         });
+        return propertyModifiedHandler(values, limit);
 
         function propertyModifiedHandler (values, limit_param) {
           limit = limit_param || limit;
@@ -500,7 +498,7 @@ veda.Module(function (veda) { "use strict";
           for (var i = 0; i < limit && i < values.length; i++) {
             templatesPromises.push( renderRelationValue(about, rel_uri, values[i], relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) );
           }
-          Promise.all(templatesPromises).then(function (renderedTemplates) {
+          return Promise.all(templatesPromises).then(function (renderedTemplates) {
             relContainer.append(renderedTemplates);
             if (limit < values.length && more) {
               relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
@@ -524,10 +522,10 @@ veda.Module(function (veda) { "use strict";
 
       });
 
-    });
+    }).get();
 
     // About resource
-    $("[about]:not([rel] *):not([about] *):not([rel]):not([property])", wrapper).map( function () {
+    var abouts = template.find("[about]:not([rel] *):not([about] *):not([rel]):not([property])").addBack("[about]:not([rel] *):not([about] *):not([rel]):not([property])").map( function () {
       var aboutContainer = $(this),
           about_template_uri = aboutContainer.attr("data-template"),
           about_inline_template = aboutContainer.html().trim(),
@@ -545,16 +543,16 @@ veda.Module(function (veda) { "use strict";
       } else {
         about = new veda.IndividualModel(aboutContainer.attr("about"));
       }
-      about.present(aboutContainer, aboutTemplate, isEmbedded ? mode : undefined).then(function (aboutTemplate) {
+      return about.present(aboutContainer, aboutTemplate, isEmbedded ? mode : undefined).then(function (aboutTemplate) {
         if (isEmbedded) {
           aboutTemplate.data("isEmbedded", true);
           embedded.push(aboutTemplate);
         }
       });
-    });
+    }).get();
 
     // About resource property
-    $("[about][property]:not([rel] *):not([about] *)", wrapper).map( function () {
+    var about_props = template.find("[about][property]:not([rel] *):not([about] *)").addBack("[about][property]:not([rel] *):not([about] *)").map( function () {
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
           about;
@@ -565,7 +563,7 @@ veda.Module(function (veda) { "use strict";
         about = new veda.IndividualModel(propertyContainer.attr("about"));
       }
 
-      about.load().then(function (about) {
+      return about.load().then(function (about) {
         propertyModifiedHandler( about[property_uri] );
         about.on(property_uri, propertyModifiedHandler);
         template.one("remove", function () {
@@ -656,7 +654,7 @@ veda.Module(function (veda) { "use strict";
     });
 
     // Property control
-    $("veda-control[property]:not([rel] *):not([about] *)", wrapper).map( function () {
+    template.find("veda-control[property]:not([rel] *):not([about] *)").addBack("veda-control[property]:not([rel] *):not([about] *)").map( function () {
 
       var control = $(this),
           property_uri = control.attr("property"),
@@ -721,7 +719,7 @@ veda.Module(function (veda) { "use strict";
     });
 
     // Relation control
-    $("veda-control[rel]:not([rel] *):not([about] *)", wrapper).map( function () {
+    template.find("veda-control[rel]:not([rel] *):not([about] *)").addBack("veda-control[rel]:not([rel] *):not([about] *)").map( function () {
 
       var control = $(this),
           rel_uri = control.attr("rel"),
@@ -781,7 +779,9 @@ veda.Module(function (veda) { "use strict";
       controlType.call(control, opts);
     });
 
-    return template;
+    return Promise.all(rels, abouts, about_props).then(function () {
+      return template;
+    });
   }
 
   function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
@@ -789,17 +789,17 @@ veda.Module(function (veda) { "use strict";
     individual.get(property_uri).map( function (value, i) {
       var valueHolder = $("<span class='value-holder'></span>");
       propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
-      var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
+      var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
       var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
       var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-      wrapper.append(btnEdit, btnRemove);
+      btnGroup.append(btnEdit, btnRemove);
 
       template.on("view edit search", function (e) {
-        if (e.type === "view") wrapper.hide();
-        else wrapper.show();
+        if (e.type === "view") btnGroup.hide();
+        else btnGroup.show();
         e.stopPropagation();
       });
-      if (mode === "view") { wrapper.hide(); }
+      if (mode === "view") { btnGroup.hide(); }
 
       btnRemove.click(function () {
         individual.set( property_uri, individual.get(property_uri).filter(function (_, j) {return j !== i; }) );
@@ -829,7 +829,7 @@ veda.Module(function (veda) { "use strict";
       }).mouseleave(function () {
         valueHolder.removeClass("blue-outline");
       });
-      valueHolder.append( wrapper );
+      valueHolder.append( btnGroup );
     });
   }
 
@@ -846,16 +846,16 @@ veda.Module(function (veda) { "use strict";
         });
       }
       if (!isAbout) {
-        var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+        var btnGroup = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
         var btnDrag = $("<button class='btn btn-default button-drag'><span class='glyphicon glyphicon-move'></span></button>");
         var btnRemove = $("<button class='btn btn-default button-delete'><span class='glyphicon glyphicon-remove'></span></button>");
-        wrapper.append(btnDrag, btnRemove);
+        btnGroup.append(btnDrag, btnRemove);
         template.on("view edit search", function (e) {
-          if (e.type === "view") wrapper.hide();
-          else wrapper.show();
+          if (e.type === "view") btnGroup.hide();
+          else btnGroup.show();
           e.stopPropagation();
         });
-        if (mode === "view") { wrapper.hide(); }
+        if (mode === "view") { btnGroup.hide(); }
 
         btnRemove.click(function (e) {
           e.preventDefault();
@@ -882,14 +882,14 @@ veda.Module(function (veda) { "use strict";
         });
 
         if (valTemplate.css("display") !== "inline") {
-          wrapper.addClass("block");
+          btnGroup.addClass("block");
         }
         if (valTemplate.css("display") === "table-row" || valTemplate.prop("tagName") === "TR") {
           var cell = valTemplate.children().last();
-          cell.css("position", "relative").append(wrapper);
+          cell.css("position", "relative").append(btnGroup);
         } else {
           valTemplate.css("position", "relative");
-          valTemplate.append(wrapper);
+          valTemplate.append(btnGroup);
         }
       }
       return valTemplate;
