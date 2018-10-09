@@ -20,8 +20,8 @@ private
 
     version (isMStorage)
     {
-        alias veda.storage.storage_manager ticket_storage_module;
-        alias veda.storage.storage_manager subject_storage_module;
+        alias veda.mstorage.storage_manager ticket_storage_module;
+        alias veda.mstorage.storage_manager subject_storage_module;
     }
 }
 

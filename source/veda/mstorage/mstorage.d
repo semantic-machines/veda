@@ -17,8 +17,8 @@ private
     import veda.onto.individual;
 }
 
-alias veda.storage.storage_manager ticket_storage_module;
-alias veda.storage.storage_manager indv_storage_thread;
+alias veda.mstorage.storage_manager ticket_storage_module;
+alias veda.mstorage.storage_manager indv_storage_thread;
 alias veda.mstorage.acl_manager    acl_module;
 
 // ////// Logger ///////////////////////////////////////////
