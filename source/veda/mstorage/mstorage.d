@@ -12,7 +12,7 @@ private
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
     import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
-    import veda.mstorage.acl_manager, veda.storage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
+    import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization;
     import veda.onto.individual;
 }
@@ -216,9 +216,9 @@ void commiter(string thread_name)
                        },
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
-        veda.storage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
+        veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
         veda.mstorage.acl_manager.flush(false);
-        veda.storage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
+        veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }
 

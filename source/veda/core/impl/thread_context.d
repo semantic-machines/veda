@@ -34,7 +34,7 @@ class PThreadContext : Context
 
     private            string[ string ] prefix_map;
 
-    private Search        _vql;
+    private Search     _vql;
 
     private Storage    storage;
 
@@ -289,11 +289,11 @@ class PThreadContext : Context
                 local_count_onto_update = g_count_onto_update;
                 onto.load();
             }
-        } 
+        }
         else
         {
-	        onto = new Onto(this);
-	        onto.load();        	
+            onto = new Onto(this);
+            onto.load();
         }
 
         return onto;
@@ -684,8 +684,10 @@ class PThreadContext : Context
                         }
                         this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
 
-                        rc = this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
-                                         opt_authorize).result;
+                        rc =
+                            this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems,
+                                        OptFreeze.NONE,
+                                        opt_authorize).result;
 
                         if (rc != ResultCode.Internal_Server_Error)
                             break;

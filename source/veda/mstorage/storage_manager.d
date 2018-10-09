@@ -1,7 +1,7 @@
 /**
  * хранение индивидов
  */
-module veda.storage.storage_manager;
+module veda.mstorage.storage_manager;
 
 private
 {
