@@ -892,17 +892,17 @@ veda.Module(function (veda) { "use strict";
     individual.get(property_uri).map( function (value, i) {
       var valueHolder = $("<span class='value-holder'></span>");
       propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
-      var wrapper = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
+      var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
       var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
       var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-      wrapper.append(btnEdit, btnRemove);
+      btnGroup.append(btnEdit, btnRemove);
 
       template.on("view edit search", function (e) {
-        if (e.type === "view") wrapper.hide();
-        else wrapper.show();
+        if (e.type === "view") btnGroup.hide();
+        else btnGroup.show();
         e.stopPropagation();
       });
-      if (mode === "view") { wrapper.hide(); }
+      if (mode === "view") { btnGroup.hide(); }
 
       btnRemove.click(function () {
         individual.set( property_uri, individual.get(property_uri).filter(function (_, j) {return j !== i; }) );
@@ -932,7 +932,7 @@ veda.Module(function (veda) { "use strict";
       }).mouseleave(function () {
         valueHolder.removeClass("blue-outline");
       });
-      valueHolder.append( wrapper );
+      valueHolder.append( btnGroup );
     });
   }
 
@@ -949,16 +949,16 @@ veda.Module(function (veda) { "use strict";
       });
     }
     if (!isAbout) {
-      var wrapper = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+      var btnGroup = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
       var btnDrag = $("<button class='btn btn-default button-drag'><span class='glyphicon glyphicon-move'></span></button>");
       var btnRemove = $("<button class='btn btn-default button-delete'><span class='glyphicon glyphicon-remove'></span></button>");
-      wrapper.append(btnDrag, btnRemove);
+      btnGroup.append(btnDrag, btnRemove);
       template.on("view edit search", function (e) {
-        if (e.type === "view") wrapper.hide();
-        else wrapper.show();
+        if (e.type === "view") btnGroup.hide();
+        else btnGroup.show();
         e.stopPropagation();
       });
-      if (mode === "view") { wrapper.hide(); }
+      if (mode === "view") { btnGroup.hide(); }
 
       btnRemove.click(function (e) {
         e.preventDefault();
@@ -985,14 +985,14 @@ veda.Module(function (veda) { "use strict";
       });
 
       if (valTemplate.css("display") !== "inline") {
-        wrapper.addClass("block");
+        btnGroup.addClass("block");
       }
       if (valTemplate.css("display") === "table-row" || valTemplate.prop("tagName") === "TR") {
         var cell = valTemplate.children().last();
-        cell.css("position", "relative").append(wrapper);
+        cell.css("position", "relative").append(btnGroup);
       } else {
         valTemplate.css("position", "relative");
-        valTemplate.append(wrapper);
+        valTemplate.append(btnGroup);
       }
     }
     return valTemplate;
