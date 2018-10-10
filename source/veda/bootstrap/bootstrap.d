@@ -164,8 +164,23 @@ void main(string[] args)
             need_watchdog = false;
     }
 
-    string webserver_ports_str = "";
+    string veda_id = "";
+    try
+    {
+        ArgumentParser.parse(args, (ArgumentSyntax syntax)
+                             {
+                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
+                                 syntax.option('i', "id", &veda_id, Required.no,
+                                               "Set veda id, example: --id=one");
+                             });
+    }
+    catch (ArgumentParserException ex)
+    {
+        stderr.writefln(ex.msg);
+        return;
+    }
 
+    string webserver_ports_str = "";
     try
     {
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
@@ -309,6 +324,15 @@ void main(string[] args)
         catch (Exception ex)
         {
         }
+		
+        try
+        {
+            mkdir("./pids");
+            stderr.writeln("create folder: ", path);
+        }
+        catch (Exception ex)
+        {
+        }
 
         RunModuleInfo[ string ] started_modules;
 
@@ -321,6 +345,9 @@ void main(string[] args)
 
             string[] sargs;
             sargs = [ "./" ~ ml.name ];
+
+            sargs ~= "--id=" ~ veda_id;
+
             stderr.writeln("starting ", sargs);
 
             auto _pid = spawnProcess(sargs,
@@ -356,6 +383,8 @@ void main(string[] args)
             else
                 sargs = [ "./" ~ ml.name ];
 
+            sargs ~= "--id=" ~ veda_id;
+
             stderr.writeln("starting ", sargs);
 
             auto _pid = spawnProcess(sargs,
@@ -387,6 +416,8 @@ void main(string[] args)
                         if (ext_user_port_str.length > 0)
                             sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
 
+                        sargs ~= "--id=" ~ veda_id;
+
                         auto _logFile = File("logs/" ~ ml.name ~ port ~ "-stderr.log", "w");
 
                         stderr.writeln("starting ", sargs);
@@ -405,6 +436,7 @@ void main(string[] args)
                     string[] sargs;
 
                     sargs = [ "./" ~ ml.name ];
+                    sargs ~= "--id=" ~ veda_id;
 
                     auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
 
@@ -451,7 +483,11 @@ void main(string[] args)
                     break;
                 }
                 else
-                    stderr.writeln("module ", eml, "...Ok");
+                {
+                    stderr.writeln("Ok, pid=", pid, ", module ", eml);
+                    auto filename = eml.replace (" " , "_");
+                    std.file.write(".pids/" ~ filename ~ "-pid", text (pid));
+                }    
             }
         }
         stderr.writefln("all component started, need_watchdog=%s", need_watchdog);

@@ -5,7 +5,7 @@ TIMESTAMP=`date +%Y-%m-%d_%H_%M`
 mkdir ./logs/$TIMESTAMP
 cp ./logs/*-stderr.log ./logs/$TIMESTAMP
 
-start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
+start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
 killall -9 veda
 killall -9 veda-ccus
 killall -9 veda-fanout-email
@@ -28,9 +28,21 @@ killall -9 veda-authorization
 #tarantoolctl stop init_tarantool.lua
 #pkill tarantool
 
-rm .veda-pid
-rm data/module-info/*.lock
-rm data/queue/*.lock
-rm data/uris/*.lock
+target=".pids/"
+let count=0
+for f in "$target"/*
+do
+    pid=`cat $target/$(basename $f)`
+    echo $pid
+    let count=count+1
+done
+echo ""
+echo "Count: $count"
+
+
+rm -f -r .pids
+rm -f data/module-info/*.lock
+rm -f data/queue/*.lock
+rm -f data/uris/*.lock
 
 exit 0
