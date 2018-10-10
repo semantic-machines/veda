@@ -14,11 +14,11 @@ veda.Module(function (veda) { "use strict";
         container = $(container).empty();
       }
 
-      //if (container.prop("id") === "main") { container.hide(); }
+      if (container.prop("id") === "main") { container.hide(); }
 
       template = present(this, container, template, mode, extra);
 
-      //if (container.prop("id") === "main") { container.show("fade", 250); }
+      if (container.prop("id") === "main") { container.show("fade", 250); }
 
     } catch (err) {
       console.log(err);
@@ -554,7 +554,7 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       });
 
-      var values = about.get(rel_uri);
+      var values = about.get(rel_uri), rendered = {}, counter = 0;
 
       if (isEmbedded) {
         embeddedHandler(values);
@@ -573,17 +573,36 @@ veda.Module(function (veda) { "use strict";
       // Re-render link property if its' values were changed
       function propertyModifiedHandler (values, limit_param) {
         limit = limit_param || limit;
-        var appended = $();
-        for (var i = 0, value, renderedRelation; i < limit && (value = values[i]); i++) {
-          renderedRelation = relContainer.children("[resource='" + veda.Util.escape4$( value.id ) + "']");
-          if ( !renderedRelation.length ) {
-            renderedRelation = renderRelationValue(about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
+        ++counter;
+        try {
+          if (values.length) {
+            for (var i = 0, value; i < limit && i < values.length; i++) {
+              value = values[i];
+              if (value.id in rendered) {
+                rendered[value.id].cnt = counter;
+                continue;
+              }
+              var renderedTmpl = renderRelationValue (about, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode);
+              rendered[value.id] = {tmpl: renderedTmpl, cnt: counter};
+            }
+            relContainer.children(".more").remove();
+            if (limit < values.length && more) {
+              relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
+            }
+          } else {
+            relContainer.empty();
           }
-          appended = appended.add(renderedRelation);
+        } catch (error) {
+          if (error instanceof TypeError) {
+            var notify = veda.Notify ? new veda.Notify() : function () {};
+            notify("warning", {name: "Error", message: "Attribute undefined: " + rel_uri});
+          }
         }
-        relContainer.children().not(appended).remove();
-        if (limit < values.length && more) {
-          relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
+        // Remove rendered templates for removed values
+        for (var i in rendered) {
+          if (rendered[i].cnt === counter) continue;
+          rendered[i].tmpl.remove();
+          delete rendered[i];
         }
       }
 
