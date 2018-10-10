@@ -5,7 +5,8 @@ DMD_VER=2.080.0
 DUB_VER=1.5.0
 GO_VER=go1.11
 MSGPUCK_VER=2.0
-TARANTOOL_VER=2.0
+TARANTOOL_VER=2.0.5
+NANOMSG_VER=1.1.4
 
 INSTALL_PATH=$PWD
 
@@ -168,12 +169,13 @@ fi
 ### LIB NANOMSG ###
 
 if ! ldconfig -p | grep libnanomsg; then
+    echo "--- INSTALL NANOMSG ---"
     # make nanomsg dependency
     mkdir tmp
-    wget https://github.com/nanomsg/nanomsg/archive/1.1.4.tar.gz -P tmp
+    wget https://github.com/nanomsg/nanomsg/archive/$NANOMSG_VER.tar.gz -P tmp
     cd tmp
-    tar -xvzf 1.1.4.tar.gz
-    cd nanomsg-1.1.4
+    tar -xvzf $NANOMSG_VER.tar.gz
+    cd nanomsg-$NANOMSG_VER
     mkdir build
     cd build
     cmake ..
@@ -187,7 +189,8 @@ if ! ldconfig -p | grep libnanomsg; then
     cd ..
     cd ..
     cd ..
-
+else
+    echo "--- NANOMSG INSTALLED ---"
 fi
 
 ### LIB RAPTOR ###
