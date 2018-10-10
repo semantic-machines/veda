@@ -24,7 +24,7 @@ func trail(ticketId, userId, action string, args map[string]interface{}, result 
 	/*
 		if cons == nil {
 			var err error
-			cons, err = tdb.NewTrailDBConstructor(tdbPath+"rest_trails_"+time.Now().Format("2006-01-02T15:04:05Z")+"_"+portStr,
+			cons, err = tdb.NewTrailDBConstructor(tdbPath+"rest_trails_"+time.Now().Format("2006-01-02T15:04:05Z")+"_"+webserverPort,
 				"ticket", "user_id", "action", "args", "result", "result_code", "duration")
 			if err != nil {
 				log.Println("ERR! OPENING TRAILS: ", err)

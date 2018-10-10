@@ -114,9 +114,6 @@ var isTrail = true
 //countTrails is variable to count trail requests, after limit they are flushed
 var countTrails = 0
 
-//portStr is string with port number vor fasthttp
-var portStr = "8080"
-
 // string BASE64_START_POS = "base64";
 
 //codeToJsonException converts ResultCode value to its string representation
