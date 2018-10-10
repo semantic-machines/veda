@@ -87,15 +87,15 @@ var g_mstorage_ch *nanomsg.Socket
 //var queryEndpoint *nanomsg.Endpoint
 
 //mainModuleURL is tcp address of veda server
-var mainModuleURL = "tcp://127.0.0.1:9112"
-var notifyChannelURL = "tcp://127.0.0.1:9111"
-var queryServiceURL = "tcp://127.0.0.1:23000"
-var lmdbServiceURL = "tcp://127.0.0.1:23001"
-var tarantoolURL = "" // = "127.0.0.1:3309"
-var webserverPort = "8080"
-var webserverHTTPSPort = "8020"
+var mainModuleURL = ""
+var notifyChannelURL = ""
+var queryServiceURL = ""
+var lmdbServiceURL = ""
+var tarantoolURL = ""
+var webserverPort = ""
+var webserverHTTPSPort = ""
 
-//var aclServiceURL = "tcp://127.0.0.1:22000"
+//var aclServiceURL = ""
 var useHTTPS = false
 
 //attachmentsPath is path where files from request are stored
