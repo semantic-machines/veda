@@ -2,7 +2,7 @@ module veda.mstorage.nanomsg_channel;
 
 import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.path, std.json;
 import veda.core.common.context, veda.core.util.utils, veda.util.tools, veda.onto.onto, veda.core.impl.thread_context, veda.core.common.define;
-import kaleidic.nanomsg.nano, veda.mstorage.server, veda.search.xapian.xapian_search;
+import kaleidic.nanomsg.nano, veda.mstorage.server, veda.search.xapian.xapian_search, veda.util.properd;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -18,7 +18,19 @@ Logger log()
 void nanomsg_channel(string thread_name)
 {
     int    sock;
-    string url = "tcp://127.0.0.1:9112\0";
+    string bind_url = null;
+
+    try
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        bind_url   = properties.as!(string)("main_module_url") ~ "\0";
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+        return;
+    }
 
     try
     {
@@ -32,18 +44,18 @@ void nanomsg_channel(string thread_name)
             log.trace("ERR! cannot create socket");
             return;
         }
-        if (nn_bind(sock, cast(char *)url) < 0)
+        if (nn_bind(sock, cast(char *)bind_url) < 0)
         {
-            log.trace("ERR! cannot bind to socket, url=%s", url);
+            log.trace("ERR! cannot bind to socket, url=%s", bind_url);
             return;
         }
-        log.trace("success bind to %s", url);
+        log.trace("success bind to %s", bind_url);
 
         if (context is null)
         {
             context = PThreadContext.create_new("cfg:standart_node", thread_name, null, log);
-            context.set_vql (new XapianSearch(context));
-        }    
+            context.set_vql(new XapianSearch(context));
+        }
 
         long luplft = context.get_configuration().getFirstInteger("cfg:user_password_lifetime");
 

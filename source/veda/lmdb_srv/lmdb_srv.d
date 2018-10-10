@@ -6,7 +6,7 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.common.logger;
+import veda.common.logger, veda.util.properd;
 import veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.common.type, veda.onto.individual, veda.onto.bj8individual.individual8json;
 
 const string individuals_db_path = "./data/lmdb-individuals";
@@ -51,12 +51,12 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
                 return "{ERR:\"invalid query:" ~ request ~ "\"}";
             }
 
-			if (indv.getStatus() == ResultCode.Not_Found)
-			{
+            if (indv.getStatus() == ResultCode.Not_Found)
+            {
                 return "[]";
-			}
-			else if (indv.getStatus() == ResultCode.OK)
-			{
+            }
+            else if (indv.getStatus() == ResultCode.OK)
+            {
                 response = individual_to_json(indv).toString();
             }
             else
@@ -83,7 +83,7 @@ private Logger log;
 
 void main(string[] args)
 {
-    string bind_url = "tcp://127.0.0.1:24000";
+    string bind_url = null;
 
     try
     {
@@ -100,12 +100,26 @@ void main(string[] args)
         return;
     }
 
+    if (bind_url is null || bind_url.length < 10)
+    {
+        try
+        {
+            string[ string ] properties;
+            properties = readProperties("./veda.properties");
+            bind_url   = properties.as!(string)("lmdb_service_url") ~ "\0";
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! unable read ./veda.properties");
+            return;
+        }
+    }
+
     int sock;
     log = new Logger("veda-core-lmdb-srv", "log", "");
 
     auto tickets_storage_r    = new LmdbDriver(tickets_db_path, DBMode.R, "tickets", log);
     auto inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, "inividuals", log);
-
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
@@ -137,7 +151,7 @@ void main(string[] args)
 
                 nn_freemsg(buf);
 
-                bytes = nn_send(sock, cast(char *)rep.dup (), rep.length, 0);
+                bytes = nn_send(sock, cast(char *)rep.dup(), rep.length, 0);
                 //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
             }
         }

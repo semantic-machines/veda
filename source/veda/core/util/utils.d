@@ -291,39 +291,6 @@ long stringToTime(string str)
     }
 }
 
-public JSONValue read_props(string file_name)
-{
-    JSONValue res;
-
-    if (std.file.exists(file_name))
-    {
-        char[] buff = cast(char[])std.file.read(file_name);
-
-        res = parseJSON(buff);
-    }
-    else
-    {
-        JSONValue transport = JSONValue([ "point" : JSONValue("tcp://*:5559") ]);
-        transport.object[ "transport" ] = JSONValue("zmq");
-
-        JSONValue transport1 = JSONValue([ "transport" : JSONValue("file_reader") ]);
-
-        JSONValue listeners = JSONValue([ transport, transport1 ]);
-        res = JSONValue([ "listeners" : listeners ]);
-
-        string buff = toJSON(res);
-
-        std.file.write(file_name, buff);
-    }
-
-    return res;
-}
-/*
-   string fromStringz(char *s)
-   {
-    return cast(string)(s ? s[ 0 .. strlen(s) ] : null);
-   }
- */
 string fromStringz(char *s, int len)
 {
     return cast(string)(s ? s[ 0 .. len ] : null);

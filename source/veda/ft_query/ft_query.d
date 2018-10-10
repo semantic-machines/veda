@@ -6,8 +6,8 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define, veda.search.common.isearch,
-       veda.search.xapian.xapian_search;
+import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
+import veda.search.common.isearch, veda.search.xapian.xapian_search;
 
 static this()
 {
@@ -144,7 +144,7 @@ private Logger log;
 
 void main(string[] args)
 {
-    string bind_url = "tcp://127.0.0.1:23000";
+    string bind_url = null;
 
     try
     {
@@ -160,6 +160,22 @@ void main(string[] args)
         stderr.writefln(ex.msg);
         return;
     }
+
+    if (bind_url is null || bind_url.length < 10)
+    {
+        try
+        {
+            string[ string ] properties;
+            properties = readProperties("./veda.properties");
+            bind_url   = properties.as!(string)("ft_query_service_url") ~ "\0";
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! unable read ./veda.properties");
+            return;
+        }
+    }
+
 
     string[] tpcs      = bind_url.split(":");
     string   log_sufix = "";

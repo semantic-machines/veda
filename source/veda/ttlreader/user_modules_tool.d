@@ -768,7 +768,8 @@ class UserModuleInfo
 
                         Individual individual;
                         individual.uri = uri;
-                        OpResult   operation_result = context.update(null, -1, &sticket, INDV_OP.REMOVE, &individual, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
+                        OpResult   operation_result = context.update(null, -1, &sticket, INDV_OP.REMOVE, &individual, umt_event_id, ALL_MODULES, OptFreeze.NONE,
+                                                                     OptAuthorize.NO);
                     }
 
                     uri = root_indv;
@@ -868,8 +869,10 @@ class UserModulesTool : VedaModule
         super(_subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         if (event_id == umt_event_id /*|| user_uri == "cfg:VedaSystem"*/) // принимаем команды только от пользователей, umt_event_id игнорируется
             return ResultCode.OK;

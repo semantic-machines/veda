@@ -10,7 +10,7 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.util.properd;
 
 
 // ////// Logger ///////////////////////////////////////////
@@ -94,7 +94,20 @@ void main(char[][] args)
             need_reload_ontology = true;
     }
 
-    string parent_url = "tcp://127.0.0.1:9112\0";
+    string parent_url = null;
+
+    try
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        parent_url = properties.as!(string)("main_module_url") ~ "\0";
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+        return;
+    }
+
 
     Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
@@ -431,8 +444,8 @@ void processed(string[] changes, Context context, bool is_check_changes)
                     {
                         individuals[ uri ] = Individual.init;
 
-                        Individual indv_in_storage = context.get_individual(&sticket, uri, OptAuthorize.NO);
-						long prev_update_counter = indv_in_storage.getFirstInteger ("v-s:updateCounter"); 
+                        Individual indv_in_storage     = context.get_individual(&sticket, uri, OptAuthorize.NO);
+                        long       prev_update_counter = indv_in_storage.getFirstInteger("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:previousVersion");
                         indv_in_storage.removeResource("v-s:actualVersion");
@@ -450,8 +463,8 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
 
-								if (prev_update_counter > 0)
-									indv.addResource("v-s:updateCounter", Resource (prev_update_counter));
+                                if (prev_update_counter > 0)
+                                    indv.addResource("v-s:updateCounter", Resource(prev_update_counter));
 
                                 ResultCode res = context.update(null, -1, &sticket, INDV_OP.PUT, &indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
 

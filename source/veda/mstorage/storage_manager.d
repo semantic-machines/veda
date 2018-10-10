@@ -8,7 +8,7 @@ private
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string, std.digest.ripemd, std.bigint;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
-    import veda.storage.binlog_tools, veda.util.module_info;
+    import veda.storage.binlog_tools, veda.util.module_info, veda.util.properd;
     import veda.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.util.properd;
@@ -150,7 +150,17 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     KeyValueDB                   storage = null;
     string                       db_name;
 
-    string[ string ] properties = readProperties("./veda.properties");
+    string[ string ] properties;
+    try
+    {
+        properties = readProperties("./veda.properties");
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+        return;
+    }
+
     string tarantool_url = properties.as!(string)("tarantool_url");
 
     if (tarantool_url !is null)
@@ -195,7 +205,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     long           op_id           = storage.get_last_op_id;
     long           committed_op_id = 0;
 
-    string         notify_channel_url = "tcp://127.0.0.1:9111\0";
+    string         notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
+
     int            sock;
     bool           already_notify_channel = false;
     ModuleInfoFile module_info;
@@ -426,10 +437,10 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                                 tnx_id = op_id;
 
                                             imm.addResource("tnx_id", Resource(tnx_id));
-                                            
+
                                             if (src is null || src == "")
-	                                            src = "?";
-	                                            
+                                                src = "?";
+
                                             imm.addResource("src", Resource(src));
 
                                             imm.addResource("op_id", Resource(op_id));

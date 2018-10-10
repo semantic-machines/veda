@@ -177,7 +177,7 @@ private long   count;
 private Logger log;
 void main(string[] args)
 {
-    string bind_url               = "tcp://127.0.0.1:22000";
+    string bind_url               = null;
     string test_user_url          = null;
     string experimental_authorize = null;
 

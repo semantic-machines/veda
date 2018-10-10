@@ -19,7 +19,7 @@ private
 
 alias veda.mstorage.storage_manager ticket_storage_module;
 alias veda.mstorage.storage_manager indv_storage_thread;
-alias veda.mstorage.acl_manager    acl_module;
+alias veda.mstorage.acl_manager     acl_module;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -117,9 +117,9 @@ void init(string node_id)
         Individual node;
 
         core_context = PThreadContext.create_new(node_id, "core_context-mstorage", null, log);
-        core_context.set_vql (new XapianSearch(core_context));
-        
-        l_context    = core_context;
+        core_context.set_vql(new XapianSearch(core_context));
+
+        l_context = core_context;
 
         sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
