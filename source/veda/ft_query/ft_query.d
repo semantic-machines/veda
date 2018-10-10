@@ -6,6 +6,7 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
+import veda.onto.resource, veda.onto.lang, veda.onto.individual;
 import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
 import veda.search.common.isearch, veda.search.xapian.xapian_search;
 
@@ -86,15 +87,30 @@ private nothrow string req_prepare(string request, Context context)
                     try
                     {
                         if (_reopen)
+                        {
                             context.reopen_ro_fulltext_indexer_db();
+
+                            Individual indv = context.get_individual(&sticket, "cfg:OntoVsn", OptAuthorize.NO);
+                            if (indv.getStatus() == ResultCode.OK)
+                            {
+                                long new_onto_vsn = indv.getFirstInteger("v-s:updateCounter");
+                                if (new_onto_vsn != onto_vsn)
+                                {
+                                    context.get_onto.load();
+                                    onto_vsn = new_onto_vsn;
+                                }
+                            }
+                        }
 
                         res = context.get_individuals_ids_via_query(user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
                     }
                     catch (Throwable tr)
                     {
                         context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query, _sort,
-                                                 _databases, _from, _top, _limit);
+                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query,
+                                                 _sort,
+                                                 _databases, _from, _top,
+                                                 _limit);
                     }
                 }
 
@@ -141,6 +157,8 @@ private string to_json_str(SearchResult res)
 
 private long   count;
 private Logger log;
+private long   onto_vsn;
+private Ticket sticket;
 
 void main(string[] args)
 {
@@ -184,11 +202,16 @@ void main(string[] args)
         log_sufix = tpcs[ 2 ];
     }
 
-    int     sock;
+    int sock;
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
-    Ticket  systicket;
+
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
+    sticket = ctx.sys_ticket();
     ctx.set_vql(new XapianSearch(ctx));
+
+    Individual indv = ctx.get_individual(&sticket, "cfg:OntoVsn", OptAuthorize.NO);
+    if (indv.getStatus() == ResultCode.OK)
+        onto_vsn = indv.getFirstInteger("v-s:updateCounter");
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
