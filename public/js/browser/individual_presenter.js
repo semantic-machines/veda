@@ -125,12 +125,12 @@ veda.Module(function (veda) { "use strict";
     container.append(renderedTemplate);
 
     // Timeout to wait all related individuals to render
-    //setTimeout(function () {
+    setTimeout(function () {
       renderedTemplate.trigger(mode);
       if (postScript) {
         postScript.call(individual, veda, individual, container, renderedTemplate, mode, extra);
       }
-    //}, 0);
+    }, 0);
 
     // Watch individual updates on server
     var updateService = new veda.UpdateService();
