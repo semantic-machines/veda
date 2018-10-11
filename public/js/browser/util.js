@@ -256,7 +256,7 @@ veda.Module(function (veda) { "use strict";
     var modalTmpl = $("#individual-modal-template").html();
     var modal = $(modalTmpl);
     var modalBody = $(".modal-body", modal);
-    modal.on("remove", function (e) {
+    modal.one("remove", function (e) {
       modal.modal("hide");
     });
     modal.modal();

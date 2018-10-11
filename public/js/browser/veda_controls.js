@@ -185,7 +185,7 @@
     this.on("edit", function () {
       autosize.update(ta);
     });
-    this.on("remove", function () {
+    this.one("remove", function () {
       autosize.destroy(ta);
     });
     this.append(control);
@@ -388,7 +388,7 @@
       return input.val(value);
     };
 
-    this.on("remove", function () {
+    this.one("remove", function () {
       control.data("DateTimePicker").destroy();
     });
 
@@ -642,7 +642,7 @@
       $this.on("edit", function () {
         autosize.update(ta);
       });
-      $this.on("remove", function () {
+      $this.one("remove", function () {
         autosize.destroy(ta);
       });
       $this.append(control);
@@ -1264,7 +1264,7 @@
       }
     }
     individual.on(property_uri, handler );
-    this.on("remove", function () {
+    this.one("remove", function () {
       individual.off(property_uri, handler);
     });
 
@@ -1682,7 +1682,7 @@
       this.on("edit", function () {
         autosize.update(fulltext);
       });
-      this.on("remove", function () {
+      this.one("remove", function () {
         autosize.destroy(fulltext);
       });
 

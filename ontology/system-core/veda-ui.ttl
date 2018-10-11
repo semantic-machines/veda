@@ -2956,7 +2956,7 @@ v-ui:Graph
     var modalBody = $(".modal-body", modal);
     var individual = new veda.IndividualModel(individual_uri);
     individual.present(modalBody);
-    modal.on("remove", function (e) {
+    modal.one("remove", function (e) {
       modal.modal("hide");
     });
     modal.modal();
