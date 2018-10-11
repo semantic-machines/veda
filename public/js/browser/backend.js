@@ -1,13 +1,6 @@
 // Veda HTTP server functions
 veda.Module(function (veda) { "use strict";
 
-  $.ajaxSetup ({
-    dataType: "json",
-    cache: false,
-    timeout: 120000,
-    async: false
-  });
-
   // Check server health
   var notify = veda.Notify ? new veda.Notify() : function () {};
   var interval;
@@ -83,37 +76,84 @@ veda.Module(function (veda) { "use strict";
 
   // Common server call function
   function call_server(params) {
-    if( !params.async ) {
-      var res = $.ajax(params);
-      if (res.status >= 400) {
-        throw new BackendError(res);
+    var method = params.type,
+        url = params.url,
+        data = params.data,
+        async = params.async || false;
+    var xhr = new XMLHttpRequest();
+    if (async) {
+      return new Promise( function (resolve, reject) {
+        xhr.timeout = 120000;
+        xhr.onload = function () {
+          if (this.status == 200) {
+            resolve(
+              JSON.parse(
+                this.response,
+                function (key, value) {
+                return key === "data" && this.type === "Datetime" ? new Date(value) :
+                       key === "data" && this.type === "Decimal" ? parseFloat(value) : value;
+                }
+              )
+            );
+          } else {
+            reject( new BackendError(this) );
+          }
+        };
+        xhr.onerror = function () {
+          reject( new BackendError(this) );
+        };
+        if (method === "GET") {
+          var params = [];
+          for (var name in data) {
+            if (typeof data[name] !== "undefined") {
+              params.push(name + "=" + encodeURIComponent(data[name]));
+            }
+          }
+          params = params.join("&");
+          xhr.open(method, url + "?" + params, async);
+          xhr.send();
+        } else {
+          xhr.open(method, url, async);
+          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          var payload = JSON.stringify(data, function (key, value) {
+            return key === "data" && this.type === "Decimal" ? value.toString() : value;
+          });
+          xhr.send(payload);
+        }
+      });
+    } else {
+      if (method === "GET") {
+        var params = [];
+        for (var name in data) {
+          if (typeof data[name] !== "undefined") {
+            params.push(name + "=" + encodeURIComponent(data[name]));
+          }
+        }
+        params = params.join("&");
+        xhr.open(method, url + "?" + params, async);
+        xhr.send();
+      } else {
+        xhr.open(method, url, async);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        var payload = JSON.stringify(data, function (key, value) {
+          return key === "data" && this.type === "Decimal" ? value.toString() : value;
+        });
+        xhr.send(payload);
       }
-      var result;
-      try {
+      if (xhr.status === 200) {
         // Parse with date & decimal reviver
-        result = JSON.parse(
-          res.responseText,
+        return JSON.parse(
+          xhr.responseText,
           function (key, value) {
             return key === "data" && this.type === "Datetime" ? new Date(value) :
                    key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? parseFloat(value) : value;
           }
         );
-      } catch (err) {
-        result = res.responseText;
-      } finally {
-        return result;
+      } else {
+        throw new BackendError(xhr);
       }
-    } else {
-      return $.ajax(params).catch(function (err) {
-        throw new BackendError(err);
-      });
     }
   }
-
-  // Deferred (promise) only version
-  /*function call_server(params) {
-    return $.ajax(params);
-  }*/
 
   window.flush = function (module_id, wait_op_id) {
     var arg = arguments[0];
@@ -318,8 +358,8 @@ veda.Module(function (veda) { "use strict";
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : query,
-        "sort": (isObj ? arg.sort : sort) || null,
-        "databases" : (isObj ? arg.databases : databases) || null,
+        "sort": (isObj ? arg.sort : sort) || undefined,
+        "databases" : (isObj ? arg.databases : databases) || undefined,
         "reopen" : (isObj ? arg.reopen : reopen) || false,
         "top" : (isObj ? arg.top : top) || 0,
         "limit" : (isObj ? arg.limit : limit) || 100000,
@@ -368,10 +408,10 @@ veda.Module(function (veda) { "use strict";
       type: "POST",
       url: "get_individuals",
       async: isObj ? arg.async : false,
-      data: JSON.stringify({
+      data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uris": isObj ? arg.uris : uris
-      }),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -386,14 +426,14 @@ veda.Module(function (veda) { "use strict";
       type: "PUT",
       url: "remove_individual",
       async: isObj ? arg.async : false,
-      data: JSON.stringify({
+      data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
         "event_id": (isObj ? arg.event_id : event_id) || "",
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
-      }),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -406,19 +446,14 @@ veda.Module(function (veda) { "use strict";
       type: "PUT",
       url: "put_individual",
       async: isObj ? arg.async : false,
-      data: JSON.stringify(
-        {
+      data: {
           "ticket": isObj ? arg.ticket : ticket,
           "individual": isObj ? arg.individual : individual,
           "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
           "prepare_events": true,
           "event_id" : (isObj ? arg.event_id : event_id) || "",
           "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
-        },
-        function (key, value) {
-          return key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? value.toString() : value;
-        }
-      ),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -431,14 +466,14 @@ veda.Module(function (veda) { "use strict";
       type: "PUT",
       url: "add_to_individual",
       async: isObj ? arg.async : false,
-      data: JSON.stringify({
+      data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
         "event_id": (isObj ? arg.event_id : event_id) || "",
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
-      }),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -451,14 +486,14 @@ veda.Module(function (veda) { "use strict";
       type: "PUT",
       url: "set_in_individual",
       async: isObj ? arg.async : false,
-      data: JSON.stringify({
+      data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
         "event_id" : (isObj ? arg.event_id : event_id) || "",
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
-      }),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -471,14 +506,14 @@ veda.Module(function (veda) { "use strict";
       type: "PUT",
       url: "remove_from_individual",
       async: isObj ? arg.async : false,
-      data: JSON.stringify({
+      data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
         "event_id" : (isObj ? arg.event_id : event_id) || "",
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
-      }),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -491,19 +526,14 @@ veda.Module(function (veda) { "use strict";
       type: "PUT",
       url: "put_individuals",
       async: isObj ? arg.async : false,
-      data: JSON.stringify(
-        {
+      data: {
           "ticket": isObj ? arg.ticket : ticket,
           "individuals": isObj ? arg.individuals : individuals,
           "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
           "prepare_events": true,
           "event_id" : (isObj ? arg.event_id : event_id) || "",
           "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
-        },
-        function (key, value) {
-          return key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? value.toString() : value;
-        }
-      ),
+      },
       contentType: "application/json"
     };
     return call_server(params);
@@ -534,9 +564,9 @@ veda.Module(function (veda) { "use strict";
       type: "POST",
       url: "execute_script",
       async: isObj ? arg.async : false,
-      data: JSON.stringify({
+      data: {
         "script": isObj ? arg.script : script
-      }),
+      },
       contentType: "application/json"
     };
     return call_server(params);
