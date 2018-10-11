@@ -17,6 +17,7 @@ struct Module
     string[] wr_components;
     bool     is_main;
     bool     is_enable;
+    int      priority;
 
     void     unlock()
     {
@@ -225,21 +226,20 @@ void main(string[] args)
 
     Module *[ string ] modules;
 
-    modules[ "veda-mstorage" ]      = new Module("veda-mstorage", [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true);
-    modules[ "veda-ccus" ]          = new Module("veda-ccus", [], false, false);
-    modules[ "veda-ft-query" ]      = new Module("veda-ft-query", [], false, false);
-    modules[ "veda-lmdb-srv" ]      = new Module("veda-lmdb-srv", [], false, false);
-    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", [], false, false);
-    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", [ "fanout_email" ], false, false);
-    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", [ "fanout_sql_np" ], false, false);
-    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", [ "fanout_sql_lp" ], false, false);
-    modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", [ "scripts-main" ], false, false);
-    modules[ "veda-scripts-lp" ]    = new Module("veda-scripts-lp", [ "scripts-lp" ], false, false);
-    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", [ "ltr_scripts" ], false, false);
-    modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", [ "fulltext_indexer" ], false, false);
-    modules[ "veda-webserver" ]     = new Module("veda-webserver", [], false);
-    modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", [], false);
-    modules[ "veda-input-queue" ]   = new Module("veda-input-queue", [], false);
+    modules[ "veda-lmdb-srv" ]      = new Module("veda-lmdb-srv", [], false, false, 0);
+    modules[ "veda-mstorage" ]      = new Module("veda-mstorage", [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
+    modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", [ "fulltext_indexer" ], false, false, 2);
+    modules[ "veda-ft-query" ]      = new Module("veda-ft-query", [], false, false, 3);
+    modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", [ "scripts-main" ], false, false, 4);
+    modules[ "veda-scripts-lp" ]    = new Module("veda-scripts-lp", [ "scripts-lp" ], false, false, 5);
+    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", [ "ltr_scripts" ], false, false, 6);
+    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", [ "fanout_email" ], false, false, 7);
+    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", [ "fanout_sql_np" ], false, false, 8);
+    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", [ "fanout_sql_lp" ], false, false, 9);
+    modules[ "veda-input-queue" ]   = new Module("veda-input-queue", [], false, false, 10);
+    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", [], false, false, 11);
+    modules[ "veda-ccus" ]          = new Module("veda-ccus", [], false, false, 12);
+    modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", [], false, false, 13);
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
@@ -324,7 +324,7 @@ void main(string[] args)
         catch (Exception ex)
         {
         }
-		
+
         try
         {
             mkdir("./.pids");
@@ -336,70 +336,45 @@ void main(string[] args)
 
         RunModuleInfo[ string ] started_modules;
 
-        foreach (ml; modules)
+        for (int priority = 0; priority < 20; priority++)
         {
-            if (ml.is_main != true)
-                continue;
+            foreach (ml; modules)
+            {
+                if (ml.is_enable == false)
+                    continue;
 
-            auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
+                if (ml.priority != priority)
+                    continue;
 
-            string[] sargs;
-            sargs = [ "./" ~ ml.name ];
+                auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
 
-            sargs ~= "--id=" ~ veda_id;
+                string[] sargs;
 
-            stderr.writeln("starting ", sargs);
+                if (need_remove_ontology && ml.name == "veda-ttlreader")
+                    sargs = [ "./" ~ ml.name, "remove-ontology" ];
+                else if (need_reload_ontology && ml.name == "veda-ttlreader")
+                    sargs = [ "./" ~ ml.name, "reload-ontology" ];
+                else
+                    sargs = [ "./" ~ ml.name ];
 
-            auto _pid = spawnProcess(sargs,
-                                     std.stdio.stdin,
-                                     std.stdio.stdout,
-                                     _logFile, env, Config.suppressConsole);
+                sargs ~= "--id=" ~ veda_id;
 
-            server_pid = _pid;
+                stderr.writeln("starting ", sargs);
 
-            auto stsargs = array_to_str(sargs);
-            started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
+                auto _pid = spawnProcess(sargs,
+                                         std.stdio.stdin,
+                                         std.stdio.stdout,
+                                         _logFile, env, Config.suppressConsole);
 
-            break;
-        }
-        core.thread.Thread.sleep(dur!("msecs")(100));
+                if (ml.is_main == true)
+                    server_pid = _pid;
 
-        foreach (ml; modules)
-        {
-            if (ml.is_main == true)
-                continue;
-
-            if (ml.is_enable == false || ml.name == "veda-webserver")
-                continue;
-
-            auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
-
-            string[] sargs;
-
-            if (need_remove_ontology && ml.name == "veda-ttlreader")
-                sargs = [ "./" ~ ml.name, "remove-ontology" ];
-            else if (need_reload_ontology && ml.name == "veda-ttlreader")
-                sargs = [ "./" ~ ml.name, "reload-ontology" ];
-            else
-                sargs = [ "./" ~ ml.name ];
-
-            sargs ~= "--id=" ~ veda_id;
-
-            stderr.writeln("starting ", sargs);
-
-            auto _pid = spawnProcess(sargs,
-                                     std.stdio.stdin,
-                                     std.stdio.stdout,
-                                     _logFile, env, Config.suppressConsole);
-
-            if (ml.is_main == true)
-                server_pid = _pid;
-
-            auto stsargs = array_to_str(sargs);
-            started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
+                auto stsargs = array_to_str(sargs);
+                started_modules[ stsargs ] = RunModuleInfo(ml, stsargs, _pid);
+            }
         }
 
-        Module *ml = modules.get("veda-webserver", null);
+        Module *ml = modules.get("veda-gowebserver", null);
 
         if (ml !is null && ml.is_enable == true)
         {
@@ -420,7 +395,7 @@ void main(string[] args)
 
                         auto _logFile = File("logs/" ~ ml.name ~ port ~ "-stderr.log", "w");
 
-                        stderr.writeln("starting ", sargs);
+                        stderr.writeln("starting websrv ", sargs);
 
                         auto _pid = spawnProcess(sargs,
                                                  std.stdio.stdin,
@@ -440,7 +415,7 @@ void main(string[] args)
 
                     auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
 
-                    stderr.writeln("starting ", sargs);
+                    stderr.writeln("starting websrv ", sargs);
 
                     auto _pid = spawnProcess(sargs,
                                              std.stdio.stdin,
@@ -485,9 +460,9 @@ void main(string[] args)
                 else
                 {
                     stderr.writeln("Ok, pid=", pid, ", module ", eml);
-                    auto filename = eml.replace (" " , "_");
-                    std.file.write(".pids/" ~ filename ~ "-pid", text (pid));
-                }    
+                    auto filename = eml.replace(" ", "_");
+                    std.file.write(".pids/" ~ filename ~ "-pid", text(pid));
+                }
             }
         }
         stderr.writefln("all component started, need_watchdog=%s", need_watchdog);
