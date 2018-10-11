@@ -16,10 +16,6 @@ import (
 	"runtime"
 )
 
-const (
-	WS_LISTEN_ADDR string = ":8088"
-)
-
 type ConnActivity uint8
 
 const (
@@ -288,7 +284,52 @@ var g_count_ws_sessions *expvar.Int
 var g_count_ws_hosts *expvar.Int
 var g_count_request *expvar.Int
 
+var	WS_LISTEN_ADDR string
+
+func config() {
+	file, err := os.Open("veda.properties")
+	if err == nil {
+		scanner := bufio.NewScanner(file)
+		count := 0
+		for scanner.Scan() {
+			count++
+			line := scanner.Text()
+			line = strings.Trim(line, "\r\n\t ")
+			line = strings.Replace(line, " ", "", -1)
+			idx := strings.Index(line, "#")
+
+			if idx >= 0 {
+				line = string([]rune(line)[:idx])
+			}
+
+			if len(line) == 0 {
+				continue
+			}
+
+			splitted := strings.SplitN(line, "=", 2)
+			if len(splitted) < 2 {
+				log.Printf("ERR! NO ASSIGNATION SING FOUND ON LINE %d\n", count)
+				continue
+			}
+
+			paramName := splitted[0]
+			paramVal := splitted[1]
+			switch paramName {
+			case "ccus_port":
+				WS_LISTEN_ADDR = paramVal
+			default:
+				continue
+			}
+		}
+		file.Close()
+	} else {
+		log.Println("ERR! ON READING CONFIG, START WITH DEFAULTS: ", err)
+	}
+}
+
 func main() {
+	config ()
+	
 	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
 
 	go collector_updateInfo(ch_update_info_in)
@@ -305,8 +346,7 @@ func main() {
 	g_count_request = expvar.NewInt("count_request")
 
 	log.Printf("Listen and serve: %s", WS_LISTEN_ADDR)
-	if err := http.ListenAndServe(WS_LISTEN_ADDR, nil); err != nil {
+	if err := http.ListenAndServe(":" + WS_LISTEN_ADDR, nil); err != nil {
 		log.Fatal("ERR! listen and serve:", err)
 	}
 }
-

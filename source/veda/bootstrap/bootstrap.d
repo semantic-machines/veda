@@ -327,7 +327,7 @@ void main(string[] args)
 		
         try
         {
-            mkdir("./pids");
+            mkdir("./.pids");
             stderr.writeln("create folder: ", path);
         }
         catch (Exception ex)
