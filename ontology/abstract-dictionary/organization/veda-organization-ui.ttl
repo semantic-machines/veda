@@ -568,9 +568,18 @@ v-s:DepartmentTemplate
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
     <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
-    <em about="v-s:shortLabel" property="rdfs:label"></em>
-    <div property="v-s:shortLabel" class="view -edit -search"></div>
-    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:shortLabel" property="rdfs:label"></em>
+        <div property="v-s:shortLabel" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>    
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:subjectCode" property="rdfs:label"></em>
+        <div property="v-s:subjectCode" class="view -edit search"></div>
+        <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+      </div>
+    </div>
     <hr class="view -edit -search">
     <div class="row">
       <div class="col-sm-6">
@@ -599,4 +608,319 @@ v-s:DepartmentTemplate
   </div>
 </div>
   """ ;
+.
+
+v-s:DepartmentForContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Department ;
+  rdfs:label "Шаблон для класса v-s:Department"@ru ;
+  rdfs:label "Template for v-s:Department class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Department" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:parentOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <div about="@" property="v-s:parentOrganization" class="-view edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <!-- <div rel="v-s:parentUnit" class="-view edit -search" data-template="v-ui:LabelLinkTemplate"></div> -->
+    <hr class="view -edit -search">
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:shortLabel" property="rdfs:label"></em>
+        <div property="v-s:shortLabel" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>    
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:subjectCode" property="rdfs:label"></em>
+        <div property="v-s:subjectCode" class="view -edit search"></div>
+        <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <hr class="view -edit -search">
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasChief" property="rdfs:label"></em>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:AppointmentForContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Appointment ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:employee')) {
+      result["v-s:employee"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:occupation')) {
+      result["v-s:occupation"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Appointment" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <hr class="view -edit -search">
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:employee" property="rdfs:label"></em>
+        <div about="@" property="v-s:employee" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+        <veda-control id="select-Person" data-type="link" rel="v-s:employee" class="-view edit search fulltext dropdown margin-sm"></veda-control>
+        <div id="fill-Person" rel="v-s:employee" data-template="v-s:EmployeeEmbeddedTemplate" data-embedded="true"></div>
+        <button id="create-Person" class="btn btn-primary -view edit -search">Создать</button>
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:occupation" property="rdfs:label"></em>
+        <div about="@" property="v-s:occupation" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control id="select-Occupation" data-type="link" rel="v-s:occupation" class="-view edit search fulltext dropdown margin-sm"></veda-control>
+        <div id="fill-Occupation" rel="v-s:occupation" data-template="v-s:OccupationEmbeddedTemplate" data-embedded="true"></div>
+        <button id="create-Occupation" class="btn btn-primary -view edit -search">Создать</button>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
+  </div>
+</div>
+<script>
+  var isNewPerson = false;
+  var isNewOccupation = false;
+  $('#create-Person', template).click(function(){
+    isNewPerson = true;
+    var NewPerson = new veda.IndividualModel();
+    NewPerson['rdf:type'] = [new veda.IndividualModel('v-s:Person')];
+    individual['v-s:employee'] = [NewPerson];
+  });
+
+  $('#create-Occupation', template).click(function(){
+    isNewOccupation = true;
+    var NewOccup = new veda.IndividualModel();
+    NewOccup['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
+    NewOccup['v-s:parentUnit'] = individual['v-s:parentUnit'];
+    individual['v-s:occupation'] = [NewOccup];
+  })
+  
+  function propertyHandler() {
+    if (individual.hasValue('v-s:employee')) {
+      if (isNewPerson) {
+        $('#create-Person', template).hide();
+        $('#select-Person', template).hide();
+        $('#fill-Person', template).show();
+      }
+    } else {
+      isNewPerson = false;
+      $('#select-Person', template).show();
+      $('#create-Person', template).show();
+      $('#fill-Person', template).hide();
+      
+    }
+    if (individual.hasValue('v-s:occupation')) {
+      if (isNewOccupation) {
+        $('#select-Occupation', template).hide();
+        $('#create-Occupation', template).hide();
+        $('#fill-Occupation', template).show();
+      }
+    } else {
+      isNewOccupation = false;
+      $('#select-Occupation', template).show();
+      $('#create-Occupation', template).show();
+      $('#fill-Occupation', template).hide();
+    }
+  }
+
+  propertyHandler();
+  individual.on('v-s:employee', propertyHandler);
+  individual.on('v-s:occupation', propertyHandler);
+  template.one('remove', function() {
+    individual.off('v-s:employee', propertyHandler);
+    individual.off('v-s:occupation', propertyHandler);
+  })
+  // function beforeSaveHandler(){
+  //   var orgINN = individual['v-s:parentOrganizationt'][0]['v-s:taxId'][0];
+  //   var personTabNumber = person['v-s:tabNumber'][0];
+  //   var occupationCode = occup['v-s:subjectCode'][0];
+
+  //   if (isNewPerson) {
+  //     var person = individual['v-s:employee'][0];
+  //     person.id = 'd:'+orgINN+'_employee_'+personTabNumber;
+  //     individual['v-s:employee'] = [person];
+  //   }
+  //   if (isNewOccupation) {
+  //     var occup = individual['v-s:occupation'][0];
+  //     occup.id = 'd:'+orgINN+'_position_'+occupationCode;
+  //     individual['v-s:occupation'] = [occup];
+  //   }
+  //   individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+occupationCode;
+  // }
+  // individual.one('beforeSave', beforeSaveHandler);
+</script>
+  """ ;
+.
+
+v-s:EmployeeEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:tabNumber')) {
+      result["v-s:tabNumber"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:lastName" property="rdfs:label"></em> 
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:lastName" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:lastName" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:firstName" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:firstName" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:firstName" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:middleName" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:middleName" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:middleName" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:birthday" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:birthday" class="view -edit search"></div>
+      <veda-control data-type="date" property="v-s:birthday" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:tabNumber" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:tabNumber" class="view -edit search""></div>
+      <veda-control data-type="string" property="v-s:tabNumber" class="-view edit search"></veda-control>
+    </div>
+  </div>
+</div>
+  """ ; 
+.
+
+v-s:OccupationEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:subjectCode')) {
+      result["v-s:subjectCode"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:title" property="rdfs:label"></em> 
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:title" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:title" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:subjectCode" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:subjectCode" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+</div>
+  """ ; 
 .
