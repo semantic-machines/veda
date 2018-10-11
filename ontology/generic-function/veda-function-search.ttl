@@ -1492,7 +1492,7 @@ v-fs:AttributiveSearchTemplate
 
   $(".xls", template).click(function (e) {
     e.preventDefault();
-    var resultTable = $(".search-result > table").clone();
+    var resultTable = $(".search-result table").clone();
     resultTable.find(".hidden").remove();
     resultTable = resultTable.get(0);
     exportTable(resultTable, individual["rdfs:label"].join(", "), "xls");
@@ -1502,7 +1502,7 @@ v-fs:AttributiveSearchTemplate
     var btn = $(this);
     toggleSpin(btn);
     e.preventDefault();
-    var resultTable = $(".search-result > table").clone();
+    var resultTable = $(".search-result table").clone();
     resultTable.find(".hidden").remove();
     resultTable = resultTable.get(0);
 
