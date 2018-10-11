@@ -76,7 +76,7 @@ veda.Module(function (veda) { "use strict";
 
   // Common server call function
   function call_server(params) {
-    var method = params.type,
+    var method = params.method,
         url = params.url,
         data = params.data,
         async = params.async || false;
@@ -159,7 +159,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "flush",
       async: isObj ? arg.async : false,
       data: {
@@ -174,7 +174,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_rights",
       async: isObj ? arg.async : false,
       data: {
@@ -189,7 +189,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_rights_origin",
       async: isObj ? arg.async : false,
       data: {
@@ -204,7 +204,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_membership",
       async: isObj ? arg.async : false,
       data: {
@@ -222,7 +222,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "authenticate",
       async: isObj ? arg.async : false,
       data: {
@@ -238,7 +238,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_ticket_trusted",
       async: isObj ? arg.async : false,
       data: {
@@ -253,7 +253,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "is_ticket_valid",
       async: isObj ? arg.async : false,
       data: {
@@ -267,7 +267,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_operation_state",
       async: isObj ? arg.async : false,
       data: {
@@ -294,7 +294,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "restart",
       async: isObj ? arg.async : false,
       data: {
@@ -308,7 +308,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "backup",
       async: isObj ? arg.async : false,
       data: {
@@ -322,7 +322,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "count_individuals",
       async: isObj ? arg.async : false,
       data: {}
@@ -334,7 +334,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "set_trace",
       async: isObj ? arg.async : false,
       data: {
@@ -352,7 +352,7 @@ veda.Module(function (veda) { "use strict";
     var isObj = typeof arg === "object";
     var async = isObj ? arg.async : false;
     var params = {
-      type: "GET",
+      method: "GET",
       url: "query",
       async: async,
       data: {
@@ -389,7 +389,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_individual",
       async: isObj ? arg.async : false,
       data: {
@@ -405,7 +405,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "POST",
+      method: "POST",
       url: "get_individuals",
       async: isObj ? arg.async : false,
       data: {
@@ -423,7 +423,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "PUT",
+      method: "PUT",
       url: "remove_individual",
       async: isObj ? arg.async : false,
       data: {
@@ -443,7 +443,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "PUT",
+      method: "PUT",
       url: "put_individual",
       async: isObj ? arg.async : false,
       data: {
@@ -463,7 +463,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "PUT",
+      method: "PUT",
       url: "add_to_individual",
       async: isObj ? arg.async : false,
       data: {
@@ -483,7 +483,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "PUT",
+      method: "PUT",
       url: "set_in_individual",
       async: isObj ? arg.async : false,
       data: {
@@ -503,7 +503,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "PUT",
+      method: "PUT",
       url: "remove_from_individual",
       async: isObj ? arg.async : false,
       data: {
@@ -523,7 +523,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "PUT",
+      method: "PUT",
       url: "put_individuals",
       async: isObj ? arg.async : false,
       data: {
@@ -545,7 +545,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "GET",
+      method: "GET",
       url: "get_property_value",
       async: isObj ? arg.async : false,
       data: {
@@ -561,7 +561,7 @@ veda.Module(function (veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      type: "POST",
+      method: "POST",
       url: "execute_script",
       async: isObj ? arg.async : false,
       data: {
