@@ -790,24 +790,25 @@ v-s:AppointmentForContactTemplate
     individual.off('v-s:employee', propertyHandler);
     individual.off('v-s:occupation', propertyHandler);
   })
-  // function beforeSaveHandler(){
-  //   var orgINN = individual['v-s:parentOrganizationt'][0]['v-s:taxId'][0];
-  //   var personTabNumber = person['v-s:tabNumber'][0];
-  //   var occupationCode = occup['v-s:subjectCode'][0];
-
-  //   if (isNewPerson) {
-  //     var person = individual['v-s:employee'][0];
-  //     person.id = 'd:'+orgINN+'_employee_'+personTabNumber;
-  //     individual['v-s:employee'] = [person];
-  //   }
-  //   if (isNewOccupation) {
-  //     var occup = individual['v-s:occupation'][0];
-  //     occup.id = 'd:'+orgINN+'_position_'+occupationCode;
-  //     individual['v-s:occupation'] = [occup];
-  //   }
-  //   individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+occupationCode;
-  // }
-  // individual.one('beforeSave', beforeSaveHandler);
+  function beforeSaveHandler(){
+    // var orgINN = individual['v-s:parentOrganizationt'][0]['v-s:taxId'][0];
+    // var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
+    // var occupationCode = individual['v-s:occupation'][0]['v-s:subjectCode'][0];
+    // if (isNewPerson) {
+    //   var person = individual['v-s:employee'][0];
+    //   person.id = 'd:'+orgINN+'_employee_'+personTabNumber;
+    //   individual['v-s:employee'] = [person];
+    // }
+    // if (isNewOccupation) {
+    //   var occup = individual['v-s:occupation'][0];
+    //   occup.id = 'd:'+orgINN+'_position_'+occupationCode;
+    //   individual['v-s:occupation'] = [occup];
+    // }
+    // individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+occupationCode;
+    var label = individual['v-s:employee'][0]['v-s:lastName'][0]+ ' ' + individual['v-s:employee'][0]['v-s:firstName'][0] + ' : ' + individual['v-s:occupation'][0]['v-s:title'][0];
+    individual['rdfs:label'] = [label];
+  }
+  individual.one('beforeSave', beforeSaveHandler);
 </script>
   """ ;
 .
@@ -893,6 +894,12 @@ v-s:OccupationEmbeddedTemplate
     var result = {};
     if (!individual.hasValue('v-s:subjectCode')) {
       result["v-s:subjectCode"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('v-s:title')) {
+      result["v-s:title"] = {
         state: false,
         cause: ["v-ui:minCardinality"]
       };

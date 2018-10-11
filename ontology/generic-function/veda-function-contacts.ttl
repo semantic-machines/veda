@@ -334,7 +334,7 @@ v-s:ContactsTemplate
     var modal = veda.Util.showModal(NewAppointment, tmpl, "edit");
     NewAppointment.one("afterSave", function () {
       var person = NewAppointment['v-s:employee'][0];
-      person['v-s:hasAppointment'] = [individual];
+      person['v-s:hasAppointment'] = [NewAppointment];
       console.log(person);
       person.save();
 
