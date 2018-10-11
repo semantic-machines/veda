@@ -131,9 +131,9 @@ v-fc:FunctionCreateTemplate
       var blank = new veda.IndividualModel();
       blank["v-fc:targetType"] = values;
       blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-      blank.present(holder, blankTemplate, "edit");
+      var renderedTemplate = blank.present(holder, blankTemplate, "edit");
       blank.object.one("afterSave", saveHandler);
-      holder.one("remove", function () {
+      renderedTemplate.one("remove", function () {
         blank.object.off("afterSave", saveHandler);
       });
     }
