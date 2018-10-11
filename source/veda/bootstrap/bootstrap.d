@@ -239,7 +239,7 @@ void main(string[] args)
     modules[ "veda-input-queue" ]   = new Module("veda-input-queue", [], false, false, 10);
     modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", [], false, false, 11);
     modules[ "veda-ccus" ]          = new Module("veda-ccus", [], false, false, 12);
-    modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", [], false, false, 13);
+    modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", [], false, false, 99);
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
