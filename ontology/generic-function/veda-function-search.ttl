@@ -1086,7 +1086,7 @@ v-fs:AttributiveSearch
   rdfs:subClassOf v-s:Function ;
   rdfs:label "Атрибутивный поиск"@ru ;
   rdfs:label "Attributive search"@en ;
-  v-ui:hasTemplate v-fs:AttributiveSearchTemplate ;
+  v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
@@ -1351,7 +1351,7 @@ v-fs:RegistrySuccessfullyUpdated
   rdfs:label "Registry successfully updated"@en ;
 .
 
-v-fs:AttributiveSearchTemplate
+v-fs:AttributiveSearchManagementTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
@@ -1414,7 +1414,7 @@ v-fs:AttributiveSearchTemplate
     $(".action.delete-registry", template).remove();
   }
 
-//# sourceURL=v-fs:AttributiveSearchTemplate_pre
+//# sourceURL=v-fs:AttributiveSearchManagementTemplate_pre
 </script>
 <div>
   <div class="container sheet">
@@ -1427,23 +1427,32 @@ v-fs:AttributiveSearchTemplate
       <button class="action delete-registry btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
     </div>
   </div>
-  <br>
-  <div class="container sheet">
-    <style>
-      td.number {
-        mso-number-format:General;
-      }
-      td.date {
-        mso-number-format:"Short Date";
-      }
-    </style>
-    <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
-    <span class="additional-actions">
-      <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
-      <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
-      <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
-    </span>
-  </div>
+  <div class="margin-lg" about="@" data-template="v-fs:AttributiveSearchTemplate">
+</div>
+  """ ;
+.
+
+v-fs:AttributiveSearchTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-fs:AttributiveSearch ;
+  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
+  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <style>
+    td.number {
+      mso-number-format:General;
+    }
+    td.date {
+      mso-number-format:"Short Date";
+    }
+  </style>
+  <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+  <span class="additional-actions">
+    <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
+    <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
+    <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
+  </span>
 </div>
 <script>
   // Append additional actions
