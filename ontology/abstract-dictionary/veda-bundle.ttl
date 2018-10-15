@@ -18,6 +18,16 @@ v-s:MainProperties
   rdfs:label "Основные свойства"@ru ;
   rdfs:label "Main properties"@en ;
 .
+v-s:YesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Да"@ru ;
+  rdfs:label "Yes"@en ;
+.
+v-s:NoBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Нет"@ru ;
+  rdfs:label "No"@en ;
+.
 v-s:Forward
   rdf:type v-s:Bundle ;
   rdfs:label "Вперед"@ru ;
