@@ -24,7 +24,8 @@ addons:
 
 # Build
 install:
-  - ./control-install.sh&>install.log 
+  - ./control-install.sh
+#&>install.log 
   - source $HOME/.cargo/env
 #  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
