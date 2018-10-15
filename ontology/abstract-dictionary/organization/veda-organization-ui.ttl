@@ -1,3 +1,4 @@
+
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -686,22 +687,45 @@ v-s:AppointmentForContactTemplate
   rdfs:label "Template for v-s:Appointment class"@en ;
   v-ui:template """
 <script>
-  template.on("validate", function () {
-    var result = {};
-    if (!individual.hasValue('v-s:employee')) {
-      result["v-s:employee"] = {
-        state: false,
-        cause: ["v-ui:minCardinality"]
-      };
-    }
-    if (!individual.hasValue('v-s:occupation')) {
-      result["v-s:occupation"] = {
-        state: false,
-        cause: ["v-ui:minCardinality"]
-      };
-    }
-    template.trigger("validated", result);
+  template.off("internal-validated");
+  template.on("validate", function (e, validStates) {
+    setTimeout(function(){
+      console.log($('div:not(.hide) veda-control.has-error', template))
+      if ($('div:not(.hide) .has-error', template).length == 0) {
+        $('.action#save', template).removeAttr('disabled');
+      } else {
+        $('.action#save', template).attr('disabled', 'disabled');
+      }
+      
+    },500);
+    // var result = {};
+
+    // var isPositionValid = typeof validStates == 'undefined'? individual.hasValue('v-s:employee') : validStates.person;
+    // var isOccupationValid = typeof validStates == 'undefined'? individual.hasValue('v-s:occupation') : validStates.occupation;
+
+    // result["v-s:employee"] = {
+    //   state: isPositionValid,
+    //   cause: ["v-ui:minCardinality"]
+    // };
+    // result["v-s:occupation"] = {
+    //   state: isOccupationValid,
+    //   cause: ["v-ui:minCardinality"]
+    // };
+    // console.log('end position:' + isPositionValid);
+    // console.log('end occupation:' + isOccupationValid);
+    // template.trigger("validated", result);
+    // if (isPositionValid && isOccupationValid) {
+    //   $('.action#save', template).removeAttr('disabled');
+    // } else {
+    //   $('.action#save', template).attr('disabled', 'disabled');
+    // }
   });
+
+  var personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"'";
+  $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
+  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+individual['v-s:parentUnit'][0].id+"'";
+  $('#select-Occupation veda-control', template).attr('data-query-prefix', occupQueryPrefixString);
+//# sourceURL=v-s:AppointmentForContactTemplate_pre
 </script>
 <div class="container sheet">
   <h2>
@@ -716,17 +740,27 @@ v-s:AppointmentForContactTemplate
     <div class="row">
       <div class="col-md-6">
         <em about="v-s:employee" property="rdfs:label"></em>
+        <div class="btn-group">
+          <button id="selectPersonBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
+          <button id="createPersonBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+        </div>
         <div about="@" property="v-s:employee" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
-        <veda-control id="select-Person" data-type="link" rel="v-s:employee" class="-view edit search fulltext dropdown margin-sm"></veda-control>
-        <div id="fill-Person" rel="v-s:employee" data-template="v-s:EmployeeEmbeddedTemplate" data-embedded="true"></div>
-        <button id="create-Person" class="btn btn-primary -view edit -search">Создать</button>
+        <div id="select-Person">
+          <veda-control data-type="link" rel="v-s:employee" class="fulltext dropdown margin-sm"></veda-control>  
+        </div>
+        <div id="fill-Person"></div>
       </div>
       <div class="col-md-6">
         <em about="v-s:occupation" property="rdfs:label"></em>
+        <div class="btn-group">
+          <button id="selectOccupationBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
+          <button id="createOccupationBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+        </div>
         <div about="@" property="v-s:occupation" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control id="select-Occupation" data-type="link" rel="v-s:occupation" class="-view edit search fulltext dropdown margin-sm"></veda-control>
-        <div id="fill-Occupation" rel="v-s:occupation" data-template="v-s:OccupationEmbeddedTemplate" data-embedded="true"></div>
-        <button id="create-Occupation" class="btn btn-primary -view edit -search">Создать</button>
+        <div id="select-Occupation">
+          <veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm"></veda-control>  
+        </div>
+        <div id="fill-Occupation"></div>
       </div>
     </div>
   </div>
@@ -738,58 +772,86 @@ v-s:AppointmentForContactTemplate
   </div>
 </div>
 <script>
-  var isNewPerson = false;
-  var isNewOccupation = false;
-  $('#create-Person', template).click(function(){
-    isNewPerson = true;
-    var NewPerson = new veda.IndividualModel();
-    NewPerson['rdf:type'] = [new veda.IndividualModel('v-s:Person')];
-    individual['v-s:employee'] = [NewPerson];
+  var NewPerson = null;
+  var NewOccupation = null;
+  var isPersonValid = false;
+  var isOccupationValid = false;
+  
+
+  function toogleButtons(currentBtn) {
+    currentBtn.siblings().removeClass('btn-primary').addClass('btn-default')
+    currentBtn.removeClass('btn-default').addClass('btn-primary');
+  }
+  
+  $('#createPersonBtn', template).click(function(){
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+
+    $('#select-Person').addClass('hide');
+    if (NewPerson) {
+      $('#fill-Person').removeClass('hide');
+    } else {
+      NewPerson = new veda.IndividualModel();
+      NewPerson['rdf:type'] = [new veda.IndividualModel('v-s:Person')];
+      var tmpl = NewPerson.present($("<div>"), 'v-s:EmployeeEmbeddedTemplate', 'edit');
+      tmpl.on("validate", function () {
+        if (NewPerson.hasValue('v-s:lastName') && NewPerson.hasValue('v-s:firstName') && NewPerson.hasValue('v-s:tabNumber')) {
+          isPersonValid = true;
+        } else {
+          isPersonValid = false;
+        }
+        template.trigger('validate', { person: isPersonValid, occupation: isOccupationValid });
+      });
+      $('#fill-Person').append(tmpl);
+    }
   });
 
-  $('#create-Occupation', template).click(function(){
-    isNewOccupation = true;
-    var NewOccup = new veda.IndividualModel();
-    NewOccup['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
-    NewOccup['v-s:parentUnit'] = individual['v-s:parentUnit'];
-    individual['v-s:occupation'] = [NewOccup];
-  })
-  
-  function propertyHandler() {
-    if (individual.hasValue('v-s:employee')) {
-      if (isNewPerson) {
-        $('#create-Person', template).hide();
-        $('#select-Person', template).hide();
-        $('#fill-Person', template).show();
-      }
-    } else {
-      isNewPerson = false;
-      $('#select-Person', template).show();
-      $('#create-Person', template).show();
-      $('#fill-Person', template).hide();
-      
-    }
-    if (individual.hasValue('v-s:occupation')) {
-      if (isNewOccupation) {
-        $('#select-Occupation', template).hide();
-        $('#create-Occupation', template).hide();
-        $('#fill-Occupation', template).show();
-      }
-    } else {
-      isNewOccupation = false;
-      $('#select-Occupation', template).show();
-      $('#create-Occupation', template).show();
-      $('#fill-Occupation', template).hide();
-    }
-  }
+  $('#selectPersonBtn').click(function (){
 
-  propertyHandler();
-  individual.on('v-s:employee', propertyHandler);
-  individual.on('v-s:occupation', propertyHandler);
-  template.one('remove', function() {
-    individual.off('v-s:employee', propertyHandler);
-    individual.off('v-s:occupation', propertyHandler);
-  })
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+    $('#select-Person').removeClass('hide');
+    $('#fill-Person').addClass('hide');
+  });
+
+  $('#createOccupationBtn', template).click(function(){
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+
+    $('#select-Occupation').addClass('hide');
+    if (NewOccupation) {
+      $('#fill-Occupation').removeClass('hide');
+    } else {
+      NewOccupation = new veda.IndividualModel();
+      NewOccupation['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
+      NewOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
+      var tmpl = NewOccupation.present($("<div>"), 'v-s:OccupationEmbeddedTemplate', 'edit');
+      tmpl.on("validate", function () {
+        if (NewOccupation.hasValue('v-s:title') && NewOccupation.hasValue('v-s:subjectCode')) {
+          isOccupationValid = true;
+        } else {
+          isOccupationValid = false;
+        }
+        template.trigger('validate', { person: isPersonValid, occupation: isOccupationValid });
+      });
+      $('#fill-Occupation').append(tmpl);   
+    }
+  });
+
+  $('#selectOccupationBtn').click(function (){
+    console.log(NewOccupation);
+
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+
+    $('#select-Occupation').removeClass('hide');
+    $('#fill-Occupation').addClass('hide');
+  });
+  
   function beforeSaveHandler(){
     // var orgINN = individual['v-s:parentOrganizationt'][0]['v-s:taxId'][0];
     // var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
@@ -836,8 +898,7 @@ v-s:EmployeeEmbeddedTemplate
       <em about="v-s:lastName" property="rdfs:label"></em> 
     </div>
     <div class="col-md-6">
-      <div property="v-s:lastName" class="view -edit search"></div>
-      <veda-control data-type="string" property="v-s:lastName" class="-view edit search"></veda-control>
+      <veda-control data-type="string" property="v-s:lastName"></veda-control>
     </div>
   </div>
   <br>
@@ -846,8 +907,7 @@ v-s:EmployeeEmbeddedTemplate
       <em about="v-s:firstName" property="rdfs:label"></em>
     </div>
     <div class="col-md-6">
-      <div property="v-s:firstName" class="view -edit search"></div>
-      <veda-control data-type="string" property="v-s:firstName" class="-view edit search"></veda-control>
+      <veda-control data-type="string" property="v-s:firstName"></veda-control>
     </div>
   </div>
   <br>
@@ -856,8 +916,7 @@ v-s:EmployeeEmbeddedTemplate
       <em about="v-s:middleName" property="rdfs:label"></em>
     </div>
     <div class="col-md-6">
-      <div property="v-s:middleName" class="view -edit search"></div>
-      <veda-control data-type="string" property="v-s:middleName" class="-view edit search"></veda-control>
+      <veda-control data-type="string" property="v-s:middleName"></veda-control>
     </div>
   </div>
   <br>
@@ -866,8 +925,7 @@ v-s:EmployeeEmbeddedTemplate
       <em about="v-s:birthday" property="rdfs:label"></em>
     </div>
     <div class="col-md-6">
-      <div property="v-s:birthday" class="view -edit search"></div>
-      <veda-control data-type="date" property="v-s:birthday" class="-view edit search"></veda-control>
+      <veda-control data-type="date" property="v-s:birthday"></veda-control>
     </div>
   </div>
   <br>
@@ -876,8 +934,7 @@ v-s:EmployeeEmbeddedTemplate
       <em about="v-s:tabNumber" property="rdfs:label"></em>
     </div>
     <div class="col-md-6">
-      <div property="v-s:tabNumber" class="view -edit search""></div>
-      <veda-control data-type="string" property="v-s:tabNumber" class="-view edit search"></veda-control>
+      <veda-control data-type="string" property="v-s:tabNumber"></veda-control>
     </div>
   </div>
 </div>
@@ -927,7 +984,6 @@ v-s:OccupationEmbeddedTemplate
       <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
     </div>
   </div>
-  <br>
 </div>
   """ ; 
 .
