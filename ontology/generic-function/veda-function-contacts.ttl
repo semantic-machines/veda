@@ -92,9 +92,9 @@ v-s:ContactsTemplate
     td {
       white-space: nowrap;
     }
-    div.value-row {
-      border-top: 1px solid #dddddd;
-    }
+    /*div.value-row {
+      margin-top: 5px;
+    }*/
     div.value-row > div.item {
       padding: 5px;
     }
@@ -120,14 +120,15 @@ v-s:ContactsTemplate
           <veda-control id="searchText" property="*" data-type="string"></veda-control>
           <span class="input-group-btn">
             <button id="searchButton" class="btn btn-primary" type="button" about="v-fs:Find" property="rdfs:label"></button>
+            <button id="resetButton" class="btn btn-warning" type="button" about="v-s:Reset" property="rdfs:label"></button>
           </span>
         </div>
         <br>
       </div>
       <br>
-      <div class="row">
+      <div>
         <div>
-          <div style="border-right: 1px dotted #ccc;">
+          <div>
             <div id="orgTree" class="table-responsive">
             </div>
           </div>
@@ -138,10 +139,12 @@ v-s:ContactsTemplate
 </div>
 <script>
   var orgTree = $("#orgTree", template);
-  //var thead = $(".thead", template);
+  
   var controlBlock = '<div id="controlButtons" style="float:right"><div class="btn create btn-xs btn-primary"><i class="glyphicon glyphicon-plus"></i></div><div class="btn edit btn-xs btn-default"><i class="glyphicon glyphicon-pencil"></i></div><div class="btn remove btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></div></div>';
 
-  var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-info">Добавить отдел</button>';
+  var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';
+
+  var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-primary">Добавить отдел</button>';
   var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Добавить сотрудника</button>';
 
   var controls = '<div id="controlButtons" style="float:right">'+addDepartmentControl+addAppointmentControl+'</div>';
@@ -172,7 +175,7 @@ v-s:ContactsTemplate
         rootElement.append('<div class="childs"></div>');
         childsContainer = rootElement.children('.childs');
 
-        var childsUri = getChilds(parentUri);
+        var childsUri = getChilds(new veda.IndividualModel(parentUri));
         console.log(childsUri);
         childsUri.forEach(function(uri) {
           var child = new veda.IndividualModel(uri);
@@ -182,36 +185,50 @@ v-s:ContactsTemplate
       }
     }
   }
-  function getChilds(parentUri){
+
+  function getChilds(parent){
+    var childsUries = [];
+    if (parent.is('v-s:Appointment')) {
+      return childsUries;
+    }
+    var parentUri = parent.id;
     var queryPattern = "'v-s:parentUnit'=='" + parentUri + "' && ";
     var queryOrgGroup = queryPattern + "'rdf:type'=='v-s:OrgGroup'";
     var queryDepartments = queryPattern + "'rdf:type'=='v-s:Department'";
     var queryOrganization = queryPattern + "'rdf:type'=='v-s:Organization'";
-
+    
     //отображение сначала должностей как корней, с аппоинтментами внутри 
     // var queryPosition = queryPattern + "'rdf:type'=='v-s:Position'";
     // var queryAppointment = "'rdf:type'=='v-s:Appointment' && 'v-s:occupation'=='"+parentUri+"'";
     // var queryStringArray = [queryOrganization, queryDepartments, queryOrgGroup, queryPosition, queryAppointment];
-    
+
     //отображение аппоинтментов как кроней
     var queryAppointment = queryPattern + "'rdf:type'=='v-s:Appointment'";
-    var queryStringArray = [queryOrganization, queryDepartments, queryOrgGroup, queryAppointment];
-    var childsUries = [];
+    var queryStringArray;
+    if (parent.is('v-s:Department')) {
+      queryStringArray = [queryDepartments, queryAppointment];  
+    } else if (parent.is('v-s:OrgGroup')) {
+      queryStringArray = [queryAppointment];
+    } else if (parent.is('v-s:Organization')) {
+      queryStringArray = [queryOrganization, queryDepartments, queryOrgGroup, queryAppointment];
+    }
+    
     var sort = "'rdfs:label' desc";
     queryStringArray.forEach(function(queryString){
       childsUries = childsUries.concat(query({ticket: veda.ticket, query: queryString, sort: sort}).result);
     });
     return childsUries;
+    
   }
+
   function getTemplate(value, currentLvl){
     var icon = '';
     var expand = '';
-    var zoomIn = '<a href="#" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';
     var textProperty = 'rdfs:label';
     if (value.is('v-s:Appointment')) {
       icon = 'fa-user-o';
     } else {
-      var preCheckChilds = getChilds(value.id);
+      var preCheckChilds = getChilds(value);
       if (preCheckChilds.length > 0) {
         expand = "<a href='#' class='expand glyphicon glyphicon-chevron-right'></a>";
       };
@@ -222,7 +239,7 @@ v-s:ContactsTemplate
       }
     }
     var iconSpan = "<span style='margin:0 5px;' class='fa fa-lg " + icon + "'></span>"
-    var rowTmpl = "<div class='value-row' style='padding-left:16px'><div class='item'>"+ expand + zoomIn + iconSpan +
+    var rowTmpl = "<div class='value-row margin-xs' style='padding-left:16px'><div class='item'>"+ expand + iconSpan +
       "<span about='@' property='" + textProperty + "' data-template='v-ui:LabelTemplate'></span></div></div>";
     return $(rowTmpl);
   }
@@ -285,7 +302,9 @@ v-s:ContactsTemplate
     if (!item.hasClass('warning')) {
       $('.item.warning', template).removeClass('warning');
       $('#controlButtons', template).remove();
+      $('#zoomIn', template).remove();
       item.addClass('warning');
+      item.append(zoomIn);
       if (self.attr('typeof') != 'v-s:Appointment') {
         item.append(controls);
       }
@@ -355,10 +374,12 @@ v-s:ContactsTemplate
 
   $('#searchButton', template).click(function(){
     var searchText = $('#searchText input', template).val();
-    console.log(searchText);
     if (!searchText) return;
     var sort = "'rdfs:label' desc";
-    var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'rdfs:label'=='"+ searchText +"*'"
+
+    var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'rdfs:label'=='"+ searchText +"*'";
+    //поиск с заполненным v-s:parentOrganization
+    // var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'v-s:parentOrganization'=='"+ individual['v-s:managedOrganization'][0].id +"' && 'rdfs:label'=='"+ searchText +"*'";
     query({
       ticket: veda.ticket,
       query: q,
@@ -372,10 +393,16 @@ v-s:ContactsTemplate
         if (temp.isSubUnitOf && temp.isSubUnitOf(individual['v-s:managedOrganization'][0])) {
           items.push(new veda.IndividualModel(item));
         }
+        //поиск с заполненным v-s:parentOrganization
+        //items.push(new veda.IndividualModel(item));
       });
       drawChilds(undefined, orgTree, items);
       return items;
     })
+  })
+  $('#resetButton', template).click(function(){
+    $('#searchText input', template).val('');
+    initialStructure();
   })
   //# sourceURL=v-s:ContactsTemplate_post
 </script>
