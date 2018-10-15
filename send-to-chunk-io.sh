@@ -3,6 +3,7 @@ mkdir chunk-io
 zip -v -r ./chunk-io/logs.zip logs
 zip -v -r ./chunk-io/logs.zip data
 zip -v ./chunk-io/logs.zip core
+zip -v ./chunk-io/logs.zip install.log
 
 cd chunk-io
 
