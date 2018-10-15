@@ -5,8 +5,8 @@ DMD_VER=2.080.0
 DUB_VER=1.5.0
 GO_VER=go1.11
 MSGPUCK_VER=2.0
-TARANTOOL_VER=2.0.5
-NANOMSG_VER=1.1.4
+TARANTOOL_VER=1.10.2
+NANOMSG_VER=1.1.5
 
 INSTALL_PATH=$PWD
 
@@ -140,7 +140,7 @@ ls $HOME/go
 
 if ! tarantool -V | grep $TARANTOOL_VER; then
 echo "--- INSTALL TARANTOOL ---"
-curl http://download.tarantool.org/tarantool/2.0/gpgkey | sudo apt-key add -
+curl http://download.tarantool.org/tarantool/1.10/gpgkey | sudo apt-key add -
 release=`lsb_release -c -s`
 
 # install https download transport for APT
@@ -148,9 +148,9 @@ sudo apt-get -y install apt-transport-https
 
 # append two lines to a list of source repositories
 sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
-sudo tee /etc/apt/sources.list.d/tarantool_2_0.list <<- EOF
-deb http://download.tarantool.org/tarantool/2.0/ubuntu/ $release main
-deb-src http://download.tarantool.org/tarantool/2.0/ubuntu/ $release main
+sudo tee /etc/apt/sources.list.d/tarantool_1_0.list <<- EOF
+deb http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
+deb-src http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
 EOF
 
 # install
