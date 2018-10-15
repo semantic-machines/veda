@@ -125,6 +125,20 @@ v-ui:placeholder
   rdfs:label "Placeholder"@en ;
   rdfs:range xsd:string ;
 .
+v-ui:trueLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
+  rdfs:label "Истинное значение"@ru ;
+  rdfs:label "True value"@en ;
+  rdfs:range xsd:string ;
+.
+v-ui:falseLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
+  rdfs:label "Ложное значение"@ru ;
+  rdfs:label "False value"@en ;
+  rdfs:range xsd:string ;
+.
 v-ui:minCardinality
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:PropertySpecification ;
