@@ -532,6 +532,9 @@ v-s:DeliveryTemplate
       <em about="rdfs:comment" property="rdfs:label"></em>
       <div property="rdfs:comment" class="view -edit -search"></div>
       <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+      <em about="v-s:attachment" property="rdfs:label"></em>
+      <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+      <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search create"></veda-control>
     </div>
   </div>
   <hr>
