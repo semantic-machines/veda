@@ -468,7 +468,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
 
         SearchResult sr = g_context.get_individuals_ids_via_query(ticket.user_uri, query, sort, databases, 0, top, limit, OptAuthorize.NO, false);
 
-        JSONValue jres;
+        JSONValue    jres;
         jres[ "result" ]         = sr.result;
         jres[ "count" ]          = sr.count;
         jres[ "estimated" ]      = sr.estimated;

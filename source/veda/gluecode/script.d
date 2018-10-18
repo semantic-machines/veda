@@ -24,7 +24,8 @@ struct ScriptInfo
     bool[ string ] dependency;
     Script compiled_script;
     string run_at;
-    bool unsafe;
+    bool   disallow_changing_source;
+    bool   unsafe;
 }
 
 class ScriptsWorkPlace
@@ -81,9 +82,10 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
             ScriptInfo script = ScriptInfo.init;
             script.id         = ss.uri;
             script.str_script = str_script;
-            
-            script.unsafe = ss.getFirstBoolean("v-s:unsafe", false);
-            script.run_at = ss.getFirstLiteral("v-s:runAt");
+
+            script.unsafe                   = ss.getFirstBoolean("v-s:unsafe", false);
+            script.run_at                   = ss.getFirstLiteral("v-s:runAt");
+            script.disallow_changing_source = ss.getFirstBoolean("v-s:disallowChangingSource");
 
             if (script.run_at is null)
                 script.run_at = "main";

@@ -75,7 +75,7 @@ Onto             onto;
 Context          context;
 ScriptsWorkPlace _wpl;
 
-Search              vql;
+Search           vql;
 string           empty_uid;
 string           vars_for_codelet_script;
 
@@ -99,9 +99,9 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
-    context.set_vql (new XapianSearch(context));
+    context.set_vql(new XapianSearch(context));
 
-	vql = context.get_vql ();
+    vql = context.get_vql();
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
@@ -333,8 +333,10 @@ class ScriptProcess : VedaModule
         return null;
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         committed_op_id = op_id;
 
@@ -367,7 +369,7 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        context.set_vql (new XapianSearch(context));
+        context.set_vql(new XapianSearch(context));
         //context.set_vql(new FTQueryClient(context));
 
         return true;

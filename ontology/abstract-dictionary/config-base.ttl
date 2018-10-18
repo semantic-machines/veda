@@ -1316,6 +1316,7 @@ cfg:Event_16
   rdfs:comment "Скрипт обработки обратных ссылок" ;
   v-s:triggerByType v-s:BackwardLink ;
   v-s:preventByType v-s:Version;
+  v-s:disallowChangingSource "true"^^xsd:boolean ;
   v-s:script """
 
   // First class event
