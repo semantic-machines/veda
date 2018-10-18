@@ -29,23 +29,21 @@ v-s:ApplicationSmallCardTemplate
   rdfs:label "Шаблон для приложения"@ru ;
   rdfs:label "Application small card template"@en ;
   v-ui:template """
-<div about="@" class="card card-small card-post card-post--1">
+<div about="@" class="card card-small card-post card-post--1" style="display: flex; flex-flow: column; padding: 15px;">
   <a href="#/@" rel="v-s:hasImage">
     <div class="card-post__image" style="background-image: url('/files/@');"></div>
   </a>
-  <div class="card-body">
-    <h4 class="card-title margin-md text-center">
-      <a href="#/@" property="rdfs:label"></a>
-      <br>
-      <small property="rdfs:comment"></small>
-    </h4>
-    <div class="row">
-      <div class="col-md-6" about="@" rel="v-s:hasBlank" data-limit="1">
-        <a href="#/@" class="btn btn-success btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
-      </div>
-      <div class="col-md-6" about="@" rel="v-s:hasRegistry" data-limit="1">
-        <a href="#/@" class="btn btn-info btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
-      </div>
+  <h4 class="card-title margin-md text-center" style="margin-bottom: 15px;">
+    <a href="#/@" about="@" property="rdfs:label"></a>
+    <br>
+    <small about="@" property="rdfs:comment"></small>
+  </h4>
+  <div style="margin-top: auto;">
+    <div about="@" rel="v-s:hasBlank" data-limit="1">
+      <a href="#/@" class="btn btn-success btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
+    </div>
+    <div about="@" rel="v-s:hasRegistry" data-limit="1">
+      <a href="#/@" class="btn btn-info btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
     </div>
   </div>
 </div>

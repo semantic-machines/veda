@@ -498,10 +498,10 @@ v-s:AspectTemplate
   v-ui:forClass v-s:Aspect ;
   v-ui:template """
 <div class="container" style="position:relative;">
-  <h1 property="rdfs:label" class="text-center"></h1>
+  <h2 property="rdfs:label" class="text-center"></h2>
   <br>
-  <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-wrap: wrap;">
-    <div class="col-md-4 col-sm-6" style="display: flex;">
+  <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-flow: row wrap;">
+    <div class="col-md-3 col-md-4 col-sm-6 col-xs-12" style="display: flex;">
       <div about="@" data-template="v-s:ApplicationSmallCardTemplate" style="display: flex; width:100%;"></div>
     </div>
   <div>
