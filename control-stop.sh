@@ -9,6 +9,7 @@ cp ./logs/*-stderr.log ./logs/$TIMESTAMP
 #pkill tarantool
 
 start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
+start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
 
 target=".pids/"
 let count=0
