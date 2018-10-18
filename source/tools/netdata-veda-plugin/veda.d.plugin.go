@@ -109,11 +109,11 @@ func main() {
 	cs_scripts_main := NewConsumer(main_queue, "scripts_main0", R)
 	cs_scripts_main.open()
 
-	cs_ltr_scripts := NewConsumer(main_queue, "ltr_scripts0", R)
-	cs_ltr_scripts.open()
-
 	cs_scripts_lp := NewConsumer(main_queue, "scripts_lp0", R)
 	cs_scripts_lp.open()
+
+	cs_ltr_scripts := NewConsumer(main_queue, "ltr_scripts0", R)
+	cs_ltr_scripts.open()
 
 	vedaData := make(map[string]interface{})
 	for {
@@ -167,8 +167,8 @@ func main() {
     		cs_fulltext_indexer0.get_info()
     		cs_fulltext_indexer1.get_info()
     		cs_scripts_main.get_info()
-    		cs_ltr_scripts.get_info()
     		cs_scripts_lp.get_info()
+    		cs_ltr_scripts.get_info()
     		cs_CCUS.get_info()
 
 		main_queue.get_info (main_queue.chunk)
@@ -176,11 +176,11 @@ func main() {
 		fmt.Println("BEGIN netdata.plugin_veda_queue_scripts_main")
 		fmt.Printf("SET queue_fanout_email0=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)
 		fmt.Printf("SET queue_scripts_main0=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
+		fmt.Printf("SET queue_scripts_lp0=%d\n", main_queue.count_pushed - cs_scripts_lp.count_popped)
 		fmt.Printf("SET queue_fanout_sql_lp0=%d\n", main_queue.count_pushed - cs_fanout_sql_lp.count_popped)
 		fmt.Printf("SET queue_fanout_sql_np0=%d\n", main_queue.count_pushed - cs_fanout_sql_np.count_popped)
 		fmt.Printf("SET queue_fulltext_indexer0=%d\n", main_queue.count_pushed - cs_fulltext_indexer0.count_popped)
 		fmt.Printf("SET queue_fulltext_indexer1=%d\n", main_queue.count_pushed - cs_fulltext_indexer1.count_popped)
-		fmt.Printf("SET queue_scripts_main0=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
 		fmt.Printf("SET queue_CCUS=%d\n", main_queue.count_pushed - cs_CCUS.count_popped)
 		fmt.Println("END")
 
