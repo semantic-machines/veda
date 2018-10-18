@@ -66,11 +66,11 @@ func main() {
 
 	fmt.Println("DIMENSION queue_fanout_email0 'email' absolute 1 1")
 	fmt.Println("DIMENSION queue_scripts_main0 'scripts_main0' absolute 1 1")
+	fmt.Println("DIMENSION queue_scripts_lp0 'scripts_lp0' absolute 1 1")
 	fmt.Println("DIMENSION queue_fanout_sql_lp0 'sql_lp' absolute 1 1")
 	fmt.Println("DIMENSION queue_fanout_sql_np0 'sql_np' absolute 1 1")
 	fmt.Println("DIMENSION queue_fulltext_indexer0 'fulltext_indexer0' absolute 1 1")
 	fmt.Println("DIMENSION queue_fulltext_indexer1 'fulltext_indexer1' absolute 1 1")
-	fmt.Println("DIMENSION queue_scripts_main 'scripts_lp0' absolute 1 1")
 	fmt.Println("DIMENSION queue_CCUS 'CCUS' absolute 1 1")
 
 	fmt.Println("CHART netdata.plugin_veda_users '' 'Veda users' 'count' veda.d '' area 10000 3")
