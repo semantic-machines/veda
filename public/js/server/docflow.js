@@ -1031,26 +1031,24 @@ veda.Module(function (veda) { "use strict";
               }
 
 
+              is_completed = true;
               document['v-wf:isCompleted'] = [
               {
-                  data: true,
+                  data: is_completed,
                   type: "Boolean"
               }];
-
-              is_completed = true;
 
               var completeProcess = {
                   '@': forProcess,
                   'v-wf:isCompleted': [
                   {
-                      data: true,
+                      data: is_completed,
                       type: "Boolean"
                   }]
               };
 
               veda.Codelet.complete_process(ticket, _process, _event_id);
-
-              add_to_individual(ticket, completeProcess, _event_id);
+              set_in_individual(ticket, completeProcess, _event_id);
 
           } // end [OutputCondition]
 
