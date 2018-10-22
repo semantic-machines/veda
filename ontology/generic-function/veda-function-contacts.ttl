@@ -145,7 +145,7 @@ v-s:ContactsTemplate
   var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';
 
   var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-primary">Добавить отдел</button>';
-  var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Добавить сотрудника</button>';
+  var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Назначить сотрудника</button>';
 
   var controls = '<div id="controlButtons" style="float:right">'+addDepartmentControl+addAppointmentControl+'</div>';
 
@@ -176,7 +176,6 @@ v-s:ContactsTemplate
         childsContainer = rootElement.children('.childs');
 
         var childsUri = getChilds(new veda.IndividualModel(parentUri));
-        console.log(childsUri);
         childsUri.forEach(function(uri) {
           var child = new veda.IndividualModel(uri);
           var tmpl = getTemplate(child);
@@ -214,9 +213,11 @@ v-s:ContactsTemplate
     }
     
     var sort = "'rdfs:label' desc";
-    queryStringArray.forEach(function(queryString){
-      childsUries = childsUries.concat(query({ticket: veda.ticket, query: queryString, sort: sort}).result);
-    });
+    if (queryStringArray) {
+      queryStringArray.forEach(function(queryString){
+        childsUries = childsUries.concat(query({ticket: veda.ticket, query: queryString, sort: sort}).result);
+      });  
+    }
     return childsUries;
     
   }
@@ -352,16 +353,11 @@ v-s:ContactsTemplate
 
     var modal = veda.Util.showModal(NewAppointment, tmpl, "edit");
     NewAppointment.one("afterSave", function () {
-      var person = NewAppointment['v-s:employee'][0];
-      person['v-s:hasAppointment'] = [NewAppointment];
-      console.log(person);
-      person.save();
-
       modal.modal("hide").remove();
       row.find('.childs').remove();
       setTimeout(function(){
         drawChilds(parentUri, row)
-      }, 500);
+      }, 1000);
     });
     return false;
   });
