@@ -31,7 +31,7 @@ v-s:ApplicationSmallCardTemplate
   v-ui:template """
 <div about="@" class="card card-small card-post card-post--1" style="display: flex; flex-flow: column; padding: 15px;">
   <a href="#/@" rel="v-s:hasImage">
-    <div class="card-post__image" style="background-image: url('/files/@');"></div>
+    <div class="card-post__icon" style="background-image: url('/files/@');"></div>
   </a>
   <h4 class="card-title margin-md text-center" style="margin-bottom: 15px;">
     <a href="#/@" about="@" property="rdfs:label"></a>

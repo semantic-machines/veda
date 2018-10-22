@@ -428,7 +428,16 @@ body {
   min-height: 20rem;
   border-top-left-radius: 0.625rem;
   border-top-right-radius: 0.625rem;
-  /*background-size: cover;*/
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat; }
+
+.card-post__icon {
+  position: relative;
+  min-height: 20rem;
+  border-top-left-radius: 0.625rem;
+  border-top-right-radius: 0.625rem;
+  background-size: 50%;
   background-position: center;
   background-repeat: no-repeat; }
 
