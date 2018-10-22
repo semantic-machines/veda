@@ -1,7 +1,8 @@
 body {
   position: relative;
   font-family:"Ubuntu",Tahoma,"Helvetica Neue",Helvetica,Arial,sans-serif;
-  color: #334;
+  /*color: #334;*/
+  color: #333;
   /*background-color: #f8f8fa;*/
   background-color: #f2f2f2;
 }
