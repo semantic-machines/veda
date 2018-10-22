@@ -193,7 +193,10 @@ class XapianReader : SearchReader
             foreach (key, value; databasenames)
             {
                 if (value == false)
-                    db_names ~= key;
+                {
+                    if (key != "not-indexed")
+                        db_names ~= key;
+                }
             }
         }
         else
@@ -203,13 +206,19 @@ class XapianReader : SearchReader
             foreach (el; db_names)
             {
                 if (el[ 0 ] == ' ' || el[ $ - 1 ] == ' ')
-                    db_names[ idx ] = strip(el);
+                {
+                    auto dbn = strip(el);
+                    if (dbn != "not-indexed")
+                        db_names[ idx ] = strip(el);
+                }
                 idx++;
             }
         }
 
         if (db_names.length == 0)
             db_names = [ "base" ];
+
+        log.trace("db_names=%s", db_names);
 
         if (trace)
             log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query,
@@ -304,7 +313,7 @@ class XapianReader : SearchReader
 
             if (sr.total_time > 5_000)
             {
-                log.trace("WARN! xapian::get, total_time (%d) > 5 sec, user=%s, query=%s, sr=%s", sr.total_time, user_uri, str_query, sr);
+                log.trace("WARN! xapian::get, total_time (%d ms) > 5 sec, user=%s, query=%s, sr=%s", sr.total_time, user_uri, str_query, sr);
             }
 
             if (sr.result_code == ResultCode.DatabaseModifiedError)
