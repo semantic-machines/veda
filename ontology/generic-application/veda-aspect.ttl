@@ -498,7 +498,7 @@ v-s:AspectTemplate
   v-ui:forClass v-s:Aspect ;
   v-ui:template """
 <div class="container" style="position:relative;">
-  <h1 property="rdfs:label" class="text-center"></h1>
+  <h1 property="rdfs:label" class="text-center" style="color:#5c5c5c"></h1>
   <br>
   <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-flow: row wrap;">
     <div class="col-md-3 col-md-4 col-sm-6 col-xs-12" style="display: flex;">
