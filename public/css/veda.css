@@ -428,7 +428,7 @@ body {
   min-height: 20rem;
   border-top-left-radius: 0.625rem;
   border-top-right-radius: 0.625rem;
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat; }
 
