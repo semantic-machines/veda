@@ -280,7 +280,7 @@ public class IndexerContext
                         indexer_base_db.delete_document(uuid.ptr, uuid.length, &err);
                 }
 
-                if (dbname == "not-indexed")
+                if (is_deleted == false && dbname == "not-indexed")
                     return;
 
                 foreach (predicate, resources; indv.resources)
