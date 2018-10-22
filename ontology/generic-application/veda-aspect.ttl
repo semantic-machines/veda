@@ -501,7 +501,7 @@ v-s:AspectTemplate
   <h1 property="rdfs:label" class="text-center" style="color:#5c5c5c"></h1>
   <br>
   <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-flow: row wrap;">
-    <div class="col-md-3 col-md-4 col-sm-6 col-xs-12" style="display: flex;">
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="display: flex;">
       <div about="@" data-template="v-s:ApplicationSmallCardTemplate" style="display: flex; width:100%;"></div>
     </div>
   <div>
