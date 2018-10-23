@@ -23,8 +23,10 @@ public class FanoutProcess : VedaModule
         super(_subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         ResultCode rc;
 
@@ -38,6 +40,12 @@ public class FanoutProcess : VedaModule
             {
                 log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
             }
+        }
+
+        if (rc == ResultCode.Fail_Commit)
+        {
+            log.trace("ERR! fail commit");
+            return ResultCode.Not_Ready;
         }
 
         committed_op_id = op_id;
@@ -167,6 +175,8 @@ public class FanoutProcess : VedaModule
                     catch (Throwable ex)
                     {
                         log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                        mysql_conn.query("ROLLBACK");
+                        return ResultCode.Fail_Commit;
                     }
                 }
 
@@ -188,6 +198,11 @@ public class FanoutProcess : VedaModule
                                                  "ADD `deleted` BOOL NULL");
                                 log.trace("alter table [%s]", predicate);
                                 insert_to_sql(predicate, rss, new_indv);
+                            }
+                            else
+                            {
+                                mysql_conn.query("ROLLBACK");
+                                return ResultCode.Fail_Commit;
                             }
                         }
                     }
