@@ -48,7 +48,7 @@ sudo apt-get install build-essential
 
 ### RUST LANG ###
 
-if ! rustc -V; then
+if [ "$1" = force ] || ! rustc -V ; then
     echo "--- INSTALL RUST ---"
     curl https://sh.rustup.rs -sSf | sh -s -- -y
     source $HOME/.cargo/env
@@ -64,7 +64,7 @@ cargo -V
 ### D LANG ###
 
 # Get right version of DMD
-if ! dmd --version | grep $DMD_VER ; then
+if [ "$1" = force ] || ! dmd --version | grep $DMD_VER ; then
     echo "--- INSTALL DMD ---"
     wget -w 10 http://downloads.dlang.org/releases/2.x/$DMD_VER/dmd_$DMD_VER-0_amd64.deb
     sudo dpkg -i dmd_$DMD_VER-0_amd64.deb
@@ -75,7 +75,7 @@ else
 fi
 
 # Get right version of DUB
-if ! dub --version | grep $DUB_VER ; then
+if [ "$1" = force ] || ! dub --version | grep $DUB_VER ; then
     echo "--- INSTALL DUB ---"
     wget https://github.com/dlang/dub/releases/download/v$DUB_VER/dub-$DUB_VER-linux-x86_64.tar.gz
     tar -xvzf dub-$DUB_VER-linux-x86_64.tar.gz
@@ -87,7 +87,7 @@ else
 fi
 
 ### GO LANG ###
-if ! go version | grep $GO_VER ; then
+if [ "$1" = force ] || ! go version | grep $GO_VER ; then
     echo "--- INSTALL GOLANG ---"
     mkdir tmp
     cd tmp
@@ -138,7 +138,7 @@ ls $HOME/go
 
 ### TARANTOOL SERVER ###
 
-if ! tarantool -V | grep $TARANTOOL_VER; then
+if [ "$1" = force ] || ! tarantool -V | grep $TARANTOOL_VER ; then
 echo "--- INSTALL TARANTOOL ---"
 curl http://download.tarantool.org/tarantool/1.10/gpgkey | sudo apt-key add -
 release=`lsb_release -c -s`
@@ -168,7 +168,7 @@ fi
 
 ### LIB NANOMSG ###
 
-if ! ldconfig -p | grep libnanomsg; then
+if [ "$1" = force ] || ! ldconfig -p | grep libnanomsg ; then
     echo "--- INSTALL NANOMSG ---"
     # make nanomsg dependency
     mkdir tmp
@@ -197,7 +197,7 @@ fi
 
 sudo apt-get remove -y libraptor2-0
 ldconfig -p | grep libraptor2
-if ! ldconfig -p | grep libraptor2; then
+if [ "$1" = force ] || ! ldconfig -p | grep libraptor2 ; then
     echo "--- INSTALL LIB RAPTOR ---"
     sudo apt-get install -y gtk-doc-tools
     sudo apt-get install -y libxml2-dev
@@ -224,7 +224,7 @@ else
     echo "--- LIB RAPTOR INSTALLED ---"
 fi
 
-if ! ldconfig -p | grep libtarantool; then
+if [ "$1" = force ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
     TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
 
