@@ -505,7 +505,7 @@ class VedaModule : VedaModuleBasic
                          res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
                 {
                     log.trace("WARN: message fail prepared, sleep and repeate...");
-                    Thread.sleep(dur!("seconds")(10));
+                    Thread.sleep(dur!("seconds")(1));
                 }
                 else
                 {
