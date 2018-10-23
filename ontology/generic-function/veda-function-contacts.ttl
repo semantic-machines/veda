@@ -185,7 +185,7 @@ v-s:ContactsTemplate
     }
   }
 
-  function getChilds(parent){
+  function getChilds(parent, isPrefetch){
     var childsUries = [];
     if (parent.is('v-s:Appointment')) {
       return childsUries;
@@ -203,7 +203,7 @@ v-s:ContactsTemplate
 
     //отображение аппоинтментов как кроней
     var queryAppointment = queryPattern + "'rdf:type'=='v-s:Appointment'";
-    var queryStringArray;
+    var queryStringArray = [];
     if (parent.is('v-s:Department')) {
       queryStringArray = [queryDepartments, queryAppointment];  
     } else if (parent.is('v-s:OrgGroup')) {
@@ -213,10 +213,12 @@ v-s:ContactsTemplate
     }
     
     var sort = "'rdfs:label' desc";
-    if (queryStringArray) {
-      queryStringArray.forEach(function(queryString){
-        childsUries = childsUries.concat(query({ticket: veda.ticket, query: queryString, sort: sort}).result);
-      });  
+    for (var i = 0; i< queryStringArray.length; i++) {
+      var result = query({ticket: veda.ticket, query: queryStringArray[i], sort: sort}).result;
+      childsUries = childsUries.concat(result);
+      if (isPrefetch && childsUries.length > 0) {
+        break;
+      }
     }
     return childsUries;
     
@@ -229,7 +231,7 @@ v-s:ContactsTemplate
     if (value.is('v-s:Appointment')) {
       icon = 'fa-user-o';
     } else {
-      var preCheckChilds = getChilds(value);
+      var preCheckChilds = getChilds(value, true);
       if (preCheckChilds.length > 0) {
         expand = "<a href='#' class='expand glyphicon glyphicon-chevron-right'></a>";
       };
