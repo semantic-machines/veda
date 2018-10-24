@@ -12,7 +12,7 @@ import (
 //request is redirected to veda-server via socket
 //veda-server stores individual into storage
 func putIndividual(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now()
 
 	var assignedSubsystems uint64
 	var ticketKey, eventID string
@@ -60,7 +60,7 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 
 //putIndividuals same to put individual but this function store array of individuals from client
 func putIndividuals(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now()
 
 	var assignedSubsystems uint64
 	var ticketKey, eventID string

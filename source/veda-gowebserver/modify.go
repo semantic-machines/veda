@@ -15,7 +15,7 @@ import (
 //event_id is current event id
 func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON interface{}, assignedSubsystems uint64,
 	eventID string, startTime int64, ctx *fasthttp.RequestCtx) ResultCode {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now()
 	request := make(map[string]interface{})
 
 	//fills request map with parametrs
