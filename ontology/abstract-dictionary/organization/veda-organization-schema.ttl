@@ -124,7 +124,7 @@ v-s:parentOrganization
   rdfs:label "Основная организация"@ru ;
   rdfs:label "Parent organization"@en ;
   rdfs:range v-s:Organization ;
-  rdfs:domain v-s:Department ;
+  rdfs:domain v-s:OrganizationUnit ;
 .
 # ------------------------------------------------------------
 v-s:Subsidiary
