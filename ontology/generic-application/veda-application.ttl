@@ -58,7 +58,7 @@ v-s:ApplicationTemplate
   v-ui:template """
 <div about="@" class="container">
   <div about="@" class="card card-big card-post card-post--1" style="position:relative;">
-    <div class="card-title">
+    <!--div class="card-title">
       <h2>
         <span href="#/@" property="rdfs:label"></span>
         <small class="card-text d-inline-block mb-3" property="rdfs:comment"></small>
@@ -66,34 +66,36 @@ v-s:ApplicationTemplate
     </div>
     <div about="@" rel="v-s:hasImage">
       <div class="card-post__image" style="background-image: url('/files/@');"></div>
-    </div>
+    </div-->
     <div class="card-body">
+      <div class="clearfix">
+        <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
+        <h2 class="pull-left margin-lg-h" style="color: #5c5c5c;">
+          <span href="#/@" property="rdfs:label"></span>
+          <small class="card-text d-inline-block mb-3" property="rdfs:comment"></small>
+        </h2>
+      </div>
+      <hr>
+      <em about="v-s:description" property="rdfs:label"></em>
+      <div about="@" property="v-s:description"></div>
+      <hr>
       <div class="row margin-lg">
-        <div class="col-md-4">
-          <div class="container-fluid">
-            <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o"></i> <span about="v-s:Blanks" property="rdfs:label"></span></h4>
-            <hr>
-            <div about="@" rel="v-s:hasBlank">
-              <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
-            </div>
+        <div class="col-md-4 col-sm-6">
+          <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:Create" property="rdfs:label"></span></h4>
+          <div about="@" rel="v-s:hasBlank">
+            <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="container-fluid">
-            <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table"></i> <span about="v-s:Registries" property="rdfs:label"></span></h4>
-            <hr>
-            <div about="@" rel="v-s:hasRegistry">
-              <a href="#/@" class="btn btn-info btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
-            </div>
+        <div class="col-md-4 col-sm-6">
+          <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table text-muted margin-md-h"></i><span about="v-s:Find" property="rdfs:label"></span></h4>
+          <div about="@" rel="v-s:hasRegistry">
+            <a href="#/@" class="btn btn-info btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="container-fluid">
-            <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart"></i> <span about="v-s:Reports" property="rdfs:label"></span></h4>
-            <hr>
-            <div about="@" rel="v-s:hasReport">
-              <a href="#/@" class="btn btn-warning btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
-            </div>
+        <div class="col-md-4 col-sm-6">
+          <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart text-muted margin-md-h"></i><span about="v-s:Report" property="rdfs:label"></span></h4>
+          <div about="@" rel="v-s:hasReport">
+            <a href="#/@" class="btn btn-warning btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
           </div>
         </div>
       </div>
