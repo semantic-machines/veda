@@ -54,11 +54,11 @@ class XapianSearch : Search
 
             context.get_storage().get_obj_from_individual_storage(uri, individual);
 
-            if (individual.getStatus() == ResultCode.Not_Found)
+            if (individual.getStatus() == ResultCode.NotFound)
             {
                 log.trace("ERR! FT:get Unable to find the object [%s] it should be, query=[%s]", uri, filter);
             }
-            else if (individual.getStatus() == ResultCode.OK)
+            else if (individual.getStatus() == ResultCode.Ok)
             {
                 individuals ~= individual;
             }
@@ -94,7 +94,7 @@ class XapianSearch : Search
 
         SearchResult sr = xr.query(user_uri, filter, sort, db_names, from, top, limit, dg, op_auth, trace);
 
-        if (sr.result_code == ResultCode.OK)
+        if (sr.result_code == ResultCode.Ok)
             sr.result = res;
 
         return sr;

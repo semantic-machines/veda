@@ -137,7 +137,7 @@ class UserModuleInfo
 
         OpResult rs = context.update(null, -1, &sticket, INDV_OP.SET_IN, &indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
-        if (rs.result != ResultCode.OK)
+        if (rs.result != ResultCode.Ok)
         {
             log.trace("ERR! fail store log [%s], err=[%s]", uri, rs.result);
         }
@@ -287,7 +287,7 @@ class UserModuleInfo
                 individual.uri = uid;
                 OpResult   operation_result = context.update(null, -1, &sticket, INDV_OP.REMOVE, &individual, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
-                if (operation_result.result != ResultCode.OK)
+                if (operation_result.result != ResultCode.Ok)
                 {
                     log.trace("ERR! fail remove [%s], err=[%s]", uid, operation_result.result);
                     is_success = false;
@@ -308,7 +308,7 @@ class UserModuleInfo
                 }
 
                 Individual mindv = context.get_individual(&sticket, module_id, OptAuthorize.NO);
-                if (mindv.getStatus() == ResultCode.OK)
+                if (mindv.getStatus() == ResultCode.Ok)
                 {
                     Individual indv;
                     indv.uri = module_id;
@@ -316,7 +316,7 @@ class UserModuleInfo
 
                     OpResult rs = context.update(null, -1, &sticket, INDV_OP.SET_IN, &indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
-                    if (rs.result != ResultCode.OK)
+                    if (rs.result != ResultCode.Ok)
                     {
                         log.trace("ERR! fail deactivate [%s], err=[%s]", module_id, rs.result);
 
@@ -392,7 +392,7 @@ class UserModuleInfo
 
             OpResult orc = context.update(null, -1, &sticket, INDV_OP.PUT, &image_indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
-            if (orc.result != ResultCode.OK)
+            if (orc.result != ResultCode.Ok)
             {
                 log.trace("WARN! can not install %s, err=%s", image_indv.uri, orc.result);
             }
@@ -421,7 +421,7 @@ class UserModuleInfo
             log.trace("MODULE [%s][%s] ALREADY INSTALLED", uri, ver);
 
             Individual mindv = context.get_individual(&sticket, uri, OptAuthorize.NO);
-            if (mindv.getStatus() != ResultCode.OK)
+            if (mindv.getStatus() != ResultCode.Ok)
                 this.store_module_individ();
             else if (mindv.isExists("v-s:deleted", true))
                 this.store_module_individ();
@@ -440,7 +440,7 @@ class UserModuleInfo
 
             log.trace("[%s][%s] INSERT %s", uri, ver, uid);
 
-            if (orc.result == ResultCode.OK)
+            if (orc.result == ResultCode.Ok)
                 installed[ uid ] = true;
             else
             {
@@ -492,7 +492,7 @@ class UserModuleInfo
             //log.trace("check individual [%s]", uid);
             Individual indv_in_storage = context.get_individual(&sticket, uid, OptAuthorize.NO);
 
-            if (indv_in_storage.getStatus() == ResultCode.OK)
+            if (indv_in_storage.getStatus() == ResultCode.Ok)
             {
                 string hash_indv_storage = indv_in_storage.get_CRC32();
                 total_hash_indv_storage ~= hash_indv_storage;
@@ -503,7 +503,7 @@ class UserModuleInfo
                 {
                     // [rdfs:isDefinedBy] is not equal to the installed uid module, we check the possibility of replacement
                     Individual indv_module = context.get_individual(&sticket, is_defined_by_in_storage, OptAuthorize.NO);
-                    if (indv_module.getStatus() == ResultCode.OK)
+                    if (indv_module.getStatus() == ResultCode.Ok)
                     {
                         if (indv_module.isExists("rdf:type", "v-s:Module") == true)
                         {
@@ -527,7 +527,7 @@ class UserModuleInfo
                     }
                 }
             }
-            else if (indv_in_storage.getStatus() != ResultCode.Not_Found && indv_in_storage.getStatus() != ResultCode.Unprocessable_Entity)
+            else if (indv_in_storage.getStatus() != ResultCode.NotFound && indv_in_storage.getStatus() != ResultCode.UnprocessableEntity)
             {
                 log.trace("ERR! [%s] already exist, but not read, errcode=%s", uid, indv_in_storage.getStatus());
                 operation_result = OperationResult.FOUND_INVALID_VERSION;
@@ -875,13 +875,13 @@ class UserModulesTool : VedaModule
                                 long count_popped)
     {
         if (event_id == umt_event_id /*|| user_uri == "cfg:VedaSystem"*/) // принимаем команды только от пользователей, umt_event_id игнорируется
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         tmp_installed_modules = (UserModuleInfo[ string ]).init;
 
         try
         {
-            ResultCode   operation_result = ResultCode.OK;
+            ResultCode   operation_result = ResultCode.Ok;
 
             Resources    types = new_indv.getResources("rdf:type");
             PreparedType ptype = PreparedType.NONE;
@@ -907,7 +907,7 @@ class UserModulesTool : VedaModule
             }
 
             if (ptype == PreparedType.NONE)
-                return ResultCode.OK;
+                return ResultCode.Ok;
 
             log.trace("[%s]: prepare, event_id=%s, user_id=%s", new_indv.uri, event_id, user_uri);
 
@@ -926,7 +926,7 @@ class UserModulesTool : VedaModule
                 if (new_is_deleted == true)
                 {
                     log.trace("individual [%s] already deleted, nothing", new_indv.uri);
-                    return ResultCode.OK;
+                    return ResultCode.Ok;
                 }
 
                 if (ptype == PreparedType.REQUEST)
@@ -939,14 +939,14 @@ class UserModulesTool : VedaModule
 
                     OpResult   orc = context.update(null, -1, &sticket, INDV_OP.PUT, &request, "", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
-                    if (orc.result != ResultCode.OK)
+                    if (orc.result != ResultCode.Ok)
 
                         log.trace("ERR! can not store request %s, err=%s", request.uri, orc.result);
                     else
                         log.trace("store request %s", request.uri);
                 }
 
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
             else
             {
@@ -961,14 +961,14 @@ class UserModulesTool : VedaModule
                         {
                             OpResult orc = context.update(null, -1, &sticket, INDV_OP.PUT, &prev_indv, umt_event_id, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
-                            if (orc.result != ResultCode.OK)
+                            if (orc.result != ResultCode.Ok)
                                 log.trace("ERR! can not restore %s, err=%s", prev_indv.uri, orc.result);
                             else
                                 log.trace("restore %s", prev_indv.uri);
                         }
                     }
 
-                    return ResultCode.OK;
+                    return ResultCode.Ok;
                 }
                 else
                 if (new_is_deleted == false && prev_is_deleted == true)
@@ -976,21 +976,21 @@ class UserModulesTool : VedaModule
                     if (ptype == PreparedType.MODULE)
                         install_user_module(new_indv);
 
-                    return ResultCode.OK;
+                    return ResultCode.Ok;
                 }
                 else
                 if (new_is_deleted == true && prev_is_deleted == true)
                 {
                     if (ptype == PreparedType.MODULE)
                         log.trace("module already deleted, nothing");
-                    return ResultCode.OK;
+                    return ResultCode.Ok;
                 }
                 else
                 if (new_is_deleted == false && prev_is_deleted == false)
                 {
                     if (ptype == PreparedType.MODULE)
                         log.trace("module changed, nothing");
-                    return ResultCode.OK;
+                    return ResultCode.Ok;
                 }
             }
         }
@@ -1000,7 +1000,7 @@ class UserModulesTool : VedaModule
         }
 
         committed_op_id = op_id;
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override void thread_id()

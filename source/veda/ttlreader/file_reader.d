@@ -123,7 +123,7 @@ void main(char[][] args)
 
     sticket = context.sys_ticket();
 
-    while (sticket.result != ResultCode.OK)
+    while (sticket.result != ResultCode.Ok)
     {
         Thread.sleep(dur!("seconds")(1));
         log.trace("fail read systicket: wait 1s, and repeate");
@@ -471,7 +471,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
-                                if (res != ResultCode.OK)
+                                if (res != ResultCode.Ok)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
 
                                 is_loaded = true;

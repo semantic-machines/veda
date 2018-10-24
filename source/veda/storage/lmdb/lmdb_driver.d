@@ -187,10 +187,10 @@ public class LmdbDriver : KeyValueDB
             string value = in_value.dup;
 
             if (_key is null || _key.length < 1)
-                return ResultCode.No_Content;
+                return ResultCode.NoContent;
 
             if (value is null || value.length < 1)
-                return ResultCode.No_Content;
+                return ResultCode.NoContent;
 
             int     rc;
             MDB_dbi dbi;
@@ -203,7 +203,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
             if (rc != 0)
@@ -212,7 +212,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
 
             MDB_val key;
@@ -236,7 +236,7 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
-                return ResultCode.Fail_Store;
+                return ResultCode.FailStore;
             }
 
             rc = mdb_txn_commit(txn);
@@ -253,17 +253,17 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR! %s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                           rc)),
                                           _key);
-                return ResultCode.Fail_Commit;
+                return ResultCode.FailCommit;
             }
 
             mdb_dbi_close(env, dbi);
 
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
         catch (Throwable tr)
         {
             log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
-            return ResultCode.Fail_Store;
+            return ResultCode.FailStore;
         }
     }
 
@@ -277,7 +277,7 @@ public class LmdbDriver : KeyValueDB
             string _key = in_key.dup;
 
             if (_key is null || _key.length < 1)
-                return ResultCode.No_Content;
+                return ResultCode.NoContent;
 
             int     rc;
             MDB_dbi dbi;
@@ -290,7 +290,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
             if (rc != 0)
@@ -299,7 +299,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
 
             MDB_val key;
@@ -324,7 +324,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Store;
+                return ResultCode.FailStore;
             }
 
             rc = mdb_txn_commit(txn);
@@ -341,17 +341,17 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
-                return ResultCode.Fail_Commit;
+                return ResultCode.FailCommit;
             }
 
             mdb_dbi_close(env, dbi);
 
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
         catch (Throwable tr)
         {
             log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
-            return ResultCode.Fail_Store;
+            return ResultCode.FailStore;
         }
     }
 
@@ -461,7 +461,7 @@ public class LmdbDriver : KeyValueDB
 
         if (individual_as_binobj is null)
         {
-            individual.setStatus(ResultCode.Not_Found);
+            individual.setStatus(ResultCode.NotFound);
             return;
         }
 
@@ -469,16 +469,16 @@ public class LmdbDriver : KeyValueDB
         if (individual_as_binobj !is null && individual_as_binobj.length > 1)
         {
             if (individual.deserialize(individual_as_binobj) > 0)
-                individual.setStatus(ResultCode.OK);
+                individual.setStatus(ResultCode.Ok);
             else
             {
-                individual.setStatus(ResultCode.Unprocessable_Entity);
+                individual.setStatus(ResultCode.UnprocessableEntity);
                 writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
             }
         }
         else
         {
-            individual.setStatus(ResultCode.Unprocessable_Entity);
+            individual.setStatus(ResultCode.UnprocessableEntity);
             //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
         }
     }

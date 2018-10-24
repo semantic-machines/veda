@@ -248,7 +248,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     if (uri is null || uri.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         executed_script_binobj is null || executed_script_binobj.length <= 3)
-        return ResultCode.OK;
+        return ResultCode.Ok;
 
     if (onto is null)
         onto = context.get_onto();
@@ -294,7 +294,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
             ResultCode res = g_context.commit(&tnx);
             tnx.reset();
 
-            if (res != ResultCode.OK)
+            if (res != ResultCode.Ok)
             {
                 log.trace("fail exec event script : %s", script.id);
                 return res;
@@ -308,7 +308,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
         }
     }
 
-    return ResultCode.OK;
+    return ResultCode.Ok;
 }
 
 class ScriptProcess : VedaModule
@@ -341,10 +341,10 @@ class ScriptProcess : VedaModule
         committed_op_id = op_id;
 
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         //string queue_id = "uris-tmp";
         //context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
@@ -352,7 +352,7 @@ class ScriptProcess : VedaModule
         string queue_id = "uris-db";
         start_script(new_bin, queue_id);
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override bool configure()

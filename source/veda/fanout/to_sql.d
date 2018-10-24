@@ -42,14 +42,14 @@ public class FanoutProcess : VedaModule
             }
         }
 
-        if (rc == ResultCode.Fail_Commit)
+        if (rc == ResultCode.FailCommit)
         {
             log.trace("ERR! fail commit");
-            return ResultCode.Not_Ready;
+            return ResultCode.NotReady;
         }
 
         committed_op_id = op_id;
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override void thread_id()
@@ -103,7 +103,7 @@ public class FanoutProcess : VedaModule
     private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
         if (mysql_conn is null)
-            return ResultCode.Connect_Error;
+            return ResultCode.ConnectError;
 
         try
         {
@@ -120,7 +120,7 @@ public class FanoutProcess : VedaModule
             if (isDraftOf !is null)
             {
                 log.trace("new_indv [%s] is draft, ignore", new_indv.uri);
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             if ((actualVersion !is null && actualVersion != new_indv.uri /*||
@@ -132,7 +132,7 @@ public class FanoutProcess : VedaModule
 //		if (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)
 //          log.trace("prev[%s].v-s:previousVersion[%s] == new[%s].v-s:previousVersion[%s], ignore", prev_indv.uri, previousVersion_prev, new_indv.uri, previousVersion_new);
 
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             Resources types        = new_indv.getResources("rdf:type");
@@ -176,7 +176,7 @@ public class FanoutProcess : VedaModule
                     {
                         log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                         mysql_conn.query("ROLLBACK");
-                        return ResultCode.Fail_Commit;
+                        return ResultCode.FailCommit;
                     }
                 }
 
@@ -202,7 +202,7 @@ public class FanoutProcess : VedaModule
                             else
                             {
                                 mysql_conn.query("ROLLBACK");
-                                return ResultCode.Fail_Commit;
+                                return ResultCode.FailCommit;
                             }
                         }
                     }
@@ -217,7 +217,7 @@ public class FanoutProcess : VedaModule
             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     private void insert_to_sql(string predicate, Resources rss, ref Individual new_indv)

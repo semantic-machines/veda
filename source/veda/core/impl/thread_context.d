@@ -182,7 +182,7 @@ class PThreadContext : Context
                     log.trace("rep: (%s)", rep);
                     OpResult ores;
                     ores.op_id  = -1;
-                    ores.result = ResultCode.Internal_Server_Error;
+                    ores.result = ResultCode.InternalServerError;
                     return [ ores ];
                 }
 
@@ -198,7 +198,7 @@ class PThreadContext : Context
                 {
                     OpResult ores;
                     ores.op_id  = -1;
-                    ores.result = ResultCode.Internal_Server_Error;
+                    ores.result = ResultCode.InternalServerError;
                     return [ ores ];
                 }
 
@@ -271,7 +271,7 @@ class PThreadContext : Context
             Ticket sticket = sys_ticket();
 
             node = get_individual(&sticket, node_id, OptAuthorize.NO);
-            if (node.getStatus() != ResultCode.OK)
+            if (node.getStatus() != ResultCode.Ok)
                 node = Individual.init;
         }
         return node;
@@ -453,14 +453,14 @@ class PThreadContext : Context
         try
         {
             storage.get_obj_from_individual_storage(uri, individual);
-            if (individual.getStatus() == ResultCode.OK)
+            if (individual.getStatus() == ResultCode.Ok)
             {
                 if (!(opt_authorize == OptAuthorize.NO ||
                       storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read))
                 {
                     if (trace_msg[ T_API_160 ] == 1)
                         log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
-                    individual.setStatus(ResultCode.Not_Authorized);
+                    individual.setStatus(ResultCode.NotAuthorized);
                 }
             }
 
@@ -495,7 +495,7 @@ class PThreadContext : Context
                     Individual individual = Individual.init;
 
                     storage.get_obj_from_individual_storage(uri, individual);
-                    if (individual.getStatus() == ResultCode.OK)
+                    if (individual.getStatus() == ResultCode.Ok)
                     {
                         res ~= individual;
                     }
@@ -503,7 +503,7 @@ class PThreadContext : Context
                     {
                         Individual indv;
                         indv.uri = uri;
-                        indv.setStatus(ResultCode.Unprocessable_Entity);
+                        indv.setStatus(ResultCode.UnprocessableEntity);
                         res ~= indv;
                     }
                 }
@@ -525,18 +525,18 @@ class PThreadContext : Context
 
         //StopWatch sw; sw.start;
 
-        OpResult res = OpResult(ResultCode.Fail_Store, -1);
+        OpResult res = OpResult(ResultCode.FailStore, -1);
 
         try
         {
             if (indv !is null && (indv.uri is null || indv.uri.length < 2))
             {
-                res.result = ResultCode.Invalid_Identifier;
+                res.result = ResultCode.InvalidIdentifier;
                 return res;
             }
             if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
             {
-                res.result = ResultCode.No_Content;
+                res.result = ResultCode.NoContent;
                 return res;
             }
 
@@ -576,7 +576,7 @@ class PThreadContext : Context
         }
         finally
         {
-            if (res.result != ResultCode.OK)
+            if (res.result != ResultCode.Ok)
                 log.trace("ERR! update: no store individual: errcode=[%s], ticket=[%s] indv=[%s]", text(res.result),
                           ticket !is null ? text(*ticket) : "null",
                           indv !is null ? text(*indv) : "null");
@@ -636,7 +636,7 @@ class PThreadContext : Context
 
         if (in_tnx.get_queue().length == 0)
         {
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
 
         if (in_tnx.is_autocommit == true)
@@ -648,7 +648,7 @@ class PThreadContext : Context
                 if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
                     continue;
 
-                if (item.rc != ResultCode.OK)
+                if (item.rc != ResultCode.Ok)
                     return item.rc;
 
                 Ticket *ticket = storage.get_ticket(item.ticket_id, false);
@@ -666,7 +666,7 @@ class PThreadContext : Context
                     this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
                                 opt_authorize).result;
 
-                if (rc == ResultCode.Internal_Server_Error)
+                if (rc == ResultCode.InternalServerError)
                 {
                     this.get_logger().trace("FAIL STORE ITEM: %s %s", item.uri, text(rc));
 
@@ -679,7 +679,7 @@ class PThreadContext : Context
                         Individual prev = this.get_individual(ticket, item.uri, OptAuthorize.NO);
                         if (prev.getFirstInteger("v-s:updateCounter", -1) == update_counter)
                         {
-                            rc = ResultCode.OK;
+                            rc = ResultCode.Ok;
                             break;
                         }
                         this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
@@ -689,19 +689,19 @@ class PThreadContext : Context
                                         OptFreeze.NONE,
                                         opt_authorize).result;
 
-                        if (rc != ResultCode.Internal_Server_Error)
+                        if (rc != ResultCode.InternalServerError)
                             break;
                     }
                 }
 
                 uri2exists[ item.uri ] = true;
 
-                if (rc == ResultCode.No_Content)
+                if (rc == ResultCode.NoContent)
                 {
                     this.get_logger().trace("WARN!: Rejected attempt to store an empty object: %s", item.new_indv);
                 }
 
-                if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+                if (rc != ResultCode.Ok && rc != ResultCode.NoContent)
                 {
                     this.get_logger().trace("FAIL COMMIT %s", in_tnx.id);
                     return rc;
@@ -759,13 +759,13 @@ class PThreadContext : Context
                 OpResult res = reqrep_binobj_2_main_module(binobj)[ 0 ];
                 //log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
 
-                if (res.result != ResultCode.OK && res.result != ResultCode.No_Content)
+                if (res.result != ResultCode.Ok && res.result != ResultCode.NoContent)
                 {
                     this.get_logger().trace("FAIL COMMIT");
                     return res.result;
                 }
             }
         }
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 }

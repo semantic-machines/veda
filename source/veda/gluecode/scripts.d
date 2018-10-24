@@ -56,10 +56,10 @@ class ScriptProcess : VedaModule
                                 long count_popped)
     {
         if (script_vm is null)
-            return ResultCode.Not_Ready;
+            return ResultCode.NotReady;
 
         if (src != "?" && queue_name != src)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
@@ -78,7 +78,7 @@ class ScriptProcess : VedaModule
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
             {
                 committed_op_id = op_id;
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             if (itype == veda_schema__Event)
@@ -179,7 +179,7 @@ class ScriptProcess : VedaModule
                         log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
                     }
 
-                    if (res != ResultCode.OK)
+                    if (res != ResultCode.Ok)
                     {
                         log.trace("fail exec event script : %s", script_id);
                         return res;
@@ -199,7 +199,7 @@ class ScriptProcess : VedaModule
         // clear_script_data_cache ();
         committed_op_id = op_id;
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override bool open()

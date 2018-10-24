@@ -157,7 +157,7 @@ class XapianReader : SearchReader
         if (tta is null)
         {
             log.trace("fail parse query (phase 1) [%s], tta is null", str_query);
-            sr.result_code = ResultCode.Bad_Request;
+            sr.result_code = ResultCode.BadRequest;
             return sr;
         }
 
@@ -260,7 +260,7 @@ class XapianReader : SearchReader
             catch (Throwable tr)
             {
                 log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
-                sr.result_code = ResultCode.Bad_Request;
+                sr.result_code = ResultCode.BadRequest;
                 return sr;
             }
 
@@ -294,7 +294,7 @@ class XapianReader : SearchReader
             if (err < 0)
             {
                 log.trace("ERR! xapian_reader:get err=%s", get_xapian_err_msg(err));
-                sr.result_code = ResultCode.Bad_Request;
+                sr.result_code = ResultCode.BadRequest;
                 return sr;
             }
 
@@ -320,14 +320,14 @@ class XapianReader : SearchReader
                 reopen_dbs();
             else
             {
-                if (sr.result_code != ResultCode.OK)
+                if (sr.result_code != ResultCode.Ok)
                     log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query,
                               sr.result_code);
             }
         }
         else
         {
-            sr.result_code = ResultCode.Bad_Request;
+            sr.result_code = ResultCode.BadRequest;
             log.trace("invalid query [%s]", str_query);
         }
 

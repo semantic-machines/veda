@@ -721,7 +721,7 @@ class XapianVQL
         if (user_uri is null)
         {
             log.trace("exec_xapian_query_and_queue_authorize:user_uri is null");
-            sr.result_code = ResultCode.Ticket_not_found;
+            sr.result_code = ResultCode.TicketNotFound;
             sw.stop;
             sr.total_time = sw.peek.total !"msecs";
             return sr;
@@ -737,7 +737,7 @@ class XapianVQL
             if (err == -1)
                 sr.result_code = ResultCode.DatabaseModifiedError;
             else
-                sr.result_code = ResultCode.Internal_Server_Error;
+                sr.result_code = ResultCode.InternalServerError;
 
             //            sr.err         = err;
             sw.stop;
@@ -762,7 +762,7 @@ class XapianVQL
                     if (err == -1)
                         sr.result_code = ResultCode.DatabaseModifiedError;
                     else
-                        sr.result_code = ResultCode.Internal_Server_Error;
+                        sr.result_code = ResultCode.InternalServerError;
 
                     log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
@@ -783,7 +783,7 @@ class XapianVQL
                     if (err == -1)
                         sr.result_code = ResultCode.DatabaseModifiedError;
                     else
-                        sr.result_code = ResultCode.Internal_Server_Error;
+                        sr.result_code = ResultCode.InternalServerError;
 
                     log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
@@ -838,7 +838,7 @@ class XapianVQL
 
         sr.processed   = processed;
         sr.count       = read_count;
-        sr.result_code = ResultCode.OK;
+        sr.result_code = ResultCode.Ok;
         sr.cursor      = from + processed;
         sw.stop;
         sr.total_time     = sw.peek.total !"msecs";

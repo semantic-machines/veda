@@ -123,7 +123,7 @@ void init(string node_id)
 
         sticket = sys_ticket(core_context);
         node    = core_context.get_configuration();
-        if (node.getStatus() == ResultCode.OK)
+        if (node.getStatus() == ResultCode.Ok)
             log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
         log.trace("init core");
@@ -131,13 +131,13 @@ void init(string node_id)
         sticket = sys_ticket(core_context, true);
         Ticket *guest_ticket = core_context.get_storage.get_ticket("guest", false);
 
-        if (guest_ticket is null || guest_ticket.result == ResultCode.Ticket_not_found)
+        if (guest_ticket is null || guest_ticket.result == ResultCode.TicketNotFound)
         {
             create_new_ticket("guest", "cfg:Guest", "900000000", "guest");
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (node.getStatus() != ResultCode.OK)
+        if (node.getStatus() != ResultCode.Ok)
         {
             core_context.reopen_ro_individuals_storage_db();
             core_context.reopen_ro_acl_storage_db();
@@ -255,7 +255,7 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
     Ticket     ticket;
     Individual new_ticket;
 
-    ticket.result = ResultCode.Fail_Store;
+    ticket.result = ResultCode.FailStore;
 
     Resources type = [ Resource(ticket__Ticket) ];
 
@@ -285,7 +285,7 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
                                    op_id);
     ticket.result = rc;
 
-    if (rc == ResultCode.OK)
+    if (rc == ResultCode.Ok)
     {
         subject2Ticket(new_ticket, &ticket);
         user_of_ticket[ ticket.id ] = new Ticket(ticket);
@@ -312,26 +312,26 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     //if (trace_msg[ T_API_70 ] == 1)
     log.trace("authenticate, login=[%s] password=[%s], secret=[%s]", login, password, secret);
 
-    ticket.result = ResultCode.Authentication_Failed;
+    ticket.result = ResultCode.AuthenticationFailed;
 
     if (login == null || login.length < 3)
         return ticket;
 
     if (secret !is null && secret.length > 5 && password == empty_Sha256_hash)
     {
-        ticket.result = ResultCode.Empty_password;
+        ticket.result = ResultCode.EmptyPassword;
         return ticket;
     }
 
     if (secret !is null && secret.length > 5 && (password == null || password.length < 64))
     {
-        ticket.result = ResultCode.Invalid_password;
+        ticket.result = ResultCode.InvalidPassword;
         return ticket;
     }
 
     if (secret !is null && secret != "?" && secret.length < 6)
     {
-        ticket.result = ResultCode.Invalid_secret;
+        ticket.result = ResultCode.InvalidSecret;
         return ticket;
     }
 
@@ -370,7 +370,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
         Individual iuser = get_individual(ctx, &sticket, user_id);
 
-        if (iuser.getStatus() != ResultCode.OK)
+        if (iuser.getStatus() != ResultCode.Ok)
         {
             log.trace("ERR! authenticate:user %s not found", user_id);
             continue;
@@ -430,7 +430,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (old_secret is null)
             {
                 log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
-                ticket.result = ResultCode.Invalid_secret;
+                ticket.result = ResultCode.InvalidSecret;
                 remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
@@ -438,7 +438,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (secret != old_secret)
             {
                 log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
-                ticket.result = ResultCode.Invalid_secret;
+                ticket.result = ResultCode.InvalidSecret;
                 remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
@@ -448,7 +448,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
             if (now - prev_secret_date > 12 * 60 * 60)
             {
-                ticket.result = ResultCode.Secret_expired;
+                ticket.result = ResultCode.SecretExpired;
                 log.trace("ERR! authenticate:request new password, secret expired, login=[%s] password=[%s] secret=[%s]", login, password,
                           secret);
                 return ticket;
@@ -458,7 +458,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (exist_password == password)
             {
                 log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
-                ticket.result = ResultCode.New_password_is_equal_to_old;
+                ticket.result = ResultCode.NewPasswordIsEqualToOld;
                 remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
@@ -466,7 +466,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (password == empty_Sha256_hash)
             {
                 log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
-                ticket.result = ResultCode.Empty_password;
+                ticket.result = ResultCode.EmptyPassword;
                 remove_secret(i_usesCredential, iuser.uri, storage, &sticket);
                 return ticket;
             }
@@ -485,14 +485,14 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                                                  OptFreeze.NONE, OptAuthorize.YES,
                                                  OptTrace.NONE);
 
-            if (op_res.result == ResultCode.OK)
+            if (op_res.result == ResultCode.Ok)
             {
                 ticket = create_new_ticket(login, user_id);
                 log.trace("INFO! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
             }
             else
             {
-                ticket.result = ResultCode.Authentication_Failed;
+                ticket.result = ResultCode.AuthenticationFailed;
                 log.trace("ERR! authenticate:fail store new password [%s] for user, user=[%s]", password, iuser.uri);
             }
 
@@ -521,7 +521,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (is_request_new_password == true)
             {
                 log.trace("ERR! authenticate:request new password, login=[%s] password=[%s] secret=[%s]", login, password, secret);
-                ticket.result = ResultCode.Password_expired;
+                ticket.result = ResultCode.PasswordExpired;
 
                 // generate new secret
                 auto rnd      = Random(unpredictableSeed);
@@ -533,7 +533,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                     long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
                     if (now - prev_secret_date < 10 * 60)
                     {
-                        ticket.result = ResultCode.Too_Many_Requests;
+                        ticket.result = ResultCode.TooManyRequests;
                         log.trace("ERR! authenticate:request new password, to many request, login=[%s] password=[%s] secret=[%s]", login, password,
                                   secret);
                         return ticket;
@@ -551,7 +551,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                                                      OptFreeze.NONE, OptAuthorize.YES,
                                                      OptTrace.NONE);
 
-                if (op_res.result != ResultCode.OK)
+                if (op_res.result != ResultCode.Ok)
                 {
                     log.trace("ERR! authenticate:fail store new secret, user=[%s]", iuser.uri);
                     return ticket;
@@ -575,7 +575,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                                                 OptFreeze.NONE, OptAuthorize.YES,
                                                 OptTrace.NONE);
 
-                    if (op_res.result != ResultCode.OK)
+                    if (op_res.result != ResultCode.Ok)
                     {
                         log.trace("ERR! authenticate:fail store email with new secret, user=[%s]", iuser.uri);
                         return ticket;
@@ -603,7 +603,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     }
 
     log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
-    ticket.result = ResultCode.Authentication_Failed;
+    ticket.result = ResultCode.AuthenticationFailed;
     return ticket;
 }
 
@@ -623,7 +623,7 @@ private void remove_secret(ref Individual i_usesCredential, string user_uri, Sto
                                              OptFreeze.NONE, OptAuthorize.YES,
                                              OptTrace.NONE);
 
-        if (op_res.result != ResultCode.OK)
+        if (op_res.result != ResultCode.Ok)
         {
             log.trace("ERR! authenticate:fail remove secret code for user, user=[%s]", user_uri);
         }
@@ -643,7 +643,7 @@ public string execute_json(string in_msg, Context ctx)
     {
         log.trace("ERR! fail parse msg=%s, err=%s", in_msg, tr.msg);
         res[ "type" ]   = "OpResult";
-        res[ "result" ] = ResultCode.Internal_Server_Error;
+        res[ "result" ] = ResultCode.InternalServerError;
         res[ "op_id" ]  = -1;
 
         return res.toString();
@@ -855,7 +855,7 @@ public string execute_json(string in_msg, Context ctx)
                 flush_ext_module(f_module_id, wait_op_id);
 
             res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.OK;
+            res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
         }
         else if (sfn == "send_to_module")
@@ -868,27 +868,27 @@ public string execute_json(string in_msg, Context ctx)
             msg_to_module(f_module_id, msg, false);
 
             res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.OK;
+            res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
         }
         else if (sfn == "freeze")
         {
             ctx.freeze();
             res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.OK;
+            res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
         }
         else if (sfn == "unfreeze")
         {
             ctx.unfreeze();
             res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.OK;
+            res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
         }
         else
         {
             res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.Bad_Request;
+            res[ "result" ] = ResultCode.BadRequest;
             res[ "op_id" ]  = -1;
         }
 
@@ -898,7 +898,7 @@ public string execute_json(string in_msg, Context ctx)
     {
         log.trace("ERR! fail execute msg=%s, err=%s", in_msg, tr.msg);
         res[ "type" ]   = "OpResult";
-        res[ "result" ] = ResultCode.Internal_Server_Error;
+        res[ "result" ] = ResultCode.InternalServerError;
         res[ "op_id" ]  = -1;
 
         return res.toString();
@@ -956,7 +956,7 @@ private Ticket sys_ticket(Context ctx, bool is_new = false)
 
             log.trace("systicket [%s] was created", ticket.id);
 
-            if (opres.result == ResultCode.OK)
+            if (opres.result == ResultCode.Ok)
                 log.trace("permission was created [%s]", sys_account_permission);
         }
         catch (Exception ex)
@@ -992,14 +992,14 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
             log.trace("commit: rc=%s", rc);
 
-            if (rc == ResultCode.OK)
+            if (rc == ResultCode.Ok)
             {
                 MapResource rdfType;
 
                 foreach (item; items)
                 {
                     log.trace("commit: item.rc=%s", item.rc);
-                    if (item.rc == ResultCode.OK)
+                    if (item.rc == ResultCode.Ok)
                         rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
                 }
                 rcs ~= OpResult(rc, op_id);
@@ -1029,12 +1029,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
     //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
 
-    OpResult res = OpResult(ResultCode.Fail_Store, -1);
+    OpResult res = OpResult(ResultCode.FailStore, -1);
 
     if (ticket is null)
     {
         log.trace("ERR! add_to_transaction: %s %s, ticket is null", text(cmd), *indv);
-        res = OpResult(ResultCode.Authentication_Failed, -1);
+        res = OpResult(ResultCode.AuthenticationFailed, -1);
         return res;
     }
 
@@ -1042,12 +1042,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     {
         if (indv !is null && (indv.uri is null || indv.uri.length < 2))
         {
-            res.result = ResultCode.Invalid_Identifier;
+            res.result = ResultCode.InvalidIdentifier;
             return res;
         }
         if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
         {
-            res.result = ResultCode.No_Content;
+            res.result = ResultCode.NoContent;
             return res;
         }
 
@@ -1082,7 +1082,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             }
             catch (Exception ex)
             {
-                res.result = ResultCode.Unprocessable_Entity;
+                res.result = ResultCode.UnprocessableEntity;
                 log.trace("ERR! add_to_transaction: not read prev_state uri=[%s], ex=%s", indv.uri, ex.msg);
                 return res;
             }
@@ -1093,7 +1093,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 if (code < 0)
                 {
                     log.trace("ERR! add_to_transaction: invalid prev_state [%s], uri=%s", prev_state, indv.uri);
-                    res.result = ResultCode.Unprocessable_Entity;
+                    res.result = ResultCode.UnprocessableEntity;
                     return res;
                 }
 
@@ -1111,7 +1111,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                         {
                             // для устаноки аттрибута v-s:deleted у индивида проверим доступность бита Delete
                             log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can delete] [%s] ", ticket.user_uri, indv.uri);
-                            res.result = ResultCode.Not_Authorized;
+                            res.result = ResultCode.NotAuthorized;
                             return res;
                         }
                     }
@@ -1119,7 +1119,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     {
                         // для обновляемого индивида проверим доступность бита Update
                         log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can update] [%s] ", ticket.user_uri, indv.uri);
-                        res.result = ResultCode.Not_Authorized;
+                        res.result = ResultCode.NotAuthorized;
                         return res;
                     }
 
@@ -1150,7 +1150,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     if (acl_client.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create)
                     {
                         log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can_create] [%s] ", ticket.user_uri, key);
-                        res.result = ResultCode.Not_Authorized;
+                        res.result = ResultCode.NotAuthorized;
                         return res;
                     }
                 }
@@ -1175,7 +1175,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             new_state = prev_indv.serialize();
             if (new_state.length > max_size_of_individual)
             {
-                res.result = ResultCode.Size_too_large;
+                res.result = ResultCode.SizeTooLarge;
                 return res;
             }
 
@@ -1193,7 +1193,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
                                              res.op_id);
 
-                if (res.result == ResultCode.OK)
+                if (res.result == ResultCode.Ok)
                 {
                     res.result =
                         indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
@@ -1220,7 +1220,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             new_state = indv.serialize();
             if (new_state.length > max_size_of_individual)
             {
-                res.result = ResultCode.Size_too_large;
+                res.result = ResultCode.SizeTooLarge;
                 return res;
             }
 
@@ -1241,14 +1241,14 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             //log.trace("res.result=%s", res.result);
         }
 
-        if (tnx.is_autocommit && res.result == ResultCode.OK)
+        if (tnx.is_autocommit && res.result == ResultCode.Ok)
             res.result = prepare_event(rdfType, prev_state, new_state, is_acl_element, is_onto, res.op_id);
 
         return res;
     }
     finally
     {
-        if (res.result != ResultCode.OK)
+        if (res.result != ResultCode.Ok)
             log.trace("ERR! add_to_transaction (%s): no store individual: errcode=[%s], ticket=[%s], indv=[%s]", text(cmd), text(res.result),
                       ticket !is null ? text(*ticket) : "null",
                       indv !is null ? text(*indv) : "null");
@@ -1275,7 +1275,7 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
         }
     }
 
-    res = ResultCode.OK;
+    res = ResultCode.Ok;
 
     return res;
 }
@@ -1300,7 +1300,7 @@ public ResultCode flush_storage()
 {
     ResultCode rc;
 
-    rc = ResultCode.OK;
+    rc = ResultCode.Ok;
     return rc;
 }
 
@@ -1331,7 +1331,7 @@ private ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
             send(tid, CMD_MSG, msg, f_module, thisTid);
             receive((bool isReady) {});
         }
-        rc = ResultCode.OK;
+        rc = ResultCode.Ok;
     }
     return rc;
 }
@@ -1354,7 +1354,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
     //if (trace_msg[ T_API_60 ] == 1)
     log.trace("INFO: request trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
-    ticket.result = ResultCode.Authentication_Failed;
+    ticket.result = ResultCode.AuthenticationFailed;
 
     if (login == null || login.length < 1 || tr_ticket_id.length < 6)
     {
@@ -1363,7 +1363,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
     }
 
     Ticket *tr_ticket = ctx.get_storage().get_ticket(tr_ticket_id, false);
-    if (tr_ticket.result == ResultCode.OK)
+    if (tr_ticket.result == ResultCode.Ok)
     {
         bool      is_allow_trusted = false;
 
@@ -1423,6 +1423,6 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
 
     log.trace("ERR! failed trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
-    ticket.result = ResultCode.Authentication_Failed;
+    ticket.result = ResultCode.AuthenticationFailed;
     return ticket;
 }

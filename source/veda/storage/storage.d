@@ -62,7 +62,7 @@ public abstract class Storage
         Ticket     ticket;
         Individual new_ticket;
 
-        ticket.result = ResultCode.Fail_Store;
+        ticket.result = ResultCode.FailStore;
 
         Resources type = [ Resource(ticket__Ticket) ];
 
@@ -92,7 +92,7 @@ public abstract class Storage
 
         string systicket_id;
 
-        if (indv_systicket_link.getStatus == ResultCode.OK)
+        if (indv_systicket_link.getStatus == ResultCode.Ok)
         {
             systicket_id = indv_systicket_link.getFirstLiteral("v-s:resource");
         }
@@ -133,17 +133,17 @@ public abstract class Storage
                 Individual ticket;
                 get_tickets_storage_r().get_individual(ticket_id, ticket);
 
-                if (ticket.getStatus() == ResultCode.OK)
+                if (ticket.getStatus() == ResultCode.Ok)
                 {
                     tt = new Ticket;
                     subject2Ticket(ticket, tt);
-                    tt.result               = ResultCode.OK;
+                    tt.result               = ResultCode.Ok;
                     user_of_ticket[ tt.id ] = tt;
                 }
-                else if (ticket.getStatus() == ResultCode.Not_Found)
+                else if (ticket.getStatus() == ResultCode.NotFound)
                 {
                     tt        = new Ticket;
-                    tt.result = ResultCode.Ticket_not_found;
+                    tt.result = ResultCode.TicketNotFound;
 
                     if (is_trace)
                         log.trace("тикет не найден в базе, id=%s", ticket_id);
@@ -151,7 +151,7 @@ public abstract class Storage
                 else
                 {
                     tt        = new Ticket;
-                    tt.result = ResultCode.Unprocessable_Entity;
+                    tt.result = ResultCode.UnprocessableEntity;
                     log.trace("ERR! storage.get_ticket, invalid individual, uri=%s, errcode=%s", ticket_id, ticket.getStatus());
                 }
             }
@@ -176,13 +176,13 @@ public abstract class Storage
                     {
                         tt        = new Ticket;
                         tt.id     = "?";
-                        tt.result = ResultCode.Ticket_expired;
+                        tt.result = ResultCode.TicketExpired;
                     }
                     return tt;
                 }
                 else
                 {
-                    tt.result = ResultCode.OK;
+                    tt.result = ResultCode.Ok;
                 }
 
                 if (is_trace)

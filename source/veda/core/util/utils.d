@@ -224,7 +224,7 @@ public string serialize_key2slot(ref int[ string ] key2slot, out string hash_hex
 public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
 {
     int[ string ] key2slot;
-    rc = ResultCode.Internal_Server_Error;
+    rc = ResultCode.InternalServerError;
 
     try
     {
@@ -234,7 +234,7 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
             if (record.length != 2)
             {
                 stderr.writeln("ERR! key2slot, invalid record=", record);
-                rc = ResultCode.Unprocessable_Entity;
+                rc = ResultCode.UnprocessableEntity;
                 return key2slot;
             }
             //stderr.writeln ("@&2 record=[", record, "]");
@@ -243,12 +243,12 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
                 key2slot[ record[ 0 ] ] = record[ 1 ];
             idx++;
         }
-        rc = ResultCode.OK;
+        rc = ResultCode.Ok;
     }
     catch (Throwable tr)
     {
         stderr.writeln("ERR! key2slot err=", tr.msg);
-        rc = ResultCode.Unprocessable_Entity;
+        rc = ResultCode.UnprocessableEntity;
     }
 
     return key2slot;

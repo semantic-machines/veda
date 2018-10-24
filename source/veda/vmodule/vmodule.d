@@ -380,7 +380,7 @@ class VedaModule : VedaModuleBasic
 
                     Individual indv = context.get_individual(&sticket, data, OptAuthorize.NO);
 
-                    ResultCode rc = ResultCode.Internal_Server_Error;
+                    ResultCode rc = ResultCode.InternalServerError;
 
                     if (indv !is Individual.init)
                     {
@@ -395,7 +395,7 @@ class VedaModule : VedaModuleBasic
                         }
                     }
 
-                    if (rc != ResultCode.Connect_Error)
+                    if (rc != ResultCode.ConnectError)
                         prepare_batch_cs.commit_and_next(true);
 
                     main_queue.close();
@@ -495,14 +495,14 @@ class VedaModule : VedaModuleBasic
                 ResultCode res = prepare(main_cs[ i ].name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
                                          count_popped);
 
-                if (res == ResultCode.OK)
+                if (res == ResultCode.Ok)
                 {
                     main_cs[ i ].commit_and_next(true);
                     module_info.put_info(op_id, committed_op_id);
                     //log.trace("put info: op_id=%d, committed_op_id=%d", op_id, committed_op_id);
                 }
-                else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
-                         res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
+                else if (res == ResultCode.ConnectError || res == ResultCode.InternalServerError || res == ResultCode.NotReady ||
+                         res == ResultCode.ServiceUnavailable || res == ResultCode.TooManyRequests)
                 {
                     log.trace("WARN: message fail prepared, sleep and repeate...");
                     Thread.sleep(dur!("seconds")(1));
@@ -528,7 +528,7 @@ class VedaModule : VedaModuleBasic
     {
         sticket = *context.get_storage().get_systicket_from_storage();
 
-        if (sticket is Ticket.init || sticket.result != ResultCode.OK)
+        if (sticket is Ticket.init || sticket.result != ResultCode.Ok)
         {
             log.trace("load_systicket: fail systicket=%s", text(sticket));
 

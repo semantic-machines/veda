@@ -75,7 +75,7 @@ class FTIndexerProcess : VedaModule
     {
         ictx.index_msg(new_indv, prev_indv, cmd, op_id, context);
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override void thread_id()
