@@ -58,26 +58,134 @@ func to_delta_level (ns_delta int64) int {
 
 func resultCodeToStr(code ResultCode) string {
         
-        switch code {
-        case Ok:
-                return  "Ok"
-        case BadRequest:
-                return "BadRequest"
-        case NotAuthorized:
-                return "NotAuthorized"
-        case NotFound:
-                return "NotFound"
-        case InternalServerError:
-                return "InternalServerError"
-        case TicketExpired:
-                return "TicketExpired"
-        case NoContent:
-                return "NoContent"
-        case SizeTooLarge:
-                return "SizeToLarge"
-        case UnprocessableEntity:
-                return "UnprocessableEntity"
-        default:
-                return "UnknownError"
-        }
+	switch code {
+case zero:
+		return "zero"
+
+    /// 200
+case Ok:
+		return "Ok"
+
+    /// 201
+case Created:
+		return "Created"
+
+    /// 204
+case NoContent:
+		return "NoContent"
+
+    /// 400
+case BadRequest:
+		return "Bad_Request"
+
+    /// 403
+case Forbidden:
+		return "Forbidden"
+
+    /// 404
+case NotFound:
+		return "NotFound"
+
+    /// 422
+case UnprocessableEntity:
+		return "UnprocessableEntity"
+
+    /// 429
+case TooManyRequests:
+		return "TooManyRequests"
+
+    /// 464
+case SecretExpired:
+		return "SecretExpired"
+
+    /// 465
+case EmptyPassword:
+		return "EmptyPassword"
+
+    /// 466
+case NewPasswordIsEqualToOld:
+		return "NewPasswordIsEqualToOld"
+
+    /// 467
+case InvalidPassword:
+		return "InvalidPassword"
+
+    /// 468
+case InvalidSecret:
+		return "InvalidSecret"
+
+    /// 469
+case PasswordExpired:
+		return "PasswordExpired"
+
+    /// 470
+case TicketNotFound:
+		return "TicketNotFound"
+
+    /// 471
+case TicketExpired:
+		return "TicketExpired"
+
+    /// 472
+case NotAuthorized:
+		return "NotAuthorized"
+
+    /// 473
+case AuthenticationFailed:
+		return "AuthenticationFailed"
+
+    /// 474
+case NotReady:
+		return "NotReady"
+
+    /// 475
+case FailOpenTransaction:
+		return "FailOpenTransaction"
+
+    /// 476
+case FailCommit:
+		return "FailCommit"
+
+    /// 477
+case FailStore:
+		return "FailStore"
+
+    /// 500
+case InternalServerError:
+		return "InternalServerError"
+
+    /// 501
+case NotImplemented:
+		return "NotImplemented"
+
+    /// 503
+case ServiceUnavailable:
+		return "ServiceUnavailable"
+
+case InvalidIdentifier:
+		return "InvalidIdentifier"
+
+    /// 999
+case DatabaseModifiedError:
+		return "DatabaseModifiedError"
+
+    /// 1021
+case DiskFull:
+		return "DiskFull"
+
+    /// 1022
+case DuplicateKey:
+		return "DuplicateKey"
+
+    /// 1118
+case SizeTooLarge:
+		return "SizeTooLarge"
+
+    /// 4000
+case ConnectError:
+		return "ConnectError"
+
+	default:
+		return "UnknownError"
+	}
 }
