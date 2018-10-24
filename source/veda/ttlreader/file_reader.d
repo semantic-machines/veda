@@ -303,7 +303,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
     {
         if (extension(fname) == ".ttl" && fname.indexOf("#") < 0 && fname.indexOf("module.ttl") < 0)
         {
-            log.trace("change file %s", fname);
+            log.trace("check file %s", fname);
 
             string     file_uri       = "d:" ~ baseName(fname);
             Individual indv_ttrl_file = context.get_individual(&sticket, file_uri, OptAuthorize.NO);
@@ -330,9 +330,9 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
                     if (new_hash != old_hash)
                     {
                         log.trace("file is modifed (hash), %s", fname);
+	                    files_to_load ~= fname;
+	                    is_reload = true;
                     }
-                    files_to_load ~= fname;
-                    is_reload = true;
                 }
             }
         }
