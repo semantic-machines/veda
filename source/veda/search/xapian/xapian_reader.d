@@ -302,7 +302,7 @@ class XapianReader : SearchReader
             if (sorter !is null)
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
 
-            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, query, xapian_enquire, from, top, limit, add_out_element,
+            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, tta, xapian_enquire, from, top, limit, add_out_element,
                                                               context, trace, op_auth);
 
             destroy_Enquire(xapian_enquire);
