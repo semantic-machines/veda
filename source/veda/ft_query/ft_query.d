@@ -75,7 +75,7 @@ private nothrow string req_prepare(string request, Context context)
                         else
                         {
                             if (ticket.user_uri is null || ticket.user_uri.length == 0)
-                                context.get_logger.trace("ERR! ft_query: user not found in ticket object, ticket_id=%s, ticket=%s", _ticket, *ticket);
+                                context.get_logger.trace("ERR! ft_query: user not found in ticket object, ticket_id=%s, query=%s", _ticket, _query);
                             else
                                 user_uri = ticket.user_uri;
                         }
