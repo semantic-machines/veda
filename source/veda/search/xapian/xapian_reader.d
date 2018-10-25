@@ -218,8 +218,6 @@ class XapianReader : SearchReader
         if (db_names.length == 0)
             db_names = [ "base" ];
 
-        log.trace("db_names=%s", db_names);
-
         if (trace)
             log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query,
                       user_uri, str_query,
@@ -254,12 +252,12 @@ class XapianReader : SearchReader
             }
             catch (XapianError ex)
             {
-                log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, ex.msg);
+                log.trace("ERR! fail parse query (phase 2) [%s], err:[%s]", str_query, ex.msg);
                 state = ex.code;
             }
             catch (Throwable tr)
             {
-                log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
+                log.trace("ERR! fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
                 sr.result_code = ResultCode.BadRequest;
                 return sr;
             }
@@ -304,7 +302,7 @@ class XapianReader : SearchReader
             if (sorter !is null)
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
 
-            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
+            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, query, xapian_enquire, from, top, limit, add_out_element,
                                                               context, trace, op_auth);
 
             destroy_Enquire(xapian_enquire);
@@ -328,7 +326,7 @@ class XapianReader : SearchReader
         else
         {
             sr.result_code = ResultCode.BadRequest;
-            log.trace("invalid query [%s]", str_query);
+            log.trace("ERR! fail prepare query [%s]", str_query);
         }
 
         //log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.count, sr.processed);

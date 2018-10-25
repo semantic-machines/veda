@@ -23,10 +23,14 @@ Logger log()
     return _log;
 }
 
-int get_slot(ref int[ string ] key2slot, string key)
+int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
 {
     if (key.length < 1)
+    {
+    	if (log_if_err !is null)
+			log_if_err.trace("ERR! key2slot, key is empty");    		
         return -1;
+    }    
 
     if (key[ 0 ] == '#')
     {
@@ -37,11 +41,22 @@ int get_slot(ref int[ string ] key2slot, string key)
         }
         catch (Throwable tr)
         {
+	    	if (log_if_err !is null)
+				log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);    		
+
             return -1;
         }
     }
 
-    return key2slot.get(key, -1);
+	int slot = key2slot.get(key, -1);
+	
+	if (slot < 0)
+	{
+    	if (log_if_err !is null)
+			log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);    		
+	}
+	
+	return slot;
 }
 
 public void subject2Ticket(ref Individual ticket, Ticket *tt)

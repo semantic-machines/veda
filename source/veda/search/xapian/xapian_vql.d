@@ -47,7 +47,7 @@ class XapianVQL
                     else
                         asc_desc = true;
 
-                    int slot = get_slot(key2slot, key);
+                    int slot = get_slot(key2slot, key, log);
                     if (slot >= 0)
                     {
                         if (trace)
@@ -297,9 +297,9 @@ class XapianVQL
                         {
                             int slot;
                             if (rs !is null && rs[ 0 ] == '*' && is_good_token(rs))
-                                slot = get_slot(key2slot, ls ~ "#F");
+                                slot = get_slot(key2slot, ls ~ "#F", log);
                             else
-                                slot = get_slot(key2slot, ls);
+                                slot = get_slot(key2slot, ls, log);
 
                             //log.trace("@p slot=%d, predicate=%s", slot, ls);
 
@@ -589,7 +589,7 @@ class XapianVQL
                     //writeln("@p c_from=", c_from);
                     //writeln("@p c_to=", c_to);
 
-                    int slot = get_slot(key2slot, token_L);
+                    int slot = get_slot(key2slot, token_L, log);
 
                     query_r = new_Query_range(xapian_op.OP_VALUE_RANGE, slot, c_from, c_to, &err);
 
@@ -691,6 +691,7 @@ class XapianVQL
     }
 
     public SearchResult exec_xapian_query_and_queue_authorize(string user_uri,
+                                                              XapianQuery xapian_query,
                                                               XapianEnquire xapian_enquire,
                                                               int from,
                                                               int top,
@@ -750,6 +751,12 @@ class XapianVQL
         if (matches !is null)
         {
             sr.estimated = matches.get_matches_estimated(&err);
+
+            if (sr.estimated > limit)
+            {
+                string str_x_query = get_query_description(xapian_query);
+                log.trace("WARN! estimated %d > limit %d, user_uri=%s, query=%s", sr.estimated, limit, user_uri, str_x_query);
+            }
 
             XapianMSetIterator it = matches.iterator(&err);
 
