@@ -27,6 +27,7 @@
 	    "../../veda/authorization/authorization.d",
             "../../veda/authorization/cache.d",
             "../../veda/authorization/az_client.d",
+            "../../veda/authorization/az_lib.d",
     	    "../../veda/storage/common.d",
     	    "../../veda/authorization/right_set.d",
     	    "../../veda/storage/storage.d",

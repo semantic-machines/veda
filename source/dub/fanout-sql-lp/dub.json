@@ -35,6 +35,7 @@
     	    "../../veda/fanout/fanout_sql_lp.d",
     	    "../../veda/fanout/to_sql.d",
     	    "../../veda/authorization/right_set.d",
+            "../../veda/authorization/az_lib.d",
     	    "../../veda/storage/common.d",
             "../../veda/authorization/authorization.d",
             "../../veda/authorization/cache.d",

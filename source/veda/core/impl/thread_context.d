@@ -9,7 +9,6 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.file, std.path,
            std.json, std.regex;
     import veda.util.properd;
-    import veda.bind.xapian_d_header;
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
@@ -35,7 +34,6 @@ class PThreadContext : Context
     private            string[ string ] prefix_map;
 
     private Search     _vql;
-
     private Storage    storage;
 
     private long       local_last_update_time;

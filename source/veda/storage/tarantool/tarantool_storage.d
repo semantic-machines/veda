@@ -5,8 +5,7 @@ module veda.storage.tarantool.tarantool_storage;
 
 import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
 import veda.common.type, veda.storage.common, veda.storage.storage;
-import veda.storage.tarantool.tarantool_driver, veda.authorization.authorization;
-
+import veda.storage.tarantool.tarantool_driver, veda.authorization.authorization, veda.authorization.az_lib, veda.authorization.az_client;
 
 public class TarantoolStorage : Storage
 {
