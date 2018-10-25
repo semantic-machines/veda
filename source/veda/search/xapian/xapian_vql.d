@@ -691,6 +691,7 @@ class XapianVQL
     }
 
     public SearchResult exec_xapian_query_and_queue_authorize(string user_uri,
+                                                              TTA query_as_tta,
                                                               XapianEnquire xapian_enquire,
                                                               int from,
                                                               int top,
@@ -750,6 +751,12 @@ class XapianVQL
         if (matches !is null)
         {
             sr.estimated = matches.get_matches_estimated(&err);
+
+            if (sr.estimated > limit)
+            {
+                string str_x_query = query_as_tta.toString();
+                log.trace("WARN! estimated %d > limit %d, user_uri=%s, query=%s", sr.estimated, limit, user_uri, str_x_query);
+            }
 
             XapianMSetIterator it = matches.iterator(&err);
 

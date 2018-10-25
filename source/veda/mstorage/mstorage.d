@@ -599,16 +599,10 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 ticket = create_new_ticket(login, user_id);
                 return ticket;
             }
-            else
-            {
-                log.trace("WARN! request passw not equal with exist", user.uri);
-            }
         }
-
-        log.trace("WARN! user %s not pass", user.uri);
     }
 
-    log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s], candidate users =%s", login, password, candidate_users);
+    log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s]", login, password);
     ticket.result = ResultCode.AuthenticationFailed;
     return ticket;
 }

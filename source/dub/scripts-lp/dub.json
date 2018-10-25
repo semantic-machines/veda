@@ -2,6 +2,7 @@
 	"name": "veda-scripts-lp",
 	"description": "veda-scripts-lp",
 	"dependencies": {
+		"xapian-d": "1.0.0", 
 		"pacahon_third_party": "1.0.16", 
 		"d-nanomsg": "0.2.0",
         	"msgpack-d": "1.0.0-beta.6",
@@ -16,6 +17,7 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
             "../../veda/search/common",
+            "../../veda/search/xapian",
             "../../veda/search/ft_query",
 	    "../../veda/core/common",
             "../../veda/storage/lmdb",
@@ -37,6 +39,7 @@
 	    "../../veda/gluecode/scripts.d", 
 	    "../../veda/gluecode/scripts_lp.d", 
 	    "../../veda/gluecode/v8d_header.d",
+	    "../../veda/bind/xapian_d_header.d",
 	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
 	    "../../veda/util/tools.d",

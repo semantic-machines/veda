@@ -2,6 +2,7 @@
 	"name": "veda-ltr-scripts",
 	"description": "veda-ltr-scripts",
 	"dependencies": {
+		"xapian-d": "1.0.0", 
 		"pacahon_third_party": "1.0.16", 
 		"d-nanomsg": "0.2.0",
                 "msgpack-d": "1.0.0-beta.6",
@@ -16,6 +17,7 @@
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
             "../../veda/search/common",
+            "../../veda/search/xapian",
             "../../veda/search/ft_query",
             "../../veda/storage/lmdb",
             "../../veda/storage/tarantool",
@@ -31,6 +33,7 @@
     	    "../../veda/authorization/right_set.d",
     	    "../../veda/storage/storage.d",
     	    "../../veda/storage/binlog_tools.d",
+	    "../../veda/bind/xapian_d_header.d",
     	    "../../veda/bind/nano.d",
     	    "../../veda/gluecode/script.d",
     	    "../../veda/gluecode/ltr_scripts.d",

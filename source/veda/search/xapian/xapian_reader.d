@@ -302,18 +302,12 @@ class XapianReader : SearchReader
             if (sorter !is null)
                 xapian_enquire.set_sort_by_key(sorter, true, &err);
 
-            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, xapian_enquire, from, top, limit, add_out_element,
+            sr = xpnvql.exec_xapian_query_and_queue_authorize(user_uri, tta, xapian_enquire, from, top, limit, add_out_element,
                                                               context, trace, op_auth);
 
             destroy_Enquire(xapian_enquire);
             destroy_Query(query);
             destroy_MultiValueKeyMaker(sorter);
-
-            if (sr.estimated > limit)
-            {
-                string str_x_query = tta.toString();
-                log.trace("WARN! estimated > limit: %d > %d, time=%d ms, user_uri=%s, query=%s", sr.estimated, limit, sr.total_time, user_uri, str_x_query);
-            }
 
             if (sr.total_time > 5_000)
             {
