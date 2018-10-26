@@ -191,11 +191,10 @@ v-s:ContactsTemplate
       return childsUries;
     }
     var parentUri = parent.id;
+    var parentOrgUri = individual["v-s:managedOrganization"][0].id;
     var queryPattern = "'v-s:parentUnit'=='" + parentUri + "' && ";
-    var queryOrgGroup = queryPattern + "'rdf:type'=='v-s:OrgGroup'";
+
     var queryDepartments = queryPattern + "'rdf:type'=='v-s:Department'";
-    var queryOrganization = queryPattern + "'rdf:type'=='v-s:Organization'";
-    
     //отображение сначала должностей как корней, с аппоинтментами внутри 
     // var queryPosition = queryPattern + "'rdf:type'=='v-s:Position'";
     // var queryAppointment = "'rdf:type'=='v-s:Appointment' && 'v-s:occupation'=='"+parentUri+"'";
@@ -209,7 +208,10 @@ v-s:ContactsTemplate
     } else if (parent.is('v-s:OrgGroup')) {
       queryStringArray = [queryAppointment];
     } else if (parent.is('v-s:Organization')) {
-      queryStringArray = [queryOrganization, queryDepartments, queryOrgGroup, queryAppointment];
+      var queryOrgGroup = queryPattern + "'rdf:type'=='v-s:OrgGroup'";
+      var querySubsidiary = "'v-s:parentOrganization'=='"+parentOrgUri+"' && 'rdf:type'=='v-s:Subsidiary'";
+      var queryOrganization = queryPattern + "'rdf:type'=='v-s:Organization'";
+      queryStringArray = [queryOrganization, querySubsidiary, queryDepartments, queryOrgGroup, queryAppointment];
     }
     
     var sort = "'rdfs:label' desc";
@@ -324,7 +326,7 @@ v-s:ContactsTemplate
 
     var NewDepartment = new veda.IndividualModel();
     var _class = new veda.IndividualModel('v-s:Department');
-    var tmpl = new veda.IndividualModel('v-s:DepartmentForContactTemplate');
+    var tmpl = new veda.IndividualModel('v-s:DepartmentTemplate');
     NewDepartment['rdf:type'] = [_class];
     NewDepartment['v-s:parentUnit'] = [new veda.IndividualModel(parentUri)];
     NewDepartment['v-s:parentOrganization'] = individual['v-s:managedOrganization'];
@@ -375,9 +377,9 @@ v-s:ContactsTemplate
     if (!searchText) return;
     var sort = "'rdfs:label' desc";
 
-    var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'rdfs:label'=='"+ searchText +"*'";
+    // var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'rdfs:label'=='"+ searchText +"*'";
     //поиск с заполненным v-s:parentOrganization
-    // var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'v-s:parentOrganization'=='"+ individual['v-s:managedOrganization'][0].id +"' && 'rdfs:label'=='"+ searchText +"*'";
+    var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'v-s:parentOrganization'=='"+ individual['v-s:managedOrganization'][0].id +"' && 'rdfs:label'=='"+ searchText +"*'";
     query({
       ticket: veda.ticket,
       query: q,
@@ -388,11 +390,11 @@ v-s:ContactsTemplate
       var items = [];
       unique.forEach(function (item) {
         var temp = new veda.IndividualModel(item);
-        if (temp.isSubUnitOf && temp.isSubUnitOf(individual['v-s:managedOrganization'][0])) {
-          items.push(new veda.IndividualModel(item));
-        }
+        // if (temp.isSubUnitOf && temp.isSubUnitOf(individual['v-s:managedOrganization'][0])) {
+        //   items.push(new veda.IndividualModel(item));
+        // }
         //поиск с заполненным v-s:parentOrganization
-        //items.push(new veda.IndividualModel(item));
+        items.push(new veda.IndividualModel(item));
       });
       drawChilds(undefined, orgTree, items);
       return items;

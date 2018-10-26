@@ -637,7 +637,6 @@ v-s:DepartmentForContactTemplate
     </div>
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
-    <!-- <div rel="v-s:parentUnit" class="-view edit -search" data-template="v-ui:LabelLinkTemplate"></div> -->
     <hr class="view -edit -search">
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
