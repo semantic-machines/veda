@@ -169,7 +169,7 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
             }
             else
             {
-                prev_indv = g_context.get_individual(ticket, ti.new_indv.uri, OptAuthorize.NO);
+                prev_indv = g_context.get_individual(ti.new_indv.uri);
             }
 
             if (prev_indv.getStatus() == ResultCode.ConnectError || prev_indv.getStatus() == ResultCode.TooManyRequests)

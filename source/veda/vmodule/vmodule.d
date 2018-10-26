@@ -378,7 +378,7 @@ class VedaModule : VedaModuleBasic
                         break;
                     }
 
-                    Individual indv = context.get_individual(&sticket, data, OptAuthorize.NO);
+                    Individual indv = context.get_individual(data);
 
                     ResultCode rc = ResultCode.InternalServerError;
 
@@ -538,7 +538,7 @@ class VedaModule : VedaModuleBasic
             {
                 OutBuffer trace_acl = new OutBuffer();
 
-                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", trace_acl, null);
+                context.get_storage().get_acl_client().get_rights_origin_from_acl(&sticket, "cfg:SuperUser", trace_acl, null);
 
                 foreach (rr; trace_acl.toString().split('\n'))
                 {

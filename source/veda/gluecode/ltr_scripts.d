@@ -108,7 +108,7 @@ private void ltrs_thread(string parent_url)
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
         ~ "var user_uri = get_env_str_var ('$user');"
-        ~ "var execute_script = get_individual (ticket, '$execute_script');";
+        ~ "var execute_script = get_individual ('$execute_script');";
 
     script_vm = get_ScriptVM(context);
 
@@ -281,7 +281,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
 
     if (script is ScriptInfo.init)
     {
-        Individual codelet = context.get_individual(&sticket, script_uri, OptAuthorize.NO);
+        Individual codelet = context.get_individual(script_uri);
         prepare_script(_wpl, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
     }
 

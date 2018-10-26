@@ -141,7 +141,7 @@ void init(string node_id)
         {
             core_context.reopen_ro_individuals_storage_db();
             core_context.reopen_ro_acl_storage_db();
-            node = core_context.get_individual(&sticket, node_id, OptAuthorize.NO);
+            node = core_context.get_individual(node_id);
 
             log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }
@@ -1374,7 +1374,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
         bool      is_allow_trusted = false;
 
         OutBuffer trace_acl = new OutBuffer();
-        ctx.get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, trace_acl, null);
+        ctx.get_storage().get_acl_client().get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, trace_acl, null);
         foreach (rr; trace_acl.toString().split('\n'))
         {
             string[] cc = rr.split(";");

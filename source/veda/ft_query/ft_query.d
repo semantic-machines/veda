@@ -90,7 +90,7 @@ private nothrow string req_prepare(string request, Context context)
                         {
                             context.reopen_ro_fulltext_indexer_db();
 
-                            Individual indv = context.get_individual(&sticket, "cfg:OntoVsn", OptAuthorize.NO);
+                            Individual indv = context.get_individual("cfg:OntoVsn");
                             if (indv.getStatus() == ResultCode.Ok)
                             {
                                 long new_onto_vsn = indv.getFirstInteger("v-s:updateCounter");
@@ -209,7 +209,7 @@ void main(string[] args)
     sticket = ctx.sys_ticket();
     ctx.set_vql(new XapianSearch(ctx));
 
-    Individual indv = ctx.get_individual(&sticket, "cfg:OntoVsn", OptAuthorize.NO);
+    Individual indv = ctx.get_individual("cfg:OntoVsn");
     if (indv.getStatus() == ResultCode.Ok)
         onto_vsn = indv.getFirstInteger("v-s:updateCounter");
 

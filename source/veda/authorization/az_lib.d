@@ -25,8 +25,17 @@ public class AuthorizationUseLib : Authorization
         log = _log;
     }
 
-    ubyte authorize(string _uri, string user_uri, ubyte request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
-                    OutBuffer _trace_info)
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info)
+    {
+        if (ticket is null)
+            return;
+
+        authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null, trace_info);
+    }
+
+
+    public ubyte authorize(string _uri, string user_uri, ubyte request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
+                           OutBuffer _trace_info)
     {
         trace_acl   = _trace_acl;
         trace_group = _trace_group;
@@ -58,7 +67,7 @@ public class AuthorizationUseLib : Authorization
         }
         else
         {
-	    is_check_for_reload = false;
+            is_check_for_reload = false;
             return authorize_r((_uri ~ "\0").ptr, (user_uri ~ "\0").ptr, request_access, is_check_for_reload);
         }
     }

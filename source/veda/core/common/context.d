@@ -79,55 +79,12 @@ interface Context
     /**
        Вернуть индивидуала по его uri
        Params:
-                 ticket = указатель на обьект Ticket
                  Uri
 
        Returns:
-                авторизованный экземпляр onto.Individual
+                НЕ ПРОШЕДШИЙ ПРОЦЕДУРУ авторизации экземпляр onto.Individual
      */
-    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize);
-
-    /**
-       Вернуть список индивидуалов по списку uri
-       Params:
-                ticket = указатель на обьект Ticket
-                uris   = список содержащий заданные uri
-
-       Returns:
-                авторизованные экземпляры Individual
-     */
-    public Individual[] get_individuals(Ticket *ticket, string[] uris);
-
-    // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
-    /**
-       Вернуть список доступных прав для пользователя на указанномый uri
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri    = uri субьекта
-
-       Returns:
-                байт содержащий установленные биты (type.Access)
-     */
-    public ubyte get_rights(Ticket *ticket, string uri, ubyte access);
-
-
-    /**
-       Вернуть детализированный список доступных прав для пользователя по указанному uri, список представляет собой массив индивидов
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri    = uri субьекта
-                 trace_acl  = буффер, собирающий результат выполнения функции
-     */
-    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info);
-
-    /**
-       Вернуть список групп в которые входит индивид указанный по uri, список представляет собой индивид
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri    = uri субьекта
-                 trace_group  = буффер,, собирающий результат выполнения функции
-     */
-    public void get_membership_from_acl(Ticket *ticket, string uri, OutBuffer trace_group);
+    public Individual               get_individual(Uri uri);
 
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 

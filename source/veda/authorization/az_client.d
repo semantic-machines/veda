@@ -20,8 +20,16 @@ class ClientAuthorization : Authorization
         log             = _log;
     }
 
-    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
-                    OutBuffer _trace_info)
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info)
+    {
+        if (ticket is null)
+            return;
+
+        authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true, trace_acl, null, trace_info);
+    }
+
+    public ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
+                           OutBuffer _trace_info)
     {
         ubyte res;
 

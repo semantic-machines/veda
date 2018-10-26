@@ -6,17 +6,19 @@ import veda.core.common.know_predicates;
 
 interface Authorization
 {
-    ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
-                    OutBuffer _trace_info);
+    public ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
+                           OutBuffer _trace_info);
+
+    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info);
 
     public bool open();
     public void reopen();
     public void close();
 }
 
-const     TRACE_ACL   = 0;
-const     TRACE_GROUP = 1;
-const     TRACE_INFO  = 2;
+const TRACE_ACL   = 0;
+const TRACE_GROUP = 1;
+const TRACE_INFO  = 2;
 
 string access_to_short_string(const ubyte src)
 {
