@@ -523,49 +523,7 @@ class VedaModule : VedaModuleBasic
         //if (count_readed != count_success_prepared)
         //    log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
     }
-/*
-    void load_systicket()
-    {
-        sticket = *context.get_storage().get_systicket_from_storage();
 
-        if (sticket is Ticket.init || sticket.result != ResultCode.Ok)
-        {
-            log.trace("load_systicket: fail systicket=%s", text(sticket));
-
-            bool is_superadmin = false;
-
-            while (is_superadmin == false)
-            {
-                OutBuffer trace_acl = new OutBuffer();
-
-                context.get_storage().get_acl_client().get_rights_origin_from_acl(&sticket, "cfg:SuperUser", trace_acl, null);
-
-                foreach (rr; trace_acl.toString().split('\n'))
-                {
-                    string[] cc = rr.split(";");
-                    if (cc.length == 3)
-                    {
-                        string resource_group = cc[ 0 ];
-                        string subject_group  = cc[ 1 ];
-                        string right          = cc[ 2 ];
-
-                        if (subject_group == "cfg:SuperUser")
-                        {
-                            is_superadmin = true;
-                            break;
-                        }
-                    }
-                }
-
-                log.trace("child_process is_superadmin=%s", text(is_superadmin));
-                Thread.sleep(dur!("seconds")(1));
-            }
-        }
-
-        set_global_systicket(sticket);
-        log.trace("load_systicket: systicket=%s", text(sticket));
-    }
- */
     void ev_CALLBACK_GET_THREAD_ID()
     {
         //g_child_process.thread_id();

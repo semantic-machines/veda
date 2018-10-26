@@ -15,8 +15,7 @@ private
     import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
     import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
-    import veda.storage.lmdb.lmdb_storage;
-    import veda.storage.tarantool.tarantool_storage;
+    import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage, veda.authorization.authorization;
 
     version (isMStorage)
     {
@@ -28,22 +27,23 @@ private
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    private Onto       onto;
+    private Onto          onto;
 
-    private string     name;
+    private string        name;
 
-    private            string[ string ] prefix_map;
+    private               string[ string ] prefix_map;
 
-    private Search     _vql;
-    private Storage    storage;
+    private Search        _vql;
+    private Storage       storage;
+    private Authorization az;
 
-    private long       local_last_update_time;
-    private Individual node = Individual.init;
-    private string     node_id;
+    private long          local_last_update_time;
+    private Individual    node = Individual.init;
+    private string        node_id;
 
-    private bool       API_ready = true;
-    private string     main_module_url;
-    private Logger     log;
+    private bool          API_ready = true;
+    private string        main_module_url;
+    private Logger        log;
 
     Storage get_storage()
     {
@@ -369,6 +369,16 @@ class PThreadContext : Context
     public Search get_vql()
     {
         return _vql;
+    }
+
+    public Authorization get_az()
+    {
+        return az;
+    }
+
+    public void set_az(Authorization in_az)
+    {
+        az = in_az;
     }
 
     public void reopen_ro_fulltext_indexer_db()

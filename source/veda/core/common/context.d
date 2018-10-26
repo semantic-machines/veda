@@ -9,8 +9,9 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.logger, veda.core.common.transaction;
+private import veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage, veda.authorization.authorization;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;
@@ -41,7 +42,10 @@ interface Context
 
     public Search get_vql();
     public void set_vql(Search in_vql);
-    
+
+    public Authorization get_az();
+    public void set_az(Authorization in_az);
+
     public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
