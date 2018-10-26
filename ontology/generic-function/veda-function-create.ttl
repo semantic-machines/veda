@@ -284,7 +284,10 @@ v-fc:BlankTemplate
     $("#cancel.action", objectTemplate).click(function () {
       window.history.back();
     });
-    objectTemplate.one("save", saveHandler);
+    object.one("afterSave", saveHandler);
+    objectTemplate.one("remove", function () {
+      object.off("afterSave", saveHandler);
+    });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
@@ -412,7 +415,10 @@ v-fc:BlankTemplateShort
     $("#cancel.action", objectTemplate).click(function () {
       window.history.back();
     });
-    objectTemplate.one("save", saveHandler);
+    object.one("afterSave", saveHandler);
+    objectTemplate.one("remove", function () {
+      object.off("afterSave", saveHandler);
+    });
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
