@@ -7,84 +7,73 @@ import { Selector, t } from 'testcafe';
   const last = 'GhiOJe';
   const middle = 'NE1UCD';
   const birth = '01.01.1990';
-  test('testAttributiveSearch', async t => {
+  test('testAttributiveSearch_create', async t => {
     basic.login('karpovrt', '123');
     basic.createTestUiForAttributiveSearch(last+'b', first+'cbb', middle+'Q', birth);
     basic.createTestUiForAttributiveSearch('a'+last, first+'bcc', 'T'+middle, birth);
     await t
-      .click('#menu')
-      .click('li[id="menu"] li[resource="v-s:Find"]')
-      .click('ul#req-tabs a[about="v-fs:AttributiveBundle"]')
-      .typeText('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]', 'Класс для тестирования интерфейса')
-      .click('div.suggestion[resource="v-ui:TestUIClass"]')
-      .typeText('veda-control[property="rdfs:label"] input.form-control[name="v_ui_testuiclass_rdfs_label"]', 'a' + last)
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('1')
+      .expect(Selector('ul.nav.navbar-nav.navbar-right li#user-info').innerText).eql('Администратор2');
+  });
+    
+  test
+    .page `http://localhost:8080/#/v-ui:TestUIRegistry`
+  ('testAttributiveSearch_find', async t => {
+  basic.login('karpovrt', '123');
+  await t
+  
+    .typeText('veda-control#label', 'a' + last)
+    .click('veda-control#comment')
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
+    
+    .click('veda-control#label')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control#comment', first.substring(0,4) + '*')
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('2')
 
-      .click('a#params-pill-at')
+    .click('veda-control#comment')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control#comment', first + 'ccc')
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('0')
 
-      .click('veda-control[property="rdfs:label"] input.form-control[name="v_ui_testuiclass_rdfs_label"]')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', first.substring(0,4) + '*')
-      .click('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('2')
+    .click('veda-control#comment')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control#testString', middle)
+    .click('veda-control#comment')
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
+    
+    .click('veda-control#testString')
+    .pressKey('ctrl+a delete')
+    .click('veda-control#date')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
+    .click('veda-control#comment')
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('2')
 
-      .click('a#params-pill-at')
+    .click('veda-control#date')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
+    .click('veda-control#label')
+    .click('veda-control#comment')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control#comment', first)
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('2')
 
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', first + 'ccc')
-      .click('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('0')
-
-      .click('a#params-pill-at')
-
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-ui:testString"]', middle)
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('1')
-
-      .click('a#params-pill-at')
-
-      .click('veda-control[property="v-ui:testString"]')
-      .pressKey('ctrl+a delete')
-      .click('veda-control#date')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('2')
-
-      .click('a#params-pill-at')
-
-      .click('veda-control#date')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
-      .click('veda-control[property="rdfs:label"] input.form-control[name="v_ui_testuiclass_rdfs_label"]')
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', first)
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('2')
-
-      .click('a#params-pill-at')
-
-      .click('veda-control#date')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
-      .click('veda-control[property="rdfs:label"] input.form-control[name="v_ui_testuiclass_rdfs_label"]')
-      .click('veda-control.-view.edit.search[property="rdfs:comment"]')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', first)
-      .typeText('veda-control[property="rdfs:label"] input.form-control[name="v_ui_testuiclass_rdfs_label"]', last)
-      .typeText('veda-control[property="v-ui:testString"]', middle)
-      .click('veda-control[property="rdfs:label"] input.form-control[name="v_ui_testuiclass_rdfs_label"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('1')
-
-});
+    .click('veda-control#date')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
+    .click('veda-control#label')
+    .click('veda-control#comment')
+    .pressKey('ctrl+a delete')
+    .typeText('veda-control#comment', first)
+    .typeText('veda-control#label', last)
+    .typeText('veda-control#testString', middle)
+    .click('veda-control#label')
+    .click('button#search-button')
+    .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
+  });
