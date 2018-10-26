@@ -165,7 +165,7 @@ void init(string node_id)
         if (node.getStatus() != ResultCode.Ok)
         {
             core_context.reopen_ro_individuals_storage_db();
-            core_context.reopen_ro_acl_storage_db();
+            core_context.get_az().reopen();
             node = core_context.get_individual(node_id);
 
             log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);

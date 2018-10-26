@@ -78,7 +78,6 @@ interface Context
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_individuals_storage_db();
-    public void reopen_ro_acl_storage_db();
 
     /**
        Вернуть индивидуала по его uri

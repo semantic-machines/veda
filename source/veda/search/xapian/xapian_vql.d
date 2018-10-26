@@ -808,7 +808,7 @@ class XapianVQL
                 if (op_auth == OptAuthorize.YES)
                 {
                     sw_az.start;
-                    is_passed = context.get_storage().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen);
+                    is_passed = context.get_az().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen);
                     sw_az.stop;
                 }
 

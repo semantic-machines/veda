@@ -22,13 +22,8 @@
 	    "../../veda/core/common"
 	],
         "sourceFiles":[
-            "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
     	    "../../lib64/libv8d.a", 
-    	    "../../veda/authorization/right_set.d",
-            "../../veda/authorization/az_lib.d",
-            "../../veda/authorization/az_client.d",
-            "../../veda/authorization/cache.d",
  	    "../../veda/authorization/authorization.d",
     	    "../../veda/storage/common.d",
     	    "../../veda/storage/storage.d",

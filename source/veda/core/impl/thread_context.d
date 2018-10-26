@@ -393,12 +393,6 @@ class PThreadContext : Context
             storage.get_inividuals_storage_r().reopen();
     }
 
-    public void reopen_ro_acl_storage_db()
-    {
-        if (storage !is null)
-            storage.get_acl_client().reopen();
-    }
-
     // ////////// external ////////////
 
     public SearchResult get_individuals_ids_via_query(string user_uri, string query_str, string sort_str, string db_str, int from, int top, int limit,

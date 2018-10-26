@@ -9,6 +9,8 @@ interface Authorization
     public ubyte authorize(string _uri, string user_uri, ubyte _request_access, bool is_check_for_reload, OutBuffer _trace_acl, OutBuffer _trace_group,
                            OutBuffer _trace_info);
 
+    public bool authorize(string uri, string user_uri, ubyte request_acess, bool is_check_for_reload);
+
     public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info);
 
     public bool open();

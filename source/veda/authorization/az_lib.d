@@ -25,6 +25,18 @@ public class AuthorizationUseLib : Authorization
         log = _log;
     }
 
+    bool authorize(string uri, string user_uri, ubyte request_acess, bool is_check_for_reload)
+    {
+        if (user_uri is null)
+        {
+            return false;
+        }
+
+        ubyte res = authorize(uri, user_uri, request_acess, is_check_for_reload, null, null, null);
+
+        return request_acess == res;
+    }
+
     public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info)
     {
         if (ticket is null)

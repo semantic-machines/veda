@@ -22,7 +22,6 @@
             "../../veda/storage/tarantool"
 	],
         "sourceFiles":[
-            "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
     	    "../../veda/util/properd.d",
     	    "../../veda/bind/nano.d",
@@ -30,18 +29,14 @@
     	    "../../veda/util/tools.d",
     	    "../../veda/util/queue.d",
     	    "../../veda/util/container.d",
-    	    "../../veda/util/module_info.d",
+            "../../veda/util/module_info.d",
     	    "../../veda/util/tests_tools.d",
     	    "../../veda/fanout/fanout_sql_lp.d",
     	    "../../veda/fanout/to_sql.d",
-    	    "../../veda/authorization/right_set.d",
-            "../../veda/authorization/az_lib.d",
     	    "../../veda/storage/common.d",
-            "../../veda/authorization/authorization.d",
-            "../../veda/authorization/cache.d",
-            "../../veda/authorization/az_client.d",
     	    "../../veda/storage/storage.d",
-    	    "../../veda/storage/binlog_tools.d"
+    	    "../../veda/storage/binlog_tools.d",
+    	    "../../veda/authorization/authorization.d"
 	],
         "libs":["nanomsg", "tarantool"],
 	"configurations": [

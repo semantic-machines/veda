@@ -18,21 +18,8 @@ public abstract class Storage
      */
     abstract long count_individuals();
 
-    abstract Authorization get_acl_client();
     abstract KeyValueDB get_tickets_storage_r();
     abstract KeyValueDB get_inividuals_storage_r();
-
-    bool authorize(string uri, string user_uri, ubyte request_acess, bool is_check_for_reload)
-    {
-        if (user_uri is null)
-        {
-            return false;
-        }
-
-        ubyte res = get_acl_client().authorize(uri, user_uri, request_acess, is_check_for_reload, null, null, null);
-
-        return request_acess == res;
-    }
 
     public string get_binobj_from_individual_storage(string uri)
     {
