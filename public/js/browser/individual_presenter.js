@@ -224,6 +224,9 @@ veda.Module(function (veda) { "use strict";
     // Define handlers
     function saveHandler (e, parent) {
       if (parent !== individual.id) {
+        if (embedded.length) {
+          individual.isSync(false);
+        }
         individual.save();
       }
       template.trigger("view");
