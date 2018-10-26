@@ -29,7 +29,7 @@ v-s:ApplicationSmallCardTemplate
   rdfs:label "Шаблон для приложения"@ru ;
   rdfs:label "Application small card template"@en ;
   v-ui:template """
-<div about="@" class="card card-small card-post card-post--1" style="display: flex; flex-flow: column; padding: 15px;">
+<div class="card card-small card-post card-post--1" style="display: flex; flex-flow: column; padding: 15px;">
   <a href="#/@" rel="v-s:hasIcon">
     <div class="card-post__icon" style="background-image: url('/files/@');"></div>
   </a>
