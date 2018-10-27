@@ -7,9 +7,12 @@ import { Selector, t } from 'testcafe';
   test('testComment', async t => {
     basic.login('karpovrt', '123');
     basic.createTestUI('Тест комментария', timeStamp);
-    basic.attributiveSearchTestUi(timeStamp);
     await t
-      .click('table#results-tbl tbody#results-body tr[typeof="v-ui:TestUIClass"] span.glyphicon.glyphicon-search')
+      .expect(Selector('#user-info').innerText).eql('Администратор2')
+      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .typeText('veda-control#comment', timeStamp)
+      .click('button#search-button')
+      .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       .click('#add-comment')
       .typeText('div[typeof="v-s:Comment"] textarea[class="form-control"]', '12345')  //type comment
       .click('div[typeof="v-s:Comment"] button[id="save"]')
