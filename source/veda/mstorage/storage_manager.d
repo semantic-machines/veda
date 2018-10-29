@@ -202,7 +202,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     long           last_reopen_rw_op_id = 0;
     int            max_count_updates    = 10_000;
 
-    long           op_id           = storage.get_last_op_id;
     long           committed_op_id = 0;
 
     string         notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
@@ -247,6 +246,9 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
             return;
         }
+
+        MInfo info  = module_info.get_info();
+        long  op_id = info.committed_op_id;
 
         // SEND ready
         receive((Tid tid_response_reciever)

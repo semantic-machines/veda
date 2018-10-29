@@ -211,11 +211,6 @@ public class TarantoolDriver : KeyValueDB
         return ResultCode.Ok;
     }
 
-    public long get_last_op_id()
-    {
-        return -1;
-    }
-
     public void open()
     {
         tnt = tnt_net(null);

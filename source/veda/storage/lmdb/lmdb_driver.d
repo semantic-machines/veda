@@ -25,8 +25,6 @@ public class LmdbDriver : KeyValueDB
     public string       _path;
     string              db_name;
     string              parent_thread_name;
-    private long        last_op_id;
-    long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
     long                read_count;
@@ -57,11 +55,6 @@ public class LmdbDriver : KeyValueDB
         return this._path;
     }
 
-    public long get_last_op_id()
-    {
-        return last_op_id;
-    }
-
     public void close()
     {
         if (mode == DBMode.RW)
@@ -79,7 +72,7 @@ public class LmdbDriver : KeyValueDB
         {
             close();
             open();
-            log.trace("reopen_db %s, mode=%s, thread:%s, last_op_id=%d", _path, text(mode), core_thread.getThis().name, last_op_id);
+            log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
         }
     }
 
@@ -118,27 +111,22 @@ public class LmdbDriver : KeyValueDB
 
             if (rc == 0)
             {
-                string   data_str = get_binobj(summ_hash_this_db_id);
+                string data_str = get_binobj(summ_hash_this_db_id);
 
-                string[] dataff = data_str.split(',');
-                string   hash_str;
-                if (dataff.length == 2)
+                if (data_str !is null && data_str.length > 0)
                 {
-                    hash_str = dataff[ 0 ];
+                    string[] dataff = data_str.split(',');
+                    string   hash_str;
+                    if (dataff.length == 2)
+                        hash_str = dataff[ 0 ];
 
-                    try
-                    {
-                        last_op_id           = to!long (dataff[ 1 ]);
-                        committed_last_op_id = last_op_id;
-                    }
-                    catch (Throwable tr) {}
+                    if (hash_str is null || hash_str.length < 1)
+                        hash_str = "0";
+
+                    summ_hash_this_db = BigInt("0x" ~ hash_str);
                 }
 
-                if (hash_str is null || hash_str.length < 1)
-                    hash_str = "0";
-
-                summ_hash_this_db = BigInt("0x" ~ hash_str);
-                log.trace("open LMDB %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
+                log.trace("open LMDB %s data_str=[%s]", _path, data_str);
                 db_is_opened = true;
             }
         }
@@ -177,9 +165,6 @@ public class LmdbDriver : KeyValueDB
     {
         if (db_is_opened == false)
             open();
-
-        if (op_id > 0)
-            last_op_id = op_id;
 
         try
         {
@@ -359,13 +344,6 @@ public class LmdbDriver : KeyValueDB
     {
         try
         {
-            //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
-            if (mode == DBMode.RW && last_op_id > committed_last_op_id)
-            {
-                store(summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
-                committed_last_op_id = last_op_id;
-            }
-
             int rc = mdb_env_sync(env, force);
 
             if (rc != 0)

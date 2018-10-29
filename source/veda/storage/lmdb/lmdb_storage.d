@@ -19,8 +19,8 @@ static this()
 
 public class LmdbStorage : Storage
 {
-    private KeyValueDB    tickets_storage_r;
-    private KeyValueDB    inividuals_storage_r;
+    private KeyValueDB tickets_storage_r;
+    private KeyValueDB inividuals_storage_r;
 
     this(string _name, Logger _log)
     {
