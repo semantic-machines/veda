@@ -34,7 +34,7 @@
 ```sh
 $ control-install.sh
 ```
-**2. Build & start veda**
+**2. Build**
 ```sh
 $ build.sh
 ```
