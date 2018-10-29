@@ -1,5 +1,6 @@
 # Veda - ontology driven application development platform 
 [![Build Status](https://travis-ci.org/semantic-machines/veda.svg?branch=master)](https://travis-ci.org/semantic-machines/veda)
+[![Join the chat at https://gitter.im/semantic-machines/veda]](https://gitter.im/semantic-machines/veda?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## I. Overview
 
