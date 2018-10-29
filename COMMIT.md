@@ -1,6 +1,6 @@
-Commit Message Conventions (https://gist.github.com/stephenparish/9941e89d80e2bc58a153)
+Commit Message Conventions
 ==========================
-These rules are adopted from [the AngularJS commit conventions](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/).
+These rules are adopted from [commit conventions](https://gist.github.com/stephenparish/9941e89d80e2bc58a153/).
 
 * [Goals](#goals)
 * [Generating CHANGELOG.md](#generating-changelogmd)
