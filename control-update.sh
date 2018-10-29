@@ -15,8 +15,6 @@ if wget -q -O - "$@" https://api.travis-ci.org/repos/semantic-machines/veda/cc.x
     echo "=== Generate JSduck documentation ==="
     ./jsduck.sh
 
-    echo "=== Build dependencies ==="
-    dub -v fetch vibe-d --version=0.7.30
     echo "=== Build project ==="
     ./build.sh
 
