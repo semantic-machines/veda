@@ -1,0 +1,58 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-function-report>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология функции 'Отчет' системы Веда"@ru ;
+  rdfs:label "Veda system function 'Report' ontology"@en ;
+#  owl:versionInfo "0.2" ;
+  v-s:loadPriority 9 ;
+.
+
+v-s:Report
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Отчет"@ru ;
+  rdfs:label "Report"@en ;
+.
+
+v-s:ReportsForClass
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:isDefinedBy v-s: ;
+  rdfs:label "Список отчетов"@ru ;
+  rdfs:label "Reports list"@en ;
+.
+
+v-s:reportPath
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Report ;
+  rdfs:domain v-s:ReportsForClass ;
+  rdfs:label "Путь файла"@ru ;
+  rdfs:label "File path"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:reportFormat
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Формат файла"@ru ;
+  rdfs:label "File format"@en ;
+  rdfs:domain v-s:Report ;
+  rdfs:domain v-s:ReportsForClass ;
+  rdfs:range xsd:string ;
+.
+
+v-s:reportBlank
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Формат файла"@ru ;
+  rdfs:label "File format"@en ;
+  rdfs:domain v-s:ReportsForClass ;
+  rdfs:domain v-s:Report ;
+  rdfs:range xsd:string ;
+.
