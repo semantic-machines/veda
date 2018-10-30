@@ -7,7 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
 private import veda.bind.xapian_d_header;
-private import veda.core.common.context, veda.util.tools, veda.ft_indexer.xapian_indexer;
+private import veda.core.common.context, veda.ft_indexer.xapian_indexer;
 private import veda.vmodule.vmodule;
 
 // ////// Logger ///////////////////////////////////////////

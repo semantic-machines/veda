@@ -35,7 +35,6 @@
 	    "../../veda/gluecode/v8d_header.d",
 	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
-	    "../../veda/util/tools.d",
 	    "../../veda/util/queue.d",
 	    "../../veda/util/container.d",
 	    "../../veda/util/tests_tools.d",

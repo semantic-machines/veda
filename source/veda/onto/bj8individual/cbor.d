@@ -6,7 +6,6 @@ module veda.onto.bj8individual.cbor;
 private
 {
     import std.outbuffer, std.stdio, std.typetuple, std.datetime, std.conv;
-    import veda.util.tools;
 }
 
 enum : byte
@@ -308,4 +307,25 @@ void hexdump(T) (string z, T[] s)
         }
     }
     writefln("\n");
+}
+
+private ushort ushort_from_buff(ubyte[] buff, int pos)
+{
+    ushort res = *((cast(ushort *)(buff.ptr + pos)));
+
+    return res;
+}
+
+private uint uint_from_buff(ubyte[] buff, int pos)
+{
+    uint res = *((cast(uint *)(buff.ptr + pos)));
+
+    return res;
+}
+
+private ulong ulong_from_buff(ubyte[] buff, int pos)
+{
+    ulong res = *((cast(ulong *)(buff.ptr + pos)));
+
+    return res;
 }
