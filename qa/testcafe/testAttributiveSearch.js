@@ -3,10 +3,10 @@ import { Selector, t } from 'testcafe';
   fixture `test Attributive Search`
     .page `http://localhost:8080/`
   const basic = new Basic();
-  const first =  'xGIo5f';
-  const last = 'GhiOJe';
-  const middle = 'NE1UCD';
-  const birth = '01.01.1990';
+  const first =  (new Date%9e6).toString(36);
+  const last = (new Date%9e6).toString(36);
+  const middle = (new Date%9e6).toString(36);
+  const birth = '01.01.'+Math.floor(1000 + Math.random() * 9000);
   test('testAttributiveSearch', async t => {
     basic.login('karpovrt', '123');
     basic.createTestUiForAttributiveSearch(last+'b', first+'cbb', middle+'Q', birth);
