@@ -70,3 +70,14 @@ import { Selector, t } from 'testcafe';
       .click('button#search-button')
       .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1');
   });
+  test('testSearchOrderBy', async t => {
+    basic.login('karpovrt', '123');
+    await t
+      .expect(Selector('#user-info').innerText).eql('Администратор2')
+      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .click('button#search-button')
+      .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
+      .expect(Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container td[property="v-ui:testInteger"]').innerText).eql('999\t')
+      .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
+      .expect(Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container td[property="v-ui:testInteger"]').innerText).eql('2\t')
+  });
