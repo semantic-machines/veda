@@ -1,6 +1,6 @@
 {
-	"name": "az_lmdb_dump_2_tarantool",
-	"description": "az_lmdb_dump_2_tarantool",
+	"name": "vqueuectl",
+	"description": "command line for managing a veda queue",
         "license": "LGPL v3",
         "dependencies": {
                 "backtrace-d": "0.1.2",
@@ -11,7 +11,6 @@
         ],
 	"sourcePaths":[
 	    "source",
-	    "source/tarantool"
 	],
 	"configurations": [
 	{
