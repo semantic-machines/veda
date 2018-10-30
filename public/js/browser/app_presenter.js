@@ -27,6 +27,26 @@ veda.Module(function (veda) { "use strict";
     }
   });
 
+  // Localize resources on language change
+  veda.on("language:changed", function () {
+    var resourcesNodes = $("[resource], [about]");
+    var resources = resourcesNodes.map(function () {
+      var $this = $(this);
+      return $this.attr("about") || $this.attr("resource");
+    }).get();
+    resources = veda.Util.unique(resources);
+    resources.forEach(function (resource_uri) {
+      var resource = new veda.IndividualModel(resource_uri);
+      for (var property_uri in resource.properties) {
+        if (property_uri === "@") { continue; }
+        if ( resource.properties[property_uri] && resource.properties[property_uri].length && resource.properties[property_uri][0].type === "String" ) {
+          resource.trigger("propertyModified", property_uri, resource.get(property_uri));
+          resource.trigger(property_uri, resource.get(property_uri));
+        }
+      }
+    });
+  });
+
   // Prevent empty links routing
   $("body").on("click", "[href='']", function (e) {
     e.preventDefault();
