@@ -190,8 +190,8 @@ v-s:ProcessStarted
 v-s:Journal_printBlank
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:Document ;
-  v-s:filePath "/Subreports/Unidoc_Journal" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/Subreports/Unidoc_Journal" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Печатная форма журнала"@ru ;
   rdfs:label "Journal print blank"@en ;
 #  rdfs:label "pdf"@en ;
@@ -200,24 +200,24 @@ v-s:Journal_printBlank
 #---------
 v-s:JournalCoordination_printBlank_pdf
   rdf:type v-s:Report ;
-  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Лист согласования (pdf)"@ru ;
   rdfs:label "Coordination list (pdf)"@en ;
   v-s:deleted "true"^^xsd:boolean;
 .
 v-s:JournalCoordination_printBlank_xlsx
   rdf:type v-s:Report ;
-  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "xlsx";
+  v-s:reportPath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:reportFormat "xlsx";
   rdfs:label "Лист согласования (xlsx)"@ru ;
   rdfs:label "Coordination list (xlsx)"@en ;
   v-s:deleted "true"^^xsd:boolean;
 .
 v-s:JournalCoordination_printBlank_docx
   rdf:type v-s:Report ;
-  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "docx";
+  v-s:reportPath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:reportFormat "docx";
   rdfs:label "Лист согласования (docx)"@ru ;
   rdfs:label "Coordination list (docx)"@en ;
   v-s:deleted "true"^^xsd:boolean;
