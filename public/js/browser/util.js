@@ -187,7 +187,7 @@ veda.Module(function (veda) { "use strict";
 
     var form = document.createElement("form");
     form.setAttribute("method", "post");
-    form.setAttribute("action", jasperServerAddress + "flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit=" + encodeURIComponent(report["v-s:filePath"][0]) + "&output=" + encodeURIComponent(report["v-s:fileFormat"][0]) + "&documentId=" + encodeURIComponent(individual.id) + "&ticket=" + veda.ticket);
+    form.setAttribute("action", jasperServerAddress + "flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit=" + encodeURIComponent(report["v-s:reportPath"][0]) + "&output=" + encodeURIComponent(report["v-s:reportFormat"][0]) + "&documentId=" + encodeURIComponent(individual.id) + "&ticket=" + veda.ticket);
     form.setAttribute("target", "view");
 
     Object.getOwnPropertyNames(individual.properties).forEach(function (key) {
