@@ -11,7 +11,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+    import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.search.common.isearch, veda.search.ft_query.ft_query_client;
     import veda.gluecode.script, veda.gluecode.v8d_header;
 }

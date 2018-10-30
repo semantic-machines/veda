@@ -14,7 +14,6 @@
 	    "../../veda/core/common/define.d",
     	    "../../veda/util/module_info.d",
     	    "../../veda/util/queue.d",
-    	    "../../veda/util/tools.d",
     	    "../../veda/util/commando.d",
 	    "../../veda/util/container.d"
 	],

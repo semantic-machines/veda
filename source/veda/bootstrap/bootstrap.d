@@ -1,7 +1,7 @@
 module veda.bootstrap;
 
 import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal, std.file, core.thread;
-import commando, veda.util.properd;
+import commando, veda.util.properd, veda.core.common.define;
 
 struct ProcessInfo
 {
@@ -295,7 +295,7 @@ void main(string[] args)
             }
         }
 
-        if (Queue.is_lock("individuals-flow"))
+        if (Queue.is_lock(queue_db_path, "individuals-flow"))
         {
             stderr.writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
             is_exist_lock = true;

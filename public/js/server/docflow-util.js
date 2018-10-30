@@ -694,58 +694,57 @@ veda.Module(function (veda) { "use strict";
 
   };
 
-  ///////////////////////////////////////////// JOURNAL //////////////////////////////////////////////////
+///////////////////////////////////////////// JOURNAL //////////////////////////////////////////////////
+veda.Workflow.create_new_journal = function(ticket, new_journal_uri, parent_journal_uri, label, is_trace)
+{
+    try
+    {
+        var exists_journal = get_individual(ticket, new_journal_uri);
 
-  veda.Workflow.create_new_journal = function (ticket, new_journal_uri, parent_journal_uri, label, is_trace)
-  {
-      try
-      {
-          var exists_journal = get_individual(ticket, new_journal_uri);
-
-          if (!exists_journal)
-          {
-              var new_journal = {
-                  '@': new_journal_uri,
-                  'rdf:type': [
-                  {
-                      data: 'v-s:Journal',
-                      type: "Uri"
-                  }],
-          'v-s:created': [
-          {
-                data: new Date(),
-                type: "Datetime"
-                  }]
-              };
-
-              if (parent_journal_uri)
+        if (!exists_journal)
         {
-      veda.Workflow.create_new_journal(ticket, parent_journal_uri, null, "", is_trace)
-                  new_journal['v-s:parentJournal'] = veda.Util.newUri(parent_journal_uri);
+            var new_journal = {
+                '@': new_journal_uri,
+                'rdf:type': [
+                {
+                    data: 'v-s:Journal',
+                    type: "Uri"
+                }],
+                'v-s:created': [
+                {
+                    data: new Date(),
+                    type: "Datetime"
+                }]
+            };
+
+            if (parent_journal_uri)
+            {
+                veda.Workflow.create_new_journal(ticket, parent_journal_uri, null, "", is_trace)
+                new_journal['v-s:parentJournal'] = veda.Util.newUri(parent_journal_uri);
+            }
+
+            if (label)
+                new_journal['rdfs:label'] = label;
+
+            if (is_trace)
+                new_journal['v-wf:isTrace'] = veda.Util.newBool(true);
+
+            put_individual(ticket, new_journal, _event_id);
+            //print ("create_new_journal, new_journal=", veda.Util.toJson (new_journal), ", ticket=", ticket);
+        }
+        else
+        {
+            //print ("create_new_journal, journal already exists, exists_journal=", veda.Util.toJson (exists_journal), ", ticket=", ticket);
         }
 
-              if (label)
-                  new_journal['rdfs:label'] = label;
-
-              if (is_trace)
-                  new_journal['v-wf:isTrace'] = veda.Util.newBool(true);
-
-              put_individual(ticket, new_journal, _event_id);
-              //print ("create_new_journal, new_journal=", veda.Util.toJson (new_journal), ", ticket=", ticket);
-          }
-    else
+        return new_journal_uri;
+    }
+    catch (e)
     {
-              //print ("create_new_journal, journal already exists, exists_journal=", veda.Util.toJson (exists_journal), ", ticket=", ticket);
+        print(e.stack);
     }
 
-          return new_journal_uri;
-      }
-      catch (e)
-      {
-          print(e.stack);
-      }
-
-  };
+};
 
   veda.Workflow.mapToJournal = function (map_container, ticket, _process, _task, _order, msg, journal_uri, trace_journal_uri, trace_comment)
   {

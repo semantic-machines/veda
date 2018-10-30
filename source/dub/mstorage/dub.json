@@ -17,7 +17,6 @@
     	    "../../veda/util/properd.d",
 	    "../../veda/bind/nano.d", 
 	    "../../veda/bind/xapian_d_header.d",
-	    "../../veda/util/tools.d",
 	    "../../veda/util/queue.d",
 	    "../../veda/util/container.d",
     	    "../../veda/util/module_info.d",

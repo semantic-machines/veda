@@ -1355,8 +1355,25 @@ veda.Module(function (veda) { "use strict";
       }
 
       put_individual(ticket, new_process, _event_id);
+      
+      var jrn_processed_doc_uri = veda.Util.getJournalUri(processedDocumentId)
+      
+      if (!get_individual(ticket, jrn_processed_doc_uri))
+      {
+		var jrn_processed_doc = {
+          '@': jrn_processed_doc_uri,
+          'rdf:type': veda.Util.newUri('v-s:Journal'),
+          'v-s:onDocument': processedDocumentValue,
+          'v-s:created': [
+          {
+              data: new Date(),
+              type: "Datetime"
+          }]
+        };
+		put_individual(ticket, jrn_processed_doc, _event_id);		  
+	  }
 
-      veda.Workflow.create_new_journal(ticket, veda.Util.getJournalUri(new_process_uri), veda.Util.getJournalUri(processedDocumentId), _net['rdfs:label']);
+      veda.Workflow.create_new_journal(ticket, veda.Util.getJournalUri(new_process_uri), jrn_processed_doc_uri, _net['rdfs:label']);
 
       var jrId = veda.Util.genUri() + "-psr";
       var journalRecord = {
@@ -1370,7 +1387,7 @@ veda.Module(function (veda) { "use strict";
               data: new Date(),
               type: "Datetime"
           }]
-      };
+         };
 
       //    var user = get_individual(ticket, author_uri);
       //    if (user['v-s:hasAppointment'])
