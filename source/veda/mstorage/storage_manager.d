@@ -84,7 +84,7 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
             send(tid, CMD_COMMIT, thisTid);
             receive((bool isReady) {});
         }
-        rc = ResultCode.OK;
+        rc = ResultCode.Ok;
     }
     return rc;
 }
@@ -202,7 +202,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
     long           last_reopen_rw_op_id = 0;
     int            max_count_updates    = 10_000;
 
-    long           op_id           = storage.get_last_op_id;
     long           committed_op_id = 0;
 
     string         notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
@@ -247,6 +246,9 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
             return;
         }
+
+        MInfo info  = module_info.get_info();
+        long  op_id = info.committed_op_id;
 
         // SEND ready
         receive((Tid tid_response_reciever)
@@ -359,10 +361,10 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         },
                         (string src, OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
                         {
-                            ResultCode rc = ResultCode.Not_Ready;
+                            ResultCode rc = ResultCode.NotReady;
                             if (tiz.length == 0)
                             {
-                                rc = ResultCode.No_Content;
+                                rc = ResultCode.NoContent;
                                 send(tid_response_reciever, rc, thisTid);
                                 return;
                             }
@@ -376,10 +378,10 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                             {
                                 if (ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(ti.uri) == ResultCode.OK)
-                                        rc = ResultCode.OK;
+                                    if (storage.remove(ti.uri) == ResultCode.Ok)
+                                        rc = ResultCode.Ok;
                                     else
-                                        rc = ResultCode.Fail_Store;
+                                        rc = ResultCode.FailStore;
 
                                     send(tid_response_reciever, rc, thisTid);
 
@@ -389,20 +391,20 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 {
                                     string new_hash;
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
-                                    if (storage.store(ti.uri, ti.new_binobj, op_id) == ResultCode.OK)
+                                    if (storage.store(ti.uri, ti.new_binobj, op_id) == ResultCode.Ok)
                                     {
-                                        rc = ResultCode.OK;
+                                        rc = ResultCode.Ok;
                                         op_id++;
                                         set_subject_manager_op_id(op_id);
                                     }
                                     else
                                     {
-                                        rc = ResultCode.Fail_Store;
+                                        rc = ResultCode.FailStore;
                                     }
 
                                     send(tid_response_reciever, rc, thisTid);
 
-                                    if (rc == ResultCode.OK)
+                                    if (rc == ResultCode.Ok)
                                     {
                                         module_info.put_info(op_id, committed_op_id);
 
@@ -466,7 +468,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                             }
                             catch (Exception ex)
                             {
-                                send(tid_response_reciever, ResultCode.Fail_Commit, thisTid);
+                                send(tid_response_reciever, ResultCode.FailCommit, thisTid);
                                 return;
                             }
                         },

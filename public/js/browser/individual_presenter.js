@@ -224,6 +224,9 @@ veda.Module(function (veda) { "use strict";
     // Define handlers
     function saveHandler (e, parent) {
       if (parent !== individual.id) {
+        if (embedded.length) {
+          individual.isSync(false);
+        }
         individual.save();
       }
       template.trigger("view");
@@ -622,7 +625,7 @@ veda.Module(function (veda) { "use strict";
       } else {
         about = new veda.IndividualModel(aboutContainer.attr("about"));
       }
-      aboutTemplate = about.present(aboutContainer, aboutTemplate);
+      aboutTemplate = about.present(aboutContainer, aboutTemplate, isEmbedded ? mode : "view");
       if (isEmbedded) {
         aboutTemplate.data("isEmbedded", true);
         embedded.push(aboutTemplate);

@@ -54,6 +54,7 @@ void nanomsg_channel(string thread_name)
         if (context is null)
         {
             context = PThreadContext.create_new("cfg:standart_node", thread_name, null, log);
+            context.set_az(get_acl_client(log));
             context.set_vql(new XapianSearch(context));
         }
 

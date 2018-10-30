@@ -51,11 +51,11 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
                 return "{ERR:\"invalid query:" ~ request ~ "\"}";
             }
 
-            if (indv.getStatus() == ResultCode.Not_Found)
+            if (indv.getStatus() == ResultCode.NotFound)
             {
                 return "[]";
             }
-            else if (indv.getStatus() == ResultCode.OK)
+            else if (indv.getStatus() == ResultCode.Ok)
             {
                 response = individual_to_json(indv).toString();
             }

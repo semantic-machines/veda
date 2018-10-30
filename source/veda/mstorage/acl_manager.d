@@ -58,7 +58,7 @@ public ResultCode flush(bool is_wait)
             send(tid, CMD_COMMIT, thisTid);
             receive((bool isReady) {});
         }
-        rc = ResultCode.OK;
+        rc = ResultCode.Ok;
     }
     return rc;
 }

@@ -152,99 +152,99 @@ public enum MODULE : ubyte
 public enum ResultCode
 {
     /// 0
-    zero                         = 0,
+    zero                    = 0,
 
     /// 200
-    OK                           = 200,
+    Ok                      = 200,
 
     /// 201
-    Created                      = 201,
+    Created                 = 201,
 
     /// 204
-    No_Content                   = 204,
+    NoContent               = 204,
 
     /// 400
-    Bad_Request                  = 400,
+    BadRequest              = 400,
 
     /// 403
-    Forbidden                    = 403,
+    Forbidden               = 403,
 
     /// 404
-    Not_Found                    = 404,
+    NotFound                = 404,
 
     /// 422
-    Unprocessable_Entity         = 422,
+    UnprocessableEntity     = 422,
 
     /// 429
-    Too_Many_Requests            = 429,
+    TooManyRequests         = 429,
 
     /// 464
-    Secret_expired               = 464,
+    SecretExpired           = 464,
 
     /// 465
-    Empty_password               = 465,
+    EmptyPassword           = 465,
 
     /// 466
-    New_password_is_equal_to_old = 466,
+    NewPasswordIsEqualToOld = 466,
 
     /// 467
-    Invalid_password             = 467,
+    InvalidPassword         = 467,
 
     /// 468
-    Invalid_secret               = 468,
+    InvalidSecret           = 468,
 
     /// 469
-    Password_expired             = 469,
+    PasswordExpired         = 469,
 
     /// 470
-    Ticket_not_found             = 470,
+    TicketNotFound          = 470,
 
     /// 471
-    Ticket_expired               = 471,
+    TicketExpired           = 471,
 
     /// 472
-    Not_Authorized               = 472,
+    NotAuthorized           = 472,
 
     /// 473
-    Authentication_Failed        = 473,
+    AuthenticationFailed    = 473,
 
     /// 474
-    Not_Ready                    = 474,
+    NotReady                = 474,
 
     /// 475
-    Fail_Open_Transaction        = 475,
+    FailOpenTransaction     = 475,
 
     /// 476
-    Fail_Commit                  = 476,
+    FailCommit              = 476,
 
     /// 477
-    Fail_Store                   = 477,
+    FailStore               = 477,
 
     /// 500
-    Internal_Server_Error        = 500,
+    InternalServerError     = 500,
 
     /// 501
-    Not_Implemented              = 501,
+    NotImplemented          = 501,
 
     /// 503
-    Service_Unavailable          = 503,
+    ServiceUnavailable      = 503,
 
-    Invalid_Identifier           = 904,
+    InvalidIdentifier       = 904,
 
     /// 999
-    DatabaseModifiedError        = 999,
+    DatabaseModifiedError   = 999,
 
     /// 1021
-    Disk_Full                    = 1021,
+    DiskFull                = 1021,
 
     /// 1022
-    Duplicate_Key                = 1022,
+    DuplicateKey            = 1022,
 
     /// 1118
-    Size_too_large               = 1118,
+    SizeTooLarge            = 1118,
 
     /// 4000
-    Connect_Error                = 4000
+    ConnectError            = 4000
 }
 
 enum OptFreeze

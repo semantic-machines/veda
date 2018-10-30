@@ -25,8 +25,6 @@ public class LmdbDriver : KeyValueDB
     public string       _path;
     string              db_name;
     string              parent_thread_name;
-    private long        last_op_id;
-    long                committed_last_op_id;
     Logger              log;
     bool                db_is_opened;
     long                read_count;
@@ -57,11 +55,6 @@ public class LmdbDriver : KeyValueDB
         return this._path;
     }
 
-    public long get_last_op_id()
-    {
-        return last_op_id;
-    }
-
     public void close()
     {
         if (mode == DBMode.RW)
@@ -79,7 +72,7 @@ public class LmdbDriver : KeyValueDB
         {
             close();
             open();
-            log.trace("reopen_db %s, mode=%s, thread:%s, last_op_id=%d", _path, text(mode), core_thread.getThis().name, last_op_id);
+            log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
         }
     }
 
@@ -118,27 +111,22 @@ public class LmdbDriver : KeyValueDB
 
             if (rc == 0)
             {
-                string   data_str = get_binobj(summ_hash_this_db_id);
+                string data_str = get_binobj(summ_hash_this_db_id);
 
-                string[] dataff = data_str.split(',');
-                string   hash_str;
-                if (dataff.length == 2)
+                if (data_str !is null && data_str.length > 0)
                 {
-                    hash_str = dataff[ 0 ];
+                    string[] dataff = data_str.split(',');
+                    string   hash_str;
+                    if (dataff.length == 2)
+                        hash_str = dataff[ 0 ];
 
-                    try
-                    {
-                        last_op_id           = to!long (dataff[ 1 ]);
-                        committed_last_op_id = last_op_id;
-                    }
-                    catch (Throwable tr) {}
+                    if (hash_str is null || hash_str.length < 1)
+                        hash_str = "0";
+
+                    summ_hash_this_db = BigInt("0x" ~ hash_str);
                 }
 
-                if (hash_str is null || hash_str.length < 1)
-                    hash_str = "0";
-
-                summ_hash_this_db = BigInt("0x" ~ hash_str);
-                log.trace("open LMDB %s data_str=[%s], last_op_id=%d", _path, data_str, last_op_id);
+                log.trace("open LMDB %s data_str=[%s]", _path, data_str);
                 db_is_opened = true;
             }
         }
@@ -178,19 +166,16 @@ public class LmdbDriver : KeyValueDB
         if (db_is_opened == false)
             open();
 
-        if (op_id > 0)
-            last_op_id = op_id;
-
         try
         {
             string _key  = in_key.dup;
             string value = in_value.dup;
 
             if (_key is null || _key.length < 1)
-                return ResultCode.No_Content;
+                return ResultCode.NoContent;
 
             if (value is null || value.length < 1)
-                return ResultCode.No_Content;
+                return ResultCode.NoContent;
 
             int     rc;
             MDB_dbi dbi;
@@ -203,7 +188,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
             if (rc != 0)
@@ -212,7 +197,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
 
             MDB_val key;
@@ -236,7 +221,7 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
-                return ResultCode.Fail_Store;
+                return ResultCode.FailStore;
             }
 
             rc = mdb_txn_commit(txn);
@@ -253,17 +238,17 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR! %s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                           rc)),
                                           _key);
-                return ResultCode.Fail_Commit;
+                return ResultCode.FailCommit;
             }
 
             mdb_dbi_close(env, dbi);
 
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
         catch (Throwable tr)
         {
             log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
-            return ResultCode.Fail_Store;
+            return ResultCode.FailStore;
         }
     }
 
@@ -277,7 +262,7 @@ public class LmdbDriver : KeyValueDB
             string _key = in_key.dup;
 
             if (_key is null || _key.length < 1)
-                return ResultCode.No_Content;
+                return ResultCode.NoContent;
 
             int     rc;
             MDB_dbi dbi;
@@ -290,7 +275,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
             if (rc != 0)
@@ -299,7 +284,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Open_Transaction;
+                return ResultCode.FailOpenTransaction;
             }
 
             MDB_val key;
@@ -324,7 +309,7 @@ public class LmdbDriver : KeyValueDB
                                                                                                                                          rc)),
                                           _key);
                 mdb_txn_abort(txn);
-                return ResultCode.Fail_Store;
+                return ResultCode.FailStore;
             }
 
             rc = mdb_txn_commit(txn);
@@ -341,17 +326,17 @@ public class LmdbDriver : KeyValueDB
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
-                return ResultCode.Fail_Commit;
+                return ResultCode.FailCommit;
             }
 
             mdb_dbi_close(env, dbi);
 
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
         catch (Throwable tr)
         {
             log.trace_log_and_console("ERR!  " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", %s", tr.msg);
-            return ResultCode.Fail_Store;
+            return ResultCode.FailStore;
         }
     }
 
@@ -359,13 +344,6 @@ public class LmdbDriver : KeyValueDB
     {
         try
         {
-            //    log.trace("flush %s last_op_id=%d", _path, last_op_id);
-            if (mode == DBMode.RW && last_op_id > committed_last_op_id)
-            {
-                store(summ_hash_this_db_id, "0," ~ text(last_op_id), -1);
-                committed_last_op_id = last_op_id;
-            }
-
             int rc = mdb_env_sync(env, force);
 
             if (rc != 0)
@@ -461,7 +439,7 @@ public class LmdbDriver : KeyValueDB
 
         if (individual_as_binobj is null)
         {
-            individual.setStatus(ResultCode.Not_Found);
+            individual.setStatus(ResultCode.NotFound);
             return;
         }
 
@@ -469,16 +447,16 @@ public class LmdbDriver : KeyValueDB
         if (individual_as_binobj !is null && individual_as_binobj.length > 1)
         {
             if (individual.deserialize(individual_as_binobj) > 0)
-                individual.setStatus(ResultCode.OK);
+                individual.setStatus(ResultCode.Ok);
             else
             {
-                individual.setStatus(ResultCode.Unprocessable_Entity);
+                individual.setStatus(ResultCode.UnprocessableEntity);
                 writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
             }
         }
         else
         {
-            individual.setStatus(ResultCode.Unprocessable_Entity);
+            individual.setStatus(ResultCode.UnprocessableEntity);
             //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
         }
     }

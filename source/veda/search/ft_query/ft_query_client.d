@@ -65,11 +65,11 @@ class FTQueryClient : Search
 
             context.get_storage().get_obj_from_individual_storage(uri, individual);
 
-            if (individual.getStatus() == ResultCode.Not_Found)
+            if (individual.getStatus() == ResultCode.NotFound)
             {
                 log.trace("ERR! FT:get Unable to find the object [%s] it should be, query=[%s]", uri, filter);
             }
-            else if (individual.getStatus() == ResultCode.OK)
+            else if (individual.getStatus() == ResultCode.Ok)
             {
                 individuals ~= individual;
             }

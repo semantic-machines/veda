@@ -8,7 +8,7 @@ import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.onto.resource, veda.onto.lang, veda.onto.individual;
 import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
-import veda.search.common.isearch, veda.search.xapian.xapian_search;
+import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
 
 static this()
 {
@@ -75,7 +75,7 @@ private nothrow string req_prepare(string request, Context context)
                         else
                         {
                             if (ticket.user_uri is null || ticket.user_uri.length == 0)
-                                context.get_logger.trace("ERR! user not found in ticket object, ticket_id=%s, ticket=%s", _ticket, ticket);
+                                context.get_logger.trace("ERR! ft_query: user not found in ticket object, ticket_id=%s, query=%s", _ticket, _query);
                             else
                                 user_uri = ticket.user_uri;
                         }
@@ -90,8 +90,8 @@ private nothrow string req_prepare(string request, Context context)
                         {
                             context.reopen_ro_fulltext_indexer_db();
 
-                            Individual indv = context.get_individual(&sticket, "cfg:OntoVsn", OptAuthorize.NO);
-                            if (indv.getStatus() == ResultCode.OK)
+                            Individual indv = context.get_individual("cfg:OntoVsn");
+                            if (indv.getStatus() == ResultCode.Ok)
                             {
                                 long new_onto_vsn = indv.getFirstInteger("v-s:updateCounter");
                                 if (new_onto_vsn != onto_vsn)
@@ -155,6 +155,31 @@ private string to_json_str(SearchResult res)
 }
 
 
+private Authorization get_acl_client(Logger log)
+{
+    Authorization acl_client;
+
+    try
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        string acl_service = properties.as!(string)("acl_service_url");
+        if (acl_service !is null)
+            acl_client = new ClientAuthorization(acl_service, log);
+        else
+        {
+            acl_client = new AuthorizationUseLib(log);
+        }
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+    }
+
+    return acl_client;
+}       
+
+
 private long   count;
 private Logger log;
 private long   onto_vsn;
@@ -207,10 +232,11 @@ void main(string[] args)
 
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
     sticket = ctx.sys_ticket();
+    ctx.set_az (get_acl_client(log));
     ctx.set_vql(new XapianSearch(ctx));
 
-    Individual indv = ctx.get_individual(&sticket, "cfg:OntoVsn", OptAuthorize.NO);
-    if (indv.getStatus() == ResultCode.OK)
+    Individual indv = ctx.get_individual("cfg:OntoVsn");
+    if (indv.getStatus() == ResultCode.Ok)
         onto_vsn = indv.getFirstInteger("v-s:updateCounter");
 
     sock = nn_socket(AF_SP, NN_REP);

@@ -23,10 +23,14 @@ Logger log()
     return _log;
 }
 
-int get_slot(ref int[ string ] key2slot, string key)
+int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
 {
     if (key.length < 1)
+    {
+    	if (log_if_err !is null)
+			log_if_err.trace("ERR! key2slot, key is empty");    		
         return -1;
+    }    
 
     if (key[ 0 ] == '#')
     {
@@ -37,11 +41,22 @@ int get_slot(ref int[ string ] key2slot, string key)
         }
         catch (Throwable tr)
         {
+	    	if (log_if_err !is null)
+				log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);    		
+
             return -1;
         }
     }
 
-    return key2slot.get(key, -1);
+	int slot = key2slot.get(key, -1);
+	
+	if (slot < 0)
+	{
+    	if (log_if_err !is null)
+			log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);    		
+	}
+	
+	return slot;
 }
 
 public void subject2Ticket(ref Individual ticket, Ticket *tt)
@@ -224,7 +239,7 @@ public string serialize_key2slot(ref int[ string ] key2slot, out string hash_hex
 public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
 {
     int[ string ] key2slot;
-    rc = ResultCode.Internal_Server_Error;
+    rc = ResultCode.InternalServerError;
 
     try
     {
@@ -234,7 +249,7 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
             if (record.length != 2)
             {
                 stderr.writeln("ERR! key2slot, invalid record=", record);
-                rc = ResultCode.Unprocessable_Entity;
+                rc = ResultCode.UnprocessableEntity;
                 return key2slot;
             }
             //stderr.writeln ("@&2 record=[", record, "]");
@@ -243,12 +258,12 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
                 key2slot[ record[ 0 ] ] = record[ 1 ];
             idx++;
         }
-        rc = ResultCode.OK;
+        rc = ResultCode.Ok;
     }
     catch (Throwable tr)
     {
         stderr.writeln("ERR! key2slot err=", tr.msg);
-        rc = ResultCode.Unprocessable_Entity;
+        rc = ResultCode.UnprocessableEntity;
     }
 
     return key2slot;

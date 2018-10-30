@@ -54,7 +54,7 @@ class InputQueueProcess : VedaModule
 
         auto rc = context.update(null, transaction_id, &sticket, cmd, &new_indv, event_id, 0, OptFreeze.NONE, OptAuthorize.NO).result;
 
-        if (rc != ResultCode.OK)
+        if (rc != ResultCode.Ok)
         {
             log.trace("ERR! fail store [%s]", new_indv.uri);
         }
@@ -64,7 +64,7 @@ class InputQueueProcess : VedaModule
         //    log.trace("[%s]: end prepare", new_indv.uri);
         //}
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override void thread_id()

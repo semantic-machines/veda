@@ -154,18 +154,18 @@ veda.Module(function (veda) { "use strict";
    */
   veda.Util.createReport = function (individual, reportId) {
     if (reportId !== undefined) {
-      $('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
+      $("[resource='" + veda.Util.escape4$(individual.id) + "']").find("#createReport").dropdown("toggle");
       veda.Util.redirectToReport(individual, reportId);
     } else {
-      var s = query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'");
+      var s = query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '" + individual["rdf:type"][0].id + "'");
       if (s.result.length === 0) {
-        alert('Нет отчета. Меня жизнь к такому не готовила.');
+        alert('Нет отчета.');
       } else if (s.result.length === 1) {
-        $('[resource="'+individual.id+'"]').find("#createReport").dropdown('toggle');
+        $("[resource='" + veda.Util.escape4$(individual.id) + "']").find("#createReport").dropdown("toggle");
         veda.Util.redirectToReport(individual, s.result[0]);
       } else {
-        var reportsDropdown = $('[resource="'+individual.id+'"] #chooseReport + .dropdown-menu');
-        if (reportsDropdown.html()== '') {
+        var reportsDropdown = $('[resource="' + veda.Util.escape4$(individual.id) + '"] #chooseReport + .dropdown-menu');
+        if (reportsDropdown.html() == "") {
           s.result.forEach( function (res_id) {
             $("<li/>", {
               "style" : "cursor:pointer",
@@ -187,24 +187,19 @@ veda.Module(function (veda) { "use strict";
 
     var form = document.createElement("form");
     form.setAttribute("method", "post");
-    form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id)+'&ticket='+veda.ticket);
+    form.setAttribute("action", jasperServerAddress + "flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit=" + encodeURIComponent(report["v-s:reportPath"][0]) + "&output=" + encodeURIComponent(report["v-s:reportFormat"][0]) + "&documentId=" + encodeURIComponent(individual.id) + "&ticket=" + veda.ticket);
     form.setAttribute("target", "view");
 
-    Object.getOwnPropertyNames(individual.properties).forEach(function (key)
-    {
-      if ( key !== '@' && individual.hasValue(key) ) {
+    Object.getOwnPropertyNames(individual.properties).forEach(function (key) {
+      if ( key !== "@" && individual.hasValue(key) ) {
         var hiddenField = document.createElement("input");
         hiddenField.setAttribute("type", "hidden");
-        hiddenField.setAttribute("name", key.replace(':','_'));
-        var value = '';
-        individual.get(key).forEach(function(item, i, arr) {
-          if (i>0) value+=',';
-          value += (
-            item instanceof veda.IndividualModel ? item.id :
-            item instanceof Date ? item.toISOString() :
-            item
-          );
-        });
+        hiddenField.setAttribute("name", key.replace(":", "_"));
+        var value = individual.get(key).map(function (item) {
+          return item instanceof veda.IndividualModel ? item.id :
+                 item instanceof Date ? item.toISOString() :
+                 item;
+        }).join(",");
         hiddenField.setAttribute("value", value);
         form.appendChild(hiddenField);
       }
@@ -217,7 +212,7 @@ veda.Module(function (veda) { "use strict";
     tzField.setAttribute("value", tz);
     form.appendChild(tzField);
     document.body.appendChild(form);
-    window.open('', 'view');
+    window.open("", "view");
     form.submit();
   };
 

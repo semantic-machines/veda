@@ -126,7 +126,7 @@ veda.Module(function (veda) { "use strict";
 
   veda.Codelet.change_process_status = function (ticket, process, status, _event_id)
   {
-      //    print('>>> '+veda.Util.toJson(process));
+      //print('>>> '+veda.Util.toJson(process));
       var vars = process['v-wf:inVars'];
       if (!vars) return;
       for (var i = 0; i < vars.length; i++)
@@ -137,11 +137,15 @@ veda.Module(function (veda) { "use strict";
               variable['v-wf:variableName'][0].data == 'docId')
           {
               var doc = get_individual(ticket, variable['v-wf:variableValue'][0].data);
-              if (doc['v-wf:isProcess'] && doc['v-wf:isProcess'][0].data == process['@'])
-              {
+
+              if (!doc['v-wf:isProcess'])  return;
+              for(var j = 0; j < doc['v-wf:isProcess'].length; j++) {
+                //print('>>> '+veda.Util.toJson(doc['v-wf:isProcess'][j].data));
+                if (doc['v-wf:isProcess'][j].data == process['@']) {
                   delete doc['v-wf:isProcess'];
                   doc['v-wf:hasStatusWorkflow'] = veda.Util.newUri(status);
-                  put_individual(ticket, doc, _event_id);
+                  put_individual(ticket, doc, _event_id);   
+                }
               }
           }
       }

@@ -4,6 +4,7 @@ import { Selector, t } from 'testcafe';
   .page `http://localhost:8080/`
   const basic = new Basic();
   const timeStamp = ''+Math.round(+new Date()/1000);
+  const searchStartForm = "'rdfs:label' == '"+ timeStamp +"'" ;
   const query = "'rdfs:label' == '"+ timeStamp +"' && 'v-s:deleted' == 'true'" ;
   test('testDeleteAndRecovery', async t => {
     basic.login('karpovrt', '123');
@@ -14,16 +15,15 @@ import { Selector, t } from 'testcafe';
       .click('div.suggestion[resource="v-wf:StartForm"]')
       .typeText('veda-control[data-type="multilingualString"] input[type="text"]', timeStamp)
       .click('#save')
-      .click('#menu')
-      .click('li[id="menu"] li[resource="v-s:Find"]')
-      .typeText('veda-control[property="v-fs:fulltextQuery"] input[type="text"]', timeStamp)
-      .typeText('veda-control[rel="v-fs:typeToSearch"] textarea[name="v_fs_fulltextrequest_v_fs_typetosearch"]', 'Стартовая форма')
-      .click('div.suggestion[resource="v-wf:StartForm"]')
-      .click('div.input-group button#submit')
-      .click('ol#results-list span.label-template')
+      .click('li[about="v-fs:FulltextSearch"]')
+      .typeText('veda-control[property="*"] input.form-control', searchStartForm)
+      .click('div.input-group span.input-group-btn #custom-search-button.search-button')
+      .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       .setNativeDialogHandler(() => true)
       .click('#delete')
       .click('li[about="v-fs:FulltextSearch"]')
+      .click('veda-control[property="*"] input.form-control')
+      .pressKey('ctrl+a delete')
       .typeText('veda-control[property="*"] input.form-control', query)
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
       .click('div.results a.glyphicon.glyphicon-search.deleted[typeof="v-wf:StartForm"]')

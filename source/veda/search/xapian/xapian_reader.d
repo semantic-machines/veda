@@ -157,7 +157,7 @@ class XapianReader : SearchReader
         if (tta is null)
         {
             log.trace("fail parse query (phase 1) [%s], tta is null", str_query);
-            sr.result_code = ResultCode.Bad_Request;
+            sr.result_code = ResultCode.BadRequest;
             return sr;
         }
 
@@ -218,8 +218,6 @@ class XapianReader : SearchReader
         if (db_names.length == 0)
             db_names = [ "base" ];
 
-        log.trace("db_names=%s", db_names);
-
         if (trace)
             log.trace("[Q:%X] user_uri=[%s] query=[%s] str_sort=[%s], db_names=[%s], from=[%d], top=[%d], limit=[%d]", cast(void *)str_query,
                       user_uri, str_query,
@@ -254,13 +252,13 @@ class XapianReader : SearchReader
             }
             catch (XapianError ex)
             {
-                log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, ex.msg);
+                log.trace("ERR! fail parse query (phase 2) [%s], err:[%s]", str_query, ex.msg);
                 state = ex.code;
             }
             catch (Throwable tr)
             {
-                log.trace("fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
-                sr.result_code = ResultCode.Bad_Request;
+                log.trace("ERR! fail parse query (phase 2) [%s], err:[%s]", str_query, tr.msg);
+                sr.result_code = ResultCode.BadRequest;
                 return sr;
             }
 
@@ -294,7 +292,7 @@ class XapianReader : SearchReader
             if (err < 0)
             {
                 log.trace("ERR! xapian_reader:get err=%s", get_xapian_err_msg(err));
-                sr.result_code = ResultCode.Bad_Request;
+                sr.result_code = ResultCode.BadRequest;
                 return sr;
             }
 
@@ -311,6 +309,12 @@ class XapianReader : SearchReader
             destroy_Query(query);
             destroy_MultiValueKeyMaker(sorter);
 
+            if (sr.estimated > limit)
+            {
+                string str_x_query = tta.toString();
+                log.trace("WARN! estimated > limit: %d > %d, time=%d ms, user_uri=%s, query=%s", sr.estimated, limit, sr.total_time, user_uri, str_x_query);
+            }
+
             if (sr.total_time > 5_000)
             {
                 log.trace("WARN! xapian::get, total_time (%d ms) > 5 sec, user=%s, query=%s, sr=%s", sr.total_time, user_uri, str_query, sr);
@@ -320,15 +324,15 @@ class XapianReader : SearchReader
                 reopen_dbs();
             else
             {
-                if (sr.result_code != ResultCode.OK)
+                if (sr.result_code != ResultCode.Ok)
                     log.trace("ERR! [Q:%X] exec_xapian_query_and_queue_authorize, query=[%s], err=[%s]", cast(void *)str_query, str_query,
                               sr.result_code);
             }
         }
         else
         {
-            sr.result_code = ResultCode.Bad_Request;
-            log.trace("invalid query [%s]", str_query);
+            sr.result_code = ResultCode.BadRequest;
+            log.trace("ERR! fail prepare query [%s]", str_query);
         }
 
         //log.trace("[Q:%X] query [%s], result.count=%d, result.processed=%d", cast(void *)str_query, str_query, sr.count, sr.processed);

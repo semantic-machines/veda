@@ -123,7 +123,7 @@ void main(char[][] args)
 
     sticket = context.sys_ticket();
 
-    while (sticket.result != ResultCode.OK)
+    while (sticket.result != ResultCode.Ok)
     {
         Thread.sleep(dur!("seconds")(1));
         log.trace("fail read systicket: wait 1s, and repeate");
@@ -303,10 +303,10 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
     {
         if (extension(fname) == ".ttl" && fname.indexOf("#") < 0 && fname.indexOf("module.ttl") < 0)
         {
-            log.trace("change file %s", fname);
+            log.trace("check file %s", fname);
 
             string     file_uri       = "d:" ~ baseName(fname);
-            Individual indv_ttrl_file = context.get_individual(&sticket, file_uri, OptAuthorize.NO);
+            Individual indv_ttrl_file = context.get_individual(file_uri);
 
             if (!is_check)
             {
@@ -330,9 +330,9 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
                     if (new_hash != old_hash)
                     {
                         log.trace("file is modifed (hash), %s", fname);
+	                    files_to_load ~= fname;
+	                    is_reload = true;
                     }
-                    files_to_load ~= fname;
-                    is_reload = true;
                 }
             }
         }
@@ -444,7 +444,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
                     {
                         individuals[ uri ] = Individual.init;
 
-                        Individual indv_in_storage     = context.get_individual(&sticket, uri, OptAuthorize.NO);
+                        Individual indv_in_storage     = context.get_individual(uri);
                         long       prev_update_counter = indv_in_storage.getFirstInteger("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:previousVersion");
@@ -471,7 +471,7 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
-                                if (res != ResultCode.OK)
+                                if (res != ResultCode.Ok)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
 
                                 is_loaded = true;

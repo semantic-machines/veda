@@ -9,8 +9,9 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container,
-               veda.common.logger, veda.core.common.transaction, veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage;
+private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.logger, veda.core.common.transaction;
+private import veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage, veda.authorization.authorization;
 
 alias MODULES_MASK = long;
 const ALL_MODULES  = 0;
@@ -41,7 +42,10 @@ interface Context
 
     public Search get_vql();
     public void set_vql(Search in_vql);
-    
+
+    public Authorization get_az();
+    public void set_az(Authorization in_az);
+
     public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
                            OptFreeze opt_freeze, OptAuthorize opt_request);
 
@@ -74,60 +78,16 @@ interface Context
 
     public void reopen_ro_fulltext_indexer_db();
     public void reopen_ro_individuals_storage_db();
-    public void reopen_ro_acl_storage_db();
 
     /**
        Вернуть индивидуала по его uri
        Params:
-                 ticket = указатель на обьект Ticket
                  Uri
 
        Returns:
-                авторизованный экземпляр onto.Individual
+                НЕ ПРОШЕДШИЙ ПРОЦЕДУРУ авторизации экземпляр onto.Individual
      */
-    public Individual               get_individual(Ticket *ticket, Uri uri, OptAuthorize opt_authorize);
-
-    /**
-       Вернуть список индивидуалов по списку uri
-       Params:
-                ticket = указатель на обьект Ticket
-                uris   = список содержащий заданные uri
-
-       Returns:
-                авторизованные экземпляры Individual
-     */
-    public Individual[] get_individuals(Ticket *ticket, string[] uris);
-
-    // ////////////////////////////////////////////// AUTHORIZATION ////////////////////////////////////////////
-    /**
-       Вернуть список доступных прав для пользователя на указанномый uri
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri    = uri субьекта
-
-       Returns:
-                байт содержащий установленные биты (type.Access)
-     */
-    public ubyte get_rights(Ticket *ticket, string uri, ubyte access);
-
-
-    /**
-       Вернуть детализированный список доступных прав для пользователя по указанному uri, список представляет собой массив индивидов
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri    = uri субьекта
-                 trace_acl  = буффер, собирающий результат выполнения функции
-     */
-    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info);
-
-    /**
-       Вернуть список групп в которые входит индивид указанный по uri, список представляет собой индивид
-       Params:
-                 ticket = указатель на обьект Ticket
-                 uri    = uri субьекта
-                 trace_group  = буффер,, собирающий результат выполнения функции
-     */
-    public void get_membership_from_acl(Ticket *ticket, string uri, OutBuffer trace_group);
+    public Individual               get_individual(Uri uri);
 
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
 

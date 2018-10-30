@@ -140,24 +140,24 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
     if (ti.cmd == INDV_OP.REMOVE)
     {
         ti.new_indv.uri = _binobj;
-        ti.rc           = ResultCode.OK;
+        ti.rc           = ResultCode.Ok;
     }
     else
     {
         int code = ti.new_indv.deserialize(ti.new_binobj);
         if (code < 0)
         {
-            ti.rc = ResultCode.Unprocessable_Entity;
+            ti.rc = ResultCode.UnprocessableEntity;
             log.trace("ERR! v8d:transaction:deserialize cmd:[%s] ticket:[%s] event:[%s] binobj[%s]", text(_cmd), _ticket_id, _event_id, _binobj);
             return;
         }
         else
-            ti.rc = ResultCode.OK;
+            ti.rc = ResultCode.Ok;
 
         ti.new_indv.setStatus(ti.rc);
         ti.uri = ti.new_indv.uri;
 
-        if (ti.rc == ResultCode.OK && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
+        if (ti.rc == ResultCode.Ok && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
         {
             // log.trace("fill_TransactionItem(%s) [%s]", text (_cmd), ti.new_indv);
             Individual      prev_indv;
@@ -169,13 +169,13 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
             }
             else
             {
-                prev_indv = g_context.get_individual(ticket, ti.new_indv.uri, OptAuthorize.NO);
+                prev_indv = g_context.get_individual(ti.new_indv.uri);
             }
 
-            if (prev_indv.getStatus() == ResultCode.Connect_Error || prev_indv.getStatus() == ResultCode.Too_Many_Requests)
+            if (prev_indv.getStatus() == ResultCode.ConnectError || prev_indv.getStatus() == ResultCode.TooManyRequests)
                 ti.rc = prev_indv.getStatus();
 
-            if (prev_indv.getStatus() == ResultCode.OK)
+            if (prev_indv.getStatus() == ResultCode.Ok)
                 ti.new_indv = *indv_apply_cmd(ti.cmd, &prev_indv, &ti.new_indv);
             else
                 log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri,
@@ -307,7 +307,7 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
     fill_TransactionItem(&ti, INDV_OP.PUT, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                          g_event_id);
 
-    if (ti.rc == ResultCode.OK)
+    if (ti.rc == ResultCode.Ok)
         tnx.add(ti);
 
     return ti.rc;
@@ -320,7 +320,7 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
     fill_TransactionItem(&ti, INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                          g_event_id);
 
-    if (ti.rc == ResultCode.OK)
+    if (ti.rc == ResultCode.Ok)
         tnx.add(ti);
 
     return ti.rc;
@@ -333,7 +333,7 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
     fill_TransactionItem(&ti, INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                          g_event_id);
 
-    if (ti.rc == ResultCode.OK)
+    if (ti.rc == ResultCode.Ok)
         tnx.add(ti);
 
     return ti.rc;
@@ -346,7 +346,7 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
     fill_TransactionItem(&ti, INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                          g_event_id);
 
-    if (ti.rc == ResultCode.OK)
+    if (ti.rc == ResultCode.Ok)
         tnx.add(ti);
 
     return ti.rc;
@@ -359,7 +359,7 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
     fill_TransactionItem(&ti, INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
                          g_event_id);
 
-    if (ti.rc == ResultCode.OK)
+    if (ti.rc == ResultCode.Ok)
         tnx.add(ti);
 
     return ti.rc;

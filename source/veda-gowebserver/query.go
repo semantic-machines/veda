@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"log"
-
+	"time"
 	"github.com/op/go-nanomsg"
 	"github.com/itiu/fasthttp"
 )
@@ -12,10 +12,9 @@ import (
 //query request redirects to fr-query module via socket
 func query(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
+	timestamp := time.Now()
 
 	request := make([]interface{}, 8)
-	// request := make(map[string]interface{})
-	/**/
 	//fills request map with parametrs
 	ticketKey := string(ctx.QueryArgs().Peek("ticket")[:])
 	query := string(ctx.QueryArgs().Peek("query")[:])
@@ -50,7 +49,9 @@ func query(ctx *fasthttp.RequestCtx) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("ERR! fail execute(%s) request=%v\n", queryServiceURL, request)
-			ctx.Response.SetStatusCode(int(InternalServerError))
+			rc := InternalServerError
+			ctx.Response.SetStatusCode(int(rc))
+			trail1(ticketKey, "", "query", query, "", rc, timestamp)
 			return
 		}
 	}()
@@ -119,4 +120,6 @@ func query(ctx *fasthttp.RequestCtx) {
 
 		ctx.Response.SetStatusCode(result_code)
 	}
+
+	trail1(ticketKey, "", "query", query, "", ResultCode(result_code), timestamp)
 }

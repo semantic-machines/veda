@@ -10,10 +10,10 @@ private
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import veda.common.logger, veda.core.impl.thread_context;
+    import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
     import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-    import veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.search.common.isearch, veda.search.ft_query.ft_query_client;
+    import veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -99,14 +99,16 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
-    context.set_vql(new XapianSearch(context));
+    
+    context.set_vql(new FTQueryClient(context));
+    //context.set_vql(new XapianSearch(context));
 
     vql = context.get_vql();
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
         ~ "var user_uri = get_env_str_var ('$user');"
-        ~ "var execute_script = get_individual (ticket, '$execute_script');";
+        ~ "var execute_script = get_individual ('$execute_script');";
 
     script_vm = get_ScriptVM(context);
 
@@ -248,7 +250,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     if (uri is null || uri.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         executed_script_binobj is null || executed_script_binobj.length <= 3)
-        return ResultCode.OK;
+        return ResultCode.Ok;
 
     if (onto is null)
         onto = context.get_onto();
@@ -279,7 +281,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
 
     if (script is ScriptInfo.init)
     {
-        Individual codelet = context.get_individual(&sticket, script_uri, OptAuthorize.NO);
+        Individual codelet = context.get_individual(script_uri);
         prepare_script(_wpl, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
     }
 
@@ -294,7 +296,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
             ResultCode res = g_context.commit(&tnx);
             tnx.reset();
 
-            if (res != ResultCode.OK)
+            if (res != ResultCode.Ok)
             {
                 log.trace("fail exec event script : %s", script.id);
                 return res;
@@ -308,7 +310,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
         }
     }
 
-    return ResultCode.OK;
+    return ResultCode.Ok;
 }
 
 class ScriptProcess : VedaModule
@@ -341,10 +343,10 @@ class ScriptProcess : VedaModule
         committed_op_id = op_id;
 
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         //string queue_id = "uris-tmp";
         //context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
@@ -352,7 +354,7 @@ class ScriptProcess : VedaModule
         string queue_id = "uris-db";
         start_script(new_bin, queue_id);
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override bool configure()
@@ -369,8 +371,8 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        context.set_vql(new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
+        //context.set_vql(new XapianSearch(context));
+        context.set_vql(new FTQueryClient(context));
 
         return true;
     }

@@ -49,7 +49,7 @@ class FanoutProcess : VedaModule
             // addr to smpt server not set, skip message
 
             committed_op_id = op_id;
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
 
         ResultCode res;
@@ -65,10 +65,10 @@ class FanoutProcess : VedaModule
             if (smtp_conn !is null)
             {
                 res = push_to_smtp(prev_indv, new_indv);
-                if (res == ResultCode.Connect_Error)
+                if (res == ResultCode.ConnectError)
                 {
                     connect_to_smtp(context);
-                    return ResultCode.Connect_Error;
+                    return ResultCode.ConnectError;
                 }
             }
         }
@@ -77,14 +77,14 @@ class FanoutProcess : VedaModule
             log.trace("ERR! LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
-        if (res == ResultCode.OK)
+        if (res == ResultCode.Ok)
         {
             committed_op_id = op_id;
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
         else
         {
-            return ResultCode.Fail_Commit;
+            return ResultCode.FailCommit;
         }
     }
 
@@ -138,15 +138,15 @@ class FanoutProcess : VedaModule
         if (p_uri is null)
             return null;
 
-        Individual prs = context.get_individual(&sticket, p_uri, OptAuthorize.NO);
-        if (prs.getStatus() != ResultCode.OK)
+        Individual prs = context.get_individual(p_uri);
+        if (prs.getStatus() != ResultCode.Ok)
             return null;
 
         string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
         if (preference_uri !is null)
         {
-            Individual preference = context.get_individual(&sticket, preference_uri, OptAuthorize.NO);
-            if (preference.getStatus() == ResultCode.OK)
+            Individual preference = context.get_individual(preference_uri);
+            if (preference.getStatus() == ResultCode.Ok)
             {
                 string receiveMessageType = prs.getFirstLiteral("v-ui:receiveMessageType");
 
@@ -165,8 +165,8 @@ class FanoutProcess : VedaModule
         if (ac_uri is null)
             return null;
 
-        Individual ac = context.get_individual(&sticket, ac_uri, OptAuthorize.NO);
-        if (ac.getStatus() != ResultCode.OK)
+        Individual ac = context.get_individual(ac_uri);
+        if (ac.getStatus() != ResultCode.Ok)
             return null;
 
         return ac.getResources("v-s:mailbox");
@@ -179,9 +179,9 @@ class FanoutProcess : VedaModule
 
         Resources  res;
 
-        Individual indv = context.get_individual(&sticket, ap_uri, OptAuthorize.NO);
+        Individual indv = context.get_individual(ap_uri);
 
-        if (indv.getStatus() != ResultCode.OK)
+        if (indv.getStatus() != ResultCode.Ok)
             return null;
 
         label = indv.getFirstLiteral("rdfs:label");
@@ -274,7 +274,7 @@ class FanoutProcess : VedaModule
             if (isDraftOf !is null)
             {
                 log.trace("new_indv [%s] is draft, ignore", new_indv.uri);
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             if (is_deleted == false && (actualVersion !is null && actualVersion != new_indv.uri /*||
@@ -286,7 +286,7 @@ class FanoutProcess : VedaModule
 //				if (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)
 //                  log.trace("prev[%s].v-s:previousVersion[%s] == new[%s].v-s:previousVersion[%s], ignore", prev_indv.uri, previousVersion_prev, new_indv.uri, previousVersion_new);
 
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             Resources types        = new_indv.getResources("rdf:type");
@@ -303,7 +303,7 @@ class FanoutProcess : VedaModule
 
 
             if (!need_prepare)
-                return ResultCode.OK;
+                return ResultCode.Ok;
 
             ResultCode rc;
             bool       is_send = false;
@@ -386,7 +386,7 @@ class FanoutProcess : VedaModule
                             try
                             {
                                 //writeln("@1 attachment_id=", attachment_ids);
-                                Individual file_info = context.get_individual(&sticket, attachment_id, OptAuthorize.NO);
+                                Individual file_info = context.get_individual(attachment_id);
                                 if (file_info !is Individual.init)
                                 {
                                     string path     = file_info.getFirstResource("v-s:filePath").get!string;
@@ -418,7 +418,7 @@ class FanoutProcess : VedaModule
                             try
                             {
                                 //writeln("@1 attachment_id=", attachment_ids);
-                                Individual file_info = context.get_individual(&sticket, attachment_id, OptAuthorize.NO);
+                                Individual file_info = context.get_individual(attachment_id);
                                 if (file_info !is Individual.init)
                                 {
                                     string path     = file_info.getFirstResource("v-s:filePath").get!string;
@@ -452,13 +452,13 @@ class FanoutProcess : VedaModule
                         {
                             is_send = false;
                             if (res.code == 451)
-                                rc = ResultCode.Connect_Error;
+                                rc = ResultCode.ConnectError;
                             if (res.code == 501)
-                                rc = ResultCode.Bad_Request;
+                                rc = ResultCode.BadRequest;
                         }
                         else
                         {
-                            rc      = ResultCode.OK;
+                            rc      = ResultCode.Ok;
                             is_send = true;
                             //new_indv.addResource("v-s:isSuccess", Resource(true));
                         }
@@ -497,7 +497,7 @@ class FanoutProcess : VedaModule
         catch (Throwable ex)
         {
             log.trace("ERR! push_to_smtp[%s], \n%s", new_indv.uri, ex.info);
-            return ResultCode.Internal_Server_Error;
+            return ResultCode.InternalServerError;
         }
     }
 
@@ -513,7 +513,7 @@ class FanoutProcess : VedaModule
 
             foreach (gate; gates)
             {
-                Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
+                Individual connection = context.get_individual(gate.uri);
                 //subscribe_on_prefetch(gate.uri);
                 Resource   transport = connection.getFirstResource("v-s:transport");
                 if (transport != Resource.init)

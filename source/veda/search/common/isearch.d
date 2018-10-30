@@ -16,7 +16,7 @@ public struct SearchResult
     long       total_time;
     long       query_time;
     long       authorize_time;
-    ResultCode result_code = ResultCode.Not_Ready;
+    ResultCode result_code = ResultCode.NotReady;
 }
 
 interface Search

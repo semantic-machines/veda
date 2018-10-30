@@ -7,7 +7,10 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     const timeStamp = ''+Math.round(+new Date()/1000);
     basic.createTestUI('Вася Пупкин', timeStamp);
-    basic.attributiveSearchTestUi(timeStamp);
     await t
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql('1')
+      .expect(Selector('#user-info').innerText).eql('Администратор2\n')
+      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .typeText('veda-control#comment', timeStamp)
+      .click('button#search-button')
+      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
 });

@@ -150,8 +150,25 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		fileInfo := rr.GetIndv(0)
 		//log.Println("@", fileInfo)
 		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
+		if len(filePath) < 3 {
+			log.Println("ERR! file path is empty, uri=%s", uri)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
 		fileURI, _ := getFirstString(fileInfo, "v-s:fileUri")
+		if len(fileURI) < 3 {
+			log.Println("ERR! file uri is empty, uri=%s", uri)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
 		fileName, _ := getFirstString(fileInfo, "v-s:fileName")
+		if len(fileName) < 1 {
+			log.Println("ERR! file name is empty, uri=%s", uri)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
 
 		//Create path to file string
 		filePathStr := attachmentsPath + filePath + "/" + fileURI

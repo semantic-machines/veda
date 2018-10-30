@@ -7,7 +7,8 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
+private import veda.gluecode.script, veda.gluecode.v8d_header;
 
 class ScriptProcess : VedaModule
 {
@@ -56,10 +57,10 @@ class ScriptProcess : VedaModule
                                 long count_popped)
     {
         if (script_vm is null)
-            return ResultCode.Not_Ready;
+            return ResultCode.NotReady;
 
         if (src != "?" && queue_name != src)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
@@ -78,7 +79,7 @@ class ScriptProcess : VedaModule
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
             {
                 committed_op_id = op_id;
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             if (itype == veda_schema__Event)
@@ -179,7 +180,7 @@ class ScriptProcess : VedaModule
                         log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
                     }
 
-                    if (res != ResultCode.OK)
+                    if (res != ResultCode.Ok)
                     {
                         log.trace("fail exec event script : %s", script_id);
                         return res;
@@ -199,13 +200,13 @@ class ScriptProcess : VedaModule
         // clear_script_data_cache ();
         committed_op_id = op_id;
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override bool open()
     {
-        context.set_vql(new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
+        //context.set_vql(new XapianSearch(context));
+        context.set_vql(new FTQueryClient(context));
 
         vql       = context.get_vql();
         script_vm = get_ScriptVM(context);
