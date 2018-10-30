@@ -73,7 +73,7 @@ import { Selector, t } from 'testcafe';
   test('testSearchOrderBy', async t => {
     basic.login('karpovrt', '123');
     await t
-      .expect(Selector('#user-info').innerText).eql('Администратор2')
+      .expect(Selector('#user-info').innerText).eql('Администратор2\n')
       .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .click('button#search-button')
       .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
