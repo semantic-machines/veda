@@ -58,15 +58,6 @@ v-s:ApplicationTemplate
   v-ui:template """
 <div about="@" class="container">
   <div about="@" class="card card-big card-post card-post--1" style="position:relative;">
-    <!--div class="card-title">
-      <h2>
-        <span href="#/@" property="rdfs:label"></span>
-        <small class="card-text d-inline-block mb-3" property="rdfs:comment"></small>
-      </h2>
-    </div>
-    <div about="@" rel="v-s:hasImage">
-      <div class="card-post__image" style="background-image: url('/files/@');"></div>
-    </div-->
     <div class="card-body">
       <div class="clearfix">
         <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
@@ -75,9 +66,15 @@ v-s:ApplicationTemplate
           <small class="card-text d-inline-block mb-3" property="rdfs:comment"></small>
         </h2>
       </div>
-      <hr>
-      <em about="v-s:description" property="rdfs:label"></em>
-      <div about="@" property="v-s:description"></div>
+      <hr class="margin-md">
+      <div class="row">
+        <div class="col-md-9 col-sm-8" style="border-right: 1px dotted #ddd;">
+          <div about="@" property="v-s:description" class="markdown"></div>
+        </div>
+        <div class="col-md-3 col-sm-4">
+          <strong about="v-s:responsible" property="rdfs:label"></strong>
+        </div>
+      </div>
       <hr>
       <div class="row margin-lg">
         <div class="col-md-4 col-sm-6">
