@@ -53,6 +53,7 @@ v-ui:forClass
   rdfs:domain v-ui:ClassTemplate ;
   rdfs:domain v-ui:ClassModel ;
   rdfs:domain v-ui:PropertySpecification ;
+  rdfs:domain v-s:ReportsForClass ;
   rdfs:label "Для класса"@ru ;
   rdfs:label "For class"@en ;
   rdfs:range owl:Class ;
