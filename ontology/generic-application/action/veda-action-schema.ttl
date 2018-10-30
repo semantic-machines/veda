@@ -412,7 +412,7 @@ for (var i=0; i<result.length; i++){
     print("Skip, because hasPeriod empty: ",result[i]);
     continue;
   }
-  //скрипт выполняется ночью, для этого deadline смещается на полночь текущего дня
+  //скрипт выполняется ночью, для этого deadline смещается на полночь
   var today = new Date();
   var targetDate = +today+delta;
   if ((deadline.setHours(0,0,0,0) - targetDate) > 0) {
@@ -426,7 +426,7 @@ for (var i=0; i<result.length; i++){
     "@" : uri,
     "rdf:type" : veda.Util.newUri("v-df:InstructionRouteStartForm"),
     "v-wf:StartForm_canEdit" : veda.Util.newBool(false),
-    "v-wf:StartForm_setStatus" : veda.Util.newBool(false),
+    "v-wf:StartForm_setStatus" : veda.Util.newBool(true),
     "v-wf:forNet" : veda.Util.newUri("s-wf:WrapUniversalNet"),
     "v-wf:processedDocument" : veda.Util.newUri(result[i]),
     "v-wf:useTransformation" : veda.Util.newUri("v-df:InstructionRouteStartFormToNet"),
@@ -444,9 +444,10 @@ for (var i=0; i<result.length; i++){
   }
   put_individual(ticket, startForm, _event_id);
   var set_in_document = {
-  '@': result[i]
+    '@': result[i]
   };
   set_in_document['v-s:scriptHandlered'] = veda.Util.newBool('true');
+  set_in_document['v-s:dateToFact'] = veda.Util.newDate(today);
   set_in_individual(ticket, set_in_document, _event_id);
   print("Created: ", uri, ". For document:", result[i]);
 }
