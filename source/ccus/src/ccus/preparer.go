@@ -210,7 +210,8 @@ func (pc *ccusConn) preparer(cc_control chan int, cc_prepare_in chan string, cc_
 			// unsubscribe all
 
 			pc.count_2_uid = make(map[string]int)
-
+			cc_prepare_out <- ""
+			
 		} else if len(msg) > 3 {
 
 			res := ""
