@@ -4,7 +4,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import veda.util.properd;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
-private import veda.core.common.context, veda.util.tools;
+private import veda.core.common.context;
 private import veda.vmodule.vmodule;
 
 void main(char[][] args)
