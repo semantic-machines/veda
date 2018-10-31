@@ -197,8 +197,6 @@ veda.Module(function (veda) { "use strict";
           if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.isDraft() ) { continue; }
           if (list[uri]) {
             list[uri].updateCounter = updateCounter;
-          } else {
-            list[uri] = { subscribeCounter: 1, updateCounter: updateCounter } ;
           }
           individual.reset(); // Reset to DB
         } catch (error) {
