@@ -1,0 +1,14 @@
+testcafe chromium ../qa/testcafe/testLogin.js
+testcafe chromium ../qa/testcafe/testLanguage.js
+testcafe chromium ../qa/testcafe/testAttributiveSearch.js
+testcafe chromium ../qa/testcafe/testComment.js
+testcafe chromium ../qa/testcafe/testCreatingNetInterface.js
+testcafe chromium ../qa/testcafe/testDeleteAndRecovery.js
+testcafe chromium ../qa/testcafe/testJournal.js
+testcafe chromium ../qa/testcafe/testPerson.js
+testcafe chromium ../qa/testcafe/testRights.js
+testcafe chromium ../qa/testcafe/testSearchRangeOfDates.js
+testcafe chromium ../qa/testcafe/testVersionedDocument.js
+testcafe chromium ../qa/testcafe/testSimpleNet.js
+testcafe chromium ../qa/testcafe/testSimpleNet2.js  
+testcafe chromium ../qa/testcafe/testSimpleNet3.js  
