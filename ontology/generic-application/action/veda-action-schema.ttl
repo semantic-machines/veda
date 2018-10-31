@@ -414,8 +414,10 @@ for (var i=0; i<result.length; i++){
   }
   //скрипт выполняется ночью, для этого deadline смещается на полночь
   var today = new Date();
+
   var targetDate = +today+delta;
-  if ((deadline.setHours(0,0,0,0) - targetDate) > 0) {
+  deadline = deadline.setHours(0,0,0,0);
+  if ((deadline - targetDate) > 0) {
     print("Skip, because too early: ",result[i]);
     continue;
   }
