@@ -4,11 +4,57 @@
 module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
+private import std.concurrency;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-private import veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.gluecode.script, veda.gluecode.v8d_header, veda.gluecode.ltr_scripts;
+
+int main(string[] args)
+{
+    writeln("args = ", args);
+    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "ltr"))
+    {
+        writefln("use %s [main/lp/ltr]", args[ 0 ]);
+        return -1;
+    }
+
+    string vm_id = args[ 1 ];
+
+    MODULE module_id = MODULE.scripts_main;
+    if (vm_id == "lp")
+        module_id = MODULE.scripts_lp;
+    else if (vm_id == "ltr")
+        module_id = MODULE.ltr_scripts;
+
+    process_name = "scripts-" ~ vm_id;
+    Logger log = new Logger("veda-core-" ~ process_name, "log", "");
+    log.tracec("use VM id=%s", vm_id);
+
+    if (vm_id == "ltr")
+    {
+        core.thread.Thread.sleep(dur!("seconds")(2));
+
+        ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, module_id, log);
+        //log = p_script.log();
+
+        tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
+
+        p_script.run();
+
+        shutdown_ltr_scripts();
+    }
+    else
+    {
+        Thread.sleep(dur!("seconds")(1));
+
+        ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, module_id, log);
+        p_script.run();
+    }
+
+    return 0;
+}
 
 class ScriptProcess : VedaModule
 {

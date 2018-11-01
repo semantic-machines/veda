@@ -64,21 +64,15 @@ if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-np" ] ; th
     ./tools/build-component.sh veda-fanout-sql-lp fanout-sql-lp
 fi
 
-if [ -z $1 ] || [ $1 == "scripts-main" ] || [ $1 == "veda-scripts-main" ] ; then
-    ./tools/build-component.sh veda-scripts-main scripts-main
-    rm veda-scripts
-fi
-
-if [ -z $1 ] || [ $1 == "scripts-lp" ] || [ $1 == "veda-scripts-lp" ] ; then
-    ./tools/build-component.sh veda-scripts-lp scripts-lp
+if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] ; then
+    ./tools/build-component.sh veda-scripts scripts
+    rm veda-scripts-main
+    rm veda-scripts-lp
+    rm veda-ltr-scripts
 fi
 
 if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] ; then
     ./tools/build-component.sh veda-ft-indexer ft-indexer
-fi
-
-if [ -z $1 ] || [ $1 == "ltr-scripts" ] || [ $1 == "veda-ltr-scripts" ] ; then
-    ./tools/build-component.sh veda-ltr-scripts ltr-scripts
 fi
 
 if [ -z $1 ] || [ $1 == "ttlreader" ] || [ $1 == "veda-ttlreader" ] ; then
