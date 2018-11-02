@@ -354,6 +354,8 @@ v-s:RecursiveScheduledActionTemplate
         <a href="#" id="edit-ScheduledAction" class="action" about="v-s:Edit" property="rdfs:label"></a>
         &nbsp;
         <a href="#" id="delete" class="action" about="v-s:Delete" property="rdfs:label"></a>
+        &nbsp;
+        <a href="#" id="journal" class="action" about="v-s:Journal" property="rdfs:label"></a>
       </small>
     </div>
     <div id="new-reply"></div>
@@ -361,6 +363,19 @@ v-s:RecursiveScheduledActionTemplate
     <div about="@" rel="v-s:hasScheduledAction" data-template="v-s:RecursiveCommentTemplate"></div>
   </div>
 </div>
+<script>
+  $("#journal", template).on("click", function (e) {
+    e.preventDefault();
+    var journal_uri = individual.id + "j",
+        journal = new veda.IndividualModel(journal_uri);
+    if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
+      riot.route("#/" + journal_uri);
+    } else {
+      var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty")["rdfs:label"].join(" ");
+      alert(journalEmpty);
+    }
+  });
+</script>
   """ ;
 .
 
@@ -396,17 +411,17 @@ for (var i=0; i<result.length; i++){
   var deadline = individ['v-s:dateToPlan'][0];
   var period = individ['v-s:hasPeriod'][0];
   var delta;
-  if (individ.hasValue('v-s:hasPeriod', 'd:z8r34mi5y8rl8m4kbo3q69uw5d')) { 
+  if (individ.hasValue('v-s:hasPeriod', 'd:z8r34mi5y8rl8m4kbo3q69uw5d')) {
     delta = 86400000;
-  } else if (individ.hasValue('v-s:hasPeriod', 'd:a21t5y3pswuewm8ohjexiqtxscr')) { 
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:a21t5y3pswuewm8ohjexiqtxscr')) {
     delta = 86400000*7;
-  } else if (individ.hasValue('v-s:hasPeriod', 'd:pqauzdiqyls7pzrawelnh2zwj3')) { 
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:pqauzdiqyls7pzrawelnh2zwj3')) {
     delta = 86400000*30;
-  } else if (individ.hasValue('v-s:hasPeriod', 'd:a28m44dm9yw04j7hf69r4i40sn5')) { 
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:a28m44dm9yw04j7hf69r4i40sn5')) {
     delta = 86400000*121;
-  } else if (individ.hasValue('v-s:hasPeriod', 'd:p699yrkgnd7bamjaqwx305o5hi')) { 
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:p699yrkgnd7bamjaqwx305o5hi')) {
     delta = 86400000*365;
-  } else if (individ.hasValue('v-s:hasPeriod', 'd:jsc4p8dq5u4fm1sumekuifkw7r')) { 
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:jsc4p8dq5u4fm1sumekuifkw7r')) {
     delta = 86400000/24;
   } else {
     print("Skip, because hasPeriod empty: ",result[i]);
