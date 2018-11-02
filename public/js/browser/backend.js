@@ -80,10 +80,9 @@ veda.Module(function (veda) { "use strict";
         url = params.url,
         data = params.data,
         async = params.async || false;
-    var xhr = new XMLHttpRequest();
     if (async) {
       return new Promise( function (resolve, reject) {
-        xhr.timeout = 120000;
+        var xhr = new XMLHttpRequest();
         xhr.onload = function () {
           if (this.status == 200) {
             resolve(
@@ -111,9 +110,11 @@ veda.Module(function (veda) { "use strict";
           }
           params = params.join("&");
           xhr.open(method, url + "?" + params, async);
+          xhr.timeout = 120000;
           xhr.send();
         } else {
           xhr.open(method, url, async);
+          xhr.timeout = 120000;
           xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
           var payload = JSON.stringify(data, function (key, value) {
             return key === "data" && this.type === "Decimal" ? value.toString() : value;
@@ -122,6 +123,7 @@ veda.Module(function (veda) { "use strict";
         }
       });
     } else {
+      var xhr = new XMLHttpRequest();
       if (method === "GET") {
         var params = [];
         for (var name in data) {
