@@ -852,7 +852,7 @@ veda.Module(function (veda) { "use strict";
         if (mode === "view") { btnGroup.hide(); }
 
         btnRemove.click(function () {
-          about.set( property_uri, individual.get(property_uri).filter(function (_, j) {return j !== i; }) );
+          about.set( property_uri, about.get(property_uri).filter(function (_, j) {return j !== i; }) );
         }).mouseenter(function () {
           valueHolder.addClass("red-outline");
         }).mouseleave(function () {
