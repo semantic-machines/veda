@@ -269,7 +269,7 @@ public class IndexerContext
                         break;
                 }
 
-                if (prev_dbname != dbname)
+                if (prev_dbname != dbname && prev_indv != Individual.init)
                 {
                     log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
                     log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
