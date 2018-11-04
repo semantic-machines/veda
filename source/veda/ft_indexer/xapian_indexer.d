@@ -33,6 +33,7 @@ public class IndexerContext
 
     IndexerProperty        iproperty;
 
+    string                 use_db;
     XapianWritableDatabase indexer_base_db;
     XapianWritableDatabase indexer_system_db;
     XapianWritableDatabase indexer_deleted_db;
@@ -62,7 +63,7 @@ public class IndexerContext
             indexer_deleted_db.close(&err);
     }
 
-    bool init(Ticket *_ticket, Context _context)
+    bool init(Ticket *_ticket, string use_db, Context _context)
     {
         context = _context;
         ticket  = _ticket;
@@ -137,29 +138,36 @@ public class IndexerContext
 
         //bool       is_exist_db = exists(xapian_search_db_path);
 
-        this.indexer_base_db = new_WritableDatabase(db_path_base.ptr, cast(uint)db_path_base.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
-        if (err == 0)
+        if (use_db is null || use_db == "base")
         {
-            this.indexer_system_db = new_WritableDatabase(db_path_system.ptr, cast(uint)db_path_system.length, DB_CREATE_OR_OPEN,
-                                                          xapian_db_type, &err);
+            this.indexer_base_db = new_WritableDatabase(db_path_base.ptr, cast(uint)db_path_base.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
+            if (err != 0)
+            {
+                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg(err));
+                return false;
+            }
+        }
+
+        if (use_db is null || use_db == "system")
+        {
+            this.indexer_system_db = new_WritableDatabase(db_path_system.ptr, cast(uint)db_path_system.length, DB_CREATE_OR_OPEN, xapian_db_type,
+                                                          &err);
             if (err != 0)
             {
                 log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg(err));
                 return false;
             }
+        }
 
-            this.indexer_deleted_db = new_WritableDatabase(db_path_deleted.ptr, cast(uint)db_path_deleted.length, DB_CREATE_OR_OPEN,
-                                                           xapian_db_type, &err);
+        if (use_db is null || use_db == "delete")
+        {
+            this.indexer_deleted_db = new_WritableDatabase(db_path_deleted.ptr, cast(uint)db_path_deleted.length, DB_CREATE_OR_OPEN, xapian_db_type,
+                                                           &err);
             if (err != 0)
             {
                 log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg(err));
                 return false;
             }
-        }
-        else
-        {
-            log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg(err));
-            return false;
         }
 
         this.indexer = new_TermGenerator(&err);
@@ -269,7 +277,7 @@ public class IndexerContext
                         break;
                 }
 
-                if (prev_dbname != dbname && prev_indv != Individual.init)
+                if (prev_dbname != dbname && prev_indv != Individual.init && use_db is null)
                 {
                     log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
                     log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
@@ -282,6 +290,15 @@ public class IndexerContext
 
                 if (is_deleted == false && dbname == "not-indexed")
                     return;
+
+                if (use_db !is null)
+                {
+                    if (is_deleted == true && use_db != "deleted")
+                        return;
+
+                    if (dbname != use_db)
+                        return;
+                }
 
                 foreach (predicate, resources; indv.resources)
                 {
