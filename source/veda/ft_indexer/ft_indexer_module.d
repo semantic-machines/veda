@@ -26,8 +26,22 @@ void main(char[][] args)
 {
     Thread.sleep(dur!("seconds")(1));
     process_name = ft_indexer_queue_name;
+    string use_db;
 
-    auto p_module = new FTIndexerProcess(SUBSYSTEM.FULL_TEXT_INDEXER, MODULE.fulltext_indexer, new Logger("veda-core-fulltext_indexer", "log", ""));
+    if (args.length == 2)
+    {
+        string[] carg = cast(string[])args[ 1 ].split("=");
+        if (carg.length == 2)
+        {
+            if (carg[ 0 ] == "indexer_use_db")
+            {
+                use_db = carg[ 1 ].strip();
+            }
+        }
+    }
+
+    auto p_module =
+        new FTIndexerProcess(SUBSYSTEM.FULL_TEXT_INDEXER, MODULE.fulltext_indexer, use_db, new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }
@@ -38,6 +52,7 @@ class FTIndexerProcess : VedaModule
 
     long           last_update_time  = 0;
     string         low_priority_user = "";
+    string         use_db;
 
     int indexer_priority(string user_uri)
     {
@@ -47,12 +62,13 @@ class FTIndexerProcess : VedaModule
         return 0;
     }
 
-    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, string _use_db, Logger log)
     {
         super(_subsystem_id, _module_id, log);
 
         priority       = &indexer_priority;
         main_cs.length = 2;
+        use_db         = _use_db;
     }
 
 
@@ -120,17 +136,6 @@ class FTIndexerProcess : VedaModule
         context.set_vql(new XapianSearch(context));
         //context.set_vql(new FTQueryClient(context));
         string use_db;
-
-        try
-        {
-            string[ string ] properties;
-            properties = readProperties("./veda.properties");
-            use_db     = properties.as!(string)("indexer_use_db");
-        }
-        catch (Throwable ex)
-        {
-            log.trace("ERR! unable read ./veda.properties");
-        }
 
         ictx.thread_name = process_name;
         ictx.init(&sticket, use_db, context);

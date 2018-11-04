@@ -63,10 +63,11 @@ public class IndexerContext
             indexer_deleted_db.close(&err);
     }
 
-    bool init(Ticket *_ticket, string use_db, Context _context)
+    bool init(Ticket *_ticket, string _use_db, Context _context)
     {
         context = _context;
         ticket  = _ticket;
+        use_db  = _use_db;
         string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
         if (exists(file_name_key2slot) == false)
@@ -159,7 +160,7 @@ public class IndexerContext
             }
         }
 
-        if (use_db is null || use_db == "delete")
+        if (use_db is null || use_db == "deleted")
         {
             this.indexer_deleted_db = new_WritableDatabase(db_path_deleted.ptr, cast(uint)db_path_deleted.length, DB_CREATE_OR_OPEN, xapian_db_type,
                                                            &err);
@@ -198,8 +199,6 @@ public class IndexerContext
         bool is_deleted, prev_is_deleted, is_restored;
 
         //if (is_trace)
-        log.trace("index uri=%s", indv.uri);
-
         if (cmd == INDV_OP.REMOVE)
             is_deleted = true;
 
@@ -209,14 +208,14 @@ public class IndexerContext
         if (prev_indv.isExists(veda_schema__deleted, true) == true)
             prev_is_deleted = true;
 
-        if (prev_is_deleted == true && is_deleted == false)
+        if (prev_is_deleted == true && is_deleted == false && use_db is null)
         {
             log.trace("index msg: restore individual: %s ", indv.uri);
             is_restored = true;
         }
 
-        if (prev_is_deleted == false && is_deleted == true)
-            log.trace("index msg: delete individual: %s", indv.uri);
+        //if (prev_is_deleted == false && is_deleted == true)
+        //    log.trace("index msg: delete individual: %s", indv.uri);
 
         try
         {
@@ -244,10 +243,6 @@ public class IndexerContext
                         log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", indv.uri, actualVersion, indv.uri);
                     return;
                 }
-
-                OutBuffer      all_text = new OutBuffer();
-                XapianDocument doc      = new_Document(&err);
-                indexer.set_document(doc, &err);
 
                 if (trace_msg[ 220 ] == 1)
                     log.trace("index document:[%s]", indv.uri);
@@ -296,9 +291,13 @@ public class IndexerContext
                     if (is_deleted == true && use_db != "deleted")
                         return;
 
-                    if (dbname != use_db)
+                    if (dbname != use_db && use_db != "deleted")
                         return;
                 }
+
+                OutBuffer      all_text = new OutBuffer();
+                XapianDocument doc      = new_Document(&err);
+                indexer.set_document(doc, &err);
 
                 foreach (predicate, resources; indv.resources)
                 {
@@ -795,20 +794,29 @@ public class IndexerContext
                 if (is_restored)
                     indexer_deleted_db.delete_document(uuid.ptr, uuid.length, &err);
 
-                if (is_deleted)
+                if (is_deleted && indexer_deleted_db !is null)
                 {
                     indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
                     doc = new_Document(&err);
+                    log.trace("index to [deleted], uri=[%s]", indv.uri);
                     indexer.set_document(doc, &err);
                 }
 
                 if (dbname == "system")
                 {
-                    indexer_system_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                    if (indexer_system_db !is null)
+                    {
+                        log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
+                        indexer_system_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                    }
                 }
                 else
                 {
-                    indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                    if (indexer_base_db !is null)
+                    {
+                        log.trace("index to [%s], uri=[%s]", dbname, indv.uri, );
+                        indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                    }
                 }
 
 //            if (counter % 100 == 0)
@@ -841,17 +849,27 @@ public class IndexerContext
 
     void commit_all_db()
     {
-        indexer_base_db.commit(&err);
-        if (err != 0)
-            log.trace("EX! FT:commit:base fail=%d", counter);
+        if (indexer_base_db !is null)
+        {
+            indexer_base_db.commit(&err);
+            if (err != 0)
+                log.trace("EX! FT:commit:base fail=%d", counter);
+        }
 
-        indexer_system_db.commit(&err);
-        if (err != 0)
-            log.trace("EX! FT:commit:system fail=%d", counter);
 
-        indexer_deleted_db.commit(&err);
-        if (err != 0)
-            log.trace("EX! FT:commit:deleted fail=%d", counter);
+        if (indexer_system_db !is null)
+        {
+            indexer_system_db.commit(&err);
+            if (err != 0)
+                log.trace("EX! FT:commit:system fail=%d", counter);
+        }
+
+        if (indexer_deleted_db !is null)
+        {
+            indexer_deleted_db.commit(&err);
+            if (err != 0)
+                log.trace("EX! FT:commit:deleted fail=%d", counter);
+        }
 
 //        set_count_indexed(counter);
         //log.trace("@FT:commit=%d", counter);
