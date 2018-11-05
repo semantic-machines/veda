@@ -28,11 +28,8 @@ veda.Module(function (veda) { "use strict";
       var protocol = location.protocol === "http:" ? "ws:" : "wss:",
           address0 = protocol + "//" + location.host + "/ccus",
           address1 = protocol + "//" + location.hostname + ":8088/ccus";
-      if (address && address === address0) {
-        address = address1;
-      } else {
-        address = address0;
-      }
+
+      address = address === address0 ? address1 : address0;
       var socket = new WebSocket(address);
       socket.onopen = openedHandler;
       socket.onclose = closedHandler;
