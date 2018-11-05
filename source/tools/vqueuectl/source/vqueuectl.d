@@ -57,7 +57,7 @@ void main(string[] args)
 
     if (command == "repair")
     {
-        queue_new = new Queue(path ~ "/repair", name, Mode.RW, log);
+        queue_new = new Queue("./tmp/" ~ name ~ "/repair", name, Mode.RW, log);
         queue_new.open();
         queue_new.get_info(0);
     }
@@ -78,10 +78,16 @@ void main(string[] args)
 
         cs.commit_and_next(true);
 
-        queue_new.push(data);
+        if (command == "repair")
+            queue_new.push(data);
+
+        if (command == "cat")
+            writeln(data);
     }
 
-    queue_new.close();
+    if (command == "repair")
+        queue_new.close();
+
     cs.close();
     queue.close();
 }
