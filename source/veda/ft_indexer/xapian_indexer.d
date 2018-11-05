@@ -68,6 +68,10 @@ public class IndexerContext
         context = _context;
         ticket  = _ticket;
         use_db  = _use_db;
+
+        if (use_db !is null)
+            log.trace("WARN! indexer use only %s db", use_db);
+
         string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
         if (exists(file_name_key2slot) == false)
@@ -75,16 +79,13 @@ public class IndexerContext
         else
         {
             ff_key2slot_w = new File(file_name_key2slot, "r+");
-            long cur_size = getSize(file_name_key2slot);
+            long       cur_size = getSize(file_name_key2slot);
             ff_key2slot_w.seek(0);
-            auto buf = ff_key2slot_w.rawRead(new char[ cur_size + 128 ]);
+            auto       buf = ff_key2slot_w.rawRead(new char[ cur_size + 128 ]);
 
-            //writefln("@indexer:init:data [%s]", cast(string)buf);
             ResultCode rc;
             key2slot           = deserialize_key2slot(cast(string)buf, rc);
             last_size_key2slot = key2slot.length;
-
-            //writeln("@indexer:init:key2slot", key2slot);
         }
 
         // attempt to create a path

@@ -31,13 +31,8 @@ void main(char[][] args)
     if (args.length == 2)
     {
         string[] carg = cast(string[])args[ 1 ].split("=");
-        if (carg.length == 2)
-        {
-            if (carg[ 0 ] == "indexer_use_db")
-            {
-                use_db = carg[ 1 ].strip();
-            }
-        }
+        if (carg.length == 2 && carg[ 0 ] == "--indexer_use_db")
+            use_db = carg[ 1 ].strip();
     }
 
     auto p_module =
@@ -69,8 +64,10 @@ class FTIndexerProcess : VedaModule
         priority       = &indexer_priority;
         main_cs.length = 2;
         use_db         = _use_db;
-    }
 
+        if (use_db !is null)
+            process_name = process_name ~ use_db;
+    }
 
 
     /+  override int priority(string user_uri)
@@ -135,7 +132,6 @@ class FTIndexerProcess : VedaModule
     {
         context.set_vql(new XapianSearch(context));
         //context.set_vql(new FTQueryClient(context));
-        string use_db;
 
         ictx.thread_name = process_name;
         ictx.init(&sticket, use_db, context);
