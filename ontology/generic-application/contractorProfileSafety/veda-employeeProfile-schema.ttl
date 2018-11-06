@@ -23,6 +23,7 @@ v-s:EmployeeProfile
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Досье сотрудника"@ru ;
   rdfs:label "Employee profile"@en ;
   v-s:labelPattern "{@.v-s:creator}" ;

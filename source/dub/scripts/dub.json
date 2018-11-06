@@ -1,6 +1,6 @@
 {
-	"name": "veda-scripts-lp",
-	"description": "veda-scripts-lp",
+	"name": "veda-scripts",
+	"description": "veda-scripts",
 	"dependencies": {
 		"pacahon_third_party": "1.0.16", 
 		"d-nanomsg": "0.2.0",
@@ -17,28 +17,28 @@
 	    "../../veda/core/impl", 
             "../../veda/search/common",
             "../../veda/search/ft_query",
-	    "../../veda/core/common",
             "../../veda/storage/lmdb",
-            "../../veda/storage/tarantool"
+            "../../veda/storage/tarantool",
+	    "../../veda/core/common"
 	],
         "sourceFiles":[
     	    "../../lib64/liblmdb.a",
-            "../../lib64/libv8d.a", 
-	    "../../veda/authorization/authorization.d",
-            "../../veda/storage/common.d",
-            "../../veda/storage/storage.d",
-            "../../veda/storage/binlog_tools.d",
-            "../../veda/util/properd.d",
+    	    "../../lib64/libv8d.a", 
+ 	    "../../veda/authorization/authorization.d",
+    	    "../../veda/storage/common.d",
+    	    "../../veda/storage/storage.d",
+    	    "../../veda/storage/binlog_tools.d",
+    	    "../../veda/util/properd.d",
 	    "../../veda/gluecode/script.d",
 	    "../../veda/gluecode/scripts.d", 
-	    "../../veda/gluecode/scripts_lp.d", 
+            "../../veda/gluecode/ltr_scripts.d",
 	    "../../veda/gluecode/v8d_header.d",
-	    "../../veda/bind/nano.d",
+    	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
-	    "../../veda/util/queue.d",
-	    "../../veda/util/container.d",
-	    "../../veda/util/tests_tools.d",
-	    "../../veda/util/module_info.d"
+    	    "../../veda/util/queue.d",
+    	    "../../veda/util/container.d",
+    	    "../../veda/util/tests_tools.d",
+    	    "../../veda/util/module_info.d"
 	],
 	"libs":["nanomsg", "tarantool"],
 	"configurations": [

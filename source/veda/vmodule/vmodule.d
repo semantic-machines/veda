@@ -450,7 +450,7 @@ class VedaModule : VedaModuleBasic
                 }
             }
 
-            if (priority(user_uri) != i)
+            if (user_uri !is null && user_uri.length > 3 && priority(user_uri) != i)
             {
                 main_cs[ i ].commit_and_next(true);
                 i = 0;

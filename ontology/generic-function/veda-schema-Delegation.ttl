@@ -575,6 +575,10 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var appointment_uri = item.data;
   var appointment = get_individual(ticket, appointment_uri);
 
+  if (!appointment) {
+    return false;
+  }
+
   var isPremature = now < appointment["v-s:dateFrom"][0].data;
   var isActual = appointment["v-s:dateFrom"][0].data <= now && now <= appointment["v-s:dateTo"][0].data;
   var isOverdue = now > appointment["v-s:dateTo"][0].data;

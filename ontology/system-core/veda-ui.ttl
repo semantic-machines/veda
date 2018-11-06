@@ -2037,7 +2037,7 @@ v-ui:DocumentEventTemplate
     if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
       && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) { 
       var actor = individual['v-s:actor'][0];
-      if (actor.id === veda.appointment.id) {
+      if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
         $(".stop-process", template).show();  
       }
     }
