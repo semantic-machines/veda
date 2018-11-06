@@ -1,4 +1,4 @@
-import std.stdio, core.stdc.stdlib, std.uuid;
+import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons;
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource;
 
 /*
@@ -141,5 +141,20 @@ private void collect_stat(string data)
 
 private void print_stat()
 {
-    writefln("STAT: %s", type_2_count);
+    auto sorted_list = aa_sort(type_2_count);
+
+    writefln("STAT: ------------------------");
+    foreach (el; sorted_list)
+    {
+        writefln("%d %s", el[ 1 ], el[ 0 ]);
+    }
+}
+
+private Tuple!(string, long)[] aa_sort(long[ string ] aa)
+{
+    typeof(return )r = [];
+    foreach (k, v; aa)
+        r ~= tuple(k, v);
+    sort!q { a[ 1 ] < b[ 1 ] } (r);
+    return r;
 }
