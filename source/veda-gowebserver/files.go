@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
 
@@ -109,7 +110,8 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 	//Reqding client ticket key from request
 	ticketKey := string(ctx.Request.Header.Cookie("ticket"))
-
+	timestamp := time.Now()
+	
 	if len(ticketKey) == 0 {
 		ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
 	}
@@ -192,5 +194,11 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		//fasthttp.ServeFileUncompressed(ctx, filePathStr)
 		fasthttp.ServeFileBytesUncompressed(ctx, []byte(filePathStr))
 		//		ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/octet-stream"))
+		
+		trail1(ticket.Id, ticket.UserURI, "files", uri, "", Ok, timestamp)
+	} else {
+			log.Println("ERR! FILE uri < 3 or empty ticket")
+			ctx.Response.SetStatusCode(int(InternalServerError))		
 	}
+	
 }
