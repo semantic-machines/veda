@@ -439,7 +439,7 @@ body {
   min-height: 20rem;
   border-top-left-radius: 0.625rem;
   border-top-right-radius: 0.625rem;
-  background-size: 67% 67%;
+  background-size: auto 67%;
   background-position: center;
   background-repeat: no-repeat; }
 
