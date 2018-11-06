@@ -1,13 +1,13 @@
 {
-	"name": "veda-fanout-sql-lp",
-	"description": "veda-fanout-sql-lp",
+	"name": "veda-scripts",
+	"description": "veda-scripts",
 	"dependencies": {
-		"mysql-d": "0.3.3",
+		"pacahon_third_party": "1.0.16", 
 		"d-nanomsg": "0.2.0",
-                "msgpack-d": "1.0.0-beta.6",
+        	"msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
 	},
-        "versions": ["isModule", "std_socket"],
+        "versions": ["libV8", "isModule"],
         "license": "LGPL v3",
 	"sourcePaths":[
 	    "../../veda/common", 
@@ -15,29 +15,32 @@
             "../../veda/onto/bj8individual",
 	    "../../veda/vmodule",
 	    "../../veda/core/impl", 
-	    "../../veda/core/common",
             "../../veda/search/common",
             "../../veda/search/ft_query",
             "../../veda/storage/lmdb",
-            "../../veda/storage/tarantool"
+            "../../veda/storage/tarantool",
+	    "../../veda/core/common"
 	],
         "sourceFiles":[
     	    "../../lib64/liblmdb.a",
-    	    "../../veda/util/properd.d",
-    	    "../../veda/bind/nano.d",
- 	    "../../veda/core/util/utils.d",
-    	    "../../veda/util/queue.d",
-    	    "../../veda/util/container.d",
-            "../../veda/util/module_info.d",
-    	    "../../veda/util/tests_tools.d",
-    	    "../../veda/fanout/fanout_sql_lp.d",
-    	    "../../veda/fanout/to_sql.d",
+    	    "../../lib64/libv8d.a", 
+ 	    "../../veda/authorization/authorization.d",
     	    "../../veda/storage/common.d",
     	    "../../veda/storage/storage.d",
     	    "../../veda/storage/binlog_tools.d",
-    	    "../../veda/authorization/authorization.d"
+    	    "../../veda/util/properd.d",
+	    "../../veda/gluecode/script.d",
+	    "../../veda/gluecode/scripts.d", 
+            "../../veda/gluecode/ltr_scripts.d",
+	    "../../veda/gluecode/v8d_header.d",
+    	    "../../veda/bind/nano.d",
+	    "../../veda/core/util/utils.d",
+    	    "../../veda/util/queue.d",
+    	    "../../veda/util/container.d",
+    	    "../../veda/util/tests_tools.d",
+    	    "../../veda/util/module_info.d"
 	],
-        "libs":["nanomsg", "tarantool"],
+	"libs":["nanomsg", "tarantool"],
 	"configurations": [
 	{
 	    "name": "app",

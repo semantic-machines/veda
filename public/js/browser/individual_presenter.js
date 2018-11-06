@@ -139,22 +139,6 @@ veda.Module(function (veda) { "use strict";
       updateService.unsubscribe(individual.id);
     });
 
-    // Watch language change
-    veda.on("language:changed", localizeIndividual);
-    renderedTemplate.one("remove", function () {
-      veda.off("language:changed", localizeIndividual);
-    });
-
-    function localizeIndividual () {
-      for (var property_uri in individual.properties) {
-        if (property_uri === "@") { continue; }
-        if ( individual.hasValue(property_uri) && individual.properties[property_uri][0].type === "String" ) {
-          individual.trigger("propertyModified", property_uri, individual.get(property_uri));
-          individual.trigger(property_uri, individual.get(property_uri));
-        }
-      }
-    }
-
     return renderedTemplate;
   }
 
@@ -408,35 +392,6 @@ veda.Module(function (veda) { "use strict";
       self.attr("style", style.replace("@", individual.id));
     });
 
-    // Property value
-    template.find("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)").map( function () {
-      var propertyContainer = $(this),
-          property_uri = propertyContainer.attr("property"),
-          spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
-
-      function idModifiedHandler() {
-        propertyContainer.text(individual.id);
-      }
-      if (property_uri === "@") {
-        propertyContainer.text(individual.id);
-        individual.on("idChanged", idModifiedHandler);
-        template.one("remove", function () {
-          individual.off("idChanged", idModifiedHandler);
-        });
-        return;
-      }
-      renderPropertyValues(individual, property_uri, propertyContainer, template, mode);
-
-      // Re-render all property values if model's property was changed
-      function propertyModifiedHandler() {
-        renderPropertyValues(individual, property_uri, propertyContainer, template, mode);
-      }
-      individual.on(property_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        individual.off(property_uri, propertyModifiedHandler);
-      });
-    });
-
     // Fetch related individuals all together
     var prefetch_args = [1];
 
@@ -454,7 +409,7 @@ veda.Module(function (veda) { "use strict";
 
     // Fetch about resources alltogether
     var abouts = [];
-    template.find("[about]:not([rel] *):not([about] *)").addBack("[about]:not([rel] *):not([about] *)").map( function () {
+    template.find("[about]").addBack("[about]").map( function () {
       var about_uri = $(this).attr("about");
       if (about_uri !== "@" && !veda.cache.get(about_uri) ) {
         abouts.push(about_uri);
@@ -465,6 +420,58 @@ veda.Module(function (veda) { "use strict";
         var about = new veda.IndividualModel(item);
       });
     }
+
+    // Property value
+    template.find("[property]:not(veda-control):not([rel] *):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about] *)").map( function () {
+      var propertyContainer = $(this),
+          property_uri = propertyContainer.attr("property"),
+          about_uri = propertyContainer.attr("about"),
+          about,
+          isAbout;
+
+      if (about_uri === "@") {
+        about = individual;
+        isAbout = true;
+        propertyContainer.attr("about", about.id);
+      } else if (!about_uri) {
+        about = individual;
+        isAbout = false;
+      } else {
+        about = new veda.IndividualModel(about_uri);
+        isAbout = true;
+      }
+
+      function idModifiedHandler() {
+        propertyContainer.text(individual.id);
+      }
+      if (property_uri === "@") {
+        propertyContainer.text(about.id);
+        about.on("idChanged", idModifiedHandler);
+        template.one("remove", function () {
+          about.off("idChanged", idModifiedHandler);
+        });
+        return;
+      }
+      renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
+
+      // Re-render all property values if model's property was changed
+      function propertyModifiedHandler() {
+        renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
+      }
+      about.on(property_uri, propertyModifiedHandler);
+      template.one("remove", function () {
+        about.off(property_uri, propertyModifiedHandler);
+      });
+
+      if ( about !== individual ) {
+        // Watch server-side updates
+        var updateService = new veda.UpdateService();
+        updateService.subscribe(about.id);
+        template.one("remove", function () {
+          updateService.unsubscribe(about.id);
+        });
+      }
+    });
 
     // Max displayed values
     template.on("click", ".more", function (e) {
@@ -480,7 +487,6 @@ veda.Module(function (veda) { "use strict";
 
     // Related resources & about resources
     rels.map( function () {
-      //template.find("[rel]:not(veda-control):not([rel] *):not([about] *)").addBack("[rel]:not(veda-control):not([rel] *):not([about] *)").map( function () {
       var relContainer = $(this),
           about = relContainer.attr("about"),
           rel_uri = relContainer.attr("rel"),
@@ -629,52 +635,6 @@ veda.Module(function (veda) { "use strict";
       if (isEmbedded) {
         aboutTemplate.data("isEmbedded", true);
         embedded.push(aboutTemplate);
-      }
-    });
-
-    // About resource property
-    template.find("[about][property]:not([rel] *):not([about] *)").addBack("[about][property]:not([rel] *):not([about] *)").map( function () {
-      var propertyContainer = $(this),
-          property_uri = propertyContainer.attr("property"),
-          about;
-      if (propertyContainer.attr("about") === "@") {
-        about = individual;
-        propertyContainer.attr("about", about.id);
-      } else {
-        about = new veda.IndividualModel(propertyContainer.attr("about"));
-      }
-      propertyModifiedHandler();
-
-      function propertyModifiedHandler() {
-        if (property_uri === "@") {
-          propertyContainer.text( about.id );
-        } else {
-          var formatted = about.get(property_uri).map(veda.Util.formatValue).join(" ");
-          propertyContainer.text( formatted );
-        }
-      }
-      about.on(property_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        about.off(property_uri, propertyModifiedHandler);
-      });
-
-      // Watch server-side updates
-      var updateService = new veda.UpdateService();
-      updateService.subscribe(about.id);
-      template.one("remove", function () {
-        updateService.unsubscribe(about.id);
-      });
-
-      // Watch language change
-      veda.on("language:changed", localize);
-      template.one("remove", function () {
-        veda.off("language:changed", localize);
-      });
-      function localize() {
-        if ( about.hasValue(property_uri) && about.properties[property_uri][0].type === "String" ) {
-          about.trigger("propertyModified", property_uri, about.get(property_uri));
-          about.trigger(property_uri, about.get(property_uri));
-        }
       }
     });
 
@@ -872,30 +832,34 @@ veda.Module(function (veda) { "use strict";
     return template;
   }
 
-  function renderPropertyValues(individual, property_uri, propertyContainer, template, mode) {
+  function renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode) {
     propertyContainer.empty();
-    individual.get(property_uri).map( function (value, i) {
-      var valueHolder = $("<span class='value-holder'></span>");
-      propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
-      var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
-      var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-      btnGroup.append(btnRemove);
+    about.get(property_uri).map( function (value, i) {
+      if (isAbout) {
+        propertyContainer.append( veda.Util.formatValue(value) + " " );
+      } else {
+        var valueHolder = $("<span class='value-holder'></span>");
+        propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
+        var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
+        var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+        btnGroup.append(btnRemove);
 
-      template.on("view edit search", function (e) {
-        if (e.type === "view") btnGroup.hide();
-        else btnGroup.show();
-        e.stopPropagation();
-      });
-      if (mode === "view") { btnGroup.hide(); }
+        template.on("view edit search", function (e) {
+          if (e.type === "view") btnGroup.hide();
+          else btnGroup.show();
+          e.stopPropagation();
+        });
+        if (mode === "view") { btnGroup.hide(); }
 
-      btnRemove.click(function () {
-        individual.set( property_uri, individual.get(property_uri).filter(function (_, j) {return j !== i; }) );
-      }).mouseenter(function () {
-        valueHolder.addClass("red-outline");
-      }).mouseleave(function () {
-        valueHolder.removeClass("red-outline");
-      });
-      valueHolder.append( btnGroup );
+        btnRemove.click(function () {
+          about.set( property_uri, about.get(property_uri).filter(function (_, j) {return j !== i; }) );
+        }).mouseenter(function () {
+          valueHolder.addClass("red-outline");
+        }).mouseleave(function () {
+          valueHolder.removeClass("red-outline");
+        });
+        valueHolder.append( btnGroup );
+      }
     });
   }
 

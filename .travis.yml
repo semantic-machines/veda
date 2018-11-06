@@ -12,10 +12,6 @@ before_install:
   - npm install grunt --save-dev
 
 addons:
-#  firefox: latest
-#  sauce_connect:
-#    username: semanticmachines
-#    access_key: 0fdd3d85-3d51-4fd5-89ed-10980baa57a5
   apt:
     sources:
      - google-chrome
@@ -26,7 +22,6 @@ addons:
 install:
   - ./control-install.sh&>install.log 
   - source $HOME/.cargo/env
-#  - npm install --save-dev testcafe-browser-provider-saucelabs
   - npm install --save-dev testcafe
   - go version
   - dmd --version    
@@ -62,4 +57,4 @@ after_script:
 
 after_failure:
   - ./control-stop.sh
-  - ./send-to-chunk-io.sh
+  - ./tools/send-to-chunk-io.sh

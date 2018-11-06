@@ -156,41 +156,6 @@ v-s:result
   rdfs:range v-s:Variable ;
 .
 
-# ------------------------------------------------------------
-v-s:TTLFile
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Container ;
-  rdfs:label "TTL файл"@ru ;
-  rdfs:label "TTL file"@en ;
-.
-v-s:hash
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Хэш"@ru ;
-  rdfs:label "Hash"@en ;
-  rdfs:domain v-s:TTLFile ;
-  rdfs:range xsd:string ;
-.
-# Надо что-то решать с такими свойствами. Во всех этих 4-х классах
-# либо они должны наследоваться от какого-то абстрактного либо нужно назвать по разному
-v-s:filePath
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:File, v-s:TTLFile;
-  rdfs:label "Путь файла"@ru ;
-  rdfs:label "File path"@en ;
-  rdfs:range xsd:string ;
-.
-v-s:filePath
-  rdfs:domain v-s:ReportsForClass ;
-  rdfs:domain v-s:Report ;
-.
-v-s:fileUri
-  rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:File, v-s:TTLFile;
-  rdfs:label "URI файла"@ru ;
-  rdfs:label "File URI"@en ;
-  rdfs:range xsd:string ;
-.
-# ------------------------------------------------------------
 v-s:Variable
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -276,6 +241,23 @@ v-s:Container
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Контейнер"@ru ;
+.
+
+# ------------------------------------------------------------
+
+v-s:TTLFile
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Container ;
+  rdfs:subClassOf v-s:File ;
+  rdfs:label "TTL файл"@ru ;
+  rdfs:label "TTL file"@en ;
+.
+v-s:hash
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Хэш"@ru ;
+  rdfs:label "Hash"@en ;
+  rdfs:domain v-s:TTLFile ;
+  rdfs:range xsd:string ;
 .
 
 # ------------------------------------------------------------

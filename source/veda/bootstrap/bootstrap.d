@@ -1,7 +1,7 @@
 module veda.bootstrap;
 
 import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal, std.file, core.thread;
-import commando, veda.util.properd;
+import commando, veda.util.properd, veda.core.common.define;
 
 struct ProcessInfo
 {
@@ -14,6 +14,8 @@ struct ProcessInfo
 struct Module
 {
     string   name;
+    string   exec_file_name;
+    string[] args;
     string[] wr_components;
     bool     is_main;
     bool     is_enable;
@@ -226,20 +228,20 @@ void main(string[] args)
 
     Module *[ string ] modules;
 
-    modules[ "veda-lmdb-srv" ]      = new Module("veda-lmdb-srv", [], false, false, 0);
-    modules[ "veda-mstorage" ]      = new Module("veda-mstorage", [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
-    modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", [ "fulltext_indexer" ], false, false, 2);
-    modules[ "veda-ft-query" ]      = new Module("veda-ft-query", [], false, false, 3);
-    modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", [ "scripts-main" ], false, false, 4);
-    modules[ "veda-scripts-lp" ]    = new Module("veda-scripts-lp", [ "scripts-lp" ], false, false, 5);
-    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", [ "ltr_scripts" ], false, false, 6);
-    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", [ "fanout_email" ], false, false, 7);
-    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", [ "fanout_sql_np" ], false, false, 8);
-    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", [ "fanout_sql_lp" ], false, false, 9);
-    modules[ "veda-input-queue" ]   = new Module("veda-input-queue", [], false, false, 10);
-    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", [], false, false, 11);
-    modules[ "veda-ccus" ]          = new Module("veda-ccus", [], false, false, 12);
-    modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", [], false, false, 99);
+    modules[ "veda-lmdb-srv" ]      = new Module("veda-lmdb-srv", "veda-lmdb-srv", [], [], false, false, 0);
+    modules[ "veda-mstorage" ]      = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
+    modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", "veda-ft-indexer", [], [ "fulltext_indexer" ], false, false, 2);
+    modules[ "veda-ft-query" ]      = new Module("veda-ft-query", "veda-ft-query", [], [], false, false, 3);
+    modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", "veda-scripts", [ "main" ], [ "scripts-main" ], false, false, 4);
+    modules[ "veda-scripts-lp" ]    = new Module("veda-scripts-lp", "veda-scripts", [ "lp" ], [ "scripts-lp" ], false, false, 5);
+    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", "veda-scripts", [ "ltr" ], [ "ltr_scripts" ], false, false, 6);
+    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", "veda-fanout-email", [], [ "fanout_email" ], false, false, 7);
+    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", "veda-fanout-sql-np", [], [ "fanout_sql_np" ], false, false, 8);
+    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", "veda-fanout-sql-lp", [], [ "fanout_sql_lp" ], false, false, 9);
+    modules[ "veda-input-queue" ]   = new Module("veda-input-queue", "veda-input-queue", [], [], false, false, 10);
+    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", "veda-ttlreader", [], [], false, false, 11);
+    modules[ "veda-ccus" ]          = new Module("veda-ccus", "veda-ccus", [], [], false, false, 12);
+    modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", "veda-gowebserver", [], [], false, false, 99);
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
@@ -295,7 +297,7 @@ void main(string[] args)
             }
         }
 
-        if (Queue.is_lock("individuals-flow"))
+        if (Queue.is_lock(queue_db_path, "individuals-flow"))
         {
             stderr.writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
             is_exist_lock = true;
@@ -351,11 +353,14 @@ void main(string[] args)
                 string[] sargs;
 
                 if (need_remove_ontology && ml.name == "veda-ttlreader")
-                    sargs = [ "./" ~ ml.name, "remove-ontology" ];
+                    sargs = [ "./" ~ ml.exec_file_name, "remove-ontology" ];
                 else if (need_reload_ontology && ml.name == "veda-ttlreader")
-                    sargs = [ "./" ~ ml.name, "reload-ontology" ];
+                    sargs = [ "./" ~ ml.exec_file_name, "reload-ontology" ];
                 else
-                    sargs = [ "./" ~ ml.name ];
+                    sargs = [ "./" ~ ml.exec_file_name ];
+
+                foreach (arg; ml.args)
+                    sargs ~= arg;
 
                 sargs ~= "--id=" ~ veda_id;
 
@@ -374,8 +379,8 @@ void main(string[] args)
             }
         }
 
+        // start webserver
         Module *ml = modules.get("veda-gowebserver", null);
-
         if (ml !is null && ml.is_enable == true)
         {
             if (need_remove_ontology == false && need_reload_ontology == false)
@@ -386,14 +391,14 @@ void main(string[] args)
                     {
                         string[] sargs;
 
-                        sargs = [ "./" ~ ml.name, "--http_port=" ~ port ];
+                        sargs = [ "./" ~ ml.exec_file_name, "--http_port=" ~ port ];
 
                         if (ext_user_port_str.length > 0)
                             sargs ~= "--ext_usr_http_port=" ~ ext_user_port_str;
 
                         sargs ~= "--id=" ~ veda_id;
 
-                        auto _logFile = File("logs/" ~ ml.name ~ port ~ "-stderr.log", "w");
+                        auto _logFile = File("logs/" ~ ml.exec_file_name ~ port ~ "-stderr.log", "w");
 
                         stderr.writeln("starting websrv ", sargs);
 
@@ -410,7 +415,7 @@ void main(string[] args)
                 {
                     string[] sargs;
 
-                    sargs = [ "./" ~ ml.name ];
+                    sargs = [ "./" ~ ml.exec_file_name ];
                     sargs ~= "--id=" ~ veda_id;
 
                     auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");

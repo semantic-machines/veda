@@ -11,7 +11,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+    import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.search.common.isearch, veda.search.ft_query.ft_query_client;
     import veda.gluecode.script, veda.gluecode.v8d_header;
 }
@@ -44,20 +44,6 @@ shared static this()
     process_name = "ltr_scripts";
 }
 
-void main(char[][] args)
-{
-    core.thread.Thread.sleep(dur!("seconds")(2));
-
-    ScriptProcess p_script = new ScriptProcess(SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, new Logger("veda-core-ltr_scripts", "log", ""));
-    //log = p_script.log();
-
-    tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
-
-    p_script.run();
-
-    shutdown_ltr_scripts();
-}
-
 private struct Task
 {
     Consumer   consumer;
@@ -84,7 +70,7 @@ ScriptVM         script_vm;
 Tasks *[ int ] tasks_2_priority;
 Task *task;
 
-private void ltrs_thread(string parent_url)
+public void ltrs_thread(string parent_url)
 {
     _wpl         = new ScriptsWorkPlace();
     process_name = "ltr_scripts";
@@ -99,7 +85,7 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
-    
+
     context.set_vql(new FTQueryClient(context));
     //context.set_vql(new XapianSearch(context));
 
@@ -389,7 +375,7 @@ private void start_script(string execute_script_srz, string queue_id)
         send(tid_ltr_scripts, CMD_START, execute_script_srz, queue_id);
 }
 
-private void shutdown_ltr_scripts()
+public void shutdown_ltr_scripts()
 {
     if (tid_ltr_scripts != Tid.init)
         send(tid_ltr_scripts, CMD_EXIT);

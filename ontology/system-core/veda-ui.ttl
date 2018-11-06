@@ -53,6 +53,7 @@ v-ui:forClass
   rdfs:domain v-ui:ClassTemplate ;
   rdfs:domain v-ui:ClassModel ;
   rdfs:domain v-ui:PropertySpecification ;
+  rdfs:domain v-s:ReportsForClass ;
   rdfs:label "Для класса"@ru ;
   rdfs:label "For class"@en ;
   rdfs:range owl:Class ;
@@ -2032,12 +2033,13 @@ v-ui:DocumentEventTemplate
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
     var process = individual['v-wf:onProcess'][0];
-    if (
-      (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
-      && process.rights.hasValue("v-s:canDelete")
-    ) {
-      $(".stop-process", template).show();
+    
+    if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
+      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) { 
+      var actor = individual['v-s:actor'][0];
+      if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
+        $(".stop-process", template).show();  
+      }
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".process-id", template).addClass('text-danger');

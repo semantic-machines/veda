@@ -7,7 +7,7 @@ private
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
+    import veda.core.common.context, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
 bool   f_listen_exit = false;
@@ -450,7 +450,7 @@ class VedaModule : VedaModuleBasic
                 }
             }
 
-            if (priority(user_uri) != i)
+            if (user_uri !is null && user_uri.length > 3 && priority(user_uri) != i)
             {
                 main_cs[ i ].commit_and_next(true);
                 i = 0;

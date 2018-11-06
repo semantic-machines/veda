@@ -4,10 +4,11 @@
 module veda.ft_indexer.ft_indexer_module;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, core.sys.posix.signal, core.sys.posix.unistd, core.thread;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue,
+               veda.util.properd;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
 private import veda.bind.xapian_d_header;
-private import veda.core.common.context, veda.util.tools, veda.ft_indexer.xapian_indexer;
+private import veda.core.common.context, veda.ft_indexer.xapian_indexer;
 private import veda.vmodule.vmodule;
 
 // ////// Logger ///////////////////////////////////////////
@@ -25,8 +26,17 @@ void main(char[][] args)
 {
     Thread.sleep(dur!("seconds")(1));
     process_name = ft_indexer_queue_name;
+    string use_db;
 
-    auto p_module = new FTIndexerProcess(SUBSYSTEM.FULL_TEXT_INDEXER, MODULE.fulltext_indexer, new Logger("veda-core-fulltext_indexer", "log", ""));
+    if (args.length == 2)
+    {
+        string[] carg = cast(string[])args[ 1 ].split("=");
+        if (carg.length == 2 && carg[ 0 ] == "--indexer_use_db")
+            use_db = carg[ 1 ].strip();
+    }
+
+    auto p_module =
+        new FTIndexerProcess(SUBSYSTEM.FULL_TEXT_INDEXER, MODULE.fulltext_indexer, use_db, new Logger("veda-core-fulltext_indexer", "log", ""));
 
     p_module.run();
 }
@@ -37,6 +47,7 @@ class FTIndexerProcess : VedaModule
 
     long           last_update_time  = 0;
     string         low_priority_user = "";
+    string         use_db;
 
     int indexer_priority(string user_uri)
     {
@@ -46,14 +57,17 @@ class FTIndexerProcess : VedaModule
         return 0;
     }
 
-    this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
+    this(SUBSYSTEM _subsystem_id, MODULE _module_id, string _use_db, Logger log)
     {
         super(_subsystem_id, _module_id, log);
 
         priority       = &indexer_priority;
         main_cs.length = 2;
-    }
+        use_db         = _use_db;
 
+        if (use_db !is null)
+            process_name = process_name ~ use_db;
+    }
 
 
     /+  override int priority(string user_uri)
@@ -70,8 +84,10 @@ class FTIndexerProcess : VedaModule
         return null;
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin, ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         ictx.index_msg(new_indv, prev_indv, cmd, op_id, context);
 
@@ -114,11 +130,11 @@ class FTIndexerProcess : VedaModule
 
     override bool open()
     {
-        context.set_vql (new XapianSearch(context));
+        context.set_vql(new XapianSearch(context));
         //context.set_vql(new FTQueryClient(context));
 
         ictx.thread_name = process_name;
-        ictx.init(&sticket, context);
+        ictx.init(&sticket, use_db, context);
 
         low_priority_user = node.getFirstLiteral("cfg:low_priority_user");
         return true;
