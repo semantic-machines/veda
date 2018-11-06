@@ -1,5 +1,5 @@
 import std.stdio, core.stdc.stdlib, std.uuid;
-import veda.util.queue, veda.common.logger, veda.onto.individual;
+import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource;
 
 /*
     COMMAND NAME PATH [OPTIONS..]
@@ -25,7 +25,7 @@ void main(string[] args)
 {
     if (args.length < 3)
     {
-        writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[0]);
+        writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[ 0 ]);
         writeln("		EXAMPLE: vqueuectl check individuals-flow data/queue");
         return;
     }
@@ -33,13 +33,13 @@ void main(string[] args)
     string command = args[ 1 ];
     if (command != "check" && command != "cat" && command != "repair" && command != "stat")
     {
-        writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[0]);
+        writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[ 0 ]);
         writeln("		COMMAND : [check/cat/repair/stat]");
         return;
-	}
-    
-    string name    = args[ 2 ];
-    string path    = args[ 3 ];
+    }
+
+    string name = args[ 2 ];
+    string path = args[ 3 ];
 
     writefln("cmd=%s, name=%s, path=%s", command, name, path);
 
@@ -81,15 +81,20 @@ void main(string[] args)
         auto prc = count * oprc;
 
         if (count % 100000 == 0)
+        {
             writefln("%s %3.2f%% %d", command, prc, count);
+
+            if (command == "stat")
+                print_stat();
+        }
 
         cs.commit_and_next(true);
 
         if (command == "repair")
             queue_new.push(data);
-		else if (command == "cat")
+        else if (command == "cat")
             writeln(data);
-		else if (command == "stat")
+        else if (command == "stat")
             collect_stat(data);
     }
 
@@ -100,41 +105,41 @@ void main(string[] args)
     queue.close();
 }
 
-long[string] type_2_count;
+long[ string ] type_2_count;
 
-private void collect_stat (string data)
+private void collect_stat(string data)
 {
-            Individual imm;
-            if (data !is null && imm.deserialize(data) < 0)
+    Individual imm;
+
+    if (data !is null && imm.deserialize(data) < 0)
+    {
+        log.trace("ERR! read in queue: invalid individual:[%s]", data);
+    }
+    else
+    {
+        string     new_bin = imm.getFirstLiteral("new_state");
+
+        Individual new_indv;
+
+        if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
+        {
+            log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
+        }
+        else
+        {
+            Resources types = new_indv.getResources("rdf:type");
+
+            foreach (type; types)
             {
-                log.trace("ERR! read in queue: invalid individual:[%s]", data);
+                string stype = type.data;
+                long   count = type_2_count.get(stype, 0);
+                type_2_count[ stype ] = count + 1;
             }
-            else
-            {
-				string new_bin             = imm.getFirstLiteral("new_state");
-				
-            if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
-            {
-                log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
-            }
-            else
-            {
-				Resources[] types = new_indv.getFirstLiteral("rdf:type");
-				
-				foreach (type ; types)
-				{
-					string stype = type.data;
-					long count = type_2_count.get (stype, 0);
-					type_2_count[stype] = count + 1;
-				}
-			}				
-			
-			
-			
-			}	
+        }
+    }
 }
 
-private void print_stat ()
+private void print_stat()
 {
-	
+    writefln("STAT: %s", type_2_count);
 }
