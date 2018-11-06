@@ -16,10 +16,12 @@ import { Selector, t } from 'testcafe';
       .click('#add-comment')
       .typeText('div[typeof="v-s:Comment"] textarea[class="form-control"]', '12345')  //type comment
       .click('div[typeof="v-s:Comment"] button[id="save"]')
+      .wait(3000)
       .click('#reply')
       .typeText('div[typeof="v-s:Comment"] textarea[class="form-control"]', '12345')  //type reply-comment
       .click('div[typeof="v-s:Comment"] button[id="save"]')
       //check buttons
+      .wait(3000)
       .expect(Selector('#reply').count).eql(2)
       .expect(Selector('#edit-comment').count).eql(2)
       .expect(Selector('a[id="edit-comment"][style="display: none;"]').count).eql(1)
