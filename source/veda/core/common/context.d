@@ -23,6 +23,7 @@ interface Context
     string get_name();
 
     Onto get_onto();
+    public void onto_load();
 
     public long get_operation_state(MODULE module_id, long wait_op_id);
 

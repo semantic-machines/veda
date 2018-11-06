@@ -96,7 +96,7 @@ private nothrow string req_prepare(string request, Context context)
                                 long new_onto_vsn = indv.getFirstInteger("v-s:updateCounter");
                                 if (new_onto_vsn != onto_vsn)
                                 {
-                                    context.get_onto.load();
+                                    context.onto_load();
                                     onto_vsn = new_onto_vsn;
                                 }
                             }
