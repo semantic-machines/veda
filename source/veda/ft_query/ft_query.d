@@ -6,7 +6,7 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.onto.resource, veda.onto.lang, veda.onto.individual;
+import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.type;
 import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
 import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
 

@@ -8,7 +8,7 @@ import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime
 import veda.util.properd;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define,
        veda.core.common.know_predicates;
-import veda.core.common.log_msg, veda.storage.common, veda.core.util.utils, veda.common.logger, veda.util.module_info, veda.core.impl.thread_context;
+import veda.core.common.log_msg, veda.storage.common, veda.core.common.type, veda.core.util.utils, veda.common.logger, veda.util.module_info, veda.core.impl.thread_context;
 import veda.storage.common, veda.authorization.right_set;
 import veda.storage.lmdb.lmdb_driver;
 import veda.storage.tarantool.tarantool_driver;

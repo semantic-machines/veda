@@ -4,7 +4,7 @@
 module veda.gluecode.v8d_header;
 
 import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json;
-import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
+import veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction, veda.search.common.isearch;
 import veda.util.container;
 

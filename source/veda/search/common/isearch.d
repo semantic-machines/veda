@@ -4,7 +4,7 @@
 
 module veda.search.common.isearch;
 
-import veda.common.type, veda.onto.individual;
+import veda.common.type, veda.core.common.type, veda.onto.individual;
 
 public struct SearchResult
 {

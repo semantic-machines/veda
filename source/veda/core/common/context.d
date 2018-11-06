@@ -9,7 +9,7 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.type, veda.core.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
 private import veda.common.logger, veda.core.common.transaction;
 private import veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage, veda.authorization.authorization;
 

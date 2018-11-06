@@ -6,7 +6,7 @@ module veda.search.common.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.common.log_msg;
-private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type;
+private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type, veda.core.common.type;
 private import veda.common.logger, veda.onto.onto;
 
 class IndexerProperty

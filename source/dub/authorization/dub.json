@@ -23,6 +23,7 @@
 	    "../../veda/util/module_info.d",
 	    "../../veda/common/logger.d",
 	    "../../veda/common/type.d",
+	    "../../veda/common/core/type.d",
 	    "../../veda/util/properd.d",
 	    "../../veda/core/common/know_predicates.d",
 	    "../../veda/core/common/define.d"

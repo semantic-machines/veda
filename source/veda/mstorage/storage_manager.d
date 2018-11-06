@@ -9,7 +9,7 @@ private
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
     import veda.storage.binlog_tools, veda.util.module_info, veda.util.properd;
-    import veda.common.type, veda.core.common.transaction, veda.storage.common;
+    import veda.common.type, veda.core.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.util.properd;
     import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_storage;

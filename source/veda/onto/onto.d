@@ -11,8 +11,8 @@ private
     import std.stdio, std.datetime.stopwatch, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                                      : SwapStrategy;
     import veda.onto.resource, veda.onto.individual;
-    import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.type;
-    import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
+    import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.type, veda.core.common.type;
+    import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg;
 }
 
 alias bool[ string ] Names;
