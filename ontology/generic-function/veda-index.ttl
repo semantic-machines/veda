@@ -67,6 +67,7 @@ vdi:indexed_to
   rdfs:label "Indexed to"@en ;
   rdfs:range xsd:string ;
 .
+
 #---------------------------------------------
 
 vdi:index_01
@@ -90,70 +91,22 @@ vdi:index_02
   rdfs:label "not indexed" ;
   vdi:indexed_to "not-indexed" ;
 .
-# vdi:index_1
-#   rdf:type vdi:ClassIndex ;
-#   vdi:forProperty v-s:creator ;
-#   vdi:inherited_index vdi:index_2 ;
-#   vdi:inherited_index vdi:index_2_1 ;
-#   vdi:inherited_index vdi:index_3 ;
-# .
-# vdi:index_2
-#   rdf:type vdi:ClassIndex ;
-#   vdi:forClass v-s:Appointment ;
-#   vdi:forProperty v-s:employee ;
-#   vdi:inherited_index vdi:index_4 ;
-# .
-# vdi:index_2_1
-#   rdf:type vdi:ClassIndex ;
-#   vdi:forClass v-s:Appointment ;
-#   vdi:indexed_field v-s:employee ;
-# .
-# vdi:index_3
-#   rdf:type vdi:ClassIndex ;
-#   vdi:forClass v-s:Appointment ;
-#   vdi:forProperty v-s:occupation ;
-#   vdi:inherited_index vdi:index_5 ;
-# .
-# vdi:index_4
-#   rdf:type vdi:ClassIndex ;
-#   vdi:forClass v-s:Person ;
-#   vdi:indexed_field v-s:firstName ;
-#   vdi:indexed_field v-s:lastName ;
-#   vdi:indexed_field v-s:middleName ;
-#   vdi:indexed_field v-s:hasAccount ;
-#   vdi:indexed_field v-s:tabNumber ;
-# .
-# vdi:index_5
-#   rdf:type vdi:ClassIndex ;
-#   vdi:forClass v-s:OrganizationUnit ;
-#   vdi:indexed_field rdfs:label ;
-# .
 
-vdi:rdf_type_index
-  rdf:type vdi:ClassIndex ;
-  vdi:forProperty rdf:type ;
-  vdi:inherited_index vdi:class_name_index ;
-.
-vdi:class_name_index
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass rdfs:Resource ;
-  vdi:indexed_field rdfs:label ;
-.
+#---------------------------------------------
 
 vdi:index_creator
   rdf:type vdi:ClassIndex ;
   vdi:forProperty v-s:creator ;
-  vdi:inherited_index vdi:index_creator_person_position_department_org ;
+  vdi:inherited_index vdi:index_person_position ;
 .
-vdi:index_creator_person_position_department_org
+vdi:index_person_position
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Appointment ;
-  vdi:indexed_field rdfs:label ;
   vdi:indexed_field v-s:occupation ;
   vdi:indexed_field v-s:employee ;
-  vdi:indexed_field v-s:parentUnit ;
-  vdi:indexed_field v-s:parentOrganization ;
 .
+
+# ---------------------------
 
 vdi:index_appointment_employee
   rdf:type vdi:ClassIndex ;
@@ -163,9 +116,12 @@ vdi:index_appointment_employee
 .
 vdi:index_person
   rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Person ;
   vdi:indexed_field rdfs:label ;
   vdi:indexed_field v-s:tabNumber ;
 .
+
+#---------------------------------------------
 
 vdi:index_appointment_occupation
   rdf:type vdi:ClassIndex ;
@@ -175,5 +131,6 @@ vdi:index_appointment_occupation
 .
 vdi:index_position
   rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Position ;
   vdi:indexed_field rdfs:label ;
 .
