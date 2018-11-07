@@ -356,12 +356,12 @@ class ScriptProcess : VedaModule
 
         Individual[] res;
 
-        auto         si = context.get_storage().get_info(MODULE.subject_manager);
+        auto         si = context.get_info(MODULE.subject_manager);
 
         bool         is_ft_busy = true;
         while (is_ft_busy)
         {
-            auto mi = context.get_storage().get_info(MODULE.fulltext_indexer);
+            auto mi = context.get_info(MODULE.fulltext_indexer);
 
             log.trace("wait for the ft-index to finish storage.op_id=%d ft.committed_op_id=%d ...", si.op_id, mi.committed_op_id);
 

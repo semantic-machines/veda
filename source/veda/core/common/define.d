@@ -72,6 +72,8 @@ const string xapian_info_path      = "./data/xapian-info";
 const string module_info_path      = "./data/module-info";
 const string trails_path           = "./data/trails";
 const string logs_path             = "./logs";
+const string individuals_db_path0 = "./data/lmdb-individuals";
+const string tickets_db_path0     = "./data/lmdb-tickets";
 
 const string main_queue_name       = "individuals-flow";
 const string ft_indexer_queue_name = "fulltext_indexer0";
@@ -79,8 +81,9 @@ const string ft_indexer_queue_name = "fulltext_indexer0";
 string[]     paths_list            =
 [
     tmp_path, logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, uris_db_path, queue_db_path,
-    xapian_info_path, module_info_path, trails_path, acl_indexes_db_path
+    xapian_info_path, module_info_path, trails_path, acl_indexes_db_path, individuals_db_path0, tickets_db_path0
 ];
+
 
 private string[ string ] _xapian_search_db_path;
 public string get_xapiab_db_path(string db_name)

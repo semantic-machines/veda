@@ -67,7 +67,7 @@ private nothrow string req_prepare(string request, Context context)
                     else
                     {
                         Ticket *ticket;
-                        ticket = context.get_storage().get_ticket(_ticket, false);
+                        ticket = context.get_ticket(_ticket, false);
                         if (ticket is null)
                         {
                             context.get_logger.trace("ERR! ticket not fount: ticket_id = %s", _ticket);

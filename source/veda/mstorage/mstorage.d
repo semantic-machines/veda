@@ -154,7 +154,7 @@ void init(string node_id)
         log.trace("init core");
 
         sticket = sys_ticket(core_context, true);
-        Ticket *guest_ticket = core_context.get_storage.get_ticket("guest", false);
+        Ticket *guest_ticket = core_context.get_ticket("guest", false);
 
         if (guest_ticket is null || guest_ticket.result == ResultCode.TicketNotFound)
         {
@@ -738,7 +738,7 @@ public string execute_json(string in_msg, Context ctx)
 
             long   transaction_id = 0;
 
-            Ticket *ticket = ctx.get_storage().get_ticket(_ticket.str, false);
+            Ticket *ticket = ctx.get_ticket(_ticket.str, false);
 
             if (sfn == "put")
             {
@@ -1393,7 +1393,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
         return ticket;
     }
 
-    Ticket *tr_ticket = ctx.get_storage().get_ticket(tr_ticket_id, false);
+    Ticket *tr_ticket = ctx.get_ticket(tr_ticket_id, false);
     if (tr_ticket.result == ResultCode.Ok)
     {
         bool      is_allow_trusted = false;

@@ -18,6 +18,9 @@ const ALL_MODULES  = 0;
 
 interface Context
 {
+	public MInfo get_info(MODULE module_id);
+    public Ticket *get_ticket(string ticket_id, bool is_trace, bool is_systicket = false);
+
     Storage get_storage();
 
     string get_name();

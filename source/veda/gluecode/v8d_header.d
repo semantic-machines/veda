@@ -134,7 +134,7 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
     ti.new_binobj = _binobj;
     ti.ticket_id  = _ticket_id;
     ti.event_id   = _event_id;
-    Ticket *ticket = g_context.get_storage().get_ticket(ti.ticket_id, false);
+    Ticket *ticket = g_context.get_ticket(ti.ticket_id, false);
     ti.user_uri = ticket.user_uri;
 
     if (ti.cmd == INDV_OP.REMOVE)
@@ -458,7 +458,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
         if (_databases !is null && _databases_length > 1)
             databases = cast(string)_databases[ 0.._databases_length ];
 
-        Ticket *ticket = g_context.get_storage().get_ticket(ticket_id, false);
+        Ticket *ticket = g_context.get_ticket(ticket_id, false);
 
         if (ticket is null)
         {

@@ -269,13 +269,6 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
     return key2slot;
 }
 
-string getNowAsString()
-{
-    SysTime sysTime = Clock.currTime();
-
-    return sysTime.toISOExtString();
-}
-
 string timeToString(long tm)
 {
     SysTime sysTime = SysTime(tm);
