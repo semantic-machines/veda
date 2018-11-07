@@ -282,6 +282,8 @@ body {
   padding: 1.875rem; }
   .card-body > p:last-child {
     margin-bottom: 0; }
+  .card-body img {
+    width: 100%; }
 
 .card-title {
   font-weight: 500;
@@ -418,7 +420,7 @@ body {
     column-gap: 1.25rem; } }
 
 .card-post .card-body {
-  padding: 0 1.5625rem 1.5625rem; }
+  /*padding: 0 1.5625rem 1.5625rem;*/ }
 
 .card-post .card-footer,
 .card-post .card-header {
@@ -491,7 +493,7 @@ body {
   /*padding-top: 2.1875rem;*/ }
 
 .card-post--1.card-post--aside .card-body {
-  padding: 1.5625rem 1.5625rem; }
+  /*padding: 1.5625rem 1.5625rem;*/ }
 
 .card-post--1.card-post--aside .card-post__author {
   left: 0.9375rem;
@@ -545,6 +547,9 @@ em {
   font-weight: bold;
   font-style: normal;
   display: block;
+}
+em:first-child {
+  margin: 0px 0px 5px 0px;
 }
 
 hr.black {
