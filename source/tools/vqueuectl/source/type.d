@@ -1,1 +1,1 @@
-/home/itiu/work/veda/source/veda/common/type.d
+../../../veda/common/type.d

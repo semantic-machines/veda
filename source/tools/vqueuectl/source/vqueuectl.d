@@ -20,6 +20,7 @@ Logger log()
     return _log;
 }
 
+double oprc;
 
 void main(string[] args)
 {
@@ -57,7 +58,7 @@ void main(string[] args)
     if (queue.count_pushed <= 0)
         return;
 
-    double oprc = 100.0 / queue.count_pushed;
+    oprc = 100.0 / queue.count_pushed;
     long   count;
 
     Queue  queue_new;
@@ -84,8 +85,8 @@ void main(string[] args)
         {
             writefln("%s %3.2f%% %d", command, prc, count);
 
-            if (command == "stat")
-                print_stat();
+            //if (command == "stat")
+            //    print_stat();
         }
 
         cs.commit_and_next(true);
@@ -97,6 +98,8 @@ void main(string[] args)
         else if (command == "stat")
             collect_stat(data);
     }
+
+    print_stat();
 
     if (command == "repair")
         queue_new.close();
@@ -146,7 +149,8 @@ private void print_stat()
     writefln("STAT: ------------------------");
     foreach (el; sorted_list)
     {
-        writefln("%d %s", el[ 1 ], el[ 0 ]);
+	auto prc = el[ 1 ] * oprc;
+        writefln("%10d %3.2f%% %s", el[ 1 ], prc, el[ 0 ]);
     }
 }
 
@@ -155,6 +159,6 @@ private Tuple!(string, long)[] aa_sort(long[ string ] aa)
     typeof(return )r = [];
     foreach (k, v; aa)
         r ~= tuple(k, v);
-    sort!q { a[ 1 ] < b[ 1 ] } (r);
+    sort!q{ a[ 1 ] < b[ 1 ] }(r);
     return r;
 }
