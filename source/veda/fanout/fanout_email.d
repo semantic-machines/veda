@@ -5,7 +5,7 @@ module veda.fanout.fanout_email;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
 private import veda.core.common.context;
 private import veda.vmodule.vmodule;
@@ -34,8 +34,10 @@ class FanoutProcess : VedaModule
         super(_subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         //log.trace("[%s]: start prepare", new_indv.uri);
 
@@ -139,7 +141,7 @@ class FanoutProcess : VedaModule
             return null;
 
         Individual prs = context.get_individual(p_uri);
-        if (prs.getStatus() != ResultCode.Ok)
+        if (prs.getStatus() != ResultCode.Ok || prs.isExists("v-s:deleted", true) == true)
             return null;
 
         string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
@@ -166,7 +168,7 @@ class FanoutProcess : VedaModule
             return null;
 
         Individual ac = context.get_individual(ac_uri);
-        if (ac.getStatus() != ResultCode.Ok)
+        if (ac.getStatus() != ResultCode.Ok || ac.isExists("v-s:deleted", true) == true)
             return null;
 
         return ac.getResources("v-s:mailbox");
@@ -199,10 +201,13 @@ class FanoutProcess : VedaModule
 
             foreach (individual; l_individuals)
             {
-                Resources tmp_res = get_email_from_appointment(sticket, hasMessageType, individual);
+                if (individual.isExists("v-s:deleted", true) == false)
+                {
+                    Resources tmp_res = get_email_from_appointment(sticket, hasMessageType, individual);
 
-                foreach (rr; tmp_res)
-                    res ~= rr;
+                    foreach (rr; tmp_res)
+                        res ~= rr;
+                }
             }
         }
         else
@@ -348,17 +353,17 @@ class FanoutProcess : VedaModule
                     if (from_label is null || from_label.length == 0)
                         from_label = "Veda System";
 
-                    string      label;
-                    Recipient[] rr_email_to;
+                    string label;
+                    Recipient[ string ] rr_email_to;
 
                     foreach (Resource elt; to)
                     {
                         foreach (Resource el; extract_email(sticket, hasMessageType, elt.uri(), label))
-                            rr_email_to ~= Recipient(el.data(), label);
+                            rr_email_to[ el.data() ] = Recipient(el.data(), label);
                     }
 
                     foreach (Resource el; recipientMailbox)
-                        rr_email_to ~= Recipient(el.data(), "");
+                        rr_email_to[ el.data() ] = Recipient(el.data(), "");
 
                     string str_email_reply_to = "";
                     foreach (Resource elt; reply_to)
@@ -374,7 +379,7 @@ class FanoutProcess : VedaModule
 
                         message = SmtpMessage(
                                               Recipient(email_from, from_label),
-                                              rr_email_to,
+                                              rr_email_to.values,
                                               subject,
                                               message_body,
                                               str_email_reply_to

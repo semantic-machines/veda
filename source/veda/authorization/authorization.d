@@ -1,7 +1,7 @@
 module veda.authorization.authorization;
 
 import std.conv, std.datetime, std.outbuffer, std.string, std.stdio;
-import veda.common.logger, veda.core.common.define, veda.common.type;
+import veda.common.logger, veda.core.common.define, veda.common.type, veda.core.common.type;
 import veda.core.common.know_predicates;
 
 interface Authorization

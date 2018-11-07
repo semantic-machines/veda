@@ -9,7 +9,7 @@ import dt                                                                       
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
 import veda.search.common.isearch, veda.search.common.vel;
-import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
+import veda.common.type, veda.core.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
 
 
 class XapianVQL

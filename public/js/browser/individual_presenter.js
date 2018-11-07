@@ -170,9 +170,6 @@ veda.Module(function (veda) { "use strict";
       "typeof": individual["rdf:type"].map(function (item) { return item.id; }).join(" ")
     });
 
-    // Unwrapped templates support
-
-
     var view = template.find(".view").addBack(".view");
     var edit = template.find(".edit").addBack(".edit");
     var search = template.find(".search").addBack(".search");

@@ -12,7 +12,7 @@ private
     import veda.util.properd;
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
-    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
+    import veda.common.type, veda.core.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
     import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
     import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage, veda.authorization.authorization;
@@ -286,16 +286,37 @@ class PThreadContext : Context
             if (g_count_onto_update > local_count_onto_update)
             {
                 local_count_onto_update = g_count_onto_update;
-                onto.load();
+                onto_load();
             }
         }
         else
         {
-            onto = new Onto(this);
-            onto.load();
+            onto = new Onto(this.log);
+            onto_load();
         }
 
         return onto;
+    }
+
+    public void onto_load()
+    {
+        std.datetime.stopwatch.StopWatch sw1;
+
+        sw1.start();
+
+        reopen_ro_individuals_storage_db();
+        reopen_ro_fulltext_indexer_db();
+
+        Ticket       sticket       = sys_ticket();
+        Individual[] l_individuals = get_individuals_via_query(
+                                                               sticket.user_uri,
+                                                               "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
+                                                               OptAuthorize.NO, 10000, 10000);
+
+        sw1.stop();
+
+        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", get_name, l_individuals.length, sw1.peek.total !"usecs");
+        onto.load(l_individuals);
     }
 
     public string get_name()
