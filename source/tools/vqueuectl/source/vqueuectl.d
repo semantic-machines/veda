@@ -1,10 +1,12 @@
 import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons;
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource;
 
+import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type;
+
 /*
     COMMAND NAME PATH [OPTIONS..]
 
-    COMMAND: check, cat, repair, stat
+    COMMAND: check, cat, repair, stat, check_links
 
     check
 
@@ -20,7 +22,8 @@ Logger log()
     return _log;
 }
 
-double oprc;
+double     oprc;
+LmdbDriver individual_lmdb_driver;
 
 void main(string[] args)
 {
@@ -32,10 +35,10 @@ void main(string[] args)
     }
 
     string command = args[ 1 ];
-    if (command != "check" && command != "cat" && command != "repair" && command != "stat")
+    if (command != "check" && command != "cat" && command != "repair" && command != "stat" && command != "check_links")
     {
         writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[ 0 ]);
-        writeln("		COMMAND : [check/cat/repair/stat]");
+        writeln("		COMMAND : [check/cat/repair/stat/check_links]");
         return;
     }
 
@@ -59,9 +62,12 @@ void main(string[] args)
         return;
 
     oprc = 100.0 / queue.count_pushed;
-    long   count;
+    long  count;
 
-    Queue  queue_new;
+    Queue queue_new;
+
+    if (command == "check_links")
+        individual_lmdb_driver = new LmdbDriver("./data/lmdb-individuals", DBMode.R, "vqueuectl", log);
 
     if (command == "repair")
     {
@@ -97,6 +103,8 @@ void main(string[] args)
             writeln(data);
         else if (command == "stat")
             collect_stat(data);
+        else if (command == "check_links")
+            check_links(data);
     }
 
     print_stat();
@@ -109,6 +117,65 @@ void main(string[] args)
 }
 
 long[ string ] type_2_count;
+
+private void check_links(string data)
+{
+    Individual imm;
+
+    if (data !is null && imm.deserialize(data) < 0)
+    {
+        log.trace("ERR! read in queue: invalid individual:[%s]", data);
+    }
+    else
+    {
+        string     new_bin = imm.getFirstLiteral("new_state");
+
+        Individual new_indv;
+
+        if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
+        {
+            log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
+        }
+        else
+        {
+            Resources types = new_indv.getResources("rdf:type");
+
+            string    stypes = "";
+            foreach (type; types)
+            {
+                string stype = type.data;
+                stypes ~= " " ~ stype;
+            }
+
+            int all_count_uri  = 0;
+            int good_count_uri = 0;
+            foreach (key, rss; new_indv.resources)
+            {
+                foreach (rs; rss)
+                {
+                    if (rs.type == DataType.Uri)
+                    {
+                        all_count_uri++;
+                        string data = individual_lmdb_driver.get_binobj(rs.uri);
+                        if (data is null)
+                        {
+//							log.trace ("uri %s not found in predicate %s, indv.uri=%s", rs, key, new_indv.uri);
+                        }
+                        else
+                        {
+                            good_count_uri++;
+                        }
+                    }
+                }
+            }
+
+            if ((all_count_uri > 0 && all_count_uri - good_count_uri > 2) || (all_count_uri > 0 && good_count_uri == 0))
+            {
+                log.trace("ERR! %d, fail links %d, uri=[%s], type=[%s]", all_count_uri, all_count_uri - good_count_uri, new_indv.uri, stypes);
+            }
+        }
+    }
+}
 
 private void collect_stat(string data)
 {
@@ -131,7 +198,6 @@ private void collect_stat(string data)
         else
         {
             Resources types = new_indv.getResources("rdf:type");
-
             foreach (type; types)
             {
                 string stype = type.data;
@@ -149,7 +215,7 @@ private void print_stat()
     writefln("STAT: ------------------------");
     foreach (el; sorted_list)
     {
-	auto prc = el[ 1 ] * oprc;
+        auto prc = el[ 1 ] * oprc;
         writefln("%10d %3.2f%% %s", el[ 1 ], prc, el[ 0 ]);
     }
 }
@@ -159,6 +225,6 @@ private Tuple!(string, long)[] aa_sort(long[ string ] aa)
     typeof(return )r = [];
     foreach (k, v; aa)
         r ~= tuple(k, v);
-    sort!q{ a[ 1 ] < b[ 1 ] }(r);
+    sort!q{ a[ 1 ] < b[ 1 ] } (r);
     return r;
 }

@@ -12,6 +12,10 @@
 	"sourcePaths":[
 	    "source",
 	],
+	"sourceFiles":[
+            "../../lib64/libauthorization.a",
+	    "../../lib64/liblmdb.a",
+	],
 	"configurations": [
 	{
 	    "name": "app",
