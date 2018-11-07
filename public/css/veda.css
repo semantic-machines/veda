@@ -548,6 +548,9 @@ em {
   font-style: normal;
   display: block;
 }
+em:first-child {
+  margin: 0px 0px 5px 0px;
+}
 
 hr.black {
   border-top: 1px solid #233333;

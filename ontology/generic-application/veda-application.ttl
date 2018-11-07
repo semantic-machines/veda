@@ -20,8 +20,15 @@
 v-s:Application
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Aspect ;
+  rdfs:subClassOf v-s:Controlled ;
   rdfs:label "Приложение"@ru ;
   rdfs:label "Application"@en ;
+.
+
+v-s:ManualBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Инструкции"@ru ;
+  rdfs:label "User manuals"@en ;
 .
 
 v-s:ApplicationSmallCardTemplate
@@ -68,11 +75,14 @@ v-s:ApplicationTemplate
       </div>
       <hr class="margin-md">
       <div class="row">
-        <div class="col-md-9 col-sm-8" style="border-right: 1px dotted #ddd;">
+        <div class="col-lg-8 col-sm-6" style="border-right: 1px dotted #ddd;">
           <div about="@" property="v-s:description" class="markdown"></div>
+          <em about="v-s:responsible" property="rdfs:label"></em>
+          <div about="@" rel="v-s:responsible" class="margin-md"></div>
         </div>
-        <div class="col-md-3 col-sm-4">
-          <strong about="v-s:responsible" property="rdfs:label"></strong>
+        <div class="col-lg-4 col-sm-6">
+          <em about="v-s:ManualBundle" property="rdfs:label"></em>
+          <div about="@" rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
         </div>
       </div>
       <hr>
