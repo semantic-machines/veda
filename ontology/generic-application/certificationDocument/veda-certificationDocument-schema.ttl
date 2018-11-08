@@ -1,0 +1,55 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+
+<http://semantic-machines.com/veda/veda-certificationDocument-schema>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология Веда. Документы о сертификации"@ru ;
+  rdfs:label "Veda ontology. Certification documents "@en ;
+  v-s:loadPriority 20 ;
+.
+
+#------------------------------------------------------------БЛАНКИ----
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+v-s:CertificationDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Удостоверяющий документ"@ru ;
+  rdfs:label "Certification document"@en ;
+.
+v-s:hasCertificationDocumentType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:CertificationDocument ;
+  rdfs:label "Тип документа"^^xsd:string;
+  rdfs:range v-s:CertificationDocumentType ;
+.
+v-s:hasDocumentKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:CertificationDocument ;
+  rdfs:label "Вид документа"^^xsd:string;
+  rdfs:range v-s:DocumentKind ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:dateFrom
+# v-s:dateTo
+# rdfs:comment
+# v-s:attachment
+
+# ------------------------------------------------------------ КЛАССЫ --
+v-s:CertificationDocumentType
+  rdf:type owl:Class ;
+  rdfs:label "Тип удостоверяющего документа"@ru ;
+  rdfs:label "Certification document type"@en ;
+.

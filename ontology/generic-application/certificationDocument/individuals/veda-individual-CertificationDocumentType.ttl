@@ -1,0 +1,25 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+
+<http://semantic-machines.com/veda/veda-individual-CertificationDocumentType>
+  rdf:type owl:Ontology ;
+  v-s:loadPriority 10 ;
+.
+
+
+d:ub9l9kduz43gkkxyl66pmyznkf
+  a v-s:CertificationDocumentType;
+  rdfs:label "Первичный"^^xsd:string;
+.
+d:ddn4y2e3fd4rsfsy97p5swk5al
+  a v-s:CertificationDocumentType;
+  rdfs:label "Вторичный"^^xsd:string;
+.
+d:a0edmuunt1hp9hvhbtm24v4fdig
+  a v-s:CertificationDocumentType;
+  rdfs:label "Внеплановый"^^xsd:string;
+.
