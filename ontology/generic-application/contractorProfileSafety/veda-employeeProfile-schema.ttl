@@ -58,7 +58,7 @@ v-s:laborSafetyCertificate
   rdfs:label "Labor safety certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
-v-s:hasWorkAtHighAltitudeCertificate
+v-s:workAtHighAltitudeCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
   rdfs:label "Удостоверение/протокол по работам на высоте (без группы)"@ru ;
