@@ -63,8 +63,19 @@ v-s:ApplicationTemplate
   rdfs:label "Template for Application class"@en ;
   v-ui:forClass v-s:Application ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-s:hasBlank")) {
+    $(".blanks", template).remove();
+  }
+  if (!individual.hasValue("v-s:hasRegistry")) {
+    $(".registries", template).remove();
+  }
+  if (!individual.hasValue("v-s:hasReport")) {
+    $(".reports", template).remove();
+  }
+</script>
 <div about="@" class="container">
-  <div about="@" class="card card-big card-post card-post--1" style="position:relative;">
+  <div class="card card-big">
     <div class="card-body">
       <div class="clearfix">
         <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
@@ -85,21 +96,32 @@ v-s:ApplicationTemplate
           <div about="@" rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
         </div>
       </div>
-      <hr>
-      <div class="row margin-lg">
-        <div class="col-md-4 col-sm-6">
+    </div>
+  </div>
+  <div class="row" style="display: flex; flex-flow: row wrap;">
+    <div class="blanks col-md-4 col-sm-6 col-xs-12" style="display: flex;">
+      <div class="card card-big" style="width:100%;">
+        <div class="card-body">
           <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:Create" property="rdfs:label"></span></h4>
           <div about="@" rel="v-s:hasBlank">
             <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
           </div>
         </div>
-        <div class="col-md-4 col-sm-6">
+      </div>
+    </div>
+    <div class="registries col-md-4 col-sm-6 col-xs-12" style="display: flex;">
+      <div class="card card-big" style="width:100%;">
+        <div class="card-body">
           <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table text-muted margin-md-h"></i><span about="v-s:Find" property="rdfs:label"></span></h4>
           <div about="@" rel="v-s:hasRegistry">
             <a href="#/@" class="btn btn-info btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
           </div>
         </div>
-        <div class="col-md-4 col-sm-6">
+      </div>
+    </div>
+    <div class="reports col-md-4 col-sm-6 col-xs-12" style="display: flex;">
+      <div class="card card-big" style="width:100%;">
+        <div class="card-body">
           <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart text-muted margin-md-h"></i><span about="v-s:Report" property="rdfs:label"></span></h4>
           <div about="@" rel="v-s:hasReport">
             <a href="#/@" class="btn btn-warning btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
