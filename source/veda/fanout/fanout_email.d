@@ -353,17 +353,22 @@ class FanoutProcess : VedaModule
                     if (from_label is null || from_label.length == 0)
                         from_label = "Veda System";
 
-                    string label;
-                    Recipient[ string ] rr_email_to;
+                    string      label;
+                    Recipient[] rr_email_to;
+                    Recipient[ string ] rr_email_to_hash;
 
                     foreach (Resource elt; to)
                     {
                         foreach (Resource el; extract_email(sticket, hasMessageType, elt.uri(), label))
-                            rr_email_to[ el.data() ] = Recipient(el.data(), label);
+                            rr_email_to_hash[ el.data() ] = Recipient(el.data(), label);
                     }
 
                     foreach (Resource el; recipientMailbox)
-                        rr_email_to[ el.data() ] = Recipient(el.data(), "");
+                        rr_email_to_hash[ el.data() ] = Recipient(el.data(), "");
+
+                    // !!!! если ставить в отправителя (to) rr_email_to_hash.values, то письма дублируются, причина неизвестна
+                    foreach (el; rr_email_to_hash)
+                        rr_email_to ~= el;
 
                     string str_email_reply_to = "";
                     foreach (Resource elt; reply_to)
@@ -379,7 +384,7 @@ class FanoutProcess : VedaModule
 
                         message = SmtpMessage(
                                               Recipient(email_from, from_label),
-                                              rr_email_to.values,
+                                              rr_email_to,
                                               subject,
                                               message_body,
                                               str_email_reply_to
@@ -594,5 +599,3 @@ class FanoutProcess : VedaModule
             log.trace("WARN! not found configuration for connection to smtp server");
     }
 }
-
-
