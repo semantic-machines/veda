@@ -88,8 +88,8 @@ v-s:ApplicationTemplate
       <div class="row">
         <div class="col-lg-8 col-sm-6" style="border-right: 1px dotted #ddd;">
           <div about="@" property="v-s:description" class="markdown"></div>
-          <em about="v-s:responsible" property="rdfs:label"></em>
-          <div about="@" rel="v-s:responsible" class="margin-md"></div>
+          <!--em about="v-s:responsible" property="rdfs:label"></em>
+          <div about="@" rel="v-s:responsible" class="margin-md"></div-->
         </div>
         <div class="col-lg-4 col-sm-6">
           <em about="v-s:ManualBundle" property="rdfs:label"></em>
