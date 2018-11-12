@@ -87,7 +87,6 @@ public void ltrs_thread(string parent_url)
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
 
     context.set_vql(new FTQueryClient(context));
-    //context.set_vql(new XapianSearch(context));
 
     vql = context.get_vql();
 
@@ -357,7 +356,6 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql(new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
 
         return true;

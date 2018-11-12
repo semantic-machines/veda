@@ -131,7 +131,6 @@ class FTIndexerProcess : VedaModule
     override bool open()
     {
         context.set_vql(new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
 
         ictx.thread_name = process_name;
         ictx.init(&sticket, use_db, context);

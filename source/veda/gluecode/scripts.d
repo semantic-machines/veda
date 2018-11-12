@@ -293,7 +293,6 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql(new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
 
         vql       = context.get_vql();
