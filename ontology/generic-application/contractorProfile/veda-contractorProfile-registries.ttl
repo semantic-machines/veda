@@ -32,7 +32,7 @@ v-s:ContractorProfileRegistry
 v-s:ContractorProfileRegistryBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Досье контрагента"@ru ;
-  rdfs:label "Contractor Profile"@en ;
+  rdfs:label "Contractor's profile"@en ;
   v-fc:targetType v-s:ContractorProfile  ;
   v-s:backwardTarget v-s:ContractorProfileRegistryBlank_ParentOrganization;
 .

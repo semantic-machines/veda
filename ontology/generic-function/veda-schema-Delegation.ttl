@@ -343,8 +343,8 @@ v-s:RequestDelegationRegistry
 
 v-s:RequestDelegationRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Заявки на делегирование"@ru ;
-  rdfs:label "Delegation requests"@en ;
+  rdfs:label "Заявка на делегирование"@ru ;
+  rdfs:label "Delegation request"@en ;
   v-fc:targetType v-s:RequestDelegation ;
   v-fc:targetType v-s:RequestDelegationUser ;
   v-fc:targetType v-s:RequestDelegationAdmin ;

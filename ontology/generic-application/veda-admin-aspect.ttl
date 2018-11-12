@@ -59,7 +59,7 @@ v-s:OntologyRegistry
 v-s:OntologyRegistryBlank
   a v-fc:Blank ;
   rdfs:label "Онтология"@ru ;
-  rdfs:label "Ontologies"@en ;
+  rdfs:label "Ontology"@en ;
   v-fc:targetType owl:Ontology ;
 .
 
@@ -109,8 +109,8 @@ v-s:PropertyRegistry
 .
 v-s:PropertyRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все свойства"@ru ;
-  rdfs:label "All properties"@en ;
+  rdfs:label "Свойство"@ru ;
+  rdfs:label "Property"@en ;
   v-fc:targetType owl:ObjectProperty ;
   v-fc:targetType owl:DatatypeProperty ;
   v-fc:targetType rdf:Property ;
@@ -136,8 +136,8 @@ v-s:ClassTemplateRegistry
 .
 v-s:ClassTemplateRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все шаблоны"@ru ;
-  rdfs:label "All templates"@en ;
+  rdfs:label "Шаблон"@ru ;
+  rdfs:label "Template"@en ;
   v-fc:targetType v-ui:ClassTemplate ;
 .
 
@@ -160,8 +160,8 @@ v-s:PersonRegistry
 .
 v-s:PersonRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все пользователи"@ru ;
-  rdfs:label "All users"@en ;
+  rdfs:label "Пользователь"@ru ;
+  rdfs:label "User"@en ;
   v-fc:targetType v-s:Person ;
 .
 
@@ -209,8 +209,8 @@ v-s:NetRegistry
 .
 v-s:NetRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все сети"@ru ;
-  rdfs:label "All nets"@en ;
+  rdfs:label "Сеть"@ru ;
+  rdfs:label "Net"@en ;
   v-fc:targetType v-wf:Net ;
 .
 
@@ -236,8 +236,8 @@ v-s:UserScriptRegistry
 .
 v-s:UserScriptRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все скрипты"@ru ;
-  rdfs:label "All scripts"@en ;
+  rdfs:label "Скрипт"@ru ;
+  rdfs:label "Script"@en ;
   v-fc:targetType v-s:UserScript ;
 .
 
@@ -255,8 +255,8 @@ v-s:OperationRegistry
 .
 v-s:OperationRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все операции"@ru ;
-  rdfs:label "All operations"@en ;
+  rdfs:label "Операция"@ru ;
+  rdfs:label "Operation"@en ;
   v-fc:targetType owl:Class ;
   rdfs:subClassOf v-s:Operation ;
 .
@@ -282,8 +282,8 @@ v-s:ModulesRegistry
 .
 v-s:ModulesRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Установленные модули"@ru ;
-  rdfs:label "Installed modules"@en ;
+  rdfs:label "Модуль"@ru ;
+  rdfs:label "Module"@en ;
   v-fc:targetType v-s:Module ;
 .
 # -- СОБЫТИЯ --
@@ -306,8 +306,8 @@ v-s:EventRegistry
 .
 v-s:EventRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все события"@ru ;
-  rdfs:label "All events"@en ;
+  rdfs:label "Событие"@ru ;
+  rdfs:label "Event"@en ;
   v-fc:targetType v-s:Event ;
 .
 
@@ -332,8 +332,8 @@ v-s:FunctionRegistry
 .
 v-s:FunctionRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все функции"@ru ;
-  rdfs:label "All functions"@en ;
+  rdfs:label "Функция"@ru ;
+  rdfs:label "Function"@en ;
   v-fc:targetType owl:Class ;
   rdfs:subClassOf v-s:Function ;
 .
@@ -358,8 +358,8 @@ v-s:BlankRegistry
 .
 v-s:BlankRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все бланки"@ru ;
-  rdfs:label "All blanks"@en ;
+  rdfs:label "Бланк"@ru ;
+  rdfs:label "Blank"@en ;
   v-fc:targetType v-fc:Blank ;
 .
 # -- РЕЕСТРЫ --
@@ -382,8 +382,8 @@ v-s:RegistryRegistry
 .
 v-s:RegistryRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все реестры"@ru ;
-  rdfs:label "All registries"@en ;
+  rdfs:label "Реестр"@ru ;
+  rdfs:label "Registry"@en ;
   v-fc:targetType v-fs:AttributiveSearch ;
 .
 
@@ -406,8 +406,8 @@ v-s:PermissionStatementRegistry
 .
 v-s:PermissionStatementRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все реестры"@ru ;
-  rdfs:label "All registries"@en ;
+  rdfs:label "Право"@ru ;
+  rdfs:label "Permission"@en ;
   v-fc:targetType v-s:PermissionStatement ;
 .
 
@@ -431,8 +431,8 @@ v-s:BugReportRegistry
 .
 v-s:BugReportBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Все сообщения об ошибках"@ru ;
-  rdfs:label "All bug reports"@en ;
+  rdfs:label "Сообщение об ошибке"@ru ;
+  rdfs:label "Bug report"@en ;
   v-fc:targetType v-s:BugReport ;
 .
 
