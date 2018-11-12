@@ -685,7 +685,8 @@ fn print_to_trace_info(trace: &mut Trace, text: String) {
 fn get_path(mopc: &mut HashMap<String, String>, el: String) -> String {
 
     if mopc.contains_key(&el) {
-		let parent = mopc[&el].clone ();	
+		let parent = mopc[&el].clone ();
+		mopc.remove (&el);	
 		let prev = get_path(mopc, parent.to_string());
 	
 		return prev + "->" + &el;
