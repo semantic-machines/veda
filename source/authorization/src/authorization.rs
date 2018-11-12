@@ -374,12 +374,13 @@ fn authorize_obj_group(
 
                                 if (azc.calc_right_res & request_access) == request_access {
                                     if trace.is_info {
-                                        let req_acs = request_access;
+/*                                      let req_acs = request_access;
                                         let crr_acs = azc.calc_right_res;
-/*                                        print_to_trace_info(
+                                        print_to_trace_info(
                                             trace,
                                             format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
-                                        );*/
+                                        );
+*/
                                     } else if trace.is_group == false && trace.is_acl == false {
                                         is_authorized = true;
                                         return Ok(is_authorized);
@@ -427,12 +428,13 @@ fn authorize_obj_group(
 
     if (azc.calc_right_res & request_access) == request_access {
         if trace.is_info {
-            let req_acs = request_access;
+/*            let req_acs = request_access;
             let crr_acs = azc.calc_right_res;
-/*            print_to_trace_info(
+            print_to_trace_info(
                 trace,
                 format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
-            );*/
+            );
+*/             
         }
 
         if trace.is_info == false && trace.is_group == false && trace.is_acl == false {
