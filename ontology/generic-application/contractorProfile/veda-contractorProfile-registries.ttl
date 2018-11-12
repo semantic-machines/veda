@@ -23,8 +23,8 @@
 
 v-s:ContractorProfileRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Досье контрагента"@ru;
-  rdfs:label "Contractor profile"@en;
+  rdfs:label "Досье контрагентов"@ru;
+  rdfs:label "Contractors' profiles"@en;
   v-fs:searchBlank v-s:ContractorProfileRegistryBlank ;
   v-fs:searchBlankTemplate v-s:ContractorProfileRegistryBlankTemplate;
   v-fs:searchResultTemplate v-s:ContractorProfileResultTemplate ;

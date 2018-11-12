@@ -48,8 +48,8 @@ v-s:OntologyBlank
 .
 v-s:OntologyRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все онтологии"@ru ;
-  rdfs:label "All ontologies"@en ;
+  rdfs:label "Онтологии"@ru ;
+  rdfs:label "Ontologies"@en ;
   v-fs:searchBlank v-s:OntologyRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -58,8 +58,8 @@ v-s:OntologyRegistry
 .
 v-s:OntologyRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все онтологии"@ru ;
-  rdfs:label "All ontologies"@en ;
+  rdfs:label "Онтология"@ru ;
+  rdfs:label "Ontologies"@en ;
   v-fc:targetType owl:Ontology ;
 .
 
@@ -73,8 +73,8 @@ v-s:ClassBlank
 .
 v-s:ClassRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все классы"@ru ;
-  rdfs:label "All classes"@en ;
+  rdfs:label "Классы"@ru ;
+  rdfs:label "Classes"@en ;
   v-fs:searchBlank v-s:ClassRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -83,8 +83,8 @@ v-s:ClassRegistry
 .
 v-s:ClassRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все классы"@ru ;
-  rdfs:label "All classes"@en ;
+  rdfs:label "Класс"@ru ;
+  rdfs:label "Class"@en ;
   v-fc:targetType owl:Class ;
   v-fc:targetType rdfs:Class ;
 .
@@ -99,8 +99,8 @@ v-s:PropertyBlank
 .
 v-s:PropertyRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все свойства"@ru ;
-  rdfs:label "All properties"@en ;
+  rdfs:label "Свойства"@ru ;
+  rdfs:label "Properties"@en ;
   v-fs:searchBlank v-s:PropertyRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -126,8 +126,8 @@ v-s:ClassTemplateBlank
 .
 v-s:ClassTemplateRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все шаблоны"@ru ;
-  rdfs:label "All templates"@en ;
+  rdfs:label "Шаблоны"@ru ;
+  rdfs:label "Templates"@en ;
   v-fs:searchBlank v-s:ClassTemplateRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -151,8 +151,8 @@ v-s:PersonBlank
 .
 v-s:PersonRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все пользователи"@ru ;
-  rdfs:label "All users"@en ;
+  rdfs:label "Пользователи"@ru ;
+  rdfs:label "Users"@en ;
   v-fs:searchBlank v-s:PersonRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -175,8 +175,8 @@ v-s:GroupBlank
 .
 v-s:GroupRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все группы"@ru ;
-  rdfs:label "All groups"@en ;
+  rdfs:label "Группы"@ru ;
+  rdfs:label "Groups"@en ;
   v-fs:searchBlank v-s:GroupRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -184,8 +184,8 @@ v-s:GroupRegistry
 .
 v-s:GroupRegistryBlank
   a v-fc:Blank ;
-  rdfs:label "Все группы"@ru ;
-  rdfs:label "All groups"@en ;
+  rdfs:label "Группа"@ru ;
+  rdfs:label "Group"@en ;
   v-fc:targetType v-s:Group ;
 .
 
@@ -199,8 +199,8 @@ v-s:NetBlank
 .
 v-s:NetRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все сети"@ru ;
-  rdfs:label "All nets"@en ;
+  rdfs:label "Сети"@ru ;
+  rdfs:label "Nets"@en ;
   v-fs:searchBlank v-s:NetRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -224,8 +224,8 @@ v-s:UserScriptBlank
 .
 v-s:UserScriptRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все скрипты"@ru ;
-  rdfs:label "All scripts"@en ;
+  rdfs:label "Скрипты"@ru ;
+  rdfs:label "Scripts"@en ;
   v-fs:searchBlank v-s:UserScriptRegistryBlank ;
 #  v-fs:searchBlankTemplate v-s:UserScriptTemplate ;
 #  v-fs:searchResultTemplate v-s:UserScriptResultTemplate ;
@@ -245,8 +245,8 @@ v-s:UserScriptRegistryBlank
 
 v-s:OperationRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все операции"@ru ;
-  rdfs:label "All operations"@en ;
+  rdfs:label "Операции"@ru ;
+  rdfs:label "Operations"@en ;
   v-fs:searchBlank v-s:OperationRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -296,8 +296,8 @@ v-s:EventBlank
 .
 v-s:EventRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Все события"@ru ;
-  rdfs:label "All events"@en ;
+  rdfs:label "События"@ru ;
+  rdfs:label "Events"@en ;
   v-fs:searchBlank v-s:EventRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -322,8 +322,8 @@ v-s:FunctionBlank
 .
 v-s:FunctionRegistry
   a v-fs:AttributiveSearch ;
-  rdfs:label "Все функции"@ru ;
-  rdfs:label "All functions"@en ;
+  rdfs:label "Функции"@ru ;
+  rdfs:label "Functions"@en ;
   v-fs:searchBlank v-s:FunctionRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -348,8 +348,8 @@ v-s:BlankBlank
 .
 v-s:BlankRegistry
   a v-fs:AttributiveSearch ;
-  rdfs:label "Все бланки"@ru ;
-  rdfs:label "All blanks"@en ;
+  rdfs:label "Бланки"@ru ;
+  rdfs:label "Blanks"@en ;
   v-fs:searchBlank v-s:BlankRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -372,8 +372,8 @@ v-s:RegistryBlank
 .
 v-s:RegistryRegistry
   a v-fs:AttributiveSearch ;
-  rdfs:label "Все реестры"@ru ;
-  rdfs:label "All registries"@en ;
+  rdfs:label "Реестры"@ru ;
+  rdfs:label "Registries"@en ;
   v-fs:searchBlank v-s:RegistryRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -397,8 +397,8 @@ v-s:PermissionStatementBlank
 .
 v-s:PermissionStatementRegistry
   a v-fs:AttributiveSearch ;
-  rdfs:label "Все права"@ru ;
-  rdfs:label "All permissions"@en ;
+  rdfs:label "Права"@ru ;
+  rdfs:label "Permissions"@en ;
   v-fs:searchBlank v-s:PermissionStatementRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -421,8 +421,8 @@ v-s:PermissionStatementBlank
 .
 v-s:BugReportRegistry
   a v-fs:AttributiveSearch ;
-  rdfs:label "Все сообщения об ошибках"@ru ;
-  rdfs:label "All bug reports"@en ;
+  rdfs:label "Сообщения об ошибках"@ru ;
+  rdfs:label "Bug reports"@en ;
   v-fs:searchBlank v-s:BugReportBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
