@@ -5,7 +5,7 @@ import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storag
 /*
     COMMAND NAME PATH [OPTIONS..]
 
-    COMMAND: check, message_to_json, repair, stat, check_links
+    COMMAND: check, message_to_json, repair, stat_by_type, check_links, consumer_unread_counter
 
     check
 
@@ -27,11 +27,13 @@ LmdbDriver individual_lmdb_driver;
 void main(string[] args)
 {
     bool[ string ] cmds;
-    cmds[ "check" ]           = true;
-    cmds[ "message_to_json" ] = true;
-    cmds[ "repair" ]          = true;
-    cmds[ "stat" ]            = true;
-    cmds[ "check_links" ]     = true;
+    cmds[ "check" ]                    = true;
+    cmds[ "message_to_json" ]          = true;
+    cmds[ "repair" ]                   = true;
+    cmds[ "stat_by_type" ]             = true;
+    cmds[ "check_links" ]              = true;
+    cmds[ "push_count" ]               = true;
+    cmds[ "consumer_unread_counter" ] = true;
 
     if (args.length < 3)
     {
@@ -52,21 +54,39 @@ void main(string[] args)
     string name = args[ 2 ];
     string path = args[ 3 ];
 
-    writefln("cmd=%s, name=%s, path=%s", command, name, path);
+    //writefln("cmd=%s, name=%s, path=%s", command, name, path);
 
     Queue queue = new Queue(path, name, Mode.R, log);
     queue.open();
     queue.get_info(0);
 
-    writefln("QUEUE %s content %d elements ", name, queue.count_pushed);
+    //writefln("QUEUE %s content %d elements ", name, queue.count_pushed);
+
+    if (queue.count_pushed <= 0)
+        return;
 
     string   consumer_path = "./tmp";
 
     Consumer cs = new Consumer(queue, consumer_path, "cs-" ~ name, Mode.RW, log);
     cs.open();
 
-    if (queue.count_pushed <= 0)
+    if (command == "consumer_unread_counter")
+    {
+        if (args.length < 5)
+        {
+            writeln("use %s COMMAND NAME DIR CONSUMER_NAME", args[ 0 ]);
+            writeln("		EXAMPLE: vqueuectl consumer_unread_counter individuals-flow data/queue fanout_email");
+            return;
+        }
+
+        string   consumer_name = args[ 4 ];
+
+        Consumer cs1 = new Consumer(queue, path, consumer_name, Mode.R, log);
+        cs1.open();
+
+        writeln(queue.count_pushed - cs1.count_popped);
         return;
+    }
 
     oprc = 100.0 / queue.count_pushed;
     long  count;
@@ -105,14 +125,14 @@ void main(string[] args)
             queue_new.push(data);
         else if (command == "message_to_json")
             message_to_json(data);
-        else if (command == "stat")
-            collect_stat(data);
+        else if (command == "stat_by_type")
+            collect_stat_by_type(data);
         else if (command == "check_links")
             check_links(data);
     }
 
-    if (command == "stat")
-        print_stat();
+    if (command == "stat_by_type")
+        print_stat_by_type();
 
     if (command == "repair")
         queue_new.close();
@@ -182,7 +202,7 @@ private void check_links(string data)
     }
 }
 
-private void collect_stat(string data)
+private void collect_stat_by_type(string data)
 {
     Individual imm;
 
@@ -238,12 +258,12 @@ private void message_to_json(string data)
             long      update_counter = new_indv.getFirstInteger("v-s:updateCounter");
             bool      deleted        = new_indv.getFirstBoolean("v-s:deleted");
 
-            log.trace("uri=%s, user=%s, type=%s, counter=%d, is_deleted=%s \n %s", new_indv.uri, user, type, update_counter, text (deleted), jj);
+            log.trace("uri=%s, user=%s, type=%s, counter=%d, is_deleted=%s \n %s", new_indv.uri, user, type, update_counter, text(deleted), jj);
         }
     }
 }
 
-private void print_stat()
+private void print_stat_by_type()
 {
     auto sorted_list = aa_sort(type_2_count);
 
