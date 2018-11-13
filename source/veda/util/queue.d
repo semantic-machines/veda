@@ -212,15 +212,13 @@ class Consumer
             return false;
 
         ff_info_pop_r.seek(0);
-//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
 
         string str = ff_info_pop_r.readln();
-        //writeln("@3 str=[", str, "]");
-        if (str !is null)
+        if (str !is null && str.length > 1)
         {
-        	if (isDigit(str[$]) == false)
-				str = str[ 0..$ - 1 ];
-				        	
+            if (isDigit(str[ $ - 1 ]) == false)
+                str = str[ 0..$ - 1 ];
+
             string[] ch = str.split(';');
             //writeln("@ queue.get_info ch=", ch);
             if (ch.length != 5)
