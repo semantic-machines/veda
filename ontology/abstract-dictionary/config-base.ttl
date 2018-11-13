@@ -1332,7 +1332,8 @@ cfg:Event_16
       canRead   = document["v-s:canRead"],
       canUpdate = document["v-s:canUpdate"],
       canDelete = document["v-s:canDelete"],
-      isDeleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
+      isDeleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" }),
+      forceUpdate = veda.Util.hasValue(document, "v-s:backwardForceUpdate", { data: true, type: "Boolean" });
 
   //expected equal backwardPropery and backwardReplaceUris for all backwardTargets
   for (var i = 0; i < backwardTargetUris.length; i++) {
@@ -1385,10 +1386,10 @@ cfg:Event_16
         backwardTarget[backwardPropertyUri].push({type: "Uri", data: backwardLinkUri});
       }
     }
-    backwardReplaceUris.map(function (replaceUri) {
+    backwardReplaceUris.forEach(function (replaceUri) {
       backwardTarget[replaceUri] = document[replaceUri];
     });
-    if (JSON.stringify(backwardTarget) !== backwardTarget_original) {
+    if (forceUpdate || JSON.stringify(backwardTarget) !== backwardTarget_original) {
       put_individual(ticket, backwardTarget, _event_id);
       //print( "BL target updated =", JSON.stringify(backwardTarget) );
     }
