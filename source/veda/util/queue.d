@@ -1,6 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii;
 import veda.common.logger;
 
 enum QMessageType
@@ -218,7 +218,10 @@ class Consumer
         //writeln("@3 str=[", str, "]");
         if (str !is null)
         {
-            string[] ch = str[ 0..$ - 1 ].split(';');
+        	if (isDigit(str[$]) == false)
+				str = str[ 0..$ - 1 ];
+				        	
+            string[] ch = str.split(';');
             //writeln("@ queue.get_info ch=", ch);
             if (ch.length != 5)
             {
