@@ -1,12 +1,11 @@
-import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons;
+import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv;
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource;
-
-import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type;
+import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
 
 /*
     COMMAND NAME PATH [OPTIONS..]
 
-    COMMAND: check, cat, repair, stat, check_links
+    COMMAND: check, message_to_json, repair, stat, check_links
 
     check
 
@@ -27,6 +26,13 @@ LmdbDriver individual_lmdb_driver;
 
 void main(string[] args)
 {
+    bool[ string ] cmds;
+    cmds[ "check" ]           = true;
+    cmds[ "message_to_json" ] = true;
+    cmds[ "repair" ]          = true;
+    cmds[ "stat" ]            = true;
+    cmds[ "check_links" ]     = true;
+
     if (args.length < 3)
     {
         writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[ 0 ]);
@@ -35,7 +41,8 @@ void main(string[] args)
     }
 
     string command = args[ 1 ];
-    if (command != "check" && command != "cat" && command != "repair" && command != "stat" && command != "check_links")
+
+    if (cmds.get(command, false) == false)
     {
         writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[ 0 ]);
         writeln("		COMMAND : [check/cat/repair/stat/check_links]");
@@ -90,24 +97,22 @@ void main(string[] args)
         if (count % 100000 == 0)
         {
             writefln("%s %3.2f%% %d", command, prc, count);
-
-            //if (command == "stat")
-            //    print_stat();
         }
 
         cs.commit_and_next(true);
 
         if (command == "repair")
             queue_new.push(data);
-        else if (command == "cat")
-            writeln(data);
+        else if (command == "message_to_json")
+            message_to_json(data);
         else if (command == "stat")
             collect_stat(data);
         else if (command == "check_links")
             check_links(data);
     }
 
-    print_stat();
+    if (command == "stat")
+        print_stat();
 
     if (command == "repair")
         queue_new.close();
@@ -204,6 +209,36 @@ private void collect_stat(string data)
                 long   count = type_2_count.get(stype, 0);
                 type_2_count[ stype ] = count + 1;
             }
+        }
+    }
+}
+
+private void message_to_json(string data)
+{
+    Individual imm;
+
+    if (data !is null && imm.deserialize(data) < 0)
+    {
+        log.trace("ERR! read in queue: invalid individual:[%s]", data);
+    }
+    else
+    {
+        string     new_bin = imm.getFirstLiteral("new_state");
+
+        Individual new_indv;
+        if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
+        {
+            log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
+        }
+        else
+        {
+            JSONValue jj             = individual_to_json(new_indv);
+            string    user           = imm.getFirstLiteral("user_uri");
+            string    type           = new_indv.getFirstLiteral("rdf:type");
+            long      update_counter = new_indv.getFirstInteger("v-s:updateCounter");
+            bool      deleted        = new_indv.getFirstBoolean("v-s:deleted");
+
+            log.trace("uri=%s, user=%s, type=%s, counter=%d, is_deleted=%s \n %s", new_indv.uri, user, type, update_counter, text (deleted), jj);
         }
     }
 }
