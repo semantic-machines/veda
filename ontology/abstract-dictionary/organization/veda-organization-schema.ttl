@@ -92,6 +92,14 @@ v-s:isOwnOrganization
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Organization ;
 .
+v-s:hasCommunicationMean
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Средства связи"@ru ;
+  rdfs:label "Communication Mean"@en ;
+  rdfs:range v-s:CommunicationMean ;
+  rdfs:domain v-s:OrganizationUnit ;
+.
+
 
 # Перенести в управление контрагентами
 

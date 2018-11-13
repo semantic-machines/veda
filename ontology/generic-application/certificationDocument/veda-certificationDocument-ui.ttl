@@ -1,4 +1,5 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -21,20 +22,38 @@ v-s:PS_hasDocumentKind_certificationDocument
   v-ui:forProperty v-s:hasDocumentKind ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('@'==='d:2d1f180dd5c44f4aa9ddd9f6eaa6b3de' || '@'==='d:14add314e3684e2b863eb9fb8f31fcba' || '@'==='d:cded2f4b8ef34c679e35fffb5c204ec3' || '@'==='d:7d633b2966c8434db81487474acbab06' || '@'==='d:a27993f6be1340b6beb1b4e8d049d812')" ;
+  v-ui:queryPrefix "('@'==='d:2d1f180dd5c44f4aa9ddd9f6eaa6b3de' || '@'==='d:14add314e3684e2b863eb9fb8f31fcba' || '@'==='d:cded2f4b8ef34c679e35fffb5c204ec3' || '@'==='d:7d633b2966c8434db81487474acbab06' || '@'==='d:a27993f6be1340b6beb1b4e8d049d812' || '@'==='d:7e7000a4229343d6adfba85089a390d6')" ;
   rdfs:label "Спецификация свойства v-s:hasDocumentKind для класса v-s:CertificationDocument"@ru ;
   rdfs:label "v-s:hasDocumentKind property specification for v-s:CertificationDocument class"@en ;
 .
 v-s:PS_certificationDocumentType_certificationDocument
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:CertificationDocument ;
-  v-ui:forProperty v-s:certificationDocumentType ;
+  v-ui:forProperty v-s:hasCertificationDocumentType ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
+  v-ui:defaultValue d:ddn4y2e3fd4rsfsy97p5swk5al ;
   rdfs:label "Спецификация свойства v-s:certificationDocumentType для класса v-s:CertificationDocument"@ru ;
   rdfs:label "v-s:certificationDocumentType    property specification for v-s:CertificationDocument class"@en ;
 .
-
+v-s:PS_dateFrom_certificationDocument
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CertificationDocument ;
+  v-ui:forProperty v-s:dateFrom ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:dateFrom для класса v-s:CertificationDocument"@ru ;
+  rdfs:label "v-s:dateFrom property specification for v-s:CertificationDocument class"@en ;
+.
+v-s:PS_attachment_certificationDocument
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CertificationDocument ;
+  v-ui:forProperty v-s:attachment ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация свойства v-s:dateFrom для класса v-s:CertificationDocument"@ru ;
+  rdfs:label "v-s:dateFrom property specification for v-s:CertificationDocument class"@en ;
+.
 # ------------------------------------------------------------ШАБЛОНЫ --
 v-s:CertificationDocumentTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -52,9 +71,9 @@ v-s:CertificationDocumentTemplate
         <div rel="v-s:hasCertificationDocumentType" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
       </div>
       <div class="col-md-3">
-        <em about="v-s:hasCertificationDocumentKind" property="rdfs:label" class="view edit -search"></em>
-        <veda-control rel="v-s:hasCertificationDocumentKind" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
-        <div rel="v-s:hasCertificationDocumentKind" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+        <em about="v-s:hasDocumentKind" property="rdfs:label" class="view edit -search"></em>
+        <veda-control rel="v-s:hasDocumentKind" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+        <div rel="v-s:hasDocumentKind" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
       </div>
       <div class="col-md-3">
         <em about="v-s:registrationNumber" property="rdfs:label" class="view edit -search"></em>
@@ -78,12 +97,7 @@ v-s:CertificationDocumentTemplate
         <div property="v-s:dateTo" class="view -edit -search"></div>
         <veda-control property="v-s:dateTo" data-type="date" class="-view edit -search"></veda-control>
       </div>
-      <div class="col-md-3">
-        <em about="rdfs:comment" property="rdfs:label" class="view edit -search"></em>
-        <div property="rdfs:comment" class="view -edit -search"></div>
-        <veda-control property="rdfs:comment" data-type="text" class="-view edit -search"></veda-control>
-      </div>
-      <div class="col-md-3">
+      <div class="col-md-6">
         <em about="v-s:attachment" property="rdfs:label"></em>
         <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
         <veda-control data-type="file"  rel="v-s:attachment" class="-view edit -search"></veda-control>

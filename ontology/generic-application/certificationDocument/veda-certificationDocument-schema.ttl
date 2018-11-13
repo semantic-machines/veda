@@ -27,6 +27,7 @@ v-s:CertificationDocument
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Удостоверяющий документ"@ru ;
   rdfs:label "Certification document"@en ;
+  v-ui:hasTemplate v-s:CertificationDocumentTemplate ;
 .
 v-s:hasCertificationDocumentType
   rdf:type owl:ObjectProperty ;
