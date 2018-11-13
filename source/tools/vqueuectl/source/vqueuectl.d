@@ -5,7 +5,7 @@ import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storag
 /*
     COMMAND NAME PATH [OPTIONS..]
 
-    COMMAND: check, message_to_json, repair, stat_by_type, check_links, consumer_unread_counter
+    COMMAND: check, message_to_json, repair, stat_by_type, check_links, consumer_unread_counter, extract_uris
 
     check
 
@@ -27,13 +27,14 @@ LmdbDriver individual_lmdb_driver;
 void main(string[] args)
 {
     bool[ string ] cmds;
-    cmds[ "check" ]                    = true;
-    cmds[ "message_to_json" ]          = true;
-    cmds[ "repair" ]                   = true;
-    cmds[ "stat_by_type" ]             = true;
-    cmds[ "check_links" ]              = true;
-    cmds[ "push_count" ]               = true;
+    cmds[ "check" ]                   = true;
+    cmds[ "message_to_json" ]         = true;
+    cmds[ "repair" ]                  = true;
+    cmds[ "stat_by_type" ]            = true;
+    cmds[ "check_links" ]             = true;
+    cmds[ "push_count" ]              = true;
     cmds[ "consumer_unread_counter" ] = true;
+    cmds[ "extract_uris" ]            = true;
 
     if (args.length < 3)
     {
@@ -65,11 +66,6 @@ void main(string[] args)
     if (queue.count_pushed <= 0)
         return;
 
-    string   consumer_path = "./tmp";
-
-    Consumer cs = new Consumer(queue, consumer_path, "cs-" ~ name, Mode.RW, log);
-    cs.open();
-
     if (command == "consumer_unread_counter")
     {
         if (args.length < 5)
@@ -83,10 +79,16 @@ void main(string[] args)
 
         Consumer cs1 = new Consumer(queue, path, consumer_name, Mode.R, log);
         cs1.open();
+        cs1.get_info();
 
         writeln(queue.count_pushed - cs1.count_popped);
         return;
     }
+
+    string   consumer_path = "./tmp";
+
+    Consumer cs = new Consumer(queue, consumer_path, "cs-" ~ name, Mode.RW, log);
+    cs.open();
 
     oprc = 100.0 / queue.count_pushed;
     long  count;
@@ -99,6 +101,13 @@ void main(string[] args)
     if (command == "repair")
     {
         queue_new = new Queue("./tmp/" ~ name ~ "/repair", name, Mode.RW, log);
+        queue_new.open();
+        queue_new.get_info(0);
+    }
+
+    if (command == "extract_uris")
+    {
+        queue_new = new Queue("./tmp/" ~ name ~ "/uris", name, Mode.RW, log);
         queue_new.open();
         queue_new.get_info(0);
     }
@@ -123,6 +132,12 @@ void main(string[] args)
 
         if (command == "repair")
             queue_new.push(data);
+        else if (command == "extract_uris")
+        {
+            string uri = extract_uri(data);
+            if (uri !is null)
+                queue_new.push(extract_uri(data));
+        }
         else if (command == "message_to_json")
             message_to_json(data);
         else if (command == "stat_by_type")
@@ -143,6 +158,31 @@ void main(string[] args)
 
 long[ string ] type_2_count;
 
+private string extract_uri(string data)
+{
+    Individual imm;
+
+    if (data !is null && imm.deserialize(data) < 0)
+    {
+        log.trace("ERR! read in queue: invalid individual:[%s]", data);
+    }
+    else
+    {
+        string     new_bin = imm.getFirstLiteral("new_state");
+        Individual new_indv;
+
+        if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
+        {
+            log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
+        }
+        else
+        {
+            return new_indv.uri;
+        }
+    }
+    return null;
+}
+
 private void check_links(string data)
 {
     Individual imm;
@@ -154,7 +194,6 @@ private void check_links(string data)
     else
     {
         string     new_bin = imm.getFirstLiteral("new_state");
-
         Individual new_indv;
 
         if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
@@ -280,6 +319,6 @@ private Tuple!(string, long)[] aa_sort(long[ string ] aa)
     typeof(return )r = [];
     foreach (k, v; aa)
         r ~= tuple(k, v);
-    sort!q{ a[ 1 ] < b[ 1 ] } (r);
+    sort!q { a[ 1 ] < b[ 1 ] } (r);
     return r;
 }
