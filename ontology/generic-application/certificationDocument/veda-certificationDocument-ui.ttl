@@ -22,7 +22,7 @@ v-s:PS_hasDocumentKind_certificationDocument
   v-ui:forProperty v-s:hasDocumentKind ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('@'==='d:2d1f180dd5c44f4aa9ddd9f6eaa6b3de' || '@'==='d:14add314e3684e2b863eb9fb8f31fcba' || '@'==='d:cded2f4b8ef34c679e35fffb5c204ec3' || '@'==='d:7d633b2966c8434db81487474acbab06' || '@'==='d:a27993f6be1340b6beb1b4e8d049d812' || '@'==='d:7e7000a4229343d6adfba85089a390d6')" ;
+  v-ui:queryPrefix "('@'==='d:2d1f180dd5c44f4aa9ddd9f6eaa6b3de' || '@'==='d:14add314e3684e2b863eb9fb8f31fcba' || '@'==='d:cded2f4b8ef34c679e35fffb5c204ec3' || '@'==='d:7d633b2966c8434db81487474acbab06' || '@'==='d:a27993f6be1340b6beb1b4e8d049d812' || '@'==='d:7e7000a4229343d6adfba85089a390d6' || '@'==='d:41d32cc4c1ef45e68a93006855e07d2f_1')" ;
   rdfs:label "Спецификация свойства v-s:hasDocumentKind для класса v-s:CertificationDocument"@ru ;
   rdfs:label "v-s:hasDocumentKind property specification for v-s:CertificationDocument class"@en ;
 .
