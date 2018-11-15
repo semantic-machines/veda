@@ -8,7 +8,7 @@ private
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string, std.digest.ripemd, std.bigint;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
     import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
-    import veda.storage.binlog_tools, veda.util.module_info, veda.util.properd;
+    import veda.util.module_info, veda.util.properd;
     import veda.common.type, veda.core.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.util.properd;
@@ -196,9 +196,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
     log.trace("COUNT INDIVIDUALS=%d", count);
 
-    int            size_bin_log         = 0;
-    int            max_size_bin_log     = 10_000_000;
-    string         bin_log_name         = get_new_binlog_name(db_name);
     long           last_reopen_rw_op_id = 0;
     int            max_count_updates    = 10_000;
 
@@ -389,7 +386,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 }
                                 else if (ti.cmd == INDV_OP.PUT)
                                 {
-                                    string new_hash;
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
                                     if (storage.store(ti.uri, ti.new_binobj, op_id) == ResultCode.Ok)
                                     {
@@ -407,12 +403,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                     if (rc == ResultCode.Ok)
                                     {
                                         module_info.put_info(op_id, committed_op_id);
-
-                                        ubyte[ 20 ] hash = ripemd160Of(ti.new_binobj);
-                                        BigInt msg_hash = "0x" ~ toHexString(hash);
-                                        new_hash = toHex(msg_hash);
-
-                                        bin_log_name = write_in_binlog(ti.new_binobj, new_hash, bin_log_name, size_bin_log, max_size_bin_log, db_name);
 
                                         if (storage_id == P_MODULE.subject_manager)
                                         {
@@ -444,7 +434,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                                 src = "?";
 
                                             imm.addResource("src", Resource(src));
-
+										    imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
                                             imm.addResource("assigned_subsystems", Resource(ti.assigned_subsystems));
