@@ -374,6 +374,7 @@ class PThreadContext : Context
     {
         PThreadContext ctx = new PThreadContext();
 
+		ctx.node_id = "cfg:standart_node";
         ctx.log = _log;
 
         if (ctx.log is null)
@@ -439,8 +440,6 @@ class PThreadContext : Context
         if (node == Individual.init && node_id !is null)
         {
             this.reopen_ro_individuals_storage_db();
-            Ticket sticket = sys_ticket();
-
             node = get_individual(node_id);
             if (node.getStatus() != ResultCode.Ok)
                 node = Individual.init;
