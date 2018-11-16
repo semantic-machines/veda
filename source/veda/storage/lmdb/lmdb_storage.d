@@ -23,9 +23,11 @@ public class LmdbStorage : Storage
 
     ~this()
     {
-        log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
-        tickets_storage_r.close();
-        inividuals_storage_r.close();
+	    if (tickets_storage_r !is null)
+	        tickets_storage_r.close();
+	        
+	    if (inividuals_storage_r !is null)    
+	        inividuals_storage_r.close();
     }
 
     override KeyValueDB get_tickets_storage_r()

@@ -63,16 +63,16 @@ public class LmdbDriver : KeyValueDB
         db_is_open[ _path ] = false;
         GC.collect();
 
-//      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
+        log.trace("close %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
     }
 
     public void reopen()
     {
         if (mode == DBMode.R)
         {
+            log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
             close();
             open();
-            log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
         }
     }
 
@@ -111,22 +111,7 @@ public class LmdbDriver : KeyValueDB
 
             if (rc == 0)
             {
-                string data_str = get_binobj(summ_hash_this_db_id);
-
-                if (data_str !is null && data_str.length > 0)
-                {
-                    string[] dataff = data_str.split(',');
-                    string   hash_str;
-                    if (dataff.length == 2)
-                        hash_str = dataff[ 0 ];
-
-                    if (hash_str is null || hash_str.length < 1)
-                        hash_str = "0";
-
-                    summ_hash_this_db = BigInt("0x" ~ hash_str);
-                }
-
-                log.trace("open LMDB %s data_str=[%s]", _path, data_str);
+                log.trace("open LMDB %s, thread:%s", _path, core_thread.getThis().name);
                 db_is_opened = true;
             }
         }
@@ -358,14 +343,6 @@ public class LmdbDriver : KeyValueDB
     }
 
 
-    private string get_new_hash(string content)
-    {
-        ubyte[ 20 ] hash = ripemd160Of(content);
-        BigInt msg_hash = "0x" ~ toHexString(hash);
-        summ_hash_this_db += msg_hash;
-        return toHex(summ_hash_this_db);
-    }
-
     public long count_entries()
     {
         if (db_is_opened == false)
@@ -442,7 +419,6 @@ public class LmdbDriver : KeyValueDB
             individual.setStatus(ResultCode.NotFound);
             return;
         }
-
 
         if (individual_as_binobj !is null && individual_as_binobj.length > 1)
         {

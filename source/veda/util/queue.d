@@ -163,10 +163,14 @@ class Consumer
         {
             ff_info_pop_w.flush();
             ff_info_pop_w.close();
+            ff_info_pop_w = null;
         }
 
         if (ff_info_pop_r !is null)
+        {
             ff_info_pop_r.close();
+            ff_info_pop_r = null;
+        }    
     }
 
     public void reopen()
@@ -556,7 +560,9 @@ class Queue
             {
                 flush();
                 ff_info_push_w.close();
+                ff_info_push_w = null;
                 ff_queue_w.close();
+                ff_queue_w = null;
                 remove_lock();
             }
             isReady = false;
