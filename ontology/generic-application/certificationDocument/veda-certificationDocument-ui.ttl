@@ -61,7 +61,6 @@ v-s:CertificationDocumentTemplate
   rdfs:label "Шаблон для класса v-s:CertificationDocument"@ru ;
   rdfs:label "Template for v-s:CertificationDocument class"@en ;
   v-ui:template """
-<div>
 <div class="panel panel-default">
   <div class="panel-body">
     <div class="row">
@@ -103,7 +102,6 @@ v-s:CertificationDocumentTemplate
         <veda-control data-type="file"  rel="v-s:attachment" class="-view edit -search"></veda-control>
       </div>
     </div>
-    <br>
   </div>
 </div>
   """ ;
