@@ -362,8 +362,8 @@ veda.Module(function (veda) { "use strict";
       self.attr("style", style.replace("@", individual.id));
     });
 
-    // Property value
-    template.find("[property]:not(veda-control):not([rel] *):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about] *)").map( function () {
+    // Property values
+    var props = template.find("[property]:not(veda-control):not([rel] *):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about] *)").map( function () {
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
           about_uri = propertyContainer.attr("about"),
@@ -385,7 +385,7 @@ veda.Module(function (veda) { "use strict";
       return about.load().then(function (about) {
 
         function idModifiedHandler() {
-          propertyContainer.text(individual.id);
+          propertyContainer.text(about.id);
         }
         if (property_uri === "@") {
           propertyContainer.text(about.id);
@@ -395,16 +395,6 @@ veda.Module(function (veda) { "use strict";
           });
           return;
         }
-        renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
-
-        // Re-render all property values if model's property was changed
-        function propertyModifiedHandler() {
-          renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
-        }
-        about.on(property_uri, propertyModifiedHandler);
-        template.one("remove", function () {
-          about.off(property_uri, propertyModifiedHandler);
-        });
 
         if ( about !== individual ) {
           // Watch server-side updates
@@ -415,8 +405,19 @@ veda.Module(function (veda) { "use strict";
           });
         }
 
+        // Re-render all property values if model's property was changed
+        function propertyModifiedHandler() {
+          renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
+        }
+        about.on(property_uri, propertyModifiedHandler);
+        template.one("remove", function () {
+          about.off(property_uri, propertyModifiedHandler);
+        });
+
+        renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
       });
-    });
+
+    }).get();
 
     // Max displayed values
     template.on("click", ".more", function (e) {
@@ -530,8 +531,8 @@ veda.Module(function (veda) { "use strict";
           limit = limit_param || limit;
           relContainer.empty();
           var templatesPromises = [];
-          for (var i = 0; i < limit && i < values.length; i++) {
-            templatesPromises.push( renderRelationValue(about, rel_uri, values[i], relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) );
+          for (var i = 0, value; i < limit && (value = values[i]); i++) {
+            templatesPromises.push( renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded) );
           }
           return Promise.all(templatesPromises).then(function (renderedTemplates) {
             relContainer.append(renderedTemplates);
@@ -777,7 +778,12 @@ veda.Module(function (veda) { "use strict";
       controlType.call(control, opts);
     });
 
-    return Promise.all(rels, abouts).then(function () {
+    var allPromises = rels;//.concat(abouts, props);
+
+    return Promise.all(allPromises).then(function (proms) {
+      return template;
+    }).catch(function (error) {
+      console.log(error);
       return template;
     });
   }
@@ -813,7 +819,7 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function renderRelationValue(individual, rel_uri, value, relContainer, relTemplate, isEmbedded, embedded, isAbout, template, mode) {
+  function renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded) {
     return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined).then(function (valTemplate) {
       if (isEmbedded) {
         valTemplate.data("isEmbedded", true);
@@ -840,8 +846,8 @@ veda.Module(function (veda) { "use strict";
         btnRemove.click(function (e) {
           e.preventDefault();
           valTemplate.remove();
-          individual.set( rel_uri, individual.get(rel_uri).filter(function (item) { return item.id !== value.id; }) );
-          if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", individual) ) {
+          about.set( rel_uri, about.get(rel_uri).filter(function (item) { return item.id !== value.id; }) );
+          if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", about) ) {
             value.delete();
           }
         }).mouseenter(function () {
