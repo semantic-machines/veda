@@ -22,6 +22,6 @@
 v-s:CreateContractorProfile
   a v-fc:Blank;
   rdfs:label "Досье контрагента"@ru ;
-  rdfs:label "ContractorProfile"@en ;
+  rdfs:label "Contractor's profile"@en ;
   v-fc:targetType v-s:ContractorProfile ;
 .

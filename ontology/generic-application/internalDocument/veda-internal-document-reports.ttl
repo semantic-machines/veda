@@ -22,8 +22,8 @@
 v-s:InternalDocument_printBlank
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:InternalDocument ;
-  v-s:filePath "/reports/Documents/InternalDocument_PrintBlank" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/reports/Documents/InternalDocument_PrintBlank" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Печатная форма"@ru ;
   rdfs:label "Print blank"@en ;
 .

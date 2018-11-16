@@ -23,6 +23,7 @@ v-s:EmployeeProfile
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:label "Досье сотрудника"@ru ;
   rdfs:label "Employee profile"@en ;
   v-s:labelPattern "{@.v-s:creator}" ;
@@ -34,6 +35,164 @@ v-s:hasProfession
   rdfs:range v-s:Profession ;
   rdfs:domain v-s:EmployeeProfile ;
 .
+
+
+v-s:medicalCheckupCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Мед осмотр"@ru ;
+  rdfs:label "Medical checkup"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:medicalCheckupCertificateForDriver
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Мед осмотр (водитель)"@ru ;
+  rdfs:label "Medical checkup for driver"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:laborSafetyCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Проверка знаний по ОТ"@ru ;
+  rdfs:label "Labor safety certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:workAtHighAltitudeCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол по работам на высоте (без группы)"@ru ;
+  rdfs:label "Work at high altitude certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:workAtHighAltitudeCertificateGroup1
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол по работам на высоте (1 группа)"@ru ;
+  rdfs:label "Work at high altitude certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:workAtHighAltitudeCertificateGroup2
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол по работам на высоте (2 группа)"@ru ;
+  rdfs:label "Work at high altitude certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:workAtHighAltitudeCertificateGroup3
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол по работам на высоте (3 группа)"@ru ;
+  rdfs:label "Work at high altitude certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:cradleCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол рабочий люльки"@ru ;
+  rdfs:label "Cradle certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:liftDriverCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол машинист подъемника"@ru ;
+  rdfs:label "Lift driver certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:fireTechnicalMinimumCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Проверка знаний по Пож тех мини - ПТМ (удостоверение, протокол)"@ru ;
+  rdfs:label "Fire technical minimum certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:electricalSafetyCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверения/протокол по электробезопасности 2,3,4,5 до 1000 в. и более"@ru ;
+  rdfs:label "Electrical safety certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:gasCutterCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверения/протокол газорезчика"@ru ;
+  rdfs:label "Gas cutter certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:welderCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверения/протокол сварщика"@ru ;
+  rdfs:label "Welder certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:safetyOfWorkWithLiftingStructureCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Ответственный за безопасность производство работ ПС"@ru ;
+  rdfs:label "Safety of work with lifting structure certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:safetyOfWorkWithLiftingStructurePeopleCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Ответственный за безопасность производство работ с ПС для людей"@ru ;
+  rdfs:label "Safety of work with lifting structure people certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:driverCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверения/протокол водителя АТС, трактора, погрузчика, машиниста"@ru ;
+  rdfs:label "Driver certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:roadSafetyCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Протокол/протокол проверки БДД"@ru ;
+  rdfs:label "Road safety certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:slingerCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверения/протокол стропальщиков"@ru ;
+  rdfs:label "Slinger certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:hoistmanCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение крановщика"@ru ;
+  rdfs:label "Hoistman certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:spidermanCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол монтажник-высотник (промышленный альпенизм)"@ru ;
+  rdfs:label "Spiderman certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:diverCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение/протокол водолазов"@ru ;
+  rdfs:label "Diver certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:otherCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Документы, подтверждающие прочие квалификации"@ru ;
+  rdfs:label "Other certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+
+
 # ------------------------------------------------------------
 v-s:Profession
   rdf:type owl:Class ;

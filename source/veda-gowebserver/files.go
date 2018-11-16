@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 	"unicode/utf8"
 )
 
@@ -109,7 +110,8 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 	//Reqding client ticket key from request
 	ticketKey := string(ctx.Request.Header.Cookie("ticket"))
-
+	timestamp := time.Now()
+	
 	if len(ticketKey) == 0 {
 		ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
 	}
@@ -150,8 +152,25 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		fileInfo := rr.GetIndv(0)
 		//log.Println("@", fileInfo)
 		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
+		if len(filePath) < 3 {
+			log.Println("ERR! file path is empty, uri=%s", uri)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
 		fileURI, _ := getFirstString(fileInfo, "v-s:fileUri")
+		if len(fileURI) < 3 {
+			log.Println("ERR! file uri is empty, uri=%s", uri)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
+
 		fileName, _ := getFirstString(fileInfo, "v-s:fileName")
+		if len(fileName) < 1 {
+			log.Println("ERR! file name is empty, uri=%s", uri)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			return
+		}
 
 		//Create path to file string
 		filePathStr := attachmentsPath + filePath + "/" + fileURI
@@ -175,5 +194,11 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		//fasthttp.ServeFileUncompressed(ctx, filePathStr)
 		fasthttp.ServeFileBytesUncompressed(ctx, []byte(filePathStr))
 		//		ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/octet-stream"))
+		
+		trail1(ticket.Id, ticket.UserURI, "files", uri, "", Ok, timestamp)
+	} else {
+			log.Println("ERR! FILE uri < 3 or empty ticket")
+			ctx.Response.SetStatusCode(int(InternalServerError))		
 	}
+	
 }

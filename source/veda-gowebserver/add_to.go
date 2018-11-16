@@ -11,7 +11,7 @@ import (
 //addToIndividual handler routes request to veda-server and returns veda-server response
 //veda-server adds the given value to ght given field
 func addToIndividual(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now()
 
 	var assignedSubsystems uint64
 	var ticketKey, eventID string

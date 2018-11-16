@@ -172,9 +172,6 @@ veda.Module(function (veda) { "use strict";
       "typeof": individual["rdf:type"].map(function (item) { return item.id; }).join(" ")
     });
 
-    // Unwrapped templates support
-
-
     var view = template.find(".view").addBack(".view");
     var edit = template.find(".edit").addBack(".edit");
     var search = template.find(".search").addBack(".search");
@@ -213,6 +210,9 @@ veda.Module(function (veda) { "use strict";
 
     function saveHandler (e, parent) {
       if (parent !== individual.id) {
+        if (embedded.length) {
+          individual.isSync(false);
+        }
         individual.save().then(function () {
           template.trigger("view");
           notify("success", {name: "Объект сохранен"});
@@ -445,6 +445,9 @@ veda.Module(function (veda) { "use strict";
         }
       };
       relContainer.sortable(sortableOptions);
+      template.one("remove", function () {
+        relContainer.sortable("destroy");
+      });
 
       template.on("view edit search", function (e) {
         if (e.type === "view") {
@@ -637,10 +640,13 @@ veda.Module(function (veda) { "use strict";
     template.on("edit", triggerValidation);
 
     // Handle validation events from template
-    template.on("validate", function (e) {
+    template.on("validate", stopPropagation);
+    template.on("validated", mergeValidationResult);
+
+    function stopPropagation (e) {
       e.stopPropagation();
-    });
-    template.on("validated", function (e, validationResult) {
+    }
+    function mergeValidationResult (e, validationResult) {
       e.stopPropagation();
       if (mode === "edit") {
         // Merge template validation results with internal validation results
@@ -713,9 +719,6 @@ veda.Module(function (veda) { "use strict";
       };
 
       controlType.call(control, opts);
-
-      props_ctrls[property_uri] ? props_ctrls[property_uri].push(control) : props_ctrls[property_uri] = [ control ];
-
     });
 
     // Relation control
@@ -784,52 +787,34 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode) {
+  function renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode) {
     propertyContainer.empty();
-    individual.get(property_uri).map( function (value, i) {
-      var valueHolder = $("<span class='value-holder'></span>");
-      propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
-      var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
-      var btnEdit = $("<button class='btn btn-default'><span class='glyphicon glyphicon-pencil'></span></button>");
-      var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
-      btnGroup.append(btnEdit, btnRemove);
+    about.get(property_uri).map( function (value, i) {
+      if (isAbout) {
+        propertyContainer.append( veda.Util.formatValue(value) + " " );
+      } else {
+        var valueHolder = $("<span class='value-holder'></span>");
+        propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
+        var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
+        var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
+        btnGroup.append(btnRemove);
 
-      template.on("view edit search", function (e) {
-        if (e.type === "view") btnGroup.hide();
-        else btnGroup.show();
-        e.stopPropagation();
-      });
-      if (mode === "view") { btnGroup.hide(); }
+        template.on("view edit search", function (e) {
+          if (e.type === "view") btnGroup.hide();
+          else btnGroup.show();
+          e.stopPropagation();
+        });
+        if (mode === "view") { btnGroup.hide(); }
 
-      btnRemove.click(function () {
-        individual.set( property_uri, individual.get(property_uri).filter(function (_, j) {return j !== i; }) );
-      }).mouseenter(function () {
-        valueHolder.addClass("red-outline");
-      }).mouseleave(function () {
-        valueHolder.removeClass("red-outline");
-      });
-      btnEdit.click(function () {
-        var val;
-        individual.set(
-          property_uri,
-          individual.get(property_uri).filter(function (_, j) {
-            var test = j !== i;
-            if (!test) val = individual.get(property_uri)[j];
-            return test;
-          })
-        );
-        if ( props_ctrls[property_uri] ) {
-          props_ctrls[property_uri].map(function (item, i) {
-            item.val(val);
-            if (i === 0) item.trigger("veda_focus", [val]);
-          });
-        }
-      }).mouseenter(function () {
-        valueHolder.addClass("blue-outline");
-      }).mouseleave(function () {
-        valueHolder.removeClass("blue-outline");
-      });
-      valueHolder.append( btnGroup );
+        btnRemove.click(function () {
+          about.set( property_uri, about.get(property_uri).filter(function (_, j) {return j !== i; }) );
+        }).mouseenter(function () {
+          valueHolder.addClass("red-outline");
+        }).mouseleave(function () {
+          valueHolder.removeClass("red-outline");
+        });
+        valueHolder.append( btnGroup );
+      }
     });
   }
 

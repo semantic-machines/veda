@@ -2,9 +2,9 @@ module veda.input.input_queue;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import veda.util.properd;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
-private import veda.core.common.context, veda.util.tools;
+private import veda.core.common.context;
 private import veda.vmodule.vmodule;
 
 void main(char[][] args)
@@ -45,16 +45,19 @@ class InputQueueProcess : VedaModule
         super(_subsystem_id, _module_id, log, main_queue_path, my_consumer_path);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin, ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         log.trace("[%s]: start prepare", new_indv.uri);
 
         auto sticket = context.sys_ticket();
 
+        cmd = INDV_OP.PUT;
         auto rc = context.update(null, transaction_id, &sticket, cmd, &new_indv, event_id, 0, OptFreeze.NONE, OptAuthorize.NO).result;
 
-        if (rc != ResultCode.OK)
+        if (rc != ResultCode.Ok)
         {
             log.trace("ERR! fail store [%s]", new_indv.uri);
         }
@@ -64,7 +67,7 @@ class InputQueueProcess : VedaModule
         //    log.trace("[%s]: end prepare", new_indv.uri);
         //}
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override void thread_id()

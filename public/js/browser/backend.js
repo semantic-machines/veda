@@ -114,9 +114,11 @@ veda.Module(function Backend(veda) { "use strict";
         }
         params = params.join("&");
         xhr.open(method, url + "?" + params, true);
+        xhr.timeout = 120000;
         xhr.send();
       } else {
         xhr.open(method, url, true);
+        xhr.timeout = 120000;
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         var payload = JSON.stringify(data, function (key, value) {
           return key === "data" && this.type === "Decimal" ? value.toString() : value;

@@ -8,7 +8,7 @@ private
 {
     import std.string, std.stdio, std.conv, std.outbuffer, core.stdc.string;
     import veda.util.container, veda.common.logger, veda.core.util.utils;
-    import veda.core.common.context, veda.core.common.define, veda.core.common.know_predicates, veda.common.type;
+    import veda.core.common.context, veda.core.common.define, veda.core.common.type, veda.core.common.know_predicates, veda.common.type;
     import veda.search.common.isearch, veda.search.common.vel, veda.search.xapian.xapian_reader;
     import veda.onto.individual;
 }
@@ -54,11 +54,11 @@ class XapianSearch : Search
 
             context.get_storage().get_obj_from_individual_storage(uri, individual);
 
-            if (individual.getStatus() == ResultCode.Not_Found)
+            if (individual.getStatus() == ResultCode.NotFound)
             {
                 log.trace("ERR! FT:get Unable to find the object [%s] it should be, query=[%s]", uri, filter);
             }
-            else if (individual.getStatus() == ResultCode.OK)
+            else if (individual.getStatus() == ResultCode.Ok)
             {
                 individuals ~= individual;
             }
@@ -94,7 +94,7 @@ class XapianSearch : Search
 
         SearchResult sr = xr.query(user_uri, filter, sort, db_names, from, top, limit, dg, op_auth, trace);
 
-        if (sr.result_code == ResultCode.OK)
+        if (sr.result_code == ResultCode.Ok)
             sr.result = res;
 
         return sr;

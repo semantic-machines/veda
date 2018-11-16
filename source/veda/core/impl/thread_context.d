@@ -1,4 +1,5 @@
 /**
+
  * Межмодульное API - Реализация
  */
 
@@ -7,44 +8,201 @@ module veda.core.impl.thread_context;
 private
 {
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.file, std.path,
-           std.json, std.regex;
+           std.json, std.regex, std.uuid;
     import veda.util.properd;
-    import veda.bind.xapian_d_header;
     import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
            veda.util.module_info;
-    import veda.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
+    import veda.common.type, veda.core.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
     import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
-    import veda.storage.lmdb.lmdb_storage;
-    import veda.storage.tarantool.tarantool_storage;
+    import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage, veda.authorization.authorization;
 
     version (isMStorage)
     {
-        alias veda.storage.storage_manager ticket_storage_module;
-        alias veda.storage.storage_manager subject_storage_module;
+        alias veda.mstorage.storage_manager ticket_storage_module;
+        alias veda.mstorage.storage_manager subject_storage_module;
     }
 }
 
 /// реализация интерфейса Context
 class PThreadContext : Context
 {
-    private Onto       onto;
+    private Onto          onto;
 
-    private string     name;
+    private string        name;
 
-    private            string[ string ] prefix_map;
+    private               string[ string ] prefix_map;
 
     private Search        _vql;
+    private Storage       storage;
+    private Authorization az;
 
-    private Storage    storage;
+    private long          local_last_update_time;
+    private Individual    node = Individual.init;
+    private string        node_id;
 
-    private long       local_last_update_time;
-    private Individual node = Individual.init;
-    private string     node_id;
+    private bool          API_ready = true;
+    private string        main_module_url;
+    private Logger        log;
+    
+    Ticket *[ string ] user_of_ticket;
+    long   last_ticket_manager_op_id = 0;
 
-    private bool       API_ready = true;
-    private string     main_module_url;
-    private Logger     log;
+    public Ticket *get_systicket_from_storage()
+    {
+        Individual indv_systicket_link;
+
+        storage.get_tickets_storage_r().get_individual("systicket", indv_systicket_link);
+
+        string systicket_id;
+
+        if (indv_systicket_link.getStatus == ResultCode.Ok)
+        {
+            systicket_id = indv_systicket_link.getFirstLiteral("v-s:resource");
+        }
+        else
+        {
+            log.trace("SYSTICKET NOT FOUND");
+        }
+
+        return get_ticket(systicket_id, false);
+    }
+
+    public Ticket create_new_ticket(string user_login, string user_id, string duration, string ticket_id, bool is_trace = false)
+    {
+        if (is_trace)
+            log.trace("create_new_ticket, ticket__accessor=%s", user_id);
+
+        Ticket     ticket;
+        Individual new_ticket;
+
+        ticket.result = ResultCode.FailStore;
+
+        Resources type = [ Resource(ticket__Ticket) ];
+
+        new_ticket.resources[ rdf__type ] = type;
+
+        if (ticket_id !is null && ticket_id.length > 0)
+            new_ticket.uri = ticket_id;
+        else
+        {
+            UUID new_id = randomUUID();
+            new_ticket.uri = new_id.toString();
+        }
+
+        new_ticket.resources[ ticket__login ] ~= Resource(user_login);
+        new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
+        new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
+        new_ticket.resources[ ticket__duration ] ~= Resource(duration);
+
+        return ticket;
+    }
+
+    public Ticket *get_ticket(string ticket_id, bool is_trace, bool is_systicket = false)
+    {
+        //StopWatch sw; sw.start;
+
+        try
+        {
+            Ticket *tt;
+            if (ticket_id is null || ticket_id == "" || ticket_id == "systicket")
+                ticket_id = "guest";
+
+            tt = user_of_ticket.get(ticket_id, null);
+
+            if (tt is null)
+            {
+                string when     = null;
+                int    duration = 0;
+
+                MInfo  mi = get_info(MODULE.ticket_manager);
+
+                //log.trace ("last_ticket_manager_op_id=%d, mi.op_id=%d,  mi.committed_op_id=%d", last_ticket_manager_op_id, mi.op_id, mi.committed_op_id);
+                if (last_ticket_manager_op_id < mi.op_id)
+                {
+                    last_ticket_manager_op_id = mi.op_id;
+                    storage.reopen_ro_ticket_manager_db();
+                }
+
+                Individual ticket;
+                storage.get_tickets_storage_r().get_individual(ticket_id, ticket);
+
+                if (ticket.getStatus() == ResultCode.Ok)
+                {
+                    tt = new Ticket;
+                    subject2Ticket(ticket, tt);
+                    tt.result               = ResultCode.Ok;
+                    user_of_ticket[ tt.id ] = tt;
+                }
+                else if (ticket.getStatus() == ResultCode.NotFound)
+                {
+                    tt        = new Ticket;
+                    tt.result = ResultCode.TicketNotFound;
+
+                    if (is_trace)
+                        log.trace("тикет не найден в базе, id=%s", ticket_id);
+                }
+                else
+                {
+                    tt        = new Ticket;
+                    tt.result = ResultCode.UnprocessableEntity;
+                    log.trace("ERR! storage.get_ticket, invalid individual, uri=%s, errcode=%s", ticket_id, ticket.getStatus());
+                }
+            }
+            else
+            {
+                if (is_trace)
+                    log.trace("тикет нашли в кеше, id=%s, end_time=%d", tt.id, tt.end_time);
+
+                SysTime now = Clock.currTime();
+                if (now.stdTime >= tt.end_time && !is_systicket)
+                {
+                    log.trace("ticket %s expired, user=%s, start=%s, end=%s, now=%s", tt.id, tt.user_uri, SysTime(tt.start_time,
+                                                                                                                  UTC()).toISOExtString(),
+                              SysTime(tt.end_time, UTC()).toISOExtString(), now.toISOExtString());
+
+                    if (ticket_id == "guest")
+                    {
+                        Ticket guest_ticket = create_new_ticket("guest", "cfg:Guest", "900000000", "guest");
+                        tt = &guest_ticket;
+                    }
+                    else
+                    {
+                        tt        = new Ticket;
+                        tt.id     = "?";
+                        tt.result = ResultCode.TicketExpired;
+                    }
+                    return tt;
+                }
+                else
+                {
+                    tt.result = ResultCode.Ok;
+                }
+
+                if (is_trace)
+                    log.trace("ticket: %s", *tt);
+            }
+            return tt;
+        }
+        finally
+        {
+            //stat(CMD_GET, sw);
+        }
+    }
+
+    private ModuleInfoFile[ MODULE ] info_r__2__pmodule;
+    public MInfo get_info(MODULE module_id)
+    {
+        ModuleInfoFile mdif = info_r__2__pmodule.get(module_id, null);
+
+        if (mdif is null)
+        {
+            mdif                            = new ModuleInfoFile(text(module_id), log, OPEN_MODE.READER);
+            info_r__2__pmodule[ module_id ] = mdif;
+        }
+        MInfo info = mdif.get_info();
+        return info;
+    }
 
     Storage get_storage()
     {
@@ -182,7 +340,7 @@ class PThreadContext : Context
                     log.trace("rep: (%s)", rep);
                     OpResult ores;
                     ores.op_id  = -1;
-                    ores.result = ResultCode.Internal_Server_Error;
+                    ores.result = ResultCode.InternalServerError;
                     return [ ores ];
                 }
 
@@ -198,7 +356,7 @@ class PThreadContext : Context
                 {
                     OpResult ores;
                     ores.op_id  = -1;
-                    ores.result = ResultCode.Internal_Server_Error;
+                    ores.result = ResultCode.InternalServerError;
                     return [ ores ];
                 }
 
@@ -256,7 +414,7 @@ class PThreadContext : Context
 
         version (isModule)
         {
-            ticket = *(storage.get_systicket_from_storage());
+            ticket = *(get_systicket_from_storage());
             set_global_systicket(ticket);
         }
 
@@ -270,8 +428,8 @@ class PThreadContext : Context
             this.reopen_ro_individuals_storage_db();
             Ticket sticket = sys_ticket();
 
-            node = get_individual(&sticket, node_id, OptAuthorize.NO);
-            if (node.getStatus() != ResultCode.OK)
+            node = get_individual(node_id);
+            if (node.getStatus() != ResultCode.Ok)
                 node = Individual.init;
         }
         return node;
@@ -287,42 +445,42 @@ class PThreadContext : Context
             if (g_count_onto_update > local_count_onto_update)
             {
                 local_count_onto_update = g_count_onto_update;
-                onto.load();
+                onto_load();
             }
-        } 
+        }
         else
         {
-	        onto = new Onto(this);
-	        onto.load();        	
+            onto = new Onto(this.log);
+            onto_load();
         }
 
         return onto;
     }
 
+    public void onto_load()
+    {
+        std.datetime.stopwatch.StopWatch sw1;
+
+        sw1.start();
+
+        reopen_ro_individuals_storage_db();
+        reopen_ro_fulltext_indexer_db();
+
+        Ticket       sticket       = sys_ticket();
+        Individual[] l_individuals = get_individuals_via_query(
+                                                               sticket.user_uri,
+                                                               "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
+                                                               OptAuthorize.NO, 10000, 10000);
+
+        sw1.stop();
+
+        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", get_name, l_individuals.length, sw1.peek.total !"usecs");
+        onto.load(l_individuals);
+    }
+
     public string get_name()
     {
         return name;
-    }
-
-    public Individual[ string ] get_onto_as_map_individuals()
-    {
-        if (onto !is null)
-        {
-            long g_count_onto_update = get_count_onto_update();
-            if (g_count_onto_update > local_count_onto_update)
-            {
-                local_count_onto_update = g_count_onto_update;
-                onto.load();
-            }
-
-            return onto.get_individuals;
-        }
-        else
-        {
-	        onto = new Onto(this);
-	        onto.load();        	
-            return onto.get_individuals;
-        }
     }
 
     ref string[ string ] get_prefix_map()
@@ -344,7 +502,7 @@ class PThreadContext : Context
 
     public bool is_ticket_valid(string ticket_id)
     {
-        Ticket *ticket = storage.get_ticket(ticket_id, false);
+        Ticket *ticket = get_ticket(ticket_id, false);
 
         if (ticket is null)
             return false;
@@ -393,6 +551,16 @@ class PThreadContext : Context
         return _vql;
     }
 
+    public Authorization get_az()
+    {
+        return az;
+    }
+
+    public void set_az(Authorization in_az)
+    {
+        az = in_az;
+    }
+
     public void reopen_ro_fulltext_indexer_db()
     {
         if (_vql !is null)
@@ -405,42 +573,7 @@ class PThreadContext : Context
             storage.get_inividuals_storage_r().reopen();
     }
 
-    public void reopen_ro_acl_storage_db()
-    {
-        if (storage !is null)
-            storage.get_acl_client().reopen();
-    }
-
     // ////////// external ////////////
-
-    public ubyte get_rights(Ticket *ticket, string uri, ubyte access)
-    {
-        if (ticket is null)
-            return 0;
-
-        return storage.get_acl_client().authorize(uri, ticket.user_uri, access, true, null, null,
-                                                  null);
-    }
-
-    public void get_rights_origin_from_acl(Ticket *ticket, string uri, OutBuffer trace_acl, OutBuffer trace_info)
-    {
-        if (ticket is null)
-            return;
-
-        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true,
-                                           trace_acl, null,
-                                           trace_info);
-    }
-
-    public void get_membership_from_acl(Ticket *ticket, string uri, OutBuffer trace_group)
-    {
-        if (ticket is null)
-            return;
-
-        storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_create | Access.can_read | Access.can_update | Access.can_delete, true,
-                                           null, trace_group,
-                                           null);
-    }
 
     public SearchResult get_individuals_ids_via_query(string user_uri, string query_str, string sort_str, string db_str, int from, int top, int limit,
                                                       OptAuthorize op_auth, bool trace)
@@ -455,36 +588,13 @@ class PThreadContext : Context
         return sr;
     }
 
-    public Individual get_individual(Ticket *ticket, string uri, OptAuthorize opt_authorize)
+    public Individual get_individual(string uri)
     {
         Individual individual = Individual.init;
-
-        if (ticket is null)
-        {
-            log.trace("get_individual, uri=%s, ticket is null", uri);
-            return individual;
-        }
-
-        if (trace_msg[ T_API_150 ] == 1)
-        {
-            if (ticket !is null)
-                log.trace("get_individual, uri=%s, ticket=%s", uri, ticket.id);
-        }
 
         try
         {
             storage.get_obj_from_individual_storage(uri, individual);
-            if (individual.getStatus() == ResultCode.OK)
-            {
-                if (!(opt_authorize == OptAuthorize.NO ||
-                      storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read))
-                {
-                    if (trace_msg[ T_API_160 ] == 1)
-                        log.trace("get_individual, not authorized, uri=%s, user_uri=%s", uri, ticket.user_uri);
-                    individual.setStatus(ResultCode.Not_Authorized);
-                }
-            }
-
             return individual;
         }
         finally
@@ -492,49 +602,6 @@ class PThreadContext : Context
 //            stat(CMD_GET, sw);
             if (trace_msg[ T_API_170 ] == 1)
                 log.trace("get_individual: end, uri=%s", uri);
-        }
-    }
-
-    public Individual[] get_individuals(Ticket *ticket, string[] uris)
-    {
-        //StopWatch sw; sw.start;
-
-        try
-        {
-            Individual[] res = Individual[].init;
-
-            if (ticket is null)
-            {
-                log.trace("get_individuals, uris=%s, ticket is null", uris);
-                return res;
-            }
-
-            foreach (uri; uris)
-            {
-                if (storage.get_acl_client().authorize(uri, ticket.user_uri, Access.can_read, true, null, null, null) == Access.can_read)
-                {
-                    Individual individual = Individual.init;
-
-                    storage.get_obj_from_individual_storage(uri, individual);
-                    if (individual.getStatus() == ResultCode.OK)
-                    {
-                        res ~= individual;
-                    }
-                    else
-                    {
-                        Individual indv;
-                        indv.uri = uri;
-                        indv.setStatus(ResultCode.Unprocessable_Entity);
-                        res ~= indv;
-                    }
-                }
-            }
-
-            return res;
-        }
-        finally
-        {
-            //stat(CMD_GET, sw);
         }
     }
 
@@ -546,18 +613,18 @@ class PThreadContext : Context
 
         //StopWatch sw; sw.start;
 
-        OpResult res = OpResult(ResultCode.Fail_Store, -1);
+        OpResult res = OpResult(ResultCode.FailStore, -1);
 
         try
         {
             if (indv !is null && (indv.uri is null || indv.uri.length < 2))
             {
-                res.result = ResultCode.Invalid_Identifier;
+                res.result = ResultCode.InvalidIdentifier;
                 return res;
             }
             if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
             {
-                res.result = ResultCode.No_Content;
+                res.result = ResultCode.NoContent;
                 return res;
             }
 
@@ -597,7 +664,7 @@ class PThreadContext : Context
         }
         finally
         {
-            if (res.result != ResultCode.OK)
+            if (res.result != ResultCode.Ok)
                 log.trace("ERR! update: no store individual: errcode=[%s], ticket=[%s] indv=[%s]", text(res.result),
                           ticket !is null ? text(*ticket) : "null",
                           indv !is null ? text(*indv) : "null");
@@ -635,7 +702,7 @@ class PThreadContext : Context
     {
         long  res = -1;
 
-        MInfo info = storage.get_info(module_id);
+        MInfo info = get_info(module_id);
 
         if (info.is_Ok)
         {
@@ -657,7 +724,7 @@ class PThreadContext : Context
 
         if (in_tnx.get_queue().length == 0)
         {
-            return ResultCode.OK;
+            return ResultCode.Ok;
         }
 
         if (in_tnx.is_autocommit == true)
@@ -669,10 +736,10 @@ class PThreadContext : Context
                 if (item.cmd != INDV_OP.REMOVE && item.new_indv == Individual.init)
                     continue;
 
-                if (item.rc != ResultCode.OK)
+                if (item.rc != ResultCode.Ok)
                     return item.rc;
 
-                Ticket *ticket = storage.get_ticket(item.ticket_id, false);
+                Ticket *ticket = get_ticket(item.ticket_id, false);
 
                 //log.trace ("transaction: cmd=%s, indv=%s ", item.cmd, item.indv);
 
@@ -687,7 +754,7 @@ class PThreadContext : Context
                     this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
                                 opt_authorize).result;
 
-                if (rc == ResultCode.Internal_Server_Error)
+                if (rc == ResultCode.InternalServerError)
                 {
                     this.get_logger().trace("FAIL STORE ITEM: %s %s", item.uri, text(rc));
 
@@ -697,30 +764,32 @@ class PThreadContext : Context
                         Thread.sleep(dur!("msecs")(pause));
                         pause += 10;
 
-                        Individual prev = this.get_individual(ticket, item.uri, OptAuthorize.NO);
+                        Individual prev = this.get_individual(item.uri);
                         if (prev.getFirstInteger("v-s:updateCounter", -1) == update_counter)
                         {
-                            rc = ResultCode.OK;
+                            rc = ResultCode.Ok;
                             break;
                         }
                         this.get_logger().trace("REPEAT STORE ITEM: %s", item.uri);
 
-                        rc = this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
-                                         opt_authorize).result;
+                        rc =
+                            this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems,
+                                        OptFreeze.NONE,
+                                        opt_authorize).result;
 
-                        if (rc != ResultCode.Internal_Server_Error)
+                        if (rc != ResultCode.InternalServerError)
                             break;
                     }
                 }
 
                 uri2exists[ item.uri ] = true;
 
-                if (rc == ResultCode.No_Content)
+                if (rc == ResultCode.NoContent)
                 {
                     this.get_logger().trace("WARN!: Rejected attempt to store an empty object: %s", item.new_indv);
                 }
 
-                if (rc != ResultCode.OK && rc != ResultCode.No_Content)
+                if (rc != ResultCode.Ok && rc != ResultCode.NoContent)
                 {
                     this.get_logger().trace("FAIL COMMIT %s", in_tnx.id);
                     return rc;
@@ -778,13 +847,13 @@ class PThreadContext : Context
                 OpResult res = reqrep_binobj_2_main_module(binobj)[ 0 ];
                 //log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
 
-                if (res.result != ResultCode.OK && res.result != ResultCode.No_Content)
+                if (res.result != ResultCode.Ok && res.result != ResultCode.NoContent)
                 {
                     this.get_logger().trace("FAIL COMMIT");
                     return res.result;
                 }
             }
         }
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 }

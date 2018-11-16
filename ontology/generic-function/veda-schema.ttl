@@ -25,6 +25,20 @@ v-s:File
   rdfs:label "File"@en ;
   v-ui:hasTemplate v-ui:FileTemplateWithComment ;
 .
+v-s:filePath
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:File ;
+  rdfs:label "Путь файла"@ru ;
+  rdfs:label "File path"@en ;
+  rdfs:range xsd:string ;
+.
+v-s:fileUri
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:File ;
+  rdfs:label "URI файла"@ru ;
+  rdfs:label "File URI"@en ;
+  rdfs:range xsd:string ;
+.
 v-s:fileName
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:File ;
@@ -63,47 +77,6 @@ v-s:ClassifiedFile
 # v-s:hasNormativeDocument
 
 ### veda-workflow
-
-# veda-ui-reports (v-ui:)
-################################ REPORTS START ####################################################
-
-v-s:ReportsForClass
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Список отчетов"@ru ;
-  rdfs:label "Reports list"@en ;
-.
-v-ui:forClass
-  rdfs:domain v-s:ReportsForClass ;
-.
-
-v-s:fileFormat
-  rdf:type owl:DatatypeProperty ;
-  rdfs:label "Формат файла"@ru ;
-  rdfs:label "File format"@en ;
-  rdfs:domain v-s:ReportsForClass ;
-  rdfs:domain v-s:Report ;
-  rdfs:range xsd:string ;
-.
-
-v-s:Report
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Отчет"@ru ;
-  rdfs:label "Report"@en ;
-.
-
-v-s:ReportParametersForm
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
-  rdfs:isDefinedBy v-s: ;
-  rdfs:label "Форма параметров отчета"@ru ;
-  rdfs:label "Report parameters form"@en ;
-.
-
-################################ REPORTS END ####################################################
 
 # veda-journal (v-s:)
 ################################ JOURNAL ####################################################
@@ -217,8 +190,8 @@ v-s:ProcessStarted
 v-s:Journal_printBlank
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:Document ;
-  v-s:filePath "/Subreports/Unidoc_Journal" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/Subreports/Unidoc_Journal" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Печатная форма журнала"@ru ;
   rdfs:label "Journal print blank"@en ;
 #  rdfs:label "pdf"@en ;
@@ -227,24 +200,24 @@ v-s:Journal_printBlank
 #---------
 v-s:JournalCoordination_printBlank_pdf
   rdf:type v-s:Report ;
-  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Лист согласования (pdf)"@ru ;
   rdfs:label "Coordination list (pdf)"@en ;
   v-s:deleted "true"^^xsd:boolean;
 .
 v-s:JournalCoordination_printBlank_xlsx
   rdf:type v-s:Report ;
-  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "xlsx";
+  v-s:reportPath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:reportFormat "xlsx";
   rdfs:label "Лист согласования (xlsx)"@ru ;
   rdfs:label "Coordination list (xlsx)"@en ;
   v-s:deleted "true"^^xsd:boolean;
 .
 v-s:JournalCoordination_printBlank_docx
   rdf:type v-s:Report ;
-  v-s:filePath "/Subreports/Unidoc_Journal_Coordination" ;
-  v-s:fileFormat "docx";
+  v-s:reportPath "/Subreports/Unidoc_Journal_Coordination" ;
+  v-s:reportFormat "docx";
   rdfs:label "Лист согласования (docx)"@ru ;
   rdfs:label "Coordination list (docx)"@en ;
   v-s:deleted "true"^^xsd:boolean;

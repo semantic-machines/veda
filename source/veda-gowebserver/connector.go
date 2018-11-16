@@ -366,7 +366,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				continue
 			}
 
-		if strings.Index(val, "{ERR:") == 0 {
+			if strings.Index(val, "{ERR:") == 0 {
 				rr.CommonRC = InternalServerError
 				return rr
 			}
@@ -424,8 +424,7 @@ func trace_acl(str *C.char) {
 
 //Authorize sends authorize, get membership or get rights origin request,
 //it depends on parametr operation. Individuals uris passed as data here
-func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, operation uint,
-	trace, traceAuth bool) RequestResponse {
+func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, operation uint, trace bool) RequestResponse {
 	var rr RequestResponse
 
 	//If userUri is too short return NotAuthorized to client
@@ -445,7 +444,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		log.Printf("@CONNECTOR AUTHORIZE: PACK AUTHORIZE REQUEST need_auth=%v, user_uri=%v, uri=%v \n",
 			needAuth, userUri, uri)
 	}
-
 	if operation == Authorize {
 
 		rr.Rights = make([]uint8, 1)
@@ -463,9 +461,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
-	}
-
-	if operation == GetRightsOrigin {
+	} else if operation == GetRightsOrigin {
 
 		curi := C.CString(uri)
 		defer C.free(unsafe.Pointer(curi))
@@ -474,13 +470,13 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		defer C.free(unsafe.Pointer(cuser_uri))
 
 		rights_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_ACL, true))
-		//defer C.free(unsafe.Pointer(right))
+
+		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_INFO, true))
 
 		rr.Rights = make([]uint8, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		statements := strings.Split(rights_str, "\n")
-		//rr.Indv = make([]Individual, 0)
 
 		for j := 0; j < len(statements)-1; j++ {
 
@@ -501,30 +497,27 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 				},
 			}
 			rr.AddIndv(statementIndiv)
-			//rr.Indv = append(rr.Indv, statementIndiv)
 		}
 
-		//			commentIndiv := map[string]interface{}{
-		//				"@": "_",
-		//				"rdf:type": []interface{}{
-		//					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
-		//				},
-		//				"v-s:permissionSubject": []interface{}{
-		//					map[string]interface{}{"type": "Uri", "data": "?"},
-		//				},
+		commentIndiv := map[string]interface{}{
+			"@": "_",
+			"rdf:type": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
+			},
+			"v-s:permissionSubject": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": "?"},
+			},
 
-		//				"rdfs:comment": []interface{}{
-		//					map[string]interface{}{"type": "String", "lang": "NONE", "data": rights[i+2]},
-		//				},
-		//			}
-		//			data = append(data, commentIndiv)
+			"rdfs:comment": []interface{}{
+				map[string]interface{}{"type": "String", "lang": "NONE", "data": info_str},
+			},
+		}
+		rr.AddIndv(commentIndiv)
 
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
-	}
-
-	if operation == GetMembership {
+	} else if operation == GetMembership {
 
 		curi := C.CString(uri)
 		defer C.free(unsafe.Pointer(curi))

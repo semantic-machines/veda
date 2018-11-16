@@ -92,6 +92,14 @@ v-s:isOwnOrganization
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Organization ;
 .
+v-s:hasCommunicationMean
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Средства связи"@ru ;
+  rdfs:label "Communication Mean"@en ;
+  rdfs:range v-s:CommunicationMean ;
+  rdfs:domain v-s:OrganizationUnit ;
+.
+
 
 # Перенести в управление контрагентами
 
@@ -124,7 +132,7 @@ v-s:parentOrganization
   rdfs:label "Основная организация"@ru ;
   rdfs:label "Parent organization"@en ;
   rdfs:range v-s:Organization ;
-  rdfs:domain v-s:Department ;
+  rdfs:domain v-s:OrganizationUnit ;
 .
 # ------------------------------------------------------------
 v-s:Subsidiary

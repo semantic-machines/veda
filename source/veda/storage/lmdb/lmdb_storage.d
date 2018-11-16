@@ -3,25 +3,17 @@
  */
 module veda.storage.lmdb.lmdb_storage;
 
-import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
+import veda.common.logger, veda.util.properd;
 import veda.common.type, veda.storage.common, veda.storage.storage;
-import veda.storage.lmdb.lmdb_driver, veda.authorization.authorization;
+import veda.storage.lmdb.lmdb_driver;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
 
-static this()
-{
-    paths_list ~= individuals_db_path;
-    paths_list ~= tickets_db_path;
-}
-
-
 public class LmdbStorage : Storage
 {
-    private Authorization acl_client;
-    private KeyValueDB    tickets_storage_r;
-    private KeyValueDB    inividuals_storage_r;
+    private KeyValueDB tickets_storage_r;
+    private KeyValueDB inividuals_storage_r;
 
     this(string _name, Logger _log)
     {
@@ -34,32 +26,6 @@ public class LmdbStorage : Storage
         log.trace_log_and_console("DESTROY OBJECT LmdbStorage:[%s]", name);
         tickets_storage_r.close();
         inividuals_storage_r.close();
-        acl_client.close();
-    }
-
-    override Authorization get_acl_client()
-    {
-        if (acl_client is null)
-        {
-            try
-            {
-                string[ string ] properties;
-                properties = readProperties("./veda.properties");
-                string acl_service = properties.as!(string)("acl_service_url");
-                if (acl_service !is null)
-                    acl_client = new ClientAuthorization(acl_service, this.log);
-                else
-                {
-                    acl_client = new AuthorizationUseLib(this.log);
-                }
-            }
-            catch (Throwable ex)
-            {
-                log.trace("ERR! unable read ./veda.properties");
-            }
-        }
-
-        return acl_client;
     }
 
     override KeyValueDB get_tickets_storage_r()

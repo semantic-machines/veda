@@ -132,9 +132,6 @@ class ModuleInfoFile
 
     private void open_reader()
     {
-        if (mode != OPEN_MODE.READER && mode != OPEN_MODE.READER_WRITER)
-            return;
-
         try
         {
             ff_module_info_r = new File(fn_module_info, "r");

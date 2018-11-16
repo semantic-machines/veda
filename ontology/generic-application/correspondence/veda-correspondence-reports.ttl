@@ -22,24 +22,24 @@
 v-s:OutgoingLetterPrintBlank_pdf
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:OutgoingLetter ;
-  v-s:filePath "/reports/Documents/OutgoingLetter_PrintBlank" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/reports/Documents/OutgoingLetter_PrintBlank" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Печатная форма (pdf)"@ru ;
   rdfs:label "Print form (pdf)"@en ;
 .
 v-s:OutgoingLetterPrintBlank_rtf
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:OutgoingLetter ;
-  v-s:filePath "/reports/Documents/OutgoingLetter_PrintBlank" ;
-  v-s:fileFormat "rtf";
+  v-s:reportPath "/reports/Documents/OutgoingLetter_PrintBlank" ;
+  v-s:reportFormat "rtf";
   rdfs:label "Печатная форма (rtf)"@ru ;
   rdfs:label "Print form (rtf)"@en ;
 .
 v-s:IncomingLetterPrintBlank
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:IncomingLetter ;
-  v-s:filePath "/reports/Documents/IncomingLetter_PrintBlank" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/reports/Documents/IncomingLetter_PrintBlank" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Печатная форма"@ru ;
   rdfs:label "Print form"@en ;
 .
@@ -62,16 +62,16 @@ v-s:blankCreateCompletedTasksCount_Report
 
 v-s:CountOfUsersTasks_Report
   rdf:type v-s:Report ;
-  v-s:filePath "/reports/Documents/CountOfUsersTasks_Report" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/reports/Documents/CountOfUsersTasks_Report" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Количество задач"@ru ;
   rdfs:label "Number of tasks"@en ;
 .
 
 v-s:CompletedTasksCount_Report
   rdf:type v-s:Report ;
-  v-s:filePath "/reports/Documents/CompletedTasksCount_Report" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/reports/Documents/CompletedTasksCount_Report" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Количество выполненных задач"@ru ;
   rdfs:label "Number of competed tasks"@en ;
 .

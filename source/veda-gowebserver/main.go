@@ -18,26 +18,99 @@ import (
 type ResultCode uint32
 
 const (
-	//Ok is success code
-	Ok ResultCode = 200
-	//BadRequest is returned for requests with invalid data
-	BadRequest ResultCode = 400
-	//NotAuthorized is returned than user doesn't have enough rights for do request
-	NotAuthorized ResultCode = 472
-	//NotFound is returned if individual not found
-	NotFound ResultCode = 404
-	//InternalServerError is returned if error occured during request handling
-	InternalServerError ResultCode = 500
-	//TicketExpired return if given ticket is expired
-	TicketExpired ResultCode = 471
-	//NoContent is returned if http-request has empty data
-	NoContent ResultCode = 204
-	//SizeTooLarge is returned if size of request or response is too large
-	SizeTooLarge ResultCode = 1118
-	//UnprocessableEntity is returned if individual not found
-	UnprocessableEntity ResultCode = 422
-	//Invalid identifier is returned if invalid queue identifier was passed
-	InvalidIdentifier ResultCode = 904
+    zero                         ResultCode =  0
+
+    /// 200
+    Ok                           ResultCode =  200
+
+    /// 201
+    Created                      ResultCode =  201
+
+    /// 204
+    NoContent                   ResultCode =  204
+
+    /// 400
+    BadRequest                  ResultCode =  400
+
+    /// 403
+    Forbidden                    ResultCode =  403
+
+    /// 404
+    NotFound                    ResultCode =  404
+
+    /// 422
+    UnprocessableEntity         ResultCode =  422
+
+    /// 429
+    TooManyRequests             ResultCode =  429
+
+    /// 464
+    SecretExpired               ResultCode =  464
+
+    /// 465
+    EmptyPassword               ResultCode =  465
+
+    /// 466
+    NewPasswordIsEqualToOld 	ResultCode =  466
+
+    /// 467
+    InvalidPassword             ResultCode =  467
+
+    /// 468
+    InvalidSecret               ResultCode =  468
+
+    /// 469
+    PasswordExpired             ResultCode =  469
+
+    /// 470
+    TicketNotFound             ResultCode =  470
+
+    /// 471
+    TicketExpired               ResultCode =  471
+
+    /// 472
+    NotAuthorized               ResultCode =  472
+
+    /// 473
+    AuthenticationFailed        ResultCode =  473
+
+    /// 474
+    NotReady                    ResultCode =  474
+
+    /// 475
+    FailOpenTransaction        ResultCode =  475
+
+    /// 476
+    FailCommit                  ResultCode =  476
+
+    /// 477
+    FailStore                   ResultCode =  477
+
+    /// 500
+    InternalServerError        ResultCode =  500
+
+    /// 501
+    NotImplemented              ResultCode =  501
+
+    /// 503
+    ServiceUnavailable          ResultCode =  503
+
+    InvalidIdentifier           ResultCode =  904
+
+    /// 999
+    DatabaseModifiedError        ResultCode =  999
+
+    /// 1021
+    DiskFull                    ResultCode =  1021
+
+    /// 1022
+    DuplicateKey                ResultCode =  1022
+
+    /// 1118
+    SizeTooLarge               ResultCode =  1118
+
+    /// 4000
+    ConnectError                ResultCode =  4000
 )
 
 type ticket struct {
@@ -87,15 +160,15 @@ var g_mstorage_ch *nanomsg.Socket
 //var queryEndpoint *nanomsg.Endpoint
 
 //mainModuleURL is tcp address of veda server
-var mainModuleURL = "tcp://127.0.0.1:9112"
-var notifyChannelURL = "tcp://127.0.0.1:9111"
-var queryServiceURL = "tcp://127.0.0.1:23000"
-var lmdbServiceURL = "tcp://127.0.0.1:23001"
-var tarantoolURL = "" // = "127.0.0.1:3309"
-var webserverPort = "8080"
-var webserverHTTPSPort = "8020"
+var mainModuleURL = ""
+var notifyChannelURL = ""
+var queryServiceURL = ""
+var lmdbServiceURL = ""
+var tarantoolURL = ""
+var webserverPort = ""
+var webserverHTTPSPort = ""
 
-//var aclServiceURL = "tcp://127.0.0.1:22000"
+//var aclServiceURL = ""
 var useHTTPS = false
 
 //attachmentsPath is path where files from request are stored
@@ -114,9 +187,6 @@ var isTrail = true
 //countTrails is variable to count trail requests, after limit they are flushed
 var countTrails = 0
 
-//portStr is string with port number vor fasthttp
-var portStr = "8080"
-
 // string BASE64_START_POS = "base64";
 
 //codeToJsonException converts ResultCode value to its string representation
@@ -124,24 +194,132 @@ func codeToJsonException(code ResultCode) []byte {
 	exception := make(map[string]interface{})
 
 	switch code {
-	case Ok:
+case zero:
+		exception["statusMessage"] = "zero"
+
+    /// 200
+case Ok:
 		exception["statusMessage"] = "Ok"
-	case BadRequest:
-		exception["statusMessage"] = "BadRequest"
-	case NotAuthorized:
-		exception["statusMessage"] = "NotAuthorized"
-	case NotFound:
-		exception["statusMessage"] = "NotFound"
-	case InternalServerError:
-		exception["statusMessage"] = "InternalServerError"
-	case TicketExpired:
-		exception["statusMessage"] = "TicketExpired"
-	case NoContent:
+
+    /// 201
+case Created:
+		exception["statusMessage"] = "Created"
+
+    /// 204
+case NoContent:
 		exception["statusMessage"] = "NoContent"
-	case SizeTooLarge:
-		exception["statusMessage"] = "SizeToLarge"
-	case UnprocessableEntity:
+
+    /// 400
+case BadRequest:
+		exception["statusMessage"] = "Bad_Request"
+
+    /// 403
+case Forbidden:
+		exception["statusMessage"] = "Forbidden"
+
+    /// 404
+case NotFound:
+		exception["statusMessage"] = "NotFound"
+
+    /// 422
+case UnprocessableEntity:
 		exception["statusMessage"] = "UnprocessableEntity"
+
+    /// 429
+case TooManyRequests:
+		exception["statusMessage"] = "TooManyRequests"
+
+    /// 464
+case SecretExpired:
+		exception["statusMessage"] = "SecretExpired"
+
+    /// 465
+case EmptyPassword:
+		exception["statusMessage"] = "EmptyPassword"
+
+    /// 466
+case NewPasswordIsEqualToOld:
+		exception["statusMessage"] = "NewPasswordIsEqualToOld"
+
+    /// 467
+case InvalidPassword:
+		exception["statusMessage"] = "InvalidPassword"
+
+    /// 468
+case InvalidSecret:
+		exception["statusMessage"] = "InvalidSecret"
+
+    /// 469
+case PasswordExpired:
+		exception["statusMessage"] = "PasswordExpired"
+
+    /// 470
+case TicketNotFound:
+		exception["statusMessage"] = "TicketNotFound"
+
+    /// 471
+case TicketExpired:
+		exception["statusMessage"] = "TicketExpired"
+
+    /// 472
+case NotAuthorized:
+		exception["statusMessage"] = "NotAuthorized"
+
+    /// 473
+case AuthenticationFailed:
+		exception["statusMessage"] = "AuthenticationFailed"
+
+    /// 474
+case NotReady:
+		exception["statusMessage"] = "NotReady"
+
+    /// 475
+case FailOpenTransaction:
+		exception["statusMessage"] = "FailOpenTransaction"
+
+    /// 476
+case FailCommit:
+		exception["statusMessage"] = "FailCommit"
+
+    /// 477
+case FailStore:
+		exception["statusMessage"] = "FailStore"
+
+    /// 500
+case InternalServerError:
+		exception["statusMessage"] = "InternalServerError"
+
+    /// 501
+case NotImplemented:
+		exception["statusMessage"] = "NotImplemented"
+
+    /// 503
+case ServiceUnavailable:
+		exception["statusMessage"] = "ServiceUnavailable"
+
+case InvalidIdentifier:
+		exception["statusMessage"] = "InvalidIdentifier"
+
+    /// 999
+case DatabaseModifiedError:
+		exception["statusMessage"] = "DatabaseModifiedError"
+
+    /// 1021
+case DiskFull:
+		exception["statusMessage"] = "DiskFull"
+
+    /// 1022
+case DuplicateKey:
+		exception["statusMessage"] = "DuplicateKey"
+
+    /// 1118
+case SizeTooLarge:
+		exception["statusMessage"] = "SizeTooLarge"
+
+    /// 4000
+case ConnectError:
+		exception["statusMessage"] = "ConnectError"
+
 	default:
 		exception["statusMessage"] = "UnknownError"
 	}

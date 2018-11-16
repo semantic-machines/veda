@@ -9,7 +9,7 @@ import veda.onto.lang;
 import veda.common.type;
 
 alias Resource[] Resources;
-alias Resource [ string ]  MapResource;
+alias            Resource[ string ]  MapResource;
 Resources        _empty_Resources = Resources.init;
 
 public Resources get_disappeared(ref Resources A, ref Resources B)
@@ -76,7 +76,7 @@ struct Resource
     /// InfoByte
     byte     info = -1;
 
-	int		 order;
+    int      order;
 
     /// Язык
     LANG     lang = LANG.NONE;

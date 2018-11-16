@@ -3,14 +3,12 @@
  */
 module veda.storage.tarantool.tarantool_storage;
 
-import veda.core.common.define, veda.common.logger, veda.util.properd, veda.authorization.az_client;
+import veda.core.common.define, veda.common.logger, veda.util.properd;
 import veda.common.type, veda.storage.common, veda.storage.storage;
-import veda.storage.tarantool.tarantool_driver, veda.authorization.authorization;
-
+import veda.storage.tarantool.tarantool_driver;
 
 public class TarantoolStorage : Storage
 {
-    private Authorization acl_client;
     private KeyValueDB    tickets_storage_r;
     private KeyValueDB    inividuals_storage_r;
 
@@ -23,32 +21,6 @@ public class TarantoolStorage : Storage
     ~this()
     {
         log.trace_log_and_console("DESTROY OBJECT TarantoolStorage:[%s]", name);
-        acl_client.close();
-    }
-
-    override Authorization get_acl_client()
-    {
-        if (acl_client is null)
-        {
-            try
-            {
-                string[ string ] properties;
-                properties = readProperties("./veda.properties");
-                string acl_service = properties.as!(string)("acl_service_url");
-                if (acl_service !is null)
-                    acl_client = new ClientAuthorization(acl_service, this.log);
-                else
-                {
-                    acl_client = new AuthorizationUseLib(this.log);
-                }
-            }
-            catch (Throwable ex)
-            {
-                log.trace("ERR! unable read ./veda.properties");
-            }
-        }
-
-        return acl_client;
     }
 
     override KeyValueDB get_tickets_storage_r()

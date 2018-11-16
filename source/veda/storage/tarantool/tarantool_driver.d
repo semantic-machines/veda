@@ -38,7 +38,7 @@ public class TarantoolDriver : KeyValueDB
 
         if (individual_as_binobj is null)
         {
-            individual.setStatus(ResultCode.Not_Found);
+            individual.setStatus(ResultCode.NotFound);
             return;
         }
 
@@ -46,16 +46,16 @@ public class TarantoolDriver : KeyValueDB
         if (individual_as_binobj !is null && individual_as_binobj.length > 1)
         {
             if (individual.deserialize(individual_as_binobj) > 0)
-                individual.setStatus(ResultCode.OK);
+                individual.setStatus(ResultCode.Ok);
             else
             {
-                individual.setStatus(ResultCode.Unprocessable_Entity);
+                individual.setStatus(ResultCode.UnprocessableEntity);
                 writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
             }
         }
         else
         {
-            individual.setStatus(ResultCode.Unprocessable_Entity);
+            individual.setStatus(ResultCode.UnprocessableEntity);
             //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
         }
     }
@@ -145,11 +145,11 @@ public class TarantoolDriver : KeyValueDB
         {
             open();
             if (db_is_opened != true)
-                return ResultCode.Connect_Error;
+                return ResultCode.ConnectError;
         }
 
         if (in_value.length < 3)
-            return ResultCode.Internal_Server_Error;
+            return ResultCode.InternalServerError;
 
 //        auto field_type = mp_typeof(*cast(char*)in_value);
         //stderr.writefln ("\n@PUT in_value=%s", in_value);
@@ -172,11 +172,11 @@ public class TarantoolDriver : KeyValueDB
         {
             log.trace("Insert failed [%s][%s] errcode=%s msg=%s", in_key, in_value, reply.code, to!string(reply.error));
             tnt_reply_free(&reply);
-            return ResultCode.Internal_Server_Error;
+            return ResultCode.InternalServerError;
         }
 
         tnt_reply_free(&reply);
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     public ResultCode remove(string in_key)
@@ -185,7 +185,7 @@ public class TarantoolDriver : KeyValueDB
         {
             open();
             if (db_is_opened != true)
-                return ResultCode.Connect_Error;
+                return ResultCode.ConnectError;
         }
 
         tnt_stream *tuple = tnt_object(null);
@@ -204,16 +204,11 @@ public class TarantoolDriver : KeyValueDB
         {
             log.trace("Remove failed [%s] errcode=%s msg=%s", in_key, reply.code, to!string(reply.error));
             tnt_reply_free(&reply);
-            return ResultCode.Internal_Server_Error;
+            return ResultCode.InternalServerError;
         }
 
         tnt_reply_free(&reply);
-        return ResultCode.OK;
-    }
-
-    public long get_last_op_id()
-    {
-        return -1;
+        return ResultCode.Ok;
     }
 
     public void open()

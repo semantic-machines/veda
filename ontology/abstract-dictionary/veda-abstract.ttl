@@ -235,6 +235,13 @@ v-s:hasParentLink
   rdfs:range rdfs:Resource ;
   rdfs:domain v-s:Thing ;
 .
+v-s:hasIcon
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Иконка"@ru ;
+  rdfs:label "Icon"@en ;
+  rdfs:range v-s:File ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:hasImage
   rdf:type owl:ObjectProperty ;
   rdfs:label "Изображение"@ru ;
@@ -899,7 +906,7 @@ v-s:evaluatedProcess
 .
 
 v-s:scriptHandlered
-  rdf:type owl:DatatypeProperty ; 
+  rdf:type owl:DatatypeProperty ;
   rdfs:label "Обработано скриптом "@ru ;
   rdfs:label "Script handlered"@en ;
   rdfs:range xsd:boolean ;

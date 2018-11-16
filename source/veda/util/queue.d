@@ -1,7 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format;
-import veda.common.type, veda.core.common.define, veda.util.tools;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii;
 import veda.common.logger;
 
 enum QMessageType
@@ -213,13 +212,14 @@ class Consumer
             return false;
 
         ff_info_pop_r.seek(0);
-//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
 
         string str = ff_info_pop_r.readln();
-        //writeln("@3 str=[", str, "]");
-        if (str !is null)
+        if (str !is null && str.length > 1)
         {
-            string[] ch = str[ 0..$ - 1 ].split(';');
+            if (isDigit(str[ $ - 1 ]) == false)
+                str = str[ 0..$ - 1 ];
+
+            string[] ch = str.split(';');
             //writeln("@ queue.get_info ch=", ch);
             if (ch.length != 5)
             {
@@ -436,9 +436,9 @@ class Queue
 //      sink (", count_popped=" ~ text(count_popped));
     }
 
-    public static bool is_lock(string _queue_name)
+    public static bool is_lock(string path, string _queue_name)
     {
-        return(exists(queue_db_path ~ "/" ~ _queue_name ~ "_queue.lock"));
+        return(exists(path ~ "/" ~ _queue_name ~ "_queue.lock"));
     }
 
     public void remove()
@@ -745,4 +745,45 @@ unittest
     cs.remove();
 
     writeln("unittest [Queue] Ok");
+}
+
+private ushort ushort_from_buff(ubyte[] buff, int pos)
+{
+    ushort res = *((cast(ushort *)(buff.ptr + pos)));
+
+    return res;
+}
+
+private uint uint_from_buff(ubyte[] buff, int pos)
+{
+    uint res = *((cast(uint *)(buff.ptr + pos)));
+
+    return res;
+}
+
+private ulong ulong_from_buff(ubyte[] buff, int pos)
+{
+    ulong res = *((cast(ulong *)(buff.ptr + pos)));
+
+    return res;
+}
+
+private void uint_to_buff(ubyte[] _buff, int pos, ulong data)
+{
+    _buff[ pos + 0 ] = (data & 0x000000FF);
+    _buff[ pos + 1 ] = (data & 0x0000FF00) >> 8;
+    _buff[ pos + 2 ] = (data & 0x00FF0000) >> 16;
+    _buff[ pos + 3 ] = (data & 0xFF000000) >> 24;
+}
+
+private void ulong_to_buff(ubyte[] _buff, int pos, ulong data)
+{
+    _buff[ pos + 0 ] = (data & 0x00000000000000FF);
+    _buff[ pos + 1 ] = (data & 0x000000000000FF00) >> 8;
+    _buff[ pos + 2 ] = (data & 0x0000000000FF0000) >> 16;
+    _buff[ pos + 3 ] = (data & 0x00000000FF000000) >> 24;
+    _buff[ pos + 4 ] = (data & 0x000000FF00000000) >> 32;
+    _buff[ pos + 5 ] = (data & 0x0000FF0000000000) >> 40;
+    _buff[ pos + 6 ] = (data & 0x00FF000000000000) >> 48;
+    _buff[ pos + 7 ] = (data & 0xFF00000000000000) >> 56;
 }

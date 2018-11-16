@@ -192,7 +192,7 @@ v-s:PropertySubPropertyOfSpec
 
 v-s:PropertySpecificationSearch
   rdf:type v-fs:AttributiveSearch ;
-  rdfs:label "Спецификации свойств класса"@ru ;
+  rdfs:label "Спецификации свойств"@ru ;
   rdfs:label "Property specifications"@en ;
   v-fs:searchBlank v-s:PropertySpecificationSearchBlank ;
   v-fs:searchOnLoad true ;
@@ -1169,8 +1169,8 @@ v-s:MembershipBlank
 .
 v-s:MembershipRegistry
   a v-fs:AttributiveSearch ;
-  rdfs:label "Члены группы"@ru ;
-  rdfs:label "Group members"@en ;
+  rdfs:label "Записи о включении в группу"@ru ;
+  rdfs:label "Memberships"@en ;
   v-fs:searchBlank v-s:MembershipRegistryBlank ;
   v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
   v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
@@ -1179,8 +1179,8 @@ v-s:MembershipRegistry
 .
 v-s:MembershipRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Члены группы"@ru ;
-  rdfs:label "Group members"@en ;
+  rdfs:label "Запись о включении в группу"@ru ;
+  rdfs:label "Membership"@en ;
   v-fc:targetType v-s:Membership ;
 .
 

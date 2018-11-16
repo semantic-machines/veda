@@ -272,8 +272,7 @@ v-s:LetterTemplate
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
     <br>
     <div class="actions view edit -search">
-      <button type="button" class="action btn btn-success -view edit -search" id="save2" about="v-s:Save" property="rdfs:label" style="margin-right:3px;"></button>
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit cancel delete journal task"></span>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send save edit cancel delete journal task"></span>
       <button type="button" class="action btn btn-info view -edit -search" id="incoming-print-blank" about="v-s:IncomingLetterPrintBlank" property="rdfs:label"/>
       <div class="btn-group dropup" id="outgoing-print-blank">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -300,50 +299,6 @@ v-s:LetterTemplate
       $(".action#save2", template).removeAttr("disabled");
     } else {
       $(".action#save2", template).attr("disabled", "disabled");
-    }
-  });
-
-  // Альтернативное сохранение для номера и лабела, что формируется на сервере
-  $("#save2", template).click(function () {
-    var that = this;
-    individual.save();
-    template.trigger("view");
-
-    if ( individual.hasValue("v-s:recipient") ) {
-      for (var i = 0; i < individual["v-s:recipient"].length; i++) {
-        individual["v-s:recipient"][i].save();
-      }
-    }
-    if ( individual.hasValue("v-s:sender") ) {
-      for (var i = 0; i < individual["v-s:sender"].length; i++) {
-        individual["v-s:sender"][i].save();
-      }
-    }
-    if ( individual.hasValue("v-s:hasDelivery") ) {
-      for (var i = 0; i < individual["v-s:hasDelivery"].length; i++) {
-        individual["v-s:hasDelivery"][i].save();
-      }
-    }
-    if ( individual.hasValue("v-s:hasLetterRegistrationRecordRecipient") ) {
-      var regRecRec = individual["v-s:hasLetterRegistrationRecordRecipient"][0] ;
-      regRecRec.on("afterReset", save);
-      template.one("remove", function () {
-        regRecRec.off("afterReset", save);
-      });
-      regRecRec.save();
-    }
-    if ( individual.hasValue("v-s:hasLetterRegistrationRecordSender") ) {
-      var regRecSen = individual["v-s:hasLetterRegistrationRecordSender"][0] ;
-      regRecSen.on("afterReset", save);
-      template.one("remove", function () {
-        regRecSen.off("afterReset", save);
-      });
-      regRecSen.save();
-    }
-
-    function save () {
-      individual.isSync(false);
-      individual.save();
     }
   });
 
@@ -532,6 +487,9 @@ v-s:DeliveryTemplate
       <em about="rdfs:comment" property="rdfs:label"></em>
       <div property="rdfs:comment" class="view -edit -search"></div>
       <veda-control property="rdfs:comment" data-type="text" class="-view edit search"></veda-control>
+      <em about="v-s:attachment" property="rdfs:label"></em>
+      <div rel="v-s:attachment" data-template="v-ui:FileTemplateWithComment" data-embedded="true"></div>
+      <veda-control data-type="file" rel="v-s:attachment" class="-view edit -search create"></veda-control>
     </div>
   </div>
   <hr>

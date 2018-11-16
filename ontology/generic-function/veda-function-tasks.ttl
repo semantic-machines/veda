@@ -430,7 +430,7 @@ v-ft:InboxTemplate
   });
 //# sourceURL=v-ft:InboxTemplate_pre
 </script>
-<div class="container sheet" about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+<div class="container sheet" about="@" data-template="v-fs:AttributiveSearchTemplate"></div>
   """ ;
 .
 

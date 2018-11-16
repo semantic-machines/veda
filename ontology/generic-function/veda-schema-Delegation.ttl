@@ -343,8 +343,8 @@ v-s:RequestDelegationRegistry
 
 v-s:RequestDelegationRegistryBlank
   rdf:type v-fc:Blank ;
-  rdfs:label "Заявки на делегирование"@ru ;
-  rdfs:label "Delegation requests"@en ;
+  rdfs:label "Заявка на делегирование"@ru ;
+  rdfs:label "Delegation request"@en ;
   v-fc:targetType v-s:RequestDelegation ;
   v-fc:targetType v-s:RequestDelegationUser ;
   v-fc:targetType v-s:RequestDelegationAdmin ;
@@ -574,6 +574,10 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
 allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
   var appointment_uri = item.data;
   var appointment = get_individual(ticket, appointment_uri);
+
+  if (!appointment) {
+    return false;
+  }
 
   var isPremature = now < appointment["v-s:dateFrom"][0].data;
   var isActual = appointment["v-s:dateFrom"][0].data <= now && now <= appointment["v-s:dateTo"][0].data;

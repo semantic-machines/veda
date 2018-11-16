@@ -5,9 +5,9 @@ module veda.fanout.to_sql;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import mysql.d;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
-private import veda.core.common.context, veda.util.tools;
+private import veda.core.common.context;
 private import veda.vmodule.vmodule;
 
 public class FanoutProcess : VedaModule
@@ -23,8 +23,10 @@ public class FanoutProcess : VedaModule
         super(_subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         ResultCode rc;
 
@@ -40,8 +42,14 @@ public class FanoutProcess : VedaModule
             }
         }
 
+        if (rc == ResultCode.FailCommit)
+        {
+            log.trace("ERR! fail commit");
+            return ResultCode.NotReady;
+        }
+
         committed_op_id = op_id;
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override void thread_id()
@@ -95,7 +103,7 @@ public class FanoutProcess : VedaModule
     private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
     {
         if (mysql_conn is null)
-            return ResultCode.Connect_Error;
+            return ResultCode.ConnectError;
 
         try
         {
@@ -112,7 +120,7 @@ public class FanoutProcess : VedaModule
             if (isDraftOf !is null)
             {
                 log.trace("new_indv [%s] is draft, ignore", new_indv.uri);
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             if ((actualVersion !is null && actualVersion != new_indv.uri /*||
@@ -124,7 +132,7 @@ public class FanoutProcess : VedaModule
 //		if (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)
 //          log.trace("prev[%s].v-s:previousVersion[%s] == new[%s].v-s:previousVersion[%s], ignore", prev_indv.uri, previousVersion_prev, new_indv.uri, previousVersion_new);
 
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             Resources types        = new_indv.getResources("rdf:type");
@@ -167,6 +175,8 @@ public class FanoutProcess : VedaModule
                     catch (Throwable ex)
                     {
                         log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
+                        mysql_conn.query("ROLLBACK");
+                        return ResultCode.FailCommit;
                     }
                 }
 
@@ -189,6 +199,11 @@ public class FanoutProcess : VedaModule
                                 log.trace("alter table [%s]", predicate);
                                 insert_to_sql(predicate, rss, new_indv);
                             }
+                            else
+                            {
+                                mysql_conn.query("ROLLBACK");
+                                return ResultCode.FailCommit;
+                            }
                         }
                     }
                 }
@@ -202,7 +217,7 @@ public class FanoutProcess : VedaModule
             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
         }
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     private void insert_to_sql(string predicate, Resources rss, ref Individual new_indv)
@@ -349,7 +364,7 @@ public class FanoutProcess : VedaModule
             log.trace("connect_to_mysql:found gates: %s", gates);
             foreach (gate; gates)
             {
-                Individual connection = context.get_individual(&sticket, gate.uri, OptAuthorize.NO);
+                Individual connection = context.get_individual(gate.uri);
                 log.trace("connect_to_mysql:connection: %s=[%s]", gate.uri, connection);
                 //subscribe_on_prefetch(gate.uri);
 

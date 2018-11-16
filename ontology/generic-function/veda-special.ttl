@@ -40,6 +40,13 @@ v-s:backwardReplace
   rdfs:label "backward replace"@en ;
   rdfs:range owl:ObjectProperty ;
 .
+v-s:backwardForceUpdate
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:BackwardLink ;
+  rdfs:label "принудительно обновить"@ru ;
+  rdfs:label "force update"@en ;
+  rdfs:range xsd:boolean ;
+.
 # ------------------------------------------------------------
 v-s:Exportable
   rdf:type owl:Class ;

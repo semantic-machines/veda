@@ -9,7 +9,7 @@ import dt                                                                       
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
 import veda.search.common.isearch, veda.search.common.vel;
-import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
+import veda.common.type, veda.core.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
 
 
 class XapianVQL
@@ -47,7 +47,7 @@ class XapianVQL
                     else
                         asc_desc = true;
 
-                    int slot = get_slot(key2slot, key);
+                    int slot = get_slot(key2slot, key, log);
                     if (slot >= 0)
                     {
                         if (trace)
@@ -297,9 +297,9 @@ class XapianVQL
                         {
                             int slot;
                             if (rs !is null && rs[ 0 ] == '*' && is_good_token(rs))
-                                slot = get_slot(key2slot, ls ~ "#F");
+                                slot = get_slot(key2slot, ls ~ "#F", log);
                             else
-                                slot = get_slot(key2slot, ls);
+                                slot = get_slot(key2slot, ls, log);
 
                             //log.trace("@p slot=%d, predicate=%s", slot, ls);
 
@@ -589,7 +589,7 @@ class XapianVQL
                     //writeln("@p c_from=", c_from);
                     //writeln("@p c_to=", c_to);
 
-                    int slot = get_slot(key2slot, token_L);
+                    int slot = get_slot(key2slot, token_L, log);
 
                     query_r = new_Query_range(xapian_op.OP_VALUE_RANGE, slot, c_from, c_to, &err);
 
@@ -721,7 +721,7 @@ class XapianVQL
         if (user_uri is null)
         {
             log.trace("exec_xapian_query_and_queue_authorize:user_uri is null");
-            sr.result_code = ResultCode.Ticket_not_found;
+            sr.result_code = ResultCode.TicketNotFound;
             sw.stop;
             sr.total_time = sw.peek.total !"msecs";
             return sr;
@@ -737,7 +737,7 @@ class XapianVQL
             if (err == -1)
                 sr.result_code = ResultCode.DatabaseModifiedError;
             else
-                sr.result_code = ResultCode.Internal_Server_Error;
+                sr.result_code = ResultCode.InternalServerError;
 
             //            sr.err         = err;
             sw.stop;
@@ -762,7 +762,7 @@ class XapianVQL
                     if (err == -1)
                         sr.result_code = ResultCode.DatabaseModifiedError;
                     else
-                        sr.result_code = ResultCode.Internal_Server_Error;
+                        sr.result_code = ResultCode.InternalServerError;
 
                     log.trace("exec_xapian_query_and_queue_authorize:mset:is_next, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
@@ -783,7 +783,7 @@ class XapianVQL
                     if (err == -1)
                         sr.result_code = ResultCode.DatabaseModifiedError;
                     else
-                        sr.result_code = ResultCode.Internal_Server_Error;
+                        sr.result_code = ResultCode.InternalServerError;
 
                     log.trace("exec_xapian_query_and_queue_authorize:get_document_data, err=(%s), user_uri=%s", get_xapian_err_msg(err), user_uri);
 //                    sr.err = err;
@@ -808,7 +808,7 @@ class XapianVQL
                 if (op_auth == OptAuthorize.YES)
                 {
                     sw_az.start;
-                    is_passed = context.get_storage().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen);
+                    is_passed = context.get_az().authorize(subject_id, user_uri, Access.can_read, acl_db_reopen);
                     sw_az.stop;
                 }
 
@@ -838,7 +838,7 @@ class XapianVQL
 
         sr.processed   = processed;
         sr.count       = read_count;
-        sr.result_code = ResultCode.OK;
+        sr.result_code = ResultCode.Ok;
         sr.cursor      = from + processed;
         sw.stop;
         sr.total_time     = sw.peek.total !"msecs";

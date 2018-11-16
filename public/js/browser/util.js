@@ -159,11 +159,11 @@ veda.Module(function (veda) { "use strict";
       var s = veda.Backend.query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'").then(function (queryResult) {
         var reportUris = queryResult.result;
         if (reportUris.length === 0) {
-          alert("Нет отчета. Меня жизнь к такому не готовила.");
+          alert("Нет отчета.");
         } else if (reportUris.length === 1) {
           veda.Util.redirectToReport(individual, reportUris[0]);
         } else {
-          var reportsDropdown = $('[resource="'+individual.id+'"] #chooseReport + .dropdown-menu');
+          var reportsDropdown = $('[resource="' + veda.Util.escape4$(individual.id) + '"] #chooseReport + .dropdown-menu');
           if (reportsDropdown.html() === "") {
             var reportPromises = reportUris.map(function (reportUri) {
               return new veda.IndividualModel(reportUri).load();
@@ -192,24 +192,19 @@ veda.Module(function (veda) { "use strict";
 
     var form = document.createElement("form");
     form.setAttribute("method", "post");
-    form.setAttribute("action", jasperServerAddress+'flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit='+encodeURIComponent(report['v-s:filePath'][0])+'&output='+encodeURIComponent(report['v-s:fileFormat'][0])+'&documentId='+encodeURIComponent(individual.id)+'&ticket='+veda.ticket);
-    form.setAttribute("target", "view");
+    form.setAttribute("action", jasperServerAddress + "flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit=" + encodeURIComponent(report["v-s:reportPath"][0]) + "&output=" + encodeURIComponent(report["v-s:reportFormat"][0]) + "&documentId=" + encodeURIComponent(individual.id) + "&ticket=" + veda.ticket);
+    form.setAttribute("target", "Report");
 
-    Object.getOwnPropertyNames(individual.properties).forEach(function (key)
-    {
-      if ( key !== '@' && individual.hasValue(key) ) {
+    Object.getOwnPropertyNames(individual.properties).forEach(function (key) {
+      if ( key !== "@" && individual.hasValue(key) ) {
         var hiddenField = document.createElement("input");
         hiddenField.setAttribute("type", "hidden");
-        hiddenField.setAttribute("name", key.replace(':','_'));
-        var value = '';
-        individual.get(key).forEach(function(item, i, arr) {
-          if (i>0) value+=',';
-          value += (
-            item instanceof veda.IndividualModel ? item.id :
-            item instanceof Date ? item.toISOString() :
-            item
-          );
-        });
+        hiddenField.setAttribute("name", key.replace(":", "_"));
+        var value = individual.get(key).map(function (item) {
+          return item instanceof veda.IndividualModel ? item.id :
+                 item instanceof Date ? item.toISOString() :
+                 item;
+        }).join(",");
         hiddenField.setAttribute("value", value);
         form.appendChild(hiddenField);
       }
@@ -222,7 +217,8 @@ veda.Module(function (veda) { "use strict";
     tzField.setAttribute("value", tz);
     form.appendChild(tzField);
     document.body.appendChild(form);
-    window.open('', 'view');
+    window.open("", "Report");
+    console.log("REPORT FORM:", form);
     form.submit();
   };
 
@@ -261,7 +257,7 @@ veda.Module(function (veda) { "use strict";
     var modalTmpl = $("#individual-modal-template").html();
     var modal = $(modalTmpl);
     var modalBody = $(".modal-body", modal);
-    modal.on("remove", function (e) {
+    modal.one("remove", function (e) {
       modal.modal("hide");
     });
     modal.modal();

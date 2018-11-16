@@ -17,7 +17,6 @@
     	    "../../veda/onto/resource.d",
     	    "../../veda/onto/lang.d",
     	    "../../veda/util/commando.d",
-    	    "../../veda/util/tools.d",
     	    "../../veda/bind/nano.d",
     	    "../../veda/util/properd.d",
     	    "../../veda/core/common/define.d",

@@ -350,8 +350,8 @@ v-s:AddDateactions
 v-s:ContractorCategoryDecision_printBlank
   rdf:type v-s:ReportsForClass ;
   v-ui:forClass v-s:ContractorCategoryDecision ;
-  v-s:filePath "/reports/Contract/ContractorCategoryDecision_PrintBlank" ;
-  v-s:fileFormat "pdf";
+  v-s:reportPath "/reports/Contract/ContractorCategoryDecision_PrintBlank" ;
+  v-s:reportFormat "pdf";
   rdfs:label "Печатная форма листа оценки"@ru ;
   rdfs:label "ContractorCategoryDecision print blank"@en ;
 .

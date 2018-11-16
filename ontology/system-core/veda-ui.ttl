@@ -3,8 +3,10 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
 
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
@@ -51,6 +53,7 @@ v-ui:forClass
   rdfs:domain v-ui:ClassTemplate ;
   rdfs:domain v-ui:ClassModel ;
   rdfs:domain v-ui:PropertySpecification ;
+  rdfs:domain v-s:ReportsForClass ;
   rdfs:label "Для класса"@ru ;
   rdfs:label "For class"@en ;
   rdfs:range owl:Class ;
@@ -123,6 +126,20 @@ v-ui:placeholder
   rdfs:domain v-ui:PropertySpecification ;
   rdfs:label "Заполнитель"@ru ;
   rdfs:label "Placeholder"@en ;
+  rdfs:range xsd:string ;
+.
+v-ui:trueLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
+  rdfs:label "Истинное значение"@ru ;
+  rdfs:label "True value"@en ;
+  rdfs:range xsd:string ;
+.
+v-ui:falseLabel
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-ui:DatatypePropertySpecification ;
+  rdfs:label "Ложное значение"@ru ;
+  rdfs:label "False value"@en ;
   rdfs:range xsd:string ;
 .
 v-ui:minCardinality
@@ -1353,6 +1370,72 @@ v-ui:TestUIClass_permission
   rdfs:label "Права на создание тестового шаблона" ;
 .
 
+# for search #
+v-ui:TestUIRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Тестовый шаблон"@ru ;
+  rdfs:label "Test UI template"@en ;
+  v-fs:searchBlank v-ui:TestUIRegistryBlank ;
+  v-fs:searchBlankTemplate v-ui:TestUITemplate ;
+  v-fs:searchResultTemplate v-ui:TestUIResultTemplate ;
+.
+v-ui:TestUIRegistryBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Тестовый шаблон"@ru ;
+  rdfs:label "Test UI template"@en ;
+  v-fc:targetType v-ui:TestUIClass ;
+.
+v-ui:TestUIResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра годовые TestUI"@ru ;
+  rdfs:label "TestUI result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="15" about="v-ui:TestUI" property="rdfs:label"></th>
+    </tr>
+    <tr class="active">
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testBoolean"><span about="v-ui:testBoolean" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testString"><span about="v-ui:testString" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testInteger"><span about="v-ui:testInteger" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testDecimal"><span about="v-ui:testDecimal" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testDatetime"><span about="v-ui:testDatetime" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testLink"><span about="v-ui:testLink" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:template"><span about="v-ui:template" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:script"><span about="v-s:script" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-ui:testFile"><span about="v-ui:testFile" property="rdfs:label"></span></th>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td class="serial-number"></td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td property="v-s:creator"></td>
+      <td property="v-s:created"></td>
+      <td property="rdfs:label"></td>
+      <td property="rdfs:comment"></td>
+      <td property="v-ui:testBoolean"></td>
+      <td property="v-ui:testString"></td>
+      <td property="v-ui:testInteger"></td>
+      <td property="v-ui:testDecimal"></td>
+      <td property="v-ui:testDatetime"></td>
+      <td property="v-ui:testLink"></td>
+      <td property="v-ui:template"></td>
+      <td property="v-s:script"></td>
+      <td property="v-ui:testFile"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+##############
+
 v-ui:TestUITemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Тестовый шаблон"@ru ;
@@ -1364,16 +1447,14 @@ v-ui:TestUITemplate
     <h2 class="pull-left" about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
     <a class="pull-right" href="#/@"><small property="@"></small></a>
   </div>
-
   <em about="rdfs:label" property="rdfs:label" class="-view edit search"></em>
   <h3 property="rdfs:label"></h3>
-  <veda-control property="rdfs:label" data-type="string" class="-view edit search"></veda-control>
+  <veda-control property="rdfs:label" data-type="string" class="-view edit search" id="label"></veda-control>
   <br class="-view edit search">
   <em about="rdfs:comment" property="rdfs:label" class="-view edit search"></em>
   <div><em property="rdfs:comment"></em></div>
-  <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
+  <veda-control property="rdfs:comment" data-type="string" class="-view edit search" id="comment"></veda-control>
   <br class="-view edit search">
-
   <div class="checkbox">
     <label>
       <veda-control property="v-ui:testBoolean" data-type="boolean"></veda-control>
@@ -1381,10 +1462,9 @@ v-ui:TestUITemplate
     </label>
   </div>
   <hr>
-
   <em about="v-ui:testString" property="rdfs:label"></em>
   <div property="v-ui:testString"></div>
-  <veda-control property="v-ui:testString" data-type="string" class="-view edit search"></veda-control>
+  <veda-control property="v-ui:testString" data-type="string" class="-view edit search" id="testString"></veda-control>
   <veda-control property="v-ui:testString" data-type="multilingualString" class="-view edit search"></veda-control>
   <veda-control property="v-ui:testString" data-type="text" class="-view edit search"></veda-control>
   <veda-control property="v-ui:testString" data-type="multilingualText" class="-view edit search"></veda-control>
@@ -1392,7 +1472,6 @@ v-ui:TestUITemplate
   <veda-control property="v-ui:testString" data-type="checkbox" class="view edit search"></veda-control>
   <veda-control property="v-ui:testString" data-type="radio" class="view edit search"></veda-control>
   <hr>
-
   <em about="v-ui:testInteger" property="rdfs:label"></em>
   <div property="v-ui:testInteger"></div>
   <veda-control property="v-ui:testInteger" data-type="integer" class="-view edit search"></veda-control>
@@ -1400,13 +1479,11 @@ v-ui:TestUITemplate
   <veda-control property="v-ui:testInteger" data-type="checkbox"></veda-control>
   <veda-control property="v-ui:testInteger" data-type="radio"></veda-control>
   <hr>
-
   <em about="v-ui:testDecimal" property="rdfs:label"></em>
   <div property="v-ui:testDecimal"></div>
   <veda-control property="v-ui:testDecimal" data-type="decimal" class="-view edit search"></veda-control>
   <veda-control property="v-ui:testDecimal" data-type="select" class="-view edit search"></veda-control>
   <hr>
-
   <em about="v-ui:testDatetime" property="rdfs:label"></em>
   <div property="v-ui:testDatetime" class="view edit -search"></div>
   <veda-control property="v-ui:testDatetime" data-type="date" class="-view edit search" id="date"></veda-control>
@@ -1415,21 +1492,18 @@ v-ui:TestUITemplate
   <veda-control property="v-ui:testDatetime" data-type="checkbox" class="-view edit search"></veda-control>
   <veda-control property="v-ui:testDatetime" data-type="radio" class="-view edit search"></veda-control>
   <hr>
-
   <em about="v-ui:testLink" property="rdfs:label"></em>
   <div rel="v-ui:testLink" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
   <veda-control rel="v-ui:testLink" data-type="link" class="-view edit search full"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="checkbox"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="radio"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="select" class="-view edit search"></veda-control>
-
   <!--hr>
   <em about="v-ui:template" property="rdfs:label"></em>
   <veda-control property="v-ui:template" data-type="source"></veda-control>
   <hr>
   <em about="v-s:script" property="rdfs:label"></em>
   <veda-control property="v-s:script" data-type="source"></veda-control-->
-
   <hr>
   <em about="v-ui:testFile" property="rdfs:label"></em>
   <div rel="v-ui:testFile" data-template="v-ui:FileTemplate" class="view edit -search"></div>
@@ -1699,7 +1773,21 @@ v-ui:SimplifiedJournalTemplate
       <tbody id="tbody">
         <tr>
           <td class="sequence-number"></td>
-          <td about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></td>
+          <td>
+            <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
+              <div about="@" rel="v-wf:redirect_from_task">
+                <script>
+                  if ( !individual.hasValue("v-wf:to") ) {
+                    template.empty();
+                  }
+                </script>
+              <div>
+              <hr class="no-margin">
+              <strong><small about="v-s:TaskIsRedirectedFrom" property="rdfs:label"></small></strong>
+              <small about="@" property="v-wf:to"></small>
+            </div>
+          </div>
+          </td>
           <td about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
           <td><a href="#/@" about="@" property="rdfs:label"></a><div about="@" property="v-s:description"></div></td>
           <td about="@" property="v-s:created"></td>
@@ -1886,12 +1974,13 @@ v-ui:DocumentEventTemplate
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
     var process = individual['v-wf:onProcess'][0];
-    if (
-      (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
-      && process.rights.hasValue("v-s:canDelete")
-    ) {
-      $(".stop-process", template).show();
+    
+    if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
+      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) { 
+      var actor = individual['v-s:actor'][0];
+      if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
+        $(".stop-process", template).show();  
+      }
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".process-id", template).addClass('text-danger');
@@ -2897,7 +2986,7 @@ v-ui:Graph
     var modalBody = $(".modal-body", modal);
     var individual = new veda.IndividualModel(individual_uri);
     individual.present(modalBody);
-    modal.on("remove", function (e) {
+    modal.one("remove", function (e) {
       modal.modal("hide");
     });
     modal.modal();

@@ -1,0 +1,103 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+<http://semantic-machines.com/veda/veda-communicationMean-ui>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Средство связи. Интерфейс."@ru ;
+  rdfs:label "Veda system ontology. Communication Mean. UI."@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# Specifications -------------------------------------------------------
+
+v-s:PS_hasCommunicationMeanChannel_communicationMean
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CommunicationMean ;
+  v-ui:forProperty v-s:hasCommunicationMeanChannel ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:defaultValue d:o3q2gagyvfwh430io88vvb8vel ;
+  rdfs:label "Спецификация свойства v-s:hasCommunicationMeanChannel для класса v-s:CommunicationMean"@ru ;
+  rdfs:label "v-s:hasCommunicationMeanChannel property specification for v-s:CommunicationMean class"@en ;
+.
+v-s:PS_hasCommunicationMeanTarget_CommunicationMean
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CommunicationMean ;
+  v-ui:forProperty v-s:hasCommunicationMeanTarget ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:defaultValue d:a3nx3vnoo4akfu67c0709dr33j ;
+  rdfs:label "Спецификация свойства v-s:hasCommunicationMeanTarget для класса v-s:CommunicationMean"@ru ;
+  rdfs:label "v-s:hasCommunicationMeanTarget property specification for v-s:CommunicationMean class"@en ;
+.
+v-s:PS_description_CommunicationMean
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CommunicationMean ;
+  v-ui:forProperty v-s:description ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:tooltip "Номер телефона, e-mail, имя пользователя, адрес страницы"@ru ;
+  rdfs:label "Спецификация свойства v-s:description для класса v-s:CommunicationMean"@ru ;
+  rdfs:label "v-s:description property specification for v-s:CommunicationMean class"@en ;
+.
+v-s:PS_comment_CommunicationMean
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:CommunicationMean ;
+  v-ui:forProperty rdfs:comment ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:tooltip "Дополнительный комментарий"@ru ;
+  rdfs:label "Спецификация свойства rdfs:comment для класса v-s:CommunicationMean"@ru ;
+  rdfs:label "rdfs:comment property specification for v-s:CommunicationMean class"@en ;
+.
+
+# ------------------------------------------------------------ШАБЛОНЫ --
+v-s:CommunicationMeanTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:CommunicationMean ;
+  rdfs:label "Шаблон для класса v-s:CommunicationMean"@ru ;
+  rdfs:label "Template for v-s:CommunicationMean class"@en ;
+  v-ui:template """
+<div>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-3">
+        <em about="v-s:hasCommunicationMeanChannel" property="rdfs:label"></em>
+        <veda-control rel="v-s:hasCommunicationMeanChannel" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+        <div rel="v-s:hasCommunicationMeanChannel" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+      </div>
+      <div class="col-md-3">
+        <em about="v-s:hasCommunicationMeanTarget" property="rdfs:label" class="view edit -search"></em>
+        <veda-control rel="v-s:hasCommunicationMeanTarget" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+        <div rel="v-s:hasCommunicationMeanTarget" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+      </div>
+      <div class="col-md-3">
+        <em about="v-s:description" property="rdfs:label" class="view edit -search"></em>
+        <div property="v-s:description" class="view -edit -search"></div>
+        <veda-control property="v-s:description" data-type="string" class="-view edit -search"></veda-control>
+      </div>
+      <div class="col-md-3">
+        <em about="rdfs:comment" property="rdfs:label" class="view edit -search"></em>
+        <div property="rdfs:comment" class="view -edit -search"></div>
+        <veda-control property="rdfs:comment" data-type="string" class="-view edit -search"></veda-control>
+      </div>
+    </div>
+    <hr>
+    <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+    <br>
+    <!-- BUTTONS -->
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    </div>
+  </div>
+</div>
+  """ ;
+.
+

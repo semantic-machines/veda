@@ -9,11 +9,11 @@ private
 {
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
-    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-    import veda.common.logger, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-    import veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+    import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
+    import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+    import veda.search.common.isearch, veda.search.ft_query.ft_query_client;
+    import veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -44,20 +44,6 @@ shared static this()
     process_name = "ltr_scripts";
 }
 
-void main(char[][] args)
-{
-    core.thread.Thread.sleep(dur!("seconds")(2));
-
-    ScriptProcess p_script = new ScriptProcess(SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, new Logger("veda-core-ltr_scripts", "log", ""));
-    //log = p_script.log();
-
-    tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
-
-    p_script.run();
-
-    shutdown_ltr_scripts();
-}
-
 private struct Task
 {
     Consumer   consumer;
@@ -75,7 +61,7 @@ Onto             onto;
 Context          context;
 ScriptsWorkPlace _wpl;
 
-Search              vql;
+Search           vql;
 string           empty_uid;
 string           vars_for_codelet_script;
 
@@ -84,7 +70,7 @@ ScriptVM         script_vm;
 Tasks *[ int ] tasks_2_priority;
 Task *task;
 
-private void ltrs_thread(string parent_url)
+public void ltrs_thread(string parent_url)
 {
     _wpl         = new ScriptsWorkPlace();
     process_name = "ltr_scripts";
@@ -99,14 +85,15 @@ private void ltrs_thread(string parent_url)
 //    core.thread.Thread.getThis().name = thread_name;
 
     context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
-    context.set_vql (new XapianSearch(context));
 
-	vql = context.get_vql ();
+    context.set_vql(new FTQueryClient(context));
+
+    vql = context.get_vql();
 
     vars_for_codelet_script =
         "var uri = get_env_str_var ('$uri');"
         ~ "var user_uri = get_env_str_var ('$user');"
-        ~ "var execute_script = get_individual (ticket, '$execute_script');";
+        ~ "var execute_script = get_individual ('$execute_script');";
 
     script_vm = get_ScriptVM(context);
 
@@ -248,7 +235,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
     if (uri is null || uri.length <= 3 || script_vm is null ||
         script_uri is null || script_uri.length <= 3 ||
         executed_script_binobj is null || executed_script_binobj.length <= 3)
-        return ResultCode.OK;
+        return ResultCode.Ok;
 
     if (onto is null)
         onto = context.get_onto();
@@ -279,7 +266,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
 
     if (script is ScriptInfo.init)
     {
-        Individual codelet = context.get_individual(&sticket, script_uri, OptAuthorize.NO);
+        Individual codelet = context.get_individual(script_uri);
         prepare_script(_wpl, codelet, script_vm, "", "", vars_for_codelet_script, "", false);
     }
 
@@ -294,7 +281,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
             ResultCode res = g_context.commit(&tnx);
             tnx.reset();
 
-            if (res != ResultCode.OK)
+            if (res != ResultCode.Ok)
             {
                 log.trace("fail exec event script : %s", script.id);
                 return res;
@@ -308,7 +295,7 @@ ResultCode execute_script(string user_uri, string uri, string script_uri, string
         }
     }
 
-    return ResultCode.OK;
+    return ResultCode.Ok;
 }
 
 class ScriptProcess : VedaModule
@@ -333,16 +320,18 @@ class ScriptProcess : VedaModule
         return null;
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped)
     {
         committed_op_id = op_id;
 
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         if (new_indv.getFirstBoolean("v-s:isSuccess") == true)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         //string queue_id = "uris-tmp";
         //context.get_subject_storage_db().unload_to_queue(tmp_path, queue_id, true);
@@ -350,7 +339,7 @@ class ScriptProcess : VedaModule
         string queue_id = "uris-db";
         start_script(new_bin, queue_id);
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override bool configure()
@@ -367,8 +356,7 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        context.set_vql (new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
+        context.set_vql(new FTQueryClient(context));
 
         return true;
     }
@@ -385,7 +373,7 @@ private void start_script(string execute_script_srz, string queue_id)
         send(tid_ltr_scripts, CMD_START, execute_script_srz, queue_id);
 }
 
-private void shutdown_ltr_scripts()
+public void shutdown_ltr_scripts()
 {
     if (tid_ltr_scripts != Tid.init)
         send(tid_ltr_scripts, CMD_EXIT);

@@ -1,0 +1,26 @@
+{
+	"name": "vqueuectl",
+	"description": "command line for managing a veda queue",
+        "license": "LGPL v3",
+        "dependencies": {
+                "backtrace-d": "0.1.2",
+                "msgpack-d": "1.0.0-beta.6"
+        },
+        "libs": [
+                    "tarantool"
+        ],
+	"sourcePaths":[
+	    "source",
+	],
+	"sourceFiles":[
+            "../../lib64/libauthorization.a",
+	    "../../lib64/liblmdb.a",
+	],
+	"configurations": [
+	{
+	    "name": "app",
+	    "docs": ["syntaxOnly"],
+	    "targetType": "executable"
+	}
+	]
+}

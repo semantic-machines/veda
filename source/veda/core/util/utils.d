@@ -9,7 +9,7 @@ private
     import core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency, std.digest.crc;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates;
+    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.core.common.type, veda.util.container, veda.core.common.know_predicates;
     import veda.common.type;
 }
 
@@ -23,10 +23,14 @@ Logger log()
     return _log;
 }
 
-int get_slot(ref int[ string ] key2slot, string key)
+int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
 {
     if (key.length < 1)
+    {
+    	if (log_if_err !is null)
+			log_if_err.trace("ERR! key2slot, key is empty");    		
         return -1;
+    }    
 
     if (key[ 0 ] == '#')
     {
@@ -37,11 +41,22 @@ int get_slot(ref int[ string ] key2slot, string key)
         }
         catch (Throwable tr)
         {
+	    	if (log_if_err !is null)
+				log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);    		
+
             return -1;
         }
     }
 
-    return key2slot.get(key, -1);
+	int slot = key2slot.get(key, -1);
+	
+	if (slot < 0)
+	{
+    	if (log_if_err !is null)
+			log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);    		
+	}
+	
+	return slot;
 }
 
 public void subject2Ticket(ref Individual ticket, Ticket *tt)
@@ -224,7 +239,7 @@ public string serialize_key2slot(ref int[ string ] key2slot, out string hash_hex
 public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
 {
     int[ string ] key2slot;
-    rc = ResultCode.Internal_Server_Error;
+    rc = ResultCode.InternalServerError;
 
     try
     {
@@ -234,7 +249,7 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
             if (record.length != 2)
             {
                 stderr.writeln("ERR! key2slot, invalid record=", record);
-                rc = ResultCode.Unprocessable_Entity;
+                rc = ResultCode.UnprocessableEntity;
                 return key2slot;
             }
             //stderr.writeln ("@&2 record=[", record, "]");
@@ -243,22 +258,15 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
                 key2slot[ record[ 0 ] ] = record[ 1 ];
             idx++;
         }
-        rc = ResultCode.OK;
+        rc = ResultCode.Ok;
     }
     catch (Throwable tr)
     {
         stderr.writeln("ERR! key2slot err=", tr.msg);
-        rc = ResultCode.Unprocessable_Entity;
+        rc = ResultCode.UnprocessableEntity;
     }
 
     return key2slot;
-}
-
-string getNowAsString()
-{
-    SysTime sysTime = Clock.currTime();
-
-    return sysTime.toISOExtString();
 }
 
 string timeToString(long tm)
@@ -291,39 +299,6 @@ long stringToTime(string str)
     }
 }
 
-public JSONValue read_props(string file_name)
-{
-    JSONValue res;
-
-    if (std.file.exists(file_name))
-    {
-        char[] buff = cast(char[])std.file.read(file_name);
-
-        res = parseJSON(buff);
-    }
-    else
-    {
-        JSONValue transport = JSONValue([ "point" : JSONValue("tcp://*:5559") ]);
-        transport.object[ "transport" ] = JSONValue("zmq");
-
-        JSONValue transport1 = JSONValue([ "transport" : JSONValue("file_reader") ]);
-
-        JSONValue listeners = JSONValue([ transport, transport1 ]);
-        res = JSONValue([ "listeners" : listeners ]);
-
-        string buff = toJSON(res);
-
-        std.file.write(file_name, buff);
-    }
-
-    return res;
-}
-/*
-   string fromStringz(char *s)
-   {
-    return cast(string)(s ? s[ 0 .. strlen(s) ] : null);
-   }
- */
 string fromStringz(char *s, int len)
 {
     return cast(string)(s ? s[ 0 .. len ] : null);

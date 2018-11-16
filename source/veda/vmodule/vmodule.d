@@ -5,9 +5,9 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.outbuffer, std.algorithm : remove;
     import kaleidic.nanomsg.nano, veda.util.properd;
-    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
+    import veda.common.type, veda.core.common.define, veda.core.common.type, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
     import veda.common.logger, veda.core.impl.thread_context;
-    import veda.core.common.context, veda.util.tools, veda.onto.onto, veda.util.module_info, veda.common.logger;
+    import veda.core.common.context, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
 bool   f_listen_exit = false;
@@ -45,7 +45,7 @@ class VedaModuleBasic
     long           committed_op_id = 0;
 
     int            sock;
-    string         notify_channel_url = "tcp://127.0.0.1:9111\0";
+    string         notify_channel_url = null;
 
     bool           already_notify_channel = false;
 
@@ -69,7 +69,7 @@ class VedaModule : VedaModuleBasic
 
     Individual node;
 
-    string     main_module_url = "tcp://127.0.0.1:9112\0";
+    string     main_module_url = null;
     Ticket     sticket;
     string     message_header;
     string     module_uid;
@@ -149,6 +149,19 @@ class VedaModule : VedaModuleBasic
             return;
         }
 
+        try
+        {
+            string[ string ] properties;
+            properties         = readProperties("./veda.properties");
+            notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
+            main_module_url    = properties.as!(string)("main_module_url") ~ "\0";
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! unable read ./veda.properties");
+            return;
+        }
+
         module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
         if (!module_info.is_ready)
         {
@@ -196,19 +209,6 @@ class VedaModule : VedaModuleBasic
         // attempt open [prepareall] queue
         open_perapare_batch_queue(true);
         //load_systicket();
-
-        try
-        {
-            string[ string ] properties;
-            properties         = readProperties("./veda.properties");
-            notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
-            main_module_url    = properties.as!(string)("main_module_url") ~ "\0";
-        }
-        catch (Throwable ex)
-        {
-            log.trace("ERR! unable read ./veda.properties");
-        }
-
 
         sock = nn_socket(AF_SP, NN_SUB);
         if (sock >= 0)
@@ -378,9 +378,9 @@ class VedaModule : VedaModuleBasic
                         break;
                     }
 
-                    Individual indv = context.get_individual(&sticket, data, OptAuthorize.NO);
+                    Individual indv = context.get_individual(data);
 
-                    ResultCode rc = ResultCode.Internal_Server_Error;
+                    ResultCode rc = ResultCode.InternalServerError;
 
                     if (indv !is Individual.init)
                     {
@@ -395,7 +395,7 @@ class VedaModule : VedaModuleBasic
                         }
                     }
 
-                    if (rc != ResultCode.Connect_Error)
+                    if (rc != ResultCode.ConnectError)
                         prepare_batch_cs.commit_and_next(true);
 
                     main_queue.close();
@@ -450,7 +450,7 @@ class VedaModule : VedaModuleBasic
                 }
             }
 
-            if (priority(user_uri) != i)
+            if (user_uri !is null && user_uri.length > 3 && priority(user_uri) != i)
             {
                 main_cs[ i ].commit_and_next(true);
                 i = 0;
@@ -495,17 +495,17 @@ class VedaModule : VedaModuleBasic
                 ResultCode res = prepare(main_cs[ i ].name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
                                          count_popped);
 
-                if (res == ResultCode.OK)
+                if (res == ResultCode.Ok)
                 {
                     main_cs[ i ].commit_and_next(true);
                     module_info.put_info(op_id, committed_op_id);
                     //log.trace("put info: op_id=%d, committed_op_id=%d", op_id, committed_op_id);
                 }
-                else if (res == ResultCode.Connect_Error || res == ResultCode.Internal_Server_Error || res == ResultCode.Not_Ready ||
-                         res == ResultCode.Service_Unavailable || res == ResultCode.Too_Many_Requests)
+                else if (res == ResultCode.ConnectError || res == ResultCode.InternalServerError || res == ResultCode.NotReady ||
+                         res == ResultCode.ServiceUnavailable || res == ResultCode.TooManyRequests)
                 {
                     log.trace("WARN: message fail prepared, sleep and repeate...");
-                    Thread.sleep(dur!("seconds")(10));
+                    Thread.sleep(dur!("seconds")(1));
                 }
                 else
                 {
@@ -523,49 +523,7 @@ class VedaModule : VedaModuleBasic
         //if (count_readed != count_success_prepared)
         //    log.trace("WARN! : readed=%d, success_prepared=%d", count_readed, count_success_prepared);
     }
-/*
-    void load_systicket()
-    {
-        sticket = *context.get_storage().get_systicket_from_storage();
 
-        if (sticket is Ticket.init || sticket.result != ResultCode.OK)
-        {
-            log.trace("load_systicket: fail systicket=%s", text(sticket));
-
-            bool is_superadmin = false;
-
-            while (is_superadmin == false)
-            {
-                OutBuffer trace_acl = new OutBuffer();
-
-                context.get_rights_origin_from_acl(&sticket, "cfg:SuperUser", trace_acl, null);
-
-                foreach (rr; trace_acl.toString().split('\n'))
-                {
-                    string[] cc = rr.split(";");
-                    if (cc.length == 3)
-                    {
-                        string resource_group = cc[ 0 ];
-                        string subject_group  = cc[ 1 ];
-                        string right          = cc[ 2 ];
-
-                        if (subject_group == "cfg:SuperUser")
-                        {
-                            is_superadmin = true;
-                            break;
-                        }
-                    }
-                }
-
-                log.trace("child_process is_superadmin=%s", text(is_superadmin));
-                Thread.sleep(dur!("seconds")(1));
-            }
-        }
-
-        set_global_systicket(sticket);
-        log.trace("load_systicket: systicket=%s", text(sticket));
-    }
- */
     void ev_CALLBACK_GET_THREAD_ID()
     {
         //g_child_process.thread_id();

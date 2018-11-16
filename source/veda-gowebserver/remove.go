@@ -12,7 +12,7 @@ import (
 //request is redirected to veda-server via socket
 //veda-server removes the given field from the individual
 func removeFromIndividual(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now()
 
 	var assignedSubsystems uint64
 	var ticketKey, eventID string
@@ -55,7 +55,7 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 //request redirected to veda-server via socket
 //veda-server removes given individual from the storage
 func removeIndividual(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now().Unix()
+	timestamp := time.Now()
 
 	var assignedSubsystems uint64
 	var ticketKey, eventID string

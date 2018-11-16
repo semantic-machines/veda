@@ -39,6 +39,7 @@ v-s:ScheduledAction
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Action ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Journaling ;
   rdfs:label "Запланированное событие"@ru ;
   rdfs:label "Scheduled action"@en ;
   v-ui:hasTemplate v-s:SingleScheduledActionTemplate ;
@@ -49,6 +50,7 @@ v-s:ScheduledAction
 # v-s:responsible
 # v-s:controller
 # v-s:dateToPlan
+# v-s:scriptHandlered
 v-s:hasPeriod
   rdf:type owl:ObjectProperty ;
   rdfs:label "Период"@ru ;
@@ -170,6 +172,7 @@ v-s:ScheduledActionTemplate
     ScheduledAction["v-s:backwardTarget"] = [individual];
     ScheduledAction["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasScheduledAction")];
     ScheduledAction["v-s:canRead"] = [ true ];
+    ScheduledAction["v-s:scriptHandlered"] = [ false ];
     ScheduledAction.present(cntr, tmpl, "edit");
     ScheduledAction.one("afterSave beforeReset", function () {
       addScheduledAction.show();
@@ -228,7 +231,7 @@ v-s:SingleScheduledActionTemplate
 </script>
 <div class="panel panel-default" style="margin-top: 20px">
   <div class="panel-body">
-
+  <span about="@" data-template="v-ui:RabbitHole"></span>
     <div class="row">
       <div class="col-md-12">
         <em about="v-s:description" property="rdfs:label"></em>
@@ -255,7 +258,7 @@ v-s:SingleScheduledActionTemplate
         <veda-control data-type="dateTime" property="v-s:dateToPlan" class="-view edit -search"></veda-control>
       </div>
       <div class="col-md-3">
-        <em about="v-s:TaskPreiodBundle" property="rdfs:label"></em>
+        <em about="v-s:TaskPeriodBundle" property="rdfs:label"></em>
         <div rel="v-s:hasPeriod" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
         <veda-control data-type="link" rel="v-s:hasPeriod" class="-view edit search fullsearch fulltext dropdown"></veda-control>
       </div>
@@ -305,6 +308,7 @@ v-s:RecursiveScheduledActionTemplate
 </script>
 <div class="media" style="overflow:initial;">
   <div class="media-body" style="overflow:initial;">
+    <div rel="v-s:backwardTarget" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></div>
     <div id="ScheduledAction-content">
       <div class="row">
         <div class="col-md-12">
@@ -350,6 +354,8 @@ v-s:RecursiveScheduledActionTemplate
         <a href="#" id="edit-ScheduledAction" class="action" about="v-s:Edit" property="rdfs:label"></a>
         &nbsp;
         <a href="#" id="delete" class="action" about="v-s:Delete" property="rdfs:label"></a>
+        &nbsp;
+        <a href="#" id="journal" class="action" about="v-s:Journal" property="rdfs:label"></a>
       </small>
     </div>
     <div id="new-reply"></div>
@@ -357,7 +363,114 @@ v-s:RecursiveScheduledActionTemplate
     <div about="@" rel="v-s:hasScheduledAction" data-template="v-s:RecursiveCommentTemplate"></div>
   </div>
 </div>
+<script>
+  $("#journal", template).on("click", function (e) {
+    e.preventDefault();
+    var journal_uri = individual.id + "j",
+        journal = new veda.IndividualModel(journal_uri);
+    if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
+      riot.route("#/" + journal_uri);
+    } else {
+      var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty")["rdfs:label"].join(" ");
+      alert(journalEmpty);
+    }
+  });
+</script>
   """ ;
 .
 
 # ------------  / ScheduledAction template ---------------
+
+# ------------  ScheduledAction events ---------------
+
+cfg:ScheduledAction_CreateInstruction_Daily
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Создание поручения для запланированных событий" ;
+  v-s:triggerByUid cfg:daily ;
+  v-s:runAt "V8.LowPriority";
+  v-s:script """
+print("[cfg:ScheduledAction_CreateInstruction_Daily] ************************** START **************************");
+
+var queryString = "( 'rdf:type'==='v-s:ScheduledAction' && 'v-s:scriptHandlered'=='false' )";
+var result = query(ticket, queryString).result;
+for (var i=0; i<result.length; i++){
+  var individ = new veda.IndividualModel(result[i]);
+  if (veda.Util.hasValue(individ, 'v-s:dateToFact')) {
+    print('Skip, because was processed: ',result[i]);
+    continue;
+  };
+  if (!individ.hasValue('v-s:backwardTarget')){
+    print('Skip, because not found backwardTarget: ',result[i]);
+    continue;
+  }
+  if (!individ.hasValue('v-s:dateToPlan')){
+    print('Skip, because not found dateToPlan: ',result[i]);
+    continue;
+  }
+  var deadline = individ['v-s:dateToPlan'][0];
+  var period = individ['v-s:hasPeriod'][0];
+  var delta;
+  if (individ.hasValue('v-s:hasPeriod', 'd:z8r34mi5y8rl8m4kbo3q69uw5d')) {
+    delta = 86400000;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:a21t5y3pswuewm8ohjexiqtxscr')) {
+    delta = 86400000*7;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:pqauzdiqyls7pzrawelnh2zwj3')) {
+    delta = 86400000*30;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:a28m44dm9yw04j7hf69r4i40sn5')) {
+    delta = 86400000*121;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:p699yrkgnd7bamjaqwx305o5hi')) {
+    delta = 86400000*365;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:jsc4p8dq5u4fm1sumekuifkw7r')) {
+    delta = 86400000/24;
+  } else {
+    print("Skip, because hasPeriod empty: ",result[i]);
+    continue;
+  }
+  //скрипт выполняется ночью, для этого deadline смещается на полночь
+  var today = new Date();
+
+  var targetDate = +today+delta;
+  deadline = deadline.setHours(0,0,0,0);
+  if ((deadline - targetDate) > 0) {
+    print("Skip, because too early: ",result[i]);
+    continue;
+  }
+  var uri = veda.Util.genUri() + "-tr";
+  var comment = individ['v-s:description'][0];
+  print(veda.Util.toJson(comment));
+  var startForm = {
+    "@" : uri,
+    "rdf:type" : veda.Util.newUri("v-df:InstructionRouteStartForm"),
+    "v-wf:StartForm_canEdit" : veda.Util.newBool(false),
+    "v-wf:StartForm_setStatus" : veda.Util.newBool(true),
+    "v-wf:forNet" : veda.Util.newUri("s-wf:WrapUniversalNet"),
+    "v-wf:processedDocument" : veda.Util.newUri(result[i]),
+    "v-wf:useTransformation" : veda.Util.newUri("v-df:InstructionRouteStartFormToNet"),
+    "v-s:responsible" : veda.Util.newUri(individ['v-s:responsible'][0].id),
+    "v-wf:hasStatusWorkflow" : veda.Util.newUri("v-wf:ToBeSent"),
+    "v-wf:fromShedulerScript" : veda.Util.newBool(true),
+    "v-s:creator" : veda.Util.newUri ('cfg:VedaSystemAppointment'),
+    "v-s:dateTo" : veda.Util.newDate(individ['v-s:dateToPlan'][0])
+  };
+  if (individ.hasValue('v-s:description')){
+    startForm['rdfs:comment'] = veda.Util.newStr(individ['v-s:description'][0]);
+  }
+  if (individ.hasValue('v-s:controller')) {
+    startForm['v-s:controller'] = veda.Util.newUri(individ['v-s:controller'][0].id);
+  }
+  put_individual(ticket, startForm, _event_id);
+  var set_in_document = {
+    '@': result[i]
+  };
+  set_in_document['v-s:scriptHandlered'] = veda.Util.newBool('true');
+  set_in_document['v-s:dateToFact'] = veda.Util.newDate(today);
+  set_in_individual(ticket, set_in_document, _event_id);
+  print("Created: ", uri, ". For document:", result[i]);
+}
+
+print("[cfg:ScheduledAction_CreateInstruction_Daily] *************************** END ***************************");
+""" ;
+.
+
+# ------------  / ScheduledAction events ---------------

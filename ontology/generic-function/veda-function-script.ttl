@@ -397,7 +397,7 @@ this.fn = function (individual_uri) {
 
 v-s:OperationUpdate
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Operation ;
+  rdfs:subClassOf v-s:GenericOperation ;
   rdfs:label "Обновить"@ru ;
   rdfs:label "Update"@en ;
   v-ui:hasModel v-s:OperationUpdateModel ;

@@ -4,7 +4,7 @@
 
 module veda.search.common.isearch;
 
-import veda.common.type, veda.onto.individual;
+import veda.common.type, veda.core.common.type, veda.onto.individual;
 
 public struct SearchResult
 {
@@ -16,7 +16,7 @@ public struct SearchResult
     long       total_time;
     long       query_time;
     long       authorize_time;
-    ResultCode result_code = ResultCode.Not_Ready;
+    ResultCode result_code = ResultCode.NotReady;
 }
 
 interface Search

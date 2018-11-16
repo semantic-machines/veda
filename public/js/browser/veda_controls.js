@@ -76,11 +76,6 @@
       }
     }
 
-    this.on("veda_focus", function (e) {
-      input.trigger("focus");
-      e.stopPropagation();
-    });
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
@@ -190,7 +185,7 @@
     this.on("edit", function () {
       autosize.update(ta);
     });
-    this.on("remove", function () {
+    this.one("remove", function () {
       autosize.destroy(ta);
     });
     this.append(control);
@@ -378,11 +373,6 @@
       change(value);
     });
 
-    this.on("veda_focus", function (e) {
-      input.trigger("focus");
-      e.stopPropagation();
-    });
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "search") {
@@ -398,7 +388,7 @@
       return input.val(value);
     };
 
-    this.on("remove", function () {
+    this.one("remove", function () {
       control.data("DateTimePicker").destroy();
     });
 
@@ -569,15 +559,6 @@
       });
     }
 
-    this.on("veda_focus", function (e, value) {
-      input.each(function () {
-        if ( value.language === this.lang || !value.language ) {
-          $(this).trigger("focus");
-        }
-      });
-      e.stopPropagation();
-    });
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
@@ -661,7 +642,7 @@
       $this.on("edit", function () {
         autosize.update(ta);
       });
-      $this.on("remove", function () {
+      $this.one("remove", function () {
         autosize.destroy(ta);
       });
       $this.append(control);
@@ -1144,6 +1125,98 @@
     template: $("#radio-control-template").html(),
   };
 
+//new radio control
+  $.fn.veda_booleanRadio = function (options) {
+    var opts = $.extend( {}, $.fn.veda_booleanRadio.defaults, options ),
+      control = $(opts.template),
+      individual = opts.individual,
+      property_uri = opts.property_uri || opts.rel_uri,
+      spec = opts.spec,
+      holder = $(".radio", control),
+      trueOption = { 
+        label: spec && spec.hasValue("v-ui:trueLabel") ? spec.get("v-ui:trueLabel").join(" ") : new veda.IndividualModel("v-s:YesBundle").get("rdfs:label").join(" "),
+        value: true
+      },
+      falseOption = {
+        label: spec && spec.hasValue("v-ui:falseLabel") ? spec.get("v-ui:falseLabel").join(" ") : new veda.IndividualModel("v-s:NoBundle").get("rdfs:label").join(" "),
+        value: false
+      },
+      options = [trueOption, falseOption];
+    
+    renderOptions();
+
+    individual.on(property_uri, changeHandler);
+    this.one("remove", function () {
+      individual.off(property_uri, changeHandler);
+    });
+    
+    function renderOptions() {
+      control.empty();
+      options.map(function (option) {
+        var hld = holder.clone().appendTo(control);
+        var lbl = $("label", hld).append( option.label );
+        var rad = $("input", lbl).data("value", option.value);
+        var hasValue = individual.hasValue(property_uri, option.value);
+        rad.prop("checked", hasValue);
+        rad.change(function () {
+          if ( rad.is(":checked") ) {
+            individual.set(property_uri, [rad.data("value")]);
+          } else {
+            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
+              return i.valueOf() !== rad.data("value").valueOf();
+            }));
+          }
+        });
+      });
+    }
+
+    function changeHandler() {
+      $("input", control).each(function () {
+        var value = $(this).data("value");
+        var hasValue = individual.hasValue(property_uri, value);
+        $(this).prop("checked", hasValue);
+      });
+    }
+    
+    if (spec && spec.hasValue("v-ui:tooltip")) {
+      control.tooltip({
+        title: spec["v-ui:tooltip"].join(", "),
+        placement: "left",
+        container: "body",
+        trigger: "hover",
+        animation: false
+      });
+      control.one("remove", function () {
+        control.tooltip("destroy");
+      });
+    }
+    
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+      if (e.type === "view") {
+        $("div.radio", control).addClass("disabled");
+        $("input", control).attr("disabled", "true");
+      } else {
+        $("div.radio", control).removeClass("disabled");
+        $("input", control).removeAttr("disabled");
+      }
+    });
+    this.val = function (value) {
+      if (!value) return $("input", this).map(function () { return this.value; });
+      populate();
+      return this;
+    };
+    this.populate = function () {
+      populate();
+      return this;
+    };
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_booleanRadio.defaults = {
+    template: $("#radio-control-template").html(),
+  };
+
   // Numeration control
   $.fn.veda_numeration = function( options ) {
     var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
@@ -1298,7 +1371,7 @@
       }
     }
     individual.on(property_uri, handler );
-    this.on("remove", function () {
+    this.one("remove", function () {
       individual.off(property_uri, handler);
     });
 
@@ -1723,7 +1796,7 @@
       this.on("edit", function () {
         autosize.update(fulltext);
       });
-      this.on("remove", function () {
+      this.one("remove", function () {
         autosize.destroy(fulltext);
       });
 

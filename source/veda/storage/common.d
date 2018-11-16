@@ -19,7 +19,6 @@ public interface KeyValueDB
     public string get_binobj(string uri);
     public void get_individual(string uri, ref Individual indv);
 
-    public long get_last_op_id();
     public void open();
     public void reopen();
     public void close();

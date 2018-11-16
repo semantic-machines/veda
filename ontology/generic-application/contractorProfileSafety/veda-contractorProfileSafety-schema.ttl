@@ -41,7 +41,6 @@ v-s:hasKindOfWork
   rdfs:range v-s:KindOfWork ;
   rdfs:domain v-s:ContractorProfileSafety ;
 .
-
 # ------------------------------------------------------------
 v-s:KindOfWork
   rdf:type owl:Class ;

@@ -11,8 +11,7 @@ private
     import std.stdio, std.datetime.stopwatch, std.conv, std.concurrency, std.outbuffer, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                                      : SwapStrategy;
     import veda.onto.resource, veda.onto.individual;
-    import veda.core.util.utils, veda.util.container, veda.common.logger, veda.common.type;
-    import veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg, veda.core.common.define;
+    import veda.common.logger, veda.common.type;
 }
 
 alias bool[ string ] Names;
@@ -91,7 +90,6 @@ private class Bdathe
 
 class Onto
 {
-    private Context context;
     private Logger  log;
     public int      reload_count = 0;
 
@@ -100,10 +98,9 @@ class Onto
     private Bdathe  _class;
     private Bdathe  _property;
 
-    public this(Context _context)
+    public this(Logger _log)
     {
-        context   = _context;
-        log       = context.get_logger();
+        log       = _log;
         _class    = new Bdathe();
         _property = new Bdathe();
     }
@@ -151,35 +148,15 @@ class Onto
         return false;
     }
 
-    public void load()
+    public void load(Individual[] l_individuals)
     {
         StopWatch sw1;
-
-        sw1.start();
-
-        reload_count++;
-        if (trace_msg[ 20 ] == 1)
-            log.trace_log_and_console("[%s] load onto..", context.get_name);
-
-        context.reopen_ro_individuals_storage_db();
-        context.reopen_ro_fulltext_indexer_db();
-
-        Ticket       sticket = context.sys_ticket();
-
-        Individual[] l_individuals = context.get_individuals_via_query(
-                                                                       sticket.user_uri,
-                                                                       "'rdf:type' === 'rdfs:Class' || 'rdf:type' === 'rdf:Property' || 'rdf:type' === 'owl:Class' || 'rdf:type' === 'owl:ObjectProperty' || 'rdf:type' === 'owl:DatatypeProperty'",
-                                                                       OptAuthorize.NO, 10000, 10000);
-
-        sw1.stop();
-
-        log.trace_log_and_console("[%s] load onto, count individuals: %d, time=%d µs", context.get_name, l_individuals.length, sw1.peek.total !"usecs");
-
 
         foreach (indv; l_individuals)
             individuals[ indv.uri ] = indv;
 
-        sw1.reset();
+        reload_count++;
+
         sw1.start();
 
         foreach (indv; l_individuals)
@@ -187,8 +164,7 @@ class Onto
 
         sw1.stop();
 
-        //if (trace_msg[ 20 ] == 1)
-        log.trace_log_and_console("[%s] update hierarhy in mem, time=%d µs", context.get_name, sw1.peek.total !"usecs");
+        log.trace_log_and_console("update hierarhy in mem, time=%d µs", sw1.peek.total !"usecs");
 
         //log.trace ("LOAD *** class *** \n%s", _class.toString());
         //log.trace ("LOAD *** property *** \n%s", _property.toString());
@@ -234,7 +210,7 @@ class Onto
                 icl = _class.el_2_super_els.get(type_uri, null);
 
             if (icl is null)
-                _update_element(type_uri, _class, rdfs__subClassOf);
+                _update_element(type_uri, _class, "rdfs:subClassOf");
 
             //_class.els [indv.uri] = true;
 
@@ -248,7 +224,7 @@ class Onto
 
             foreach (cl; nuscs.keys)
             {
-                _update_element(cl, _class, rdfs__subClassOf);
+                _update_element(cl, _class, "rdfs:subClassOf");
                 _class.orphans[ cl ] = false;
             }
 

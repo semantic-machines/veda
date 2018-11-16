@@ -4,10 +4,99 @@
 module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import std.concurrency;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
-private import veda.core.common.context, veda.util.tools, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.xapian.xapian_search, veda.gluecode.script, veda.gluecode.v8d_header;
+private import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
+private import veda.gluecode.script, veda.gluecode.v8d_header, veda.gluecode.ltr_scripts;
+
+int main(string[] args)
+{
+    writeln("args = ", args);
+    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "ltr"))
+    {
+        writefln("use %s [main/lp/ltr]", args[ 0 ]);
+        return -1;
+    }
+
+    string vm_id = args[ 1 ];
+
+    process_name = "scripts-" ~ vm_id;
+    Logger log = new Logger("veda-core-" ~ process_name, "log", "");
+    log.tracec("use VM id=%s", vm_id);
+
+    if (vm_id == "main")
+    {
+        {
+            Thread.sleep(dur!("seconds")(1));
+
+            ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, MODULE.scripts_main, log);
+            p_script.run();
+        }
+    }
+    else if (vm_id == "lp")
+    {
+        Thread.getThis().priority(Thread.PRIORITY_MIN);
+
+        ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp, log);
+        p_script.run();
+    }
+    else if (vm_id == "ltr")
+    {
+        core.thread.Thread.sleep(dur!("seconds")(2));
+
+        ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, log);
+        //log = p_script.log();
+
+        tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
+
+        p_script.run();
+
+        shutdown_ltr_scripts();
+    }
+
+    return 0;
+}
+
+class ScriptProcessLowPriority : ScriptProcess
+{
+    Consumer main_cs_r;
+    string   main_queue_cs = "scripts_main0";   // TODO переделать
+
+    this(string _vm_id, SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
+    {
+        super(_vm_id, _subsystem_id, _module_id, log);
+    }
+
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id,
+                                long op_id, long count_pushed,
+                                long count_popped)
+    {
+        if (main_cs_r is null)
+        {
+            log.trace("INFO: open %s, %s, %s", main_queue, my_consumer_path, main_queue_cs);
+            main_cs_r = new Consumer(main_queue, my_consumer_path, main_queue_cs, Mode.R, log);
+            while (main_cs_r.open(true, Mode.R) == false)
+            {
+                log.trace("WARN: main queue consumer not open, sleep and repeate");
+                core.thread.Thread.sleep(dur!("seconds")(1));
+            }
+        }
+
+        main_cs_r.reopen();
+        while (main_cs_r.count_popped < count_popped)
+        {
+            log.tracec("INFO: sleep, scripts_main=%d, my=%d", main_cs_r.count_popped, count_popped);
+            core.thread.Thread.sleep(dur!("seconds")(1));
+            main_cs_r.reopen();
+        }
+
+        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed, count_popped);
+    }
+}
 
 class ScriptProcess : VedaModule
 {
@@ -56,10 +145,10 @@ class ScriptProcess : VedaModule
                                 long count_popped)
     {
         if (script_vm is null)
-            return ResultCode.Not_Ready;
+            return ResultCode.NotReady;
 
         if (src != "?" && queue_name != src)
-            return ResultCode.OK;
+            return ResultCode.Ok;
 
         //writeln ("#prev_indv=", prev_indv);
         //writeln ("#new_indv=", new_indv);
@@ -78,7 +167,7 @@ class ScriptProcess : VedaModule
             if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
             {
                 committed_op_id = op_id;
-                return ResultCode.OK;
+                return ResultCode.Ok;
             }
 
             if (itype == veda_schema__Event)
@@ -136,18 +225,11 @@ class ScriptProcess : VedaModule
                     continue;
 
                 //log.trace("look script:%s", script_id);
-                if (script.unsafe == true)
-                {
-                    log.trace("WARN! this script is UNSAFE!, %s", script_id);
-                }
-                else if (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE"))
+                if (script.unsafe == false && (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE")))
                 {
                     //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
                     continue;
                 }
-
-                //if (script.run_at != vm_id)
-                //    continue;
 
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
@@ -157,6 +239,8 @@ class ScriptProcess : VedaModule
                     continue;
                 }
 
+                if (script.unsafe == true)
+                    log.trace("WARN! this script is UNSAFE!, %s", script_id);
 
                 //log.trace("filter pass script:%s", script_id);
 
@@ -164,25 +248,18 @@ class ScriptProcess : VedaModule
                 {
                     tnx.reset();
 
-/*
-                                    if (count_sckip == 0)
-                                    {
-                                            long now_sckip;
-                                            writefln("... start exec event script : %s %s %d %s", script_id, individual_id, op_id, event_id);
-                                            readf(" %d", &now_sckip);
-                                            count_sckip = now_sckip;
-                                    }
-
-                                    if (count_sckip > 0)
-                                        count_sckip--;
- */
                     log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
                     tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
-                    tnx.src           = queue_name;
+
+                    if (script.disallow_changing_source == true)
+                        tnx.src = src;
+                    else
+                        tnx.src = queue_name;
+
                     ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
                     //log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
@@ -191,7 +268,7 @@ class ScriptProcess : VedaModule
                         log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
                     }
 
-                    if (res != ResultCode.OK)
+                    if (res != ResultCode.Ok)
                     {
                         log.trace("fail exec event script : %s", script_id);
                         return res;
@@ -209,19 +286,16 @@ class ScriptProcess : VedaModule
         //log.trace("count:", count);
 
         // clear_script_data_cache ();
-        // log.trace("scripts B #e *", process_name);
         committed_op_id = op_id;
 
-        return ResultCode.OK;
+        return ResultCode.Ok;
     }
 
     override bool open()
     {
+        context.set_vql(new FTQueryClient(context));
 
-        context.set_vql (new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
-
-	vql = context.get_vql();
+        vql       = context.get_vql();
         script_vm = get_ScriptVM(context);
 
         if (script_vm !is null)
@@ -281,12 +355,12 @@ class ScriptProcess : VedaModule
 
         Individual[] res;
 
-        auto         si = context.get_storage().get_info(MODULE.subject_manager);
+        auto         si = context.get_info(MODULE.subject_manager);
 
         bool         is_ft_busy = true;
         while (is_ft_busy)
         {
-            auto mi = context.get_storage().get_info(MODULE.fulltext_indexer);
+            auto mi = context.get_info(MODULE.fulltext_indexer);
 
             log.trace("wait for the ft-index to finish storage.op_id=%d ft.committed_op_id=%d ...", si.op_id, mi.committed_op_id);
 

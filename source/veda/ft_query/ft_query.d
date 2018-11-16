@@ -6,8 +6,9 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.common.logger, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define, veda.search.common.isearch,
-       veda.search.xapian.xapian_search;
+import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.type;
+import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
+import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
 
 static this()
 {
@@ -66,7 +67,7 @@ private nothrow string req_prepare(string request, Context context)
                     else
                     {
                         Ticket *ticket;
-                        ticket = context.get_storage().get_ticket(_ticket, false);
+                        ticket = context.get_ticket(_ticket, false);
                         if (ticket is null)
                         {
                             context.get_logger.trace("ERR! ticket not fount: ticket_id = %s", _ticket);
@@ -74,7 +75,7 @@ private nothrow string req_prepare(string request, Context context)
                         else
                         {
                             if (ticket.user_uri is null || ticket.user_uri.length == 0)
-                                context.get_logger.trace("ERR! user not found in ticket object, ticket_id=%s, ticket=%s", _ticket, ticket);
+                                context.get_logger.trace("ERR! ft_query: user not found in ticket object, ticket_id=%s, query=%s", _ticket, _query);
                             else
                                 user_uri = ticket.user_uri;
                         }
@@ -86,15 +87,30 @@ private nothrow string req_prepare(string request, Context context)
                     try
                     {
                         if (_reopen)
+                        {
                             context.reopen_ro_fulltext_indexer_db();
+
+                            Individual indv = context.get_individual("cfg:OntoVsn");
+                            if (indv.getStatus() == ResultCode.Ok)
+                            {
+                                long new_onto_vsn = indv.getFirstInteger("v-s:updateCounter");
+                                if (new_onto_vsn != onto_vsn)
+                                {
+                                    context.onto_load();
+                                    onto_vsn = new_onto_vsn;
+                                }
+                            }
+                        }
 
                         res = context.get_individuals_ids_via_query(user_uri, _query, _sort, _databases, _from, _top, _limit, OptAuthorize.YES, false);
                     }
                     catch (Throwable tr)
                     {
                         context.get_logger.trace("ERR! get_individuals_ids_via_query, %s", tr.msg);
-                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query, _sort,
-                                                 _databases, _from, _top, _limit);
+                        context.get_logger.trace("REQUEST: user=%s, query=%s, sort=%s, databases=%s, from=%d, top=%d, limit=%d", user_uri, _query,
+                                                 _sort,
+                                                 _databases, _from, _top,
+                                                 _limit);
                     }
                 }
 
@@ -139,12 +155,39 @@ private string to_json_str(SearchResult res)
 }
 
 
+private Authorization get_acl_client(Logger log)
+{
+    Authorization acl_client;
+
+    try
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        string acl_service = properties.as!(string)("acl_service_url");
+        if (acl_service !is null)
+            acl_client = new ClientAuthorization(acl_service, log);
+        else
+        {
+            acl_client = new AuthorizationUseLib(log);
+        }
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+    }
+
+    return acl_client;
+}       
+
+
 private long   count;
 private Logger log;
+private long   onto_vsn;
+private Ticket sticket;
 
 void main(string[] args)
 {
-    string bind_url = "tcp://127.0.0.1:23000";
+    string bind_url = null;
 
     try
     {
@@ -161,6 +204,22 @@ void main(string[] args)
         return;
     }
 
+    if (bind_url is null || bind_url.length < 10)
+    {
+        try
+        {
+            string[ string ] properties;
+            properties = readProperties("./veda.properties");
+            bind_url   = properties.as!(string)("ft_query_service_url") ~ "\0";
+        }
+        catch (Throwable ex)
+        {
+            log.trace("ERR! unable read ./veda.properties");
+            return;
+        }
+    }
+
+
     string[] tpcs      = bind_url.split(":");
     string   log_sufix = "";
     if (tpcs.length == 3)
@@ -168,11 +227,17 @@ void main(string[] args)
         log_sufix = tpcs[ 2 ];
     }
 
-    int     sock;
+    int sock;
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
-    Ticket  systicket;
+
     Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
+    sticket = ctx.sys_ticket();
+    ctx.set_az (get_acl_client(log));
     ctx.set_vql(new XapianSearch(ctx));
+
+    Individual indv = ctx.get_individual("cfg:OntoVsn");
+    if (indv.getStatus() == ResultCode.Ok)
+        onto_vsn = indv.getFirstInteger("v-s:updateCounter");
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)

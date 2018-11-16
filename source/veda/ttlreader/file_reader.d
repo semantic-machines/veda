@@ -10,7 +10,7 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.util.properd, veda.core.common.type;
 
 
 // ////// Logger ///////////////////////////////////////////
@@ -94,7 +94,20 @@ void main(char[][] args)
             need_reload_ontology = true;
     }
 
-    string parent_url = "tcp://127.0.0.1:9112\0";
+    string parent_url = null;
+
+    try
+    {
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+        parent_url = properties.as!(string)("main_module_url") ~ "\0";
+    }
+    catch (Throwable ex)
+    {
+        log.trace("ERR! unable read ./veda.properties");
+        return;
+    }
+
 
     Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
@@ -110,7 +123,7 @@ void main(char[][] args)
 
     sticket = context.sys_ticket();
 
-    while (sticket.result != ResultCode.OK)
+    while (sticket.result != ResultCode.Ok)
     {
         Thread.sleep(dur!("seconds")(1));
         log.trace("fail read systicket: wait 1s, and repeate");
@@ -290,10 +303,10 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
     {
         if (extension(fname) == ".ttl" && fname.indexOf("#") < 0 && fname.indexOf("module.ttl") < 0)
         {
-            log.trace("change file %s", fname);
+            log.trace("check file %s", fname);
 
             string     file_uri       = "d:" ~ baseName(fname);
-            Individual indv_ttrl_file = context.get_individual(&sticket, file_uri, OptAuthorize.NO);
+            Individual indv_ttrl_file = context.get_individual(file_uri);
 
             if (!is_check)
             {
@@ -317,9 +330,9 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
                     if (new_hash != old_hash)
                     {
                         log.trace("file is modifed (hash), %s", fname);
+	                    files_to_load ~= fname;
+	                    is_reload = true;
                     }
-                    files_to_load ~= fname;
-                    is_reload = true;
                 }
             }
         }
@@ -431,8 +444,8 @@ void processed(string[] changes, Context context, bool is_check_changes)
                     {
                         individuals[ uri ] = Individual.init;
 
-                        Individual indv_in_storage = context.get_individual(&sticket, uri, OptAuthorize.NO);
-						long prev_update_counter = indv_in_storage.getFirstInteger ("v-s:updateCounter"); 
+                        Individual indv_in_storage     = context.get_individual(uri);
+                        long       prev_update_counter = indv_in_storage.getFirstInteger("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:updateCounter");
                         indv_in_storage.removeResource("v-s:previousVersion");
                         indv_in_storage.removeResource("v-s:actualVersion");
@@ -450,15 +463,15 @@ void processed(string[] changes, Context context, bool is_check_changes)
                                     log.trace("store, uri=%s %s \n--- prev ---\n%s \n--- new ----\n%s", indv.uri, uri, text(indv),
                                               text(indv_in_storage));
 
-								if (prev_update_counter > 0)
-									indv.addResource("v-s:updateCounter", Resource (prev_update_counter));
+                                if (prev_update_counter > 0)
+                                    indv.addResource("v-s:updateCounter", Resource(prev_update_counter));
 
                                 ResultCode res = context.update(null, -1, &sticket, INDV_OP.PUT, &indv, null, ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO).result;
 
                                 if (trace_msg[ 33 ] == 1)
                                     log.trace("file reader:store, uri=%s", indv.uri);
 
-                                if (res != ResultCode.OK)
+                                if (res != ResultCode.Ok)
                                     log.trace("individual [%s], not store, errcode =%s", indv.uri, text(res));
 
                                 is_loaded = true;

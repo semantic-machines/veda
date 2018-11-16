@@ -99,42 +99,5 @@ export default class basic {
       .click('button#save')
   }
 
-  async attributiveSearch(last, first, middle, birthDate, eql) {
-    await t
-      .click('#menu')
-      .click('li[id="menu"] li[resource="v-s:Find"]')
-      .click('ul#req-tabs a[about="v-fs:AttributiveBundle"]')
-      //.click('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]')
-      //.pressKey('ctrl+a delete')
-      .typeText('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]', 'Персона')
-      .click('div.suggestion[resource="v-s:Person"]')
-      .click('veda-control[property="v-s:lastName"] input.form-control[name="v_s_person_v_s_lastname"]', last)
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-s:lastName"] input.form-control[name="v_s_person_v_s_lastname"]', last)
-      .click('veda-control[property="v-s:firstName"] input.form-control[name="v_s_person_v_s_firstname"]', first)
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-s:firstName"] input.form-control[name="v_s_person_v_s_firstname"]', first)
-      .click('veda-control[property="v-s:middleName"] input.form-control[name="v_s_person_v_s_middlename"]', middle)
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-s:middleName"] input.form-control[name="v_s_person_v_s_middlename"]', middle)
-      .click('veda-control[property="v-s:birthday"] input.form-control[name="v_s_person_v_s_birthday"]', birthDate)
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="v-s:birthday"] input.form-control[name="v_s_person_v_s_birthday"]', birthDate)
-      .click('veda-control[property="v-s:lastName"] input.form-control[name="v_s_person_v_s_lastname"]')
-      .click('button#find')
-      .expect(Selector('a#results-pill-at span#results-count.badge').innerText).eql(eql)
-  }
-  async attributiveSearchTestUi(timeStamp) {
-    await t
-      .click('#menu')
-      .click('li[id="menu"] li[resource="v-s:Find"]')
-      .click('ul#req-tabs a[about="v-fs:AttributiveBundle"]')
-      .typeText('veda-control.fulltext.dropdown[rel="v-fs:typeToSearch"] textarea.form-control.fulltext[name="v_fs_attributiverequest_v_fs_typetosearch"]', 'Класс для тестирования интерфейса')
-      .click('div.suggestion[resource="v-ui:TestUIClass"]')
-      .typeText('veda-control.-view.edit.search[property="rdfs:comment"]', timeStamp)
-      .wait(1000)
-      .click('button#find')
-  }
-
 }
 

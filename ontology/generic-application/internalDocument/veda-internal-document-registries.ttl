@@ -21,8 +21,8 @@
 
 v-s:InternalDocumentRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Внутренний документ"@ru ;
-  rdfs:label "Internal document"@en ;
+  rdfs:label "Внутренние документы"@ru ;
+  rdfs:label "Internal documents"@en ;
   v-fs:searchBlank v-s:InternalDocumentRegistryBlank ;
   v-fs:searchBlankTemplate v-s:InternalDocumentTemplate ;
   v-fs:searchResultTemplate v-s:InternalDocumentRegistryResultTemplate ;

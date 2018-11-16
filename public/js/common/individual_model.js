@@ -353,6 +353,12 @@ veda.Module(function (veda) { "use strict";
    * Save current individual to database
    */
   proto.save = function() {
+    // Do not save rdfs:Resource
+    if ( this.hasValue("rdf:type", "rdfs:Resource") ) {
+      var notify = veda.Notify ? new veda.Notify() : console.log;
+      notify("danger", { message: "Не могу сохранить объект типа rdfs:Resource" });
+      return this;
+    }
     // Do not save individual to server if nothing changed
     if (this.isSync()) { return Promise.resolve(this); }
     var self = this;
