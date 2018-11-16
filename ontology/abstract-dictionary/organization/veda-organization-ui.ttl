@@ -577,6 +577,9 @@ v-s:DepartmentTemplate
         <em about="v-s:hasChief" property="rdfs:label"></em>
         <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
+        <em about="v-s:hasFieldChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFieldChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFieldChief" class="-view edit search fulltext"></veda-control>        
       </div>
       <div class="col-sm-6">
         <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
