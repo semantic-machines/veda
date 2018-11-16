@@ -94,21 +94,6 @@ void main(char[][] args)
             need_reload_ontology = true;
     }
 
-    string parent_url = null;
-
-    try
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        parent_url = properties.as!(string)("main_module_url") ~ "\0";
-    }
-    catch (Throwable ex)
-    {
-        log.trace("ERR! unable read ./veda.properties");
-        return;
-    }
-
-
     Thread.sleep(dur!("seconds")(2));
 //	int checktime = 30;
 
@@ -116,7 +101,7 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = PThreadContext.create_new(process_name, "file_reader", parent_url, log);
+    Context context = PThreadContext.create_new("file_reader", log);
 
     //context.set_vql (new XapianSearch(context));
     context.set_vql(new FTQueryClient(context));

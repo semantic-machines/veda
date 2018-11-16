@@ -70,7 +70,7 @@ ScriptVM         script_vm;
 Tasks *[ int ] tasks_2_priority;
 Task *task;
 
-public void ltrs_thread(string parent_url)
+public void ltrs_thread()
 {
     _wpl         = new ScriptsWorkPlace();
     process_name = "ltr_scripts";
@@ -84,7 +84,7 @@ public void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
+    context = PThreadContext.create_new("ltr_scripts", log);
 
     context.set_vql(new FTQueryClient(context));
 

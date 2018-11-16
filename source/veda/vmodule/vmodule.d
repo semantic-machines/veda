@@ -69,7 +69,6 @@ class VedaModule : VedaModuleBasic
 
     Individual node;
 
-    string     main_module_url = null;
     Ticket     sticket;
     string     message_header;
     string     module_uid;
@@ -154,7 +153,6 @@ class VedaModule : VedaModuleBasic
             string[ string ] properties;
             properties         = readProperties("./veda.properties");
             notify_channel_url = properties.as!(string)("notify_channel_url") ~ "\0";
-            main_module_url    = properties.as!(string)("main_module_url") ~ "\0";
         }
         catch (Throwable ex)
         {
@@ -173,7 +171,7 @@ class VedaModule : VedaModuleBasic
         context = create_context();
 
         if (context is null)
-            context = PThreadContext.create_new("cfg:standart_node", process_name, main_module_url, log);
+            context = PThreadContext.create_new(process_name, log);
 
         if (node == Individual.init)
             node = context.get_configuration();
