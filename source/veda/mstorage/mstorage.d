@@ -140,7 +140,7 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", null, log);
+        core_context = PThreadContext.create_new("core_context-mstorage", log);
         core_context.set_az(get_acl_client(log));
         core_context.set_vql(new XapianSearch(core_context));
 

@@ -230,7 +230,7 @@ void main(string[] args)
     int sock;
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
 
-    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
+    Context ctx = PThreadContext.create_new("ft-query", log);
     sticket = ctx.sys_ticket();
     ctx.set_az (get_acl_client(log));
     ctx.set_vql(new XapianSearch(ctx));

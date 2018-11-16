@@ -49,7 +49,7 @@ int main(string[] args)
         ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, log);
         //log = p_script.log();
 
-        tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
+        tid_ltr_scripts = spawn(&ltrs_thread);
 
         p_script.run();
 

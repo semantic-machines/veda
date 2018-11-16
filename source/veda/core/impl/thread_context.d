@@ -44,9 +44,9 @@ class PThreadContext : Context
     private bool          API_ready = true;
     private string        main_module_url;
     private Logger        log;
-    
+
     Ticket *[ string ] user_of_ticket;
-    long   last_ticket_manager_op_id = 0;
+    long last_ticket_manager_op_id = 0;
 
     public Ticket *get_systicket_from_storage()
     {
@@ -370,7 +370,7 @@ class PThreadContext : Context
         return node_id;
     }
 
-    public static Context create_new(string _node_id, string context_name, string _main_module_url, Logger _log)
+    public static Context create_new(string context_name, Logger _log, string _main_module_url = null)
     {
         PThreadContext ctx = new PThreadContext();
 
@@ -379,11 +379,24 @@ class PThreadContext : Context
         if (ctx.log is null)
             writefln("context_name [%s] log is null", context_name);
 
-        ctx.main_module_url = _main_module_url;
-        ctx.node_id         = _node_id;
+        string tarantool_url;
 
-        string[ string ] properties = readProperties("./veda.properties");
-        string tarantool_url = properties.as!(string)("tarantool_url");
+        if (_main_module_url !is null)
+            ctx.main_module_url = _main_module_url;
+        else
+        {
+            try
+            {
+                string[ string ] properties = readProperties("./veda.properties");
+                tarantool_url               = properties.as!(string)("tarantool_url");
+                ctx.main_module_url         = properties.as!(string)("main_module_url") ~ "\0";
+            }
+            catch (Throwable ex)
+            {
+                ctx.log.trace("ERR! unable read ./veda.properties");
+                return null;
+            }
+        }
 
         if (tarantool_url !is null)
         {
