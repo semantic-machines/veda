@@ -363,25 +363,58 @@ veda.Module(function (veda) { "use strict";
     });
 
     // Property value
-    var props_ctrls = {};
-    template.find("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about]):not([about] *)").map( function () {
+    template.find("[property]:not(veda-control):not([rel] *):not([about] *)").addBack("[property]:not(veda-control):not([rel] *):not([about] *)").map( function () {
       var propertyContainer = $(this),
           property_uri = propertyContainer.attr("property"),
-          spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined;
+          about_uri = propertyContainer.attr("about"),
+          about,
+          isAbout;
 
-      if (property_uri === "@") {
-        propertyContainer.text(individual.id);
-        return;
+      if (about_uri === "@") {
+        about = individual;
+        isAbout = true;
+        propertyContainer.attr("about", about.id);
+      } else if (!about_uri) {
+        about = individual;
+        isAbout = false;
+      } else {
+        about = new veda.IndividualModel(about_uri);
+        isAbout = true;
       }
-      renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
 
-      // Re-render all property values if model's property was changed
-      function propertyModifiedHandler() {
-        renderPropertyValues(individual, property_uri, propertyContainer, props_ctrls, template, mode);
-      }
-      individual.on(property_uri, propertyModifiedHandler);
-      template.one("remove", function () {
-        individual.off(property_uri, propertyModifiedHandler);
+      return about.load().then(function (about) {
+
+        function idModifiedHandler() {
+          propertyContainer.text(individual.id);
+        }
+        if (property_uri === "@") {
+          propertyContainer.text(about.id);
+          about.on("idChanged", idModifiedHandler);
+          template.one("remove", function () {
+            about.off("idChanged", idModifiedHandler);
+          });
+          return;
+        }
+        renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
+
+        // Re-render all property values if model's property was changed
+        function propertyModifiedHandler() {
+          renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode);
+        }
+        about.on(property_uri, propertyModifiedHandler);
+        template.one("remove", function () {
+          about.off(property_uri, propertyModifiedHandler);
+        });
+
+        if ( about !== individual ) {
+          // Watch server-side updates
+          var updateService = new veda.UpdateService();
+          updateService.subscribe(about.id);
+          template.one("remove", function () {
+            updateService.unsubscribe(about.id);
+          });
+        }
+
       });
     });
 
@@ -411,23 +444,6 @@ veda.Module(function (veda) { "use strict";
           relTemplate,
           isAbout;
 
-      if (about) {
-        isAbout = true;
-        about = (about === "@" ? individual : new veda.IndividualModel(about));
-        relContainer.attr("about", about.id);
-      } else {
-        isAbout = false;
-        about = individual;
-      }
-
-      if ( rel_template_uri ) {
-        relTemplate = rel_template_uri;
-      } else if ( rel_inline_template.length ) {
-        relTemplate = rel_inline_template;
-      }
-      relContainer.empty();
-
-
       var sortableOptions = {
         delay: 150,
         placeholder: "sortable-placeholder",
@@ -448,6 +464,22 @@ veda.Module(function (veda) { "use strict";
       template.one("remove", function () {
         relContainer.sortable("destroy");
       });
+
+      if (about) {
+        isAbout = true;
+        about = (about === "@" ? individual : new veda.IndividualModel(about));
+        relContainer.attr("about", about.id);
+      } else {
+        isAbout = false;
+        about = individual;
+      }
+
+      if ( rel_template_uri ) {
+        relTemplate = rel_template_uri;
+      } else if ( rel_inline_template.length ) {
+        relTemplate = rel_inline_template;
+      }
+      relContainer.empty();
 
       template.on("view edit search", function (e) {
         if (e.type === "view") {
@@ -554,43 +586,6 @@ veda.Module(function (veda) { "use strict";
       });
     }).get();
 
-    // About resource property
-    var about_props = template.find("[about][property]:not([rel] *):not([about] *)").addBack("[about][property]:not([rel] *):not([about] *)").map( function () {
-      var propertyContainer = $(this),
-          property_uri = propertyContainer.attr("property"),
-          about;
-      if (propertyContainer.attr("about") === "@") {
-        about = individual;
-        propertyContainer.attr("about", about.id);
-      } else {
-        about = new veda.IndividualModel(propertyContainer.attr("about"));
-      }
-
-      return about.load().then(function (about) {
-        propertyModifiedHandler( about[property_uri] );
-        about.on(property_uri, propertyModifiedHandler);
-        template.one("remove", function () {
-          about.off(property_uri, propertyModifiedHandler);
-        });
-
-        // Watch server-side updates
-        var updateService = new veda.UpdateService();
-        updateService.subscribe(about.id);
-        template.one("remove", function () {
-          updateService.unsubscribe(about.id);
-        });
-
-        function propertyModifiedHandler(values) {
-          if (property_uri === "@") {
-            propertyContainer.text( about.id );
-          } else {
-            var formatted = values.map(veda.Util.formatValue).join(" ");
-            propertyContainer.text( formatted );
-          }
-        }
-      });
-    });
-
     // Validation with support of embedded templates (arbitrary depth)
 
     // Initial validation state
@@ -657,7 +652,7 @@ veda.Module(function (veda) { "use strict";
         validation.state = validation.state && validationResult.state;
         template.trigger("internal-validated");
       }
-    });
+    }
 
     // Property control
     template.find("veda-control[property]:not([rel] *):not([about] *)").addBack("veda-control[property]:not([rel] *):not([about] *)").map( function () {
@@ -782,7 +777,7 @@ veda.Module(function (veda) { "use strict";
       controlType.call(control, opts);
     });
 
-    return Promise.all(rels, abouts, about_props).then(function () {
+    return Promise.all(rels, abouts).then(function () {
       return template;
     });
   }
