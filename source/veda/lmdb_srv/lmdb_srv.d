@@ -1,5 +1,10 @@
 /**
  * lmdb srv module
+ *      protocol - nanomsg
+ *		request: "T,url" - get ticket of url, response: JSON format
+ *		request: "I,url" - get individual of url, response: JSON format
+ *		request: "t,url" - get ticket of url, response: BINOBJ format
+ *		request: "i,url" - get individual of url, response: BINOBJ format
  */
 
 import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
@@ -45,6 +50,14 @@ private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r,
             else if (rel[ 0 ] == "I")
             {
                 inividuals_storage_r.get_individual(rel[ 1 ], indv);
+            }
+            else if (rel[ 0 ] == "t")
+            {
+                return tickets_storage_r.get_binobj(rel[ 1 ]);
+            }
+            else if (rel[ 0 ] == "i")
+            {
+                return inividuals_storage_r.get_binobj(rel[ 1 ]);
             }
             else
             {
