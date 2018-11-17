@@ -10,7 +10,8 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.util.properd, veda.core.common.type;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.util.properd;
+import veda.core.common.type, veda.core.impl.app_context_creator;
 
 
 // ////// Logger ///////////////////////////////////////////
@@ -101,7 +102,7 @@ void main(char[][] args)
 
     ubyte[] out_data;
 
-    Context context = PThreadContext.create_new("file_reader", log);
+    Context context = create_new_ctx("file_reader", log);
 
     //context.set_vql (new XapianSearch(context));
     context.set_vql(new FTQueryClient(context));

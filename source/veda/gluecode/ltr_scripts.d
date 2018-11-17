@@ -1,8 +1,3 @@
-/**
- * ltr_scripts module
- * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/scripts.d
- * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/ltrs.d
- */
 module veda.gluecode.ltr_scripts;
 
 private
@@ -12,7 +7,7 @@ private
     import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
     import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-    import veda.search.common.isearch, veda.search.ft_query.ft_query_client;
+    import veda.search.common.isearch, veda.search.ft_query.ft_query_client, veda.core.impl.app_context_creator;
     import veda.gluecode.script, veda.gluecode.v8d_header;
 }
 // ////// Logger ///////////////////////////////////////////
@@ -84,7 +79,7 @@ public void ltrs_thread()
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = PThreadContext.create_new("ltr_scripts", log);
+    context = create_new_ctx("ltr_scripts", log);
 
     context.set_vql(new FTQueryClient(context));
 

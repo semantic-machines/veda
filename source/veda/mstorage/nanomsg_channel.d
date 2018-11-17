@@ -2,7 +2,7 @@ module veda.mstorage.nanomsg_channel;
 
 import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.uuid, std.path, std.json;
 import veda.core.common.context, veda.core.util.utils, veda.onto.onto, veda.core.impl.thread_context, veda.core.common.define;
-import kaleidic.nanomsg.nano, veda.mstorage.server, veda.search.xapian.xapian_search, veda.util.properd;
+import kaleidic.nanomsg.nano, veda.mstorage.server, veda.search.xapian.xapian_search, veda.util.properd, veda.core.impl.app_context_creator;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -53,7 +53,7 @@ void nanomsg_channel(string thread_name)
 
         if (context is null)
         {
-            context = PThreadContext.create_new(thread_name, log);
+            context = create_new_ctx(thread_name, log);
             context.set_az(get_acl_client(log));
             context.set_vql(new XapianSearch(context));
         }
