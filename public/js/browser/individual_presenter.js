@@ -19,11 +19,6 @@ veda.Module(function (veda) { "use strict";
 
         return renderedTemplate;
 
-      })
-      .catch(function (error) {
-
-        console.log("Presenter error:", error);
-
       });
   }
 
@@ -82,6 +77,11 @@ veda.Module(function (veda) { "use strict";
           });
         }
       }
+    })
+    .catch(function (error) {
+
+      console.log("Presenter error", error);
+
     });
   }
 
@@ -126,10 +126,6 @@ veda.Module(function (veda) { "use strict";
       });
 
       return processedTemplate;
-
-    }).catch(function (error) {
-
-      console.log(error);
 
     });
   }
@@ -778,12 +774,8 @@ veda.Module(function (veda) { "use strict";
       controlType.call(control, opts);
     });
 
-    var allPromises = rels.concat(abouts, props);
-
-    return Promise.all(allPromises).then(function (proms) {
-      return template;
-    }).catch(function (error) {
-      console.log(error);
+    var promises = rels.concat(abouts, props);
+    return Promise.all(promises).then(function () {
       return template;
     });
   }
