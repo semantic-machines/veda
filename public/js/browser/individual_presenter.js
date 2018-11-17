@@ -778,7 +778,7 @@ veda.Module(function (veda) { "use strict";
       controlType.call(control, opts);
     });
 
-    var allPromises = rels;//.concat(abouts, props);
+    var allPromises = rels.concat(abouts, props);
 
     return Promise.all(allPromises).then(function (proms) {
       return template;

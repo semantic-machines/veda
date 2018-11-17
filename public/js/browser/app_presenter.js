@@ -106,7 +106,7 @@ veda.Module(function (veda) { "use strict";
     })
 
     .then(function (layout) {
-      layout.present("#app");
+      return layout.present("#app");
     })
 
     .then(function () {
@@ -138,9 +138,7 @@ veda.Module(function (veda) { "use strict";
             return acc;
           }, {});
         }
-        if (uri === "drafts") {
-          return veda.trigger("load:drafts");
-        }
+
         if (uri) {
           var individual = new veda.IndividualModel(uri);
           individual.present(container, template, mode, extra);
