@@ -14,7 +14,6 @@
 	    "../../veda/onto",  
             "../../veda/onto/bj8individual",
 	    "../../veda/vmodule",
-	    "../../veda/core/impl", 
             "../../veda/search/common",
             "../../veda/search/xapian",
             "../../veda/search/ft_query",
@@ -25,6 +24,8 @@
         "sourceFiles":[
             "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
+    	    "../../veda/core/impl/app_context_creator.d",
+    	    "../../veda/core/impl/thread_context.d",
     	    "../../veda/authorization/right_set.d",
             "../../veda/authorization/cache.d",
  	    "../../veda/authorization/authorization.d",

@@ -10,17 +10,11 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.file, std.path,
            std.json, std.regex, std.uuid;
     import veda.util.properd;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg;
+    import veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
     import veda.common.type, veda.core.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.common, veda.storage.storage;
     import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
     import veda.authorization.authorization;
-
-//    version (isMStorage)
-//    {
-//        alias veda.mstorage.storage_manager ticket_storage_module;
-//        alias veda.mstorage.storage_manager subject_storage_module;
-//    }
 }
 
 /// реализация интерфейса Context
@@ -498,10 +492,8 @@ class PThreadContext : Context
         }
         finally
         {
-//            stat(CMD_GET, sw);
-//
-            if (trace_msg[ T_API_140 ] == 1)
-                log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
+	           //stat(CMD_GET, sw);
+               //log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
         }
     }
 
@@ -564,8 +556,7 @@ class PThreadContext : Context
         finally
         {
 //            stat(CMD_GET, sw);
-            if (trace_msg[ T_API_170 ] == 1)
-                log.trace("get_individual: end, uri=%s", uri);
+//            log.trace("get_individual: end, uri=%s", uri);
         }
     }
 
@@ -633,8 +624,7 @@ class PThreadContext : Context
                           ticket !is null ? text(*ticket) : "null",
                           indv !is null ? text(*indv) : "null");
 
-            if (trace_msg[ T_API_240 ] == 1)
-                log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);
+            //   log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);
 
             //stat(CMD_PUT, sw);
         }

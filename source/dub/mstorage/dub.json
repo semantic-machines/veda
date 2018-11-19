@@ -2,11 +2,11 @@
 	"name": "veda-mstorage",
 	"description": "veda-mstorage",
 	"dependencies": {
-		"xapian-d": "1.0.0", 
+		"xapian-d": "1.0.0",
                 "msgpack-d": "1.0.0-beta.6",
                 "urld": "2.0.1"
 	},
-	"versions": ["isMStorage"],	
+	"versions": ["isMStorage"],
         "libs": [
                     "nanomsg", "tarantool"
         ],
@@ -14,9 +14,13 @@
 	"sourceFiles":[
             "../../lib64/libauthorization.a",
     	    "../../lib64/liblmdb.a",
+    	    "../../veda/core/impl/app_context_creator.d",
+    	    "../../veda/core/impl/thread_context.d",
     	    "../../veda/util/properd.d",
 	    "../../veda/bind/nano.d", 
 	    "../../veda/bind/xapian_d_header.d",
+	    "../../veda/core/impl/app_context_creator.d",
+	    "../../veda/core/impl/thread_context.d",
 	    "../../veda/util/queue.d",
 	    "../../veda/util/container.d",
     	    "../../veda/util/module_info.d",
@@ -30,13 +34,14 @@
     	    "../../veda/authorization/right_set.d",
  	],
 	"sourcePaths":[
-	    "../../veda/mstorage", 
-	    "../../veda/common", 
+	    "../../veda/mstorage",
+	    "../../veda/common",
             "../../veda/search/common",
             "../../veda/search/xapian",
             "../../veda/search/ft_query",
-	    "../../veda/core",  
-	    "../../veda/onto", 
+	    "../../veda/core/util",
+	    "../../veda/core/common",
+	    "../../veda/onto",
             "../../veda/onto/bj8individual",
             "../../veda/vmodule",
 	    "../../veda/storage/lmdb",

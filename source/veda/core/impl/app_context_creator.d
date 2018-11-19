@@ -6,12 +6,6 @@ private
     import veda.util.properd;
     import veda.core.impl.thread_context, veda.core.common.context, veda.common.logger;
     import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage;
-
-//    version (isMStorage)
-//    {
-//        alias veda.mstorage.storage_manager ticket_storage_module;
-//        alias veda.mstorage.storage_manager subject_storage_module;
-//    }
 }
 
 public static Context create_new_ctx(string context_name, Logger _log, string _main_module_url = null)

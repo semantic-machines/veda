@@ -1,9 +1,10 @@
 {
-	"name": "vqueuectl",
+	"name": "vqueuectl1",
 	"description": "command line for managing a veda queue",
         "license": "LGPL v3",
         "dependencies": {
                 "backtrace-d": "0.1.2",
+		"d-nanomsg": "0.2.0",
                 "msgpack-d": "1.0.0-beta.6"
         },
         "libs": [
