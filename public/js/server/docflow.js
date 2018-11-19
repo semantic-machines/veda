@@ -72,7 +72,7 @@ veda.Module(function (veda) { "use strict";
           {
               if (wi_isCompleted[0].data === true)
               {
-          veda.Util.set_err_on_indv("WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
+                  veda.Util.set_err_on_indv("WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], already is completed, skip decision form...", document, "prepare decision form");
                   return;
               }
           }
@@ -85,6 +85,10 @@ veda.Module(function (veda) { "use strict";
               veda.Util.set_err_on_indv("invalid WorkItem[" + veda.Util.getUri(f_forWorkItem) + "], field v-wf:forProcess[" + veda.Util.getUri(forProcess) + "], not found", document, "prepare decision form");
               return;
           }
+
+          var isStopped = _process['v-wf:isStopped'];
+          if (isStopped && isStopped[0].data === true)
+              return;
 
           var trace_journal_uri = veda.Workflow.create_new_trace_subjournal(forProcess_uri, work_item, "prepare_decision_form:" + decision_form['@'], 'v-wf:DecisionFormStarted')
 
@@ -162,6 +166,10 @@ veda.Module(function (veda) { "use strict";
           var forProcess_uri = veda.Util.getUri(forProcess);
           var _process = get_individual(ticket, forProcess_uri);
           if (!_process) return;
+
+          var isStopped = _process['v-wf:isStopped'];
+          if (isStopped && isStopped[0].data === true)
+              return;
 
           var trace_journal_uri = veda.Workflow.create_new_trace_subjournal(f_forWorkItem, _work_order, "prepare_work_order:" + _work_order['@'], 'v-wf:WorkOrderStarted')
           if (trace_journal_uri)
