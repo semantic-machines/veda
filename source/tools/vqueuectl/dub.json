@@ -1,5 +1,5 @@
 {
-	"name": "vqueuectl1",
+	"name": "vqueuectl",
 	"description": "command line for managing a veda queue",
         "license": "LGPL v3",
         "dependencies": {

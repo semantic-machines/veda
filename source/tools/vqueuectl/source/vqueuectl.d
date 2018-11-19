@@ -1,16 +1,12 @@
-import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv;
-import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource;
+import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv, std.string;
+import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator_rlmdb;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
+import filters.filter_00, filters.filter_01, filters.filter_02;
 
 /*
     COMMAND NAME PATH [OPTIONS..]
 
     COMMAND: check, message_to_json, repair, stat_by_type, check_links, consumer_unread_counter, extract_uris
-
-    check
-
-        EXAMPLE: vqueuectl check individuals-flow ./data/queue
-
  */
 
 Logger _log;
@@ -21,8 +17,9 @@ Logger log()
     return _log;
 }
 
-double     oprc;
-LmdbDriver individual_lmdb_driver;
+public double     oprc;
+public LmdbDriver individual_lmdb_driver;
+public Queue      queue_new;
 
 void main(string[] args)
 {
@@ -31,10 +28,13 @@ void main(string[] args)
     cmds[ "message_to_json" ]         = true;
     cmds[ "repair" ]                  = true;
     cmds[ "stat_by_type" ]            = true;
-    cmds[ "check_links" ]             = true;
     cmds[ "push_count" ]              = true;
     cmds[ "consumer_unread_counter" ] = true;
     cmds[ "extract_uris" ]            = true;
+    cmds[ "check_links" ]             = true;
+    cmds[ "check_links_00" ]          = true;
+    cmds[ "check_links_01" ]          = true;
+    cmds[ "check_links_02" ]          = true;
 
     if (args.length < 3)
     {
@@ -91,12 +91,29 @@ void main(string[] args)
     cs.open();
 
     oprc = 100.0 / queue.count_pushed;
-    long  count;
-
-    Queue queue_new;
+    long count;
 
     if (command == "check_links")
-        individual_lmdb_driver = new LmdbDriver("./data/lmdb-individuals", DBMode.R, "vqueuectl", log);
+    {
+        try
+        {
+            individual_lmdb_driver = new LmdbDriver("./data/lmdb-individuals", DBMode.R, "vqueuectl", log);
+        } catch (Throwable ex)
+        {
+            writefln("fail connect to LMDB, err=%s", ex.msg);
+        }
+    }
+
+    if (command == "check_links_01" || command == "check_links_02")
+    {
+        try
+        {
+            individual_lmdb_driver = new LmdbDriver("./data/lmdb-individuals", DBMode.R, "vqueuectl", log);
+        } catch (Throwable ex)
+        {
+            writefln("fail connect to LMDB, err=%s", ex.msg);
+        }
+    }
 
     if (command == "repair")
     {
@@ -107,7 +124,7 @@ void main(string[] args)
 
     if (command == "extract_uris")
     {
-        queue_new = new Queue("./tmp/" ~ name ~ "/uris", name, Mode.RW, log);
+        queue_new = new Queue("./tmp/uris", "uris", Mode.RW, log);
         queue_new.open();
         queue_new.get_info(0);
     }
@@ -126,6 +143,7 @@ void main(string[] args)
         if (count % 100000 == 0)
         {
             writefln("%s %3.2f%% %d", command, prc, count);
+            log.trace("%s %3.2f%% %d", command, prc, count);
         }
 
         cs.commit_and_next(true);
@@ -134,9 +152,9 @@ void main(string[] args)
             queue_new.push(data);
         else if (command == "extract_uris")
         {
-            string uri = extract_uri(data);
-            if (uri !is null)
-                queue_new.push(extract_uri(data));
+            string uri_type = extract_uri_type(data);
+            if (uri_type !is null)
+                queue_new.push(uri_type);
         }
         else if (command == "message_to_json")
             message_to_json(data);
@@ -144,6 +162,12 @@ void main(string[] args)
             collect_stat_by_type(data);
         else if (command == "check_links")
             check_links(data);
+        else if (command == "check_links_00")
+            check_links_00(data, queue_new, individual_lmdb_driver, log);
+        else if (command == "check_links_01")
+            check_links_01(data, queue_new, individual_lmdb_driver, log);
+        else if (command == "check_links_02")
+            check_links_02(data, queue_new, individual_lmdb_driver, log);
     }
 
     if (command == "stat_by_type")
@@ -157,8 +181,7 @@ void main(string[] args)
 }
 
 long[ string ] type_2_count;
-
-private string extract_uri(string data)
+private string extract_uri_type(string data)
 {
     Individual imm;
 
@@ -177,7 +200,8 @@ private string extract_uri(string data)
         }
         else
         {
-            return new_indv.uri;
+            string type = new_indv.getFirstLiteral("rdf:type");
+            return new_indv.uri ~ ";" ~ type;
         }
     }
     return null;

@@ -1,0 +1,1 @@
+/home/itiua/work/veda.master/source/veda/util/module_info.d
