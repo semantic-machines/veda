@@ -1,1 +1,1 @@
-/home/itiua/work/veda.master/source/veda/util/properd.d
+../../../../veda/util/properd.d
