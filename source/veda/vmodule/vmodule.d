@@ -6,7 +6,7 @@ private
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.outbuffer, std.algorithm : remove;
     import kaleidic.nanomsg.nano, veda.util.properd;
     import veda.common.type, veda.core.common.define, veda.core.common.type, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
-    import veda.common.logger, veda.core.impl.thread_context;
+    import veda.common.logger, veda.core.impl.thread_context, veda.core.impl.app_context_creator;
     import veda.core.common.context, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
 
@@ -171,7 +171,7 @@ class VedaModule : VedaModuleBasic
         context = create_context();
 
         if (context is null)
-            context = PThreadContext.create_new(process_name, log);
+            context = create_new_ctx(process_name, log);
 
         if (node == Individual.init)
             node = context.get_configuration();

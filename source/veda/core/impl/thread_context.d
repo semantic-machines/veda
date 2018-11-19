@@ -10,18 +10,17 @@ private
     import core.thread, std.stdio, std.format, std.datetime, std.concurrency, std.conv, std.outbuffer, std.string, std.file, std.path,
            std.json, std.regex, std.uuid;
     import veda.util.properd;
-    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg,
-           veda.util.module_info;
+    import veda.util.container, veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json, veda.core.common.log_msg;
     import veda.common.type, veda.core.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
-    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.storage.storage;
+    import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.common, veda.storage.storage;
     import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
-    import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage, veda.authorization.authorization;
+    import veda.authorization.authorization;
 
-    version (isMStorage)
-    {
-        alias veda.mstorage.storage_manager ticket_storage_module;
-        alias veda.mstorage.storage_manager subject_storage_module;
-    }
+//    version (isMStorage)
+//    {
+//        alias veda.mstorage.storage_manager ticket_storage_module;
+//        alias veda.mstorage.storage_manager subject_storage_module;
+//    }
 }
 
 /// реализация интерфейса Context
@@ -29,21 +28,21 @@ class PThreadContext : Context
 {
     private Onto          onto;
 
-    private string        name;
+    public string         name;
 
     private               string[ string ] prefix_map;
 
     private Search        _vql;
-    private Storage       storage;
+    public Storage        storage;
     private Authorization az;
 
     private long          local_last_update_time;
     private Individual    node = Individual.init;
-    private string        node_id;
+    public string         node_id;
 
     private bool          API_ready = true;
-    private string        main_module_url;
-    private Logger        log;
+    public string         main_module_url;
+    public Logger         log;
 
     Ticket *[ string ] user_of_ticket;
     long last_ticket_manager_op_id = 0;
@@ -368,53 +367,6 @@ class PThreadContext : Context
     public string get_config_uri()
     {
         return node_id;
-    }
-
-    public static Context create_new(string context_name, Logger _log, string _main_module_url = null)
-    {
-        PThreadContext ctx = new PThreadContext();
-
-		ctx.node_id = "cfg:standart_node";
-        ctx.log = _log;
-
-        if (ctx.log is null)
-            writefln("context_name [%s] log is null", context_name);
-
-        string tarantool_url;
-
-        if (_main_module_url !is null)
-            ctx.main_module_url = _main_module_url;
-        else
-        {
-            try
-            {
-                string[ string ] properties = readProperties("./veda.properties");
-                tarantool_url               = properties.as!(string)("tarantool_url");
-                ctx.main_module_url         = properties.as!(string)("main_module_url") ~ "\0";
-            }
-            catch (Throwable ex)
-            {
-                ctx.log.trace("ERR! unable read ./veda.properties");
-                return null;
-            }
-        }
-
-        if (tarantool_url !is null)
-        {
-            ctx.storage = new TarantoolStorage(context_name, ctx.log);
-        }
-        else
-        {
-            ctx.storage = new LmdbStorage(context_name, ctx.log);
-        }
-
-        ctx.name = context_name;
-
-        ctx.get_configuration();
-
-        ctx.log.trace_log_and_console("NEW CONTEXT [%s]", context_name);
-
-        return ctx;
     }
 
     bool isReadyAPI()

@@ -8,7 +8,7 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid, std.random;
-    import veda.util.properd;
+    import veda.util.properd, veda.core.impl.app_context_creator;
     import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
     import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
@@ -140,7 +140,7 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context = PThreadContext.create_new("core_context-mstorage", log);
+        core_context = create_new_ctx("core_context-mstorage", log);
         core_context.set_az(get_acl_client(log));
         core_context.set_vql(new XapianSearch(core_context));
 
