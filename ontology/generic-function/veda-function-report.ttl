@@ -5,6 +5,7 @@
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 
 <http://semantic-machines.com/veda/veda-function-report>
   rdf:type owl:Ontology ;
@@ -20,6 +21,7 @@ v-s:Report
   rdfs:isDefinedBy v-s: ;
   rdfs:label "Отчет"@ru ;
   rdfs:label "Report"@en ;
+  v-ui:hasTemplate v-s:ReportTemplate ;
 .
 
 v-s:ReportsForClass
@@ -50,9 +52,19 @@ v-s:reportFormat
 
 v-s:reportBlank
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Формат файла"@ru ;
-  rdfs:label "File format"@en ;
+  rdfs:label "Бланк отчета"@ru ;
+  rdfs:label "Report blank"@en ;
   rdfs:domain v-s:ReportsForClass ;
   rdfs:domain v-s:Report ;
-  rdfs:range xsd:string ;
+  rdfs:range v-fc:Blank ;
+.
+
+v-s:ReportTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Report;
+  rdfs:label "Шаблон для класса v-s:Report"@ru ;
+  rdfs:label "v-s:Report class template"@en ;
+  v-ui:template """
+
+  """;
 .
