@@ -17,27 +17,27 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control#label', 'a' + last)
       .click('veda-control#comment')
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
-      
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1')
+
       .click('veda-control#label')
       .pressKey('ctrl+a delete')
       .typeText('veda-control#comment', first.substring(0,4) + '*')
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('2')
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('2')
 
       .click('veda-control#comment')
       .pressKey('ctrl+a delete')
       .typeText('veda-control#comment', first + 'ccc')
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('0')
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('0')
 
       .click('veda-control#comment')
       .pressKey('ctrl+a delete')
       .typeText('veda-control#testString', middle)
       .click('veda-control#comment')
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
-      
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1')
+
       .click('veda-control#testString')
       .pressKey('ctrl+a delete')
       .click('veda-control#date')
@@ -45,7 +45,7 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
       .click('veda-control#comment')
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('2')
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('2')
 
       .click('veda-control#date')
       .pressKey('ctrl+a delete')
@@ -55,7 +55,7 @@ import { Selector, t } from 'testcafe';
       .pressKey('ctrl+a delete')
       .typeText('veda-control#comment', first)
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('2')
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('2')
 
       .click('veda-control#date')
       .pressKey('ctrl+a delete')
@@ -68,7 +68,7 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control#testString', middle)
       .click('veda-control#label')
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1');
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1');
   });
   test('testSearchOrderBy', async t => {
     basic.login('karpovrt', '123');

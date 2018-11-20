@@ -8,7 +8,7 @@ module veda.search.common.vel;
 private
 {
     import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string;
-    import veda.core.util.utils, veda.util.container;
+    import /*veda.core.util.utils, */veda.util.container;
 }
 
 //  expression

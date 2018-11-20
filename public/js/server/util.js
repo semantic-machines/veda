@@ -401,7 +401,12 @@ veda.Module(function (veda) { "use strict";
 
     if (elem['v-wf:isProcess']) {
       elem['v-wf:isProcess'].forEach(function(p) {
-        veda.Util.recursiveCall(get_individual(ticket, p.data), path, ticket, _event_id);
+	  var df = get_individual(ticket, p.data);
+        if (!df['v-wf:isCompleted'] || df['v-wf:isCompleted'][0].data == false) {
+          df['v-wf:isStopped'] = veda.Util.newBool(true);
+          put_individual(ticket, df, _event_id);
+        }
+        veda.Util.recursiveCall(df, path, ticket, _event_id);
       });
     }
   };

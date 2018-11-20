@@ -343,6 +343,7 @@ td:AndreyBychin
   v-s:hasAppointment td:AndreyBychin-Analyst2 ;
   rdfs:label "Администратор4"@ru ;
   rdfs:label "Administrator4"@en ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner td:AndreyBychin ;
 .
 td:AndreyBychin-Analyst2
@@ -372,6 +373,7 @@ td:RomanKarpov
   rdfs:label "Administrator2"@en ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
   v-s:hasAspect v-s:PersonalAspectKarpovr ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner td:RomanKarpov ;
 .
 
@@ -431,6 +433,7 @@ td:ValeriyBushenev
   v-ui:hasPreferences td:ValeriyBushenev_pref ;
   rdfs:label "Администратор3"@ru ;
   rdfs:label "Administrator3"@en ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner td:ValeriyBushenev ;
 .
 
@@ -468,6 +471,7 @@ td:ApplicationDevelopmentGroup
   rdfs:label "Подразделение (Тест)"@ru;
   rdfs:label "Department (Test)"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief cfg:AdministratorAppointment;
   v-s:parentUnit cfg:org_Veda;
 .
 

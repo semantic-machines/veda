@@ -12,5 +12,5 @@ import { Selector, t } from 'testcafe';
       .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .typeText('veda-control#comment', timeStamp)
       .click('button#search-button')
-      .expect(Selector('h3.clearfix span[property="v-fs:authorized"]').innerText).eql('1')
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1')
 });

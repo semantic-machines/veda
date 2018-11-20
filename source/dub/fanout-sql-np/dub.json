@@ -14,7 +14,6 @@
 	    "../../veda/onto",  
             "../../veda/onto/bj8individual",
 	    "../../veda/vmodule",
-	    "../../veda/core/impl", 
 	    "../../veda/core/common",
             "../../veda/search/common",
             "../../veda/search/ft_query",
@@ -23,6 +22,8 @@
 	],
         "sourceFiles":[
 	    "../../lib64/liblmdb.a",
+    	    "../../veda/core/impl/app_context_creator.d",
+    	    "../../veda/core/impl/thread_context.d",
 	    "../../veda/util/properd.d",
 	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",

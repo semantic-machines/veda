@@ -1,1 +1,0 @@
-../../../veda/util/properd.d

@@ -15,7 +15,6 @@
             "../../veda/onto",
             "../../veda/onto/bj8individual",
             "../../veda/vmodule",
-            "../../veda/core/impl",
             "../../veda/search/common",
             "../../veda/search/xapian",
             "../../veda/search/ft_query",
@@ -24,6 +23,8 @@
             "../../veda/core/common"
 	],
         "sourceFiles":[
+    	    "../../veda/core/impl/app_context_creator.d",
+    	    "../../veda/core/impl/thread_context.d",
     	    "../../veda/util/properd.d",
      	    "../../veda/authorization/authorization.d",
     	    "../../veda/storage/common.d",

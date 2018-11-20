@@ -1823,7 +1823,7 @@ v-fs:AttributiveSearchInlineTemplate
   </div>
   <div class="results hidden">
     <div class="result-heading">
-      <h3 class="clearfix">
+      <h4 class="clearfix">
         <span class="pull-left" about="v-fs:Results" property="rdfs:label"></span>
         <div class="pull-left margin-md-h" about="@" data-template="v-fs:SelectedResultsActionsTemplate"></div>
         <small class="stats-top pull-right" style="color:black">
@@ -1834,7 +1834,7 @@ v-fs:AttributiveSearchInlineTemplate
           <strong about="v-fs:authorized" property="rdfs:label"></strong>
           <span about="@" property="v-fs:authorized" class="badge"></span>&nbsp;&nbsp;
         </small>
-      </h3>
+      </h4>
     </div>
     <div class="search-result table-responsive noSwipe"></div>
     <div class="not-found alert alert-warning hidden">

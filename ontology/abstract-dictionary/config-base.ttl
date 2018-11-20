@@ -51,6 +51,7 @@ cfg:Guest
   v-s:defaultAppointment cfg:GuestAppointment ;
   v-s:hasAspect cfg:Guest_aspect ;
   v-ui:hasPreferences cfg:Guest_pref ;
+  v-s:parentOrganization cfg:org_Veda ;
   rdfs:label "Гость"@ru ;
   rdfs:label "Guest"@en ;
 .
@@ -95,6 +96,7 @@ cfg:ImportDMSToVeda
   v-s:firstName "Import DMS to Veda"@en ;
   v-s:hasAccount cfg:ImportDMSToVedaAccount ;
   v-s:hasAppointment cfg:ImportDMSToVedaAppointment ;
+  v-s:parentOrganization cfg:org_Veda;
   rdfs:label "Утилита DMS to Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
 .
@@ -127,6 +129,7 @@ cfg:ImportFromOtherSystemToVeda
   v-s:firstName "Import From Other System to Veda"@en ;
   v-s:hasAccount cfg:ImportFromOtherSystemToVedaAccount ;
   v-s:hasAppointment cfg:ImportFromOtherSystemToVedaAppointment ;
+  v-s:parentOrganization cfg:org_Veda;
   rdfs:label "Утилита импорта в Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
 .
@@ -160,6 +163,7 @@ cfg:VedaNTLMFilter
   v-s:hasAccount cfg:VedaNTLMFilterAccount ;
   v-s:hasAppointment cfg:VedaNTLMFilterAppointment ;
   rdfs:label "Veda NTLM Фильтр"@ru ;
+  v-s:parentOrganization cfg:org_Veda;
   rdfs:label "Veda NTLM Filter"@en ;
 .
 
@@ -194,6 +198,7 @@ cfg:VedaSystem
 #  v-s:firstName "Veda"@en ;
   v-s:hasAccount cfg:VedaSystemAccount ;
   v-s:hasAppointment cfg:VedaSystemAppointment ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:lastName "Система"@ru ;
   v-s:lastName "System"@en ;
   rdfs:label "Система"@ru ;
@@ -230,6 +235,7 @@ cfg:Administrator
   v-s:hasAppointment cfg:AdministratorAppointment ;
   v-s:hasAspect cfg:Administrator_aspect ;
   v-ui:hasPreferences cfg:Administrator_pref ;
+  v-s:parentOrganization cfg:org_Veda;
   rdfs:label "Администратор"@ru ;
   rdfs:label "Administrator"@en ;
 .
