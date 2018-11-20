@@ -41,7 +41,7 @@ public class LmdbSrvRStorage : Storage
     override KeyValueDB get_inividuals_storage_r()
     {
         if (inividuals_storage_r is null)
-            inividuals_storage_r = new LmdbClient("inividuals", srv_url, log);
+            inividuals_storage_r = new LmdbClient("individuals", srv_url, log);
 
         return inividuals_storage_r;
     }
@@ -62,9 +62,9 @@ public class LmdbClient : KeyValueDB
     this(string _space_name, string _srv_url, Logger _log)
     {
         if (_space_name == "tickets")
-            space_name = "i";
-        else if (_space_name == "individuals")
             space_name = "t";
+        else if (_space_name == "individuals")
+            space_name = "i";
         else
             space_name = "?";
 
@@ -81,7 +81,7 @@ public class LmdbClient : KeyValueDB
     {
         string individual_as_binobj = reqrep_binobj_2_srv(space_name ~ "," ~ uri);
 
-        if (individual_as_binobj is null)
+        if (individual_as_binobj is null || (individual_as_binobj.length == 1 && individual_as_binobj[ 0 ] == 0))
         {
             individual.setStatus(ResultCode.NotFound);
             return;
@@ -94,7 +94,7 @@ public class LmdbClient : KeyValueDB
             else
             {
                 individual.setStatus(ResultCode.UnprocessableEntity);
-                writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
+                writeln("ERR! LmdbSrvRStorage: invalid binobj: [", individual_as_binobj, "] ", uri);
             }
         }
         else
@@ -143,17 +143,17 @@ public class LmdbClient : KeyValueDB
         sock_srv = nn_socket(AF_SP, NN_REQ);
         if (sock_srv < 0)
         {
-            log.trace("ERR! cannot create socket");
+            log.trace("ERR! LmdbSrvRStorage: cannot create socket");
             return -1;
         }
         else if (nn_connect(sock_srv, cast(char *)srv_url) < 0)
         {
-            log.trace("ERR! cannot connect socket to %s", srv_url);
+            log.trace("ERR! LmdbSrvRStorage: cannot connect socket to %s", srv_url);
             return -1;
         }
         else
         {
-            log.trace("success connect %s", srv_url);
+            log.trace("LmdbSrvRStorage: success connect %s", srv_url);
             return sock_srv;
         }
     }
@@ -172,13 +172,13 @@ public class LmdbClient : KeyValueDB
                 char *buf = cast(char *)0;
 
                 res = nn_send(sock, cast(char *)req, req.length, 0);
+                //log.trace("TRACE! LmdbSrvRStorage: req (%s)", req);
 
                 if (res < 0)
                 {
-                    log.trace("ERR! N_CHANNEL: send: err=%s", fromStringz(nn_strerror(nn_errno())));
-                    log.trace("N_CHANNEL send (%s)", req);
+                    log.trace("ERR! LmdbSrvRStorage: send: err=%s", fromStringz(nn_strerror(nn_errno())));
+                    log.trace("ERR! LmdbSrvRStorage: send (%s)", req);
                 }
-
 
                 for (int attempt = 0; attempt < 10; attempt++)
                 {
@@ -186,13 +186,13 @@ public class LmdbClient : KeyValueDB
 
                     if (res < 0)
                     {
-                        log.trace("ERR! N_CHANNEL: recv: err=%s", fromStringz(nn_strerror(nn_errno())));
+                        log.trace("ERR! LmdbSrvRStorage: recv: err=%s", fromStringz(nn_strerror(nn_errno())));
                     }
 
                     if (res > 0 || res == -1 && nn_errno() != 4)
                         break;
 
-                    log.trace("ERR! N_CHANNEL: repeat recv, attempt=%d", attempt + 1);
+                    log.trace("ERR! LmdbSrvRStorage: repeat recv, attempt=%d", attempt + 1);
                 }
 
 
@@ -201,14 +201,14 @@ public class LmdbClient : KeyValueDB
                     int bytes = res;
 
                     rep = to!string(buf);
-                    //log.trace("N_CHANNEL recv (%s)", rep);
+                    //log.trace("TRACE! LmdbSrvRStorage: recv (%s)", rep);
 
                     nn_freemsg(buf);
                 }
             }
             else
             {
-                log.trace("ERR! N_CHANNEL: invalid socket");
+                log.trace("ERR! LmdbSrvRStorage: invalid socket");
             }
 
             if (rep.length == 0)
@@ -218,7 +218,7 @@ public class LmdbClient : KeyValueDB
         }
         catch (Throwable tr)
         {
-            log.trace("ERR! reqrep_json_2_srv, %s", tr.info);
+            log.trace("ERR! LmdbSrvRStorage: %s", tr.info);
             log.trace("req: %s", req);
             log.trace("rep: %s", rep);
 

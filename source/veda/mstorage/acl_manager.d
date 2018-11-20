@@ -139,7 +139,7 @@ void acl_manager(string thread_name)
                                     return;
                                 }
 
-                                Resources rdfType = new_ind.resources[ rdf__type ];
+                                Resources rdfType = new_ind.getResources(rdf__type) ;
 
                                 if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
                                 {

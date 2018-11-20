@@ -491,7 +491,7 @@ class PThreadContext : Context
         }
         finally
         {
-               //log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
+            //log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
         }
     }
 
@@ -622,8 +622,6 @@ class PThreadContext : Context
                           indv !is null ? text(*indv) : "null");
 
             //   log.trace("[%s] add_to_transaction [%s] = %s", name, indv.uri, res);
-
-            //stat(CMD_PUT, sw);
         }
     }
 
