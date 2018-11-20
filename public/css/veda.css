@@ -618,8 +618,20 @@ hr.black {
   border-bottom-left-radius: 6px;
 }
 
-#app-load-indicator {
-  margin: 20% auto;
+#load-indicator {
+  background-color: white;
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.5;
+}
+#load-indicator > i {
+  position: fixed;
+  top: 49%;
+  left: 49%;
 }
 
 #main {

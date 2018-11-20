@@ -60,12 +60,12 @@ veda.Module(function (veda) { "use strict";
   });
 
   // App loading indicator
-  var appLoadIndicator = $("#app-load-indicator");
+  var loadIndicator = $("#load-indicator");
   veda.on("init:progress", function (progress) {
     if (progress !== 100) {
-      appLoadIndicator.removeClass("hidden");
+      loadIndicator.show();
     } else {
-      appLoadIndicator.addClass("hidden");
+      loadIndicator.hide();
     }
   });
 
