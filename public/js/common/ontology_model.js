@@ -21,9 +21,6 @@ veda.Module(function (veda) { "use strict";
       veda.OntologyModel.prototype._singletonInstance = null;
     });
 
-    // Initialization percentage
-    veda.trigger("init:progress", 0);
-
     var self = this;
 
     this.reload = function () {
@@ -122,9 +119,6 @@ veda.Module(function (veda) { "use strict";
         }
       });
 
-      // Initialization percentage
-      veda.trigger("init:progress", 20);
-
       // Process classes
       Object.keys(classes).map( function (uri) {
         var _class = classes[uri];
@@ -147,9 +141,6 @@ veda.Module(function (veda) { "use strict";
         });
       });
 
-      // Initialization percentage
-      veda.trigger("init:progress", 40);
-
       // Process properties
       Object.keys(properties).map( function (uri) {
         try {
@@ -162,9 +153,6 @@ veda.Module(function (veda) { "use strict";
           console.error("Ontology init error, uri = %s", uri, err.name);
         }
       });
-
-      // Initialization percentage
-      veda.trigger("init:progress", 60);
 
       // Process specifications
       Object.keys(specifications).map( function (uri) {
@@ -180,9 +168,6 @@ veda.Module(function (veda) { "use strict";
           console.error("Ontology init error, uri = %s", uri, err.name);
         }
       });
-
-      // Initialization percentage
-      veda.trigger("init:progress", 80);
 
       // Init class individuals
       Object.keys(classes).map( function (uri) {
@@ -213,8 +198,6 @@ veda.Module(function (veda) { "use strict";
           console.error("Ontology init error, uri = %s", uri, err.name);
         }
       });
-
-      veda.trigger("init:progress", 100);
 
     }
 
