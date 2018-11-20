@@ -4,12 +4,11 @@
 module veda.ft_indexer.ft_indexer_module;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, core.sys.posix.signal, core.sys.posix.unistd, core.thread;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue,
-               veda.util.properd;
+private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.util.properd, veda.core.common.type;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
-private import veda.bind.xapian_d_header;
-private import veda.core.common.context, veda.ft_indexer.xapian_indexer;
-private import veda.vmodule.vmodule;
+private import veda.bind.xapian_d_header, veda.ft_indexer.xapian_indexer;
+private import veda.core.common.context, veda.vmodule.vmodule;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;

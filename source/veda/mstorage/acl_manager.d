@@ -170,8 +170,6 @@ void acl_manager(string thread_name)
                             writefln("[%s] recieve signal EXIT", "acl_manager");
                             send(tid_response_reciever, true);
                         }
-                        else if (cmd == CMD_NOP)
-                            send(tid_response_reciever, true);
                         else
                             send(tid_response_reciever, false);
                     },

@@ -340,9 +340,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 writefln("[%s] recieve signal EXIT", text(storage_id));
                                 send(tid_response_reciever, true);
                             }
-
-                            else if (cmd == CMD_NOP)
-                                send(tid_response_reciever, true);
                             else
                                 send(tid_response_reciever, false);
                         },

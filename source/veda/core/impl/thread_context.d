@@ -179,7 +179,6 @@ class PThreadContext : Context
         }
         finally
         {
-            //stat(CMD_GET, sw);
         }
     }
 
@@ -492,7 +491,6 @@ class PThreadContext : Context
         }
         finally
         {
-	           //stat(CMD_GET, sw);
                //log.trace("get_individuals_via_query: end, query_str=%s, result=%s", query_str, res);
         }
     }
@@ -555,7 +553,6 @@ class PThreadContext : Context
         }
         finally
         {
-//            stat(CMD_GET, sw);
 //            log.trace("get_individual: end, uri=%s", uri);
         }
     }
