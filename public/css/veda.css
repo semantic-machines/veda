@@ -619,19 +619,17 @@ hr.black {
 }
 
 #load-indicator {
+  background-color: white;
+  z-index: 9999;
   position: fixed;
-  z-index: 9998;
   top: 0;
-  left: 0;
   bottom: 0;
+  left: 0;
   right: 0;
-  background-color: #fff;
   opacity: 0.5;
 }
-
 #load-indicator > i {
   position: fixed;
-  z-index: 9999;
   top: 49%;
   left: 49%;
 }
