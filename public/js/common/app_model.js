@@ -99,6 +99,7 @@
 
     // Start application
     self.start = function () {
+      self.trigger("starting");
       if ( !self.ontology ) {
         self.ontology = new veda.OntologyModel();
       }

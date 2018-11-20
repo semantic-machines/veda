@@ -59,16 +59,6 @@ veda.Module(function (veda) { "use strict";
     return ( hash === location.hash ? false : riot.route(hash) );
   });
 
-  // App loading indicator
-  var appLoadIndicator = $("#app-load-indicator");
-  veda.on("init:progress", function (progress) {
-    if (progress !== 100) {
-      appLoadIndicator.removeClass("hidden");
-    } else {
-      appLoadIndicator.addClass("hidden");
-    }
-  });
-
   // Triggered in veda.start()
   veda.on("language:changed", function () {
     var uris = [];
@@ -90,6 +80,15 @@ veda.Module(function (veda) { "use strict";
         }
       }
     }
+  });
+
+
+  // App loading indicator
+  var loadIndicator = $("#load-indicator");
+  veda.on("starting", function (progress) {
+    loadIndicator.show();
+  }).on("started", function (progress) {
+    loadIndicator.hide();
   });
 
   // Triggered in veda.start()
@@ -140,8 +139,11 @@ veda.Module(function (veda) { "use strict";
         }
 
         if (uri) {
+          loadIndicator.show();
           var individual = new veda.IndividualModel(uri);
-          individual.present(container, template, mode, extra);
+          individual.present(container, template, mode, extra).then(function () {
+            loadIndicator.hide();
+          });
         } else {
           riot.route("#/" + welcome.id);
         }

@@ -7,14 +7,14 @@ veda.Module(function (veda) { "use strict";
     mode = mode || "view";
 
     if (typeof container === "string") {
-      container = $(container).empty();
+      container = $(container);
     }
 
     return present(this, container, template, mode, extra)
       .then(function (renderedTemplate) {
 
         if (container) {
-          container.append(renderedTemplate);
+          container.empty().append(renderedTemplate);
         }
 
         return renderedTemplate;
