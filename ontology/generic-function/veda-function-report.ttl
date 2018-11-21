@@ -183,19 +183,7 @@ v-s:ReportTemplate
   v-ui:template """
 <div class="container sheet">
   <div about="@" rel="v-s:reportBlank" data-template="v-fc:BlankTemplate"></div>
-  <br>
-  <div class="actions">
-    <button type="button" class="action btn btn-warning create-report" about="v-s:CreateReport" property="rdfs:label"/>
-  </div>
 </div>
-<script>
-  $(".create-report", template).on("click", function () {
-    var report = individual;
-    var params = individual["v-s:reportBlank"][0].object;
-    veda.Util.createReport(report, params);
-  });
-  //# sourceURL=v-s:ReportTemplate_post
-</script>
   """;
 .
 
