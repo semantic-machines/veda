@@ -240,6 +240,7 @@ v-s:PersonalAspectTemplate
   <ul id="personal-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 class="no-margin" about="v-s:PersonalAspectTemplate" property="rdfs:comment"></h2></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#settings" about="v-s:Settings" property="rdfs:label"></a></li>
+    <li role="presentation"><a role="tab" data-toggle="tab" href="#reports" about="v-s:Reports" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#registries" about="v-s:Registries" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#blanks" about="v-s:Blanks" property="rdfs:label"></a></li>
     <li role="presentation"><a role="tab" data-toggle="tab" href="#favorites" about="v-s:Favorites" property="rdfs:label"></a></li>
@@ -249,6 +250,15 @@ v-s:PersonalAspectTemplate
   <div class="tab-content" id="personal-tabs-content">
     <div role="tabpanel" class="tab-pane" id="personal-info">
       <div about="@" rel="v-s:owner" data-template="v-s:PersonalInfoTemplate"></div>
+    </div>
+    <div role="tabpanel" class="tab-pane" id="reports">
+      <ol rel="v-s:hasReport" class="columns-2">
+        <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
+      </ol>
+      <br/>
+      <div class="actions">
+        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+      </div>
     </div>
     <div role="tabpanel" class="tab-pane" id="registries">
       <ol rel="v-s:hasRegistry" class="columns-2">
