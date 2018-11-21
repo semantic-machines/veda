@@ -215,7 +215,7 @@ v-s:CreateReport_ProjectOrder
   rdfs:label "Project Order"@ru ;
   rdfs:label "Project Order"@en ;
 .
-v-s:RightsOrigin
+v-s:Rights
   rdf:type v-s:Bundle ;
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
