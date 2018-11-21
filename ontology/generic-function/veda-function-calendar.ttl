@@ -44,7 +44,7 @@ v-cal:FunctionCalendarModel
   v-ui:forClass v-cal:FunctionCalendar ;
   v-s:script """
 
-this.getEventsUris = function (start, end) {
+this.getEvents = function (start, end) {
   if (typeof start === "undefined") {
     start = end = new Date();
   }
@@ -58,43 +58,43 @@ this.getEventsUris = function (start, end) {
   return query({
     ticket: veda.ticket,
     query: q,
-    sort: sort
-  }).result;
-}
-
-this.getEvents = function (start, end) {
-  return this.getEventsUris(start, end).map(function (uri) {
-    var event = new veda.IndividualModel(uri);
-    var label;
-    try {
-      label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
-    } catch (e) {
-      event["rdfs:label"].join(" ");
-    }
-    var className;
-    var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
-    var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
-    var dueDate = event["v-wf:dateGiven"][0];
-    var now = new Date();
-    switch (true) {
-      case (dueDate < today) :
-        className = "fc-danger";
-      break;
-      case (today < dueDate && dueDate < tomorrow) :
-        className = "fc-warning";
-      break;
-      case (tomorrow < dueDate) :
-        className = "fc-success";
-      break;
-    }
-    return {
-      "id": event.id,
-      "title": label,
-      "url": "#/" + event.id,
-      "className": className,
-      "start": dueDate ? dueDate.valueOf() : now.valueOf(),
-      "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
-    }
+    sort: sort,
+    async: true
+  })
+  .then(function (queryResult) {
+    return queryResult.result.map(function (uri) {
+      var event = new veda.IndividualModel(uri);
+      var label;
+      try {
+        label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
+      } catch (e) {
+        event["rdfs:label"].join(" ");
+      }
+      var className;
+      var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
+      var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
+      var dueDate = event["v-wf:dateGiven"][0];
+      var now = new Date();
+      switch (true) {
+        case (dueDate < today) :
+          className = "fc-danger";
+        break;
+        case (today < dueDate && dueDate < tomorrow) :
+          className = "fc-warning";
+        break;
+        case (tomorrow < dueDate) :
+          className = "fc-success";
+        break;
+      }
+      return {
+        "id": event.id,
+        "title": label,
+        "url": "#/" + event.id,
+        "className": className,
+        "start": dueDate ? dueDate.valueOf() : now.valueOf(),
+        "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
+      }
+    });
   });
 }
 
@@ -131,13 +131,12 @@ v-cal:FunctionCalendarTemplate
     eventSources: [
       {
         events: function(start, end, timezone, callback) {
-          var events = individual.getEvents(start, end);
+          var events = individual.getEvents(start, end).then(callback);
           // Update counter if counter & events count do not match
           /*if ( !counter.isNew() && !counter.hasValue("v-ft:inboxWeekCount", events.length) && start.toDate() <= new Date() && new Date() <= end.toDate() ) {
             counter["v-ft:inboxWeekCount"] = [events.length];
             counter.save();
           }*/
-          callback(events);
         }
       }
     ],
