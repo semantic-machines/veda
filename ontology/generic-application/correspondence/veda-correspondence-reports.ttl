@@ -62,18 +62,20 @@ v-s:blankCreateCompletedTasksCount_Report
 
 v-s:CountOfUsersTasks_Report
   rdf:type v-s:Report ;
-  v-s:reportPath "/reports/Documents/CountOfUsersTasks_Report" ;
-  v-s:reportFormat "pdf";
   rdfs:label "Количество задач"@ru ;
   rdfs:label "Number of tasks"@en ;
+  v-s:reportPath "/reports/Documents/CountOfUsersTasks_Report" ;
+  v-s:reportFormat "pdf" ;
+  v-s:reportBlank v-s:blankCreateCountOfUsersTasks_report ;
 .
 
 v-s:CompletedTasksCount_Report
   rdf:type v-s:Report ;
-  v-s:reportPath "/reports/Documents/CompletedTasksCount_Report" ;
-  v-s:reportFormat "pdf";
   rdfs:label "Количество выполненных задач"@ru ;
   rdfs:label "Number of competed tasks"@en ;
+  v-s:reportPath "/reports/Documents/CompletedTasksCount_Report" ;
+  v-s:reportFormat "pdf";
+  v-s:reportBlank v-s:blankCreateCompletedTasksCount_Report ;
 .
 
 v-s:CountOfUsersTasks_report_Parameters
