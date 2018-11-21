@@ -78,7 +78,7 @@ v-s:CompletedTasksCount_Report
   v-s:reportBlank v-s:blankCreateCompletedTasksCount_Report ;
 .
 
-v-s:CountOfUsersTasks_report_Parameters
+v-s:CountOfUsersTasks_Report_Parameters
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Параметры отчета по количеству задач "@ru ;
