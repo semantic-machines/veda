@@ -1796,7 +1796,7 @@ v-ui:SimplifiedJournalTemplate
   $("#on-document", template).attr("about", doc_uri);
 
   $('.createReport0', template).on('click', function () {
-    veda.Util.createReport(doc,'v-s:Journal_printBlank');
+    veda.Util.createReport('v-s:Journal_printBlank', doc);
   });
   //# sourceURL=v-ui:SimplifiedJournalTemplate_pre
 </script>
@@ -1958,7 +1958,7 @@ v-ui:JournalTemplate
   $("#on-document", template).attr("about", doc_uri);
 
   $('.createReport0', template).on('click', function () {
-    veda.Util.createReport(doc,'v-s:Journal_printBlank');
+    veda.Util.createReport('v-s:Journal_printBlank', doc);
   });
   //# sourceURL=v-ui:JournalTemplate_pre
 </script>

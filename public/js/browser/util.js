@@ -152,7 +152,7 @@ veda.Module(function (veda) { "use strict";
    *  - Let user to choice report (if more then one founded)
    *  - Redirect to report
    */
-  veda.Util.createReport = function (params, report) {
+  veda.Util.createReport = function (report, params) {
     if (typeof report === "string" || report instanceof String) {
       report = new veda.IndividualModel(report);
     }
@@ -187,7 +187,6 @@ veda.Module(function (veda) { "use strict";
     form.appendChild(tzField);
     document.body.appendChild(form);
     window.open("", "Report");
-    console.log("REPORT FORM:", form);
     form.submit();
   };
 

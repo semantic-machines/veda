@@ -192,7 +192,7 @@ v-s:ReportTemplate
   $(".create-report", template).on("click", function () {
     var report = individual;
     var params = individual["v-s:reportBlank"][0].object;
-    veda.Util.createReport(params, report);
+    veda.Util.createReport(report, params);
   });
   //# sourceURL=v-s:ReportTemplate_post
 </script>
