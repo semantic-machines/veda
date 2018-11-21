@@ -290,17 +290,22 @@ v-fs:AttributiveSearchModel
           return new veda.IndividualModel(uri);
         });
         self.addValue("v-fs:searchResult", delta);
+
         if ( self.hasValue("v-fs:loadAll", true) && self["v-fs:cursor"][0] < self["v-fs:estimated"][0] ) {
+
           return self.search( self["v-fs:cursor"][0] );
-        }
 
-        // Notify search blank on search complete
-        if ( self.hasValue("v-fs:searchBlank") ) {
-          self["v-fs:searchBlank"][0].initBlank();
-          self["v-fs:searchBlank"][0].object.trigger("search:complete");
-        }
+        } else if ( self.hasValue("v-fs:loadAll", true) ) {
 
-        return self.hasValue("v-fs:loadAll", true) ? self["v-fs:searchResult"] : delta ;
+          self.trigger("search:complete", self["v-fs:searchResult"]);
+          return self["v-fs:searchResult"];
+
+        } else {
+
+          self.trigger("search:delta", delta);
+          return delta ;
+
+        }
       });
     } else {
       return Promise.resolve( self["v-fs:searchResult"] );
