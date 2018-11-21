@@ -322,7 +322,7 @@ v-s:Find
   rdf:type v-s:Menu ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Find"@en ;
-  v-s:objectLink v-fs:Search ;
+  v-s:objectLink v-fs:FulltextSearch ;
 .
 v-s:Drafts
   rdf:type v-s:Menu ;
