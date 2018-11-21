@@ -2,7 +2,7 @@ import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.j
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator_rlmdb;
 import veda.core.common.context, veda.core.common.type;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
-import filters.filter_00, filters.filter_01, filters.filter_02;
+import filters.filter_00, filters.filter_01, filters.filter_02, filters.filter_03;
 
 /*
     COMMAND QUEUE_NAME QUEUE_PATH [OPTIONS..]
@@ -43,6 +43,7 @@ void main(string[] args)
     cmds[ "check_links_00" ] = true;
     cmds[ "check_links_01" ] = true;
     cmds[ "check_links_02" ] = true;
+    cmds[ "check_links_03" ] = true;
 
     if (args.length < 3)
     {
@@ -131,7 +132,7 @@ void main(string[] args)
         }
     }
 
-    if (command == "check_links_01" || command == "check_links_02")
+    if (command == "check_links_01" || command == "check_links_02" || command == "check_links_03")
     {
         try
         {
@@ -197,6 +198,8 @@ void main(string[] args)
             check_links_01(data, queue_new, individual_lmdb_driver, log);
         else if (command == "check_links_02")
             check_links_02(data, queue_new, individual_lmdb_driver, log);
+        else if (command == "check_links_03")
+            check_links_03(data, queue_new, individual_lmdb_driver, log);
     }
 
     if (command == "stat_by_type")

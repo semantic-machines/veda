@@ -5,7 +5,7 @@ import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.reso
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
 
 long t1_count, t2_count;
-public void check_links_02(string data, Queue queue_new, LmdbDriver individual_lmdb_driver, Logger log)
+public void check_links_02(string data, ref Queue queue_new, LmdbDriver individual_lmdb_driver, Logger log)
 {
     Individual imm;
 
