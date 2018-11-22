@@ -54,3 +54,11 @@ v-s:CertificationDocumentType
   rdfs:label "Тип удостоверяющего документа"@ru ;
   rdfs:label "Certification document type"@en ;
 .
+
+v-s:MedicalCheckupCertificationDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:CertificationDocument ;
+  rdfs:label "Удостоверяющий документ мед осмотра"@ru ;
+  rdfs:label "Medical checkup Certification document"@en ;
+  v-ui:hasTemplate v-s:CertificationDocumentTemplate ;
+.

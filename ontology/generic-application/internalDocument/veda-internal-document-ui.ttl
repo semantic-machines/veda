@@ -180,7 +180,7 @@ v-s:InternalDocumentTemplate
   });
 
   $("#print-blank", template).click(function () {
-    veda.Util.createReport(individual, 'v-s:InternalDocument_printBlank');
+    veda.Util.createReport('v-s:InternalDocument_printBlank', individual);
   });
 
   function processHandler() {

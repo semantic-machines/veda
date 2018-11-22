@@ -8,9 +8,12 @@ private
     import veda.storage.lmdbsrv.lmdbsrv_r_storage;
 }
 
-public static Context create_new_ctx(string context_name, Logger _log, string _main_module_url = null)
+public static Context create_new_ctx(string context_name, Logger _log, string _main_module_url, string _lmdb_service_url)
 {
     PThreadContext ctx = new PThreadContext();
+
+    if (_main_module_url !is null)
+        ctx.main_module_url = _main_module_url;
 
     ctx.node_id = "cfg:standart_node";
     ctx.log     = _log;
@@ -18,13 +21,13 @@ public static Context create_new_ctx(string context_name, Logger _log, string _m
     if (ctx.log is null)
         writefln("context_name [%s] log is null", context_name);
 
-    ctx.storage = new LmdbSrvRStorage(context_name, _main_module_url, ctx.log);
+    ctx.storage = new LmdbSrvRStorage(context_name, _lmdb_service_url, ctx.log);
 
     ctx.name = context_name;
 
     ctx.get_configuration();
 
-    ctx.log.trace_log_and_console("NEW CONTEXT(RLMDB) [%s]", context_name);
+    ctx.log.trace_log_and_console("NEW CONTEXT(RLMDB) [%s], main_module_url=%s", context_name, ctx.main_module_url);
 
     return ctx;
 }

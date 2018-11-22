@@ -63,6 +63,17 @@ v-s:OrganizationUnitModel
       return state || self.getChief.call(item, chiefId, depth + 1);
     }, undefined);
   };
+  
+  this.getFieldChief = function (depth) {
+    depth = depth || 0;
+    var self = this;
+    if ( (this.hasValue("v-s:hasFieldChief") || depth > 16) ) {
+      return this["v-s:hasFieldChief"][0];
+    }
+    return this["v-s:parentUnit"].reduce(function (state, item) {
+      return state || self.getFieldChief.call(item, depth + 1);
+    }, undefined);
+  };
 
   /**
    * @method

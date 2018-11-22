@@ -307,19 +307,19 @@ v-s:LetterTemplate
     $("#outgoing-print-blank", template).remove();
     $('#incoming-print-blank', template).on('click', function (e) {
       e.preventDefault();
-      veda.Util.createReport(individual, 'v-s:IncomingLetterPrintBlank');
+      veda.Util.createReport('v-s:IncomingLetterPrintBlank', individual);
     });
   } else {
     $("#incoming-print-blank", template).remove();
     $('#createReport', template).off('click');
     $('#createReport', template).on('click', function (e) {
       e.preventDefault();
-      veda.Util.createReport(individual, 'v-s:OutgoingLetterPrintBlank_pdf');
+      veda.Util.createReport('v-s:OutgoingLetterPrintBlank_pdf', individual);
     });
     $('#createReport1', template).off('click');
     $('#createReport1', template).on('click', function (e) {
       e.preventDefault();
-      veda.Util.createReport(individual, 'v-s:OutgoingLetterPrintBlank_rtf');
+      veda.Util.createReport('v-s:OutgoingLetterPrintBlank_rtf', individual);
     });
   }
 

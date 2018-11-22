@@ -1,12 +1,11 @@
 import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv, std.string;
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator_rlmdb;
+import veda.core.common.context, veda.core.common.type;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
-import filters.filter_00, filters.filter_01, filters.filter_02;
+import filters.filter_00, filters.filter_01, filters.filter_02, filters.filter_03;
 
 /*
-    COMMAND NAME PATH [OPTIONS..]
-
-    COMMAND: check, message_to_json, repair, stat_by_type, check_links, consumer_unread_counter, extract_uris
+    COMMAND QUEUE_NAME QUEUE_PATH [OPTIONS..]
  */
 
 Logger _log;
@@ -20,9 +19,16 @@ Logger log()
 public double     oprc;
 public LmdbDriver individual_lmdb_driver;
 public Queue      queue_new;
+string[ string ]  opt;
 
 void main(string[] args)
 {
+    opt[ "--mstorage_url" ]  = "";
+    opt[ "--lmdbsrv_url" ] = "";
+    opt[ "--veda_user" ] = "";
+    opt[ "--veda_pass" ] = "";
+    opt[ "--v" ] = "";
+	
     bool[ string ] cmds;
     cmds[ "check" ]                   = true;
     cmds[ "message_to_json" ]         = true;
@@ -32,9 +38,12 @@ void main(string[] args)
     cmds[ "consumer_unread_counter" ] = true;
     cmds[ "extract_uris" ]            = true;
     cmds[ "check_links" ]             = true;
-    cmds[ "check_links_00" ]          = true;
-    cmds[ "check_links_01" ]          = true;
-    cmds[ "check_links_02" ]          = true;
+    cmds[ "remove_from_veda" ]        = true;
+
+    cmds[ "check_links_00" ] = true;
+    cmds[ "check_links_01" ] = true;
+    cmds[ "check_links_02" ] = true;
+    cmds[ "check_links_03" ] = true;
 
     if (args.length < 3)
     {
@@ -48,8 +57,18 @@ void main(string[] args)
     if (cmds.get(command, false) == false)
     {
         writeln("use %s COMMAND NAME DIR [OPTIONS..]", args[ 0 ]);
-        writeln("		COMMAND : [check/cat/repair/stat/check_links]");
         return;
+    }
+
+    foreach (arg; args)
+    {
+        string[] aa = arg.split("=");
+        writeln(aa);
+        if (aa.length == 2)
+        {
+            if (opt.get(aa[ 0 ], null) !is null)
+                opt[ aa[ 0 ] ] = aa[ 1 ];
+        }
     }
 
     string name = args[ 2 ];
@@ -60,6 +79,15 @@ void main(string[] args)
     Queue queue = new Queue(path, name, Mode.R, log);
     queue.open();
     queue.get_info(0);
+
+    Context ctx;
+    Ticket  sticket;
+
+    if (command == "remove_from_veda")
+    {
+        ctx     = create_new_ctx("vqueueuctl", log, opt.get ("--mstorage_url", null) ~ "\0", opt.get ("--lmdbsrv_url", null) ~ "\0");
+        sticket = ctx.sys_ticket();
+    }
 
     //writefln("QUEUE %s content %d elements ", name, queue.count_pushed);
 
@@ -104,7 +132,7 @@ void main(string[] args)
         }
     }
 
-    if (command == "check_links_01" || command == "check_links_02")
+    if (command == "check_links_01" || command == "check_links_02" || command == "check_links_03")
     {
         try
         {
@@ -162,12 +190,16 @@ void main(string[] args)
             collect_stat_by_type(data);
         else if (command == "check_links")
             check_links(data);
+        else if (command == "remove_from_veda")
+            execute_cmd_on_veda(INDV_OP.REMOVE, ctx, &sticket, data);
         else if (command == "check_links_00")
             check_links_00(data, queue_new, individual_lmdb_driver, log);
         else if (command == "check_links_01")
             check_links_01(data, queue_new, individual_lmdb_driver, log);
         else if (command == "check_links_02")
             check_links_02(data, queue_new, individual_lmdb_driver, log);
+        else if (command == "check_links_03")
+            check_links_03(data, queue_new, individual_lmdb_driver, log);
     }
 
     if (command == "stat_by_type")
@@ -178,6 +210,74 @@ void main(string[] args)
 
     cs.close();
     queue.close();
+}
+
+/*
+   public enum SUBSYSTEM : ubyte
+   {
+    NONE              = 0,
+    STORAGE           = 1,
+    ACL               = 2,
+    FULL_TEXT_INDEXER = 4,
+    FANOUT_EMAIL      = 8,
+    SCRIPTS           = 16,
+    FANOUT_SQL        = 32,
+    USER_MODULES_TOOL = 64
+   }
+ */
+
+private void execute_cmd_on_veda(INDV_OP cmd, Context ctx, Ticket *ticket, string data)
+{
+    if (ctx is null)
+    {
+        log.trace("ERR! execute_cmd_on_veda: context not initalized");
+        return;
+    }
+
+    Individual imm;
+    Individual indv;
+    string     new_bin;
+
+    int        dsr;
+
+    if (data !is null)
+        dsr = imm.deserialize(data);
+    if (dsr < 0 || imm.uri is null)
+    {
+        imm = ctx.get_individual(data);
+
+        if (imm.getStatus() != ResultCode.Ok)
+        {
+            log.trace("ERR! execute_cmd_on_veda: code=%s, uri=%s", imm.getStatus(), data);
+        }
+    }
+    else
+    {
+        new_bin = imm.getFirstLiteral("new_state");
+
+        if (new_bin is null)
+        {
+            log.trace("execute_cmd_on_veda: binobj not found, uri=%s ", indv.uri);
+        }
+
+        if (new_bin !is null && indv.deserialize(new_bin) < 0)
+        {
+            log.trace("ERR! read in queue, new binobj is individual:[%s]", new_bin);
+        }
+        else
+        {
+            imm.setStatus(ResultCode.Ok);
+        }
+    }
+
+    if (imm.getStatus() == ResultCode.Ok)
+    {
+        log.trace("execute_cmd_on_veda: cmd=%s, uri=%s", cmd, indv.uri);
+        if (cmd == INDV_OP.REMOVE)
+        {
+            OpResult res = ctx.update(null, -1, ticket, cmd, &indv, null, 1, OptFreeze.NONE, OptAuthorize.NO);
+        }
+    }
 }
 
 long[ string ] type_2_count;
@@ -343,6 +443,6 @@ private Tuple!(string, long)[] aa_sort(long[ string ] aa)
     typeof(return )r = [];
     foreach (k, v; aa)
         r ~= tuple(k, v);
-    sort!q { a[ 1 ] < b[ 1 ] } (r);
+    sort!q{ a[ 1 ] < b[ 1 ] } (r);
     return r;
 }

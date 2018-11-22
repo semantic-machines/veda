@@ -1187,7 +1187,7 @@ v-s:ContractorCategoryDecisionTemplate
 <script>
   $('#createReport', template).on('click', function (e) {
     e.preventDefault();
-    veda.Util.createReport(individual, 'v-s:ContractorCategoryDecision_printBlank');
+    veda.Util.createReport('v-s:ContractorCategoryDecision_printBlank', individual);
   });
 
   $("#add-ContractorCategoryDecisionSecurity", template).click(function () {

@@ -1,7 +1,7 @@
 module veda.core.common.transaction;
 
 import std.stdio, std.json;
-import veda.core.common.context, veda.common.type, veda.core.common.define, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
+import veda.core.common.context, veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
 
 struct TransactionItem
 {

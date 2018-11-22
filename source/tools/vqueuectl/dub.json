@@ -2,6 +2,7 @@
 	"name": "vqueuectl",
 	"description": "command line for managing a veda queue",
         "license": "LGPL v3",
+        "versions": ["isModule", "std_socket"],
         "dependencies": {
                 "backtrace-d": "0.1.2",
 		"d-nanomsg": "0.2.0",

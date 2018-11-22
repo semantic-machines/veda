@@ -50,6 +50,7 @@ v-s:Comment_BaseUser
 #  v-s:permissionSubject v-s:Comment_BaseUser ;
 #  v-s:canRead "true"^^xsd:boolean ;
 #  rdfs:label "R. Все пользователи. Индивиды Comment" ;
+#  v-s:deleted "true"^^xsd:boolean ;
 #.
 
 v-s:Comment_permission2

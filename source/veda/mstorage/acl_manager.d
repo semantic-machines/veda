@@ -139,7 +139,7 @@ void acl_manager(string thread_name)
                                     return;
                                 }
 
-                                Resources rdfType = new_ind.resources[ rdf__type ];
+                                Resources rdfType = new_ind.getResources(rdf__type) ;
 
                                 if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
                                 {
@@ -170,8 +170,6 @@ void acl_manager(string thread_name)
                             writefln("[%s] recieve signal EXIT", "acl_manager");
                             send(tid_response_reciever, true);
                         }
-                        else if (cmd == CMD_NOP)
-                            send(tid_response_reciever, true);
                         else
                             send(tid_response_reciever, false);
                     },

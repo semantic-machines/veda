@@ -99,15 +99,16 @@ v-cal:FunctionCalendarModel
       });
       return Promise.all(eventsPromises);
     });
-  }
+  });
+}
 
-  function format(str) {
-    var args = arguments;
-    return str.replace(/{([0-9]+)}/gi, function (match, position) {
-      return typeof args[position] !== "undefined" ? args[position] : match ;
-    });
-  }
-  //# sourceURL=v-cal:FunctionCalendarModel
+function format(str) {
+  var args = arguments;
+  return str.replace(/{([0-9]+)}/gi, function (match, position) {
+    return typeof args[position] !== "undefined" ? args[position] : match ;
+  });
+}
+//# sourceURL=v-cal:FunctionCalendarModel
   """
 .
 v-cal:TasksCalendar

@@ -164,6 +164,9 @@ void main(string[] args)
 
                 nn_freemsg(buf);
 
+				if (rep is null || rep.length == 0)
+					rep = "\0";
+
                 bytes = nn_send(sock, cast(char *)rep.dup(), rep.length, 0);
                 //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
             }

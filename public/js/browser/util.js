@@ -152,74 +152,46 @@ veda.Module(function (veda) { "use strict";
    *  - Let user to choice report (if more then one founded)
    *  - Redirect to report
    */
-  veda.Util.createReport = function (individual, reportId) {
-    if (reportId !== undefined) {
-      veda.Util.redirectToReport(individual, reportId);
-    } else {
-      var s = veda.Backend.query(veda.ticket, "'rdf:type' == 'v-s:ReportsForClass' && 'v-ui:forClass' == '"+individual["rdf:type"][0].id+"'").then(function (queryResult) {
-        var reportUris = queryResult.result;
-        if (reportUris.length === 0) {
-          alert("Нет отчета.");
-        } else if (reportUris.length === 1) {
-          veda.Util.redirectToReport(individual, reportUris[0]);
-        } else {
-          var reportsDropdown = $('[resource="' + veda.Util.escape4$(individual.id) + '"] #chooseReport + .dropdown-menu');
-          if (reportsDropdown.html() === "") {
-            var reportPromises = reportUris.map(function (reportUri) {
-              return new veda.IndividualModel(reportUri).load();
-            });
-            Promise.all(reportPromises).then(function (reports) {
-              reports.forEach(function (report) {
-                $("<li/>", {
-                  "style" : "cursor:pointer",
-                  "html" : "<a href='#'>" + report["rdfs:label"].join(" ") + "</a>",
-                  "click": (function (e) {
-                    veda.Util.redirectToReport(individual, report.id);
-                  })
-                }).appendTo(reportsDropdown);
-              });
-            });
-          }
+  veda.Util.createReport = function (report, params) {
+    if (typeof report === "string" || report instanceof String) {
+      report = new veda.IndividualModel(report);
+    }
+    var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress').load();
+	Promise.all([report.load(), jasperServer.load()]).then(function (loaded) {
+	  var report = loaded[0];
+	  var jasperServer = loaded[1];
+      var jasperServerAddress = jasperServer['rdf:value'][0];
+
+      var form = document.createElement("form");
+      form.setAttribute("method", "post");
+      form.setAttribute("action", jasperServerAddress + "flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit=" + encodeURIComponent(report["v-s:reportPath"][0]) + "&output=" + encodeURIComponent(report["v-s:reportFormat"][0]) + "&documentId=" + encodeURIComponent(params.id) + "&ticket=" + veda.ticket);
+      form.setAttribute("target", "Report");
+
+      Object.getOwnPropertyNames(params.properties).forEach(function (key) {
+        if ( key !== "@" && params.hasValue(key) ) {
+          var hiddenField = document.createElement("input");
+          hiddenField.setAttribute("type", "hidden");
+          hiddenField.setAttribute("name", key.replace(":", "_"));
+          var value = params.get(key).map(function (item) {
+            return item instanceof veda.IndividualModel ? item.id :
+                   item instanceof Date ? item.toISOString() :
+                   item;
+          }).join(",");
+          hiddenField.setAttribute("value", value);
+          form.appendChild(hiddenField);
         }
       });
-    }
-  };
-
-  veda.Util.redirectToReport = function (individual, reportId) {
-    var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress');
-    var jasperServerAddress = jasperServer['rdf:value'][0];
-    var report = new veda.IndividualModel(reportId);
-
-    var form = document.createElement("form");
-    form.setAttribute("method", "post");
-    form.setAttribute("action", jasperServerAddress + "flow.html?_flowId=viewReportFlow&j_username=joeuser&j_password=joeuser&reportUnit=" + encodeURIComponent(report["v-s:reportPath"][0]) + "&output=" + encodeURIComponent(report["v-s:reportFormat"][0]) + "&documentId=" + encodeURIComponent(individual.id) + "&ticket=" + veda.ticket);
-    form.setAttribute("target", "Report");
-
-    Object.getOwnPropertyNames(individual.properties).forEach(function (key) {
-      if ( key !== "@" && individual.hasValue(key) ) {
-        var hiddenField = document.createElement("input");
-        hiddenField.setAttribute("type", "hidden");
-        hiddenField.setAttribute("name", key.replace(":", "_"));
-        var value = individual.get(key).map(function (item) {
-          return item instanceof veda.IndividualModel ? item.id :
-                 item instanceof Date ? item.toISOString() :
-                 item;
-        }).join(",");
-        hiddenField.setAttribute("value", value);
-        form.appendChild(hiddenField);
-      }
+      // Set client timezone parameter
+      var tz = (new Date()).getTimezoneOffset();
+      var tzField = document.createElement("input");
+      tzField.setAttribute("type", "hidden");
+      tzField.setAttribute("name", "timezone");
+      tzField.setAttribute("value", tz);
+      form.appendChild(tzField);
+      document.body.appendChild(form);
+      window.open("", "Report");
+      form.submit();
     });
-    // Set client timezone parameter
-    var tz = (new Date()).getTimezoneOffset();
-    var tzField = document.createElement("input");
-    tzField.setAttribute("type", "hidden");
-    tzField.setAttribute("name", "timezone");
-    tzField.setAttribute("value", tz);
-    form.appendChild(tzField);
-    document.body.appendChild(form);
-    window.open("", "Report");
-    console.log("REPORT FORM:", form);
-    form.submit();
   };
 
   veda.Util.transform = function (individual, template, transformId) {

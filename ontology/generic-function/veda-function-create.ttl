@@ -31,7 +31,7 @@ v-fc:Blank
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
   v-ui:hasModel v-fc:BlankModel ;
-  v-ui:hasTemplate v-fc:BlankTemplateShort ;
+  v-ui:hasTemplate v-fc:BlankManagementTemplate ;
 .
 
 v-fc:BlankMgmt
@@ -67,28 +67,12 @@ v-fc:targetType
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
-v-fc:TargetTypeSpec
-  rdf:type v-ui:ObjectPropertySpecification ;
-  rdfs:label "Спецификация свойства v-fc:targetType"@ru ;
-  rdfs:label "v-fc:targetType property specification"@en ;
-  v-ui:forClass v-fc:Blank, v-fc:FunctionCreate ;
-  v-ui:forProperty v-fc:targetType ;
-  v-ui:tooltip "Ссылка на объект класса Класс."@ru ;
-  v-ui:tooltip "Link to instance of Class class"@en ;
-  v-ui:queryPrefix "('rdf:type'=='owl:Class'||'rdf:type'=='rdfs:Class')"^^xsd:string ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:minCardinality "1"^^xsd:integer ;
-.
-v-fc:LabelSpec
-  rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация свойства rdfs:label для класса v-fc:Blank"@ru ;
-  rdfs:label "Rdfs:label property specification for class v-fc:Blank"@en ;
-  v-ui:forClass v-fc:Blank ;
-  v-ui:forProperty rdfs:label ;
-  v-ui:tooltip "Обязательно. Строка произвольной длины."@ru ;
-  v-ui:tooltip "Mandatory. Arbitrary length string."@en ;
-  v-ui:maxCardinality "1"^^xsd:integer ;
-  v-ui:minCardinality "1"^^xsd:integer ;
+v-fc:targetBlank
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Тип"@ru ;
+  rdfs:label "Type"@en ;
+  rdfs:domain v-fc:FunctionCreate ;
+  rdfs:range v-fc:Blank ;
 .
 v-fc:FunctionCreateModel
   rdf:type v-ui:ClassModel ;
@@ -249,31 +233,11 @@ v-fc:BlankTemplate
 <script>
   individual.initBlank();
 </script>
-<div role="tabpanel">
-  <br>
-  <ul class="nav nav-tabs nav-right hidden-print" role="tablist">
-    <li class="pull-left"><h3 class="no-margin" about="@" property="rdfs:label"></h3></li>
-    <li role="presentation"><a id="mgmt-pill" href="#mgmt" about="v-fc:BlankMgmt" property="rdfs:label" aria-controls="mgmt" role="tab" data-toggle="tab"></a></li>
-    <li role="presentation" class="active"><a id="blank-pill" href="#blank" about="v-fc:Blank" property="rdfs:label" aria-controls="blank" role="tab" data-toggle="tab"></a></li>
-  </ul>
-  <br />
-  <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="blank">
-      <div id="object-container"></div>
-      <div id="no-rights" class="alert alert-warning container hidden">
-        <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
-        <button class="btn btn-default" about="v-fc:Back" property="rdfs:label" onclick="window.history.back();"></button>
-      </div>
-    </div>
-    <div role="tabpanel" class="tab-pane" id="mgmt">
-      <em about="rdfs:label" property="rdfs:label"></em>
-      <p property="rdfs:label" class="view -edit search"></p>
-      <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
-      <br>
-      <div class="actions">
-        <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save delete"></span>
-      </div>
-    </div>
+<div>
+  <div id="object-container"></div>
+  <div id="no-rights" class="alert alert-warning container hidden">
+    <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
+    <button class="btn btn-default" about="v-fc:Back" property="rdfs:label" onclick="window.history.back();"></button>
   </div>
 </div>
 <script>
@@ -301,7 +265,7 @@ v-fc:BlankTemplate
     }
 
     function saveHandler () {
-      if (container.attr("id") === "main") {
+      if (location.hash.indexOf(self.id) === 2) {
         setTimeout(function () {
           riot.route("#/" + object.id);
         }, 100);
@@ -344,26 +308,31 @@ v-fc:BlankSuccessfullyUpdated
   rdfs:label "Blank successfully updated"@en ;
 .
 
+v-fc:BlankSuccessfullyDeleted
+  rdf:type v-s:Bundle ;
+  rdfs:label "Бланк успешно удален"@ru ;
+  rdfs:label "Blank successfully deleted"@en ;
+.
+
 v-fc:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
   rdfs:label "Back"@en ;
 .
 
-v-fc:BlankTemplateShort
+v-fc:BlankManagementTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон класса v-fc:Blank"@ru ;
   rdfs:label "V-fc:Blank class template"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
-  individual.initBlank();
-
   var notify = new veda.Notify();
 
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
     $(".action.save-blank", template).click(function () {
       var personalLabel = prompt( new veda.IndividualModel("v-fc:EnterLabel").toString(), individual.toString() );
+      if (!personalLabel) { return; }
       individual.clone().then(function (personalBlank) {
         personalBlank["rdfs:isDefinedBy"] = [];
         personalBlank["rdfs:label"] = [ personalLabel ];
@@ -419,47 +388,8 @@ v-fc:BlankTemplateShort
     </div>
   </div>
   <br>
-  <div id="object-container"></div>
-  <div id="no-rights" class="alert alert-warning container hidden">
-    <strong about="v-s:Attention" property="rdfs:label"></strong> <span about="v-s:NoRightsForOperation" property="rdfs:label"></span>
-    <button class="btn btn-default" about="v-fc:Back" property="rdfs:label" onclick="window.history.back();"></button>
-  </div>
+  <div about="@" data-template="v-fc:BlankTemplate"></div>
 </div>
-<script>
-  var self = individual,
-      objectContainer = $("#object-container", template),
-      object = self.object;
-
-  var _class = object["rdf:type"][0];
-
-  _class.rights.then(function (rights) {
-
-    if (rights.hasValue("v-s:canCreate", true)) {
-      object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit")
-        .then(function (objectTemplate) {
-          $("#cancel.action", objectTemplate).click(function () {
-            window.history.back();
-          });
-          object.one("afterSave", saveHandler);
-          objectTemplate.one("remove", function () {
-            object.off("afterSave", saveHandler);
-          });
-        });
-    } else {
-      $("#no-rights", template).removeClass("hidden");
-    }
-
-    function saveHandler () {
-      if (container.attr("id") === "main") {
-        setTimeout(function () {
-          riot.route("#/" + object.id);
-        }, 100);
-      }
-    }
-  });
-
-  //# sourceURL=v-fc:BlankTemplateShort
-</script>
   """
 .
 

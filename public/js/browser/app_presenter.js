@@ -85,9 +85,9 @@ veda.Module(function (veda) { "use strict";
 
   // App loading indicator
   var loadIndicator = $("#load-indicator");
-  veda.on("starting", function (progress) {
+  veda.on("starting", function () {
     loadIndicator.show();
-  }).on("started", function (progress) {
+  }).on("started", function () {
     loadIndicator.hide();
   });
 

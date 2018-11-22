@@ -1,14 +1,13 @@
-module filters.filter_00;
+module filters.filter_03;
 
 import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv, std.string;
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator_rlmdb;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
 
 long t1_count, t2_count;
-public void check_links_00(string data, ref Queue queue_new, LmdbDriver individual_lmdb_driver, Logger log)
+public void check_links_03(string data, ref Queue queue_new, LmdbDriver individual_lmdb_driver, Logger log)
 {
     Individual imm;
-
     if (queue_new is null)
     {
         queue_new = new Queue("./tmp/uris", "uris", Mode.RW, log);
@@ -58,7 +57,7 @@ public void check_links_00(string data, ref Queue queue_new, LmdbDriver individu
                     {
                         string prm_object_type = poi.getFirstLiteral("rdf:type");
 
-                        if (permission_subject_uri == "v-wf:WorkflowReadUser" || prm_object_type == "v-s:PermissionStatement")
+                        if (prm_object_type == "v-s:Membership")
                         {
                             if (prm_object_type != "v-wf:Variable" && prm_object_type != "v-wf:WorkOrder" && prm_object_type != "v-wf:WorkItem"
                                 && prm_object_type != "v-wf:Process" && prm_object_type != "v-wf:WorkOrderStarted" && prm_object_type !=

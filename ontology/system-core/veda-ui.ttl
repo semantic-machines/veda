@@ -496,7 +496,7 @@ v-ui:StandardButtonsTemplate
   rdfs:comment "Actions"@en ;
   v-ui:template """
 <script>
-  // var allButtons = "send edit save cancel delete destroy journal journal-dms task";
+  // var allButtons = "send edit save cancel delete destroy journal journal-dms task rights";
   var defaultButtons = "send edit save cancel delete journal task";
   individual.rights.then(function (rights) {
     var canUpdate = rights.hasValue("v-s:canUpdate", true);
@@ -541,8 +541,7 @@ v-ui:StandardButtonsTemplate
     // template.parent().closest("[resource]").trigger("save");
     veda.Util.send(individual, template.parent().closest("[resource]"));
   });
-  $("#createReport", template).on("click", function () { veda.Util.createReport(individual); });
-  $("#showRights", template).on("click", function () { veda.Util.showRights(individual); });
+  $("#rights", template).on("click", function () { veda.Util.showRights(individual); });
 
   // Standard tasks
   template.on("click", "ul#standard-tasks a", function (e) {
@@ -562,6 +561,7 @@ v-ui:StandardButtonsTemplate
   <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
   <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"/>
   <div class="rm action btn-group dropup view -edit -search" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
@@ -600,7 +600,7 @@ v-ui:StandardButtonsTemplate
     var actionsStaticTop = placeholder.offset().top;
     var actions_inside_viewport = windowTop <= actionsStaticTop && actionsStaticTop < (windowTop + windowHeight);
     var main_inside_viewport = windowTop <= (mainTop + mainHeight - actionsStaticHeight) && (mainTop + actionsStaticHeight) < (windowTop + windowHeight);
-    if ( !actions_inside_viewport && main_inside_viewport )  {
+    if ( !actions_inside_viewport && main_inside_viewport ) {
       if ( !actions.hasClass("actions-fixed") ) {
         placeholder.css("height", actionsStaticHeight);
         actions.addClass("actions-fixed");
@@ -1737,7 +1737,7 @@ v-ui:SimplifiedJournalTemplate
   $("#on-document", template).attr("about", doc_uri);
 
   $('.createReport0', template).on('click', function () {
-    veda.Util.createReport(doc,'v-s:Journal_printBlank');
+    veda.Util.createReport('v-s:Journal_printBlank', doc);
   });
   //# sourceURL=v-ui:SimplifiedJournalTemplate_pre
 </script>
@@ -1899,7 +1899,7 @@ v-ui:JournalTemplate
   $("#on-document", template).attr("about", doc_uri);
 
   $('.createReport0', template).on('click', function () {
-    veda.Util.createReport(doc,'v-s:Journal_printBlank');
+    veda.Util.createReport('v-s:Journal_printBlank', doc);
   });
   //# sourceURL=v-ui:JournalTemplate_pre
 </script>
@@ -1974,12 +1974,12 @@ v-ui:DocumentEventTemplate
     $(".start-process", template).show();
     $(".non-start-process", template).hide();
     var process = individual['v-wf:onProcess'][0];
-    
+
     if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) { 
+      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
       var actor = individual['v-s:actor'][0];
       if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
-        $(".stop-process", template).show();  
+        $(".stop-process", template).show();
       }
     }
     if (process.hasValue("v-wf:isStopped", true)) {
@@ -2716,8 +2716,7 @@ v-ui:generic
     <br>
     <br>
     <div class="actions">
-      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task"></span>
-      <button type="button" class="action btn btn-default view -edit -search" id="rightsOrigin" about="v-s:RightsOrigin" property="rdfs:label"></button>
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy journal task rights"></span>
       <a id="default" class="btn btn-info" href="#/@" about="v-s:Default" property="rdfs:label"></a>
       <a id="generic" class="disabled btn btn-default" href="#/@//v-ui:generic">generic</a>
       <a id="json" class="btn btn-default" href="#/@//v-ui:json">json</a>
@@ -2727,11 +2726,6 @@ v-ui:generic
   <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script>
-  $("#rightsOrigin.action").on("click", function () {
-    veda.Util.showRights(individual);
-  });
-</script>
   """ ;
 .
 

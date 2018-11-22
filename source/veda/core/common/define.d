@@ -210,34 +210,6 @@ public enum MODULE : ubyte
     input_queue       = COMPONENT.input_queue
 }
 
-public enum INDV_OP : byte
-{
-    /// Сохранить
-    PUT         = 1,
-
-    /// Сохранить
-    GET         = 2,
-
-    /// Получить тикет
-    GET_TICKET  = 3,
-
-    /// Авторизовать
-    AUTHORIZE   = 8,
-
-    /// Установить в
-    SET_IN      = 45,
-
-    /// Добавить в
-    ADD_IN      = 47,
-
-    /// Убрать из
-    REMOVE_FROM = 48,
-
-    /// Убрать
-    REMOVE      = 51
-}
-
-
 /// Команды используемые процессами
 /// Сохранить
 byte CMD_PUT         = 1;
@@ -245,34 +217,13 @@ byte CMD_PUT         = 1;
 /// Найти
 byte CMD_FIND        = 2;
 
-/// Получить
-byte CMD_GET         = 2;
-
-/// Проверить
-byte CMD_EXAMINE     = 4;
-
-/// Авторизовать
-byte CMD_AUTHORIZE   = 8;
-
 /// Коммит
 byte CMD_COMMIT      = 16;
 
 byte CMD_MSG         = 17;
 
-/// Конец данных
-byte CMD_END_DATA    = 32;
-
 /// Включить/выключить отладочные сообщения
 byte CMD_SET_TRACE   = 33;
-
-/// Выгрузить
-byte CMD_UNLOAD      = 34;
-
-/// Перезагрузить
-byte CMD_RELOAD      = 40;
-
-/// Backup
-byte CMD_BACKUP      = 41;
 
 /// Остановить прием команд на изменение
 byte CMD_FREEZE      = 42;
@@ -280,36 +231,11 @@ byte CMD_FREEZE      = 42;
 /// Возобновить прием команд на изменение
 byte CMD_UNFREEZE    = 43;
 
-/// Установить в
-byte CMD_SET_IN      = 45;
-
-/// Удалить
-byte CMD_DELETE      = 46;
-
-/// Добавить в
-byte CMD_ADD_IN      = 47;
-
-/// Убрать из
-byte CMD_REMOVE_FROM = 48;
-
-
 byte CMD_EXIT        = 49;
 
 /// Установить
 byte CMD_SET         = 50;
 
 /// Убрать
-byte CMD_REMOVE      = 51;
-
 byte CMD_START       = 52;
 
-byte CMD_STOP        = 53;
-
-byte CMD_RESUME      = 54;
-
-byte CMD_PAUSE       = 55;
-
-byte CMD_WAIT        = 56;
-
-/// Пустая комманда
-byte   CMD_NOP       = 64;

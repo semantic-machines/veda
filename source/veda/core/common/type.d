@@ -5,6 +5,33 @@ module veda.core.common.type;
 
 import veda.common.type;
 
+public enum INDV_OP : byte
+{
+    /// Сохранить
+    PUT         = 1,
+
+    /// Сохранить
+    GET         = 2,
+
+    /// Получить тикет
+    GET_TICKET  = 3,
+
+    /// Авторизовать
+    AUTHORIZE   = 8,
+
+    /// Установить в
+    SET_IN      = 45,
+
+    /// Добавить в
+    ADD_IN      = 47,
+
+    /// Убрать из
+    REMOVE_FROM = 48,
+
+    /// Убрать
+    REMOVE      = 51
+}
+
 /**
  * Обьект - сессионный тикет
  */
