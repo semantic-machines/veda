@@ -173,8 +173,8 @@ v-s:LocalRegulatoryDocument
 
 v-s:hasVersionOfLocalRegulatoryDocument
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Версии документов"@ru ;
-  rdfs:label "Versions of documents"@en ;
+  rdfs:label "Версии документа"@ru ;
+  rdfs:label "Versions of document"@en ;
   rdfs:range v-s:VersionOfLocalRegulatoryDocument ;
   rdfs:domain v-s:LocalRegulatoryDocument ;
 .
