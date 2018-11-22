@@ -42,14 +42,14 @@ v-s:medicalCheckupCertificate
   rdfs:domain v-s:EmployeeProfile ;
   rdfs:label "Мед осмотр"@ru ;
   rdfs:label "Medical checkup"@en ;
-  rdfs:range v-s:CertificationDocument ;
+  rdfs:range v-s:MedicalCheckupCertificationDocument ;
 .
 v-s:medicalCheckupCertificateForDriver
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
   rdfs:label "Мед осмотр (водитель)"@ru ;
   rdfs:label "Medical checkup for driver"@en ;
-  rdfs:range v-s:CertificationDocument ;
+  rdfs:range v-s:MedicalCheckupCertificationDocument ;
 .
 v-s:laborSafetyCertificate
   rdf:type owl:ObjectProperty ;
