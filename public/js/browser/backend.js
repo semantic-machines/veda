@@ -79,7 +79,8 @@ veda.Module(function (veda) { "use strict";
     var method = params.method,
         url = params.url,
         data = params.data,
-        async = params.async || false;
+        async = params.async || false,
+        salt = Date.now();
     if (async) {
       return new Promise( function (resolve, reject) {
         var xhr = new XMLHttpRequest();
@@ -108,12 +109,13 @@ veda.Module(function (veda) { "use strict";
               params.push(name + "=" + encodeURIComponent(data[name]));
             }
           }
+          params.push(salt);
           params = params.join("&");
           xhr.open(method, url + "?" + params, async);
           xhr.timeout = 120000;
           xhr.send();
         } else {
-          xhr.open(method, url, async);
+          xhr.open(method, url + "?" + salt, async);
           xhr.timeout = 120000;
           xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
           var payload = JSON.stringify(data, function (key, value) {
@@ -131,11 +133,12 @@ veda.Module(function (veda) { "use strict";
             params.push(name + "=" + encodeURIComponent(data[name]));
           }
         }
+        params.push(salt);
         params = params.join("&");
         xhr.open(method, url + "?" + params, async);
         xhr.send();
       } else {
-        xhr.open(method, url, async);
+        xhr.open(method, url + "?" + salt, async);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         var payload = JSON.stringify(data, function (key, value) {
           return key === "data" && this.type === "Decimal" ? value.toString() : value;
