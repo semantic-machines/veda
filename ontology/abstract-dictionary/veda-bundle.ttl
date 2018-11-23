@@ -3,6 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 @prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 <http://semantic-machines.com/veda/veda-bundle>
@@ -13,6 +14,21 @@
   v-s:loadPriority 9 ;
 .
 
+v-s:Bundle
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Текстовая константа"@ru ;
+  rdfs:label "Bundle"@en ;
+  v-ui:hasTemplate v-ui:LabelTemplate ;
+.
+
+#----------------------------
+
+v-s:ReloadPage
+  rdf:type v-s:Bundle ;
+  rdfs:label "Версия приложения изменилась!\nНеобходимо обновить страницу.\n\nОбновить сейчас?\n\n"@ru ;
+  rdfs:label "Application version changed!\nPage must be reloaded.\n\nReload now?\n\n"@en ;
+.
 v-s:MainProperties
   rdf:type v-s:Bundle ;
   rdfs:label "Основные свойства"@ru ;
