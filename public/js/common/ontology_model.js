@@ -51,14 +51,14 @@ veda.Module(function (veda) { "use strict";
     }
 
     // Check whether server & client cfg:OntoVsn objects are equal
-    var clientVsn;
+    var clientOntoVsn;
     try {
-      clientVsn = ontology["cfg:OntoVsn"]["rdf:value"][0].data;
+      clientOntoVsn = ontology["cfg:OntoVsn"]["rdf:value"][0].data;
     } catch (ex) {
-      clientVsn = undefined;
+      clientOntoVsn = undefined;
     }
-    var serverVsn = get_individual(veda.ticket, "cfg:OntoVsn")["rdf:value"][0].data;
-    if ( clientVsn !== serverVsn ) {
+    var serverOntoVsn = get_individual(veda.ticket, "cfg:OntoVsn")["rdf:value"][0].data;
+    if ( clientOntoVsn !== serverOntoVsn ) {
       // Get ontology from server
       ontology = getOntology();
       storage.ontology = JSON.stringify(ontology);
