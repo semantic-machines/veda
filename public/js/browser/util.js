@@ -273,4 +273,19 @@ veda.Module(function (veda) { "use strict";
     });
     return modal;
   };
+
+  veda.Util.confirm = function (individual, template, mode) {
+    var modal = $( $("#confirm-modal-template").html() );
+    modal.modal();
+    $("body").append(modal);
+    var container = $(".modal-body", modal);
+    individual.present(container, template, mode);
+    modal.on("hidden.bs.modal", function () {
+      modal.remove();
+    });
+    return new Promise(function (resolve, reject) {
+      $(".modal-footer > .ok", modal).click(function () { resolve(true); });
+      $(".modal-footer > .cancel", modal).click(function () { resolve(false); });
+    });
+  };
 });
