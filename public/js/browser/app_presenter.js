@@ -9,7 +9,7 @@ veda.Module(function (veda) { "use strict";
     localStorage.clientVsn = serverClientVsn;
     location.reload(true);
   }
-  veda.one("started", function () {
+  veda.on("started", function () {
     var updateService = new veda.UpdateService();
     var clientVsn = new veda.IndividualModel("cfg:ClientVsn");
     updateService.subscribe(clientVsn.id);
