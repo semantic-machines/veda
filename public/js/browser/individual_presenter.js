@@ -6,16 +6,20 @@ veda.Module(function (veda) { "use strict";
 
     mode = mode || "view";
 
+    var toEmpty;
+
     if (typeof container === "string") {
       container = $(container);
+      toEmpty = true;
     }
 
     return present(this, container, template, mode, extra)
       .then(function (renderedTemplate) {
 
-        if (container) {
-          container.empty().append(renderedTemplate);
+        if (toEmpty) {
+          container.empty();
         }
+        container.append(renderedTemplate);
 
         return renderedTemplate;
 
