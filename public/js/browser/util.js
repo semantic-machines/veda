@@ -157,9 +157,9 @@ veda.Module(function (veda) { "use strict";
       report = new veda.IndividualModel(report);
     }
     var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress').load();
-	Promise.all([report.load(), jasperServer.load()]).then(function (loaded) {
-	  var report = loaded[0];
-	  var jasperServer = loaded[1];
+  Promise.all([report.load(), jasperServer.load()]).then(function (loaded) {
+    var report = loaded[0];
+    var jasperServer = loaded[1];
       var jasperServerAddress = jasperServer['rdf:value'][0];
 
       var form = document.createElement("form");
@@ -281,15 +281,16 @@ veda.Module(function (veda) { "use strict";
   veda.Util.confirm = function (individual, template, mode) {
     var modal = $( $("#confirm-modal-template").html() );
     modal.modal();
-    $("body").append(modal);
-    var container = $(".modal-body", modal);
-    individual.present(container, template, mode);
     modal.on("hidden.bs.modal", function () {
       modal.remove();
     });
-    return new Promise(function (resolve, reject) {
-      $(".modal-footer > .ok", modal).click(function () { resolve(true); });
-      $(".modal-footer > .cancel", modal).click(function () { resolve(false); });
+    $("body").append(modal);
+    var container = $(".modal-body", modal);
+    return individual.present(container, template, mode).then(function () {
+      return new Promise(function (resolve, reject) {
+        $(".modal-footer > .ok", modal).click(function () { resolve(true); });
+        $(".modal-footer > .cancel", modal).click(function () { resolve(false); });
+      });
     });
   };
 });

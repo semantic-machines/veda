@@ -3,12 +3,6 @@
 veda.Module(function (veda) { "use strict";
 
   // Reload application on 'cfg:ClientVsn' change
-  var browserClientVsn = localStorage.clientVsn;
-  var serverClientVsn = get_individual(veda.ticket, "cfg:ClientVsn")["rdf:value"][0].data;
-  if (browserClientVsn != serverClientVsn) {
-    localStorage.clientVsn = serverClientVsn;
-    location.reload(true);
-  }
   veda.on("started", function () {
     var updateService = new veda.UpdateService();
     var clientVsn = new veda.IndividualModel("cfg:ClientVsn");
