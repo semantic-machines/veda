@@ -44,61 +44,60 @@ v-cal:FunctionCalendarModel
   v-ui:forClass v-cal:FunctionCalendar ;
   v-s:script """
 
-  this.getEvents = function (start, end) {
-    if (typeof start === "undefined") {
-      start = end = new Date();
-    }
-    var q = format (
-      this["v-cal:query"][0],
-      start.toJSON(),
-      end.toJSON(),
-      veda.user.id
-    );
-    var sort = this["v-cal:sortOrder"][0];
-    return veda.Backend.query({
-      ticket: veda.ticket,
-      query: q,
-      sort: sort
-    })
-    .then(function (queryResult) {
-      var uris = queryResult.result;
-      var eventsPromises = uris.map(function (uri) {
-        return new veda.IndividualModel(uri).load()
-          .then(function (event) {
-            var label;
-            try {
-              label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
-            } catch (e) {
-              event["rdfs:label"].join(" ");
-            }
-            var className;
-            var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
-            var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
-            var dueDate = event["v-wf:dateGiven"][0];
-            var now = new Date();
-            switch (true) {
-              case (dueDate < today) :
-                className = "fc-danger";
-              break;
-              case (today < dueDate && dueDate < tomorrow) :
-                className = "fc-warning";
-              break;
-              case (tomorrow < dueDate) :
-                className = "fc-success";
-              break;
-            }
-            return {
-              "id": event.id,
-              "title": label,
-              "url": "#/" + event.id,
-              "className": className,
-              "start": dueDate ? dueDate.valueOf() : now.valueOf(),
-              "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
-            }
-          });
-      });
-      return Promise.all(eventsPromises);
+this.getEvents = function (start, end) {
+  if (typeof start === "undefined") {
+    start = end = new Date();
+  }
+  var q = format (
+    this["v-cal:query"][0],
+    start.toJSON(),
+    end.toJSON(),
+    veda.user.id
+  );
+  var sort = this["v-cal:sortOrder"][0];
+  return veda.Backend.query({
+    ticket: veda.ticket,
+    query: q,
+    sort: sort
+  })
+  .then(function (queryResult) {
+    var uris = queryResult.result;
+    var eventsPromises = uris.map(function (uri) {
+      return new veda.IndividualModel(uri).load()
+        .then(function (event) {
+          var label;
+          try {
+            label = event["rdfs:label"].join(" ") + ": " + event["v-wf:onDocument"][0]["rdfs:label"].join(" ");
+          } catch (e) {
+            event["rdfs:label"].join(" ");
+          }
+          var className;
+          var today = new Date(); today.setHours(0); today.setMinutes(0); today.setSeconds(0); today.setMilliseconds(0);
+          var tomorrow = new Date(); tomorrow.setHours(23); tomorrow.setMinutes(59); tomorrow.setSeconds(59); tomorrow.setMilliseconds(999);
+          var dueDate = event["v-wf:dateGiven"][0];
+          var now = new Date();
+          switch (true) {
+            case (dueDate < today) :
+              className = "fc-danger";
+            break;
+            case (today < dueDate && dueDate < tomorrow) :
+              className = "fc-warning";
+            break;
+            case (tomorrow < dueDate) :
+              className = "fc-success";
+            break;
+          }
+          return {
+            "id": event.id,
+            "title": label,
+            "url": "#/" + event.id,
+            "className": className,
+            "start": dueDate ? dueDate.valueOf() : now.valueOf(),
+            "end": dueDate ? dueDate.valueOf() + 60 * 60 * 1000 : now.valueOf() + 60 * 60 * 1000
+          }
+        });
     });
+    return Promise.all(eventsPromises);
   });
 }
 
@@ -108,6 +107,7 @@ function format(str) {
     return typeof args[position] !== "undefined" ? args[position] : match ;
   });
 }
+
 //# sourceURL=v-cal:FunctionCalendarModel
   """
 .
