@@ -82,7 +82,8 @@ veda.Module(function Backend(veda) { "use strict";
   function call_server(params) {
     var method = params.method,
         url = params.url,
-        data = params.data;
+        data = params.data,
+        salt = Date.now();
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -112,12 +113,13 @@ veda.Module(function Backend(veda) { "use strict";
             params.push(name + "=" + encodeURIComponent(data[name]));
           }
         }
+        params.push(salt);
         params = params.join("&");
         xhr.open(method, url + "?" + params, true);
         xhr.timeout = 120000;
         xhr.send();
       } else {
-        xhr.open(method, url, true);
+        xhr.open(method, url + "?" + salt, true);
         xhr.timeout = 120000;
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         var payload = JSON.stringify(data, function (key, value) {

@@ -1600,6 +1600,7 @@ svg.process-path-highlight path
 
 .label-template {
   display: inline-block;
+  white-space: pre-line;
   margin-right: 7px;
   margin-bottom: 7px;
 }

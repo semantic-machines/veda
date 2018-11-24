@@ -2,6 +2,32 @@
 
 veda.Module(function (veda) { "use strict";
 
+  // Reload application on 'cfg:ClientVsn' change
+  var browserClientVsn = localStorage.clientVsn;
+  var serverClientVsn = get_individual(veda.ticket, "cfg:ClientVsn")["rdf:value"][0].data;
+  if (browserClientVsn != serverClientVsn) {
+    localStorage.clientVsn = serverClientVsn;
+    location.reload(true);
+  }
+  veda.on("started", function () {
+    var updateService = new veda.UpdateService();
+    var clientVsn = new veda.IndividualModel("cfg:ClientVsn");
+    updateService.subscribe(clientVsn.id);
+    clientVsn.on("afterReset", function (values) {
+      var browserClientVsn = localStorage.clientVsn;
+      var serverClientVsn = clientVsn["rdf:value"][0];
+      if (browserClientVsn != serverClientVsn) {
+        var reloadPage = new veda.IndividualModel("v-s:ReloadPage");
+        veda.Util.confirm(reloadPage).then(function (confirmed) {
+          if ( confirmed ) {
+            localStorage.clientVsn = serverClientVsn;
+            location.reload(true);
+          }
+        });
+      }
+    });
+  });
+
   // Route to resource ttl view on Ctrl + Alt + Click
   $("body").on("click", "[resource][typeof], [about]", function (e) {
     var uri = $(this).attr("resource") || $(this).attr("about");
