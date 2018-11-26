@@ -2,7 +2,7 @@ import Basic from './basic'
 import { Selector } from 'testcafe';
 
 fixture `testAttachment`
-    .page `http://localhost:8080/#/v-fc:Create`;
+    .page `http://localhost:8080/#/v-fc:CreateByType`;
 
 test('testAttachment', async t => {
     //basic.login('karpovrt', '123');

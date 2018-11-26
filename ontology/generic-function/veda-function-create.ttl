@@ -17,11 +17,11 @@
 
 ########## CREATE FUNCTION ###########
 
-v-fc:FunctionCreate
+v-fc:Create
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Функция Создать"@ru ;
-  rdfs:label "Function Create"@en ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
   v-ui:hasModel v-fc:FunctionCreateModel ;
   v-ui:hasTemplate v-fc:FunctionCreateTemplate ;
 .
@@ -44,15 +44,27 @@ v-fc:SavedBlanks
   rdfs:label "Сохраненные бланки"@ru ;
   rdfs:label "Saved blanks"@en ;
 .
-v-fc:Create
-  rdf:type v-fc:FunctionCreate ;
+v-fc:CreateByType
+  rdf:type v-fc:Create ;
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
+  v-ui:hasTemplate v-fc:CreateByTypeTemplate ;
+.
+v-fc:CreateByBlank
+  rdf:type v-fc:Create ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+  v-ui:hasTemplate v-fc:CreateByBlankTemplate ;
 .
 v-fc:ChooseType
   rdf:type v-s:Bundle ;
   rdfs:label "Выберите тип объекта"@ru ;
   rdfs:label "Choose a type to create"@en ;
+.
+v-fc:ChooseBlank
+  rdf:type v-s:Bundle ;
+  rdfs:label "Выберите бланк"@ru ;
+  rdfs:label "Choose a blank"@en ;
 .
 v-fc:CreateBundle
   rdf:type v-s:Bundle ;
@@ -64,6 +76,7 @@ v-fc:targetType
   rdfs:label "Тип"@ru ;
   rdfs:label "Type"@en ;
   rdfs:domain v-fc:Blank ;
+  rdfs:domain v-fc:Create ;
   rdfs:range owl:Class ;
   rdfs:range rdfs:Class ;
 .
@@ -71,51 +84,50 @@ v-fc:targetBlank
   rdf:type owl:ObjectProperty ;
   rdfs:label "Тип"@ru ;
   rdfs:label "Type"@en ;
-  rdfs:domain v-fc:FunctionCreate ;
+  rdfs:domain v-fc:Create ;
   rdfs:range v-fc:Blank ;
 .
-v-fc:FunctionCreateModel
-  rdf:type v-ui:ClassModel ;
-  rdfs:label "Модель класса v-fc:FunctionCreate"@ru ;
-  rdfs:label "V-fc:FunctionCreate class model"@en ;
-  v-ui:forClass v-fc:FunctionCreate ;
-  v-s:script """
-var self = this;
-//# sourceURL=v-fc:FunctionCreateModel
+
+v-fc:CreateByBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для v-fc:CreateByBlank"@ru ;
+  rdfs:label "v-fc:CreateByBlank template"@en ;
+  v-ui:template """
+<div class="container">
+  <div class="sheet">
+    <h3 about="@" property="rdfs:label"></h3>
+    <em about="v-fc:ChooseBlank" property="rdfs:label"></em>
+    <veda-control data-type="link" rel="v-fc:targetBlank" class="fulltext dropdown"></veda-control>
+  </div>
+  <br>
+  <div rel="v-fc:targetBlank" data-template="v-fc:BlankTemplate"></div>
+</div>
   """
 .
-v-fc:FunctionCreateTemplate
+
+v-fc:CreateByTypeTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон класса v-fc:FunctionCreate"@ru ;
-  rdfs:label "V-fc:FunctionCreate class template"@en ;
-  v-ui:forClass v-fc:FunctionCreate ;
+  rdfs:label "Шаблон для v-fc:CreateByType"@ru ;
+  rdfs:label "v-fc:CreateByType template"@en ;
   v-ui:template """
-<div class="container sheet">
-  <h3 property="rdfs:label"></h3>
-  <hr>
-  <div class="row">
-    <div class="col-md-2 col-sm-3">
-      <h4 about="v-fc:SavedBlanks" property="rdfs:label"></h4>
-      <ol id="blanks"></ol>
-    </div>
-    <div class="col-md-10 col-sm-9" style="border-left: 1px solid gainsboro;">
-      <h4 about="v-fc:ChooseType" property="rdfs:label"></h4>
-      <veda-control rel="v-fc:targetType" data-type="link" class="fulltext dropdown"></veda-control>
-      <br>
-      <div id="holder"></div>
-    </div>
+<div class="container">
+  <div class="sheet">
+    <h3 property="rdfs:label"></h3>
+    <em about="v-fc:ChooseType" property="rdfs:label"></em>
+    <veda-control rel="v-fc:targetType" data-type="link" class="fulltext dropdown"></veda-control>
   </div>
+  <br>
+  <div id="holder"></div>
 </div>
 <script>
   var self = individual;
-  var blankTemplate = new veda.IndividualModel("v-fc:BlankTemplate");
   function typeHandler(values) {
     var holder = $("#holder", template).empty();
     if (values.length) {
       var blank = new veda.IndividualModel();
       blank["v-fc:targetType"] = values;
       blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-      var renderedTemplate = blank.present(holder, blankTemplate, "edit");
+      var renderedTemplate = blank.present(holder, "v-fc:BlankTemplate", "edit");
       blank.object.one("afterSave", saveHandler);
       renderedTemplate.one("remove", function () {
         blank.object.off("afterSave", saveHandler);
@@ -135,16 +147,7 @@ v-fc:FunctionCreateTemplate
   if (self.hasValue("v-fc:targetType")) {
     typeHandler(self["v-fc:targetType"]);
   }
-  var blanksHolder = $("#blanks", template),
-    asp = veda.user.aspect,
-    blanks = asp["v-s:hasBlank"];
-  if (blanks) {
-    blanks.map( function (blank) {
-      var cont = $("<li>").appendTo(blanksHolder);
-      blank.present( cont, new veda.IndividualModel("v-ui:LabelBlockLinkTemplate") );
-    });
-  }
-  //# sourceURL=v-fc:FunctionCreateTemplate
+  //# sourceURL=v-fc:CreateByTypeTemplate_post
 </script>
   """
 .
@@ -375,21 +378,6 @@ v-fc:BlankManagementTemplate
   </div>
   <br>
   <div about="@" data-template="v-fc:BlankTemplate"></div>
-</div>
-  """
-.
-
-v-fc:CreateBlankTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон класса v-fc:Blank"@ru ;
-  rdfs:label "v-fc:Blank class template"@en ;
-  v-ui:forClass v-fc:Blank ;
-  v-ui:template """
-<div class="container sheet">
-  <h3 about="v-fc:Blank" property="rdfs:label"></h3>
-  <em about="v-fc:targetType" property="rdfs:label"></em>
-  <div rel="v-fc:targetType" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-fc:targetType" class="fulltext dropdown -view edit search"></veda-control>
 </div>
   """
 .
