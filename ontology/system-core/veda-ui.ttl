@@ -717,7 +717,9 @@ v-ui:VersionTemplate
   <p>
     <span about="v-s:VersionAlert" property="rdfs:label"></span>
     <span class="pull-right" about="@" rel="v-s:actualVersion">
-      <a href="#/@" class="alert-link" about="v-s:actualVersion" property="rdfs:label"></a>
+      <a href="#/@" class="alert-link">
+        <span about="v-s:actualVersion" property="rdfs:label"></span>&rarr;
+      </a>
     </span>
   </p>
 </div>
