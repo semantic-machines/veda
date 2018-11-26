@@ -16,7 +16,7 @@ LIB_NAME[3]="libevent-dev"
 LIB_NAME[4]="libssl-dev"
 LIB_NAME[5]="libmysqlclient-dev"
 LIB_NAME[6]="cmake"
-LIB_NAME[7]="libtool"
+LIB_NAME[7]="libtool-bin"
 LIB_NAME[8]="pkg-config"
 LIB_NAME[9]="build-essential"
 LIB_NAME[10]="autoconf"
@@ -32,6 +32,8 @@ for i in "${LIB_NAME[@]}"; do
 
     L1=`dpkg -s $i | grep 'install ok'`
 
+    echo CHECK $i .... $L1
+
     if  [ "$L1" != "$LIB_OK" ]; then
 
       if [ $F_UL == 0 ]; then
@@ -39,10 +41,26 @@ for i in "${LIB_NAME[@]}"; do
           F_UL=1
       fi
 
+		echo INSTALL $i
         sudo apt-get install -y $i
     fi
 
 done
+
+if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
+
+    echo "--- INSTALL XAPIAN ---"
+
+    cd source/lib64/libxapianm
+    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
+    sudo ldconfig
+    cd $PWD
+
+else
+
+    echo "--- XAPIAN INSTALLED ---"
+
+fi
 
 sudo apt-get install build-essential
 
