@@ -75,7 +75,13 @@ v-fc:targetBlank
   rdfs:domain v-fc:Create ;
   rdfs:range v-fc:Blank ;
 .
-
+v-fc:hasBlank
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Бланк"@ru ;
+  rdfs:label "Blank"@en ;
+  rdfs:domain v-fc:Create ;
+  rdfs:range v-fc:Blank ;
+.
 v-fc:CreateByBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для v-fc:CreateByBlank"@ru ;
