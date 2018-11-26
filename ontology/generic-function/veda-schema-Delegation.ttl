@@ -318,14 +318,14 @@ v-s:RequestDelegationRegistryResultTemplate
 
 # ------------- Individuals ---------------
 
-v-s:CreateRequestDelegationUser
+v-s:RequestDelegationUserBlank
   a v-fc:Blank ;
   rdfs:label "Заявка на делегирование"@ru ;
   rdfs:label "Delegation request"@en ;
   v-fc:targetType v-s:RequestDelegationUser ;
 .
 
-v-s:CreateRequestDelegationAdmin
+v-s:RequestDelegationAdminBlank
   a v-fc:Blank ;
   rdfs:label "Заявка на делегирование для администратора"@ru ;
   rdfs:label "Delegation request for admin"@en ;
@@ -368,7 +368,7 @@ v-s:RequestDelegation_permission1
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:RequestDelegation ;
   v-s:permissionObject v-s:RequestDelegation_group ;
-  v-s:permissionObject v-s:CreateRequestDelegationUser ;
+  v-s:permissionObject v-s:RequestDelegationUserBlank ;
   v-s:permissionObject v-s:RequestDelegationRegistry ;
   v-s:permissionObject v-s:RequestDelegationRegistryBlank ;
   v-s:permissionSubject v-s:RequestDelegation_BaseUser ;
@@ -388,10 +388,10 @@ v-s:RequestDelegation_permission3
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-s:RequestDelegation ;
   v-s:permissionObject v-s:RequestDelegation_group ;
-  v-s:permissionObject v-s:CreateRequestDelegationUser ;
+  v-s:permissionObject v-s:RequestDelegationUserBlank ;
   v-s:permissionObject v-s:RequestDelegationRegistry ;
   v-s:permissionObject v-s:RequestDelegationRegistryBlank ;
-  v-s:permissionObject v-s:CreateRequestDelegationAdmin ;
+  v-s:permissionObject v-s:RequestDelegationAdminBlank ;
   v-s:permissionObject v-s:RequestDelegationAdmin ;
   v-s:permissionObject v-s:RequestDelegationAdmin_group ;
   v-s:permissionSubject v-s:RequestDelegation_Admin ;
