@@ -1434,7 +1434,7 @@ v-ui:TestUIClass_permission
 
 # for search #
 v-ui:TestUIRegistry
-  a v-fs:AttributiveSearch;
+  a v-fs:Search;
   rdfs:label "Тестовый шаблон"@ru ;
   rdfs:label "Test UI template"@en ;
   v-fs:searchBlank v-ui:TestUIRegistryBlank ;

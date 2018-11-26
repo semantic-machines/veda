@@ -78,7 +78,7 @@ v-s:hasCreate
 v-s:hasRegistry
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
-  rdfs:range v-fs:AttributiveSearch ;
+  rdfs:range v-fs:Search ;
   rdfs:label "Реестр"@ru ;
   rdfs:label "Registry"@en ;
 .

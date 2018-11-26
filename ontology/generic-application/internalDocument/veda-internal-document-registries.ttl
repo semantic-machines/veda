@@ -20,7 +20,7 @@
 # Registries -----------------------------------------------------------
 
 v-s:InternalDocumentRegistry
-  a v-fs:AttributiveSearch;
+  a v-fs:Search;
   rdfs:label "Внутренние документы"@ru ;
   rdfs:label "Internal documents"@en ;
   v-fs:searchBlank v-s:InternalDocumentRegistryBlank ;
