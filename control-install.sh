@@ -47,21 +47,6 @@ for i in "${LIB_NAME[@]}"; do
 
 done
 
-if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
-
-    echo "--- INSTALL XAPIAN ---"
-
-    cd source/lib64/libxapianm
-    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
-    sudo ldconfig
-    cd $PWD
-
-else
-
-    echo "--- XAPIAN INSTALLED ---"
-
-fi
-
 sudo apt-get install build-essential
 
 ### RUST LANG ###
@@ -279,3 +264,18 @@ fi
     cd ..
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
     sudo ldconfig
+
+if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
+
+    echo "--- INSTALL XAPIAN ---"
+
+    cd source/lib64/libxapianm
+    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
+    sudo ldconfig
+    cd $PWD
+
+else
+
+    echo "--- XAPIAN INSTALLED ---"
+
+fi
