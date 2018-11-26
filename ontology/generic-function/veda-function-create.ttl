@@ -22,8 +22,7 @@ v-fc:Create
   rdfs:subClassOf v-s:Function ;
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
-  v-ui:hasModel v-fc:FunctionCreateModel ;
-  v-ui:hasTemplate v-fc:FunctionCreateTemplate ;
+  v-ui:hasTemplate v-fc:CreateManagementTemplate ;
 .
 v-fc:Blank
   rdf:type owl:Class ;
@@ -31,18 +30,7 @@ v-fc:Blank
   rdfs:label "Бланк"@ru ;
   rdfs:label "Blank"@en ;
   v-ui:hasModel v-fc:BlankModel ;
-  v-ui:hasTemplate v-fc:BlankManagementTemplate ;
-.
-
-v-fc:BlankMgmt
-  rdf:type v-s:Bundle ;
-  rdfs:label "Запомнить"@ru ;
-  rdfs:label "Remember"@en ;
-.
-v-fc:SavedBlanks
-  rdf:type v-s:Bundle ;
-  rdfs:label "Сохраненные бланки"@ru ;
-  rdfs:label "Saved blanks"@en ;
+  v-ui:hasTemplate v-fc:BlankTemplate ;
 .
 v-fc:CreateByType
   rdf:type v-fc:Create ;
@@ -275,95 +263,99 @@ v-fc:EnterLabel
   rdfs:label "Введите название"@ru ;
   rdfs:label "Enter label"@en ;
 .
-
 v-fc:SavePersonalBlank
   rdf:type v-s:Bundle ;
   rdfs:label "Сохранить личный бланк"@ru ;
   rdfs:label "Save personal blank"@en ;
 .
-
 v-fc:UpdatePersonalBlank
   rdf:type v-s:Bundle ;
   rdfs:label "Обновить личный бланк"@ru ;
   rdfs:label "Update personal blank"@en ;
 .
-
 v-fc:BlankSuccessfullySaved
   rdf:type v-s:Bundle ;
   rdfs:label "Бланк успешно сохранен"@ru ;
   rdfs:label "Blank successfully saved"@en ;
 .
-
 v-fc:BlankSuccessfullyUpdated
   rdf:type v-s:Bundle ;
   rdfs:label "Бланк успешно обновлен"@ru ;
   rdfs:label "Blank successfully updated"@en ;
 .
-
 v-fc:BlankSuccessfullyDeleted
   rdf:type v-s:Bundle ;
   rdfs:label "Бланк успешно удален"@ru ;
   rdfs:label "Blank successfully deleted"@en ;
 .
-
 v-fc:Back
   rdf:type v-s:Bundle ;
   rdfs:label "Назад"@ru ;
   rdfs:label "Back"@en ;
 .
 
-v-fc:BlankManagementTemplate
+v-fc:CreateManagementTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон класса v-fc:Blank"@ru ;
-  rdfs:label "V-fc:Blank class template"@en ;
+  rdfs:label "Шаблон класса v-fc:Create"@ru ;
+  rdfs:label "v-fc:Create class template"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
 <script>
   var notify = new veda.Notify();
 
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
-    $(".action.save-blank", template).click(function () {
-      var personalLabel = prompt( new veda.IndividualModel("v-fc:EnterLabel").toString(), individual.toString() );
+    $(".action.save-create", template).click(function () {
+      var personalLabel = prompt( new veda.IndividualModel("v-s:EnterLabel").toString(), individual.toString() );
       if (!personalLabel) { return; }
-      var personalBlank = individual.clone();
-      personalBlank["rdfs:isDefinedBy"] = [];
-      personalBlank["rdfs:label"] = [ personalLabel ];
-      personalBlank.object = individual.object;
-      personalBlank.updateBlank();
-      personalBlank.save();
+      var personalCreate = individual.clone();
+      personalCreate["v-s:creator"] = [];
+      personalCreate["v-s:created"] = [];
+      personalCreate["rdfs:isDefinedBy"] = [];
+      personalCreate["rdfs:label"] = [ personalLabel ];
+      var createBlank = individual.hasValue("v-s:hasBlank") ? individual["v-s:hasBlank"][0] : undefined;
+      if (createBlank && createBlank.object) {
+        var personalCreateBlank = createBlank.clone();
+        personalCreate["rdfs:isDefinedBy"] = [];
+        personalCreate["v-s:hasBlank"] = [ personalCreateBlank ];
+        personalCreateBlank.object = createBlank.object;
+        personalCreateBlank.updateBlank();
+        personalCreateBlank.save();
+      }
+      personalCreate.save();
       var aspect = veda.user.aspect;
-      aspect.addValue("v-s:hasBlank", personalBlank);
+      aspect.addValue("v-s:hasCreate", personalCreate);
       aspect.save();
-      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullySaved").toString() });
+      notify("success", { message: new veda.IndividualModel("v-s:BlankSuccessfullySaved").toString() });
     });
   } else {
-    $(".action.save-blank", template).remove();
+    $(".action.save-create", template).remove();
   }
 
   if ( individual.rights.hasValue("v-s:canUpdate", true) ) {
-    $(".action.update-blank", template).click(function () {
-      var personalLabel = prompt( new veda.IndividualModel("v-fc:EnterLabel").toString(), individual.toString() );
-      individual["rdfs:label"] = [ personalLabel ];
-      individual.updateBlank();
-      individual.save();
+    $(".action.update-create", template).click(function () {
+      var createBlank = individual.hasValue("v-s:hasBlank") ? individual["v-s:hasBlank"][0] : undefined;
+      if (createBlank && createBlank.object) {
+        createBlank.updateBlank();
+        createBlank.save();
+      }
       notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyUpdated").toString() });
     });
   } else {
-    $(".action.update-blank", template).remove();
+    $(".action.update-create", template).remove();
   }
   if ( individual.rights.hasValue("v-s:canDelete", true) ) {
-    $(".action.delete-blank", template).click(function () {
+    $(".action.delete-create", template).click(function () {
       var aspect = veda.user.aspect;
-      aspect.removeValue("v-s:hasBlank", individual);
+      aspect.removeValue("v-s:hasCreate", individual);
       aspect.save();
       notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullyDeleted").toString() });
       template.trigger("delete");
       window.history.back();
     });
   } else {
-    $(".action.delete-blank", template).remove();
+    $(".action.delete-create", template).remove();
   }
-//# sourceURL=v-fc:BlankManagementTemplate_pre
+//# sourceURL=v-fc:CreateManagementTemplate_pre
 </script>
 <div>
   <div class="container sheet">
@@ -371,13 +363,13 @@ v-fc:BlankManagementTemplate
       <div class="ribbon top-left success" about="v-fc:CreateBundle" property="rdfs:label"></div>
     </div>
     <div class="actions text-right">
-      <button class="action save-blank btn btn-success" about="v-fc:SavePersonalBlank" property="rdfs:label"></button>
-      <button class="action update-blank btn btn-success" about="v-fc:UpdatePersonalBlank" property="rdfs:label"></button>
-      <button class="action delete-blank btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
+      <button class="action save-create btn btn-success" about="v-fc:SavePersonalBlank" property="rdfs:label"></button>
+      <button class="action update-create btn btn-success" about="v-fc:UpdatePersonalBlank" property="rdfs:label"></button>
+      <button class="action delete-create btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
     </div>
   </div>
   <br>
-  <div about="@" data-template="v-fc:BlankTemplate"></div>
+  <div about="@" rel="v-s:hasBlank" data-template="v-fc:BlankTemplate"></div>
 </div>
   """
 .
@@ -391,3 +383,22 @@ v-fc:Blank_permission1
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс v-fc:Blank" ;
 .
+
+v-fc:Create_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-fc:Create ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс v-fc:Create" ;
+.
+
+# ------------------------------------------------------------ TEST --
+
+v-fc:CreateOrganization
+  rdf:type v-fc:Create ;
+  v-s:hasBlank v-s:OrganizationBlank ;
+  rdfs:label "Организация"@ru ;
+  rdfs:label "Organization"@en ;
+#  v-s:creator cfg:AdministratorAppointment ;
+.
+
