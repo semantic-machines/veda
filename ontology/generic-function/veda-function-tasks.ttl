@@ -389,8 +389,8 @@ v-ft:Completed
   rdfs:label "Выполненные задачи"@ru ;
   rdfs:label "Completed tasks"@en ;
   v-fs:searchBlank v-ft:CompletedBlank ;
-  v-fs:searchBlankTemplate v-ft:CompleteTaskBlankTemplate ;
-  v-fs:searchResultTemplate v-ft:CompleteResultTemplate ;
+  v-fs:searchBlankTemplate v-ft:CompletedTaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:CompletedResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
   v-ui:hasTemplate v-ft:InboxTemplate ;
 .
@@ -424,12 +424,6 @@ v-ft:DecisionDateBundle
   rdfs:label "Complete date"@en ;
 .
 
-v-ft:DecisionCreateDateBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Дата создания"@ru ;
-  rdfs:label "Create date"@en ;
-.
-
 v-ft:DecisionCreatorBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Выполнил"@ru ;
@@ -453,7 +447,7 @@ v-ft:InboxTemplate
   """ ;
 .
 
-v-ft:CompleteTaskBlankTemplate
+v-ft:CompletedTaskBlankTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон бланка выполненных задачи"@ru ;
   rdfs:label "Complete task blank template"@en ;
@@ -698,7 +692,7 @@ v-ft:ReadUnreadBundle
   rdfs:label "Read / unread"@en ;
 .
 
-v-ft:CompleteResultTemplate
+v-ft:CompletedResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон результата поиска ВЫПОЛНЕННЫХ задач"@ru ;
   rdfs:label "Complete tasks search results template"@en ;
@@ -716,9 +710,7 @@ v-ft:CompleteResultTemplate
         <th data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
         <th data-orderby="v-wf:onDocument.rdfs:label"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
         <th><span about="v-wf:takenDecision" property="rdfs:label"></span></th>
-        <th width="10%" class="orderby" data-orderby="v-s:created">
-          <span about="v-ft:DecisionCreateDateBundle" property="rdfs:label"></span>
-        </th>
+        <th width="10%" class="orderby" data-orderby="v-s:created" about="v-s:created" property="rdfs:label"></th>
         <th width="10%" class="orderby" data-orderby="v-wf:takenDecision.v-s:created">
           <span about="v-ft:DecisionDateBundle" property="rdfs:label"></span>
         </th>
