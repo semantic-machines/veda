@@ -1383,7 +1383,7 @@ v-s:ContractorCategoryDecisionSecurityEmbeddedTemplate
   <div class="panel panel-default" style="margin-bottom: 0px" >
     <div class="panel-body">
       <h4 class="margin-sm">
-        <span id="TaxModalTemplete" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span id="open-modal" about="@" data-template="v-ui:IconModalTemplate"></span>
         <span about="v-s:isContractorOkSecurityDepSummary" property="rdfs:label"></span>
       </h4>
       <div property="v-s:contractorSecurityDepSummary" class="view -edit"></div>
@@ -1393,11 +1393,10 @@ v-s:ContractorCategoryDecisionSecurityEmbeddedTemplate
 </div>
 
 <script>
-    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity");
-   if ( !_class.rights.hasValue("v-s:canCreate", true)){
-   $("#SecurityModalTemplete", template).remove()
+  var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity");
+    if ( !_class.rights.hasValue("v-s:canCreate", true)){
+    $("#open-modal", template).remove();
   }
-
 </script>
  """ ;
 .
@@ -1450,7 +1449,7 @@ v-s:ContractorCategoryDecisionLegalEmbeddedTemplate
   <div class="panel panel-default" style="margin-bottom: 0px" >
     <div class="panel-body">
       <h4 class="margin-sm">
-        <span id="TaxModalTemplete" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span id="open-modal" about="@" data-template="v-ui:IconModalTemplate"></span>
         <span about="v-s:contractorLegalDepSummary" property="rdfs:label"></span>
       </h4>
       <div property="v-s:contractorLegalDepSummary" class="view -edit"></div>
@@ -1459,11 +1458,10 @@ v-s:ContractorCategoryDecisionLegalEmbeddedTemplate
   </div>
 </div>
 <script>
-    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal");
-   if ( !_class.rights.hasValue("v-s:canCreate", true)){
-   $("#LegalModalTemplete", template).remove()
+  var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal");
+    if ( !_class.rights.hasValue("v-s:canCreate", true)){
+    $("#open-modal", template).remove();
   }
-
 </script>
  """ ;
 .
@@ -1510,7 +1508,7 @@ v-s:ContractorCategoryDecisionFinancialEmbeddedTemplate
   <div class="panel panel-default" style="margin-bottom: 0px" >
     <div class="panel-body">
       <h4 class="margin-sm">
-        <span id="TaxModalTemplete" about="@" data-template="v-ui:IconModalTemplate"></span>
+        <span id="open-modal" about="@" data-template="v-ui:IconModalTemplate"></span>
         <span about="v-s:contractorFinancialDepSummary" property="rdfs:label"></span>
       </h4>
       <div property="v-s:contractorFinancialDepSummary" class="view -edit"></div>
@@ -1519,11 +1517,10 @@ v-s:ContractorCategoryDecisionFinancialEmbeddedTemplate
   </div>
 </div>
 <script>
-    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial");
-   if ( !_class.rights.hasValue("v-s:canCreate", true)){
-   $("#LegalModalTemplete", template).remove()
+  var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial");
+    if ( !_class.rights.hasValue("v-s:canCreate", true)){
+    $("#open-modal", template).remove();
   }
-
 </script>
   """ ;
 .
