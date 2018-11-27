@@ -121,17 +121,7 @@ v-fc:CreateByTypeTemplate
       var blank = new veda.IndividualModel();
       blank["v-fc:targetType"] = values;
       blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-      var renderedTemplate = blank.present(holder, "v-fc:BlankTemplate", "edit");
-      blank.object.one("afterSave", saveHandler);
-      renderedTemplate.one("remove", function () {
-        blank.object.off("afterSave", saveHandler);
-      });
-    }
-    function saveHandler() {
-      var self = this;
-      setTimeout(function () {
-        riot.route("#/" + self.id);
-      }, 100);
+      var renderedTemplate = blank.present(holder, "v-fc:BlankTemplate");
     }
   }
   self.on("v-fc:targetType", typeHandler);
@@ -245,10 +235,7 @@ v-fc:BlankTemplate
     $("#cancel.action", objectTemplate).click(function () {
       window.history.back();
     });
-    object.one("afterSave", saveHandler);
-    objectTemplate.one("remove", function () {
-      object.off("afterSave", saveHandler);
-    });
+    objectTemplate.one("save", saveHandler);
   } else {
     $("#no-rights", template).removeClass("hidden");
   }
@@ -256,7 +243,7 @@ v-fc:BlankTemplate
     if (location.hash.indexOf(self.id) === 2) {
       setTimeout(function () {
         riot.route("#/" + object.id);
-      }, 100);
+      }, 250);
     }
   }
   //# sourceURL=v-fc:BlankTemplate
