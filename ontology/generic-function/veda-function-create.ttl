@@ -318,11 +318,11 @@ v-fc:CreateManagementTemplate
       personalCreate["v-s:created"] = [];
       personalCreate["rdfs:isDefinedBy"] = [];
       personalCreate["rdfs:label"] = [ personalLabel ];
-      var createBlank = individual.hasValue("v-s:hasBlank") ? individual["v-s:hasBlank"][0] : undefined;
+      var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
       if (createBlank && createBlank.object) {
         var personalCreateBlank = createBlank.clone();
         personalCreate["rdfs:isDefinedBy"] = [];
-        personalCreate["v-s:hasBlank"] = [ personalCreateBlank ];
+        personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
         personalCreateBlank.object = createBlank.object;
         personalCreateBlank.updateBlank();
         personalCreateBlank.save();
