@@ -333,7 +333,7 @@ v-s:RequestDelegationAdminBlank
 .
 
 v-s:RequestDelegationRegistry
-  a v-fs:Search;
+  a v-fs:AttributiveSearch;
   rdfs:label "Заявки на делегирование"@ru;
   rdfs:label "Delegation requests"@en;
   v-fs:searchBlank v-s:RequestDelegationRegistryBlank ;

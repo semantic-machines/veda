@@ -17,7 +17,7 @@
 # ------------------------------------------------------------ РЕЕСТРЫ --
 
 v-s:OrganizationRegistry
-  a v-fs:Search;
+  a v-fs:AttributiveSearch;
   rdfs:label "Организации"@ru;
   rdfs:label "Organizations"@en;
   v-fs:searchBlank v-s:OrganizationBlank ;

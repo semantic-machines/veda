@@ -20,7 +20,7 @@
 # Letter registries ----------------------------------------------------
 
 v-s:IncomingLetterRegistry
-  a v-fs:Search;
+  a v-fs:AttributiveSearch;
   rdfs:label "Входящие письма"@ru ;
   rdfs:label "Incoming letters"@en ;
   v-fs:searchBlank v-s:IncomingLetterRegistryBlank ;
@@ -29,7 +29,7 @@ v-s:IncomingLetterRegistry
   v-fs:sortOrder "'v-s:created' desc" ;
 .
 v-s:OutgoingLetterRegistry
-  a v-fs:Search;
+  a v-fs:AttributiveSearch;
   rdfs:label "Исходящие письма"@ru ;
   rdfs:label "Outgoing letters"@en ;
   v-fs:searchBlank v-s:OutgoingLetterRegistryBlank ;
