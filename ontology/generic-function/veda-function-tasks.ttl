@@ -424,6 +424,12 @@ v-ft:DecisionDateBundle
   rdfs:label "Complete date"@en ;
 .
 
+v-ft:DecisionCreateDateBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Дата создания"@ru ;
+  rdfs:label "Create date"@en ;
+.
+
 v-ft:DecisionCreatorBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Выполнил"@ru ;
@@ -710,7 +716,10 @@ v-ft:CompleteResultTemplate
         <th data-orderby="rdfs:label"><span about="v-s:description" property="rdfs:label"></span></th>
         <th data-orderby="v-wf:onDocument.rdfs:label"><span about="v-ft:DocumentBundle" property="rdfs:label"></span></th>
         <th><span about="v-wf:takenDecision" property="rdfs:label"></span></th>
-        <th width="10%" data-orderby="v-wf:takenDecision.v-s:created">
+        <th width="10%" class="orderby" data-orderby="v-s:created">
+          <span about="v-ft:DecisionCreateDateBundle" property="rdfs:label"></span>
+        </th>
+        <th width="10%" class="orderby" data-orderby="v-wf:takenDecision.v-s:created">
           <span about="v-ft:DecisionDateBundle" property="rdfs:label"></span>
         </th>
         <th width="10%"><span about="v-ft:DecisionCreatorBundle" property="rdfs:label"></span></th>
@@ -748,7 +757,10 @@ v-ft:CompleteResultTemplate
           <div property="rdfs:label" data-template="v-ui:LabelTemplate"></div>
           <i property="rdfs:comment"></i>
         </td>
-        <td rel="v-wf:takenDecision" property="v-s:created"></td>
+        <td property="v-s:created"></td>
+        <td rel="v-wf:takenDecision">
+          <div property="v-s:created"></div>
+        </td>
         <td rel="v-wf:takenDecision">
           <div rel="v-s:creator" data-template="v-ui:LabelTemplate"></div>
         </td>
