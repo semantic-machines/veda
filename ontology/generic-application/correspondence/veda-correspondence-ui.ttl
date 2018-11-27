@@ -115,55 +115,25 @@ v-s:LetterTemplate
   rdfs:label "Template for v-s:Letter class"@en ;
   v-ui:template """
 <script>
-
-  individual.on("v-s:hasLetterRegistrationRecordSender", senderRecordHandler);
-  individual.on("v-s:hasLetterRegistrationRecordRecipient", recipientRecordHandler);
-  template.one("remove", function () {
-    individual.off("v-s:hasLetterRegistrationRecordSender", senderRecordHandler);
-    individual.off("v-s:hasLetterRegistrationRecordRecipient", recipientRecordHandler);
-  });
-
-  // Make registration record autonumerated if sender == user's organization
-  function senderRecordHandler () {
+  if ( mode === "edit" || template.data("mode") === "edit" ) {
     var userOrganization = veda.appointment.getOrganization();
     var enumerated = new veda.IndividualModel("v-s:LetterRegistrationRecordEnumerated");
-    if (
-      (mode === "edit" || template.data("mode") === "edit")
-      && this.hasValue("v-s:sender")
-      && this["v-s:sender"][0].hasValue("v-s:correspondentOrganization", userOrganization)
-      && this.hasValue("v-s:hasLetterRegistrationRecordSender")
-    ) {
-      var regRecord = this["v-s:hasLetterRegistrationRecordSender"][0];
-      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordSender"), enumerated ];
-      this["v-s:hasLetterRegistrationRecordSender"] = [ regRecord ];
-    }
-  }
 
-  // Make registration record autonumerated if recipient == user's organization
-  function recipientRecordHandler () {
-    var userOrganization = veda.appointment.getOrganization();
-    var enumerated = new veda.IndividualModel("v-s:LetterRegistrationRecordEnumerated");
-    if (
-      (mode === "edit" || template.data("mode") === "edit")
-      && this.hasValue("v-s:recipient")
-      && this["v-s:recipient"][0].hasValue("v-s:correspondentOrganization", userOrganization)
-      && this.hasValue("v-s:hasLetterRegistrationRecordRecipient")
-    ) {
-      var regRecord = this["v-s:hasLetterRegistrationRecordRecipient"][0];
-      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordRecipient"), enumerated ];
-      this["v-s:hasLetterRegistrationRecordRecipient"] = [ regRecord ];
-    }
-  }
-
-  if ( (mode === "edit" || template.data("mode") === "edit") && !this.hasValue("v-s:hasLetterRegistrationRecordSender") ) {
-    var regRecord = new veda.IndividualModel();
-    regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordSender") ];
-    this["v-s:hasLetterRegistrationRecordSender"] = [ regRecord ];
-  }
-  if ( (mode === "edit" || template.data("mode") === "edit") && !this.hasValue("v-s:hasLetterRegistrationRecordRecipient") ) {
-    var regRecord = new veda.IndividualModel();
-    regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecordRecipient") ];
-    this["v-s:hasLetterRegistrationRecordRecipient"] = [ regRecord ];
+    // These events are triggered in v-s:CorrespondentTemplate
+    template.on("v-s:sender:own v-s:sender:foreign v-s:recipient:own v-s:recipient:foreign", function (e) {
+      e.stopPropagation();
+      var keyWord = e.type.split(":")[1];
+      keyWord = keyWord.charAt(0).toUpperCase() + keyWord.slice(1);
+      var isOwn = "own" === e.type.split(":")[2];
+      var regRecord;
+      if ( individual.hasValue("v-s:hasLetterRegistrationRecord" + keyWord) ) {
+        regRecord = individual["v-s:hasLetterRegistrationRecord" + keyWord][0];
+      } else {
+        regRecord = new veda.IndividualModel();
+        individual["v-s:hasLetterRegistrationRecord" + keyWord] = [ regRecord ];
+      }
+      regRecord["rdf:type"] = [ new veda.IndividualModel("v-s:LetterRegistrationRecord" + keyWord), isOwn ? enumerated : null ];
+    });
   }
   //# sourceURL=v-s:LetterTemplate_pre
 </script>
@@ -293,15 +263,6 @@ v-s:LetterTemplate
 </div>
 <script>
 
-  // Частная валидация для кнопки сохранить
-  template.on("internal-validated", function (e, validation) {
-    if (validation.state) {
-      $(".action#save2", template).removeAttr("disabled");
-    } else {
-      $(".action#save2", template).attr("disabled", "disabled");
-    }
-  });
-
   // Печатные бланки
   if( this.hasValue("rdf:type", "v-s:IncomingLetter") ) {
     $("#outgoing-print-blank", template).remove();
@@ -403,21 +364,22 @@ v-s:CorrespondentTemplate
     self.off("v-s:correspondentOrganization", correspondentOrganizationHandler);
   });
   function correspondentOrganizationHandler () {
-    if (
-      this.hasValue("v-s:correspondentOrganization") && this["v-s:correspondentOrganization"][0].hasValue("v-s:isOwnOrganization", true) ||
-      this.hasValue("v-s:correspondentOrganization", veda.appointment.getOrganization())
-    ) {
+    var isOwn = this.hasValue("v-s:correspondentOrganization") && this["v-s:correspondentOrganization"][0].hasValue("v-s:isOwnOrganization", true) || this.hasValue("v-s:correspondentOrganization", veda.appointment.getOrganization());
+    var parentRel = template.parent().attr("rel");
+    if ( isOwn ) {
       this
         .clearValue("v-s:correspondentDepartmentDescription")
         .clearValue("v-s:correspondentPersonDescription");
       $(".user-organization", template).show();
       $(".other-organization", template).hide();
+      template.trigger(parentRel + ":own");
     } else {
       this
         .clearValue("v-s:correspondentDepartment")
         .clearValue("v-s:correspondentPerson");
       $(".user-organization", template).hide();
       $(".other-organization", template).show();
+      template.trigger(parentRel + ":foreign");
     }
   }
 
@@ -572,7 +534,15 @@ v-s:LetterRegistrationRecordTemplate
     self.off("beforeSave", date);
   });
 
-  if ( mode === "edit" ) {
+  if ( mode === "edit" || template.data("mode") === "edit" ) {
+    individual.on("rdf:type", typeHandler);
+    template.one("remove", function () {
+      individual.off("rdf:type", typeHandler);
+    });
+    typeHandler.call(this);
+  }
+
+  function typeHandler () {
     if ( this.is("v-s:LetterRegistrationRecordEnumerated") ) {
       $("input", template).attr("placeholder", (new veda.IndividualModel("v-s:AutomaticallyBundle"))["rdfs:label"].join(" "));
     } else {
