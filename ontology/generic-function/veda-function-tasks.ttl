@@ -336,7 +336,7 @@ v-ft:PSfrom_to_DecisionForm
 .
 
 v-ft:Inbox
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Входящие задачи"@ru ;
   rdfs:label "Inbox tasks"@en ;
   v-fs:searchBlank v-ft:InboxBlank ;
@@ -354,7 +354,7 @@ v-ft:InboxBlank
 .
 
 v-ft:Outbox
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Исходящие задачи"@ru ;
   rdfs:label "Outbox tasks"@en ;
   v-fs:searchBlank v-ft:OutboxBlank ;
@@ -372,7 +372,7 @@ v-ft:OutboxBlank
 .
 
 v-ft:Completed
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Выполненные задачи"@ru ;
   rdfs:label "Completed tasks"@en ;
   v-fs:searchBlank v-ft:CompletedBlank ;
@@ -430,7 +430,7 @@ v-ft:InboxTemplate
   });
 //# sourceURL=v-ft:InboxTemplate_pre
 </script>
-<div class="container sheet" about="@" data-template="v-fs:AttributiveSearchTemplate"></div>
+<div class="container sheet" about="@" data-template="v-fs:SearchTemplate"></div>
   """ ;
 .
 
@@ -917,7 +917,7 @@ v-ft:TaskResultTemplate
 # Related tasks for document
 
 v-ft:RelatedTasks
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Связанные задачи"@ru ;
   rdfs:label "Related tasks"@en ;
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
@@ -947,7 +947,7 @@ v-ft:TaskRelatedTasksTemplate
 </script>
 <div>
   <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
-  <div about="v-ft:RelatedTasks" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+  <div about="v-ft:RelatedTasks" data-template="v-fs:SearchInlineTemplate"></div>
 </div>
   """
 .

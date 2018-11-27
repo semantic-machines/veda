@@ -715,6 +715,10 @@ textarea {
   margin-top: 15px;
   margin-bottom: 15px;
 }
+.margin-xs {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
 .margin-xs-h {
   margin-left: 2px;
   margin-right: 2px;
@@ -1600,7 +1604,7 @@ svg.process-path-highlight path
 
 .label-template {
   display: inline-block;
-  white-space: pre-line;
+  /*white-space: pre-line;*/
   margin-right: 7px;
   margin-bottom: 7px;
 }

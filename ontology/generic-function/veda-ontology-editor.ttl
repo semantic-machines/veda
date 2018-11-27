@@ -191,7 +191,7 @@ v-s:PropertySubPropertyOfSpec
 .
 
 v-s:PropertySpecificationSearch
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Спецификации свойств"@ru ;
   rdfs:label "Property specifications"@en ;
   v-fs:searchBlank v-s:PropertySpecificationSearchBlank ;
@@ -1168,7 +1168,7 @@ v-s:MembershipBlank
   v-fc:targetType v-s:Membership ;
 .
 v-s:MembershipRegistry
-  a v-fs:AttributiveSearch ;
+  a v-fs:Search ;
   rdfs:label "Записи о включении в группу"@ru ;
   rdfs:label "Memberships"@en ;
   v-fs:searchBlank v-s:MembershipRegistryBlank ;
@@ -1204,7 +1204,7 @@ v-ui:GroupTemplate
   <div about="@" data-embedded="true" data-template="v-ui:CommonOntologyTemplate"></div>
   <div class="panel panel-default">
     <div class="panel-heading"><span about="v-s:MembershipRegistry" property="rdfs:label"></span><a href="#/v-s:MembershipBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
-    <div class="panel-body" about="v-s:MembershipRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+    <div class="panel-body" about="v-s:MembershipRegistry" data-template="v-fs:SearchInlineTemplate"></div>
   </div>
   <br>
   <br>

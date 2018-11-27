@@ -315,7 +315,7 @@ v-s:Create
   rdf:type v-s:Menu ;
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
-  v-s:objectLink v-fc:Create ;
+  v-s:objectLink v-fc:CreateByType ;
 .
 v-s:Find
   rdf:type v-s:Menu ;

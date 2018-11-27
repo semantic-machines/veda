@@ -22,7 +22,7 @@
 # ------------- ContractorProfile registry ---------------
 
 v-s:ContractorProfileRegistry
-  a v-fs:AttributiveSearch;
+  a v-fs:Search;
   rdfs:label "Досье контрагентов"@ru;
   rdfs:label "Contractors' profiles"@en;
   v-fs:searchBlank v-s:ContractorProfileRegistryBlank ;

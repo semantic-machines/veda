@@ -23,14 +23,14 @@ v-fs:fulltextQuery
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Запрос"@ru ;
   rdfs:label "Query"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:string ;
 .
 v-fs:sortOrder
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Порядок сортировки"@ru ;
   rdfs:label "Sort order"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:string ;
 .
 v-fs:EnterQuery
@@ -89,20 +89,20 @@ v-fs:NoMoreResults
   rdfs:label "All results loaded"@en ;
 .
 
-v-fs:AttributiveSearch
+v-fs:Search
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
   rdfs:label "Атрибутивный поиск"@ru ;
   rdfs:label "Attributive search"@en ;
-  v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
-  v-ui:hasModel v-fs:AttributiveSearchModel ;
+  v-ui:hasTemplate v-fs:SearchManagementTemplate ;
+  v-ui:hasModel v-fs:SearchModel ;
 .
 
 v-fs:applicableOperation
   rdf:type owl:ObjectProperty ;
   rdfs:label "Применимая операция"@ru ;
   rdfs:label "Applicable operation"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range v-s:Operation ;
 .
 
@@ -110,7 +110,7 @@ v-fs:searchBlankTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:label "Шаблон формы поиска"@ru ;
   rdfs:label "Search form template"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range v-ui:ClassTemplate ;
 .
 
@@ -118,7 +118,7 @@ v-fs:searchResultTemplate
   rdf:type owl:ObjectProperty ;
   rdfs:label "Шаблон результатов поиска"@ru ;
   rdfs:label "Search result template"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range v-ui:ClassTemplate ;
 .
 
@@ -126,7 +126,7 @@ v-fs:searchBlank
   rdf:type owl:ObjectProperty ;
   rdfs:label "Бланк поиска"@ru ;
   rdfs:label "Search blank"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range v-fc:Blank ;
 .
 
@@ -134,63 +134,63 @@ v-fs:searchResult
   rdf:type owl:ObjectProperty ;
   rdfs:label "Результат"@ru ;
   rdfs:label "Result"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range rdfs:Resource ;
 .
 v-fs:searchOnLoad
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Искать сразу"@ru ;
   rdfs:label "Search on load"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:boolean ;
 .
 v-fs:query
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Запрос"@ru ;
   rdfs:label "Query"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:boolean ;
 .
 v-fs:loadAll
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Загрузить все"@ru ;
   rdfs:label "Load all"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:boolean ;
 .
 v-fs:cursor
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Обработано"@ru ;
   rdfs:label "Processed"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:integer ;
 .
 v-fs:top
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Топ"@ru ;
   rdfs:label "Top"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:integer ;
 .
 v-fs:limit
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Ограничение"@ru ;
   rdfs:label "Limit"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:integer ;
 .
 v-fs:estimated
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Найдено"@ru ;
   rdfs:label "Estimated"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:integer ;
 .
 v-fs:authorized
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Авторизовано"@ru ;
   rdfs:label "Authorized"@en ;
-  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:domain v-fs:Search ;
   rdfs:range xsd:integer ;
 .
 
@@ -212,11 +212,11 @@ v-fs:ClickToViewContent
   rdfs:label "Click to view all contents"@en ;
 .
 
-v-fs:AttributiveSearchModel
+v-fs:SearchModel
   rdf:type v-ui:ClassModel ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:forClass v-fs:Search ;
+  rdfs:label "Шаблон для класса v-fs:Search"@ru ;
+  rdfs:label "Template for v-fs:Search class"@en ;
   v-s:script """
   var self = this;
 
@@ -312,7 +312,7 @@ v-fs:AttributiveSearchModel
     }
   };
 
-//# sourceURL=v-fs:AttributiveSearchModel
+//# sourceURL=v-fs:SearchModel
   """ ;
 .
 
@@ -352,11 +352,11 @@ v-fs:RegistrySuccessfullyDeleted
   rdfs:label "Registry successfully deleted"@en ;
 .
 
-v-fs:AttributiveSearchManagementTemplate
+v-fs:SearchManagementTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:forClass v-fs:Search ;
+  rdfs:label "Шаблон для класса v-fs:Search"@ru ;
+  rdfs:label "Template for v-fs:Search class"@en ;
   v-ui:template """
 <script>
   var notify = new veda.Notify();
@@ -428,7 +428,7 @@ v-fs:AttributiveSearchManagementTemplate
     }
   });
 
-//# sourceURL=v-fs:AttributiveSearchManagementTemplate_pre
+//# sourceURL=v-fs:SearchManagementTemplate_pre
 </script>
 <div>
   <div class="container sheet">
@@ -441,16 +441,16 @@ v-fs:AttributiveSearchManagementTemplate
       <button class="action delete-registry btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
     </div>
   </div>
-  <div class="margin-lg" about="@" data-template="v-fs:AttributiveSearchTemplate">
+  <div class="margin-lg" about="@" data-template="v-fs:SearchTemplate">
 </div>
   """ ;
 .
 
-v-fs:AttributiveSearchTemplate
+v-fs:SearchTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:forClass v-fs:Search ;
+  rdfs:label "Шаблон для класса v-fs:Search"@ru ;
+  rdfs:label "Template for v-fs:Search class"@en ;
   v-ui:template """
 <div class="container sheet">
   <style>
@@ -461,7 +461,7 @@ v-fs:AttributiveSearchTemplate
       mso-number-format:"Short Date";
     }
   </style>
-  <div about="@" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+  <div about="@" data-template="v-fs:SearchInlineTemplate"></div>
   <span class="additional-actions">
     <button class="btn btn-default xls"><span about="v-fs:Excel" property="rdfs:label"></span></button>
     <button class="btn btn-default files"><span about="v-fs:FilesRegistry" property="rdfs:label"></span></button>
@@ -585,7 +585,7 @@ v-fs:AttributiveSearchTemplate
     }
   }
 
-  //# sourceURL=v-fs:AttributiveSearchTemplate_post
+  //# sourceURL=v-fs:SearchTemplate_post
 </script>
   """ ;
 .
@@ -598,9 +598,9 @@ v-fs:PerformOperation
 
 v-fs:SelectedResultsActionsTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:forClass v-fs:Search ;
+  rdfs:label "Шаблон для класса v-fs:Search"@ru ;
+  rdfs:label "Template for v-fs:Search class"@en ;
   v-ui:template """
 <script>
   var self = this;
@@ -691,11 +691,11 @@ v-fs:SelectedResultsActionsTemplate
   """ ;
 .
 
-v-fs:AttributiveSearchInlineTemplate
+v-fs:SearchInlineTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-fs:AttributiveSearch ;
-  rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
-  rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
+  v-ui:forClass v-fs:Search ;
+  rdfs:label "Шаблон для класса v-fs:Search"@ru ;
+  rdfs:label "Template for v-fs:Search class"@en ;
   v-ui:template """
 <script>
   var self = individual,
@@ -1277,7 +1277,7 @@ v-fs:AttributiveSearchInlineTemplate
       });
   }
 
-  //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
+  //# sourceURL=v-fs:SearchInlineTemplate_post
 </script>
   """ ;
 .
@@ -1285,7 +1285,7 @@ v-fs:AttributiveSearchInlineTemplate
 ### INDIVIDUALS ###
 
 v-fs:FulltextSearch
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Полнотекстовый поиск"@ru ;
   rdfs:label "Fulltext search"@en ;
   v-fs:searchBlank v-fs:FulltextBlank ;
@@ -1401,7 +1401,7 @@ v-fs:FulltextResultTemplate
 .
 
 v-fs:MinimalSearch
-  rdf:type v-fs:AttributiveSearch ;
+  rdf:type v-fs:Search ;
   rdfs:label "Минимальный поиск"@ru ;
   rdfs:label "Minimal search"@en ;
   v-fs:searchBlank v-fs:MinimalSearchBlank ;
@@ -1418,7 +1418,7 @@ v-fs:MinimalSearchBlank
 
 v-fs:MinimalSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-fs:AttributiveSearch ;
+  v-ui:forClass v-fs:Search ;
   rdfs:label "Шаблон отображения результатов минимального поиска"@ru ;
   rdfs:label "Minimal search result template"@en ;
   v-ui:template """
@@ -1445,10 +1445,10 @@ v-fs:MinimalSearchResultTemplate
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
 
-v-fs:AttributiveSearch_permission1
+v-fs:Search_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-fs:AttributiveSearch ;
+  v-s:permissionObject v-fs:Search ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
-  rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;
+  rdfs:label "C. Все пользователи. Класс v-fs:Search" ;
 .

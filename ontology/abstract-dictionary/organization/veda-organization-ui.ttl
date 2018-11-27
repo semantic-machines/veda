@@ -1,3 +1,4 @@
+
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -579,9 +580,18 @@ v-s:DepartmentTemplate
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
     <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
-    <em about="v-s:shortLabel" property="rdfs:label"></em>
-    <div property="v-s:shortLabel" class="view -edit -search"></div>
-    <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:shortLabel" property="rdfs:label"></em>
+        <div property="v-s:shortLabel" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>    
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:subjectCode" property="rdfs:label"></em>
+        <div property="v-s:subjectCode" class="view -edit search"></div>
+        <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+      </div>
+    </div>
     <hr class="view -edit -search">
     <div class="row">
       <div class="col-sm-6">
@@ -613,4 +623,424 @@ v-s:DepartmentTemplate
   </div>
 </div>
   """ ;
+.
+
+v-s:DepartmentForContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Department ;
+  rdfs:label "Шаблон для класса v-s:Department"@ru ;
+  rdfs:label "Template for v-s:Department class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Department" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentOrganization" property="rdfs:label"></em>
+    <div rel="v-s:parentOrganization" class="view -edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <div about="@" property="v-s:parentOrganization" class="-view edit -search">
+      <a href="#/@">
+        <span property="v-s:taxId"></span> - <span property="v-s:shortLabel"></span> - <span property="v-s:legalAddress"></span>
+      </a>
+    </div>
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <hr class="view -edit -search">
+    <em about="rdfs:label" property="rdfs:label"></em>
+    <div property="rdfs:label" class="view -edit -search"></div>
+    <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:shortLabel" property="rdfs:label"></em>
+        <div property="v-s:shortLabel" class="view -edit -search"></div>
+        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>    
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:subjectCode" property="rdfs:label"></em>
+        <div property="v-s:subjectCode" class="view -edit search"></div>
+        <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+      </div>
+    </div>
+    <hr class="view -edit -search">
+    <div class="row">
+      <div class="col-sm-6">
+        <em about="v-s:hasChief" property="rdfs:label"></em>
+        <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
+      </div>
+      <div class="col-sm-6">
+        <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
+        <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
+  </div>
+</div>
+  """ ;
+.
+
+v-s:AppointmentForContactTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Appointment ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on('validate', function() {
+    var result = {};
+    result["v-s:employee"] = {
+      state: individual.hasValue('v-s:employee'),
+      cause: ["v-ui:minCardinality"]
+    };
+    result["v-s:occupation"] = {
+      state: individual.hasValue('v-s:occupation'),
+      cause: ["v-ui:minCardinality"]
+    };
+    template.trigger("validated", result);   
+  });
+  template.on("special-validate", function (e, validStates) {
+    setTimeout(function(){
+      // console.log($('div.validating-block:not(.hide) veda-control.has-error', template));
+      if ($('div.validating-block:not(.hide) .has-error', template).length == 0) {
+        $('.action#save', template).removeAttr('disabled');
+      } else {
+        $('.action#save', template).attr('disabled', 'disabled');
+      }
+    },500);
+  });
+
+  var personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"'";
+  $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
+  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+individual['v-s:parentUnit'][0].id+"'";
+  $('#select-Occupation veda-control', template).attr('data-query-prefix', occupQueryPrefixString);
+//# sourceURL=v-s:AppointmentForContactTemplate_pre
+</script>
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Appointment" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr>
+  <div id="mainProperties">
+    <em about="v-s:parentUnit" property="rdfs:label"></em>
+    <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <hr class="view -edit -search">
+    <div class="row">
+      <div class="col-md-6">
+        <em about="v-s:employee" property="rdfs:label"></em>
+        <div class="btn-group">
+          <button id="selectPersonBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
+          <button id="createPersonBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+        </div>
+        <!-- <div about="@" property="v-s:employee" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div> -->
+        <div id="select-Person" class="validating-block">
+          <veda-control data-type="link" rel="v-s:employee" class="fulltext dropdown margin-sm"></veda-control>  
+        </div>
+        <div id="fill-Person" class="validating-block"></div>
+      </div>
+      <div class="col-md-6">
+        <em about="v-s:occupation" property="rdfs:label"></em>
+        <div class="btn-group">
+          <button id="selectOccupationBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
+          <button id="createOccupationBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+        </div>
+        <!-- <div about="@" property="v-s:occupation" class="view -edit search" data-template="v-ui:LabelTemplate"></div> -->
+        <div id="select-Occupation" class="validating-block">
+          <veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm"></veda-control>  
+        </div>
+        <div id="fill-Occupation" class="validating-block"></div>
+      </div>
+    </div>
+    <div id="radioBlock" class="hide">
+      <em>Основное назначение</em>
+      <div class="radio">
+    </div>
+  </div>
+  <hr>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
+  </div>
+</div>
+<script>
+  var NewPerson = null;
+  var NewOccupation = null;
+  
+  var defaultAppointment = undefined;
+  template.on('click', '#radioBlock input[type="radio"]', function(){
+    console.log($(this).attr('value'));
+    defaultAppointment = $(this).attr('value');
+  });  
+
+  function toogleButtons(currentBtn) {
+    currentBtn.siblings().removeClass('btn-primary').addClass('btn-default')
+    currentBtn.removeClass('btn-default').addClass('btn-primary');
+    template.trigger('special-validate');
+  }
+  
+  $('#createPersonBtn', template).click(function(){
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+    $('#radioBlock').addClass('hide');
+    defaultAppointment = undefined;
+    $('#select-Person').addClass('hide');
+    if (NewPerson) {
+      $('#fill-Person').removeClass('hide');
+    } else {
+      NewPerson = new veda.IndividualModel();
+      NewPerson['rdf:type'] = [new veda.IndividualModel('v-s:Person')];
+      NewPerson['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      var tmpl = NewPerson.present($("<div>"), 'v-s:EmployeeEmbeddedTemplate', 'edit');
+      tmpl.on("validate", function () {
+        template.trigger('special-validate');
+      });
+      $('#fill-Person').append(tmpl);
+    }
+    individual['v-s:employee'] = [NewPerson];
+  });
+
+  $('#selectPersonBtn').click(function (){
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+    // $('#radioBlock').toggleClass('hide');
+    defaultAppointment = undefined;
+    $('#select-Person').removeClass('hide');
+    $('#fill-Person').addClass('hide');
+    individual['v-s:employee'] = [];
+    individual.on('v-s:employee', setDefaultAppointment);
+  });
+
+  $('#createOccupationBtn', template).click(function(){
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+    individual.off('v-s:employee', setDefaultAppointment);
+    $('#select-Occupation').addClass('hide');
+    if (NewOccupation) {
+      $('#fill-Occupation').removeClass('hide');
+    } else {
+      NewOccupation = new veda.IndividualModel();
+      NewOccupation['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
+      var tmpl = NewOccupation.present($("<div>"), 'v-s:OccupationEmbeddedTemplate', 'edit');
+      tmpl.on("validate", function () {
+        template.trigger('special-validate');
+      });
+      $('#fill-Occupation').append(tmpl);   
+    }
+    individual['v-s:occupation'] = [NewOccupation];
+  });
+
+  $('#selectOccupationBtn').click(function (){
+    var self = $(this);
+    if (self.hasClass('btn-primary')) return false;
+    toogleButtons(self);
+    $('#select-Occupation').removeClass('hide');
+    $('#fill-Occupation').addClass('hide');
+    individual['v-s:occupation'] = [];
+  });
+
+  function setDefaultAppointment(){
+    var radioCont = $('.radio', template).empty();
+    if (individual.hasValue('v-s:employee')) {
+      var employeeId = individual['v-s:employee'][0].id;
+      var queryString = "'rdf:type'=='v-s:Appointment' && 'v-s:employee'=='"+employeeId+"' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"'";
+      var appointments = query({ticket: veda.ticket, query: queryString}).result;
+      if (appointments.length > 0) {
+        appointments.forEach(function(appointUri) {
+          var label = $('<label></label>');
+          var radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointUri);
+          label.append(radio);
+          label.append( (new veda.IndividualModel(appointUri))['rdfs:label'][0] );
+          radioCont.append($('<div class="radio"></div>').append(label));
+        })
+        var newAppointLabel = individual['v-s:employee'][0]['rdfs:label'][0];
+        radioCont.append('<div class="radio"><label><input type="radio" name="defaultAppointment"/>Новое для '+newAppointLabel+'</label></div>');
+        $('#radioBlock').removeClass('hide');
+        return;
+      }
+    }
+    $('#radioBlock').addClass('hide');
+    
+  }
+
+  setDefaultAppointment();
+  individual.on('v-s:employee', setDefaultAppointment);
+  template.one('remove', function(){
+    individual.off('v-s:employee', setDefaultAppointment);
+  })
+
+  function beforeSaveHandler(){
+    // var orgINN = individual['v-s:parentOrganizationt'][0]['v-s:taxId'][0];
+    // var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
+    // var occupationCode = individual['v-s:occupation'][0]['v-s:subjectCode'][0];
+    // if (isNewPerson) {
+    //   var person = individual['v-s:employee'][0];
+    //   person.id = 'd:'+orgINN+'_employee_'+personTabNumber;
+    //   individual['v-s:employee'] = [person];
+    // }
+    // if (isNewOccupation) {
+    //   var occup = individual['v-s:occupation'][0];
+    //   occup.id = 'd:'+orgINN+'_position_'+occupationCode;
+    //   individual['v-s:occupation'] = [occup];
+    // }
+    // individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+occupationCode;
+    // if (!individual.hasValue('v-s:employee')) individual
+    var tempEmployee = individual['v-s:employee'][0];
+    var tempOccupation = individual['v-s:occupation'][0];
+    if (tempOccupation.isNew()) {
+      tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
+      tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      tempOccupation.save();
+      individual['v-s:occupation'] = [tempOccupation];
+    }
+    
+    if (defaultAppointment){
+      tempEmployee['v-s:defaultAppointment'] = [defaultAppointment]
+    } else {
+      tempEmployee['v-s:defaultAppointment'] = [individual];
+    }
+    tempEmployee['v-s:hasAppointment'] = tempEmployee['v-s:hasAppointment'].concat(individual);
+    if (tempEmployee.isNew()) {
+      tempEmployee['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      tempEmployee.save();
+    }
+    individual['v-s:employee'] = [tempEmployee];
+    var label = individual['v-s:employee'][0]['v-s:lastName'][0]+ ' ' + individual['v-s:employee'][0]['v-s:firstName'][0] + ' : ' + individual['v-s:occupation'][0]['rdfs:label'][0];
+    individual['rdfs:label'] = [label];
+    return false;
+  }
+  individual.one('beforeSave', beforeSaveHandler);
+  //# sourceURL=v-s:AppointmentsForContactsTemplate_post
+</script>
+  """ ;
+.
+
+v-s:EmployeeEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:tabNumber')) {
+      result["v-s:tabNumber"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:lastName" property="rdfs:label"></em> 
+    </div>
+    <div class="col-md-6">
+      <veda-control data-type="string" property="v-s:lastName"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:firstName" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <veda-control data-type="string" property="v-s:firstName"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:middleName" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <veda-control data-type="string" property="v-s:middleName"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:birthday" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <veda-control data-type="date" property="v-s:birthday"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:tabNumber" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <veda-control data-type="string" property="v-s:tabNumber"></veda-control>
+    </div>
+  </div>
+</div>
+  """ ; 
+.
+
+v-s:OccupationEmbeddedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    if (!individual.hasValue('v-s:subjectCode')) {
+      result["v-s:subjectCode"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    if (!individual.hasValue('rdfs:label')) {
+      result["rdfs:label"] = {
+        state: false,
+        cause: ["v-ui:minCardinality"]
+      };
+    }
+    template.trigger("validated", result);
+  });
+</script>
+<div>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:title" property="rdfs:label"></em> 
+    </div>
+    <div class="col-md-6">
+      <div property="rdfs:label" class="view -edit search"></div>
+      <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-md-6">
+      <em about="v-s:subjectCode" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-6">
+      <div property="v-s:subjectCode" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-s:subjectCode" class="-view edit search"></veda-control>
+    </div>
+  </div>
+</div>
+  """ ; 
 .

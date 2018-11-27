@@ -67,10 +67,18 @@ v-s:hasBlank
   rdfs:label "Blank"@en ;
 .
 
+v-s:hasCreate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Aspect ;
+  rdfs:range v-fc:Create ;
+  rdfs:label "Бланк"@ru ;
+  rdfs:label "Blank"@en ;
+.
+
 v-s:hasRegistry
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:Aspect ;
-  rdfs:range v-fs:AttributiveSearch ;
+  rdfs:range v-fs:Search ;
   rdfs:label "Реестр"@ru ;
   rdfs:label "Registry"@en ;
 .
@@ -271,6 +279,9 @@ v-s:PersonalAspectTemplate
     </div>
     <div role="tabpanel" class="tab-pane" id="blanks">
       <ol rel="v-s:hasBlank" class="columns-2">
+        <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
+      </ol>
+      <ol rel="v-s:hasCreate" class="columns-2">
         <li about="@" data-template="v-ui:LabelLinkTemplate"></li>
       </ol>
       <br/>

@@ -138,6 +138,17 @@ v-s:parentOrganization
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Department ;
 .
+
+v-s:subjectCode
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "Код субъекта"@ru ;
+  rdfs:comment "Subject code"@en ;
+  rdfs:domain v-s:Position ;
+  rdfs:domain v-s:Department ;
+  rdfs:label "Код субъекта"@ru ;
+  rdfs:label "Subject code"@en ;
+  rdfs:range xsd:string ;
+.
 # ------------------------------------------------------------
 v-s:Subsidiary
   rdf:type owl:Class ;
@@ -167,7 +178,7 @@ v-s:Position
   rdfs:label "Position"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
 .
-
+#v-s:subjectCode
 # ------------------------------------------------------------
 v-s:HRRecord
   rdf:type owl:Class ;
