@@ -1394,7 +1394,7 @@ v-s:ContractorCategoryDecisionSecurityEmbeddedTemplate
 
 <script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity");
-    if ( !_class.rights.hasValue("v-s:canCreate", true)){
+  if ( !_class.rights.hasValue("v-s:canCreate", true) ) {
     $("#open-modal", template).remove();
   }
 </script>
@@ -1459,7 +1459,7 @@ v-s:ContractorCategoryDecisionLegalEmbeddedTemplate
 </div>
 <script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal");
-    if ( !_class.rights.hasValue("v-s:canCreate", true)){
+  if ( !_class.rights.hasValue("v-s:canCreate", true) ) {
     $("#open-modal", template).remove();
   }
 </script>
@@ -1518,7 +1518,7 @@ v-s:ContractorCategoryDecisionFinancialEmbeddedTemplate
 </div>
 <script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial");
-    if ( !_class.rights.hasValue("v-s:canCreate", true)){
+  if ( !_class.rights.hasValue("v-s:canCreate", true)) {
     $("#open-modal", template).remove();
   }
 </script>
@@ -1531,7 +1531,7 @@ v-s:ContractorCategoryDecisionEmbeddedTemplate
   rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
   v-ui:template """
 <script>
-    var _class = new veda.IndividualModel("v-s:ContractorCategoryDecision");
+  var _class = new veda.IndividualModel("v-s:ContractorCategoryDecision");
   if ( !_class.rights.hasValue("v-s:canCreate", true) ) {
     $("#AddResolution", template).remove();
   }
