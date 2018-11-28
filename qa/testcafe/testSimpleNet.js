@@ -31,6 +31,7 @@ import { Selector, t } from 'testcafe';
       .click('button#save')
       .wait(2000)
       .click('button.btn.btn-link.view.edit.-search.toggle-actions')
+      .wait(2000)
       .click('div[rel="v-wf:isProcess"] span#label')
       .expect(red).eql(1)
 });
