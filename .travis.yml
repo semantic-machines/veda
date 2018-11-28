@@ -41,6 +41,7 @@ script:
   - testcafe chromium qa/testcafe/testLanguage.js
   - testcafe chromium qa/testcafe/testAttributiveSearch.js
   - testcafe chromium qa/testcafe/testComment.js
+  - testcafe chromium qa/testcafe/testControls.js
   - testcafe chromium qa/testcafe/testCreatingNetInterface.js
   - testcafe chromium qa/testcafe/testDeleteAndRecovery.js
   - testcafe chromium qa/testcafe/testJournal.js
