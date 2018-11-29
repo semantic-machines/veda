@@ -456,9 +456,8 @@
         var resourceTemplate = modal.find("[resource]").first();
         var uri = resourceTemplate.attr("resource");
         var mode = resourceTemplate.data("mode");
-        var individual = new veda.IndividualModel(uri);
         modal.modal("hide");
-        riot.route( ["#", individual.id, "#main", undefined, mode].join("/") );
+        riot.route( ["#", uri, "#main", undefined, mode].join("/") );
       });
       $(document).on({
         'show.bs.modal': function () {
