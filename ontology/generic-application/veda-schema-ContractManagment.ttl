@@ -223,6 +223,18 @@ v-s:PSBoleanAllContractor
   rdfs:label "Спецификация свойства BoleanAllContractor для класса v-s:Contractor"@ru ;
   rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
 .
+v-s:taxRegistrationCauseForContractor
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Contractor ;
+  v-ui:forProperty v-s:taxRegistrationCause;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1;
+  v-ui:regexp "^[0-9]{9}$";
+  rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Contractor"@ru ;
+  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Contractor"@en ;
+  v-ui:tooltip "Числовое значение, 9 символов, например: 123456789"@ru ;
+  v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
+.
 
 # ------------------------------------------------------------
 v-s:Cost
@@ -445,11 +457,16 @@ v-s:ContractorTemplate
       <div property="v-s:registrationNumber" class="view -edit -search"></div>
       <veda-control data-type="string" property="v-s:registrationNumber" class="-view edit search"></veda-control>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-2">
       <em about="v-s:taxId" property="rdfs:label"></em>
       <div property="v-s:taxId" class="view -edit -search"></div>
       <veda-control data-type="string" property="v-s:taxId" class="-view edit search"></veda-control>
     </div>
+    <div class="col-sm-2">
+		<em about="v-s:taxRegistrationCause" property="rdfs:label"></em>
+		<div property="v-s:taxRegistrationCause" class="view -edit -search"></div>
+		<veda-control data-type="string" property="v-s:taxRegistrationCause" class="-view edit search"></veda-control>
+	</div>
     <div class="col-md-4">
       <em about="v-s:linkedOrganization" property="rdfs:label"></em>
       <div rel="v-s:linkedOrganization" class="view -edit search" data-template="v-ui:LabelLinkTemplate"></div>

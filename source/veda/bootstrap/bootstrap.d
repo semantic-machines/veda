@@ -234,13 +234,14 @@ void main(string[] args)
     modules[ "veda-ft-query" ]      = new Module("veda-ft-query", "veda-ft-query", [], [], false, false, 3);
     modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", "veda-scripts", [ "main" ], [ "scripts-main" ], false, false, 4);
     modules[ "veda-scripts-lp" ]    = new Module("veda-scripts-lp", "veda-scripts", [ "lp" ], [ "scripts-lp" ], false, false, 5);
-    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", "veda-scripts", [ "ltr" ], [ "ltr_scripts" ], false, false, 6);
-    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", "veda-fanout-email", [], [ "fanout_email" ], false, false, 7);
-    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", "veda-fanout-sql-np", [], [ "fanout_sql_np" ], false, false, 8);
-    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", "veda-fanout-sql-lp", [], [ "fanout_sql_lp" ], false, false, 9);
-    modules[ "veda-input-queue" ]   = new Module("veda-input-queue", "veda-input-queue", [], [], false, false, 10);
-    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", "veda-ttlreader", [], [], false, false, 11);
-    modules[ "veda-ccus" ]          = new Module("veda-ccus", "veda-ccus", [], [], false, false, 12);
+    modules[ "veda-scripts-lp1" ]   = new Module("veda-scripts-lp1", "veda-scripts", [ "lp1" ], [ "scripts-lp1" ], false, false, 6);
+    modules[ "veda-ltr-scripts" ]   = new Module("veda-ltr-scripts", "veda-scripts", [ "ltr" ], [ "ltr_scripts" ], false, false, 7);
+    modules[ "veda-fanout-email" ]  = new Module("veda-fanout-email", "veda-fanout-email", [], [ "fanout_email" ], false, false, 8);
+    modules[ "veda-fanout-sql-np" ] = new Module("veda-fanout-sql-np", "veda-fanout-sql-np", [], [ "fanout_sql_np" ], false, false, 9);
+    modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", "veda-fanout-sql-lp", [], [ "fanout_sql_lp" ], false, false, 10);
+    modules[ "veda-input-queue" ]   = new Module("veda-input-queue", "veda-input-queue", [], [], false, false, 11);
+    modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", "veda-ttlreader", [], [], false, false, 12);
+    modules[ "veda-ccus" ]          = new Module("veda-ccus", "veda-ccus", [], [], false, false, 13);
     modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", "veda-gowebserver", [], [], false, false, 99);
 
     string[ string ] properties;
