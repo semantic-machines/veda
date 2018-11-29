@@ -167,7 +167,9 @@ class ScriptProcess : VedaModule
 
         bool      prepare_if_is_script = false;
 
-        Resources types      = new_indv.resources.get(rdf__type, Resources.init);
+        Resources types  = new_indv.resources.get(rdf__type, Resources.init);
+        string    run_at = new_indv.getFirstLiteral("v-s:runAt");
+
         string[]  indv_types = types.getAsArrayStrings();
         foreach (itype; indv_types)
         {
@@ -228,8 +230,13 @@ class ScriptProcess : VedaModule
 
             if (script.compiled_script !is null)
             {
-                if (src == "?" && script.run_at != vm_id)
-                    continue;
+                if (src == "?")
+                {
+                    if (run_at !is null && run_at != vm_id)
+                        continue;
+                    else if (run_at is null && script.run_at != vm_id)
+                        continue;
+                }
 
                 //log.trace("look script:%s", script_id);
                 if (script.unsafe == false && (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE")))
