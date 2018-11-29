@@ -171,7 +171,7 @@ fi
 
 ### LIB NANOMSG ###
 
-if [ "$1" = force ] || ! ldconfig -p | grep libnanomsg ; then
+if ([ "$1" = force ] ||  [ "$1" = force-nanomsg ]) || ! ldconfig -p | grep libnanomsg ; then
     echo "--- INSTALL NANOMSG ---"
     # make nanomsg dependency
     mkdir tmp
@@ -227,7 +227,7 @@ else
     echo "--- LIB RAPTOR INSTALLED ---"
 fi
 
-if [ "$1" = force ] || ! ldconfig -p | grep libtarantool ; then
+if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
     TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
 
@@ -257,6 +257,8 @@ else
     echo "--- LIBTARANTOOL INSTALLED ---"
 fi
 
+    echo "--- MAKE LIBAUTHORIZATION ---"
+
     cd $INSTALL_PATH
     cd source/authorization
     cargo build --release
@@ -265,17 +267,17 @@ fi
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
     sudo ldconfig
 
-if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
-
-    echo "--- INSTALL XAPIAN ---"
-
-    cd source/lib64/libxapianm
-    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
-    sudo ldconfig
-    cd $PWD
-
-else
-
-    echo "--- XAPIAN INSTALLED ---"
-
-fi
+#if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
+#
+#    echo "--- INSTALL XAPIAN ---"
+#
+#    cd source/lib64/libxapianm
+#    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
+#    sudo ldconfig
+#    cd $PWD
+#
+#else
+#
+#    echo "--- XAPIAN INSTALLED ---"
+#
+#fi
