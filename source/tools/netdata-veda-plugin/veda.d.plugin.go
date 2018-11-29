@@ -67,6 +67,7 @@ func main() {
 	fmt.Println("DIMENSION queue_fanout_email0 'email' absolute 1 1")
 	fmt.Println("DIMENSION queue_scripts_main0 'scripts_main0' absolute 1 1")
 	fmt.Println("DIMENSION queue_scripts_lp0 'scripts_lp0' absolute 1 1")
+	fmt.Println("DIMENSION queue_scripts_lp1 'scripts_lp1' absolute 1 1")
 	fmt.Println("DIMENSION queue_fanout_sql_lp0 'sql_lp' absolute 1 1")
 	fmt.Println("DIMENSION queue_fanout_sql_np0 'sql_np' absolute 1 1")
 	fmt.Println("DIMENSION queue_fulltext_indexer0 'fulltext_indexer0' absolute 1 1")
@@ -111,6 +112,9 @@ func main() {
 
 	cs_scripts_lp := NewConsumer(main_queue, "scripts_lp0", R)
 	cs_scripts_lp.open()
+
+	cs_scripts_lp1 := NewConsumer(main_queue, "scripts_lp10", R)
+	cs_scripts_lp1.open()
 
 	cs_ltr_scripts := NewConsumer(main_queue, "ltr_scripts0", R)
 	cs_ltr_scripts.open()
@@ -168,6 +172,7 @@ func main() {
     		cs_fulltext_indexer1.get_info()
     		cs_scripts_main.get_info()
     		cs_scripts_lp.get_info()
+    		cs_scripts_lp1.get_info()
     		cs_ltr_scripts.get_info()
     		cs_CCUS.get_info()
 
@@ -177,6 +182,7 @@ func main() {
 		fmt.Printf("SET queue_fanout_email0=%d\n", main_queue.count_pushed - cs_fanout_email.count_popped)
 		fmt.Printf("SET queue_scripts_main0=%d\n", main_queue.count_pushed - cs_scripts_main.count_popped)
 		fmt.Printf("SET queue_scripts_lp0=%d\n", main_queue.count_pushed - cs_scripts_lp.count_popped)
+		fmt.Printf("SET queue_scripts_lp1=%d\n", main_queue.count_pushed - cs_scripts_lp1.count_popped)
 		fmt.Printf("SET queue_fanout_sql_lp0=%d\n", main_queue.count_pushed - cs_fanout_sql_lp.count_popped)
 		fmt.Printf("SET queue_fanout_sql_np0=%d\n", main_queue.count_pushed - cs_fanout_sql_np.count_popped)
 		fmt.Printf("SET queue_fulltext_indexer0=%d\n", main_queue.count_pushed - cs_fulltext_indexer0.count_popped)
