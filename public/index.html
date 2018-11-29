@@ -173,7 +173,7 @@
         <div class="modal-dialog modal-lg">
           <div class="modal-content">
             <div class="modal-body">
-              <button id="follow" class="close" style="margin-right:20px;" data-dismiss="modal"><span class="fa fa-window-maximize"></span></button>
+              <button id="follow" class="close" style="margin-right:20px;"><span class="fa fa-window-maximize"></span></button>
               <button type="button" class="close" data-dismiss="modal"><span class="fa fa-times"></span></button>
               <div class="holder"></div>
             </div>
@@ -452,15 +452,13 @@
       // Bootstrap multiple modals fix
       // origin: http://stackoverflow.com/questions/19305821/multiple-modals-overlay
       $(document).on("click", ".modal #follow", function () {
-        var resource = $(this).closest(".modal").find("[resource]");
-        var uri = resource.attr("resource");
-        var mode = resource.data("mode");
+        var modal = $(this).closest(".modal");
+        var resourceTemplate = modal.find("[resource]").first();
+        var uri = resourceTemplate.attr("resource");
+        var mode = resourceTemplate.data("mode");
         var individual = new veda.IndividualModel(uri);
-        if (mode) {
-          riot.route( ["#", individual.id, "#main", undefined, mode].join("/") );
-        } else {
-          riot.route( ["#", individual.id, "#main"].join("/") );
-        }
+        modal.modal("hide");
+        riot.route( ["#", individual.id, "#main", undefined, mode].join("/") );
       });
       $(document).on({
         'show.bs.modal': function () {
