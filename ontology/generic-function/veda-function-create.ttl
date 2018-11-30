@@ -24,6 +24,13 @@ v-fc:Create
   rdfs:label "Create"@en ;
   v-ui:hasTemplate v-fc:CreateManagementTemplate ;
 .
+v-fc:PersonalCreate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-fc:Create ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+  v-ui:hasTemplate v-fc:CreateManagementTemplate ;
+.
 v-fc:Blank
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
@@ -301,6 +308,7 @@ v-fc:CreateManagementTemplate
       var personalLabel = prompt( new veda.IndividualModel("v-s:EnterLabel").toString(), individual.toString() );
       if (!personalLabel) { return; }
       var personalCreate = individual.clone();
+      personalCreate["rdf:type"] = [ new veda.IndividualModel("v-fc:PersonalCreate") ];
       personalCreate["v-s:creator"] = [];
       personalCreate["v-s:created"] = [];
       personalCreate["rdfs:isDefinedBy"] = [];

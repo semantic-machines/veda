@@ -98,6 +98,15 @@ v-fs:AttributiveSearch
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
 
+v-fs:PersonalSearch
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-fs:AttributiveSearch ;
+  rdfs:label "Найти"@ru ;
+  rdfs:label "Search"@en ;
+  v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
+  v-ui:hasModel v-fs:AttributiveSearchModel ;
+.
+
 v-fs:applicableOperation
   rdf:type owl:ObjectProperty ;
   rdfs:label "Применимая операция"@ru ;
@@ -366,6 +375,7 @@ v-fs:AttributiveSearchManagementTemplate
       var personalLabel = prompt( new veda.IndividualModel("v-fs:EnterLabel").toString(), individual.toString() );
       if (!personalLabel) { return; }
       var personalRegistry = individual.clone();
+      personalRegistry["rdf:type"] = [ new veda.IndividualModel("v-fs:PersonalSearch") ];
       personalRegistry["v-fs:searchResult"] = [];
       personalRegistry["v-fs:authorized"] = [];
       personalRegistry["v-fs:cursor"] = [];

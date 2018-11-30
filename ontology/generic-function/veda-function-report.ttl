@@ -18,16 +18,20 @@
 v-s:Report
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Отчет"@ru ;
   rdfs:label "Report"@en ;
   v-ui:hasTemplate v-s:ReportManagementTemplate ;
 .
-
+v-s:PersonalReport
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Report ;
+  rdfs:label "Отчет"@ru ;
+  rdfs:label "Report"@en ;
+  v-ui:hasTemplate v-s:ReportManagementTemplate ;
+.
 v-s:ReportsForClass
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:isDefinedBy v-s: ;
   rdfs:label "Список отчетов"@ru ;
   rdfs:label "Reports list"@en ;
 .
@@ -109,6 +113,7 @@ v-s:ReportManagementTemplate
       var personalLabel = prompt( new veda.IndividualModel("v-s:EnterLabel").toString(), individual.toString() );
       if (!personalLabel) { return; }
       var personalReport = individual.clone();
+      personalReport["rdf:type"] = [ new veda.IndividualModel("v-s:PersonalReport") ];
       personalReport["v-s:creator"] = [];
       personalReport["v-s:created"] = [];
       personalReport["rdfs:isDefinedBy"] = [];
