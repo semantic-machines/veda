@@ -92,8 +92,8 @@ v-fs:NoMoreResults
 v-fs:AttributiveSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Атрибутивный поиск"@ru ;
-  rdfs:label "Attributive search"@en ;
+  rdfs:label "Найти"@ru ;
+  rdfs:label "Search"@en ;
   v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
