@@ -174,6 +174,7 @@ fi
 if ([ "$1" = force ] ||  [ "$1" = force-nanomsg ]) || ! ldconfig -p | grep libnanomsg ; then
     echo "--- INSTALL NANOMSG ---"
     # make nanomsg dependency
+    TRAVIS_TAG=$NANOMSG_VER
     mkdir tmp
     wget https://github.com/nanomsg/nanomsg/archive/$NANOMSG_VER.tar.gz -P tmp
     cd tmp
