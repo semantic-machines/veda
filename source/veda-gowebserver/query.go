@@ -14,9 +14,6 @@ func query(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now()
 
-	request := make([]interface{}, 8)
-	//fills request map with parametrs
-
 	var query string
 	var ticketKey string
 	var sort string
@@ -40,8 +37,6 @@ func query(ctx *fasthttp.RequestCtx) {
 		from = int (_from)
 		limit = int (_limit)
 	} else {
-		log.Printf("@ POST %s", ctx.Request.Body())
-
 		var jsonData map[string]interface{}
 		err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 		if err != nil {
@@ -126,14 +121,17 @@ func query(ctx *fasthttp.RequestCtx) {
 		limit = 10000
 	}
 
+	request := make([]interface{}, 8)
+	//fills request map with parametrs
+
 	request[0] = ticketKey
 	request[1] = query
 	request[2] = sort
 	request[3] = databases
 	request[4] = reopen
-		request[5] = top
-		request[6] = limit
-		request[7] = from
+	request[5] = top
+	request[6] = limit
+	request[7] = from
 
 	defer func() {
 		if r := recover(); r != nil {
