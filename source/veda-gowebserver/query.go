@@ -84,11 +84,11 @@ func query(ctx *fasthttp.RequestCtx) {
 		if _limit != nil {
 			switch _limit.(type) {
 			case int64:
-				limit = int(_top.(int64))
+				limit = int(_limit.(int64))
 			case uint64:
-				limit = int(_top.(uint64))
+				limit = int(_limit.(uint64))
 			case float64:
-				limit = int(_top.(float64))
+				limit = int(_limit.(float64))
 			default:
 				limit = 0
 			}
@@ -98,11 +98,11 @@ func query(ctx *fasthttp.RequestCtx) {
 		if _from != nil {
 			switch _from.(type) {
 			case int64:
-				from = int (_top.(int64))
+				from = int (_from.(int64))
 			case uint64:
-				from = int (_top.(uint64))
+				from = int (_from.(uint64))
 			case float64:
-				from = int(_top.(float64))
+				from = int(_from.(float64))
 			default:
 				from = 0
 			}
