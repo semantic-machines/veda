@@ -357,7 +357,7 @@ veda.Module(function (veda) { "use strict";
     var isObj = typeof arg === "object";
     var async = isObj ? arg.async : false;
     var params = {
-      method: "GET",
+      method: "POST",
       url: "query",
       async: async,
       data: {
