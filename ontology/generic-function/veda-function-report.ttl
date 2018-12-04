@@ -201,3 +201,10 @@ v-s:Report_permission1
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс v-s:Report" ;
 .
+v-s:Report_permission2
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:PersonalReport ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс v-s:Report" ;
+.

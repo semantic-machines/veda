@@ -387,19 +387,8 @@ v-fc:Blank_permission1
 
 v-fc:Create_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-fc:Create ;
+  v-s:permissionObject v-fc:PersonalCreate ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс v-fc:Create" ;
 .
-
-# ------------------------------------------------------------ TEST --
-
-v-fc:CreateOrganization
-  rdf:type v-fc:Create ;
-  v-s:hasBlank v-s:OrganizationBlank ;
-  rdfs:label "Организация"@ru ;
-  rdfs:label "Organization"@en ;
-#  v-s:creator cfg:AdministratorAppointment ;
-.
-
