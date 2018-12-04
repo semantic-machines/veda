@@ -184,6 +184,8 @@ v-cal:FunctionCalendarIndicatorTemplate
   $(".label", template).attr("about", counter_uri);*/
   template.tooltip({
     container: template,
+    placement: "bottom",
+    trigger: "hover",
     title: individual["rdfs:label"].join(" ")
   });
   //# sourceURL=v-cal:FunctionCalendarIndicatorTemplate_pre

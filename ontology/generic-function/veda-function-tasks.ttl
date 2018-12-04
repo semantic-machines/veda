@@ -256,6 +256,8 @@ v-ft:FunctionTasksIndicatorTemplate
   $("#counter", template).attr("about", counter_uri);*/
   template.tooltip({
     container: template,
+    placement: "bottom",
+    trigger: "hover",
     title: individual["rdfs:label"].join(" ")
   });
   //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre

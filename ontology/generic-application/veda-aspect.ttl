@@ -178,6 +178,7 @@ v-s:FavoritesIndicatorTemplate
   template.tooltip({
     container: template,
     placement: "bottom",
+    trigger: "hover",
     title: function () {
       var current = getCurrent(location.hash);
       var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");

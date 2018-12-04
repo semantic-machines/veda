@@ -369,6 +369,8 @@ v-ui:DraftsIndicatorTemplate
   $("#drafts-counter", template).text(veda.drafts.length);
   template.tooltip({
     container: template,
+    placement: "bottom",
+    trigger: "hover",
     title: individual["rdfs:label"].join(" ")
   });
   //# sourceURL=v-ui:DraftsIndicatorTemplate_pre
