@@ -1462,11 +1462,10 @@ v-fs:AttributiveSearch_permission1
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;
 .
-
 v-fs:AttributiveSearch_permission2
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-fs:PersonalSearch ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
-  rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;
+  rdfs:label "C. Все пользователи. Класс v-fs:PersonalSearch" ;
 .
