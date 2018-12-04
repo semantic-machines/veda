@@ -24,12 +24,11 @@ veda.Module(function (veda) { "use strict";
 
     return this;
 
-    function initSocket(address) {
+    function initSocket() {
       var protocol = location.protocol === "http:" ? "ws:" : "wss:",
-          address0 = protocol + "//" + location.host + "/ccus",
-          address1 = protocol + "//" + location.hostname + ":8088/ccus";
+          ccusPortCfg = new veda.IndividualModel("cfg:ClientUpdateServicePort")["rdf:value"][0],
+          address = protocol + "//" + location.hostname + ":" + ( ccusPortCfg || 8088 ) + "/ccus";
 
-      address = address === address0 ? address1 : address0;
       var socket = new WebSocket(address);
       socket.onopen = openedHandler;
       socket.onclose = closedHandler;
@@ -100,7 +99,7 @@ veda.Module(function (veda) { "use strict";
     function closedHandler(event) {
       console.log("client: websocket closed", event.target.url, "| re-connect in", reconnectDelay / 1000, "sec");
       setTimeout(function () {
-        initSocket(event.target.url);
+        initSocket();
       }, reconnectDelay);
     }
 

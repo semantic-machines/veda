@@ -54,7 +54,7 @@ veda.Module(function (veda) { "use strict";
 
           put_individual(ticket, new_work_item, _event_id);
 
-          veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_uri, ["v-s:canRead"]);
+          //veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_uri, ["v-s:canRead"]);
 
           return new_uri;
       }
@@ -603,7 +603,7 @@ veda.Module(function (veda) { "use strict";
                                   data: new_variable['@'],
                                   type: "Uri"
                               });
-                              veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_variable['@'], ["v-s:canRead"]);
+                              //veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_variable['@'], ["v-s:canRead"]);
 
                           }
                           else

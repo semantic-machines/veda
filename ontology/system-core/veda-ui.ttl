@@ -384,7 +384,7 @@ v-ui:LanguageSwitchTemplate
       if (preferredLanguage.indexOf(lang_uri) > -1) {
         $this.addClass("active btn-success").removeClass("btn-default");
       } else {
-        template.removeClass("active btn-success").addClass("btn-default");
+        $this.removeClass("active btn-success").addClass("btn-default");
       }
     });
   }

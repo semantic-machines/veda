@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/itiu/fasthttp"
+	"github.com/op/go-nanomsg"
 	"log"
 	"time"
-	"github.com/op/go-nanomsg"
-	"github.com/itiu/fasthttp"
 )
 
 //query function handle query request with fulltext search
@@ -14,20 +14,104 @@ func query(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now()
 
-	request := make([]interface{}, 8)
-	//fills request map with parametrs
-	ticketKey := string(ctx.QueryArgs().Peek("ticket")[:])
-	query := string(ctx.QueryArgs().Peek("query")[:])
-	sort := string(ctx.QueryArgs().Peek("sort")[:])
-	databases := string(ctx.QueryArgs().Peek("databases")[:])
-	reopen := ctx.QueryArgs().GetBool("reopen")
-	top, _ := ctx.QueryArgs().GetUint("top")
-	limit, _ := ctx.QueryArgs().GetUint("limit")
-	from, _ := ctx.QueryArgs().GetUint("from")
+	var query string
+	var ticketKey string
+	var sort string
+	var databases string
+	var reopen bool
+	var top int
+	var from int
+	var limit int
+
+	if ctx.IsGet() == true {
+		ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+		query = string(ctx.QueryArgs().Peek("query")[:])
+		sort = string(ctx.QueryArgs().Peek("sort")[:])
+		databases = string(ctx.QueryArgs().Peek("databases")[:])
+		reopen = ctx.QueryArgs().GetBool("reopen")
+		_top, _ := ctx.QueryArgs().GetUint("top")
+		_limit, _ := ctx.QueryArgs().GetUint("limit")
+		_from, _ := ctx.QueryArgs().GetUint("from")
+
+		top = int (_top)
+		from = int (_from)
+		limit = int (_limit)
+	} else {
+		var jsonData map[string]interface{}
+		err := json.Unmarshal(ctx.Request.Body(), &jsonData)
+		if err != nil {
+			log.Println("ERR! get individuals: DECODING JSON REQUEST ", err)
+			ctx.Response.SetStatusCode(int(InternalServerError))
+			trail("", "", "query", make(map[string]interface{}), "{}", BadRequest, timestamp)
+			return
+		}
+
+		if jsonData["query"] != nil {
+			query = jsonData["query"].(string)
+		}
+
+		if jsonData["ticket"] != nil {
+			ticketKey = jsonData["ticket"].(string)
+		}
+
+		if jsonData["sort"] != nil {
+			sort = jsonData["sort"].(string)
+		}
+
+		if jsonData["databases"] != nil {
+			databases = jsonData["databases"].(string)
+		}
+
+		if jsonData["reopen"] != nil {
+			reopen = jsonData["reopen"].(bool)
+		}
+
+		_top := jsonData["top"]
+		if _top != nil {
+			switch _top.(type) {
+			case int64:
+				top = int (_top.(int64))
+			case uint64:
+				top = int (_top.(uint64))
+			case float64:
+				top = int(_top.(float64))
+			default:
+				top = 0
+			}
+		}
+
+		_limit := jsonData["limit"]
+		if _limit != nil {
+			switch _limit.(type) {
+			case int64:
+				limit = int(_limit.(int64))
+			case uint64:
+				limit = int(_limit.(uint64))
+			case float64:
+				limit = int(_limit.(float64))
+			default:
+				limit = 0
+			}
+		}
+
+		_from := jsonData["from"]
+		if _from != nil {
+			switch _from.(type) {
+			case int64:
+				from = int (_from.(int64))
+			case uint64:
+				from = int (_from.(uint64))
+			case float64:
+				from = int(_from.(float64))
+			default:
+				from = 0
+			}
+		}
+	}
 
 	if top < 0 {
 		top = 10000
-	}
+	} 
 
 	if from < 0 {
 		from = 0
@@ -36,6 +120,9 @@ func query(ctx *fasthttp.RequestCtx) {
 	if limit < 0 {
 		limit = 10000
 	}
+
+	request := make([]interface{}, 8)
+	//fills request map with parametrs
 
 	request[0] = ticketKey
 	request[1] = query

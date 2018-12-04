@@ -311,7 +311,7 @@ veda.Module(function Backend(veda) { "use strict";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
-      method: "GET",
+      method: "POST",
       url: "query",
       data: {
         "ticket": isObj ? arg.ticket : ticket,

@@ -24,6 +24,13 @@ v-fc:Create
   rdfs:label "Create"@en ;
   v-ui:hasTemplate v-fc:CreateManagementTemplate ;
 .
+v-fc:PersonalCreate
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-fc:Create ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+  v-ui:hasTemplate v-fc:CreateManagementTemplate ;
+.
 v-fc:Blank
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
@@ -121,17 +128,7 @@ v-fc:CreateByTypeTemplate
       var blank = new veda.IndividualModel();
       blank["v-fc:targetType"] = values;
       blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-      var renderedTemplate = blank.present(holder, "v-fc:BlankTemplate", "edit");
-      blank.object.one("afterSave", saveHandler);
-      renderedTemplate.one("remove", function () {
-        blank.object.off("afterSave", saveHandler);
-      });
-    }
-    function saveHandler() {
-      var self = this;
-      setTimeout(function () {
-        riot.route("#/" + self.id);
-      }, 100);
+      var renderedTemplate = blank.present(holder, "v-fc:BlankTemplate");
     }
   }
   self.on("v-fc:targetType", typeHandler);
@@ -325,6 +322,9 @@ v-fc:CreateManagementTemplate
       var personalLabel = prompt( new veda.IndividualModel("v-s:EnterLabel").toString(), individual.toString() );
       if (!personalLabel) { return; }
       individual.clone().then(function (personalCreate) {
+        personalCreate["rdf:type"] = [ new veda.IndividualModel("v-fc:PersonalCreate") ];
+        personalCreate["v-s:creator"] = [];
+        personalCreate["v-s:created"] = [];
         personalCreate["rdfs:isDefinedBy"] = [];
         personalCreate["rdfs:label"] = [ personalLabel ];
         var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
@@ -415,21 +415,10 @@ v-fc:Blank_permission1
   rdfs:label "C. Все пользователи. Класс v-fc:Blank" ;
 .
 
-v-fc:Create_permission1
+v-fc:PersonalCreate_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-fc:Create ;
+  v-s:permissionObject v-fc:PersonalCreate ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс v-fc:Create" ;
 .
-
-# ------------------------------------------------------------ TEST --
-
-v-fc:CreateOrganization
-  rdf:type v-fc:Create ;
-  v-s:hasBlank v-s:OrganizationBlank ;
-  rdfs:label "Организация"@ru ;
-  rdfs:label "Organization"@en ;
-#  v-s:creator cfg:AdministratorAppointment ;
-.
-

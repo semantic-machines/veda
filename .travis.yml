@@ -21,6 +21,7 @@ addons:
 # Build
 install:
   - ./control-install.sh&>install.log 
+#  - ./tools/send-to-chunk-io.sh
   - source $HOME/.cargo/env
   - npm install --save-dev testcafe
   - go version
@@ -39,6 +40,7 @@ script:
   - travis_wait 20 grunt test --stack --verbose
   - testcafe chromium qa/testcafe/testLogin.js
   - testcafe chromium qa/testcafe/testLanguage.js
+  - testcafe chromium qa/testcafe/testSearch.js
   - testcafe chromium qa/testcafe/testAttributiveSearch.js
   - testcafe chromium qa/testcafe/testComment.js
   - testcafe chromium qa/testcafe/testCreatingNetInterface.js
@@ -50,7 +52,8 @@ script:
   - testcafe chromium qa/testcafe/testVersionedDocument.js
   - testcafe chromium qa/testcafe/testSimpleNet.js
   - testcafe chromium qa/testcafe/testSimpleNet2.js  
-  - testcafe chromium qa/testcafe/testSimpleNet3.js  
+  - testcafe chromium qa/testcafe/testSimpleNet3.js
+  - testcafe chromium qa/testcafe/testControls.js  
 
 after_script:
   - ./control-stop.sh

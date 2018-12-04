@@ -23,12 +23,12 @@ string[ string ]  opt;
 
 void main(string[] args)
 {
-    opt[ "--mstorage_url" ]  = "";
-    opt[ "--lmdbsrv_url" ] = "";
-    opt[ "--veda_user" ] = "";
-    opt[ "--veda_pass" ] = "";
-    opt[ "--v" ] = "";
-	
+    opt[ "--mstorage_url" ] = "";
+    opt[ "--lmdbsrv_url" ]  = "";
+    opt[ "--veda_user" ]    = "";
+    opt[ "--veda_pass" ]    = "";
+    opt[ "--v" ]            = "";
+
     bool[ string ] cmds;
     cmds[ "check" ]                   = true;
     cmds[ "message_to_json" ]         = true;
@@ -85,11 +85,11 @@ void main(string[] args)
 
     if (command == "remove_from_veda")
     {
-        ctx     = create_new_ctx("vqueueuctl", log, opt.get ("--mstorage_url", null) ~ "\0", opt.get ("--lmdbsrv_url", null) ~ "\0");
+        ctx     = create_new_ctx("vqueueuctl", log, opt.get("--mstorage_url", null) ~ "\0", opt.get("--lmdbsrv_url", null) ~ "\0");
         sticket = ctx.sys_ticket();
     }
 
-    //writefln("QUEUE %s content %d elements ", name, queue.count_pushed);
+    log.trace("QUEUE %s content %d elements ", name, queue.count_pushed);
 
     if (queue.count_pushed <= 0)
         return;
@@ -189,7 +189,7 @@ void main(string[] args)
         else if (command == "stat_by_type")
             collect_stat_by_type(data);
         else if (command == "check_links")
-            check_links(data);
+            check_links(data, queue_new, individual_lmdb_driver, log);
         else if (command == "remove_from_veda")
             execute_cmd_on_veda(INDV_OP.REMOVE, ctx, &sticket, data);
         else if (command == "check_links_00")
@@ -228,6 +228,8 @@ void main(string[] args)
 
 private void execute_cmd_on_veda(INDV_OP cmd, Context ctx, Ticket *ticket, string data)
 {
+    //log.trace ("execute %s on %s", cmd, data);
+
     if (ctx is null)
     {
         log.trace("ERR! execute_cmd_on_veda: context not initalized");
@@ -244,11 +246,10 @@ private void execute_cmd_on_veda(INDV_OP cmd, Context ctx, Ticket *ticket, strin
         dsr = imm.deserialize(data);
     if (dsr < 0 || imm.uri is null)
     {
-        imm = ctx.get_individual(data);
-
-        if (imm.getStatus() != ResultCode.Ok)
+        indv = ctx.get_individual(data);
+        if (indv.getStatus() != ResultCode.Ok)
         {
-            log.trace("ERR! execute_cmd_on_veda: code=%s, uri=%s", imm.getStatus(), data);
+            log.trace("ERR! execute_cmd_on_veda: code=%s, uri=%s", indv.getStatus(), data);
         }
     }
     else
@@ -270,12 +271,13 @@ private void execute_cmd_on_veda(INDV_OP cmd, Context ctx, Ticket *ticket, strin
         }
     }
 
-    if (imm.getStatus() == ResultCode.Ok)
+    if (indv.getStatus() == ResultCode.Ok)
     {
-        log.trace("execute_cmd_on_veda: cmd=%s, uri=%s", cmd, indv.uri);
         if (cmd == INDV_OP.REMOVE)
         {
+            log.trace("execute: cmd=%s, uri=%s", cmd, indv.uri);
             OpResult res = ctx.update(null, -1, ticket, cmd, &indv, null, 1, OptFreeze.NONE, OptAuthorize.NO);
+            log.trace("res=%s", res);
         }
     }
 }
@@ -307,9 +309,39 @@ private string extract_uri_type(string data)
     return null;
 }
 
-private void check_links(string data)
+byte[ string ] not_found_uri;
+File f_uris;
+File[ string ]  f_invalid;
+
+private File get_file_of_type(string stypes)
+{
+    File ff = f_invalid.get(stypes, File.init);
+
+    if (ff is File.init)
+    {
+        log.trace("create file " ~ stypes ~ ".csv");
+        ff                  = File("./tmp/csv/" ~ stypes ~ ".csv", "w");
+        f_invalid[ stypes ] = ff;
+    }
+    return ff;
+}
+
+private void check_links(string data, ref Queue queue_new, LmdbDriver individual_lmdb_driver, Logger log)
 {
     Individual imm;
+
+    if (f_uris is File.init)
+    {
+        log.trace("create file uris.txt");
+        f_uris = File("uris.txt", "w");
+    }
+
+    if (queue_new is null)
+    {
+        queue_new = new Queue("./tmp/extracted", "individuals-flow", Mode.RW, log);
+        queue_new.open();
+        queue_new.get_info(0);
+    }
 
     if (data !is null && imm.deserialize(data) < 0)
     {
@@ -332,11 +364,14 @@ private void check_links(string data)
             foreach (type; types)
             {
                 string stype = type.data;
-                stypes ~= " " ~ stype;
+                if (stypes != "")
+                    stypes ~= " " ~ stype;
+                else
+                    stypes ~= stype;
             }
 
-            int all_count_uri  = 0;
-            int good_count_uri = 0;
+            int all_count_uri = 0;
+            int bad_count_uri = 0;
             foreach (key, rss; new_indv.resources)
             {
                 foreach (rs; rss)
@@ -344,22 +379,42 @@ private void check_links(string data)
                     if (rs.type == DataType.Uri)
                     {
                         all_count_uri++;
-                        string data = individual_lmdb_driver.get_binobj(rs.uri);
-                        if (data is null)
+
+                        if (not_found_uri.get(rs.uri, -1) == 1)
                         {
-//							log.trace ("uri %s not found in predicate %s, indv.uri=%s", rs, key, new_indv.uri);
+                            get_file_of_type(stypes).writefln("%s;%s;%s;%s", stypes, new_indv.uri, key, rs.uri);
+                            get_file_of_type(stypes).flush();
+                            bad_count_uri++;
                         }
                         else
                         {
-                            good_count_uri++;
+                            string data = individual_lmdb_driver.get_binobj(rs.uri);
+                            if (data is null)
+                            {
+                                get_file_of_type(stypes).writefln("%s;%s;%s;%s", stypes, new_indv.uri, key, rs.uri);
+                                get_file_of_type(stypes).flush();
+
+                                not_found_uri[ rs.uri ] = 1;
+
+                                f_uris.writeln(rs.uri);
+
+                                bad_count_uri++;
+                            }
                         }
+
+//                        if (bad_count_uri > 0)
+//                        {
+//                            queue_new.push(data);
+//                            return;
+//                        }
                     }
                 }
             }
 
-            if ((all_count_uri > 0 && all_count_uri - good_count_uri > 2) || (all_count_uri > 0 && good_count_uri == 0))
+            if (bad_count_uri > 0)
             {
-                log.trace("ERR! %d, fail links %d, uri=[%s], type=[%s]", all_count_uri, all_count_uri - good_count_uri, new_indv.uri, stypes);
+                queue_new.push(data);
+                return;
             }
         }
     }

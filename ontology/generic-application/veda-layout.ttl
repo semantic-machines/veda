@@ -50,6 +50,7 @@ v-s:MainPageTemplate
               template.tooltip({
                 container: template,
                 placement: "bottom",
+                trigger: "hover",
                 title: individual["rdfs:label"].join(" ")
               });
             </script>
@@ -60,6 +61,7 @@ v-s:MainPageTemplate
               template.tooltip({
                 container: template,
                 placement: "bottom",
+                trigger: "hover",
                 title: individual["rdfs:label"].join(" ")
               });
             </script>

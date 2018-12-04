@@ -792,7 +792,7 @@ veda.Module(function (veda) { "use strict";
       } else {
         var valueHolder = $("<span class='value-holder'></span>");
         propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
-        var btnGroup = $("<div id='prop-actions' class='btn-group btn-group-xs' role='group'></div>");
+        var btnGroup = $("<div class='prop-actions btn-group btn-group-xs' role='group'></div>");
         var btnRemove = $("<button class='btn btn-default'><span class='glyphicon glyphicon-remove'></span></button>");
         btnGroup.append(btnRemove);
 
@@ -828,7 +828,7 @@ veda.Module(function (veda) { "use strict";
         });
       }
       if (!isAbout) {
-        var btnGroup = $("<div id='rel-actions' class='btn-group btn-group-xs -view edit search' role='group'></div>");
+        var btnGroup = $("<div class='rel-actions btn-group btn-group-xs -view edit search' role='group'></div>");
         var btnDrag = $("<button class='btn btn-default button-drag'><span class='glyphicon glyphicon-move'></span></button>");
         var btnRemove = $("<button class='btn btn-default button-delete'><span class='glyphicon glyphicon-remove'></span></button>");
         btnGroup.append(btnDrag, btnRemove);

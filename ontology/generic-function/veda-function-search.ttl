@@ -92,8 +92,17 @@ v-fs:NoMoreResults
 v-fs:AttributiveSearch
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Function ;
-  rdfs:label "Атрибутивный поиск"@ru ;
-  rdfs:label "Attributive search"@en ;
+  rdfs:label "Найти"@ru ;
+  rdfs:label "Search"@en ;
+  v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
+  v-ui:hasModel v-fs:AttributiveSearchModel ;
+.
+
+v-fs:PersonalSearch
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-fs:AttributiveSearch ;
+  rdfs:label "Найти"@ru ;
+  rdfs:label "Search"@en ;
   v-ui:hasTemplate v-fs:AttributiveSearchManagementTemplate ;
   v-ui:hasModel v-fs:AttributiveSearchModel ;
 .
@@ -371,6 +380,7 @@ v-fs:AttributiveSearchManagementTemplate
         personalRegistry["v-fs:estimated"] = [];
         personalRegistry["v-fs:limit"] = [];
         personalRegistry["v-fs:top"] = [];
+        personalRegistry["rdf:type"] = [ new veda.IndividualModel("v-fs:PersonalSearch") ];
         personalRegistry["v-s:creator"] = [];
         personalRegistry["v-s:created"] = [];
         personalRegistry["rdfs:isDefinedBy"] = [];
@@ -1448,6 +1458,14 @@ v-fs:MinimalSearchResultTemplate
 v-fs:AttributiveSearch_permission1
   rdf:type v-s:PermissionStatement ;
   v-s:permissionObject v-fs:AttributiveSearch ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;
+.
+
+v-fs:AttributiveSearch_permission2
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-fs:PersonalSearch ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
   rdfs:label "C. Все пользователи. Класс v-fs:AttributiveSearch" ;

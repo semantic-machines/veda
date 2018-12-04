@@ -76,6 +76,7 @@ v-s:taxRegistrationCause
   rdfs:label "Tax registration cause classifier"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
+  rdfs:domain v-s:Contractor ;  
 .
 v-s:taxRegistrationNumber
   rdf:type owl:DatatypeProperty ;

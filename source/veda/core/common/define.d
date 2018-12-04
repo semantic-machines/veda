@@ -72,8 +72,8 @@ const string xapian_info_path      = "./data/xapian-info";
 const string module_info_path      = "./data/module-info";
 const string trails_path           = "./data/trails";
 const string logs_path             = "./logs";
-const string individuals_db_path0 = "./data/lmdb-individuals";
-const string tickets_db_path0     = "./data/lmdb-tickets";
+const string individuals_db_path0  = "./data/lmdb-individuals";
+const string tickets_db_path0      = "./data/lmdb-tickets";
 
 const string main_queue_name       = "individuals-flow";
 const string ft_indexer_queue_name = "fulltext_indexer0";
@@ -155,6 +155,9 @@ public enum COMPONENT : ubyte
     /// исполнение скриптов, low priority
     scripts_lp       = 33,
 
+    /// исполнение скриптов, low priority1
+    scripts_lp1      = 50,
+
     //// long time run scripts
     ltr_scripts      = 34,
 
@@ -202,6 +205,7 @@ public enum MODULE : ubyte
     fulltext_indexer  = COMPONENT.fulltext_indexer,
     scripts_main      = COMPONENT.scripts_main,
     scripts_lp        = COMPONENT.scripts_lp,
+    scripts_lp1       = COMPONENT.scripts_lp1,
     fanout_email      = COMPONENT.fanout_email,
     user_modules_tool = COMPONENT.user_modules_tool,
     ltr_scripts       = COMPONENT.ltr_scripts,
@@ -212,30 +216,30 @@ public enum MODULE : ubyte
 
 /// Команды используемые процессами
 /// Сохранить
-byte CMD_PUT         = 1;
+byte CMD_PUT       = 1;
 
 /// Найти
-byte CMD_FIND        = 2;
+byte CMD_FIND      = 2;
 
 /// Коммит
-byte CMD_COMMIT      = 16;
+byte CMD_COMMIT    = 16;
 
-byte CMD_MSG         = 17;
+byte CMD_MSG       = 17;
 
 /// Включить/выключить отладочные сообщения
-byte CMD_SET_TRACE   = 33;
+byte CMD_SET_TRACE = 33;
 
 /// Остановить прием команд на изменение
-byte CMD_FREEZE      = 42;
+byte CMD_FREEZE    = 42;
 
 /// Возобновить прием команд на изменение
-byte CMD_UNFREEZE    = 43;
+byte CMD_UNFREEZE  = 43;
 
-byte CMD_EXIT        = 49;
+byte CMD_EXIT      = 49;
 
 /// Установить
-byte CMD_SET         = 50;
+byte CMD_SET       = 50;
 
 /// Убрать
-byte CMD_START       = 52;
+byte CMD_START     = 52;
 

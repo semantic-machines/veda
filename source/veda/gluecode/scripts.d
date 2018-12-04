@@ -14,9 +14,9 @@ private import veda.gluecode.script, veda.gluecode.v8d_header, veda.gluecode.ltr
 int main(string[] args)
 {
     writeln("args = ", args);
-    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "ltr"))
+    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "lp1" && args[ 1 ] != "ltr"))
     {
-        writefln("use %s [main/lp/ltr]", args[ 0 ]);
+        writefln("use %s [main/lp/lp1/ltr]", args[ 0 ]);
         return -1;
     }
 
@@ -42,6 +42,13 @@ int main(string[] args)
         ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp, log);
         p_script.run();
     }
+    else if (vm_id == "lp1")
+    {
+        Thread.getThis().priority(Thread.PRIORITY_MIN);
+
+        ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority1", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp1, log);
+        p_script.run();
+    }
     else if (vm_id == "ltr")
     {
         core.thread.Thread.sleep(dur!("seconds")(2));
@@ -62,7 +69,7 @@ int main(string[] args)
 class ScriptProcessLowPriority : ScriptProcess
 {
     Consumer main_cs_r;
-    string   main_queue_cs = "scripts_main0";   // TODO переделать
+    string   main_queue_cs = "scripts_main0";
 
     this(string _vm_id, SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
@@ -160,7 +167,9 @@ class ScriptProcess : VedaModule
 
         bool      prepare_if_is_script = false;
 
-        Resources types      = new_indv.resources.get(rdf__type, Resources.init);
+        Resources types  = new_indv.resources.get(rdf__type, Resources.init);
+        string    run_at = new_indv.getFirstLiteral("v-s:runAt");
+
         string[]  indv_types = types.getAsArrayStrings();
         foreach (itype; indv_types)
         {
@@ -221,8 +230,13 @@ class ScriptProcess : VedaModule
 
             if (script.compiled_script !is null)
             {
-                if (src == "?" && script.run_at != vm_id)
-                    continue;
+                if (src == "?")
+                {
+                    if (run_at !is null && run_at != vm_id)
+                        continue;
+                    else if (run_at is null && script.run_at != vm_id)
+                        continue;
+                }
 
                 //log.trace("look script:%s", script_id);
                 if (script.unsafe == false && (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE")))

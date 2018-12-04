@@ -978,7 +978,7 @@ veda.Module(function (veda) { "use strict";
               for (var i = 0; i < work_order_list.length; i++)
               {
                   put_individual(ticket, work_order_list[i], _event_id);
-                  veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", work_order_list[i]['@'], ["v-s:canRead"]);
+                  //veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", work_order_list[i]['@'], ["v-s:canRead"]);
               }
 
           } // end [Task]
@@ -1174,7 +1174,7 @@ veda.Module(function (veda) { "use strict";
               data: new_variable['@'],
               type: "Uri"
             });
-            veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_variable['@'], ["v-s:canRead"]);
+            //veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", new_variable['@'], ["v-s:canRead"]);
           }
         }
       }
@@ -1328,7 +1328,7 @@ veda.Module(function (veda) { "use strict";
                   type: "Uri"
               });
 
-              veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", process_inVars[i]['@'], ["v-s:canRead"]);
+              //veda.Util.addRight(ticket, "v-wf:WorkflowReadUser", process_inVars[i]['@'], ["v-s:canRead"]);
           }
       }
 
