@@ -64,7 +64,7 @@ v-s:OrganizationUnitModel
       return state || self.getChief.call(item, chiefId, depth + 1);
     }, undefined);
   };
-  
+
   this.getFieldChief = function (depth) {
     depth = depth || 0;
     var self = this;
@@ -435,9 +435,7 @@ v-s:OrganizationTemplate
       <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
     </div>
   </div>
-  <br>
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
-  <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
 <script>
@@ -584,7 +582,7 @@ v-s:DepartmentTemplate
       <div class="col-md-6">
         <em about="v-s:shortLabel" property="rdfs:label"></em>
         <div property="v-s:shortLabel" class="view -edit -search"></div>
-        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>    
+        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
       </div>
       <div class="col-md-6">
         <em about="v-s:subjectCode" property="rdfs:label"></em>
@@ -600,7 +598,7 @@ v-s:DepartmentTemplate
         <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
         <em about="v-s:hasFieldChief" property="rdfs:label"></em>
         <div rel="v-s:hasFieldChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="v-s:hasFieldChief" class="-view edit search fulltext"></veda-control>        
+        <veda-control data-type="link" rel="v-s:hasFieldChief" class="-view edit search fulltext"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
@@ -659,7 +657,7 @@ v-s:DepartmentForContactTemplate
       <div class="col-md-6">
         <em about="v-s:shortLabel" property="rdfs:label"></em>
         <div property="v-s:shortLabel" class="view -edit -search"></div>
-        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>    
+        <veda-control data-type="string" property="v-s:shortLabel" class="-view edit search"></veda-control>
       </div>
       <div class="col-md-6">
         <em about="v-s:subjectCode" property="rdfs:label"></em>
@@ -710,7 +708,7 @@ v-s:AppointmentForContactTemplate
       state: individual.hasValue('v-s:occupation'),
       cause: ["v-ui:minCardinality"]
     };
-    template.trigger("validated", result);   
+    template.trigger("validated", result);
   });
   template.on("special-validate", function (e, validStates) {
     setTimeout(function(){
@@ -748,7 +746,7 @@ v-s:AppointmentForContactTemplate
         </div>
         <!-- <div about="@" property="v-s:employee" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div> -->
         <div id="select-Person" class="validating-block">
-          <veda-control data-type="link" rel="v-s:employee" class="fulltext dropdown margin-sm"></veda-control>  
+          <veda-control data-type="link" rel="v-s:employee" class="fulltext dropdown margin-sm"></veda-control>
         </div>
         <div id="fill-Person" class="validating-block"></div>
       </div>
@@ -760,7 +758,7 @@ v-s:AppointmentForContactTemplate
         </div>
         <!-- <div about="@" property="v-s:occupation" class="view -edit search" data-template="v-ui:LabelTemplate"></div> -->
         <div id="select-Occupation" class="validating-block">
-          <veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm"></veda-control>  
+          <veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm"></veda-control>
         </div>
         <div id="fill-Occupation" class="validating-block"></div>
       </div>
@@ -780,19 +778,19 @@ v-s:AppointmentForContactTemplate
 <script>
   var NewPerson = null;
   var NewOccupation = null;
-  
+
   var defaultAppointment = undefined;
   template.on('click', '#radioBlock input[type="radio"]', function(){
     console.log($(this).attr('value'));
     defaultAppointment = $(this).attr('value');
-  });  
+  });
 
   function toogleButtons(currentBtn) {
     currentBtn.siblings().removeClass('btn-primary').addClass('btn-default')
     currentBtn.removeClass('btn-default').addClass('btn-primary');
     template.trigger('special-validate');
   }
-  
+
   $('#createPersonBtn', template).click(function(){
     var self = $(this);
     if (self.hasClass('btn-primary')) return false;
@@ -842,7 +840,7 @@ v-s:AppointmentForContactTemplate
       tmpl.on("validate", function () {
         template.trigger('special-validate');
       });
-      $('#fill-Occupation').append(tmpl);   
+      $('#fill-Occupation').append(tmpl);
     }
     individual['v-s:occupation'] = [NewOccupation];
   });
@@ -877,7 +875,7 @@ v-s:AppointmentForContactTemplate
       }
     }
     $('#radioBlock').addClass('hide');
-    
+
   }
 
   setDefaultAppointment();
@@ -910,7 +908,7 @@ v-s:AppointmentForContactTemplate
       tempOccupation.save();
       individual['v-s:occupation'] = [tempOccupation];
     }
-    
+
     if (defaultAppointment){
       tempEmployee['v-s:defaultAppointment'] = [defaultAppointment]
     } else {
@@ -952,7 +950,7 @@ v-s:EmployeeEmbeddedTemplate
 <div>
   <div class="row">
     <div class="col-md-6">
-      <em about="v-s:lastName" property="rdfs:label"></em> 
+      <em about="v-s:lastName" property="rdfs:label"></em>
     </div>
     <div class="col-md-6">
       <veda-control data-type="string" property="v-s:lastName"></veda-control>
@@ -995,7 +993,7 @@ v-s:EmployeeEmbeddedTemplate
     </div>
   </div>
 </div>
-  """ ; 
+  """ ;
 .
 
 v-s:OccupationEmbeddedTemplate
@@ -1024,7 +1022,7 @@ v-s:OccupationEmbeddedTemplate
 <div>
   <div class="row">
     <div class="col-md-6">
-      <em about="v-s:title" property="rdfs:label"></em> 
+      <em about="v-s:title" property="rdfs:label"></em>
     </div>
     <div class="col-md-6">
       <div property="rdfs:label" class="view -edit search"></div>
@@ -1042,5 +1040,5 @@ v-s:OccupationEmbeddedTemplate
     </div>
   </div>
 </div>
-  """ ; 
+  """ ;
 .
