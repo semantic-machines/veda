@@ -133,12 +133,12 @@ body {
   border-radius: 8px;
   border: 1px solid #ddd;
   padding: 20px!important;
+  margin-bottom: 20px;
 }
 
 .sheet .sheet {
   border: none!important;
   padding: 0!important;
-  /*position: static!important;*/
 }
 
 .modal .sheet {
@@ -1123,20 +1123,19 @@ veda-control {
   white-space: pre-line;
 }
 
-#prop-actions, #rel-actions {
-  margin: 5px;
+.prop-actions, .rel-actions {
+  margin: 2px;
 }
 
-td > #rel-actions {
+td > .rel-actions {
   margin: 0px;
 }
 
-#rel-actions.block {
+.rel-actions.block {
   position:absolute !important;
   top:0px;
   right:0px;
   z-index:2;
-  padding:inherit;
 }
 .red-outline {
   outline: 3px dashed #e74c3c!important;
@@ -1658,7 +1657,7 @@ svg.process-path-highlight path
   margin-right: 0px;
   margin-bottom: 0px;
 }
-.label-template > #rel-actions {
+.label-template > .rel-actions {
   position: relative!important;
   margin: 0 0 0 7px!important;
 }
