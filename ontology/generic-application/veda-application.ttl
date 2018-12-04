@@ -37,9 +37,7 @@ v-s:ApplicationSmallCardTemplate
   rdfs:label "Application small card template"@en ;
   v-ui:template """
 <div class="sheet" style="display: flex; flex-flow: column; width: 100%">
-  <br>
-  <a href="#/@" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate" style="width:55%; margin-left: auto; margin-right: auto;"></a>
-  <br>
+  <a class="margin-xl" href="#/@" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate" style="width:55%; margin-left: auto; margin-right: auto;"></a>
   <h4 class="margin-md text-center">
     <a href="#/@" about="@" property="rdfs:label"></a>
     <br>
