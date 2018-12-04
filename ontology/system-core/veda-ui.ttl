@@ -2786,6 +2786,7 @@ v-ui:generic
       <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
     </div>
   </div>
+  <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
   """ ;
