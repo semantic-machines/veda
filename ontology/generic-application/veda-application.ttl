@@ -36,11 +36,11 @@ v-s:ApplicationSmallCardTemplate
   rdfs:label "Шаблон для приложения"@ru ;
   rdfs:label "Application small card template"@en ;
   v-ui:template """
-<div class="card card-small card-post card-post--1" style="display: flex; flex-flow: column; padding: 15px;">
-  <a href="#/@" rel="v-s:hasIcon">
-    <div class="card-post__icon" style="background-image: url('/files/@');"></div>
-  </a>
-  <h4 class="card-title margin-md text-center" style="margin-bottom: 15px;">
+<div class="sheet" style="display: flex; flex-flow: column; width: 100%">
+  <br>
+  <a href="#/@" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate" style="width:55%; margin-left: auto; margin-right: auto;"></a>
+  <br>
+  <h4 class="margin-md text-center">
     <a href="#/@" about="@" property="rdfs:label"></a>
     <br>
     <small about="@" property="rdfs:comment"></small>
@@ -53,7 +53,7 @@ v-s:ApplicationSmallCardTemplate
       <a href="#/@" class="btn btn-info btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
     </div>
   </div>
-  <div class="card-footer text-center no-padding">
+  <div class="text-center no-padding">
     <a href="#/@">
       <small about="v-s:More" property="rdfs:label"></small>
     </a>
@@ -80,57 +80,49 @@ v-s:ApplicationTemplate
   }
 </script>
 <div about="@" class="container">
-  <div class="card card-big">
-    <div class="card-body">
-      <div class="clearfix">
-        <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
-        <h2 class="pull-left margin-lg-h" style="color: #5c5c5c;">
-          <span href="#/@" property="rdfs:label"></span>
-          <small class="card-text d-inline-block mb-3" property="rdfs:comment"></small>
-        </h2>
+  <div class="sheet">
+    <div class="clearfix">
+      <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
+      <h2 class="pull-left margin-lg-h" style="color: #5c5c5c;">
+        <span href="#/@" property="rdfs:label"></span>
+        <small property="rdfs:comment"></small>
+      </h2>
+    </div>
+    <hr class="margin-md">
+    <div class="row">
+      <div class="col-lg-8 col-sm-6" style="border-right: 1px dotted #ddd;">
+        <div about="@" property="v-s:description" class="markdown"></div>
+        <!--em about="v-s:responsible" property="rdfs:label"></em>
+        <div about="@" rel="v-s:responsible" class="margin-md"></div-->
       </div>
-      <hr class="margin-md">
-      <div class="row">
-        <div class="col-lg-8 col-sm-6" style="border-right: 1px dotted #ddd;">
-          <div about="@" property="v-s:description" class="markdown"></div>
-          <!--em about="v-s:responsible" property="rdfs:label"></em>
-          <div about="@" rel="v-s:responsible" class="margin-md"></div-->
-        </div>
-        <div class="col-lg-4 col-sm-6">
-          <em about="v-s:ManualBundle" property="rdfs:label"></em>
-          <div about="@" rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
-        </div>
+      <div class="col-lg-4 col-sm-6">
+        <em about="v-s:ManualBundle" property="rdfs:label"></em>
+        <div about="@" rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
       </div>
     </div>
   </div>
   <div class="row" style="display: flex; flex-flow: row wrap;">
     <div class="blanks col-md-4 col-sm-6 col-xs-12" style="display: flex;">
-      <div class="card card-big" style="width:100%;">
-        <div class="card-body">
-          <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:Create" property="rdfs:label"></span></h4>
-          <div about="@" rel="v-s:hasBlank">
-            <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
-          </div>
+      <div class="sheet" style="width:100%;">
+        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:Create" property="rdfs:label"></span></h4>
+        <div about="@" rel="v-s:hasBlank">
+          <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
         </div>
       </div>
     </div>
     <div class="registries col-md-4 col-sm-6 col-xs-12" style="display: flex;">
-      <div class="card card-big" style="width:100%;">
-        <div class="card-body">
-          <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table text-muted margin-md-h"></i><span about="v-s:Find" property="rdfs:label"></span></h4>
-          <div about="@" rel="v-s:hasRegistry">
-            <a href="#/@" class="btn btn-info btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
-          </div>
+      <div class="sheet" style="width:100%;">
+        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table text-muted margin-md-h"></i><span about="v-s:Find" property="rdfs:label"></span></h4>
+        <div about="@" rel="v-s:hasRegistry">
+          <a href="#/@" class="btn btn-info btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
         </div>
       </div>
     </div>
     <div class="reports col-md-4 col-sm-6 col-xs-12" style="display: flex;">
-      <div class="card card-big" style="width:100%;">
-        <div class="card-body">
-          <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart text-muted margin-md-h"></i><span about="v-s:Report" property="rdfs:label"></span></h4>
-          <div about="@" rel="v-s:hasReport">
-            <a href="#/@" class="btn btn-warning btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
-          </div>
+      <div class="sheet" style="width:100%;">
+        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-bar-chart text-muted margin-md-h"></i><span about="v-s:Report" property="rdfs:label"></span></h4>
+        <div about="@" rel="v-s:hasReport">
+          <a href="#/@" class="btn btn-warning btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
         </div>
       </div>
     </div>
