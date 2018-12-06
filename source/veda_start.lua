@@ -1,4 +1,7 @@
-box.cfg{listen=3309, work_dir='./data/tarantool', log_level=5, log='./tarantool.log', memtx_memory=268435456.0, readahead = 10 * 1024 * 1024}
+-- create simlink to /usr/share/tarantool
+
+local function start()
+
 log = require('log')
 
 memtx = false
@@ -49,3 +52,9 @@ if box.space.TICKETS == nil then
 end
 
 print('ready\n')
+
+end
+
+return {
+  start = start;
+}
