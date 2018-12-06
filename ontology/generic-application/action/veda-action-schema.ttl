@@ -124,6 +124,17 @@ v-s:PsDateToPlanForScheduledAction
   rdfs:label "v-s:dateToPlan property specification for v-s:ScheduledAction class"@en ;
 .
 
+v-s:PscontrollerForScheduledAction
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:ScheduledAction;
+  v-ui:forProperty v-s:controller ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' )  && ('v-s:employee.v-s:hasAccount.isExists'=='true') && ('v-s:origin'=='sap hr' || 'v-s:origin'=='Group User') || ('rdf:type'=='v-s:Position') && ( 'v-s:origin'=='Role')"^^xsd:string;
+  rdfs:label "Спецификация свойства v-s:controller для класса v-s:ScheduledAction"@ru ;
+  rdfs:label "v-s:controller property specification for v-s:ScheduledAction class"@en ;
+.
+
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
 v-s:ScheduledAction_BaseUser
   rdf:type v-s:Group ;
@@ -231,7 +242,6 @@ v-s:SingleScheduledActionTemplate
 </script>
 <div class="panel panel-default" style="margin-top: 20px">
   <div class="panel-body">
-  <span about="@" data-template="v-ui:RabbitHole"></span>
     <div class="row">
       <div class="col-md-12">
         <em about="v-s:description" property="rdfs:label"></em>
@@ -415,8 +425,12 @@ for (var i=0; i<result.length; i++){
     delta = 86400000;
   } else if (individ.hasValue('v-s:hasPeriod', 'd:a21t5y3pswuewm8ohjexiqtxscr')) {
     delta = 86400000*7;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:fb27kxa3r98ilnkvmy99xc11p1')) {
+    delta = 86400000*14;
   } else if (individ.hasValue('v-s:hasPeriod', 'd:pqauzdiqyls7pzrawelnh2zwj3')) {
     delta = 86400000*30;
+  } else if (individ.hasValue('v-s:hasPeriod', 'd:d2cloqhm8yqaq8t68zi9iepc69')) {
+    delta = 86400000*61;
   } else if (individ.hasValue('v-s:hasPeriod', 'd:a28m44dm9yw04j7hf69r4i40sn5')) {
     delta = 86400000*121;
   } else if (individ.hasValue('v-s:hasPeriod', 'd:p699yrkgnd7bamjaqwx305o5hi')) {
