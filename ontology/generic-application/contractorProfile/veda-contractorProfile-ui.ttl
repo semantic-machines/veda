@@ -652,7 +652,6 @@ v-s:ContractorCategoryRequestTemplate
         </h4>
       </div>
     </div>
-
     <hr class="margin-sm">
     <div class="row">
       <div class="col-md-9 col-sm-7">
@@ -694,7 +693,6 @@ v-s:ContractorCategoryRequestTemplate
             </td></tr></tfoot>
           </table>
         </div>
-
         <em about="v-s:expectedValueOfContract" class="view edit -search" property="rdfs:label"></em>
         <div about="@" rel="v-s:expectedValueOfContract" class="view edit -search" data-template="v-s:PriceTemplate" data-embedded="true"></div>
         <veda-control data-type="link" rel="v-s:expectedValueOfContract" class="-view edit -search create"></veda-control>
@@ -716,7 +714,6 @@ v-s:ContractorCategoryRequestTemplate
     </div>
     <hr>
     <div about="@" rel="v-s:backwardTarget" data-embedded="true" data-template="v-s:DosieEmbeddedTemplate"></div>
-
     <hr>
     <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
     <br>
@@ -756,14 +753,8 @@ v-s:ContractorCategoryRequestTemplate
       modal.modal("hide").remove();
     });
   });
-
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecision");
   var hasRights = _class.rights.hasValue("v-s:canCreate", true);
-
-  individual.on("v-s:hasContractorCategoryDecision", handler);
-  template.one("remove", function () {
-    individual.off("v-s:hasContractorCategoryDecision", handler);
-  });
   function handler() {
     if (!hasRights) {
       $("#add-ContractorCategoryDecision", template).prop("disabled", true);
@@ -771,17 +762,14 @@ v-s:ContractorCategoryRequestTemplate
     if(individual.hasValue("v-s:hasContractorCategoryDecision")){
       $("#add-ContractorCategoryDecision", template).hide();
     } else {
-        $("#add-ContractorCategoryDecision", template).show();
-      }
+      $("#add-ContractorCategoryDecision", template).show();
+    }
   }
   handler();
-
-  individual.on("afterReset", processHandler);
-  processHandler();
+  individual.on("v-s:hasContractorCategoryDecision", handler);
   template.one("remove", function () {
-     individual.off("afterReset", processHandler);
+    individual.off("v-s:hasContractorCategoryDecision", handler);
   });
-
   //# sourceURL=v-s:ContractorCategoryRequestTemplate
 </script>
     """ ;
