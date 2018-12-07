@@ -2066,11 +2066,19 @@ v-ui:DocumentEventTemplate
       <div about="@" rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div about="@" rel="v-wf:onProcess">
         <script>
-          var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
-            return vrbl.hasValue("v-wf:variableName",  "startForm_id");
-          });
-          if (startFormVar.length) {
-            $("[about='start-form']", template).attr("about", startFormVar[0]["v-wf:variableValue"][0].id);
+          var href = null;
+          var startForm = this.properties["v-wf:hasStartForm"];
+          if (startForm) {
+            href = startForm[0].data;
+          } else {
+            //Устаревший вариант
+            var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
+              return vrbl.hasValue("v-wf:variableName",  "startForm_id");
+            });
+            href = startFormVar[0]["v-wf:variableValue"][0].id;
+          };
+          if (href != null) {
+            $("[about='start-form']", template).attr("about", href);
           } else {
             $("[about='start-form']", template).remove();
           }
