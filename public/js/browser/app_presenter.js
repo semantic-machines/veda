@@ -28,8 +28,11 @@ veda.Module(function (veda) { "use strict";
     });
   });
 
-  // Route to resource ttl view on Ctrl + Alt + Click
-  $("body").on("click", "[resource][typeof], [about]", function (e) {
+  // View resource using special templates:
+  // "v-ui:ttl" on Ctrl + Alt + Click
+  // "v-ui:json" on Alt + Shift + Click
+  // "v-ui:generic" on Ctrl + Alt + Shift + Click
+  $("body").on("click", "[resource], [about]", function (e) {
     var uri = $(this).attr("resource") || $(this).attr("about");
     var hash = "#/" + uri;
     if (e.altKey && e.ctrlKey && e.shiftKey) {
@@ -52,6 +55,31 @@ veda.Module(function (veda) { "use strict";
       });
     }
   });
+  // Outline resource containers to switch view to special templates
+  var outlined = [];
+  $(document)
+    .on("keydown", function (e) {
+      if (e.altKey && e.shiftKey || e.altKey && e.ctrlKey || e.altKey && e.ctrlKey && e.shiftKey) {
+        $("body").on("mouseover", "[resource], [about]", outline);
+      }
+    })
+    .on("keyup", removeOutline);
+  function outline(e) {
+    if (e.altKey && e.shiftKey || e.altKey && e.ctrlKey || e.altKey && e.ctrlKey && e.shiftKey) {
+      e.stopPropagation();
+      outlined.forEach(function (item) { item.removeAttr("title").removeClass("gray-outline") });
+      var $this = $(this);
+      $this.addClass("gray-outline").attr("title", $this.attr("resource") || $this.attr("about"));
+      outlined = [ $this ];
+    } else {
+      removeOutline(e);
+    }
+  }
+  function removeOutline(e) {
+    $("body").off("mouseover", outline);
+    outlined.forEach(function (item) { item.removeAttr("title").removeClass("gray-outline") });
+    outlined = [];
+  }
 
   // Localize resources on language change
   veda.on("language:changed", function () {
