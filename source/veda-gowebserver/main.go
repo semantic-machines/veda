@@ -496,7 +496,7 @@ func main() {
 			// if many requests are sent over more than 100K
 			// keep-alive http connections.
 
-			ReadTimeout:  90 * time.Second,
+			ReadTimeout:  600 * time.Second,
 			WriteTimeout: 600 * time.Second,
 			MaxKeepaliveDuration: 100 * time.Second,
 			ReadBufferSize: 8 * 1024,
