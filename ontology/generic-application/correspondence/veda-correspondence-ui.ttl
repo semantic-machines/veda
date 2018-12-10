@@ -243,6 +243,8 @@ v-s:LetterTemplate
     <br>
     <div class="actions view edit -search">
       <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send save edit cancel delete journal task"></span>
+      <button type="button" class="action btn btn-success view -edit -search" id="add-OutgoingLetter" about="v-s:OutgoingLetter" property="rdfs:label"></button>
+      <button type="button" class="action btn btn-success view -edit -search" id="add-IncomingLetter" about="v-s:IncomingLetter" property="rdfs:label"></button>
       <button type="button" class="action btn btn-info view -edit -search" id="incoming-print-blank" about="v-s:IncomingLetterPrintBlank" property="rdfs:label"/>
       <div class="btn-group dropup" id="outgoing-print-blank">
         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -310,7 +312,63 @@ v-s:LetterTemplate
   template.one("remove", function () {
     individual.off("afterUpdate", processHandler);
   });
-
+  $("#add-OutgoingLetter", template).click(function () {
+    var cntr = $("<div></div>"),
+        _class = new veda.IndividualModel("v-s:OutgoingLetter"),
+        OutcomingLetter = new veda.IndividualModel(),
+        tmpl = "mnd-s:LetterTemplate";
+    OutcomingLetter["rdf:type"] = [_class];
+    var Sender = new veda.IndividualModel();
+    Sender["rdf:type"] = [ new veda.IndividualModel("v-s:Correspondent") ];
+    Sender["v-s:correspondentOrganization"] =  individual["v-s:sender"][0]["v-s:correspondentOrganization"];
+    Sender["v-s:correspondentDepartmentDescription"] =  individual["v-s:sender"][0]["v-s:correspondentDepartmentDescription"];
+    Sender["v-s:correspondentPersonDescription"] =  individual["v-s:sender"][0]["v-s:correspondentPersonDescription"];
+    OutcomingLetter["v-s:recipient"]= [ Sender ];
+    var Recipient = new veda.IndividualModel();
+    Recipient["rdf:type"] = [ new veda.IndividualModel("v-s:Correspondent") ];
+    Recipient["v-s:correspondentOrganization"] =  individual["v-s:recipient"][0]["v-s:correspondentOrganization"];
+    Recipient["v-s:correspondentDepartment"] =  individual["v-s:recipient"][0]["v-s:correspondentDepartment"];
+    Recipient["v-s:correspondentPerson"] =  individual["v-s:recipient"][0]["v-s:correspondentPerson"];
+    OutcomingLetter["v-s:sender"]= [ Recipient ];
+    var Link = new veda.IndividualModel();
+    Link["rdf:type"] = [ new veda.IndividualModel("v-s:Link") ];
+    Link["v-s:from"] = [ OutcomingLetter ];
+    Link["v-s:to"] = [ individual ];
+    OutcomingLetter["v-s:hasLink"]= [ Link ];
+    OutcomingLetter["v-s:description"] = individual ["v-s:description"];
+    riot.route( ["#", OutcomingLetter.id, "#main", tmpl, "edit"].join("/") );
+  });
+  $("#add-IncomingLetter", template).click(function () {
+    var cntr = $("<div></div>"),
+        _class = new veda.IndividualModel("v-s:IncomingLetter"),
+        IncomingLetter = new veda.IndividualModel(),
+        tmpl = "mnd-s:LetterTemplate";
+    IncomingLetter["rdf:type"] = [_class];
+    var Sender = new veda.IndividualModel();
+    Sender["rdf:type"] = [ new veda.IndividualModel("v-s:Correspondent") ];
+    Sender["v-s:correspondentOrganization"] =  individual["v-s:sender"][0]["v-s:correspondentOrganization"];
+    Sender["v-s:correspondentDepartmentDescription"] =  individual["v-s:sender"][0]["v-s:correspondentDepartmentDescription"];
+    Sender["v-s:correspondentPersonDescription"] =  individual["v-s:sender"][0]["v-s:correspondentPersonDescription"];
+    IncomingLetter["v-s:recipient"]= [ Sender ];
+    var Recipient = new veda.IndividualModel();
+    Recipient["rdf:type"] = [ new veda.IndividualModel("v-s:Correspondent") ];
+    Recipient["v-s:correspondentOrganization"] =  individual["v-s:recipient"][0]["v-s:correspondentOrganization"];
+    Recipient["v-s:correspondentDepartment"] =  individual["v-s:recipient"][0]["v-s:correspondentDepartment"];
+    Recipient["v-s:correspondentPerson"] =  individual["v-s:recipient"][0]["v-s:correspondentPerson"];
+    IncomingLetter["v-s:sender"]= [ Recipient ];
+    var Link = new veda.IndividualModel();
+    Link["rdf:type"] = [ new veda.IndividualModel("v-s:Link") ];
+    Link["v-s:from"] = [ IncomingLetter ];
+    Link["v-s:to"] = [ individual ];
+    IncomingLetter["v-s:hasLink"]= [ Link ];
+    IncomingLetter["v-s:description"] = individual ["v-s:description"];
+    riot.route( ["#", IncomingLetter.id, "#main", tmpl, "edit"].join("/") );
+  });
+  if( individual.hasValue("rdf:type", "v-s:IncomingLetter") ) {
+    $("#add-IncomingLetter", template).remove();
+  } else if( individual.hasValue("rdf:type", "v-s:OutgoingLetter") ) {
+    $("#add-OutgoingLetter", template).remove();
+  }
   //# sourceURL=v-s:LetterTemplate_post
 </script>
   """ ;
