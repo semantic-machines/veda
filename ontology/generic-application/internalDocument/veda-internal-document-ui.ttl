@@ -156,9 +156,7 @@ v-s:InternalDocumentTemplate
       <button type="button" class="action btn btn-info view -edit -search" id="print-blank" about="v-s:InternalDocument_printBlank" property="rdfs:label"></button>
     </div>
   </div>
-  <br>
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
-  <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
 <script>

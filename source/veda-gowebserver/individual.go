@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"reflect"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -40,6 +41,37 @@ const (
 	//LangEn set for english language text
 	LangEn Lang = 2
 )
+
+const (
+	_HASH      = 0
+	_SUBJECT   = 1
+	_PREDICATE = 2
+	_OBJECT    = 3
+	_TYPE      = 4
+	_LANG      = 5
+	_ORDER     = 6
+)
+
+type Resources []interface{}
+
+func (a Resources) Len() int      { return len(a) }
+func (a Resources) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a Resources) Less(i, j int) bool {
+	vi := a[i].(map[string]interface{})
+	vj := a[j].(map[string]interface{})
+
+	ni := vi["order"]
+	nj := vj["order"]
+
+	if ni == nil {
+		ni = 0
+	}
+
+	if nj == nil {
+		nj = 0
+	}
+	return ni.(int64) < nj.(int64)
+}
 
 func getFirstInt(indv Individual, predicate string) (int, bool) {
 	rss, err := indv[predicate].([]interface{})
@@ -95,140 +127,164 @@ func getUri(indv Individual) string {
 	return indv["@"].(string)
 }
 
-func ttResordToMap(uri string, tt_record map[interface{}]interface{}) Individual {
+func ttResordToMap(uri string, tt_record []interface{}) Individual {
 	individual := make(Individual)
 
+	//log.Printf("@ttresord tt_record=%v\n", tt_record)
+
 	individual["@"] = uri
-	for predicate, pp := range tt_record {
+	for _, pp := range tt_record {
+		// loop of records
+
+		var subject string
+		var predicate string
+		var str_object string
+		var num_object int64
+		var bool_object bool
+		var _type DataType
+		var _lang Lang
+		var order int64 = -1
 
 		switch reflect.TypeOf(pp).Kind() {
 		case reflect.Slice:
 			s := reflect.ValueOf(pp)
 
-			resources := make([]interface{}, 0, s.Len())
+			for irow := 0; irow < s.Len(); irow++ {
+				// loop of fields
 
-			for i := 0; i < s.Len(); i++ {
-				arr_val := s.Index(i)
+				arr_val := s.Index(irow)
 
 				val1 := arr_val.Interface()
 				val := reflect.ValueOf(val1)
 
-				v_size := val.Len()
+				if val.IsValid() == true {
+				vval := val.Interface()
 
-				if v_size == 0 || v_size > 3 {
-					log.Printf("!ERR ttResordToMap: vsize < 1 || > 3 %d", v_size)
-					continue
-				}
+				var sval string
+				var nval int64
 
-				resource := make(map[string]interface{})
+				//log.Printf("@vval =%v\n", vval)
 
-				vtype := DataType(val.Index(0).Interface().(uint64))
-
-				switch vtype {
-				case Uri:
-					resource["type"] = dataTypeToString(Uri)
-					resource["data"] = val.Index(1).Interface().(string)
-				case Integer:
-					resource["type"] = dataTypeToString(Integer)
-
-					num := val.Index(1).Interface()
-					switch num.(type) {
-					case uint64:
-						resource["data"] = num.(uint64)
-					case int64:
-						resource["data"] = num.(int64)
-					default:
-						log.Printf("!ERR unknown num type %v", num)
-						return nil
+				switch vval.(type) {
+				case bool:
+					bb := vval.(bool)
+					if irow == _OBJECT {
+						bool_object = bb
 					}
-
-				case Datetime:
-					r_dt := val.Index(1).Interface()
-
-					switch r_dt.(type) {
-					case int64:
-						resource["data"] = time.Unix(r_dt.(int64), 0).UTC().Format("2006-01-02T15:04:05Z")
-					case uint64:
-						resource["data"] = time.Unix(int64(r_dt.(uint64)), 0).UTC().Format("2006-01-02T15:04:05Z")
-					default:
-						log.Printf("!ERR ttResordToMap: NOT INT/UINT IN DATETIME: %v", r_dt)
-						return nil
+				case uint64:
+					nval = int64(vval.(uint64))
+					if irow == _OBJECT {
+						num_object = nval
 					}
-					resource["type"] = dataTypeToString(Datetime)
-
-				case Decimal:
-					var mantissa, exponent int64
-
-					r_mantissa := val.Index(1).Interface()
-					switch r_mantissa.(type) {
-					case uint64:
-						mantissa = int64(r_mantissa.(uint64))
-					case int64:
-						mantissa = r_mantissa.(int64)
-					default:
-						log.Printf("!ERR ttResordToMap: unknown num type %v", r_mantissa)
-						return nil
+				case int64:
+					nval = vval.(int64)
+					if irow == _OBJECT {
+						num_object = nval
 					}
-
-					r_exponent := val.Index(2).Interface()
-					switch r_exponent.(type) {
-					case uint64:
-						exponent = int64(r_exponent.(uint64))
-					case int64:
-						exponent = r_exponent.(int64)
-					default:
-						log.Printf("!ERR ttResordToMap: unknown num type %v", r_exponent)
-						return nil
+				case string:
+					sval = vval.(string)
+					if irow == _OBJECT {
+						str_object = sval
 					}
-
-					resource["type"] = dataTypeToString(Decimal)
-					resource["data"] = decimalToString(mantissa, exponent)
-
-				case Boolean:
-					resource["type"] = dataTypeToString(Boolean)
-					resource["data"] = val.Index(1).Interface().(bool)
-
-				case String:
-					rval := val.Index(1).Interface()
-
-					switch rval.(type) {
-					case string:
-						resource["type"] = dataTypeToString(String)
-						resource["data"] = rval.(string)
-
-						if v_size == 3 {
-
-							r_lang := val.Index(2).Interface()
-							switch r_lang.(type) {
-							case uint64:
-								resource["lang"] = langToString(Lang(r_lang.(uint64)))
-							case int64:
-								resource["lang"] = langToString(Lang(r_lang.(int64)))
-							default:
-								log.Printf("!ERR ttResordToMap: unknown lang type %v", r_lang)
-								return nil
-							}
-						}
-					case nil:
-						resource["type"] = dataTypeToString(String)
-						resource["data"] = ""
-					default:
-						log.Printf("!ERR ttResordToMap: unknown string type %v", rval)
-						return nil
-					}
-
 				default:
-					log.Printf("!ERR ttResordToMap: unknown type %v", vtype)
+					log.Printf("!ERR unknown num type %v\n", vval)
 					return nil
 				}
-				resources = append(resources, resource)
 
+				//log.Printf("@sval =%v, nval=%v\n", sval, nval)
+
+				if irow == _ORDER {
+					order = nval
+				}
+
+				if irow == _SUBJECT && subject == "" {
+					subject = sval
+				}
+
+				if irow == _PREDICATE && predicate == "" {
+					predicate = sval
+				}
+
+				if irow == _TYPE && _type == 0 {
+					_type = DataType(nval)
+				}
+
+				if irow == _LANG && _lang == 0 {
+					_lang = Lang(nval)
+				}
+			    }
 			}
-			individual[predicate.(string)] = resources
+
+			var resources []interface{}
+			presources := individual[predicate]
+			if presources == nil {
+				resources = make([]interface{}, 0, 1)
+				//individual[predicate] = resources
+			} else {
+				resources = presources.([]interface{})
+			}
+
+			//log.Printf("@ttresord predicate=%v\n", predicate)
+			//log.Printf("@ttresord type=%v\n", _type)
+			resource := make(map[string]interface{})
+			resource["type"] = dataTypeToString(_type)
+			resource["order"] = order
+
+			if _type == Uri {
+				resource["data"] = str_object
+			} else if _type == String {
+				resource["data"] = str_object
+				resource["lang"] = langToString(_lang)
+			} else if _type == Integer {
+				resource["data"] = num_object
+			} else if _type == Datetime {
+				resource["data"] = time.Unix(int64(num_object), 0).UTC().Format("2006-01-02T15:04:05Z")
+			} else if _type == Decimal {
+				resource["data"] = str_object
+			} else if _type == Boolean {
+				resource["data"] = bool_object
+			}
+
+			resources = append(resources, resource)
+			individual[predicate] = resources
 		}
-		//resources = append(resources, resource)
-		//individual[key.(string)] = v
 	}
+
+	for predicate := range individual {
+
+		if predicate != "@" {
+			// reorder predicate values
+			var resources []interface{}
+			presources := individual[predicate]
+			if presources != nil {
+				resources = presources.([]interface{})
+			}
+
+			pcount := len(resources)
+
+			if pcount == 2 {
+				a := resources[0].(map[string]interface{})
+				b := resources[1].(map[string]interface{})
+
+				an := a["order"]
+				bn := b["order"]
+
+				if an != nil && bn != nil && an.(int64) > bn.(int64) {
+					resources[0] = b
+					resources[1] = a
+				}
+			} else if pcount > 2 {
+				sort.Sort(Resources(resources))
+			}
+
+			for irow := 0; irow < pcount; irow++ {
+				a := resources[0].(map[string]interface{})
+				delete(a, "order")
+			}
+		}
+	}
+
+	//log.Printf("@ttresord %v\n", individual)
 
 	return individual
 }

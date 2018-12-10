@@ -258,6 +258,7 @@ cfg:AdministratorAppointment
   rdfs:label "Administrator"@en ;
   v-s:origin "Internal" ;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
 .
 cfg:Administrator_pref
   rdf:type v-ui:Preferences ;

@@ -1349,6 +1349,8 @@ veda.Module(function (veda) { "use strict";
       if (new_vars.length > 0)
           new_process['v-wf:inVars'] = new_vars;
 
+      new_process['v-wf:hasStartForm'] = veda.Util.newUri(document["@"]);
+
       var trace_journal_uri;
 
       if (isTrace)
@@ -1379,7 +1381,7 @@ veda.Module(function (veda) { "use strict";
           }]
         };
 		put_individual(ticket, jrn_processed_doc, _event_id);		  
-	  }
+      }
 
       veda.Workflow.create_new_journal(ticket, veda.Util.getJournalUri(new_process_uri), jrn_processed_doc_uri, _net['rdfs:label']);
 
@@ -1422,6 +1424,7 @@ veda.Module(function (veda) { "use strict";
       }, _event_id);
 
       document['v-wf:hasStatusWorkflow'] = veda.Util.newUri('v-wf:IsSent');
+      document['v-wf:hasStartForm'] = veda.Util.newUri(document["@"]);
       document['v-wf:isProcess'] = (document['v-wf:isProcess'] || []).concat( veda.Util.newUri(new_process_uri) );
       put_individual(ticket, document, _event_id);
 
