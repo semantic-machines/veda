@@ -47,6 +47,9 @@ v-s:ApplicationSmallCardTemplate
     <div about="@" rel="v-s:hasBlank" data-limit="1">
       <a href="#/@" class="btn btn-success btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
     </div>
+    <div about="@" rel="v-s:hasCreate" data-limit="1">
+      <a href="#/@" class="btn btn-success btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
+    </div>
     <div about="@" rel="v-s:hasRegistry" data-limit="1">
       <a href="#/@" class="btn btn-info btn-block margin-sm" about="@" property="rdfs:label" style="white-space: normal;"></a>
     </div>
@@ -67,7 +70,7 @@ v-s:ApplicationTemplate
   v-ui:forClass v-s:Application ;
   v-ui:template """
 <script>
-  if (!individual.hasValue("v-s:hasBlank")) {
+  if (!individual.hasValue("v-s:hasBlank") && !individual.hasValue("v-s:hasCreate")) {
     $(".blanks", template).remove();
   }
   if (!individual.hasValue("v-s:hasRegistry")) {
@@ -104,6 +107,9 @@ v-s:ApplicationTemplate
       <div class="sheet" style="width:100%;">
         <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:Create" property="rdfs:label"></span></h4>
         <div about="@" rel="v-s:hasBlank">
+          <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
+        </div>
+        <div about="@" rel="v-s:hasCreate">
           <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
         </div>
       </div>

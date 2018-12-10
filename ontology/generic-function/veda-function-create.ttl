@@ -369,8 +369,7 @@ v-fc:CreateManagementTemplate
       <button class="action delete-create btn btn-link" about="v-s:Delete" property="rdfs:label"></button>
     </div>
   </div>
-  <br>
-  <div about="@" rel="v-s:hasBlank" data-template="v-fc:BlankTemplate"></div>
+  <div about="@" rel="v-fc:hasBlank" data-template="v-fc:BlankTemplate"></div>
 </div>
   """
 .
