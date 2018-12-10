@@ -51,3 +51,4 @@ veda.properties
 /veda-input-queue
 /veda-gowebserver
 /libauthorization.so
+*.geany
