@@ -316,7 +316,7 @@ v-s:LetterTemplate
     var cntr = $("<div></div>"),
         _class = new veda.IndividualModel("v-s:OutgoingLetter"),
         OutcomingLetter = new veda.IndividualModel(),
-        tmpl = "mnd-s:LetterTemplate";
+        tmpl = "v-s:LetterTemplate";
     OutcomingLetter["rdf:type"] = [_class];
     var Sender = new veda.IndividualModel();
     Sender["rdf:type"] = [ new veda.IndividualModel("v-s:Correspondent") ];
@@ -342,7 +342,7 @@ v-s:LetterTemplate
     var cntr = $("<div></div>"),
         _class = new veda.IndividualModel("v-s:IncomingLetter"),
         IncomingLetter = new veda.IndividualModel(),
-        tmpl = "mnd-s:LetterTemplate";
+        tmpl = "v-s:LetterTemplate";
     IncomingLetter["rdf:type"] = [_class];
     var Sender = new veda.IndividualModel();
     Sender["rdf:type"] = [ new veda.IndividualModel("v-s:Correspondent") ];
