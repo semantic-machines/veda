@@ -2235,6 +2235,7 @@ for (i = 0; i < 1; i++)
             Backend.query(ticket, "1");
             Backend.query(ticket, false);
             Backend.query(ticket, []);
+            Backend.query(ticket, [{}]);
 
             Backend.put_individual();
             Backend.put_individual(ticket);
@@ -2260,6 +2261,7 @@ for (i = 0; i < 1; i++)
             Backend.set_in_individual(ticket, 1);
             Backend.set_in_individual(ticket, "1");
             Backend.set_in_individual(ticket, false);
+            Backend.set_in_individual(ticket, []);
             Backend.set_in_individual(ticket, [{}]);
 
             ticket = get_user1_ticket();
