@@ -1578,7 +1578,7 @@ for (i = 0; i < 1; i++)
           createMeetings(user, 9, 3);
           var res = createMeetings(admin, 12, 9);
 
-	  Backend.wait_module(m_subject, res.op_id);
+    Backend.wait_module(m_subject, res.op_id);
           Backend.wait_module(m_scripts, res.op_id);
           Backend.wait_module(m_acl, res.op_id);
           Backend.wait_module(m_fulltext_indexer, res.op_id);
@@ -2149,7 +2149,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
 
-QUnit.test(
+        QUnit.test(
         "#031 1) [A] store user1 and read user2. 2) store right content filter. 3) read A user 1 and dont read [A] user2",
         function(assert)
         {
@@ -2220,6 +2220,50 @@ QUnit.test(
             Backend.wait_module(m_acl, res2.op_id);
 
             test_success_update(assert, ticket_user2, new_test_doc1);
+        });
+
+        QUnit.test(
+        "#050 Bad requests",
+        function(assert)
+        {
+            var ticket = get_user1_ticket();
+
+            Backend.query();
+            Backend.query(ticket);
+            Backend.query(ticket, {});
+            Backend.query(ticket, 1);
+            Backend.query(ticket, "1");
+            Backend.query(ticket, false);
+            Backend.query(ticket, []);
+
+            Backend.put_individual();
+            Backend.put_individual(ticket);
+            Backend.put_individual(ticket, {});
+            Backend.put_individual(ticket, 1);
+            Backend.put_individual(ticket, "1");
+            Backend.put_individual(ticket, false);
+            Backend.put_individual(ticket, []);
+            Backend.put_individual(ticket, [{}]);
+
+            Backend.put_individuals();
+            Backend.put_individuals(ticket);
+            Backend.put_individuals(ticket, {});
+            Backend.put_individuals(ticket, 1);
+            Backend.put_individuals(ticket, "1");
+            Backend.put_individuals(ticket, false);
+            Backend.put_individuals(ticket, []);
+            Backend.put_individuals(ticket, [{}]);
+
+            Backend.set_in_individual();
+            Backend.set_in_individual(ticket);
+            Backend.set_in_individual(ticket, {});
+            Backend.set_in_individual(ticket, 1);
+            Backend.set_in_individual(ticket, "1");
+            Backend.set_in_individual(ticket, false);
+            Backend.set_in_individual(ticket, [{}]);
+
+            ticket = get_user1_ticket();
+            assert.ok(ticket.id.length > 0);
         });
 
 /*
