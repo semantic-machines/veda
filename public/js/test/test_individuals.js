@@ -2207,15 +2207,15 @@ for (i = 0; i < 1; i++)
             test_fail_update(assert, ticket_user1, new_test_doc1);
             test_success_update(assert, ticket_user2, new_test_doc1);
 
-      // disable permission with filter
-      new_permission1['v-s:deleted'] = newBool (true);
+			// disable permission with filter
+			new_permission1['v-s:deleted'] = newBool (true);
             res1 = Backend.put_individual(ticket_admin.id, new_permission1);
 
             Backend.wait_module(m_acl, res1.op_id);
             test_fail_update(assert, ticket_user2, new_test_doc1);
 
-      // disable filter
-      new_permission_filter['v-s:deleted'] = newBool (true);
+			// disable filter
+			new_permission_filter['v-s:deleted'] = newBool (true);
             var res2 = Backend.put_individual(ticket_admin.id, new_permission_filter);
             Backend.wait_module(m_acl, res2.op_id);
 
@@ -2228,42 +2228,60 @@ for (i = 0; i < 1; i++)
         {
             var ticket = get_user1_ticket();
 
-            Backend.query();
-            Backend.query(ticket);
-            Backend.query(ticket, {});
-            Backend.query(ticket, 1);
-            Backend.query(ticket, "1");
-            Backend.query(ticket, false);
-            Backend.query(ticket, []);
-            Backend.query(ticket, [{}]);
+			try	{ Backend.query(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.query(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            Backend.query(ticket.id, {});
+            Backend.query(ticket.id, 1);
+            Backend.query(ticket.id, "1");
+            Backend.query(ticket.id, false);
+            Backend.query(ticket.id, []);
+			try	{ Backend.query(ticket, [{}]); } catch (e) { assert.ok(e.message = "400"); }
 
-            Backend.put_individual();
-            Backend.put_individual(ticket);
-            Backend.put_individual(ticket, {});
-            Backend.put_individual(ticket, 1);
-            Backend.put_individual(ticket, "1");
-            Backend.put_individual(ticket, false);
-            Backend.put_individual(ticket, []);
-            Backend.put_individual(ticket, [{}]);
+            try	{ Backend.put_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, []); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }
 
-            Backend.put_individuals();
-            Backend.put_individuals(ticket);
-            Backend.put_individuals(ticket, {});
-            Backend.put_individuals(ticket, 1);
-            Backend.put_individuals(ticket, "1");
-            Backend.put_individuals(ticket, false);
-            Backend.put_individuals(ticket, []);
-            Backend.put_individuals(ticket, [{}]);
+            try	{ Backend.put_individuals(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, {}); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, 1); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, "1"); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, false); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, []); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "904"); }
 
-            Backend.set_in_individual();
-            Backend.set_in_individual(ticket);
-            Backend.set_in_individual(ticket, {});
-            Backend.set_in_individual(ticket, 1);
-            Backend.set_in_individual(ticket, "1");
-            Backend.set_in_individual(ticket, false);
-            Backend.set_in_individual(ticket, []);
-            Backend.set_in_individual(ticket, [{}]);
+            try	{ Backend.set_in_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.set_in_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.set_in_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.set_in_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.set_in_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.set_in_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+			try	{ Backend.set_in_individual(ticket, []); } catch (e) { assert.ok(e.message = "400"); }            
+            try	{ Backend.set_in_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }            
 
+            try	{ Backend.add_to_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.add_to_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.add_to_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.add_to_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.add_to_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.add_to_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+			try	{ Backend.add_to_individual(ticket, []); } catch (e) { assert.ok(e.message = "400"); }            
+            try	{ Backend.add_to_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }        
+            
+            try	{ Backend.remove_from_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.remove_from_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.remove_from_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.remove_from_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.remove_from_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.remove_from_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+			try	{ Backend.remove_from_individual(ticket, []); } catch (e) { assert.ok(e.message = "400"); }            
+            try	{ Backend.remove_from_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }            
+            
             ticket = get_user1_ticket();
             assert.ok(ticket.id.length > 0);
         });

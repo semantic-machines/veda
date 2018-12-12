@@ -669,3 +669,24 @@ func NmSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
 
 	return s.Send(data, flags)
 }
+
+func getUint64FromJson(jsonData map[string]interface{}, field string) (ResultCode, uint64) {
+	var res uint64
+	iij := jsonData[field]
+	if iij != nil {
+		switch iij.(type) {
+		case json.Number:
+			r1, _ := iij.(json.Number).Int64()
+			res = uint64(r1)
+		case float64:
+			res = uint64(iij.(float64))
+		case int64:
+			res = uint64(iij.(int64))
+		case uint64:
+			res = iij.(uint64)
+		default:
+			return BadRequest, 0
+		}
+	}
+	return Ok, res
+}
