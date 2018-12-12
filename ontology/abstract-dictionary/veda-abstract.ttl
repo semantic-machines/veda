@@ -84,6 +84,13 @@ v-s:isDraft
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
+v-s:drafted
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Дата черновика"@ru ;
+  rdfs:label "Draft date"@en ;
+  rdfs:range xsd:dateTime ;
+  rdfs:domain v-s:Thing ;
+.
 v-s:created
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Дата создания"@ru ;

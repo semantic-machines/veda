@@ -570,15 +570,15 @@ v-ui:StandardButtonsTemplate
   // Standart buttons labels change for drafts
   function isDraftHandler() {
     if ( individual.isDraft() ) {
-      //Rename "Edit" -> "Continue edit"
-      $(".action#edit", template).attr("about", "v-s:ContinueEdit");
-      //Rename "Cancel" -> "Delete draft"
-      $(".action#cancel", template).attr("about", "v-s:DeleteDraft");
+      var continueEdit = new veda.IndividualModel("v-s:ContinueEdit");
+      continueEdit.present($(".action#edit", template).empty());
+      var deleteDraft = new veda.IndividualModel("v-s:DeleteDraft");
+      deleteDraft.present($(".action#cancel", template).empty());
     } else {
-      //Rename "Continue edit" -> Edit"
-      $(".action#edit", template).attr("about", "v-s:Edit");
-      //Rename "Delete draft" -> "Cancel"
-      $(".action#cancel", template).attr("about", "v-s:Cancel");
+      var edit = new veda.IndividualModel("v-s:Edit");
+      edit.present($(".action#edit", template).empty());
+      var cancel = new veda.IndividualModel("v-s:Cancel");
+      cancel.present($(".action#cancel", template).empty());
     }
   }
   individual.on("propertyModified afterSave afterReset", isDraftHandler);
@@ -592,14 +592,14 @@ v-ui:StandardButtonsTemplate
 </script>
 <span>
   <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit"><span about="v-s:Edit" property="rdfs:label"></span></button>
+  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel"><span about="v-s:Cancel" property="rdfs:label"></span></button>
+  <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"></button>
   <div class="rm action btn-group dropup view -edit -search" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
@@ -1178,13 +1178,11 @@ v-ui:DraftLinkEditTemplate
   rdfs:label "Шаблон черновика со ссылкой"@ru ;
   rdfs:label "Draft template with link"@en ;
   v-ui:template """
-  <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit">
-    <span about="@" rel="rdf:type">
-      <span about="@" property="rdfs:label"></span>
-    </span>:
-    <span id="label" about="@" property="rdfs:label"></span>. Создано:
-    <span about="@" property="v-s:created"></span>
-  </a>
+  <span>
+    <a class="label-template" style="padding: 0 0 0 20px;" href="#/@///edit" about="@" data-template="v-ui:ClassNameLabelTemplate"></a>
+    <small about="v-s:drafted" property="rdfs:label"></small>
+    <small about="@" property="v-s:drafted"></small>
+  </span>
   <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);

@@ -71,12 +71,11 @@ veda.Module(function (veda) { "use strict";
 
   proto.set = function (uri, individual) {
     this[uri] = individual;
-    var temp = individual.toJson();
-    if (this._[uri] === undefined) {
-      temp["v-s:created"] = veda.Util.newDate(new Date());
-    };
+    if ( !individual.hasValue("v-s:drafted") ) {
+      individual.addValue("v-s:drafted", new Date());
+    }
     individual.isSync(false);
-    this._[uri] = temp;
+    this._[uri] = individual.properties;
     storage.drafts = JSON.stringify(this._);
     veda.trigger("update:drafts", this);
     return this;
@@ -97,6 +96,9 @@ veda.Module(function (veda) { "use strict";
   proto.remove = function (uri) {
     if ( typeof this[uri] === "object" ) {
       var individual = this.get(uri);
+      if ( individual.hasValue("v-s:drafted") ) {
+        individual.clearValue("v-s:drafted", true);
+      }
       individual.isSync(true);
       delete this[uri];
       delete this._[uri];
