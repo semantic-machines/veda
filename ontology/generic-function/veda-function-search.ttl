@@ -1404,6 +1404,27 @@ v-fs:MinimalSearchBlank
   v-fc:targetType rdf:Property ;
 .
 
+v-fs:MinimalSearchBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Минимальный шаблон бланка поиска"@ru ;
+  rdfs:label "Minimal search blank template"@en ;
+  v-ui:template """
+<div>
+  <veda-control property="*" data-type="string"></veda-control>
+</div>
+<script>
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-ui:MinimalSearchBlankTemplate_post
+</script>
+  """ ;
+.
+
 v-fs:MinimalSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-fs:AttributiveSearch ;

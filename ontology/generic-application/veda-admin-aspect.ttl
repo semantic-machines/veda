@@ -654,6 +654,12 @@ v-s:BugReportsBundle
   rdfs:label "Bug reports"@en ;
 .
 
+v-s:NewsBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Новости"@ru ;
+  rdfs:label "News"@en ;
+.
+
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
@@ -671,7 +677,8 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Rights" aria-controls="Rights" role="tab" data-toggle="tab" about="v-s:RightsManagementBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Scripts" aria-controls="Scripts" role="tab" data-toggle="tab" about="v-s:ScriptsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#Modules" aria-controls="Modules" role="tab" data-toggle="tab" about="v-s:ModulesBundle" property="rdfs:label"></a></li>
-    <li role="presentation"><a href="#Issues" aria-controls="Issues" role="tab" data-toggle="tab" about="v-s:BugReportsBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#BugReports" aria-controls="BugReports" role="tab" data-toggle="tab" about="v-s:BugReportsBundle" property="rdfs:label"></a></li>
+    <li role="presentation"><a href="#News" aria-controls="News" role="tab" data-toggle="tab" about="v-s:NewsBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -807,7 +814,7 @@ v-ui:AdministrationAspectTemplate
       </div>
     </div>
 
-    <div role="tabpanel" class="tab-pane" id="Issues">
+    <div role="tabpanel" class="tab-pane" id="BugReports">
       <h3 about="v-s:BugReportsBundle" property="rdfs:label"></h3>
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -815,6 +822,17 @@ v-ui:AdministrationAspectTemplate
           <a href="#/v-s:BugReportBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
         </div>
         <div class="panel-body" about="v-s:BugReportRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="News">
+      <h3 about="v-s:NewsBundle" property="rdfs:label"></h3>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span about="v-s:NewsSearch" property="rdfs:label"></span>
+          <a href="#/v-s:NewsBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a>
+        </div>
+        <div class="panel-body" about="v-s:NewsSearch" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
       </div>
     </div>
 
