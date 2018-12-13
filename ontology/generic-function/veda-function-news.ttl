@@ -21,6 +21,7 @@
 v-s:News
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing;
+  rdfs:subClassOf v-s:Codelet;
   rdfs:subClassOf v-s:Labeled;
   rdfs:label "Новость"@ru ;
   rdfs:label "News"@en ;
@@ -28,31 +29,68 @@ v-s:News
   v-s:labelPattern "{@.v-s:title} {@.v-s:created}" ;
 .
 
+v-s:Notify
+  rdf:type v-s:Bundle ;
+  rdfs:label "Уведомить пользователей"@ru ;
+  rdfs:label "Notify users"@en ;
+.
+
 v-s:NewsTemplate
-  rdf:type v-s:News ;
+  rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:News"@ru ;
   rdfs:label "v-fc:CreateByBlank template"@en ;
   v-ui:template """
+<script>
+  var actions = $(".actions", template);
+  var scriptBlock = $(".script", template);
+  if ( !veda.user.isMemberOf("cfg:SuperUser") ) {
+    actions.remove();
+    scriptBlock.remove();
+  } else {
+    var notifyUsers = $(".notify-users", template);
+    var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
+    if (clientNotification.hasValue("rdf:value", individual) ) {
+      notifyUsers.addClass("disabled").attr("disabled", "disabled");
+    } else {
+      notifyUsers.click(function () {
+        try {
+          clientNotification["rdf:value"] = [individual];
+          clientNotification.save();
+          $(this).addClass("disabled").attr("disabled", "disabled");
+        } catch (error) {
+          var notify = new veda.Notify();
+          notify("danger", {name: error});
+        }
+      });
+    }
+  }
+  //# sourceURL=v-s:NewsTemplate_pre
+</script>
 <div class="container">
   <div class="sheet">
-    <h3 about="@" property="v-s:title" class="view -edit -search"></h3>
+    <h3 about="@" property="v-s:title" class="margin-md view -edit -search"></h3>
     <em about="v-s:title" property="rdfs:label" class="-view edit search"></em>
-    <veda-control data-type="multilingualString" property="v-s:title" class="-view edit search"></veda-control>
-    <i about="@" property="v-s:description" class="markdown"></i>
+    <veda-control data-type="string" property="v-s:title" class="-view edit search"></veda-control>
+    <i about="@" property="v-s:description" class="markdown view -edit -search"></i>
     <em about="v-s:description" property="rdfs:label" class="-view edit search"></em>
-    <veda-control data-type="multilingualText" data-rows="10" property="v-s:description" class="-view edit search"></veda-control>
-    <div about="@" property="v-s:content" class="markdown"></div>
+    <veda-control data-type="text" rows="3" property="v-s:description" class="-view edit search"></veda-control>
+    <div about="@" property="v-s:content" class="markdown view -edit -search"></div>
     <em about="v-s:content" property="rdfs:label" class="-view edit search"></em>
-    <veda-control data-type="multilingualText" data-rows="10" property="v-s:content" class="-view edit search"></veda-control>
-    <small about="v-s:created" property="rdfs:label" class="view -edit -search"></small>
-    <small about="@" property="v-s:created" class="view -edit -search"></small>
+    <veda-control data-type="text" rows="10" property="v-s:content" class="-view edit search"></veda-control>
+    <div class="script">
+      <pre about="@" property="v-s:script" class="markdown view -edit -search"></pre>
+      <em about="v-s:script" property="rdfs:label" class="-view edit -search"></em>
+      <veda-control data-type="source" rows="10" property="v-s:script" class="-view edit -search"></veda-control>
+    </div>
+    <b><small about="@" property="v-s:created" class="view -edit -search"></small></b>
     <em about="v-s:created" property="rdfs:label" class="-view edit search"></em>
     <veda-control data-type="date" property="v-s:created" class="-view edit search"></veda-control>
-    <br>
-    <br>
-    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+    <div class="actions margin-lg">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+      <button class="btn btn-warning notify-users" about="v-s:Notify" property="rdfs:label"></button>
+    </div>
   </div>
-  <div about="@" class="sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+  <!--div about="@" class="sheet view -edit -search" data-template="v-s:CommentsTemplate"></div-->
 </div>
   """ ;
 .
@@ -102,7 +140,6 @@ v-s:NewsSearchBlankTemplate
   """ ;
 .
 
-
 v-s:NewsResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон отображения результатов поиска Новостей"@ru ;
@@ -113,8 +150,8 @@ v-s:NewsResultTemplate
     <tr>
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
-      <th width="5%" class="orderby" data-orderby="v-s:title"><span about="v-s:title" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="85%" class="orderby" data-orderby="v-s:title"><span about="v-s:title" property="rdfs:label"></span></th>
+      <th width="13%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
     </tr>
   </thead>
   <tbody class="result-container">
@@ -137,8 +174,29 @@ v-s:NewsResultTemplate
 
 v-s:News_permission
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:News ;
+  v-s:permissionObject v-s:News_group ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "R. Все пользователи. Класс v-s:News" ;
+.
+
+########## ИНДИВИДЫ ###########
+
+v-s:NewsReloadPage
+  rdf:type v-s:News;
+  rdfs:label "Версия приложения обновилась"@ru;
+  rdfs:label "Application was updated"@en;
+  v-s:title "Версия приложения изменилась!"@ru;
+  v-s:title "Application version changed!"@en;
+  v-s:content """
+  Необходимо обновить страницу.
+
+  Обновить сейчас?
+  """@ru;
+  v-s:content """
+  Page must be reloaded.
+
+  Reload now?
+  """@en;
+  v-s:script "location.reload();";
 .
