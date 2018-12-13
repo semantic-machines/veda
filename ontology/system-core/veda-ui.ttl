@@ -954,6 +954,25 @@ v-ui:ResourceTemplate
   rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
+<script>
+  var propСontainer = $(".properties-container", template);
+  var tmpl = propСontainer.html();
+  propСontainer.empty();
+  Object.keys(this.properties).forEach(function (property_uri) {
+    if (property_uri === "@" || property_uri === "rdf:type" || property_uri === "rdfs:label") { return; }
+    var propRow = $(tmpl);
+    propRow.find(".prop-name").attr({
+      "about": property_uri,
+      "property": "rdfs:label"
+    });
+    propRow.find(".prop-value").attr({
+      "about": "@",
+      "property": property_uri
+    });
+    propСontainer.append(propRow);
+  });
+  //# sourceURL=v-ui:ResourceTemplate_pre
+</script>
 <div class="container sheet">
   <div class="clearfix">
     <h2 class="pull-left">
@@ -961,6 +980,13 @@ v-ui:ResourceTemplate
       <small about="@" property="rdfs:label"></small>
     </h2>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
+  </div>
+  <div class="properties-container">
+    <hr class="margin-sm">
+    <div class="row">
+      <div class="col-md-4 col-sm-6 text-right prop-name"></div>
+      <div class="col-md-8 col-sm-6 prop-value"></div>
+    </div>
   </div>
 </div>
   """ ;
