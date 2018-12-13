@@ -17,7 +17,7 @@
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Любая сущность"@ru ;
+  rdfs:label "Сущность"@ru ;
   rdfs:label "Thing"@en ;
 .
 v-s:updateCounter
