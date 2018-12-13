@@ -1,0 +1,144 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+
+<http://semantic-machines.com/veda/veda-function-news>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология функции 'Новость' системы Веда"@ru ;
+  rdfs:label "Veda system function 'News' ontology"@en ;
+#  owl:versionInfo "0.2" ;
+  v-s:loadPriority 9 ;
+.
+
+########## NEWS FUNCTION ###########
+
+v-s:News
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing;
+  rdfs:subClassOf v-s:Labeled;
+  rdfs:label "Новость"@ru ;
+  rdfs:label "News"@en ;
+  v-ui:hasTemplate v-s:NewsTemplate ;
+  v-s:labelPattern "{@.v-s:title} {@.v-s:created}" ;
+.
+
+v-s:NewsTemplate
+  rdf:type v-s:News ;
+  rdfs:label "Шаблон для класса v-s:News"@ru ;
+  rdfs:label "v-fc:CreateByBlank template"@en ;
+  v-ui:template """
+<div class="container">
+  <div class="sheet">
+    <h3 about="@" property="v-s:title" class="view -edit -search"></h3>
+    <em about="v-s:title" property="rdfs:label" class="-view edit search"></em>
+    <veda-control data-type="multilingualString" property="v-s:title" class="-view edit search"></veda-control>
+    <i about="@" property="v-s:description" class="markdown"></i>
+    <em about="v-s:description" property="rdfs:label" class="-view edit search"></em>
+    <veda-control data-type="multilingualText" data-rows="10" property="v-s:description" class="-view edit search"></veda-control>
+    <div about="@" property="v-s:content" class="markdown"></div>
+    <em about="v-s:content" property="rdfs:label" class="-view edit search"></em>
+    <veda-control data-type="multilingualText" data-rows="10" property="v-s:content" class="-view edit search"></veda-control>
+    <small about="v-s:created" property="rdfs:label" class="view -edit -search"></small>
+    <small about="@" property="v-s:created" class="view -edit -search"></small>
+    <em about="v-s:created" property="rdfs:label" class="-view edit search"></em>
+    <veda-control data-type="date" property="v-s:created" class="-view edit search"></veda-control>
+    <br>
+    <br>
+    <div about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></div>
+  </div>
+  <div about="@" class="sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
+</div>
+  """ ;
+.
+
+v-s:NewsBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Новость"@ru ;
+  rdfs:label "News"@en ;
+  v-fc:targetType v-s:News ;
+.
+
+v-s:NewsCreate
+  rdf:type v-fc:Create ;
+  rdfs:label "Новость"@ru ;
+  rdfs:label "News"@en ;
+  v-fc:hasBlank v-s:NewsBlank ;
+.
+
+v-s:NewsSearch
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Все новости"@ru ;
+  rdfs:label "All news"@en ;
+  v-fs:searchBlank v-s:NewsBlank ;
+  v-fs:searchBlankTemplate v-s:NewsSearchBlankTemplate ;
+  v-fs:searchResultTemplate v-s:NewsResultTemplate ;
+  v-fs:searchOnLoad true ;
+.
+
+v-s:NewsSearchBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон бланка поиска новостей"@ru ;
+  rdfs:label "News search blank template"@en ;
+  v-ui:template """
+<div>
+  <veda-control property="*" data-type="string"></veda-control>
+</div>
+<script>
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-s:NewsSearchBlankTemplate_post
+</script>
+  """ ;
+.
+
+
+v-s:NewsResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска Новостей"@ru ;
+  rdfs:label "News search result template"@en ;
+  v-ui:template """
+<table class="table">
+  <thead class="result-header">
+    <tr>
+      <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
+      <th width="1%">#</th>
+      <th width="5%" class="orderby" data-orderby="v-s:title"><span about="v-s:title" property="rdfs:label"></span></th>
+      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td width="1%"><input type="checkbox" class="toggle-select"></td>
+      <td class="serial-number"></td>
+      <td>
+        <div about="@" property="v-s:title"></div>
+        <small about="@" property="v-s:description"></small>
+        <a href="#/@"><small about="v-s:More" property="rdfs:label"></small></a>
+      </td>
+      <td about="@" property="v-s:created"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+########## УПРАВЛЕНИЕ ПРАВАМИ ###########
+
+v-s:News_permission
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:News ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "R. Все пользователи. Класс v-s:News" ;
+.
