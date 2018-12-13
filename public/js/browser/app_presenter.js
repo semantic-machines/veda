@@ -163,9 +163,6 @@ veda.Module(function (veda) { "use strict";
     riot.route(location.hash);
   });
 
-  // Load ontology
-  veda.init();
-
   // Listen to client notifications
   veda.on("started", function () {
     var updateService = new veda.UpdateService();
@@ -192,5 +189,8 @@ veda.Module(function (veda) { "use strict";
       }
     }
   });
+
+  // Load ontology
+  veda.init();
 
 });
