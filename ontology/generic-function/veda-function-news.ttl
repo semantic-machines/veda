@@ -95,6 +95,27 @@ v-s:NewsTemplate
   """ ;
 .
 
+v-s:NewsIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон индикатора новостей"@ru ;
+  rdfs:label "News indicator template"@en ;
+  v-ui:template """
+<script>
+  $("#drafts-counter", template).text(veda.drafts.length);
+  template.tooltip({
+    container: template,
+    placement: "bottom",
+    trigger: "hover",
+    title: individual["rdfs:label"].join(" ")
+  });
+  //# sourceURL=v-ui:DraftsIndicatorTemplate_pre
+</script>
+<a href="#/@" data-toggle="tooltip" data-trigger="hover" data-placement="bottom">
+  <span class="fa fa-newspaper-o fa-lg"></span> <span class="label label-default" id="news-counter"></span>
+</a>
+  """
+.
+
 v-s:NewsBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Новость"@ru ;
@@ -111,8 +132,8 @@ v-s:NewsCreate
 
 v-s:NewsSearch
   rdf:type v-fs:AttributiveSearch ;
-  rdfs:label "Все новости"@ru ;
-  rdfs:label "All news"@en ;
+  rdfs:label "Новости"@ru ;
+  rdfs:label "News"@en ;
   v-fs:searchBlank v-s:NewsBlank ;
   v-fs:searchBlankTemplate v-s:NewsSearchBlankTemplate ;
   v-fs:searchResultTemplate v-s:NewsResultTemplate ;
