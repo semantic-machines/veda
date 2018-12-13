@@ -717,4 +717,11 @@ d:Membership_71014133_71025564
   rdfs:label "Начальник управления - в группу Начальник службы"@en ;
 .
 
-
+s-wf:RouteTest
+  rdf:type v-wf:StartForm ;
+  rdfs:label "Тестовый шаблон маршурута lowPriority"@ru ;
+  rdfs:label "lowPriority test template"@en ;
+  v-wf:StartForm_canEdit "false"^^xsd:boolean ;
+  v-wf:StartForm_setStatus "false"^^xsd:boolean ;
+  v-s:runAt "V8.LowPriority1"^^xsd:string ;
+.
