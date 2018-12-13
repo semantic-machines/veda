@@ -205,6 +205,10 @@ veda.Module(function (veda) { "use strict";
     enumerable: false
   });
 
+  proto.isMemberOf = function (group_uri) {
+    return this.membership.hasValue("v-s:memberOf", group_uri);
+  };
+
   Object.defineProperty(proto, "rights", {
     get: function () {
       if ( this._.rights ) { return this._.rights; }
