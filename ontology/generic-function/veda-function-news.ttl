@@ -130,13 +130,52 @@ v-s:NewsCreate
   v-fc:hasBlank v-s:NewsBlank ;
 .
 
+v-s:NewsSearchUser
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Новости"@ru ;
+  rdfs:label "News"@en ;
+  v-fs:searchBlank v-s:NewsBlank ;
+  v-fs:searchResultTemplate v-s:NewsSearchUserResultTemplate ;
+  v-fs:searchOnLoad true ;
+  v-ui:hasTemplate v-fs:AttributiveSearchTemplate ;
+.
+
+v-s:NewsSearchUserResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон отображения результатов поиска Новостей"@ru ;
+  rdfs:label "News search result template"@en ;
+  v-ui:template """
+<table class="table">
+  <thead class="result-header">
+    <tr>
+      <th width="1%">#</th>
+      <th width="85%" class="orderby" data-orderby="v-s:title"><span about="v-s:title" property="rdfs:label"></span></th>
+      <th width="13%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td class="serial-number"></td>
+      <td>
+        <div about="@" property="v-s:title"></div>
+        <small about="@" property="v-s:description"></small>
+        <a href="#/@"><small about="v-s:More" property="rdfs:label"></small></a>
+      </td>
+      <td about="@" property="v-s:created"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+
 v-s:NewsSearch
   rdf:type v-fs:AttributiveSearch ;
   rdfs:label "Новости"@ru ;
   rdfs:label "News"@en ;
   v-fs:searchBlank v-s:NewsBlank ;
   v-fs:searchBlankTemplate v-s:NewsSearchBlankTemplate ;
-  v-fs:searchResultTemplate v-s:NewsResultTemplate ;
+  v-fs:searchResultTemplate v-s:NewsSearchResultTemplate ;
   v-fs:searchOnLoad true ;
 .
 
@@ -161,7 +200,7 @@ v-s:NewsSearchBlankTemplate
   """ ;
 .
 
-v-s:NewsResultTemplate
+v-s:NewsSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон отображения результатов поиска Новостей"@ru ;
   rdfs:label "News search result template"@en ;

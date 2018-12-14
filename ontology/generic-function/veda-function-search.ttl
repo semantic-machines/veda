@@ -721,6 +721,7 @@ v-fs:AttributiveSearchInlineTemplate
   if ( !searchBlankTemplate ) {
     $(".results-load-buttons", template).detach().appendTo(template);
     $(".params", template).remove();
+    $(".caption", template).removeClass("hidden");
   }
   if ( this.hasValue("v-fs:loadAll", true) ) {
     $(".no-more-results", template).remove();
@@ -798,6 +799,7 @@ v-fs:AttributiveSearchInlineTemplate
       border-left: 7px solid transparent;
     }
   </style>
+  <h2 about="@" property="rdfs:label" class="caption hidden"></h2>
   <div class="params">
     <div class="search-form"></div>
     <br>
