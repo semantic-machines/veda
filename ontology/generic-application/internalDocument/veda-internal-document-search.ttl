@@ -19,23 +19,23 @@
 
 # Registries -----------------------------------------------------------
 
-v-s:InternalDocumentRegistry
+v-s:InternalDocumentSearch
   a v-fs:AttributiveSearch;
   rdfs:label "Внутренние документы"@ru ;
   rdfs:label "Internal documents"@en ;
-  v-fs:searchBlank v-s:InternalDocumentRegistryBlank ;
+  v-fs:searchBlank v-s:InternalDocumentSearchBlank ;
   v-fs:searchBlankTemplate v-s:InternalDocumentTemplate ;
-  v-fs:searchResultTemplate v-s:InternalDocumentRegistryResultTemplate ;
+  v-fs:searchResultTemplate v-s:InternalDocumentSearchResultTemplate ;
 .
 
-v-s:InternalDocumentRegistryBlank
+v-s:InternalDocumentSearchBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Внутренний документ"@ru ;
   rdfs:label "Internal document"@en ;
   v-fc:targetType v-s:InternalDocument ;
 .
 
-v-s:InternalDocumentRegistryResultTemplate
+v-s:InternalDocumentSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса v-s:InternalDocument"@ru ;
   rdfs:label "Template for v-s:InternalDocument class"@en ;

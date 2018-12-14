@@ -29,6 +29,13 @@ v-s:IncomingLetterBlank
   v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlank ;
   v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlankAuto ;
 .
+v-s:IncomingLetterCreate
+  rdf:type v-fc:Create ;
+  rdfs:label "Входящее письмо"@ru ;
+  rdfs:label "Incoming letter"@en ;
+  v-fc:hasBlank v-s:IncomingLetterBlank ;
+.
+
 v-s:OutgoingLetterBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Исходящее письмо"@ru ;
@@ -38,6 +45,12 @@ v-s:OutgoingLetterBlank
   v-s:recipient v-s:RecipientCorrespondentBlank ;
   v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderBlankAuto ;
   v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientBlank ;
+.
+v-s:OutgoingLetterCreate
+  rdf:type v-fc:Create ;
+  rdfs:label "Исходящее письмо"@ru ;
+  rdfs:label "Outgoing letter"@en ;
+  v-fc:hasBlank v-s:OutgoingLetterBlank ;
 .
 v-s:SenderCorrespondentBlank
   a v-fc:Blank ;

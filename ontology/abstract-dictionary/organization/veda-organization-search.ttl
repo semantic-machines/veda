@@ -16,18 +16,18 @@
 
 # ------------------------------------------------------------ РЕЕСТРЫ --
 
-v-s:OrganizationRegistry
+v-s:OrganizationSearch
   a v-fs:AttributiveSearch;
   rdfs:label "Организации"@ru;
   rdfs:label "Organizations"@en;
   v-fs:searchBlank v-s:OrganizationBlank ;
   v-fs:searchBlankTemplate v-s:OrganizationTemplate;
-  v-fs:searchResultTemplate v-s:OrganizationRegistryResultTemplate ;
+  v-fs:searchResultTemplate v-s:OrganizationSearchResultTemplate ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
-v-s:OrganizationRegistryResultTemplate
+v-s:OrganizationSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон результатов реестра Организаций"@ru ;
   rdfs:label "Organizations registry result template"@en ;

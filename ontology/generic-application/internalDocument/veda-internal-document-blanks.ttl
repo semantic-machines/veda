@@ -25,3 +25,9 @@ v-s:InternalDocumentBlank
   rdfs:label "Internal document"@en ;
   v-fc:targetType v-s:InternalDocument ;
 .
+v-s:InternalDocumentCreate
+  a v-fc:Create;
+  rdfs:label "Внутренний документ"@ru ;
+  rdfs:label "Internal document"@en ;
+  v-fc:hasBlank v-s:InternalDocumentBlank ;
+.
