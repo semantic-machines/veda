@@ -242,10 +242,10 @@ veda.Module(function (veda) { "use strict";
       var q = /* Ontology version */
           "'@' == 'cfg:OntoVsn' || " +
           /* Classes */
+          "'rdf:type' === 'owl:Ontology' || " +
+          "'rdf:type' === 'rdfs:Datatype' || " +
           "'rdf:type' === 'rdfs:Class' || " +
           "'rdf:type' === 'owl:Class' || " +
-          "'rdf:type' === 'rdfs:Datatype' || " +
-          "'rdf:type' === 'owl:Ontology' || " +
           /* Properties */
           "'rdf:type' === 'rdf:Property' || " +
           "'rdf:type' === 'owl:DatatypeProperty' || " +
