@@ -387,7 +387,7 @@ class FanoutProcess : VedaModule
                         message = SmtpMessage(
                                               Recipient(email_from, from_label),
                                               rr_email_to,
-                                              subject,
+                                              subject ~ "\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"",
                                               message_body,
                                               str_email_reply_to
                                               );
