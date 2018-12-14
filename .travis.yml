@@ -54,7 +54,8 @@ script:
   - testcafe chromium qa/testcafe/testSimpleNet2.js  
   - testcafe chromium qa/testcafe/testSimpleNet3.js
   - testcafe chromium qa/testcafe/testSimpleNetLowPriority.js
-  - testcafe chromium qa/testcafe/testControls.js  
+  - testcafe chromium qa/testcafe/testControls.js
+  - testcafe chromium qa/testcafe/testDrafts.js
 
 after_script:
   - ./control-stop.sh
