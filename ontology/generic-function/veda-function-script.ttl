@@ -850,3 +850,19 @@ this.console = nativeConsole;
 """
 .
 
+# --------------------------Cron scripts-----------------------------
+
+v-s:CronScriptsInfo
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Информация о периодических скриптах"@ru ;
+  rdfs:label "Cron scripts info"@en ;
+.
+
+v-s:lastDateOfExecuting
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Дата последнего выполнения"@ru ;
+  rdfs:label "Date of last executing"@en ;
+  rdfs:domain v-s:CronScriptsInfo ;
+  rdfs:range xsd:dateTime ;
+.
