@@ -2156,7 +2156,7 @@ v-ui:PermissionStatementInlineTemplate
   rdfs:label "Document event template"@en ;
   v-ui:forClass v-s:PermissionStatement ;
   v-ui:template """
-  <div>
+<div>
   <div class="row right-header" style="display:none">
     <div class="col-md-1">
       <span about="v-s:canCreate" property="rdfs:label"></span>
@@ -2216,15 +2216,14 @@ v-ui:PermissionStatementInlineTemplate
       <pre style="border:none;background-color:#fff;"></pre>
     </div>
   </div>
-  </div>
-  <script>
-//    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
-    var dd = individual['rdfs:comment'][0];
-    var pre = $("pre", template);
-    var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
-    pre.html(anchored);
-    //# sourceURL=v-ui:PermissionStatementInlineTemplate_post
-  </script>
+</div>
+<script>
+  var dd = individual['rdfs:comment'][0];
+  var pre = $("pre", template);
+  var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+  pre.html(anchored);
+  //# sourceURL=v-ui:PermissionStatementInlineTemplate_post
+</script>
   """ ;
 .
 

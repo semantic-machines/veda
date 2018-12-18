@@ -826,6 +826,8 @@ cfg:Event_6
   v-s:triggerByType v-ui:PropertySpecification ;
   v-s:triggerByType v-ui:DatatypePropertySpecification ;
   v-s:triggerByType v-ui:ObjectPropertySpecification ;
+  v-s:triggerByType v-ui:ClassTemplate ;
+  v-s:triggerByType v-ui:ClassModel ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
