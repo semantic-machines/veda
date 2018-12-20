@@ -19,6 +19,7 @@ import { Selector, t } from 'testcafe';
       .click('li[about="v-s:Drafts"]')
       .click('ol#drafts-list span[typeof="v-s:IncomingLetter"]')
       .click('button#save')
+      .wait(2000)
       .click('div.navbar-header')
       .expect(Selector('li[about="v-s:Drafts"] span.label.label-default').innerText).eql('0')
 });
