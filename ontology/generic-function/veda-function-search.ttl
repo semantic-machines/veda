@@ -389,8 +389,8 @@ v-fs:AttributiveSearchManagementTemplate
       var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
       if (searchBlank && searchBlank.object) {
         var personalRegistryBlank = searchBlank.clone();
-        personalRegistry["rdfs:isDefinedBy"] = [];
         personalRegistry["v-fs:searchBlank"] = [ personalRegistryBlank ];
+        personalRegistryBlank["rdfs:isDefinedBy"] = [];
         personalRegistryBlank.object = searchBlank.object;
         personalRegistryBlank.updateBlank();
         personalRegistryBlank.save();
