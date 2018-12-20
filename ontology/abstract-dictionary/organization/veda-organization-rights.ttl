@@ -84,6 +84,8 @@ v-s:Organization_Environment_membership
   v-s:resource v-s:Organization_group ;
   v-s:resource v-s:Subsidiary ;
   v-s:resource v-s:Subsidiary_group ;
+  v-s:resource v-s:CommunicationMean ;
+  v-s:resource v-s:CommunicationMean_group ;  
   rdfs:label "Члены группы Окружение Organization - схема и индивиды" ;
 .
 v-s:OrganizationStructure_Environment_membership
@@ -97,5 +99,7 @@ v-s:OrganizationStructure_Environment_membership
   v-s:resource v-s:Appointment_group ;  
   v-s:resource v-s:Person ;
   v-s:resource v-s:Person_group ;  
+  v-s:resource v-s:CommunicationMean ;
+  v-s:resource v-s:CommunicationMean_group ;  
   rdfs:label "Члены группы Окружение OrganizationStructure - схема и индивиды" ;
 .
