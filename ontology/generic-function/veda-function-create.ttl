@@ -326,7 +326,7 @@ v-fc:CreateManagementTemplate
       var aspect = veda.user.aspect;
       aspect.addValue("v-s:hasCreate", personalCreate);
       aspect.save();
-      notify("success", { message: new veda.IndividualModel("v-s:BlankSuccessfullySaved").toString() });
+      notify("success", { message: new veda.IndividualModel("v-fc:BlankSuccessfullySaved").toString() });
     });
   } else {
     $(".action.save-create", template).remove();

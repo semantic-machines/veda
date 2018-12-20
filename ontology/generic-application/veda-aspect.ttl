@@ -263,6 +263,9 @@ v-s:PersonalAspectTemplate
             <div rel="v-s:hasBlank">
               <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
             </div>
+            <div rel="v-s:hasCreate">
+              <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
+            </div>
           </div>
         </div>
         <div class="registries col-md-4 col-sm-6 col-xs-12" style="display: flex;">
