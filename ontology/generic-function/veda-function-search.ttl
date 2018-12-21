@@ -799,7 +799,6 @@ v-fs:AttributiveSearchInlineTemplate
       border-left: 7px solid transparent;
     }
   </style>
-  <h2 about="@" property="rdfs:label" class="caption hidden"></h2>
   <div class="params">
     <div class="search-form"></div>
     <br>
