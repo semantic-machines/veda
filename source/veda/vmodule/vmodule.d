@@ -5,7 +5,8 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.outbuffer, std.algorithm : remove;
     import kaleidic.nanomsg.nano, veda.util.properd;
-    import veda.common.type, veda.core.common.define, veda.core.common.type, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue, veda.util.container;
+    import veda.common.type, veda.core.common.define, veda.core.common.type, veda.onto.resource, veda.onto.lang, veda.onto.individual,
+           veda.util.queue, veda.util.container;
     import veda.common.logger, veda.core.impl.thread_context, veda.core.impl.app_context_creator;
     import veda.core.common.context, veda.onto.onto, veda.util.module_info, veda.common.logger;
 }
@@ -245,7 +246,8 @@ class VedaModule : VedaModuleBasic
 ///////////////////////////////////////////////////
 
     // if return [false] then, no commit prepared message, and repeate
-    abstract ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+    abstract ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
                                 long count_popped);
@@ -339,8 +341,25 @@ class VedaModule : VedaModuleBasic
         long count_popped = 0;
         long count_pushed = 0;
 
-        main_queue.close();
-        main_queue.open();
+        auto timeout = 1;
+
+        while (true)
+        {
+            main_queue.close();
+            main_queue.open();
+            main_queue.get_info(main_queue.chunk);
+
+            if (main_queue.isReady == false)
+            {
+                log.trace("queue %s not ready, sleep %d s and repeate...", main_queue.get_name(), timeout);
+                Thread.sleep(dur!("seconds")(timeout));
+
+                if (timeout < 10)
+                    timeout++;
+            }
+            else
+                break;
+        }
 
         int i = 0;
         while (true)
@@ -385,7 +404,9 @@ class VedaModule : VedaModuleBasic
                         Individual prev_indv;
                         try
                         {
-                            rc = prepare(main_cs[ i ].name, null, INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1, count_pushed, count_popped);
+                            rc =
+                                prepare(main_cs[ i ].name, null, INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1, count_pushed,
+                                        count_popped);
                         }
                         catch (Throwable tr)
                         {
@@ -490,8 +511,10 @@ class VedaModule : VedaModuleBasic
 
             try
             {
-                ResultCode res = prepare(main_cs[ i ].name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
-                                         count_popped);
+                ResultCode res =
+                    prepare(main_cs[ i ].name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id,
+                            count_pushed,
+                            count_popped);
 
                 if (res == ResultCode.Ok)
                 {

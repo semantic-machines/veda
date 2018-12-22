@@ -124,6 +124,11 @@ class Consumer
         header_buff = new ubyte[ header.length() ];
     }
 
+    public string get_name()
+    {
+        return name;
+    }
+
     public bool open(bool open_only_if_exists = false, Mode _mode = Mode.DEFAULT)
     {
         if (_mode != Mode.DEFAULT)
@@ -170,7 +175,8 @@ class Consumer
         {
             ff_info_pop_r.close();
             ff_info_pop_r = null;
-        }    
+        }
+        isReady = false;
     }
 
     public void reopen()
@@ -270,7 +276,11 @@ class Consumer
         if (!queue.isReady || !isReady || mode == Mode.R)
             return null;
 
-        queue.get_info(chunk);
+        if (queue.get_info(chunk) == false)
+        {
+            log.trace("ERR! pop: queue %s not ready", queue.name);
+            return null;
+        }
 
         if (count_popped >= queue.count_pushed)
             return null;
@@ -429,6 +439,11 @@ class Queue
     ~this()
     {
         close();
+    }
+
+    public string get_name()
+    {
+        return name;
     }
 
     void toString(scope void delegate(const(char)[]) sink) const
@@ -594,7 +609,15 @@ class Queue
 
         if (ff_info_push_chunk_r is null)
         {
-            ff_info_push_chunk_r = new File(path ~ "/" ~ name ~ "_info_push_" ~ text(r_chunk), "r");
+            try
+            {
+                ff_info_push_chunk_r = new File(path ~ "/" ~ name ~ "_info_push_" ~ text(r_chunk), "r");
+            }
+            catch (Throwable tr)
+            {
+                isReady = false;
+                return false;
+            }
         }
 
         ff_info_push_chunk_r.seek(0);
