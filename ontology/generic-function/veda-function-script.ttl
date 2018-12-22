@@ -296,7 +296,7 @@ v-s:UserScriptTemplate
 
 v-s:Operation
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Операция"@ru ;
   rdfs:label "Operation"@en ;
@@ -368,6 +368,26 @@ this.fn = function (individual_uri) {
     "@": individual_uri,
     "v-s:deleted": veda.Util.newBool(true)
   });
+};
+  """ ;
+.
+
+v-s:OperationRemove
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:GenericOperation ;
+  rdfs:label "Уничтожить"@ru ;
+  rdfs:label "Remove"@en ;
+  v-ui:hasModel v-s:OperationRemoveModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationRemoveModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции уничтожения"@ru ;
+  rdfs:label "Remove operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  remove_individual(veda.ticket, individual_uri);
 };
   """ ;
 .

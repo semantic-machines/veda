@@ -1,0 +1,371 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-function-property-authorization>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства'"@ru ;
+  rdfs:label "Veda system ontology. Function 'Authorization on property value'"@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+v-s:AuthDistributionRule
+  rdf:type owl:Class ;
+  rdfs:label "Правило распределения авторизации"@ru ;
+  rdfs:label "Authorization distribution rule"@en ;
+  rdfs:comment "Правило распределения индивидов в группы авторизации на основе связки класс, предикат и объект."@ru ;
+  rdfs:comment "Authorization group distribution rule based on union of class, predicate and object."@en ;
+  rdfs:subClassOf v-s:SystemThing ;
+  v-ui:hasTemplate v-s:AuthDistributionRuleTemplate ;
+.
+
+v-s:authClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:label "Целевой класс"@ru ;
+  rdfs:label "Target class"@en ;
+  rdfs:range rdfs:Class ;
+.
+
+v-s:authProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:label "Целевое свойство"@ru ;
+  rdfs:label "Target property"@en ;
+  rdfs:range rdf:Property ;
+.
+
+v-s:authExpression
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:label "Целевое выражение"@ru ;
+  rdfs:label "Target expression"@en ;
+  rdfs:range xsd:string ;
+.
+
+# ------------------------------------------------------------ ШАБЛОНЫ --
+
+v-s:AuthDistributionRuleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:AuthDistributionRule ;
+  rdfs:label "Шаблон для класса v-s:AuthDistributionRule"@ru ;
+  rdfs:label "Template for v-s:AuthDistributionRule class"@en ;
+  v-ui:template """
+<script>
+  //# sourceURL=v-s:AuthDistributionRuleTemplate_pre
+</script>
+<div class="container sheet">
+  <h2 about="v-s:AuthDistributionRule" property="rdfs:label"></h2>
+  <hr>
+  <em about="rdfs:label" property="rdfs:label"></em>
+  <div property="rdfs:label" class="view -edit -search"></div>
+  <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <div property="rdfs:comment" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="rdfs:comment" class="-view edit search"></veda-control>
+
+  <em about="v-s:authClass" property="rdfs:label"></em>
+  <div about="@" rel="v-s:authClass" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+  <div rel="v-s:authClass" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:authClass" class="-view edit search fulltext"></veda-control>
+
+  <em about="v-s:authProperty" property="rdfs:label"></em>
+  <div about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+  <div rel="v-s:authProperty" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:authProperty" class="-view edit search fulltext"></veda-control>
+
+  <em about="v-s:authExpression" property="rdfs:label"></em>
+  <div property="v-s:authExpression" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="v-s:authExpression" class="-view edit search"></veda-control>
+  <br>
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  //# sourceURL=v-s:AuthDistributionRuleTemplate_post
+</script>
+""" ;
+.
+
+# ------------- РЕЕСТРЫ ---------------
+
+v-s:AuthDistributionRuleBlank
+  a v-fc:Blank ;
+  rdfs:label "Заявка на делегирование"@ru ;
+  rdfs:label "Delegation request"@en ;
+  v-fc:targetType v-s:AuthDistributionRuleUser ;
+.
+
+v-s:AuthDistributionRuleRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Заявки на делегирование"@ru;
+  rdfs:label "Delegation requests"@en;
+  v-fs:searchBlank v-s:AuthDistributionRuleBlank ;
+  v-fs:searchBlankTemplate v-s:AuthDistributionRuleTemplate ;
+  v-fs:searchResultTemplate v-s:AuthDistributionRuleRegistryResultTemplate ;
+.
+
+v-s:AuthDistributionRuleRegistryResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра v-s:AuthDistributionRule"@ru ;
+  rdfs:label "v-s:AuthDistributionRule registry result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="10" about="v-s:AuthDistributionRule" property="rdfs:label"></th>
+    </tr>
+    <tr class="active">
+      <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:authClass"><span about="v-s:authClass" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authProperty"><span about="v-s:authProperty" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authExpression"><span about="v-s:authExpression" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:dateFrom"><span about="v-s:dateFrom" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:dateTo"><span about="v-s:dateTo" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td><input type="checkbox" class="toggle-select"></td>
+      <td class="serial-number"></td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td about="@" rel="v-s:authClass" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:authExpression"></td>
+      <td about="@" property="v-s:dateFrom"></td>
+      <td about="@" property="v-s:dateTo"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:created"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+# ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
+
+v-s:AuthDistributionRule_BaseUser
+  rdf:type v-s:Group ;
+  rdfs:label "Основные пользователи v-s:AuthDistributionRule"@ru ;
+  rdfs:label "Users v-s:AuthDistributionRule"@en ;
+.
+
+v-s:AuthDistributionRule_Admin
+  rdf:type v-s:Group ;
+  rdfs:label "Администраторы v-s:AuthDistributionRule"@ru ;
+  rdfs:label "Administrators v-s:AuthDistributionRule"@en ;
+.
+
+v-s:AuthDistributionRule_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:AuthDistributionRule ;
+  v-s:permissionObject v-s:AuthDistributionRule_group ;
+  v-s:permissionObject v-s:AuthDistributionRuleBlank ;
+  v-s:permissionObject v-s:AuthDistributionRuleRegistry ;
+  v-s:permissionObject v-s:AuthDistributionRuleRegistryBlank ;
+  v-s:permissionSubject v-s:AuthDistributionRule_BaseUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "R. Все пользователи. Индивиды v-s:AuthDistributionRule" ;
+.
+
+v-s:AuthDistributionRule_permission2
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:AuthDistributionRuleUser ;
+  v-s:permissionSubject v-s:AuthDistributionRule_BaseUser ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Админы. Класс v-s:AuthDistributionRule" ;
+.
+
+v-s:AuthDistributionRule_permission3
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:AuthDistributionRule ;
+  v-s:permissionObject v-s:AuthDistributionRule_group ;
+  v-s:permissionObject v-s:AuthDistributionRuleUserBlank ;
+  v-s:permissionObject v-s:AuthDistributionRuleRegistry ;
+  v-s:permissionObject v-s:AuthDistributionRuleRegistryBlank ;
+  v-s:permissionObject v-s:AuthDistributionRuleAdminBlank ;
+  v-s:permissionObject v-s:AuthDistributionRuleAdmin ;
+  v-s:permissionObject v-s:AuthDistributionRuleAdmin_group ;
+  v-s:permissionSubject v-s:AuthDistributionRule_Admin ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:canUpdate "true"^^xsd:boolean ;
+  v-s:canDelete "true"^^xsd:boolean ;
+  rdfs:label "CRUD. Админы. Индивиды v-s:AuthDistributionRule" ;
+.
+
+v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-s:AuthDistributionRule_BaseUser ;
+  v-s:resource cfg:AllUsersGroup ;
+  v-s:resource v-s:AuthDistributionRule_Admin ;
+  rdfs:label "Все пользователи входят в группу Основные пользователи v-s:AuthDistributionRule" ;
+.
+
+# ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
+
+cfg:Event_AuthDistribution
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт распределения по группам авторизации" ;
+  v-s:triggerByType v-s:ClassAuthorized ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+console.log("super_classes", super_classes);
+try {
+  veda.AuthDistributionRules = veda.AuthDistributionRules || query(veda.ticket, "'rdf:type' === 'v-s:AuthDistributionRule'").result.reduce(function (acc, rule_uri) {
+    var rule = get_individual(veda.ticket, rule_uri);
+    var authClass = veda.Util.getUri(rule["v-s:authClass"]);
+    var authProperty = veda.Util.getUri(rule["v-s:authProperty"]);
+    var authExpression = veda.Util.getFirstValue(rule["v-s:authExpression"]);
+    var fn;
+    if (authProperty) {
+      fn = new Function("veda", "return ( veda.Util.getFirstValue(this['" + authProperty + "']) );");
+    } else if (authExpression) {
+      fn = new Function("veda", "return (" + authExpression + ");");
+    }
+    fn.rule = rule_uri;
+    acc[authClass] = (acc[authClass] || []).concat(fn);
+    return acc;
+  }, {});
+
+  console.log("@1");
+
+  var type = veda.Util.getUri(document["rdf:type"]);
+  var _super = JSON.parse(super_classes);
+  _super.push(type);
+
+  console.log("@2", _super);
+
+  for (var i = 0, _class; (_class = _super[i]); i++) {
+    if (_class in veda.AuthDistributionRules) {
+      var fns = veda.AuthDistributionRules[_class];
+      for (var j = 0, fn; (fn = fns[j]); j++) {
+        var fn_value = fn.call(document, veda);
+        if ( !fn_value ) { continue; }
+        var group_concat_uri = _class + " " + fn.rule + " " + fn_value.toString();
+        console.log("@3", group_concat_uri);
+        var hash = Sha256.hash(group_concat_uri).substring(32);
+        var group_uri = "d:grp-" + hash;
+        console.log("@33", group_uri);
+        var group = get_individual(veda.ticket, group_uri);
+        if ( !group ) {
+          group = {
+            "@": group_uri,
+            "rdf:type": veda.Util.newUri("v-s:Group"),
+            "rdfs:label": veda.Util.newStr(group_concat_uri)
+          };
+          put_individual(veda.ticket, group);
+          console.log("Auth group created:", group_uri);
+        }
+        console.log("@4", group);
+        var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
+        var mem = get_individual(veda.ticket, mem_uri);
+        if ( !mem ) {
+          mem = {
+            "@": mem_uri,
+            "rdf:type": veda.Util.newUri("v-s:Membership"),
+            "rdfs:label": veda.Util.newStr("Membership for rule " + fn.rule),
+            "v-s:resource": veda.Util.newUri(document["@"]),
+            "v-s:memberOf": veda.Util.newUri(group_uri)
+          }
+          put_individual(veda.ticket, mem);
+          console.log("Auth membership created:", mem_uri);
+        }
+        console.log("@5", mem);
+      }
+    }
+  }
+} catch (error) {
+  console.log("Error: ", error);
+}
+  """ ;
+.
+
+cfg:Event_AuthDistributionRuleHandler
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки правил распределения авторизации" ;
+  v-s:triggerByType v-s:AuthDistributionRule ;
+  v-s:script """
+veda.AuthDistributionRules = undefined;
+  """ ;
+.
+
+##### Type distribution rule #####
+
+v-s:AuthDistributionRule_Class
+  rdf:type v-s:AuthDistributionRule ;
+  v-s:authClass v-s:ClassAuthorized ;
+  v-s:authProperty rdf:type ;
+  rdfs:label "Auth distribution rule: put individual to class group" ;
+.
+
+v-s:AuthDistributionRule_SuperClass
+  rdf:type v-s:AuthDistributionRule ;
+  v-s:authClass rdfs:Class ;
+  v-s:authProperty rdfs:subClassOf ;
+  rdfs:label "Auth distribution rule: put class to super class group" ;
+.
+
+v-s:AuthDistributionRule_ClassGroupToSuperClassGroup
+  rdf:type v-s:AuthDistributionRule ;
+  v-s:authClass v-s:Group ;
+  v-s:authExpression """
+(function () {
+
+})();
+  """ ;
+  rdfs:label "Auth distribution rule: put class individuals group to super class individuals group" ;
+.
+
+
+# Сделал первый подход к мандатам (правилам распределения индивидов по авторизационным группам).
+#
+# В принципе получается универсальный инструмент.
+# Хочу перевести на него наши существующие скрипты по созданию групп и включению в них индивидов (например, группа индивидов классов, иерархия групп индивидов классов в соответствии с  иерархией классов, иерархия групп орг. структуры).
+#
+# Работает так:
+# 1) Есть скрипт, обрабатывающий объекты класса v-s:ClassAuthorized (просто для теста, от него наследуется v-s:UserThing).
+# 2) Скрипт ведет в инстансе JsVm список всех существующих правил распределения по группам.
+# 3) Для каждого индивида пойманного скриптом проверяется наличие правила распределения. Проверка делается для класса и всех суперклассов индивида. Подходящие правила выполняются по отношению к индивиду.
+# 4) Каждое правило описывает:
+#   - целевой класс, для которого выполняется правило;
+#   - целевое свойство (для распределение по значению свойства индивида).
+#   - целевое выражение - скрипт, который должен вернуть произвольное значение на основе индивида.
+# Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
+# 5) Задача правила - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое свойством равно количеству уникальных целевых значений.
+# 6) Uri Авторизационной группы вычисляется так:
+# "d:grp-" + Sha256.hash(class_uri + " " + rule_uri + " " value).substr(32)
+# 7) Объект добавляется в вычисленную (созданную) группу.
+# Uri Записи о включении в группу вычисляется так:
+# "d:mem-" + Sha256.hash(object_uri + " " + group_uri).substring(32)
+# 8) Права можно выдавать традиционным способом - зная uri группы объекта и субъекта, создать запись о правах.
+# 9) (пока не реализовано, может и не надо) Или создавать специальные записи о правах, где указываются не группы, а правила для групп субъекта и объекта и их целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе специальных записей создаются обычные записи о правах (1 к 1).
+#
+# Таким образом, предлагаемый механизм является надстройкой над уже существующей системой авторизации и фактически повторяет возможности мандатов в СЭД.
