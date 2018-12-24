@@ -31,13 +31,13 @@ veda.Module(function (veda) { "use strict";
 
     var ontology = new veda.OntologyModel();
 
-    var specs = $.extend.apply (
-      {}, [].concat(
-        individual["rdf:type"].map( function (_class) {
-          return ontology.getClassSpecifications(_class.id);
-        })
-      )
-    );
+    var specs = individual["rdf:type"].reduce( function (acc, _class) {
+      var _classSpecs = ontology.getClassSpecifications(_class.id);
+      Object.keys(_classSpecs).forEach(function (property_uri) {
+        acc[property_uri] = _classSpecs[property_uri];
+      });
+      return acc;
+    }, {});
 
     if (template) {
       if (typeof template === "string" && (/^(\w|-)+:.*?$/).test(template) ) {
