@@ -31,25 +31,33 @@ v-s:AuthDistributionRule
 v-s:authClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:AuthDistributionRule ;
-  rdfs:label "Целевой класс"@ru ;
-  rdfs:label "Target class"@en ;
+  rdfs:label "Авторизуемый класс"@ru ;
+  rdfs:label "Authorized   class"@en ;
   rdfs:range rdfs:Class ;
 .
 
 v-s:authProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:AuthDistributionRule ;
-  rdfs:label "Целевое свойство"@ru ;
-  rdfs:label "Target property"@en ;
+  rdfs:label "Авторизуемое свойство"@ru ;
+  rdfs:label "Authorized property"@en ;
   rdfs:range rdf:Property ;
 .
 
 v-s:authExpression
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:AuthDistributionRule ;
-  rdfs:label "Целевое выражение"@ru ;
-  rdfs:label "Target expression"@en ;
+  rdfs:label "Авторизуемое выражение"@ru ;
+  rdfs:label "Authorized expression"@en ;
   rdfs:range xsd:string ;
+.
+
+v-s:authValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:label "Авторизуемое значение"@ru ;
+  rdfs:label "Authorized value"@en ;
+  rdfs:range rdfs:Resource ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
@@ -87,6 +95,11 @@ v-s:AuthDistributionRuleTemplate
   <em about="v-s:authExpression" property="rdfs:label"></em>
   <div property="v-s:authExpression" class="view -edit -search"></div>
   <veda-control data-type="text" rows="2" property="v-s:authExpression" class="-view edit search"></veda-control>
+
+  <em about="v-s:authValue" property="rdfs:label"></em>
+  <div property="v-s:authValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
+
   <br>
   <div class="actions view edit -search">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
@@ -124,7 +137,7 @@ v-s:AuthDistributionRuleRegistryResultTemplate
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="10" about="v-s:AuthDistributionRule" property="rdfs:label"></th>
+      <th colspan="11" about="v-s:AuthDistributionRule" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
@@ -133,6 +146,7 @@ v-s:AuthDistributionRuleRegistryResultTemplate
       <th class="orderby" data-orderby="v-s:authClass"><span about="v-s:authClass" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authProperty"><span about="v-s:authProperty" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authExpression"><span about="v-s:authExpression" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:dateFrom"><span about="v-s:dateFrom" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:dateTo"><span about="v-s:dateTo" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
@@ -147,6 +161,7 @@ v-s:AuthDistributionRuleRegistryResultTemplate
       <td about="@" rel="v-s:authClass" data-template="v-ui:LabelTemplate"></td>
       <td about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:authExpression"></td>
+      <td about="@" property="v-s:authValue"></td>
       <td about="@" property="v-s:dateFrom"></td>
       <td about="@" property="v-s:dateTo"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
