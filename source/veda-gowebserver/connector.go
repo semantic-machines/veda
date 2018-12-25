@@ -48,7 +48,7 @@ type RequestResponse struct {
 
 	uris        []string
 	data_binobj []string
-	data_obj_tt [][]interface{}
+	data_obj_tt []map[interface{}]interface{}
 	src_type    int
 }
 
@@ -61,7 +61,7 @@ func (rr *RequestResponse) AddIndv(data Individual) {
 	rr.indv = append(rr.indv, data)
 }
 
-func (rr *RequestResponse) AddTTResult(data []interface{}) {
+func (rr *RequestResponse) AddTTResult(data map[interface{}]interface{}) {
 	rr.src_type = TT
 	rr.data_obj_tt = append(rr.data_obj_tt, data)
 }
@@ -287,37 +287,39 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 	if conn.tt_client != nil {
 
 		for i := 0; i < len(uris); i++ {
-
-			resp, err := conn.tt_client.Select("INDIVIDUALS", "S", 0, 1024, tarantool.IterEq, []interface{}{uris[i]})
-
+			resp, err := conn.tt_client.Select("INDIVIDUALS", "primary", 0, 1, tarantool.IterEq, []interface{}{uris[i]})
 			if err != nil {
 				log.Println("ERR! ", err)
 			} else {
 				if len(resp.Data) == 0 {
 					rr.OpRC = append(rr.OpRC, NotFound)
 					continue
+				}
+				if tpl, ok := resp.Data[0].([]interface{}); !ok {
+					log.Println("ERR! Get: Unexpected body of Insert")
+					rr.CommonRC = InternalServerError
 				} else {
-
-					if needAuth {
-						curi := C.CString(uris[i])
-						defer C.free(unsafe.Pointer(curi))
-						cuser_uri := C.CString(userUri)
-						defer C.free(unsafe.Pointer(cuser_uri))
-						if reopen == true {
-							if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
-								rr.OpRC = append(rr.OpRC, NotAuthorized)
-								continue
-							}
-						} else {
-							if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
-								rr.OpRC = append(rr.OpRC, NotAuthorized)
-								continue
+					if len(tpl) == 2 {
+						if needAuth {
+							curi := C.CString(uris[i])
+							defer C.free(unsafe.Pointer(curi))
+							cuser_uri := C.CString(userUri)
+							defer C.free(unsafe.Pointer(cuser_uri))
+							if reopen == true {
+								if C.authorize_r(curi, cuser_uri, 2, true) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
+							} else {
+								if C.authorize_r(curi, cuser_uri, 2, false) != 2 {
+									rr.OpRC = append(rr.OpRC, NotAuthorized)
+									continue
+								}
 							}
 						}
+						rr.OpRC = append(rr.OpRC, Ok)
+						rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
 					}
-
-					rr.OpRC = append(rr.OpRC, Ok)
-					rr.AddTTResult(resp.Data)
 				}
 
 			}
@@ -577,7 +579,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 
 	if conn.tt_client != nil {
 
-		resp, err := conn.tt_client.Select("TICKETS", "S", 0, 1024, tarantool.IterEq, []interface{}{ticketIDs[0]})
+		resp, err := conn.tt_client.Select("TICKETS", "primary", 0, 1, tarantool.IterEq, []interface{}{ticketIDs[0]})
 		if err != nil {
 			log.Println("ERR! ", err)
 			rr.CommonRC = InternalServerError
@@ -586,10 +588,13 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		if len(resp.Data) == 0 {
 			log.Println("ERR! webserver.GetTicket: Empty body of Insert")
 			rr.CommonRC = InternalServerError
+		} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
+			log.Println("ERR! webserver.GetTicket: Unexpected body of Insert")
+			rr.CommonRC = InternalServerError
 		} else {
 			rr.OpRC = append(rr.OpRC, Ok)
 
-			rr.AddTTResult(resp.Data)
+			rr.AddTTResult(tpl[1].(map[interface{}]interface{}))
 			rr.CommonRC = Ok
 		}
 
