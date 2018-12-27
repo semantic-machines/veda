@@ -18,27 +18,27 @@
 
 # ------------------------------------------------------------ КЛАССЫ --
 
-v-s:AuthDistributionRule
+v-s:GroupRule
   rdf:type owl:Class ;
-  rdfs:label "Правило распределения авторизации"@ru ;
-  rdfs:label "Authorization distribution rule"@en ;
+  rdfs:label "Правило формирования групп авторизации"@ru ;
+  rdfs:label "Authorization group form rule"@en ;
   rdfs:comment "Правило распределения индивидов в группы авторизации на основе связки класс, предикат и объект."@ru ;
   rdfs:comment "Authorization group distribution rule based on union of class, predicate and object."@en ;
   rdfs:subClassOf v-s:SystemThing ;
-  v-ui:hasTemplate v-s:AuthDistributionRuleTemplate ;
+  v-ui:hasTemplate v-s:GroupRuleTemplate ;
 .
 
 v-s:authClass
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:domain v-s:GroupRule ;
   rdfs:label "Авторизуемый класс"@ru ;
-  rdfs:label "Authorized   class"@en ;
+  rdfs:label "Authorized class"@en ;
   rdfs:range rdfs:Class ;
 .
 
 v-s:authProperty
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:domain v-s:GroupRule ;
   rdfs:label "Авторизуемое свойство"@ru ;
   rdfs:label "Authorized property"@en ;
   rdfs:range rdf:Property ;
@@ -46,7 +46,7 @@ v-s:authProperty
 
 v-s:authExpression
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:domain v-s:GroupRule ;
   rdfs:label "Авторизуемое выражение"@ru ;
   rdfs:label "Authorized expression"@en ;
   rdfs:range xsd:string ;
@@ -54,7 +54,7 @@ v-s:authExpression
 
 v-s:authValue
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:AuthDistributionRule ;
+  rdfs:domain v-s:GroupRule ;
   rdfs:label "Авторизуемое значение"@ru ;
   rdfs:label "Authorized value"@en ;
   rdfs:range rdfs:Resource ;
@@ -62,17 +62,17 @@ v-s:authValue
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
-v-s:AuthDistributionRuleTemplate
+v-s:GroupRuleTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-s:AuthDistributionRule ;
-  rdfs:label "Шаблон для класса v-s:AuthDistributionRule"@ru ;
-  rdfs:label "Template for v-s:AuthDistributionRule class"@en ;
+  v-ui:forClass v-s:GroupRule ;
+  rdfs:label "Шаблон для класса v-s:GroupRule"@ru ;
+  rdfs:label "Template for v-s:GroupRule class"@en ;
   v-ui:template """
 <script>
-  //# sourceURL=v-s:AuthDistributionRuleTemplate_pre
+  //# sourceURL=v-s:GroupRuleTemplate_pre
 </script>
 <div class="container sheet">
-  <h2 about="v-s:AuthDistributionRule" property="rdfs:label"></h2>
+  <h2 about="v-s:GroupRule" property="rdfs:label"></h2>
   <hr>
   <em about="rdfs:label" property="rdfs:label"></em>
   <div property="rdfs:label" class="view -edit -search"></div>
@@ -106,38 +106,38 @@ v-s:AuthDistributionRuleTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-s:AuthDistributionRuleTemplate_post
+  //# sourceURL=v-s:GroupRuleTemplate_post
 </script>
 """ ;
 .
 
 # ------------- РЕЕСТРЫ ---------------
 
-v-s:AuthDistributionRuleBlank
+v-s:GroupRuleBlank
   a v-fc:Blank ;
   rdfs:label "Заявка на делегирование"@ru ;
   rdfs:label "Delegation request"@en ;
-  v-fc:targetType v-s:AuthDistributionRuleUser ;
+  v-fc:targetType v-s:GroupRuleUser ;
 .
 
-v-s:AuthDistributionRuleRegistry
+v-s:GroupRuleRegistry
   a v-fs:AttributiveSearch;
   rdfs:label "Заявки на делегирование"@ru;
   rdfs:label "Delegation requests"@en;
-  v-fs:searchBlank v-s:AuthDistributionRuleBlank ;
-  v-fs:searchBlankTemplate v-s:AuthDistributionRuleTemplate ;
-  v-fs:searchResultTemplate v-s:AuthDistributionRuleRegistryResultTemplate ;
+  v-fs:searchBlank v-s:GroupRuleBlank ;
+  v-fs:searchBlankTemplate v-s:GroupRuleTemplate ;
+  v-fs:searchResultTemplate v-s:GroupRuleRegistryResultTemplate ;
 .
 
-v-s:AuthDistributionRuleRegistryResultTemplate
+v-s:GroupRuleRegistryResultTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон результатов реестра v-s:AuthDistributionRule"@ru ;
-  rdfs:label "v-s:AuthDistributionRule registry result template"@en ;
+  rdfs:label "Шаблон результатов реестра v-s:GroupRule"@ru ;
+  rdfs:label "v-s:GroupRule registry result template"@en ;
   v-ui:template """
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="11" about="v-s:AuthDistributionRule" property="rdfs:label"></th>
+      <th colspan="11" about="v-s:GroupRule" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
@@ -174,62 +174,62 @@ v-s:AuthDistributionRuleRegistryResultTemplate
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
 
-v-s:AuthDistributionRule_BaseUser
+v-s:GroupRule_BaseUser
   rdf:type v-s:Group ;
-  rdfs:label "Основные пользователи v-s:AuthDistributionRule"@ru ;
-  rdfs:label "Users v-s:AuthDistributionRule"@en ;
+  rdfs:label "Основные пользователи v-s:GroupRule"@ru ;
+  rdfs:label "Users v-s:GroupRule"@en ;
 .
 
-v-s:AuthDistributionRule_Admin
+v-s:GroupRule_Admin
   rdf:type v-s:Group ;
-  rdfs:label "Администраторы v-s:AuthDistributionRule"@ru ;
-  rdfs:label "Administrators v-s:AuthDistributionRule"@en ;
+  rdfs:label "Администраторы v-s:GroupRule"@ru ;
+  rdfs:label "Administrators v-s:GroupRule"@en ;
 .
 
-v-s:AuthDistributionRule_permission1
+v-s:GroupRule_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:AuthDistributionRule ;
-  v-s:permissionObject v-s:AuthDistributionRule_group ;
-  v-s:permissionObject v-s:AuthDistributionRuleBlank ;
-  v-s:permissionObject v-s:AuthDistributionRuleRegistry ;
-  v-s:permissionObject v-s:AuthDistributionRuleRegistryBlank ;
-  v-s:permissionSubject v-s:AuthDistributionRule_BaseUser ;
+  v-s:permissionObject v-s:GroupRule ;
+  v-s:permissionObject v-s:GroupRule_group ;
+  v-s:permissionObject v-s:GroupRuleBlank ;
+  v-s:permissionObject v-s:GroupRuleRegistry ;
+  v-s:permissionObject v-s:GroupRuleRegistryBlank ;
+  v-s:permissionSubject v-s:GroupRule_BaseUser ;
   v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "R. Все пользователи. Индивиды v-s:AuthDistributionRule" ;
+  rdfs:label "R. Все пользователи. Индивиды v-s:GroupRule" ;
 .
 
-v-s:AuthDistributionRule_permission2
+v-s:GroupRule_permission2
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:AuthDistributionRuleUser ;
-  v-s:permissionSubject v-s:AuthDistributionRule_BaseUser ;
+  v-s:permissionObject v-s:GroupRuleUser ;
+  v-s:permissionSubject v-s:GroupRule_BaseUser ;
   v-s:canCreate "true"^^xsd:boolean ;
-  rdfs:label "C. Админы. Класс v-s:AuthDistributionRule" ;
+  rdfs:label "C. Админы. Класс v-s:GroupRule" ;
 .
 
-v-s:AuthDistributionRule_permission3
+v-s:GroupRule_permission3
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:AuthDistributionRule ;
-  v-s:permissionObject v-s:AuthDistributionRule_group ;
-  v-s:permissionObject v-s:AuthDistributionRuleUserBlank ;
-  v-s:permissionObject v-s:AuthDistributionRuleRegistry ;
-  v-s:permissionObject v-s:AuthDistributionRuleRegistryBlank ;
-  v-s:permissionObject v-s:AuthDistributionRuleAdminBlank ;
-  v-s:permissionObject v-s:AuthDistributionRuleAdmin ;
-  v-s:permissionObject v-s:AuthDistributionRuleAdmin_group ;
-  v-s:permissionSubject v-s:AuthDistributionRule_Admin ;
+  v-s:permissionObject v-s:GroupRule ;
+  v-s:permissionObject v-s:GroupRule_group ;
+  v-s:permissionObject v-s:GroupRuleUserBlank ;
+  v-s:permissionObject v-s:GroupRuleRegistry ;
+  v-s:permissionObject v-s:GroupRuleRegistryBlank ;
+  v-s:permissionObject v-s:GroupRuleAdminBlank ;
+  v-s:permissionObject v-s:GroupRuleAdmin ;
+  v-s:permissionObject v-s:GroupRuleAdmin_group ;
+  v-s:permissionSubject v-s:GroupRule_Admin ;
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:canUpdate "true"^^xsd:boolean ;
   v-s:canDelete "true"^^xsd:boolean ;
-  rdfs:label "CRUD. Админы. Индивиды v-s:AuthDistributionRule" ;
+  rdfs:label "CRUD. Админы. Индивиды v-s:GroupRule" ;
 .
 
 v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
   rdf:type v-s:Membership ;
-  v-s:memberOf v-s:AuthDistributionRule_BaseUser ;
+  v-s:memberOf v-s:GroupRule_BaseUser ;
   v-s:resource cfg:AllUsersGroup ;
-  v-s:resource v-s:AuthDistributionRule_Admin ;
-  rdfs:label "Все пользователи входят в группу Основные пользователи v-s:AuthDistributionRule" ;
+  v-s:resource v-s:GroupRule_Admin ;
+  rdfs:label "Все пользователи входят в группу Основные пользователи v-s:GroupRule" ;
 .
 
 # ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
@@ -251,13 +251,14 @@ cfg:Event_AuthDistribution
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-console.log("super_classes", super_classes);
+
 try {
-  veda.AuthDistributionRules = veda.AuthDistributionRules || query(veda.ticket, "'rdf:type' === 'v-s:AuthDistributionRule'").result.reduce(function (acc, rule_uri) {
+  veda.AuthDistributionRules = veda.AuthDistributionRules || query(veda.ticket, "'rdf:type' === 'v-s:GroupRule'").result.reduce(function (acc, rule_uri) {
     var rule = get_individual(veda.ticket, rule_uri);
     var authClass = veda.Util.getUri(rule["v-s:authClass"]);
     var authProperty = veda.Util.getUri(rule["v-s:authProperty"]);
     var authExpression = veda.Util.getFirstValue(rule["v-s:authExpression"]);
+    var authValue = veda.Util.getFirstValue(rule["v-s:authValue"]);
     var fn;
     if (authProperty) {
       fn = new Function("veda", "return ( veda.Util.getFirstValue(this['" + authProperty + "']) );");
@@ -265,29 +266,29 @@ try {
       fn = new Function("veda", "return (" + authExpression + ");");
     }
     fn.rule = rule_uri;
+    fn.value = authValue;
     acc[authClass] = (acc[authClass] || []).concat(fn);
     return acc;
   }, {});
-
-  console.log("@1");
 
   var type = veda.Util.getUri(document["rdf:type"]);
   var _super = JSON.parse(super_classes);
   _super.push(type);
 
-  console.log("@2", _super);
-
   for (var i = 0, _class; (_class = _super[i]); i++) {
     if (_class in veda.AuthDistributionRules) {
       var fns = veda.AuthDistributionRules[_class];
       for (var j = 0, fn; (fn = fns[j]); j++) {
-        var fn_value = fn.call(document, veda);
-        if ( !fn_value ) { continue; }
-        var group_concat_uri = _class + " " + fn.rule + " " + fn_value.toString();
-        console.log("@3", group_concat_uri);
+        var fn_value;
+        if (typeof fn.value === "undefined") {
+          fn_value = fn.call(document, veda);
+        } else {
+          fn_value = (fn.value === fn.call(document, veda)) && fn.value;
+        }
+        if (typeof fn_value === "undefined") { continue; }
+        var group_concat_uri = fn.rule + " " + fn_value.toString();
         var hash = Sha256.hash(group_concat_uri).substring(32);
         var group_uri = "d:grp-" + hash;
-        console.log("@33", group_uri);
         var group = get_individual(veda.ticket, group_uri);
         if ( !group ) {
           group = {
@@ -298,7 +299,6 @@ try {
           put_individual(veda.ticket, group);
           console.log("Auth group created:", group_uri);
         }
-        console.log("@4", group);
         var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
         var mem = get_individual(veda.ticket, mem_uri);
         if ( !mem ) {
@@ -310,9 +310,7 @@ try {
             "v-s:memberOf": veda.Util.newUri(group_uri)
           }
           put_individual(veda.ticket, mem);
-          console.log("Auth membership created:", mem_uri);
         }
-        console.log("@5", mem);
       }
     }
   }
@@ -326,7 +324,7 @@ cfg:Event_AuthDistributionRuleHandler
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки правил распределения авторизации" ;
-  v-s:triggerByType v-s:AuthDistributionRule ;
+  v-s:triggerByType v-s:GroupRule ;
   v-s:script """
 veda.AuthDistributionRules = undefined;
   """ ;
@@ -334,27 +332,27 @@ veda.AuthDistributionRules = undefined;
 
 ##### Type distribution rule #####
 
-v-s:AuthDistributionRule_Class
-  rdf:type v-s:AuthDistributionRule ;
+v-s:GroupRule_Class
+  rdf:type v-s:GroupRule ;
   v-s:authClass v-s:ClassAuthorized ;
   v-s:authProperty rdf:type ;
   rdfs:label "Auth distribution rule: put individual to class group" ;
 .
 
-v-s:AuthDistributionRule_SuperClass
-  rdf:type v-s:AuthDistributionRule ;
+v-s:GroupRule_SuperClass
+  rdf:type v-s:GroupRule ;
   v-s:authClass rdfs:Class ;
   v-s:authProperty rdfs:subClassOf ;
   rdfs:label "Auth distribution rule: put class to super class group" ;
 .
 
-v-s:AuthDistributionRule_ClassGroupToSuperClassGroup
-  rdf:type v-s:AuthDistributionRule ;
+v-s:GroupRule_ClassGroupToSuperClassGroup
+  rdf:type v-s:GroupRule ;
   v-s:authClass v-s:Group ;
   v-s:authExpression """
 (function () {
 
-})();
+})()
   """ ;
   rdfs:label "Auth distribution rule: put class individuals group to super class individuals group" ;
 .
@@ -376,7 +374,7 @@ v-s:AuthDistributionRule_ClassGroupToSuperClassGroup
 # Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
 # 5) Задача правила - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое свойством равно количеству уникальных целевых значений.
 # 6) Uri Авторизационной группы вычисляется так:
-# "d:grp-" + Sha256.hash(class_uri + " " + rule_uri + " " value).substr(32)
+# "d:grp-" + Sha256.hash(rule_uri + " " value).substr(32)
 # 7) Объект добавляется в вычисленную (созданную) группу.
 # Uri Записи о включении в группу вычисляется так:
 # "d:mem-" + Sha256.hash(object_uri + " " + group_uri).substring(32)
