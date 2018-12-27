@@ -186,8 +186,6 @@ func (conn *Connector) open_dbs() {
 			log.Fatal("ERR! open_dbs", err)
 		} else {
 			conn.db_is_open = true
-			log.Println("@ resp.Code=", resp.Code)
-			log.Println("@ resp.Data=", resp.Data)
 		}
 
 	} else {
