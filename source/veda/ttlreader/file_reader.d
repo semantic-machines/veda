@@ -316,8 +316,8 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
                     if (new_hash != old_hash)
                     {
                         log.trace("file is modifed (hash), %s", fname);
-	                    files_to_load ~= fname;
-	                    is_reload = true;
+                        files_to_load ~= fname;
+                        is_reload = true;
                     }
                 }
             }
