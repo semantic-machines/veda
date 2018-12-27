@@ -421,15 +421,8 @@ v-s:OrganizationTemplate
         <div property="v-s:postalAddress" class="view -edit -search"></div>
         <veda-control data-type="text" rows="3" property="v-s:postalAddress" class="-view edit search"></veda-control>
       </div>
-      <div class="col-sm-4">
-        <em about="v-s:mailbox" property="rdfs:label"></em>
-        <div property="v-s:mailbox" class="view -edit -search"></div>
-        <veda-control data-type="text" rows="3" property="v-s:mailbox" class="-view edit search"></veda-control>
-      </div>
     </div>
-
     <hr class="view -edit -search">
-
     <em about="v-s:LegalEntityExistencePeriodBundle" property="rdfs:label"></em>
     <div class="row">
       <div class="col-md-4">
@@ -441,7 +434,6 @@ v-s:OrganizationTemplate
         <veda-control property="v-s:dateToFact" data-type="date" class="-view edit search"></veda-control>
       </div>
     </div>
-
     <em about="v-s:hasSubsidiary" property="rdfs:label"></em>
     <table class="table table-condensed table-bordered">
       <thead>

@@ -118,16 +118,8 @@ public class TarantoolDriver : KeyValueDB
                 return null;
             }
 
-//            uint field_count = mp_decode_array(&reply.data);
-//            char *str_value;
-//            uint str_value_length;
-//            mp_decode_str(&reply.data, &str_value_length);
-//            str_value = mp_decode_str(&reply.data, &str_value_length);
-//            string res = cast(string)str_value[ 0..str_value_length ].dup;
-
             auto   data_size = reply.data_end - reply.data;
             string res       = cast(string)reply.data[ 0..data_size ].dup;
-            //stderr.writefln ("\n@GET reply.data=%s", res);
 
             //stderr.writefln("@ TarantoolDriver.find: FOUND %s->[%s]", uri, cast(string)str_value[ 0..str_value_length ]);
 
@@ -169,17 +161,17 @@ public class TarantoolDriver : KeyValueDB
         tnt_flush(tnt);
         tnt_stream_free(tuple);
 
-        tnt_reply_ reply;
-        tnt_reply_init(&reply);
-        tnt.read_reply(tnt, &reply);
+        tnt_reply_ *reply;
+        reply = tnt_reply_init(null);
+        tnt.read_reply(tnt, reply);
         if (reply.code != 0)
         {
             log.trace("Insert failed [%s][%s] errcode=%s msg=%s", in_key, in_value, reply.code, to!string(reply.error));
-            tnt_reply_free(&reply);
+            tnt_reply_free(reply);
             return ResultCode.InternalServerError;
         }
 
-        tnt_reply_free(&reply);
+        tnt_reply_free(reply);
         return ResultCode.Ok;
     }
 
@@ -228,11 +220,8 @@ public class TarantoolDriver : KeyValueDB
             tnt_ping(tnt);
             tnt_reply_ *reply = tnt_reply_init(null);
             tnt.read_reply(tnt, reply);
-            tnt_reply_free(reply);
             if (reply.code == 0)
             {
-                tnt_reply_init(reply);
-
                 tnt_stream *tuple = tnt_object(null);
 
                 tnt_object_add_array(tuple, 1);
@@ -253,7 +242,6 @@ public class TarantoolDriver : KeyValueDB
                 }
                 else
                     tnt_reply_free(reply);
-
 
                 log.trace("SUCCESS CONNECT TO TARANTOOL %s", uri);
                 db_is_opened = true;
