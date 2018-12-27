@@ -179,7 +179,7 @@ const (
 
 func (conn *Connector) open_dbs() {
 	if conn.tt_client != nil {
-		resp, err := conn.tt_client.Ping()
+		_, err := conn.tt_client.Ping()
 
 		if err != nil {
 			conn.db_is_open = false
