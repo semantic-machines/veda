@@ -883,18 +883,17 @@ v-ui:AppointmentPopoverTemplate
       </div>
     </div>
     <div about="@" rel="v-s:employee">
-      <div about="@" rel="v-s:hasAccount">
+      <div about="@" rel="v-s:hasCommunicationMean">
         <div>
-          <small about="@" property="v-s:mailbox"></small>
-          <small about="@" property="v-s:phone"></small>
+          <small about="@" property="v-s:description"></small>
         </div>
       </div>
-      <small about="@" property="v-s:phone"></small>
     </div>
   </div>
 </div>
   """ ;
 .
+
 v-ui:PersonPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с фотографией"@ru ;
@@ -921,13 +920,11 @@ v-ui:PersonPopoverTemplate
         <span about="@" property="rdfs:label"></span>
       </small>
     </div>
-    <div about="@" rel="v-s:hasAccount">
+    <div about="@" rel="v-s:hasCommunicationMean">
       <div>
-        <small about="@" property="v-s:mailbox"></small>
-        <small about="@" property="v-s:phone"></small>
+        <small about="@" property="v-s:description"></small>
       </div>
     </div>
-    <small about="@" property="v-s:phone"></small>
   </div>
 </div>
   """ ;
@@ -2063,11 +2060,14 @@ v-ui:DocumentEventTemplate
     var process = individual['v-wf:onProcess'][0];
 
     if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
+        && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
       var actor = individual['v-s:actor'][0];
-      if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
-        $(".stop-process", template).show();
+      if (actor) {
+        if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
+          $(".stop-process", template).show();
+        }
       }
+      
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".process-id", template).addClass('text-danger');
@@ -2096,10 +2096,12 @@ v-ui:DocumentEventTemplate
             href = startForm[0].data;
           } else {
             //Устаревший вариант
-            var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
-              return vrbl.hasValue("v-wf:variableName",  "startForm_id");
-            });
-            href = startFormVar[0]["v-wf:variableValue"][0].id;
+            try {
+              var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
+                return vrbl.hasValue("v-wf:variableName",  "startForm_id");
+              });
+              href = startFormVar[0]["v-wf:variableValue"][0].id;
+            } catch (e) {}
           };
           if (href != null) {
             $("[about='start-form']", template).attr("about", href);

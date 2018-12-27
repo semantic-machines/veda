@@ -381,19 +381,22 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
                                     return;
                                 }
-                                else if (ti.cmd == INDV_OP.PUT)
+                                else if (ti.cmd == INDV_OP.PUT || ti.cmd == INDV_OP.REMOVE)
                                 {
+                                    if (ti.cmd == INDV_OP.REMOVE)
+                                        rc = storage.remove(ti.uri);
+                                    else
+                                        rc = storage.store(ti.uri, ti.new_binobj, op_id);
+
+
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
-                                    if (storage.store(ti.uri, ti.new_binobj, op_id) == ResultCode.Ok)
+                                    if (rc == ResultCode.Ok)
                                     {
-                                        rc = ResultCode.Ok;
                                         op_id++;
                                         set_subject_manager_op_id(op_id);
                                     }
                                     else
-                                    {
                                         rc = ResultCode.FailStore;
-                                    }
 
                                     send(tid_response_reciever, rc, thisTid);
 
@@ -412,7 +415,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                             if (ti.user_uri !is null && ti.user_uri.length > 0)
                                                 imm.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
 
-                                            imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
+                                            if (ti.new_binobj !is null && ti.new_binobj.length > 0)
+                                                imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
 
                                             if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
                                                 imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
@@ -431,7 +435,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                                 src = "?";
 
                                             imm.addResource("src", Resource(src));
-										    imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                                            imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
                                             imm.addResource("assigned_subsystems", Resource(ti.assigned_subsystems));
@@ -439,10 +443,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                             //log.trace ("imm=[%s]", imm);
 
                                             string binobj = imm.serialize();
-                                            //writeln("*binobj.length=", binobj.length);
 
                                             individual_queue.push(binobj);
-//                                          string msg_to_modules = indv_uri ~ ";" ~ text(update_counter) ~ ";" ~ text (op_id) ~ "\0";
                                             string msg_to_modules = format("#%s;%d;%d", ti.uri, ti.update_counter, op_id);
 
                                             int bytes = nn_send(sock, cast(char *)msg_to_modules, msg_to_modules.length, 0);

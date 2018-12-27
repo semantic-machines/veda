@@ -82,6 +82,9 @@ class ScriptProcessLowPriority : ScriptProcess
                                 long op_id, long count_pushed,
                                 long count_popped)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         if (main_cs_r is null)
         {
             log.trace("INFO: open %s, %s, %s", main_queue, my_consumer_path, main_queue_cs);
@@ -151,6 +154,9 @@ class ScriptProcess : VedaModule
                                 long op_id, long count_pushed,
                                 long count_popped)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         if (script_vm is null)
             return ResultCode.NotReady;
 

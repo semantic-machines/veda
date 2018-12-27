@@ -320,6 +320,9 @@ class ScriptProcess : VedaModule
                                 string event_id, long transaction_id, long op_id, long count_pushed,
                                 long count_popped)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         committed_op_id = op_id;
 
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)

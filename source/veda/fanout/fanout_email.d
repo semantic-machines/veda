@@ -41,6 +41,9 @@ class FanoutProcess : VedaModule
                                 string event_id, long transaction_id, long op_id, long count_pushed,
                                 long count_popped)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         //log.trace("[%s]: start prepare", new_indv.uri);
 
         //scope (exit)

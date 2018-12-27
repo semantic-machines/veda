@@ -150,7 +150,6 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		}
 
 		fileInfo := rr.GetIndv(0)
-		//log.Println("@", fileInfo)
 		filePath, _ := getFirstString(fileInfo, "v-s:filePath")
 		if len(filePath) < 3 {
 			log.Println("ERR! file path is empty, uri=%s", uri)

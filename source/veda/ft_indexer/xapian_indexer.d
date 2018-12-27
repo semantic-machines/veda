@@ -199,9 +199,12 @@ public class IndexerContext
     {
         bool is_deleted, prev_is_deleted, is_restored;
 
-        //if (is_trace)
         if (cmd == INDV_OP.REMOVE)
-            is_deleted = true;
+            return;
+
+        //if (is_trace)
+        //if (cmd == INDV_OP.REMOVE)
+        //    is_deleted = true;
 
         if (is_deleted == false && indv.isExists(veda_schema__deleted, true) == true)
             is_deleted = true;

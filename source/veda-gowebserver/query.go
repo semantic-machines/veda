@@ -24,8 +24,6 @@ func query(ctx *fasthttp.RequestCtx) {
 	var limit int
 
 	if ctx.IsGet() == true {
-		log.Printf("@0.1")
-
 		ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
 		query = string(ctx.QueryArgs().Peek("query")[:])
 		sort = string(ctx.QueryArgs().Peek("sort")[:])
@@ -39,7 +37,6 @@ func query(ctx *fasthttp.RequestCtx) {
 		from = int(_from)
 		limit = int(_limit)
 	} else {
-		log.Printf("@0.2")
 		var jsonData map[string]interface{}
 		err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 		if err != nil {
@@ -123,8 +120,6 @@ func query(ctx *fasthttp.RequestCtx) {
 	if limit < 0 {
 		limit = 10000
 	}
-
-	log.Printf("@1 ticketKey=[%s]", ticketKey)
 
 	request := make([]interface{}, 8)
 	//fills request map with parametrs

@@ -30,6 +30,9 @@ public class FanoutProcess : VedaModule
     {
         ResultCode rc;
 
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         if (priority == "low" && user_uri == low_priority_user || priority == "normal" && user_uri != low_priority_user)
         {
             try
