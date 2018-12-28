@@ -20,8 +20,8 @@
 
 v-s:GroupRule
   rdf:type owl:Class ;
-  rdfs:label "Правило формирования групп авторизации"@ru ;
-  rdfs:label "Authorization group form rule"@en ;
+  rdfs:label "Правило группы авторизации"@ru ;
+  rdfs:label "Authorization group rule"@en ;
   rdfs:comment "Правило распределения индивидов в группы авторизации на основе связки класс, предикат и объект."@ru ;
   rdfs:comment "Authorization group distribution rule based on union of class, predicate and object."@en ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -55,9 +55,26 @@ v-s:authExpression
 v-s:authValue
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:GroupRule ;
+  rdfs:domain v-s:PermissionRule ;
   rdfs:label "Авторизуемое значение"@ru ;
   rdfs:label "Authorized value"@en ;
   rdfs:range rdfs:Resource ;
+.
+
+v-s:PermissionRule
+  rdf:type owl:Class ;
+  rdfs:label "Право для группы авторизации"@ru ;
+  rdfs:label "Permission rule for authorization group"@en ;
+  rdfs:subClassOf v-s:SystemThing ;
+  v-ui:hasTemplate v-s:PermissionRuleTemplate ;
+.
+
+v-s:hasGroupRule
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionRule ;
+  rdfs:label "Правило группы авторизации"@ru ;
+  rdfs:label "Authorization group rule"@en ;
+  rdfs:range v-s:GroupRule ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
@@ -107,6 +124,69 @@ v-s:GroupRuleTemplate
 </div>
 <script>
   //# sourceURL=v-s:GroupRuleTemplate_post
+</script>
+""" ;
+.
+
+v-s:PermissionRuleTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:GroupRule ;
+  rdfs:label "Шаблон для класса v-s:PermissionRule"@ru ;
+  rdfs:label "Template for v-s:PermissionRule class"@en ;
+  v-ui:template """
+<script>
+  //# sourceURL=v-s:PermissionRuleTemplate_pre
+</script>
+<div class="container sheet">
+  <h2 about="v-s:PermissionRule" property="rdfs:label"></h2>
+  <hr>
+  <em about="rdfs:label" property="rdfs:label"></em>
+  <div property="rdfs:label" class="view -edit -search"></div>
+  <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <div property="rdfs:comment" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="rdfs:comment" class="-view edit search"></veda-control>
+
+  <em about="v-s:hasGroupRule" property="rdfs:label"></em>
+  <div rel="v-s:hasGroupRule" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:hasGroupRule" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:authValue" property="rdfs:label"></em>
+  <div property="v-s:authValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
+
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canCreate" data-type="boolean"></veda-control>
+      <em about="v-s:canCreate" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canRead" data-type="boolean"></veda-control>
+      <em about="v-s:canRead" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canUpdate" data-type="boolean"></veda-control>
+      <em about="v-s:canUpdate" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canDelete" data-type="boolean"></veda-control>
+      <em about="v-s:canDelete" property="rdfs:label"></em>
+    </label>
+  </div>
+  <br>
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  //# sourceURL=v-s:PermissionRuleTemplate_post
 </script>
 """ ;
 .
@@ -234,7 +314,7 @@ v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
 
 # ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
 
-cfg:Event_AuthDistribution
+cfg:Event_GroupRule
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт распределения по группам авторизации" ;
@@ -253,7 +333,7 @@ cfg:Event_AuthDistribution
  */
 
 try {
-  veda.AuthDistributionRules = veda.AuthDistributionRules || query(veda.ticket, "'rdf:type' === 'v-s:GroupRule'").result.reduce(function (acc, rule_uri) {
+  veda.GroupRules = veda.GroupRules || query(veda.ticket, "'rdf:type' === 'v-s:GroupRule'").result.reduce(function (acc, rule_uri) {
     var rule = get_individual(veda.ticket, rule_uri);
     var authClass = veda.Util.getUri(rule["v-s:authClass"]);
     var authProperty = veda.Util.getUri(rule["v-s:authProperty"]);
@@ -276,8 +356,8 @@ try {
   _super.push(type);
 
   for (var i = 0, _class; (_class = _super[i]); i++) {
-    if (_class in veda.AuthDistributionRules) {
-      var fns = veda.AuthDistributionRules[_class];
+    if (_class in veda.GroupRules) {
+      var fns = veda.GroupRules[_class];
       for (var j = 0, fn; (fn = fns[j]); j++) {
         var fn_value;
         if (typeof fn.value === "undefined") {
@@ -320,13 +400,44 @@ try {
   """ ;
 .
 
-cfg:Event_AuthDistributionRuleHandler
+cfg:Event_GroupRulesReset
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки правил распределения авторизации" ;
   v-s:triggerByType v-s:GroupRule ;
   v-s:script """
-veda.AuthDistributionRules = undefined;
+veda.GroupRules = undefined;
+  """ ;
+.
+
+cfg:Event_PermissionRule
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки объектов v-s:PermissionRule" ;
+  v-s:triggerByType v-s:PermissionRule ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+  """ ;
+.
+
+cfg:Event_GroupRuleHandler
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки правил распределения авторизации" ;
+  v-s:triggerByType v-s:GroupRule ;
+  v-s:script """
+veda.GroupRules = undefined;
   """ ;
 .
 
@@ -371,6 +482,7 @@ v-s:GroupRule_ClassGroupToSuperClassGroup
 #   - целевой класс, для которого выполняется правило;
 #   - целевое свойство (для распределение по значению свойства индивида).
 #   - целевое выражение - скрипт, который должен вернуть произвольное значение на основе индивида.
+#   - целевое значение - если указано, то производится проверка на соответствие целевого значения и значения целевого свойства или целевого выражения. Если значения совпадают, объект помещается в соответствующую группу.
 # Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
 # 5) Задача правила - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое свойством равно количеству уникальных целевых значений.
 # 6) Uri Авторизационной группы вычисляется так:
