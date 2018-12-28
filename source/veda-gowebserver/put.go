@@ -78,7 +78,7 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 	//Send modify request to veda-server
 	rc = modifyIndividual("put", &ticket, "individuals", []map[string]interface{}{indv.(map[string]interface{})},
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
-	trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
+	//trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
 }
 
 //putIndividuals same to put individual but this function store array of individuals from client
@@ -144,6 +144,6 @@ func putIndividuals(ctx *fasthttp.RequestCtx) {
 
 	rc = modifyIndividual("put", &ticket, "individuals", individuals,
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
-	trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
+	//trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
 
 }

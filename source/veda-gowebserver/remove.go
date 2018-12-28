@@ -78,7 +78,7 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 	//Send modify request to veda server
 	rc = modifyIndividual("remove_from", &ticket, "individuals", []map[string]interface{}{indv.(map[string]interface{})},
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
-	trail(ticket.Id, ticket.UserURI, "remove_from", jsonData, "", rc, timestamp)
+	//trail(ticket.Id, ticket.UserURI, "remove_from", jsonData, "", rc, timestamp)
 }
 
 //removeIndividual handles remove_individual request
@@ -125,5 +125,5 @@ func removeIndividual(ctx *fasthttp.RequestCtx) {
 	//Send modify request to veda-server
 	rc = modifyIndividual("remove", &ticket, "individuals", []map[string]interface{}{individual},
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
-	trail(ticket.Id, ticket.UserURI, "remove_individual", jsonData, "", rc, timestamp)
+	//trail(ticket.Id, ticket.UserURI, "remove_individual", jsonData, "", rc, timestamp)
 }

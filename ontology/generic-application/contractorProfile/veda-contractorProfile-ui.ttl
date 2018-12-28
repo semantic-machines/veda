@@ -501,31 +501,12 @@ v-s:ContractorProfileTemplate
 
     </label>
   </div>
-
   <em about="v-s:organizationProperties" property="rdfs:label"></em>
   <div property="v-s:organizationProperties" class="view -edit -search"></div>
   <veda-control data-type="text" property="v-s:organizationProperties" class="-view edit search"></veda-control>
-
   <em about="v-s:contactInfo" property="rdfs:label"></em>
   <div property="v-s:contactInfo" class="view -edit -search"></div>
   <veda-control data-type="text" property="v-s:contactInfo" class="-view edit search"></veda-control>
-  <div class="row">
-    <div class="col-md-4">
-      <em about="v-s:mailbox" property="rdfs:label"></em>
-      <div property="v-s:mailbox" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
-    </div>
-    <div class="col-md-4">
-      <em about="v-s:phone" property="rdfs:label"></em>
-      <div property="v-s:phone" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:phone" class="-view edit search"></veda-control>
-    </div>
-    <div class="col-md-4">
-      <em about="v-s:fax" property="rdfs:label"></em>
-      <div property="v-s:fax" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:fax" class="-view edit search"></veda-control>
-    </div>
-  </div>
   <br>
   <table class="table table-bordered files">
     <thead>
@@ -1015,27 +996,9 @@ v-s:DosieEmbeddedTemplate
   <em about="v-s:organizationProperties" property="rdfs:label"></em>
   <div property="v-s:organizationProperties" class="view -edit -search"></div>
   <veda-control data-type="text" property="v-s:organizationProperties" class="-view edit search"></veda-control>
-
   <em about="v-s:contactInfo" property="rdfs:label"></em>
   <div property="v-s:contactInfo" class="view -edit -search"></div>
   <veda-control data-type="text" property="v-s:contactInfo" class="-view edit search"></veda-control>
-  <div class="row">
-    <div class="col-md-4">
-      <em about="v-s:mailbox" property="rdfs:label"></em>
-      <div property="v-s:mailbox" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:mailbox" class="-view edit search"></veda-control>
-    </div>
-    <div class="col-md-4">
-      <em about="v-s:phone" property="rdfs:label"></em>
-      <div property="v-s:phone" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:phone" class="-view edit search"></veda-control>
-    </div>
-    <div class="col-md-4">
-      <em about="v-s:fax" property="rdfs:label"></em>
-      <div property="v-s:fax" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:fax" class="-view edit search"></veda-control>
-    </div>
-  </div>
   <br>
   <table class="table table-bordered files">
     <thead>

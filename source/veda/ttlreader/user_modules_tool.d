@@ -874,6 +874,9 @@ class UserModulesTool : VedaModule
                                 string event_id, long transaction_id, long op_id, long count_pushed,
                                 long count_popped)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         if (event_id == umt_event_id /*|| user_uri == "cfg:VedaSystem"*/) // принимаем команды только от пользователей, umt_event_id игнорируется
             return ResultCode.Ok;
 

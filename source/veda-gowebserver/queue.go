@@ -240,8 +240,6 @@ func (ths *Consumer) get_info() bool {
 
 		ths.first_element = uint64(nn)
 
-		//log.Printf("@ ch[4]=%s", ch[4])
-
 		nn, err = strconv.ParseInt(ch[4], 10, 0)
 		if err != nil {
 			ths.isReady = false
@@ -271,7 +269,6 @@ func (ths *Consumer) pop() string {
 
 	ths.queue.ff_queue_r.Read(header_buff)
 	ths.header.from_buff(header_buff)
-	//log.Printf("@header=%s, ths.count_popped=%d", ths.header.toString(), ths.count_popped)
 
 	if ths.header.start_pos != ths.first_element {
 		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %v\n", ths.header.start_pos, ths.first_element, ths.header)
@@ -468,12 +465,10 @@ func (ths *Queue) get_info(chunk int32) bool {
 	}
 
 	ths.ff_info_push_r.Seek(0, 0)
-	//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
 
 	rr := bufio.NewReader(ths.ff_info_push_r)
 	str, err := Readln(rr)
 
-	//writeln("@3 str=[", str, "]");
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)-1], ";")
 		if len(ch) != 5 {
@@ -503,8 +498,6 @@ func (ths *Queue) get_info(chunk int32) bool {
 		ths.count_pushed = uint32(count_pushed)
 		//string hash_hex = ch[ 4 ];
 	}
-
-	//log.Printf("@queue info=%s", ths)
 
 	return true
 }

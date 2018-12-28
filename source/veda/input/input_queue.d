@@ -50,22 +50,26 @@ class InputQueueProcess : VedaModule
                                 string event_id, long transaction_id, long op_id, long count_pushed,
                                 long count_popped)
     {
-        log.trace("[%s]: start prepare", new_indv.uri);
+        string uri;
+
+        if (new_indv.uri is null)
+            uri = prev_indv.uri;
+        else
+            uri = new_indv.uri;
+
+        log.trace("get: cmd=%s, uri=%s", cmd, uri);
 
         auto sticket = context.sys_ticket();
 
-        cmd = INDV_OP.PUT;
-        auto rc = context.update(null, transaction_id, &sticket, cmd, &new_indv, event_id, 0, OptFreeze.NONE, OptAuthorize.NO).result;
+        //cmd = INDV_OP.PUT;
+
+        ulong target_maks = SUBSYSTEM.STORAGE | SUBSYSTEM.ACL | SUBSYSTEM.FULL_TEXT_INDEXER | SUBSYSTEM.FANOUT_SQL | SUBSYSTEM.USER_MODULES_TOOL;
+        auto  rc          = context.update(null, transaction_id, &sticket, cmd, &new_indv, event_id, target_maks, OptFreeze.NONE, OptAuthorize.NO).result;
 
         if (rc != ResultCode.Ok)
         {
-            log.trace("ERR! fail store [%s]", new_indv.uri);
+            log.trace("ERR! fail update [%s]", uri);
         }
-
-        //scope (exit)
-        //{
-        //    log.trace("[%s]: end prepare", new_indv.uri);
-        //}
 
         return ResultCode.Ok;
     }
