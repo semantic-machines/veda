@@ -1083,9 +1083,9 @@ v-ui:IconModalTemplate
 <script>
   template.on("click", function (e) {
     e.preventDefault();
-    var newMode = "view";
+    var newMode = container.data("mode");
     var parentTmpl = template.parent().closest("[resource]");
-    if (parentTmpl.attr("resource") === individual.id) {
+    if (!newMode && parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.data("mode");
     }
     var modal;
@@ -2067,7 +2067,7 @@ v-ui:DocumentEventTemplate
           $(".stop-process", template).show();
         }
       }
-      
+
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".process-id", template).addClass('text-danger');
