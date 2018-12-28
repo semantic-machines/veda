@@ -80,7 +80,7 @@ class ScriptProcessLowPriority : ScriptProcess
                                 ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start, long count_from_start)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
@@ -104,7 +104,7 @@ class ScriptProcessLowPriority : ScriptProcess
             main_cs_r.reopen();
         }
 
-        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed, count_popped);
+        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed, count_popped, op_id_on_start, count_from_start);
     }
 }
 
@@ -152,7 +152,7 @@ class ScriptProcess : VedaModule
                                 ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start, long count_from_start)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
