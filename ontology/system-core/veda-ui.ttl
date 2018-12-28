@@ -1086,9 +1086,9 @@ v-ui:IconModalTemplate
 <script>
   template.on("click", function (e) {
     e.preventDefault();
-    var newMode = "view";
+    var newMode = container.data("mode");
     var parentTmpl = template.parent().closest("[resource]");
-    if (parentTmpl.attr("resource") === individual.id) {
+    if (!newMode && parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.data("mode");
     }
     var modal;
@@ -2063,11 +2063,14 @@ v-ui:DocumentEventTemplate
     var process = individual['v-wf:onProcess'][0];
 
     if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
+        && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
       var actor = individual['v-s:actor'][0];
-      if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
-        $(".stop-process", template).show();
+      if (actor) {
+        if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
+          $(".stop-process", template).show();
+        }
       }
+
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".process-id", template).addClass('text-danger');
