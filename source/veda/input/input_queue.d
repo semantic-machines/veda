@@ -31,7 +31,6 @@ class InputQueueProcess : VedaModule
         properties = readProperties("./veda.properties");
 
         main_queue_path = properties.as!(string)("input_queue_path");
-        log.trace("use input_queue_path=%s", main_queue_path);
 
         try
         {
@@ -57,7 +56,7 @@ class InputQueueProcess : VedaModule
         else
             uri = new_indv.uri;
 
-        log.trace("get: cmd=%s, uri=%s", cmd, uri);
+        log.trace("get: opid=%d, cmd=%s, uri=%s", op_id, cmd, uri);
 
         auto sticket = context.sys_ticket();
 
@@ -99,6 +98,14 @@ class InputQueueProcess : VedaModule
     override bool configure()
     {
         log.trace("use configuration: %s", node);
+
+        if (main_queue_path is null || main_queue_path.length < 3)
+        {
+            log.trace("ERR! not set variable [input_queue_path] in veda.properties");
+            return false;
+        }
+
+        log.trace("use input_queue_path=%s", main_queue_path);
 
         return true;
     }
