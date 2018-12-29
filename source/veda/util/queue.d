@@ -523,6 +523,10 @@ class Queue
         {
             log.trace("ERR! queue, not open: ex: %s", ex.msg);
         }
+
+        if (isReady == false)
+            log.trace("ERR! queue %s, not open", name);
+
         return isReady;
     }
 
@@ -616,22 +620,20 @@ class Queue
             catch (Throwable tr)
             {
                 isReady = false;
+                log.trace("ERR! queue:get_info: fail open file %s", path ~ "/" ~ name ~ "_info_push_" ~ text(r_chunk));
                 return false;
             }
         }
 
         ff_info_push_chunk_r.seek(0);
-//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
-
         string str = ff_info_push_chunk_r.readln();
-        //writeln("@3 str=[", str, "]");
         if (str !is null)
         {
             string[] ch = str[ 0..$ - 1 ].split(';');
-            //writeln("@ queue.get_info ch=", ch);
             if (ch.length != 5)
             {
                 isReady = false;
+                log.trace("ERR! queue:get_info: invalid info record %s", str);
                 return false;
             }
 
@@ -640,6 +642,7 @@ class Queue
             if (ch[ 0 ] != name)
             {
                 isReady = false;
+                log.trace("ERR! queue:get_info: %s not equal %s", ch[ 0 ], name);
                 return false;
             }
             name         = ch[ 0 ];

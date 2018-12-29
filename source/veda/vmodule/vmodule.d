@@ -353,7 +353,7 @@ class VedaModule : VedaModuleBasic
 
             if (main_queue.isReady == false)
             {
-                log.trace("queue %s not ready, sleep %d s and repeate...", main_queue.get_name(), timeout);
+                log.trace("ERR! vmodule: queue %s not ready, sleep %d s and repeate...", main_queue.get_name(), timeout);
                 Thread.sleep(dur!("seconds")(timeout));
 
                 if (timeout < 10)
