@@ -376,6 +376,11 @@ class VedaModule : VedaModuleBasic
             count_pushed = main_queue.count_pushed;
             count_popped = main_cs[ i ].count_popped;
 
+            if (count_popped > count_pushed)
+            {
+                log.trace("ERR! count_popped (%s) > queue.count_pushed (%s)", count_popped, count_pushed);
+            }
+
             if (data is null && (i + 1 < main_cs.length))
             {
                 i++;
