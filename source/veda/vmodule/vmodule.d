@@ -61,21 +61,21 @@ class VedaModuleBasic
 
 class VedaModule : VedaModuleBasic
 {
-    long       count_signal           = 0;
-    long       count_readed           = 0;
-    long       count_success_prepared = 0;
+    long                 count_signal           = 0;
+    long                 count_readed           = 0;
+    long                 count_success_prepared = 0;
+    long                 opid_on_start;
 
-    Context    context;
-    Onto       onto;
+    Context              context;
+    Onto                 onto;
 
-    Individual node;
+    Individual           node;
 
-    Ticket     sticket;
-    string     message_header;
-    string     module_uid;
-    string     main_queue_path;
-    string     my_consumer_path;
-
+    Ticket               sticket;
+    string               message_header;
+    string               module_uid;
+    string               main_queue_path;
+    string               my_consumer_path;
 
     int delegate(string) priority;
     bool[ string ]   subsrc;
@@ -167,6 +167,8 @@ class VedaModule : VedaModuleBasic
             log.trace("%s terminated", process_name);
             return;
         }
+        opid_on_start = module_info.get_info().op_id;
+
         log.trace("[%s] start module %s", process_name, cast(SUBSYSTEM)module_id);
 
         context = create_context();
@@ -250,7 +252,7 @@ class VedaModule : VedaModuleBasic
                                 string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped);
+                                long count_popped, long op_id_on_start, long count_from_start);
 
     abstract bool configure();
     abstract bool close();
@@ -380,6 +382,8 @@ class VedaModule : VedaModuleBasic
                 continue;
             }
 
+            count_readed++;
+
             if (data is null)
             {
                 if (prepare_batch_cs !is null)
@@ -406,7 +410,7 @@ class VedaModule : VedaModuleBasic
                         {
                             rc =
                                 prepare(main_cs[ i ].name, null, INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1, count_pushed,
-                                        count_popped);
+                                        count_popped, opid_on_start, count_readed);
                         }
                         catch (Throwable tr)
                         {
@@ -428,8 +432,6 @@ class VedaModule : VedaModuleBasic
                     break;
                 }
             }
-
-            count_readed++;
 
             Individual imm;
             if (data !is null && imm.deserialize(data) < 0)
@@ -514,7 +516,7 @@ class VedaModule : VedaModuleBasic
                 ResultCode res =
                     prepare(main_cs[ i ].name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id,
                             count_pushed,
-                            count_popped);
+                            count_popped, opid_on_start, count_readed);
 
                 if (res == ResultCode.Ok)
                 {

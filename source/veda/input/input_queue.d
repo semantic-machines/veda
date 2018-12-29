@@ -31,7 +31,6 @@ class InputQueueProcess : VedaModule
         properties = readProperties("./veda.properties");
 
         main_queue_path = properties.as!(string)("input_queue_path");
-        log.trace("use input_queue_path=%s", main_queue_path);
 
         try
         {
@@ -48,16 +47,26 @@ class InputQueueProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
                                 string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long opid_on_start, long count_from_start)
     {
         string uri;
+
+        if (count_from_start == 1)
+        {
+            log.trace("INFO: start opid=%d", opid_on_start);
+            if (op_id - opid_on_start != 1)
+            {
+                log.trace("ERR: cur_opid (%d) != start opid (%d + 1)", op_id, opid_on_start);
+                return ResultCode.InternalServerError;
+            }
+        }
 
         if (new_indv.uri is null)
             uri = prev_indv.uri;
         else
             uri = new_indv.uri;
 
-        log.trace("get: cmd=%s, uri=%s", cmd, uri);
+        log.trace("INFO: opid=%d, cmd=%s, uri=%s", op_id, cmd, uri);
 
         auto sticket = context.sys_ticket();
 
@@ -99,6 +108,14 @@ class InputQueueProcess : VedaModule
     override bool configure()
     {
         log.trace("use configuration: %s", node);
+
+        if (main_queue_path is null || main_queue_path.length < 3)
+        {
+            log.trace("ERR! not set variable [input_queue_path] in veda.properties");
+            return false;
+        }
+
+        log.trace("use input_queue_path=%s", main_queue_path);
 
         return true;
     }
