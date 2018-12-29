@@ -114,7 +114,11 @@ class IndexerProperty
     {
         if (class_property__2__indiviual.length == 0 || force)
         {
-            log.trace("load indexes:start");
+            if (force)
+                log.trace("reload indexes");
+            else
+                log.trace("load indexes");
+
             context.reopen_ro_individuals_storage_db();
             context.reopen_ro_fulltext_indexer_db();
 
