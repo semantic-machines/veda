@@ -394,16 +394,16 @@ v-fs:AttributiveSearchManagementTemplate
             personalRegistryBlank.object = searchBlank.object;
             personalRegistryBlank.updateBlank();
             personalRegistryBlank.save();
-            personalRegistry.save();
+            return personalRegistry.save();
           });
         } else {
           return personalRegistry.save();
         }
-      }).then(function(aspect) {
-        return veda.user.aspect.load()
-      }).then(function(aspect) {
-        aspect.addValue("v-s:hasRegistry", personalRegistry);
-        return aspect.save()
+      }).then(function(personalRegistry) {
+        veda.user.aspect.load().then(function (aspect) {
+          aspect.addValue("v-s:hasRegistry", personalRegistry);
+          return aspect.save();
+        });
       }).then(function () {
         return new veda.IndividualModel("v-fs:RegistrySuccessfullySaved").load();
       }).then(function (message) {
