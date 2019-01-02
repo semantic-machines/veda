@@ -24,11 +24,6 @@ v-s:Bundle
 
 #----------------------------
 
-v-s:ReloadPage
-  rdf:type v-s:Bundle ;
-  rdfs:label "Версия приложения изменилась!\nНеобходимо обновить страницу.\n\nОбновить сейчас?\n\n"@ru ;
-  rdfs:label "Application version changed!\nPage must be reloaded.\n\nReload now?\n\n"@en ;
-.
 v-s:More
   rdf:type v-s:Bundle ;
   rdfs:label "Подробнее..."@ru ;

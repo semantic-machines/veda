@@ -833,20 +833,20 @@ cfg:Event_6
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
   rdfs:comment "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
-  v-s:triggerByType rdf:Property ;
-  v-s:triggerByType rdfs:Class ;
-  v-s:triggerByType rdfs:Datatype ;
-  v-s:triggerByType owl:Class ;
   v-s:triggerByType owl:Ontology ;
+  v-s:triggerByType rdfs:Datatype ;
+  v-s:triggerByType rdfs:Class ;
+  v-s:triggerByType owl:Class ;
+  v-s:triggerByType rdf:Property ;
   v-s:triggerByType owl:DatatypeProperty ;
   v-s:triggerByType owl:ObjectProperty ;
-  v-s:triggerByType owl:Restriction ;
-  v-s:triggerByType v-ui:ClassModel ;
-  v-s:triggerByType v-ui:ClassTemplate ;
+  v-s:triggerByType owl:OntologyProperty ;
+  v-s:triggerByType owl:AnnotationProperty ;
   v-s:triggerByType v-ui:PropertySpecification ;
   v-s:triggerByType v-ui:DatatypePropertySpecification ;
   v-s:triggerByType v-ui:ObjectPropertySpecification ;
-  v-s:triggerByType v-s:Bundle ;
+  v-s:triggerByType v-ui:ClassTemplate ;
+  v-s:triggerByType v-ui:ClassModel ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket

@@ -554,14 +554,14 @@ v-ui:StandardButtonsTemplate
 </script>
 <span>
   <button type="submit" class="rm action btn btn-warning view edit -search" id="send" about="v-s:Send" property="rdfs:label"></button>
-  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit" about="v-s:Edit" property="rdfs:label"/>
-  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel" about="v-s:Cancel" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"/>
-  <button type="button" class="rm action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"/>
+  <button type="button" class="rm action btn btn-primary view -edit -search" id="edit"><span about="v-s:Edit" property="rdfs:label"></span></button>
+  <button type="submit" class="rm action btn btn-success -view edit -search" id="save" about="v-s:Save" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default -view edit -search" id="cancel"><span about="v-s:Cancel" property="rdfs:label"></span></button>
+  <button type="button" class="rm action btn btn-link view edit -search" id="delete" about="v-s:Delete" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-danger view edit -search" id="destroy" about="v-s:Destroy" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal" about="v-s:ViewJournal" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="journal-dms" about="v-s:ViewJournalDMS" property="rdfs:label"></button>
+  <button type="button" class="rm action btn btn-default view -edit -search" id="rights" about="v-s:Rights" property="rdfs:label"></button>
   <div class="rm action btn-group dropup view -edit -search" id="task">
     <button class="action btn btn-warning btn-block dropdown-toggle" id="task-button" data-toggle="dropdown">
       <span about="v-s:SendTask" property="rdfs:label"> </span>
@@ -851,18 +851,17 @@ v-ui:AppointmentPopoverTemplate
       </div>
     </div>
     <div about="@" rel="v-s:employee">
-      <div about="@" rel="v-s:hasAccount">
+      <div about="@" rel="v-s:hasCommunicationMean">
         <div>
-          <small about="@" property="v-s:mailbox"></small>
-          <small about="@" property="v-s:phone"></small>
+          <small about="@" property="v-s:description"></small>
         </div>
       </div>
-      <small about="@" property="v-s:phone"></small>
     </div>
   </div>
 </div>
   """ ;
 .
+
 v-ui:PersonPopoverTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон персоны с фотографией"@ru ;
@@ -889,13 +888,11 @@ v-ui:PersonPopoverTemplate
         <span about="@" property="rdfs:label"></span>
       </small>
     </div>
-    <div about="@" rel="v-s:hasAccount">
+    <div about="@" rel="v-s:hasCommunicationMean">
       <div>
-        <small about="@" property="v-s:mailbox"></small>
-        <small about="@" property="v-s:phone"></small>
+        <small about="@" property="v-s:description"></small>
       </div>
     </div>
-    <small about="@" property="v-s:phone"></small>
   </div>
 </div>
   """ ;
@@ -922,6 +919,25 @@ v-ui:ResourceTemplate
   rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
+<script>
+  var propСontainer = $(".properties-container", template);
+  var tmpl = propСontainer.html();
+  propСontainer.empty();
+  Object.keys(this.properties).forEach(function (property_uri) {
+    if (property_uri === "@" || property_uri === "rdf:type" || property_uri === "rdfs:label") { return; }
+    var propRow = $(tmpl);
+    propRow.find(".prop-name").attr({
+      "about": property_uri,
+      "property": "rdfs:label"
+    });
+    propRow.find(".prop-value").attr({
+      "about": "@",
+      "property": property_uri
+    });
+    propСontainer.append(propRow);
+  });
+  //# sourceURL=v-ui:ResourceTemplate_pre
+</script>
 <div class="container sheet">
   <div class="clearfix">
     <h2 class="pull-left">
@@ -929,6 +945,13 @@ v-ui:ResourceTemplate
       <small about="@" property="rdfs:label"></small>
     </h2>
     <a class="pull-right" href="#/@"><span property="@"></span></a>
+  </div>
+  <div class="properties-container">
+    <hr class="margin-sm">
+    <div class="row">
+      <div class="col-md-4 col-sm-6 text-right prop-name"></div>
+      <div class="col-md-8 col-sm-6 prop-value"></div>
+    </div>
   </div>
 </div>
   """ ;
@@ -1028,9 +1051,9 @@ v-ui:IconModalTemplate
 <script>
   template.on("click", function (e) {
     e.preventDefault();
-    var newMode = "view";
+    var newMode = container.data("mode");
     var parentTmpl = template.parent().closest("[resource]");
-    if (parentTmpl.attr("resource") === individual.id) {
+    if (!newMode && parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.data("mode");
     }
     var modal = $("#notification-modal-template").html();
@@ -1978,11 +2001,14 @@ v-ui:DocumentEventTemplate
     var process = individual['v-wf:onProcess'][0];
 
     if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-      && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
+        && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
       var actor = individual['v-s:actor'][0];
-      if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
-        $(".stop-process", template).show();
+      if (actor) {
+        if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
+          $(".stop-process", template).show();
+        }
       }
+
     }
     if (process.hasValue("v-wf:isStopped", true)) {
       $(".process-id", template).addClass('text-danger');
@@ -2011,10 +2037,12 @@ v-ui:DocumentEventTemplate
             href = startForm[0].data;
           } else {
             //Устаревший вариант
-            var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
-              return vrbl.hasValue("v-wf:variableName",  "startForm_id");
-            });
-            href = startFormVar[0]["v-wf:variableValue"][0].id;
+            try {
+              var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
+                return vrbl.hasValue("v-wf:variableName",  "startForm_id");
+              });
+              href = startFormVar[0]["v-wf:variableValue"][0].id;
+            } catch (e) {}
           };
           if (href != null) {
             $("[about='start-form']", template).attr("about", href);
@@ -2071,7 +2099,7 @@ v-ui:PermissionStatementInlineTemplate
   rdfs:label "Document event template"@en ;
   v-ui:forClass v-s:PermissionStatement ;
   v-ui:template """
-  <div>
+<div>
   <div class="row right-header" style="display:none">
     <div class="col-md-1">
       <span about="v-s:canCreate" property="rdfs:label"></span>
@@ -2131,15 +2159,14 @@ v-ui:PermissionStatementInlineTemplate
       <pre style="border:none;background-color:#fff;"></pre>
     </div>
   </div>
-  </div>
-  <script>
-//    if (!individual.hasValue("v-s:permissionObject") && !individual.hasValue("v-s:permissionSubject")) $(".right-header", template).show();
-    var dd = individual['rdfs:comment'][0];
-    var pre = $("pre", template);
-    var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
-    pre.html(anchored);
-    //# sourceURL=v-ui:PermissionStatementInlineTemplate_post
-  </script>
+</div>
+<script>
+  var dd = individual['rdfs:comment'][0];
+  var pre = $("pre", template);
+  var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
+  pre.html(anchored);
+  //# sourceURL=v-ui:PermissionStatementInlineTemplate_post
+</script>
   """ ;
 .
 
@@ -2536,23 +2563,33 @@ v-ui:json
     pre.html(anchorized);
     textarea.text(formatted);
   });
-  template.on("save", function () {
-    var notify = veda.Notify ? new veda.Notify() : function () {};
-    var original = individual.properties;
+  var notify = veda.Notify ? new veda.Notify() : function () {};
+  var original = individual.properties;
+  var validationState = true;
+  textarea.on("keyup", function () {
     try {
       formatted = textarea.val();
-      anchorized = anchorize(formatted);
-      pre.html(anchorized);
       json = JSON.parse(formatted);
-      individual.properties = json;
-      individual.isSync(false);
-      individual.save();
-      notify("success", {name: "Объект сохранен"});
+      if (validationState === false) {
+        notify("success", {name: "JSON ok"});
+      }
+      template.trigger("internal-validated", {state: true});
+      validationState = true;
     } catch (error) {
-      individual.properties = original;
-      notify("danger", error);
+      formatted = format(original);
+      json = JSON.parse(formatted);
+      if (validationState === true) {
+        notify("danger", {name: "JSON error"});
+      }
+      template.trigger("internal-validated", {state: false});
+      validationState = false;
     }
+    anchorized = anchorize(formatted);
+    pre.html(anchorized);
+    individual.properties = json;
+    individual.isSync(false);
   });
+
   function format (json) {
     var ordered = {};
     Object.keys(json).sort().forEach(function(key) {

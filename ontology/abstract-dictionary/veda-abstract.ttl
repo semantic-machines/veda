@@ -17,7 +17,7 @@
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Любая сущность"@ru ;
+  rdfs:label "Сущность"@ru ;
   rdfs:label "Thing"@en ;
 .
 v-s:updateCounter
@@ -954,6 +954,12 @@ v-s:Measurable
   rdfs:subClassOf rdfs:Resource ;
   rdfs:label "Измеряемая сущность"@ru ;
   rdfs:label "Measurable thing"@en ;
+.
+v-s:UnitOfMeasure
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Единица измерения"@ru ;
+  rdfs:label "Unit of measure"@en ;
 .
 v-s:hasLevel
   rdf:type owl:ObjectProperty ;

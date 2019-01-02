@@ -16,8 +16,6 @@
   v-s:loadPriority 20 ;
 .
 
-#------------------------------------------------------------БЛАНКИ----
-
 # ------------------------------------------------------------ КЛАССЫ --
 
 v-s:CertificationDocument
@@ -48,13 +46,8 @@ v-s:hasDocumentKind
 # rdfs:comment
 # v-s:attachment
 
-# ------------------------------------------------------------ КЛАССЫ --
-v-s:CertificationDocumentType
-  rdf:type owl:Class ;
-  rdfs:label "Тип удостоверяющего документа"@ru ;
-  rdfs:label "Certification document type"@en ;
-.
 
+# ------------------------------------------------------------
 v-s:MedicalCheckupCertificationDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:CertificationDocument ;

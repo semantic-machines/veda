@@ -1,14 +1,12 @@
 import Basic from './basic'
 import { Selector, t } from 'testcafe';
-  fixture `test Simple Net2`
+  fixture `test Simple Net Low Priority`
     .page `http://localhost:8080/`;
   const basic = new Basic();
-  test('testSimpleNet2', async t => {
+  test('testSimpleNetLowPriority', async t => {
     basic.login('karpovrt', '123');
     const timeStamp = ''+Math.round(+new Date()/1000);
     const red = Selector('div#workflow-canvas').find('div.state-io-condition-output[colored-to="red"]').count;
-    const red1 = Selector('div#workflow-canvas').find('div.state-io-condition-input[colored-to="red"]').count;
-    const green = Selector('div#workflow-canvas').find('div.state-task[colored-to="green"]').count;
     await t
       .click('#menu')
       .click('li[id="menu"] li[resource="v-s:Create"]')
@@ -17,16 +15,15 @@ import { Selector, t } from 'testcafe';
       .click('div#schema')
       .click('div#object-container div#props-col div#props table#taskTemplateProperties tbody tr td span[about="rdfs:label"]')
       .typeText('div#object-container div#props-col div#props table#taskTemplateProperties tbody tr td veda-control#VClabel input.form-control', timeStamp)
-      .click('button.create-task')
-      .dragToElement('.state-io-condition-input .ep', '.state-task')
-      .dragToElement('.state-task .ep', '.glyphicon-stop')
+      .dragToElement('.state-io-condition-input .ep', '.glyphicon-stop')
       .click('button#workflow-save-button')
-      .click('#menu')
-      .click('li[id="menu"] li[resource="v-s:Create"]')
-      .click('veda-control.fulltext.dropdown')
-      .pressKey('ctrl+a delete')
-      .typeText('veda-control.fulltext.dropdown', 'Стартовая форма')
-      .click('div.suggestion[resource="v-wf:StartForm"]')
+      .click('li[about="v-fs:FulltextSearch"]')
+      .typeText('veda-control[property="*"] input.form-control', 'Тестовый шаблон маршурута lowPriority')
+      .click('small[about="v-fs:AdvancedSearchBundle"]')
+      .click('span[about="v-s:UserThing"] button.btn.btn-default.button-delete')
+      .click('div.input-group span.input-group-btn #custom-search-button.search-button')
+      .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
+      .click('button#edit')
       .typeText('veda-control[rel="v-wf:forNet"]', timeStamp)
       .click(Selector('div.suggestions div.suggestion').withText(timeStamp))
       .typeText('veda-control[rel="v-wf:hasStatusWorkflow"]', 'Ожидает отправки')
@@ -37,6 +34,4 @@ import { Selector, t } from 'testcafe';
       .click('button.btn.btn-link.view.edit.-search.toggle-actions')
       .click('div[rel="v-wf:isProcess"] span#label')
       .expect(red).eql(1)
-      .expect(red1).eql(1)
-      .expect(green).eql(1)
 });

@@ -26,9 +26,12 @@ public class FanoutProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start, long count_from_start)
     {
         ResultCode rc;
+
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
 
         if (priority == "low" && user_uri == low_priority_user || priority == "normal" && user_uri != low_priority_user)
         {

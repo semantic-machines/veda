@@ -19,66 +19,66 @@
 
 # Letter registries ----------------------------------------------------
 
-v-s:IncomingLetterRegistry
+v-s:IncomingLetterSearch
   a v-fs:AttributiveSearch;
   rdfs:label "Входящие письма"@ru ;
   rdfs:label "Incoming letters"@en ;
-  v-fs:searchBlank v-s:IncomingLetterRegistryBlank ;
+  v-fs:searchBlank v-s:IncomingLetterSearchBlank ;
   v-fs:searchBlankTemplate v-s:LetterTemplate ;
-  v-fs:searchResultTemplate v-s:LetterRegistryResultTemplate ;
+  v-fs:searchResultTemplate v-s:LetterSearchResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc" ;
 .
-v-s:OutgoingLetterRegistry
+v-s:OutgoingLetterSearch
   a v-fs:AttributiveSearch;
   rdfs:label "Исходящие письма"@ru ;
   rdfs:label "Outgoing letters"@en ;
-  v-fs:searchBlank v-s:OutgoingLetterRegistryBlank ;
+  v-fs:searchBlank v-s:OutgoingLetterSearchBlank ;
   v-fs:searchBlankTemplate v-s:LetterTemplate ;
-  v-fs:searchResultTemplate v-s:LetterRegistryResultTemplate ;
+  v-fs:searchResultTemplate v-s:LetterSearchResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc" ;
 .
 
 # Letter registries blanks ---------------------------------------------
 
-v-s:IncomingLetterRegistryBlank
+v-s:IncomingLetterSearchBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Входящее письмо"@ru ;
   rdfs:label "Incoming letter"@en ;
   v-fc:targetType v-s:IncomingLetter ;
-  v-s:sender v-s:SenderCorrespondentRegistryBlank ;
-  v-s:recipient v-s:RecipientCorrespondentRegistryBlank ;
-  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderRegistryBlank ;
-  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientRegistryBlank ;
+  v-s:sender v-s:SenderCorrespondentSearchBlank ;
+  v-s:recipient v-s:RecipientCorrespondentSearchBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderSearchBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientSearchBlank ;
 .
-v-s:OutgoingLetterRegistryBlank
+v-s:OutgoingLetterSearchBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Исходящее письмо"@ru ;
   rdfs:label "Outgoing letter"@en ;
   v-fc:targetType v-s:OutgoingLetter ;
-  v-s:sender v-s:SenderCorrespondentRegistryBlank ;
-  v-s:recipient v-s:RecipientCorrespondentRegistryBlank ;
-  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderRegistryBlank ;
-  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientRegistryBlank ;
+  v-s:sender v-s:SenderCorrespondentSearchBlank ;
+  v-s:recipient v-s:RecipientCorrespondentSearchBlank ;
+  v-s:hasLetterRegistrationRecordSender v-s:LetterRegistrationRecordSenderSearchBlank ;
+  v-s:hasLetterRegistrationRecordRecipient v-s:LetterRegistrationRecordRecipientSearchBlank ;
 .
-v-s:SenderCorrespondentRegistryBlank
+v-s:SenderCorrespondentSearchBlank
   a v-fc:Blank ;
   rdfs:label "Корреспондент"@ru ;
   rdfs:label "Correspondent"@en ;
   v-fc:targetType v-s:Correspondent ;
 .
-v-s:RecipientCorrespondentRegistryBlank
+v-s:RecipientCorrespondentSearchBlank
   a v-fc:Blank ;
   rdfs:label "Корреспондент"@ru ;
   rdfs:label "Correspondent"@en ;
   v-fc:targetType v-s:Correspondent ;
 .
-v-s:LetterRegistrationRecordSenderRegistryBlank
+v-s:LetterRegistrationRecordSenderSearchBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Бланк регистрационной записи отправителя"@ru ;
   rdfs:label "Registration record sender blank"@en ;
   v-fc:targetType v-s:LetterRegistrationRecordSender ;
 .
-v-s:LetterRegistrationRecordRecipientRegistryBlank
+v-s:LetterRegistrationRecordRecipientSearchBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Бланк регистрационной записи получателя"@ru ;
   rdfs:label "Registration record recipient blank"@en ;
@@ -87,7 +87,7 @@ v-s:LetterRegistrationRecordRecipientRegistryBlank
 
 # Letter registry templates --------------------------------------------
 
-v-s:LetterRegistryResultTemplate
+v-s:LetterSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон результатов реестра Локальный нормативный документ"@ru ;
   rdfs:label "Local regulatory document registry result template"@en ;
@@ -121,9 +121,8 @@ v-s:LetterRegistryResultTemplate
       <th width="10%" class="orderby" data-orderby="v-s:description"><span about="v-s:description" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:attachment"><span about="v-s:attachment" property="rdfs:label"></span></th>
-      <!--th width="10%" class="orderby" data-orderby="v-s:hasRelatedLetter"><span about="v-s:hasRelatedLetter" property="rdfs:label"></span></th-->
+      <th width="10%" class="orderby" data-orderby="v-s:hasRelatedLetter"><span about="v-s:hasRelatedLetter" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:hasLink"><span about="v-s:hasLink" property="rdfs:label"></span></th>
     </tr>
   </thead>
   <tbody class="result-container">
@@ -173,14 +172,8 @@ v-s:LetterRegistryResultTemplate
       <td property="v-s:description"></td>
       <td property="rdfs:comment"></td>
       <td rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
-      <!--td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td-->
+      <td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
-      <td rel="v-s:hasLink">
-         <div>
-          <span property="v-s:from"></span>
-          <span property="v-s:to"></span>
-        </div>     
-      </td>
     </tr>
   </tbody>
 </table>

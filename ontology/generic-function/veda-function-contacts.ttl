@@ -36,6 +36,7 @@ v-s:PSmanagedOrganization
   v-ui:forProperty v-s:managedOrganization ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type' == 'v-s:Organization')"^^xsd:string ;
   v-ui:placeholder "Выберите организацию"@ru ;
   v-ui:placeholder "Choose organization"@en ;
 .
@@ -129,8 +130,7 @@ v-s:ContactsTemplate
       <div>
         <div>
           <div>
-            <div id="orgTree" class="table-responsive">
-            </div>
+            <div id="orgTree" class="table-responsive"></div>
           </div>
         </div>
       </div>
@@ -142,16 +142,73 @@ v-s:ContactsTemplate
   
   var controlBlock = '<div id="controlButtons" style="float:right"><div class="btn create btn-xs btn-primary"><i class="glyphicon glyphicon-plus"></i></div><div class="btn edit btn-xs btn-default"><i class="glyphicon glyphicon-pencil"></i></div><div class="btn remove btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></div></div>';
 
-  var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';
+  var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';  
 
-  var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-primary">Добавить отдел</button>';
-  var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Назначить сотрудника</button>';
+  var controlButtons = "";
+  var appointmentButtons = "";
+  var departmentButtons = "";
+  function generateDepartmentControls() {
+    var buttons = [];
+    var controls = "";
+    var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-primary">Добавить отдел</button>';
+    var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Назначить сотрудника</button>';
+    if (veda.appointment.id != 'cfg:AdministratorAppointment') {
+      if (!veda.appointment['v-s:parentOrganization']) return "";
+      if (veda.appointment['v-s:parentOrganization'][0].id == individual['v-s:managedOrganization'][0].id) {
+        var _department =  new veda.IndividualModel("v-s:Department");
+        var canCreateDepartment = _department.rights.hasValue("v-s:canCreate", true);
+        if (canCreateDepartment) {
+          buttons.push(addDepartmentControl);
+        }
 
-  var controls = '<div id="controlButtons" style="float:right">'+addDepartmentControl+addAppointmentControl+'</div>';
+        var _appointment =  new veda.IndividualModel("v-s:Appointment");
+        var canCreateAppointment = _appointment.rights.hasValue("v-s:canCreate", true);
+        var _position =  new veda.IndividualModel("v-s:Position");
+        var canCreatePosition = _position.rights.hasValue("v-s:canCreate", true);
+        var _person =  new veda.IndividualModel("v-s:Person");
+        var canCreatePerson = _person.rights.hasValue("v-s:canCreate", true);
+        if (canCreateAppointment && canCreatePosition && canCreatePerson) {
+          buttons.push(addAppointmentControl);
+        }
+      }
+    } else {
+      buttons.push(addDepartmentControl);
+      buttons.push(addAppointmentControl);
+    }
+    if (buttons.length > 0) {
+      controls = $('<div id="controlButtons" style="float:right"></div>');
+      buttons.forEach(function(btn) {
+        controls.append(btn);
+      });
+    }
+    return controls; 
+  }
+
+  function generateAppointmentControls(){
+    var controls = $('<div id="controlButtons" style="float:right"></div>');
+    var delAppointmentControl = '<button id="delete-Appointment" class="btn btn-xs margin-sm-h btn-danger">Удалить назначение</button>';
+    if (veda.appointment.id != 'cfg:AdministratorAppointment') {
+      if (!veda.appointment['v-s:parentOrganization']) return "";
+      if (veda.appointment['v-s:parentOrganization'][0].id == individual['v-s:managedOrganization'][0].id) {
+        var _appointment =  new veda.IndividualModel("v-s:Appointment");
+        var canDeleteAppointment = _appointment.rights.hasValue("v-s:canDelete", true);
+        console.log('canDeleteAppointment='+canDeleteAppointment);
+        if (canDeleteAppointment) {
+          controls.append(delAppointmentControl);
+        }
+      }
+    } else {
+      controls.append(delAppointmentControl);
+    }
+    return controls;
+  }
+
 
   function initialStructure(){
     orgTree.empty();
     if (individual.hasValue('v-s:managedOrganization')) {
+      departmentButtons = generateDepartmentControls();
+      appointmentButtons = generateAppointmentControls();
       var org = individual['v-s:managedOrganization'][0];
       var tmpl = getTemplate(org);
       drawRow(org, orgTree, tmpl);
@@ -288,14 +345,14 @@ v-s:ContactsTemplate
     var person, tmpl;
     if (obj.is('v-s:Appointment')) {
       obj = obj['v-s:employee'][0];
-      tmpl = new veda.IndividualModel('v-s:PersonalInfoTemplate');
+      // tmpl = new veda.IndividualModel('v-s:PersonalInfoTemplate', 'view');
+      tmpl = undefined;
     } else if (obj.is('v-s:Department')) {
-      tmpl = new veda.IndividualModel('v-s:DepartmentTemplate');
+      tmpl = new veda.IndividualModel('v-s:DepartmentTemplate', 'view');
     } else if (obj.is('v-s:Organization')) {
-      tmpl = new veda.IndividualModel('v-s:OrganizationTemplate');
+      tmpl = new veda.IndividualModel('v-s:OrganizationTemplate', 'view');
     }
     veda.Util.showModal(obj, tmpl);
-    //v-s:DepartmentTemplate
     return false;
   });
 
@@ -310,8 +367,10 @@ v-s:ContactsTemplate
       $('#zoomIn', template).remove();
       item.addClass('warning');
       item.append(zoomIn);
-      if (self.attr('typeof') != 'v-s:Appointment') {
-        item.append(controls);
+      if (self.attr('typeof') == 'v-s:Appointment') {
+        item.append(appointmentButtons);
+      } else {
+        item.append(departmentButtons);
       }
     }
     return false;
@@ -361,8 +420,25 @@ v-s:ContactsTemplate
       row.find('.childs').remove();
       setTimeout(function(){
         drawChilds(parentUri, row)
-      }, 1000);
+      }, 500);
     });
+    return false;
+  });
+
+  template.on("click", "#delete-Appointment", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    self = $(this);
+    var currentRow = self.closest('div.value-row');
+    var parentRow = currentRow.parent().closest("[resource]");
+    //var delUri = row.attr('resource');
+    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
+    if ( !confirm(warning) ) { return; }
+    currentRow.closest("[resource]").trigger('delete');
+    parentRow.find('.childs').remove();
+    setTimeout(function(){
+      drawChilds(parentRow.attr('resource'), parentRow)
+    }, 500);
     return false;
   });
 

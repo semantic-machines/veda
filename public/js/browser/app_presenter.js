@@ -2,26 +2,6 @@
 
 veda.Module(function (veda) { "use strict";
 
-  // Reload application on 'cfg:ClientVsn' change
-  veda.on("started", function () {
-    var updateService = new veda.UpdateService();
-    var clientVsn = new veda.IndividualModel("cfg:ClientVsn");
-    updateService.subscribe(clientVsn.id);
-    clientVsn.on("afterReset", function (values) {
-      var browserClientVsn = localStorage.clientVsn;
-      var serverClientVsn = clientVsn["rdf:value"][0];
-      if (browserClientVsn != serverClientVsn) {
-        var reloadPage = new veda.IndividualModel("v-s:ReloadPage");
-        veda.Util.confirm(reloadPage).then(function (confirmed) {
-          if ( confirmed ) {
-            localStorage.clientVsn = serverClientVsn;
-            location.reload(true);
-          }
-        });
-      }
-    });
-  });
-
   // View resource using special templates:
   // "v-ui:ttl" on Ctrl + Alt + Click
   // "v-ui:json" on Alt + Shift + Click
@@ -220,5 +200,46 @@ veda.Module(function (veda) { "use strict";
     }
     return value || null;
   }
+
+  veda.on("started", function () {
+    var layout;
+    if (veda.user.hasValue("v-s:origin", "External User")) {
+      layout = (new veda.IndividualModel("cfg:LayoutExternal"))["rdf:value"][0];
+    } else {
+      layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
+    }
+    layout.present("#app");
+    riot.route(location.hash);
+  });
+
+  // Listen to client notifications
+  veda.on("started", function () {
+    var updateService = new veda.UpdateService();
+    var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
+    updateService.subscribe(clientNotification.id);
+    clientNotification.on("afterReset", checkNotification);
+    checkNotification();
+    function checkNotification() {
+      var browserСlientNotification = localStorage.clientNotification;
+      var serverСlientNotification = clientNotification["rdf:value"][0];
+      if ( browserСlientNotification != serverСlientNotification && clientNotification.hasValue("rdf:value") ) {
+        var notification = clientNotification["rdf:value"][0];
+        veda.Util.confirm(notification).then(function (confirmed) {
+          if ( confirmed ) {
+            localStorage.clientNotification = serverСlientNotification;
+            if (notification.hasValue("v-s:script")) {
+              var script = notification["v-s:script"][0].toString();
+              eval(script);
+            }
+          }
+        });
+      } else {
+        localStorage.clientNotification = serverСlientNotification;
+      }
+    }
+  });
+
+  // Load ontology
+  veda.init();
 
 });

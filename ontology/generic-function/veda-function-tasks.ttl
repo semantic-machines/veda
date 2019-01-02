@@ -952,7 +952,6 @@ v-ft:TaskRelatedTasksTemplate
   //# sourceURL=v-ft:TaskRelatedTasksTemplate_pre
 </script>
 <div>
-  <h2 about="v-ft:RelatedTasks" property="rdfs:label"></h2>
   <div about="v-ft:RelatedTasks" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
 </div>
   """

@@ -89,7 +89,7 @@ veda.Module(function (veda) { "use strict";
       .map( parser );
   };
 
-  proto.set = function (property_uri, values) {
+  proto.set = function (property_uri, values, silently) {
     this.isSync(false);
     values = values.filter(function (i) { return i != undefined; });
     var serialized = values.map( serializer );
@@ -99,8 +99,10 @@ veda.Module(function (veda) { "use strict";
     var uniq = unique(serialized);
     if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
       this.properties[property_uri] = uniq;
-      this.trigger("propertyModified", property_uri, values);
-      this.trigger(property_uri, values);
+      if ( !silently ) {
+        this.trigger("propertyModified", property_uri, values);
+        this.trigger(property_uri, values);
+      }
     }
     return this;
   };
@@ -214,6 +216,10 @@ veda.Module(function (veda) { "use strict";
     configurable: false,
     enumerable: false
   });
+
+  proto.isMemberOf = function (group_uri) {
+    return this.membership.hasValue("v-s:memberOf", group_uri);
+  };
 
   Object.defineProperty(proto, "rights", {
     get: function () {
@@ -492,7 +498,7 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.addValue = function (property_uri, values) {
+  proto.addValue = function (property_uri, values, silently) {
     if (typeof values === "undefined" || values === null) {
       return this;
     }
@@ -506,9 +512,11 @@ veda.Module(function (veda) { "use strict";
       addSingleValue.call(this, property_uri, values);
     }
     this.isSync(false);
-    values = this.get(property_uri);
-    this.trigger("propertyModified", property_uri, values);
-    this.trigger(property_uri, values);
+    if ( !silently ) {
+      values = this.get(property_uri);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
     return this;
   };
   function addSingleValue(property_uri, value) {
@@ -524,7 +532,7 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.removeValue = function (property_uri, values) {
+  proto.removeValue = function (property_uri, values, silently) {
     if (!this.properties[property_uri] || !this.properties[property_uri].length || typeof values === "undefined" || values === null) {
       return this;
     }
@@ -537,9 +545,11 @@ veda.Module(function (veda) { "use strict";
       removeSingleValue.call(this, property_uri, values);
     }
     this.isSync(false);
-    values = this.get(property_uri);
-    this.trigger("propertyModified", property_uri, values);
-    this.trigger(property_uri, values);
+    if ( !silently ) {
+      values = this.get(property_uri);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
     return this;
   };
   function removeSingleValue (property_uri, value) {
@@ -557,7 +567,7 @@ veda.Module(function (veda) { "use strict";
    * @param {Any allowed type} value
    * @return {this}
    */
-  proto.toggleValue = function (property_uri, values) {
+  proto.toggleValue = function (property_uri, values, silently) {
     if (typeof values === "undefined" || values === null) {
       return this;
     }
@@ -571,9 +581,11 @@ veda.Module(function (veda) { "use strict";
       toggleSingleValue.call(this, property_uri, values);
     }
     this.isSync(false);
-    values = this.get(property_uri);
-    this.trigger("propertyModified", property_uri, values);
-    this.trigger(property_uri, values);
+    if ( !silently ) {
+      values = this.get(property_uri);
+      this.trigger("propertyModified", property_uri, values);
+      this.trigger(property_uri, values);
+    }
     return this;
   };
   function toggleSingleValue (property_uri, value) {
@@ -591,15 +603,17 @@ veda.Module(function (veda) { "use strict";
    * @param {String} property_uri property name
    * @return {this}
    */
-  proto.clearValue = function (property_uri) {
+  proto.clearValue = function (property_uri, silently) {
     if (!this.properties[property_uri] || !this.properties[property_uri].length) {
       return this;
     } else {
-      var empty = [];
-      this.properties[property_uri] = empty;
+      delete this.properties[property_uri];
       this.isSync(false);
-      this.trigger("propertyModified", empty);
-      this.trigger(property_uri, empty);
+      if ( !silently ) {
+        var empty = [];
+        this.trigger("propertyModified", property_uri, empty);
+        this.trigger(property_uri, empty);
+      }
     }
     return this;
   };

@@ -108,7 +108,8 @@ rdf:type a rdf:Property ;
     rdfs:range rdfs:Class .
 
 rdf:value a rdf:Property ;
-    rdfs:label "value" ;
+    rdfs:label "Значение"@ru ;
+    rdfs:label "value"@en ;
     rdfs:comment "Idiomatic property used for structured values." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdf: ;

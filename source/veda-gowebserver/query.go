@@ -33,9 +33,9 @@ func query(ctx *fasthttp.RequestCtx) {
 		_limit, _ := ctx.QueryArgs().GetUint("limit")
 		_from, _ := ctx.QueryArgs().GetUint("from")
 
-		top = int (_top)
-		from = int (_from)
-		limit = int (_limit)
+		top = int(_top)
+		from = int(_from)
+		limit = int(_limit)
 	} else {
 		var jsonData map[string]interface{}
 		err := json.Unmarshal(ctx.Request.Body(), &jsonData)
@@ -70,9 +70,9 @@ func query(ctx *fasthttp.RequestCtx) {
 		if _top != nil {
 			switch _top.(type) {
 			case int64:
-				top = int (_top.(int64))
+				top = int(_top.(int64))
 			case uint64:
-				top = int (_top.(uint64))
+				top = int(_top.(uint64))
 			case float64:
 				top = int(_top.(float64))
 			default:
@@ -98,9 +98,9 @@ func query(ctx *fasthttp.RequestCtx) {
 		if _from != nil {
 			switch _from.(type) {
 			case int64:
-				from = int (_from.(int64))
+				from = int(_from.(int64))
 			case uint64:
-				from = int (_from.(uint64))
+				from = int(_from.(uint64))
 			case float64:
 				from = int(_from.(float64))
 			default:
@@ -111,7 +111,7 @@ func query(ctx *fasthttp.RequestCtx) {
 
 	if top < 0 {
 		top = 10000
-	} 
+	}
 
 	if from < 0 {
 		from = 0
@@ -132,6 +132,14 @@ func query(ctx *fasthttp.RequestCtx) {
 	request[5] = top
 	request[6] = limit
 	request[7] = from
+
+	if ticketKey == "" {
+		log.Printf("ERR! bad request=%v\n", request)
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "query", query, "", rc, timestamp)
+		return
+	}
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -198,13 +206,10 @@ func query(ctx *fasthttp.RequestCtx) {
 
 	var result_code = int(InternalServerError)
 	if rc != nil {
-
 		switch rc.(type) {
-
 		case float64:
 			result_code = int(rc.(float64))
 		}
-
 		ctx.Response.SetStatusCode(result_code)
 	}
 

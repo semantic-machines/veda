@@ -373,14 +373,15 @@ v-fs:AttributiveSearchManagementTemplate
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
     $(".action.save-registry", template).click(function () {
       var personalLabel = prompt( new veda.IndividualModel("v-fs:EnterLabel").toString(), individual.toString() );
+      if (!personalLabel) { return; }
       individual.clone().then(function (personalRegistry) {
+        personalRegistry["rdf:type"] = [ new veda.IndividualModel("v-fs:PersonalSearch") ];
         personalRegistry["v-fs:searchResult"] = [];
         personalRegistry["v-fs:authorized"] = [];
         personalRegistry["v-fs:cursor"] = [];
         personalRegistry["v-fs:estimated"] = [];
         personalRegistry["v-fs:limit"] = [];
         personalRegistry["v-fs:top"] = [];
-        personalRegistry["rdf:type"] = [ new veda.IndividualModel("v-fs:PersonalSearch") ];
         personalRegistry["v-s:creator"] = [];
         personalRegistry["v-s:created"] = [];
         personalRegistry["rdfs:isDefinedBy"] = [];
@@ -388,8 +389,8 @@ v-fs:AttributiveSearchManagementTemplate
         var searchBlank = individual.hasValue("v-fs:searchBlank") ? individual["v-fs:searchBlank"][0] : undefined;
         if (searchBlank && searchBlank.object) {
           return searchBlank.clone().then(function(personalRegistryBlank) {
-            personalRegistry["rdfs:isDefinedBy"] = [];
             personalRegistry["v-fs:searchBlank"] = [ personalRegistryBlank ];
+            personalRegistryBlank["rdfs:isDefinedBy"] = [];
             personalRegistryBlank.object = searchBlank.object;
             personalRegistryBlank.updateBlank();
             personalRegistryBlank.save();
@@ -716,6 +717,7 @@ v-fs:AttributiveSearchInlineTemplate
   if ( !searchBlankTemplate ) {
     $(".results-load-buttons", template).detach().appendTo(template);
     $(".params", template).remove();
+    $(".caption", template).removeClass("hidden");
   }
   if ( this.hasValue("v-fs:loadAll", true) ) {
     $(".no-more-results", template).remove();
@@ -1424,6 +1426,27 @@ v-fs:MinimalSearchBlank
   rdfs:label "Тестовый бланк"@ru ;
   rdfs:label "Test blank"@en ;
   v-fc:targetType rdf:Property ;
+.
+
+v-fs:MinimalSearchBlankTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Минимальный шаблон бланка поиска"@ru ;
+  rdfs:label "Minimal search blank template"@en ;
+  v-ui:template """
+<div>
+  <veda-control property="*" data-type="string"></veda-control>
+</div>
+<script>
+  $("input", template).keydown(function (e) {
+    if (e.which === 13) {
+      var value = this.value;
+      individual.set("*", [value]);
+      container.siblings(".search-button").click();
+    }
+  });
+  //# sourceURL=v-ui:MinimalSearchBlankTemplate_post
+</script>
+  """ ;
 .
 
 v-fs:MinimalSearchResultTemplate

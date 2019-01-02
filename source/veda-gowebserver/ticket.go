@@ -178,7 +178,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	log.Printf("INFO: get ticket trusted, ticket=%s, login=%s, result=%s", ticketKey, login, string (getTicketResponseBuf))
+	log.Printf("INFO: get ticket trusted, ticket=%s, login=%s, result=%s", ticketKey, login, string(getTicketResponseBuf))
 
 	ctx.SetStatusCode(int(responseJSON["result"].(float64)))
 	ctx.Write(getTicketResponseBuf)

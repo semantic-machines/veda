@@ -12,36 +12,60 @@ import (
 //request is redirected to veda-server via socket
 //veda-server stores individual into storage
 func putIndividual(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now()
 
-	var assignedSubsystems uint64
+	timestamp := time.Now()
 	var ticketKey, eventID string
-	// var ticket ticket
 
 	//Decoding request paramets
-
+	jsd := json.NewDecoder(bytes.NewReader(ctx.Request.Body()))
+	jsd.UseNumber()
 	var jsonData map[string]interface{}
 
-	d := json.NewDecoder(bytes.NewReader(ctx.Request.Body()))
-	d.UseNumber()
-
-	//err := json.Unmarshal(ctx.Request.Body(), &jsonData)
-	if err := d.Decode(&jsonData); err != nil {
-		log.Println("ERR! PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
+	if err := jsd.Decode(&jsonData); err != nil {
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
 		return
 	}
 
 	if jsonData["ticket"] != nil {
-	    ticketKey = jsonData["ticket"].(string)
+		ticketKey = jsonData["ticket"].(string)
+	} else {
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+		return
 	}
 
-	if jsonData["assigned_subsystems"] != nil {
-		aa := jsonData["assigned_subsystems"].(json.Number)
-		assignedSubsystems1, _ := aa.Int64()
-		assignedSubsystems = uint64(assignedSubsystems1)
+	rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
+	if rc1 != Ok {
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		ctx.Response.SetStatusCode(int(rc1))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc1, timestamp)
+		return
 	}
+
 	eventID = jsonData["event_id"].(string)
+
+	indv := jsonData["individual"]
+	if indv == nil {
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+		return
+	}
+	switch indv.(type) {
+	case map[string]interface{}:
+	default:
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+		return
+	}
 
 	//Check if ticket is valid, if it's not valid then return fail code to client
 	rc, ticket := getTicket(ticketKey)
@@ -52,41 +76,67 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
 	}
 
 	//Send modify request to veda-server
-	rc = modifyIndividual("put", &ticket, "individuals", []map[string]interface{}{jsonData["individual"].(map[string]interface{})},
+	rc = modifyIndividual("put", &ticket, "individuals", []map[string]interface{}{indv.(map[string]interface{})},
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
-	trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
-
+	//trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
 }
 
 //putIndividuals same to put individual but this function store array of individuals from client
 func putIndividuals(ctx *fasthttp.RequestCtx) {
-	timestamp := time.Now()
 
-	var assignedSubsystems uint64
+	timestamp := time.Now()
 	var ticketKey, eventID string
 	// var ticket ticket
 
 	var jsonData map[string]interface{}
 	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
 	if err != nil {
-		log.Println("ERR! PUT_INDIVIDUAL: DECODING JSON REQUEST ", err)
-		ctx.Response.SetStatusCode(int(InternalServerError))
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
 		return
 	}
 
-	ticketKey = jsonData["ticket"].(string)
-	assignedSubsystems = uint64(jsonData["assigned_subsystems"].(float64))
+	if jsonData["ticket"] != nil {
+		ticketKey = jsonData["ticket"].(string)
+	} else {
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+		return
+	}
+
+	rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
+	if rc1 != Ok {
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		ctx.Response.SetStatusCode(int(rc1))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc1, timestamp)
+		return
+	}
+
 	eventID = jsonData["event_id"].(string)
 
 	rc, ticket := getTicket(ticketKey)
 	if rc != Ok {
 		ctx.Response.SetStatusCode(int(rc))
 		trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
-
 		return
 	}
 
-	individualsI := jsonData["individuals"].([]interface{})
+	individualsIJ := jsonData["individuals"]
+	switch individualsIJ.(type) {
+	case []interface{}:
+	default:
+		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		rc := BadRequest
+		ctx.Response.SetStatusCode(int(rc))
+		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+		return
+	}
+
+	individualsI := individualsIJ.([]interface{})
 	individuals := make([]map[string]interface{}, len(individualsI))
 	for i := 0; i < len(individualsI); i++ {
 		individuals[i] = individualsI[i].(map[string]interface{})
@@ -94,6 +144,6 @@ func putIndividuals(ctx *fasthttp.RequestCtx) {
 
 	rc = modifyIndividual("put", &ticket, "individuals", individuals,
 		assignedSubsystems, eventID, time.Now().Unix(), ctx)
-	trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
+	//trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
 
 }

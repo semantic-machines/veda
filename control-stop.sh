@@ -2,8 +2,8 @@
 
 TIMESTAMP=`date +%Y-%m-%d_%H_%M`
 
-mkdir ./logs/$TIMESTAMP
-cp ./logs/*-stderr.log ./logs/$TIMESTAMP
+#mkdir ./logs/$TIMESTAMP
+#cp ./logs/*-stderr.log ./logs/$TIMESTAMP
 
 #tarantoolctl stop init_tarantool.lua
 #pkill tarantool
@@ -47,6 +47,9 @@ if [ $1 == "all" ] ; then
     killall -9 veda-gowebserver
     killall -9 veda-ft-query
     killall -9 veda-lmdb-srv
+
+    #tarantoolctl stop init_tarantool.lua
+    pkill tarantool
 
 fi
 

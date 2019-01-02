@@ -159,6 +159,7 @@ var stopList = [
   "v-s:creator",
   "v-s:lastEditor",
   "v-s:created",
+  "v-s:drafted",
   "v-s:edited",
   "v-s:updateCounter",
   "v-s:deleted",
@@ -246,24 +247,20 @@ v-fc:BlankTemplate
     if (rights.hasValue("v-s:canCreate", true)) {
       object.present(objectContainer, _class.id === "v-fc:Blank" ? "v-fc:CreateBlankTemplate" : undefined, "edit")
         .then(function (objectTemplate) {
-          $("#cancel.action", objectTemplate).click(function () {
-            window.history.back();
-          });
-          object.one("afterSave", saveHandler);
-          objectTemplate.one("remove", function () {
-            object.off("afterSave", saveHandler);
-          });
+          objectTemplate.one("cancel", cancelHandler);
+          objectTemplate.one("save", saveHandler);
         });
     } else {
       $("#no-rights", template).removeClass("hidden");
     }
 
+    function cancelHandler () {
+      window.history.back();
+    }
     function saveHandler () {
-      if (location.hash.indexOf(self.id) === 2) {
-        setTimeout(function () {
-          riot.route("#/" + object.id);
-        }, 100);
-      }
+      setTimeout(function () {
+        riot.route("#/" + object.id);
+      }, 250);
     }
   });
 
@@ -330,11 +327,11 @@ v-fc:CreateManagementTemplate
         var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
         if (createBlank && createBlank.object) {
           var personalCreateBlank = createBlank.clone();
-          personalCreate["rdfs:isDefinedBy"] = [];
-          personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
           personalCreateBlank.object = createBlank.object;
           personalCreateBlank.updateBlank();
+          personalCreateBlank["rdfs:isDefinedBy"] = [];
           personalCreateBlank.save();
+          personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
         }
         return personalCreate.save();
       }).then(function (personalCreate) {
@@ -356,7 +353,7 @@ v-fc:CreateManagementTemplate
 
   individual.rights.then(function (rights) {
     if ( rights.hasValue("v-s:canUpdate", true) ) {
-      $(".action.update-blank", template).click(function () {
+      $(".action.update-create", template).click(function () {
         var createBlank = individual.hasValue("v-fc:hasBlank") ? individual["v-fc:hasBlank"][0] : undefined;
         if (createBlank && createBlank.object) {
           createBlank.updateBlank();
@@ -386,7 +383,7 @@ v-fc:CreateManagementTemplate
       $(".action.delete-create", template).remove();
     }
   });
-//# sourceURL=v-fc:BlankTemplateShort_pre
+//# sourceURL=v-fc:CreateManagementTemplate_pre
 </script>
 <div>
   <div class="container sheet">

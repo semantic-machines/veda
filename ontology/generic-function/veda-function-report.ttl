@@ -121,8 +121,8 @@ v-s:ReportManagementTemplate
       var reportBlank = individual.hasValue("v-s:reportBlank") ? individual["v-s:reportBlank"][0] : undefined;
       if (reportBlank && reportBlank.object) {
         var personalReportBlank = reportBlank.clone();
-        personalReport["rdfs:isDefinedBy"] = [];
         personalReport["v-s:reportBlank"] = [ personalReportBlank ];
+        personalReportBlank["rdfs:isDefinedBy"] = [];
         personalReportBlank.object = reportBlank.object;
         personalReportBlank.updateBlank();
         personalReportBlank.save();

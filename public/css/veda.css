@@ -721,16 +721,19 @@ fieldset[disabled] .form-control {
   color: white;
 }
 .carousel-indicators {
-  position: relative;
+  position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  z-index: 0;
+  bottom: 0;
+  z-index: 10;
   padding: 10px 10px;
   width: inherit;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 0;
   background: rgba(0,0,0,.4);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 .carousel-indicators > li {
   display: inline-block;
