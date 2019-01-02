@@ -201,17 +201,6 @@ veda.Module(function (veda) { "use strict";
     return value || null;
   }
 
-  veda.on("started", function () {
-    var layout;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
-      layout = (new veda.IndividualModel("cfg:LayoutExternal"))["rdf:value"][0];
-    } else {
-      layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
-    }
-    layout.present("#app");
-    riot.route(location.hash);
-  });
-
   // Listen to client notifications
   veda.on("started", function () {
     var updateService = new veda.UpdateService();
