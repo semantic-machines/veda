@@ -79,14 +79,13 @@ veda.Module(function (veda) { "use strict";
 
     function fetchResult(cursor) {
       var from = cursor || 0;
-      query({
+      veda.Backend.query({
         ticket: veda.ticket,
         query: q,
         sort: sort || "'v-s:created' desc",
         from: from,
         top: delta,
-        limit: limit,
-        async: true
+        limit: limit
       }).then(function (query_result) {
         var cursor = query_result.cursor;
         var estimated = query_result.estimated;
@@ -192,7 +191,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.forSubIndividual = function (net, property, id, func) {
-    if (net[property]===undefined) return;
+    if (net[property] === undefined) { return; }
     net[property].forEach(function(el) {
       if (el.id == id) {
         func(el);
@@ -201,7 +200,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.removeSubIndividual = function (net, property, id) {
-    if (net[property]===undefined) return undefined;
+    if (net[property] === undefined) { return; }
     return net[property].filter( function (item) {
       return item.id !== id;
     });
