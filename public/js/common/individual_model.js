@@ -227,18 +227,17 @@ veda.Module(function (veda) { "use strict";
       if (this._.rights) { return Promise.resolve(this._.rights); }
       if (this.isNew()) {
         this._.rights = new veda.IndividualModel({ cache: false });
+        this._.rights["v-s:canCreate"] = [ true ];
         this._.rights["v-s:canRead"] = [ true ];
         this._.rights["v-s:canUpdate"] = [ true ];
         this._.rights["v-s:canDelete"] = [ true ];
         return Promise.resolve(this._.rights);
       }
       return veda.Backend.get_rights(veda.ticket, this.id).then(function (rightsJSON) {
-        self._.rights = new veda.IndividualModel( rightsJSON, false );
-        return self._.rights.load();
+        return self._.rights = new veda.IndividualModel( rightsJSON, false ).load();
       }).catch(function  (error) {
         console.log("rights error", self.id, error);
-        self._.rights = new veda.IndividualModel({ cache: false });
-        return self._.rights.load();
+        return self._.rights = new veda.IndividualModel({ cache: false });
       });
     },
     configurable: false,
@@ -250,14 +249,12 @@ veda.Module(function (veda) { "use strict";
       var self = this;
       if (this._.rightsOrigin) { return Promise.resolve(this._.rightsOrigin); }
       return veda.Backend.get_rights_origin(veda.ticket, this.id).then(function (rightsOriginArr) {
-        self._.rightsOrigin = rightsOriginArr.map(function (item) {
+        return self._.rightsOrigin = Promise.all(rightsOriginArr.map(function (item) {
           return new veda.IndividualModel( item, false ).load();
-        });
-        return Promise.all(self._.rightsOrigin);
+        }));
       }).catch(function  (error) {
         console.log("rights error", self.id, error);
-        self._.rightsOrigin = [];
-        return Promise.resolve(self._.rightsOrigin);
+        return self._.rightsOrigin = [];
       });
     },
     configurable: false,

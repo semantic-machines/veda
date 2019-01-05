@@ -2093,80 +2093,79 @@ v-ui:DocumentEventTemplate
   """ ;
 .
 
-v-ui:PermissionStatementInlineTemplate
+v-ui:PermissionsTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса записи выдачи прав"@ru ;
-  rdfs:label "Document event template"@en ;
+  rdfs:label "Шаблон для отображения прав"@ru ;
+  rdfs:label "Individual rights template"@en ;
   v-ui:forClass v-s:PermissionStatement ;
   v-ui:template """
-<div>
-  <div class="row right-header" style="display:none">
-    <div class="col-md-1">
-      <span about="v-s:canCreate" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="v-s:canRead" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="v-s:canUpdate" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="v-s:canDelete" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-3">
-      <span about="v-s:permissionObject" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-3">
-      <span about="v-s:permissionSubject" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="v-s:startTime" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="v-s:endTime" property="rdfs:label"></span>
-    </div>
-    <div class="col-md-12">
-      <span about="rdfs:comment" property="rdfs:label"></span>
-    </div>
+<script>
+  var rightsContainer = $(".rights", template);
+  var rightsTemplate = rightsContainer.html();
+  rightsContainer.empty();
+  individual.rights.then(function (rights) {
+    rights.present(rightsContainer, rightsTemplate);
+  });
+
+  var descriptionContainer = $("#description", template);
+  var descriptionTemplate = descriptionContainer.html();
+  descriptionContainer.empty();
+
+  var rightsOriginContainer = $(".rightsOrigin", template);
+  var rightsOriginTemplate = rightsOriginContainer.html();
+  rightsOriginContainer.empty();
+  individual.rightsOrigin.then(function (rightsOrigin) {
+    rightsOrigin.forEach(function (origin) {
+      if ( !origin.hasValue("rdfs:comment") ) {
+        origin.present(rightsOriginContainer, rightsOriginTemplate);
+      } else {
+        origin.present(descriptionContainer, descriptionTemplate);
+      }
+    });
+  });
+//# sourceURL=v-ui:PermissionsTemplate_pre
+</script>
+<div class="container">
+  <h3 about="@" data-template="v-ui:ClassNameLabelTemplate"></h3>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr class="active">
+          <th about="v-s:permissionSubject" property="rdfs:label"></th>
+          <th about="v-s:permissionObject" property="rdfs:label"></th>
+          <th about="v-s:canCreate" property="rdfs:label"></th>
+          <th about="v-s:canRead" property="rdfs:label"></th>
+          <th about="v-s:canUpdate" property="rdfs:label"></th>
+          <th about="v-s:canDelete" property="rdfs:label"></th>
+        </tr>
+      </thead>
+      <tbody class="rightsOrigin">
+        <tr>
+          <td about="@" rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate"></td>
+          <td about="@" rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate"></td>
+          <td about="@" property="v-s:canCreate"></td>
+          <td about="@" property="v-s:canRead"></td>
+          <td about="@" property="v-s:canUpdate"></td>
+          <td about="@" property="v-s:canDelete"></td>
+        </tr>
+      </tbody>
+      <tbody class="rights">
+        <tr class="active">
+          <th></th>
+          <th></th>
+          <th about="@" property="v-s:canCreate"></th>
+          <th about="@" property="v-s:canRead"></th>
+          <th about="@" property="v-s:canUpdate"></th>
+          <th about="@" property="v-s:canDelete"></th>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <hr/>
-  <div class="row">
-    <div class="col-md-1">
-      <span about="@" property="v-s:canCreate"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="@" property="v-s:canRead"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="@" property="v-s:canUpdate"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="@" property="v-s:canDelete"></span>
-    </div>
-    <div class="col-md-3">
-      <span rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate"></span>
-    </div>
-    <div class="col-md-3">
-      <span rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="@" property="v-s:startTime"></span>
-    </div>
-    <div class="col-md-1">
-      <span about="@" property="v-s:endTime"></span>
-    </div>
-    <div class="col-md-12">
-      <pre style="border:none;background-color:#fff;"></pre>
-    </div>
+  <a about="v-s:More" property="rdfs:label" class="btn btn-link" role="button" data-toggle="collapse" href="#description" aria-expanded="false" aria-controls="description"></a>
+  <div class="collapse" id="description">
+    <pre about="@" property="rdfs:comment" style="border:none;background-color:#fff;"></pre>
   </div>
 </div>
-<script>
-  var dd = individual['rdfs:comment'][0];
-  var pre = $("pre", template);
-  var anchored = dd.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:ttl'>$1</a>");
-  pre.html(anchored);
-//# sourceURL=v-ui:PermissionStatementInlineTemplate_post
-</script>
   """ ;
 .
 

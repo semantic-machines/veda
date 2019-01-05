@@ -49,22 +49,24 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.toTTL = function (individualList, callback) {
-    var ontologies = query(veda.ticket, "'rdf:type'=='owl:Ontology'").result,
-        all_prefixes = {},
+    var all_prefixes = {},
         prefixes = {},
         triples = [],
         writer = N3.Writer();
 
     all_prefixes["dc"] = "http://purl.org/dc/elements/1.1/";
     all_prefixes["grddl"] = "http://www.w3.org/2003/g/data-view#";
-    ontologies.map( function (ontology_uri) {
-      var ontology = new veda.IndividualModel(ontology_uri);
-      var prefix = ontology_uri.slice(0, -1);
-      if (ontology.hasValue("v-s:fullUrl")) {
-        all_prefixes[prefix] = ontology["v-s:fullUrl"][0].toString();
-      }
-    });
 
+    veda.Backend.query(veda.ticket, "'rdf:type'=='owl:Ontology'")
+      .then(function (queryResult) {
+        queryResult.result.map(function (ontology_uri) {
+          var ontology = new veda.IndividualModel(ontology_uri);
+          var prefix = ontology_uri.slice(0, -1);
+          if (ontology.hasValue("v-s:fullUrl")) {
+            all_prefixes[prefix] = ontology["v-s:fullUrl"][0].toString();
+          }
+        });
+      });
     function prefixer(uri) {
       try {
         var colonIndex = uri.indexOf(":"),
@@ -157,9 +159,9 @@ veda.Module(function (veda) { "use strict";
       report = new veda.IndividualModel(report);
     }
     var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress').load();
-  Promise.all([report.load(), jasperServer.load()]).then(function (loaded) {
-    var report = loaded[0];
-    var jasperServer = loaded[1];
+    Promise.all([report.load(), jasperServer.load()]).then(function (loaded) {
+      var report = loaded[0];
+      var jasperServer = loaded[1];
       var jasperServerAddress = jasperServer['rdf:value'][0];
 
       var form = document.createElement("form");
@@ -194,11 +196,6 @@ veda.Module(function (veda) { "use strict";
     });
   };
 
-  veda.Util.transform = function (individual, template, transformId) {
-    var startForm = veda.Util.buildStartFormByTransformation(individual, new veda.IndividualModel(transformId));
-    riot.route("#/" + startForm.id + "///edit");
-  };
-
   /**
    * Event `send` handler:
    *  - Find transformation to start form or use transformation specified by `transformId` parameter
@@ -229,23 +226,12 @@ veda.Module(function (veda) { "use strict";
     var modalTmpl = $("#individual-modal-template").html();
     var modal = $(modalTmpl);
     var modalBody = $(".modal-body", modal);
-    modal.one("remove", function (e) {
-      modal.modal("hide");
-    });
     modal.modal();
-    $("#main").append(modal);
-
-    var rights = individual['rights'];
-    var holder = $("<div>");
-    rights.present(holder, "v-ui:PermissionStatementInlineTemplate");
-    holder.appendTo(modalBody);
-
-    var origin = individual['rightsOrigin'];
-    origin.forEach(function (rightRecord) {
-      var holder = $("<div>");
-      rightRecord.present(holder, "v-ui:PermissionStatementInlineTemplate");
-      holder.appendTo(modalBody);
+    modal.on("hidden.bs.modal", function () {
+      modal.remove();
     });
+    $("body").append(modal);
+    individual.present(modalBody, "v-ui:PermissionsTemplate");
   };
 
   veda.Util.showModal = function (individual, template, mode) {
