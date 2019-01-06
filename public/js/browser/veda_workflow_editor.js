@@ -1055,66 +1055,41 @@ jsWorkflow.ready = jsPlumb.ready;
       });
 
       $('.copy-net-element', template).on('click', function() {
-        function clone(selectedElementId) {
+        if (typeof selectedElementId !== "undefined") {
           var individual = new veda.IndividualModel(selectedElementId);
           if (individual.hasValue('rdf:type')) {
             if (individual['rdf:type'][0].id === 'v-wf:Task' || individual['rdf:type'][0].id === 'v-wf:Condition') {
-              individual = individual.clone();
-              individual['v-wf:locationX'] = [individual['v-wf:locationX'][0]+50];
-              individual['v-wf:locationY'] = [individual['v-wf:locationY'][0]+50];
-              individual['v-wf:hasFlow'] = [];
-              instance.createState(individual);
-              net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat(individual);
+              individual.clone().then(function (clone) {
+                clone['v-wf:locationX'] = [individual['v-wf:locationX'][0] + 50];
+                clone['v-wf:locationY'] = [individual['v-wf:locationY'][0] + 50];
+                clone['v-wf:hasFlow'] = [];
+                instance.createState(clone);
+                net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat(clone);
+              });
             }
-          }
-          return $('#' + veda.Util.escape4$(individual.id), template);
-        }
-
-        if (dragList.length > 0) {
-          var n = [];
-
-          dragList.forEach(function(item) {
-            n.push(clone(item.attr('id')));
-          });
-
-          instance.clearDragList();
-
-          n.forEach(function(item) {
-            instance.addToDragList(item);
-          });
-        } else {
-          if (typeof selectedElementId !== "undefined") {
-            clone(selectedElementId);
           }
         }
       });
 
       /* ZOOM [BEGIN] */
-      $('.zoom-in', template).on('click', function() {
-        if (net['currentScale']<1) { return instance.changeScale(net['currentScale'] + 0.1); }
-        if (net['currentScale']<2) { return instance.changeScale(net['currentScale'] + 0.25); }
-      });
-
-      $('.zoom-out', template).on('click', function() {
-        if (net['currentScale']>1) { return instance.changeScale(net['currentScale'] - 0.25); }
-        if (net['currentScale']>0.2) { return instance.changeScale(net['currentScale'] - 0.1); }
-      });
-
+      $('.zoom-in', template).on('click', zoomIn);
+      $('.zoom-out', template).on('click', zoomOut);
       wdata.bind('mousewheel', function(e) {
         if( e.originalEvent.wheelDelta > 0 ) {
-          if ( net['currentScale'] < 1 ) {
-            return instance.changeScale(net['currentScale'] + 0.1);
-          } else if ( net['currentScale'] < 2 ) {
-            return instance.changeScale(net['currentScale'] + 0.25);
-          }
+          zoomIn();
         } else {
-          if ( net['currentScale'] > 1 ) {
-            return instance.changeScale(net['currentScale'] - 0.25);
-          } else if ( net['currentScale'] > 0.2 ) {
-            return instance.changeScale(net['currentScale'] - 0.1);
-          }
+          zoomOut();
         }
       });
+
+      function zoomIn() {
+        if (net['currentScale']<1) { return instance.changeScale(net['currentScale'] + 0.1); }
+        if (net['currentScale']<2) { return instance.changeScale(net['currentScale'] + 0.25); }
+      }
+      function zoomOut() {
+        if (net['currentScale']>1) { return instance.changeScale(net['currentScale'] - 0.25); }
+        if (net['currentScale']>0.2) { return instance.changeScale(net['currentScale'] - 0.1); }
+      }
 
       $('.zoom-default', template).on('click', function() {
         instance.optimizeView();
