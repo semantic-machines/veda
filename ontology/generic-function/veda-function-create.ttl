@@ -100,7 +100,6 @@ v-fc:CreateByBlankTemplate
     <em about="v-fc:ChooseBlank" property="rdfs:label"></em>
     <veda-control data-type="link" rel="v-fc:targetBlank" class="fulltext dropdown"></veda-control>
   </div>
-  <br>
   <div rel="v-fc:targetBlank" data-template="v-fc:BlankTemplate"></div>
 </div>
   """
@@ -117,7 +116,6 @@ v-fc:CreateByTypeTemplate
     <em about="v-fc:ChooseType" property="rdfs:label"></em>
     <veda-control rel="v-fc:targetType" data-type="link" class="fulltext dropdown"></veda-control>
   </div>
-  <br>
   <div id="holder"></div>
 </div>
 <script>
@@ -337,7 +335,7 @@ v-fc:CreateManagementTemplate
       }).then(function (personalCreate) {
         return veda.user.aspect.load().then(function (aspect) {
           aspect.addValue("v-s:hasCreate", personalCreate);
-	      return aspect.save();
+        return aspect.save();
         }).then(function() {
           return new veda.IndividualModel("v-fc:BlankSuccessfullySaved").load();
         }).then(function(message) {
@@ -371,8 +369,8 @@ v-fc:CreateManagementTemplate
       $(".action.delete-create", template).click(function () {
         veda.user.aspect.load().then(function (aspect) {
           aspect.removeValue("v-s:hasCreate", individual);
-	      return aspect.save();
-	    }).then(function () {
+          return aspect.save();
+        }).then(function () {
           return new veda.IndividualModel("v-fc:BlankSuccessfullyDeleted").load();
         }).then(function (message) {
           notify("success", { message: message });
