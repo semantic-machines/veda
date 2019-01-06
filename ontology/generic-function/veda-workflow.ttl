@@ -588,8 +588,7 @@ v-wf:NetTemplate
             </div>
           </div>
         </div>
-        <div id="workflow-canvas">
-        </div>
+        <div id="workflow-canvas"></div>
       </div>
     </div>
     <div id="props-col" class="col-md-4">
@@ -597,13 +596,10 @@ v-wf:NetTemplate
       <div id="props"></div>
     </div>
   </div>
+  <div id="workflow-context-menu" class="dropdown clearfix">
+    <ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;"></ul>
+  </div>
 </div>
-
-<div id="workflow-context-menu" class="dropdown clearfix">
-    <ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;">
-    </ul>
-</div>
-
 <script>
   var wrapper = $(".workflow-canvas-wrapper", template),
     height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
