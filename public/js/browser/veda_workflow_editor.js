@@ -1019,8 +1019,8 @@ jsWorkflow.ready = jsPlumb.ready;
         var _this = this,
             stateId,
             stateElement;
-        var individual = instance.createEmptyNetElement($(_this).hasClass('create-condition')?'condition':'task');
-        $('#' + individual.id, template).click();
+        var individual = instance.createEmptyNetElement($(_this).hasClass('create-condition') ? 'condition' : 'task');
+        $('#' + veda.Util.escape4$(individual.id), template).click();
         $(this).blur();
       });
 
