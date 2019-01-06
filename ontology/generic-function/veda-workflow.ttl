@@ -536,7 +536,7 @@ v-wf:NetTemplate
     }
   </style>
   <div class="row">
-    <div id="schema" class="col-md-8">
+    <div id="schema" class="col-md-8" style="border-right: 1px solid #eee;">
       <div class="workflow-canvas-wrapper">
         <div class="row" id="workflow-toolbar">
           <div class="col-md-4">
