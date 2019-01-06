@@ -778,36 +778,39 @@ veda.Module(function (veda) { "use strict";
    * @param {allowed_property_uri, ...} Allowed property uri for links. If defined the tree is formed only for allowed properties.
    */
   proto.prefetch = function (depth) {
-    var allowed_props = [].slice.call(arguments, 1),
-        uris = [],
-        data = this.properties,
-        prefetch = this.prefetch;
-    Object.keys(data).map( function (key) {
-      if ( key === "@" || (allowed_props.length && allowed_props.indexOf(key) < 0) ) return;
-      data[key].map(function (value) {
-        if (value.type !== "Uri") return;
-        if (!veda.cache.get(value.data)) {
-          uris.push(value.data);
-        } else if (depth !== 0) {
-          uris.push( prefetch.apply( veda.cache.get(value.data), [0].concat(allowed_props) ) );
-        }
-      });
-    });
-    uris = veda.Util.unique( veda.Util.flatten(uris, false) );
-    for (var i = 0; i < depth && uris.length; i++) {
-      var result = veda.Backend.get_individuals(veda.ticket, uris),
-        res_map = result.map(function (value) {
-          var obj;
-          if ( !veda.cache.get(value["@"]) ) {
-            obj = new veda.IndividualModel(value);
-          } else {
-            obj = veda.cache.get(value["@"]);
-          }
-          return prefetch.apply( obj, [0].concat(allowed_props) );
-        });
-      uris = veda.Util.unique( veda.Util.flatten(res_map, false) );
-    }
-    return uris;
+    var allowed_props = [].slice.call(arguments, 1);
+    depth = depth || 1;
+    return prefetch.apply(this, [depth, [this.id]].concat(allowed_props) );
   };
+
+  function prefetch(depth, uris) {
+    var self = this;
+    var allowed_props = [].slice.call(arguments, 2);
+    uris = veda.Util.unique( uris );
+    var toGet = uris.filter(function (uri) {
+      return !veda.cache.get(uri);
+    });
+    return (toGet.length ? veda.Backend.get_individuals(veda.ticket, toGet) : Promise.resolve([])).then(function (got) {
+      var nextUris = [];
+      got.forEach(function (uri) {
+        var individual = new veda.IndividualModel(uri);
+      });
+      if (depth - 1 === 0) { return self; }
+      uris.forEach(function (uri) {
+        var individual = new veda.IndividualModel(uri);
+        var data = individual.properties;
+        Object.keys(data).forEach( function (key) {
+          if ( key === "@" || (allowed_props.length && allowed_props.indexOf(key) < 0) ) { return; }
+          data[key].map(function (value) {
+            if (value.type === "Uri") {
+              nextUris.push(value.data);
+            }
+          });
+        });
+      });
+      if (!nextUris.length) { return self; }
+      return prefetch.apply(self, [depth-1, nextUris].concat(allowed_props) );
+    });
+  }
 
 });
