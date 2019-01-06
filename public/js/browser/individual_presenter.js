@@ -13,22 +13,7 @@ veda.Module(function (veda) { "use strict";
       toEmpty = true;
     }
 
-    return present(this, container, template, mode, extra)
-      .then(function (renderedTemplate) {
-
-        if (toEmpty) {
-          container.empty();
-        }
-        container.append(renderedTemplate);
-
-        return renderedTemplate;
-
-      });
-  }
-
-  function present(individual, container, template, mode, extra) {
-
-    return individual.load().then(function (individual) {
+    return this.load().then(function (individual) {
 
       if (template) {
         if (template instanceof veda.IndividualModel) {
@@ -49,7 +34,7 @@ veda.Module(function (veda) { "use strict";
         }
         return template.load().then(function (template) {
           template = template["v-ui:template"][0].toString();
-          return renderTemplate(individual, container, template, mode, extra);
+          return renderTemplate(individual, container, template, mode, extra, toEmpty);
         });
       } else {
         var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
@@ -57,7 +42,7 @@ veda.Module(function (veda) { "use strict";
           template = individual["v-ui:hasTemplate"][0];
           return template.load().then(function (template) {
             template = template["v-ui:template"][0].toString();
-            return renderTemplate(individual, container, template, mode, extra);
+            return renderTemplate(individual, container, template, mode, extra, toEmpty);
           });
         } else {
           var typePromises = individual["rdf:type"].map(function (type) {
@@ -71,7 +56,7 @@ veda.Module(function (veda) { "use strict";
           }).then(function (templates) {
             var renderedTemplatesPromises = templates.map( function (template) {
               template = template["v-ui:template"][0].toString();
-              return renderTemplate(individual, container, template, mode, extra);
+              return renderTemplate(individual, container, template, mode, extra, toEmpty);
             });
             return Promise.all(renderedTemplatesPromises);
           }).then(function (renderedTemplates) {
@@ -83,13 +68,11 @@ veda.Module(function (veda) { "use strict";
       }
     })
     .catch(function (error) {
-
       console.log("Presenter error", error);
-
     });
   }
 
-  function renderTemplate(individual, container, template, mode, extra) {
+  function renderTemplate(individual, container, template, mode, extra, toEmpty) {
     var match,
         pre_render_src,
         pre_render,
@@ -117,6 +100,11 @@ veda.Module(function (veda) { "use strict";
     return processTemplate(individual, container, template, mode).then(function (processedTemplate) {
 
       processedTemplate.trigger(mode);
+
+      if (toEmpty) {
+        container.empty();
+      }
+      container.append(processedTemplate);
 
       if (post_render) {
         post_render.call(individual, veda, individual, container, processedTemplate, mode, extra);
