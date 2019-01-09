@@ -204,7 +204,7 @@ func (ths *Consumer) get_info() bool {
 
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)], ";")
-		if len(ch) != 5 {
+		if len(ch) != 5 && len(ch) != 6 {
 			ths.isReady = false
 			return false
 		}
@@ -239,8 +239,6 @@ func (ths *Consumer) get_info() bool {
 		}
 
 		ths.first_element = uint64(nn)
-
-		//log.Printf("@ ch[4]=%s", ch[4])
 
 		nn, err = strconv.ParseInt(ch[4], 10, 0)
 		if err != nil {
@@ -469,15 +467,13 @@ func (ths *Queue) get_info(chunk int32) bool {
 	}
 
 	ths.ff_info_push_r.Seek(0, 0)
-	//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
 
 	rr := bufio.NewReader(ths.ff_info_push_r)
 	str, err := Readln(rr)
 
-	//writeln("@3 str=[", str, "]");
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)-1], ";")
-		if len(ch) != 5 {
+		if len(ch) != 5 && len(ch) != 6 {
 			ths.isReady = false
 			return false
 		}

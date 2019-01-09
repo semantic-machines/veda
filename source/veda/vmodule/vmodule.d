@@ -353,7 +353,7 @@ class VedaModule : VedaModuleBasic
 
             if (main_queue.isReady == false)
             {
-                log.trace("queue %s not ready, sleep %d s and repeate...", main_queue.get_name(), timeout);
+                log.trace("ERR! vmodule: queue %s not ready, sleep %d s and repeate...", main_queue.get_name(), timeout);
                 Thread.sleep(dur!("seconds")(timeout));
 
                 if (timeout < 10)
@@ -375,6 +375,11 @@ class VedaModule : VedaModuleBasic
 
             count_pushed = main_queue.count_pushed;
             count_popped = main_cs[ i ].count_popped;
+
+            if (count_popped > count_pushed)
+            {
+                log.trace("ERR! count_popped (%s) > queue.count_pushed (%s)", count_popped, count_pushed);
+            }
 
             if (data is null && (i + 1 < main_cs.length))
             {

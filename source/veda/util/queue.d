@@ -1,6 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii, std.uuid;
 import veda.common.logger;
 
 enum QMessageType
@@ -96,6 +96,7 @@ class Consumer
     bool    isReady;
     Queue   queue;
     string  name;
+    string  id;
     string  path;
     ulong   first_element;
     uint    count_popped;
@@ -197,17 +198,20 @@ class Consumer
         if (!queue.isReady || !isReady || mode == Mode.R)
             return false;
 
+        if (id is null)
+            id = queue.get_id();
+
         try
         {
             ff_info_pop_w.seek(0);
-            ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
+            ff_info_pop_w.writefln("%s;%d;%s;%d;%d;%s", queue.name, queue.chunk, name, first_element, count_popped, id);
 
             if (is_sync_data)
                 ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
-            log.trace("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, queue.chunk, name, first_element, count_popped, tr.msg);
+            log.trace("consumer:put_info [%s;%d;%s;%d;%d;%s] %s", queue.name, queue.chunk, name, first_element, count_popped, id, tr.msg);
             return false;
         }
         return true;
@@ -230,8 +234,7 @@ class Consumer
                 str = str[ 0..$ - 1 ];
 
             string[] ch = str.split(';');
-            //writeln("@ queue.get_info ch=", ch);
-            if (ch.length != 5)
+            if (ch.length != 5 && ch.length != 6)
             {
                 isReady = false;
                 return false;
@@ -264,6 +267,9 @@ class Consumer
 
             first_element = to!ulong (ch[ 3 ]);
             count_popped  = to!uint (ch[ 4 ]);
+
+            if (ch.length == 6 && ch[ 5 ].length > 0)
+                id = ch[ 5 ];
         }
 
         //log.trace("get_info:%s", text(this));
@@ -273,17 +279,34 @@ class Consumer
 
     public string pop()
     {
-        if (!queue.isReady || !isReady || mode == Mode.R)
+        if (!queue.isReady)
+        {
+            log.trace("ERR! queue:pop: queue %s not ready", queue.name);
             return null;
+        }
+
+        if (!isReady)
+        {
+            log.trace("ERR! queue:pop: consumer %s not ready", name);
+            return null;
+        }
+
+        if (mode == Mode.R)
+        {
+            log.trace("ERR! queue:pop: consumer %s reads only", name);
+            return null;
+        }
 
         if (queue.get_info(chunk) == false)
         {
-            log.trace("ERR! pop: queue %s not ready", queue.name);
+            log.trace("ERR! queue:pop: queue %s not ready", queue.name);
             return null;
         }
 
         if (count_popped >= queue.count_pushed)
+        {
             return null;
+        }
 
         File *ff_queue_r = queue.get_chunk_file(chunk);
 
@@ -294,13 +317,13 @@ class Consumer
 
         if (header.start_pos != first_element)
         {
-            log.trace("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
+            log.trace("ERR! queue:pop: invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
             return null;
         }
 
         if (header.msg_length >= buff.length)
         {
-            log.trace("pop:inc buff size %d -> %d", buff.length, header.msg_length);
+            log.trace("INFO: queue:pop: inc buff size %d -> %d", buff.length, header.msg_length);
             buff = new ubyte[ header.msg_length + 1 ];
         }
 
@@ -309,13 +332,13 @@ class Consumer
             last_read_msg = ff_queue_r.rawRead(buff[ 0..header.msg_length ]).dup;
             if (last_read_msg.length < header.msg_length)
             {
-                log.trace("pop:invalid msg: msg.length < header.msg_length : %s", text(header));
+                log.trace("ERR! queue:pop:invalid msg: msg.length < header.msg_length : %s", text(header));
                 return null;
             }
         }
         else
         {
-            log.trace("pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
+            log.trace("ERR! queue:pop: invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
             return null;
         }
 
@@ -392,6 +415,7 @@ class Queue
 
     private Logger log;
     private string name;
+    private string id;
     private string path;
     int            chunk;
     private ulong  right_edge;
@@ -424,7 +448,6 @@ class Queue
         isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
-
         set_filenames();
     }
 
@@ -444,6 +467,11 @@ class Queue
     public string get_name()
     {
         return name;
+    }
+
+    public string get_id()
+    {
+        return id;
     }
 
     void toString(scope void delegate(const(char)[]) sink) const
@@ -523,6 +551,10 @@ class Queue
         {
             log.trace("ERR! queue, not open: ex: %s", ex.msg);
         }
+
+        if (isReady == false)
+            log.trace("ERR! queue %s, not open", name);
+
         return isReady;
     }
 
@@ -591,8 +623,14 @@ class Queue
 
         ff_info_push_w.seek(0);
 
+        if (id is null)
+        {
+            UUID new_id = randomUUID();
+            id = new_id.toString();
+        }
+
         auto writer = appender!string();
-        formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
+        formattedWrite(writer, "%s;%d;%d;%d;%s;", name, chunk, right_edge, count_pushed, id);
 
         hash.start();
         hash.put(cast(ubyte[])writer.data);
@@ -616,22 +654,22 @@ class Queue
             catch (Throwable tr)
             {
                 isReady = false;
+                log.trace("ERR! queue:get_info: fail open file %s", path ~ "/" ~ name ~ "_info_push_" ~ text(r_chunk));
                 return false;
             }
         }
 
         ff_info_push_chunk_r.seek(0);
-//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
-
         string str = ff_info_push_chunk_r.readln();
-        //writeln("@3 str=[", str, "]");
+        string hash_hex;
+
         if (str !is null)
         {
             string[] ch = str[ 0..$ - 1 ].split(';');
-            //writeln("@ queue.get_info ch=", ch);
-            if (ch.length != 5)
+            if (ch.length != 5 && ch.length != 6)
             {
                 isReady = false;
+                log.trace("ERR! queue:get_info: invalid info record %s", str);
                 return false;
             }
 
@@ -640,16 +678,23 @@ class Queue
             if (ch[ 0 ] != name)
             {
                 isReady = false;
+                log.trace("ERR! queue:get_info: %s not equal %s", ch[ 0 ], name);
                 return false;
             }
             name         = ch[ 0 ];
             chunk        = to!int (ch[ 1 ]);
             right_edge   = to!ulong (ch[ 2 ]);
             count_pushed = to!uint (ch[ 3 ]);
-            string hash_hex = ch[ 4 ];
-        }
 
-        //writeln(this);
+            if (ch.length == 5)
+                hash_hex = ch[ 4 ];
+
+            if (ch.length == 6)
+            {
+                id       = ch[ 4 ];
+                hash_hex = ch[ 5 ];
+            }
+        }
 
         return true;
     }

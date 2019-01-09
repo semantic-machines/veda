@@ -340,9 +340,9 @@ class FanoutProcess : VedaModule
                     string from_label;
                     string email_from;
 
-                    if (always_use_mail_sender == true && senderMailbox !is null && senderMailbox.length > 5)
+                    if (always_use_mail_sender == true && default_mail_sender !is null && default_mail_sender.length > 5)
                     {
-                        email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+                        email_from = default_mail_sender;
                     }
                     else
                     {
@@ -390,7 +390,7 @@ class FanoutProcess : VedaModule
                         message = SmtpMessage(
                                               Recipient(email_from, from_label),
                                               rr_email_to,
-                                              subject ~ "\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"",
+                                              subject ~ "\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"utf-8\"",
                                               message_body,
                                               str_email_reply_to
                                               );
