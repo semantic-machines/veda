@@ -82,6 +82,11 @@ struct Header
     }
 }
 
+enum QueueCode : int
+{
+    OK                 = 200,
+    ConsumerIdNotEqual = 701
+}
 
 class Consumer
 {
@@ -92,22 +97,24 @@ class Consumer
     ubyte[ 8 ] buff8;
     ubyte[ 4 ] crc;
 
-    Logger  log;
-    bool    isReady;
-    Queue   queue;
-    string  name;
-    string  id;
-    string  path;
-    ulong   first_element;
-    uint    count_popped;
-    ubyte[] last_read_msg;
-    Mode    mode;
-    int     chunk;
+    Logger    log;
+    bool      isReady;
+    QueueCode status;
 
-    File    *ff_info_pop_w = null;
-    File    *ff_info_pop_r = null;
+    Queue     queue;
+    string    name;
+    string    id;
+    string    path;
+    ulong     first_element;
+    uint      count_popped;
+    ubyte[]   last_read_msg;
+    Mode      mode;
+    int       chunk;
 
-    string  file_name_info_pop;
+    File      *ff_info_pop_w = null;
+    File      *ff_info_pop_r = null;
+
+    string    file_name_info_pop;
 
     // tmp
     Header header;
@@ -269,7 +276,17 @@ class Consumer
             count_popped  = to!uint (ch[ 4 ]);
 
             if (ch.length == 6 && ch[ 5 ].length > 0)
+            {
                 id = ch[ 5 ];
+
+                if (queue.id !is null && id != queue.id)
+                {
+                    log.trace("consumer:get_info:consumer.id [%s] != queue.id [%s]", id, queue.id);
+                    isReady = false;
+                    status  = QueueCode.ConsumerIdNotEqual;
+                    return false;
+                }
+            }
         }
 
         //log.trace("get_info:%s", text(this));
