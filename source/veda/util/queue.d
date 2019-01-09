@@ -90,34 +90,35 @@ enum QueueCode : int
 
 class Consumer
 {
-    ubyte[] buff;
-    ubyte[] header_buff;
-    ubyte[ 1 ] buff1;
-    ubyte[ 4 ] buff4;
-    ubyte[ 8 ] buff8;
-    ubyte[ 4 ] crc;
+    public bool      isReady;
+    public QueueCode status;
+    public string    name;
+    public uint      count_popped;
 
-    Logger    log;
-    bool      isReady;
-    QueueCode status;
+    private ubyte[]  buff;
+    private ubyte[]  header_buff;
+    private ubyte[ 1 ] buff1;
+    private ubyte[ 4 ] buff4;
+    private ubyte[ 8 ] buff8;
+    private ubyte[ 4 ] crc;
 
-    Queue     queue;
-    string    name;
-    string    id;
-    string    path;
-    ulong     first_element;
-    uint      count_popped;
-    ubyte[]   last_read_msg;
-    Mode      mode;
+    private Logger  log;
 
-    File      *ff_info_pop_w = null;
-    File      *ff_info_pop_r = null;
+    private Queue   queue;
+    private string  id;
+    private string  path;
+    private ulong   first_element;
+    private ubyte[] last_read_msg;
+    private Mode    mode;
 
-    string    file_name_info_pop;
+    private File    *ff_info_pop_w = null;
+    private File    *ff_info_pop_r = null;
+
+    private string  file_name_info_pop;
 
     // tmp
-    Header header;
-    CRC32  hash;
+    private Header header;
+    private CRC32  hash;
 
     this(Queue _queue, string _path, string _name, Mode _mode, Logger _log)
     {
@@ -454,7 +455,20 @@ class Queue
         isReady     = false;
         buff        = new ubyte[ 4096 * 100 ];
         header_buff = new ubyte[ header.length() ];
-        set_filenames();
+    }
+
+    ~this()
+    {
+        close();
+    }
+
+    void toString(scope void delegate(const(char)[]) sink) const
+    {
+        sink("queue:" ~ name);
+//      sink (", first_element=" ~ text(first_element));
+        sink(", right_edge=" ~ text(right_edge));
+        sink(", count_pushed=" ~ text(count_pushed));
+//      sink (", count_popped=" ~ text(count_popped));
     }
 
     void set_filenames()
@@ -465,11 +479,6 @@ class Queue
         file_name_lock       = path ~ "/" ~ name ~ "_queue.lock";
     }
 
-    ~this()
-    {
-        close();
-    }
-
     public string get_name()
     {
         return name;
@@ -478,15 +487,6 @@ class Queue
     public string get_id()
     {
         return id;
-    }
-
-    void toString(scope void delegate(const(char)[]) sink) const
-    {
-        sink("queue:" ~ name);
-//      sink (", first_element=" ~ text(first_element));
-        sink(", right_edge=" ~ text(right_edge));
-        sink(", count_pushed=" ~ text(count_pushed));
-//      sink (", count_popped=" ~ text(count_popped));
     }
 
     public static bool is_lock(string path, string _queue_name)
@@ -503,6 +503,8 @@ class Queue
 
     public bool open(Mode _mode = Mode.DEFAULT)
     {
+        set_filenames();
+
         try
         {
             if (isReady == false)
