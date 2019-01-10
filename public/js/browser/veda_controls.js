@@ -1118,7 +1118,7 @@
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
       holder = $(".radio", control),
-      trueOption = { 
+      trueOption = {
         label: spec && spec.hasValue("v-ui:trueLabel") ? spec.get("v-ui:trueLabel").join(" ") : new veda.IndividualModel("v-s:YesBundle").get("rdfs:label").join(" "),
         value: true
       },
@@ -1127,14 +1127,14 @@
         value: false
       },
       options = [trueOption, falseOption];
-    
+
     renderOptions();
 
     individual.on(property_uri, changeHandler);
     this.one("remove", function () {
       individual.off(property_uri, changeHandler);
     });
-    
+
     function renderOptions() {
       control.empty();
       options.map(function (option) {
@@ -1162,7 +1162,7 @@
         $(this).prop("checked", hasValue);
       });
     }
-    
+
     if (spec && spec.hasValue("v-ui:tooltip")) {
       control.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
@@ -1175,7 +1175,7 @@
         control.tooltip("destroy");
       });
     }
-    
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
@@ -2012,9 +2012,10 @@
     })
     .then(function (results) {
       results = veda.Util.unique( results );
-      var getList = results.filter( function (uri, index) {
-        if ( veda.cache.get(uri) ) {
-          result.push(veda.cache.get(uri));
+      var getList = results.filter( function (uri, i) {
+        var cached = veda.cache.get(uri);
+        if ( cached ) {
+          result[i] = cached;
           return false;
         } else {
           return true;
@@ -2031,9 +2032,10 @@
       }
     })
     .then(function (individuals) {
-      individuals.map( function (json) {
-        result.push( new veda.IndividualModel(json) );
-      });
+      for (var i = 0, j = 0, length = individuals.length; i < length; i++) {
+        while(result[j++]); // Fast forward to empty element
+        result[j-1] = new veda.IndividualModel(individuals[i]);
+      }
       return result;
     });
 

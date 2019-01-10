@@ -36,7 +36,16 @@ v-ft:UserTaskFormIndex_1_1
   vdi:indexed_field v-s:occupation ;
   vdi:indexed_field v-s:employee ;
 .
-
+v-ft:UserTaskFormIndex_2
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-wf:DecisionForm ;
+  vdi:forProperty v-wf:takenDecision ;
+  vdi:inherited_index v-ft:UserTaskFormIndex_2_1 ;
+.
+v-ft:UserTaskFormIndex_2_1
+  rdf:type vdi:ClassIndex ;
+  vdi:indexed_field v-s:created ;
+.
 ########## TASKS COUNTERS ###########
 
 v-ft:TaskCounter
