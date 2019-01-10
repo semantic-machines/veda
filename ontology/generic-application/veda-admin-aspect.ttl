@@ -631,6 +631,16 @@ v-s:PermissionStatementsBundle
   rdfs:label "Права"@ru ;
   rdfs:label "Permissions"@en ;
 .
+v-s:AuthGroupRulesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Правила групп авторизации"@ru ;
+  rdfs:label "Authorization group rule"@en ;
+.
+v-s:PermissionRulesBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Права для правил групп авторизации"@ru ;
+  rdfs:label "Permission rules for authorization group rules"@en ;
+.
 v-s:RightsManagementBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Управление правами"@ru ;
@@ -768,6 +778,24 @@ v-ui:AdministrationAspectTemplate
           </div>
         </div>
       </div-->
+      <div class="row">
+        <div class="col-md-6">
+          <h3 about="v-s:AuthGroupRulesBundle" property="rdfs:label"></h3>
+          <div class="panel panel-default">
+            <div class="panel-heading"><span about="v-s:GroupRule" property="rdfs:label"></span><a href="#/v-s:GroupRuleBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+            <div class="panel-body" about="v-s:GroupRuleRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3 about="v-s:PermissionRulesBundle" property="rdfs:label"></h3>
+          <div class="panel panel-default">
+            <div class="panel-heading"><span about="v-s:PermissionRuleRegistry" property="rdfs:label"></span><a href="#/v-s:PermissionRuleBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+            <div class="panel-body" about="v-s:PermissionRuleRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div role="tabpanel" class="tab-pane" id="Scripts">

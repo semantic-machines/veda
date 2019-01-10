@@ -63,13 +63,13 @@ v-s:authValue
 
 v-s:PermissionRule
   rdf:type owl:Class ;
-  rdfs:label "Право для группы авторизации"@ru ;
-  rdfs:label "Permission rule for authorization group"@en ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:PermissionStatement ;
+  rdfs:label "Право для правила группы авторизации"@ru ;
+  rdfs:label "Permission rule for authorization group rule"@en ;
   v-ui:hasTemplate v-s:PermissionRuleTemplate ;
 .
 
-v-s:hasGroupRule
+v-s:forGroupRule
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:PermissionRule ;
   rdfs:label "Правило группы авторизации"@ru ;
@@ -78,6 +78,11 @@ v-s:hasGroupRule
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
+
+v-s:GroupRuleTemplate
+  rdf:type v-s:Bundle ;
+  rdfs:label "ID группы для выбранного значения"@ru ;
+.
 
 v-s:GroupRuleTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -123,6 +128,14 @@ v-s:GroupRuleTemplate
   </div>
 </div>
 <script>
+  individual.on("propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("propertyModified", handler);
+  });
+
+  function handler() {
+    if (individual.hasValue)
+  }
   //# sourceURL=v-s:GroupRuleTemplate_post
 </script>
 """ ;
@@ -148,9 +161,9 @@ v-s:PermissionRuleTemplate
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control data-type="text" rows="2" property="rdfs:comment" class="-view edit search"></veda-control>
 
-  <em about="v-s:hasGroupRule" property="rdfs:label"></em>
-  <div rel="v-s:hasGroupRule" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:hasGroupRule" class="-view edit search fulltext dropdown"></veda-control>
+  <em about="v-s:forGroupRule" property="rdfs:label"></em>
+  <div rel="v-s:forGroupRule" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:forGroupRule" class="-view edit search fulltext dropdown"></veda-control>
 
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
@@ -195,15 +208,15 @@ v-s:PermissionRuleTemplate
 
 v-s:GroupRuleBlank
   a v-fc:Blank ;
-  rdfs:label "Заявка на делегирование"@ru ;
-  rdfs:label "Delegation request"@en ;
-  v-fc:targetType v-s:GroupRuleUser ;
+  rdfs:label "Правило группы авторизации"@ru ;
+  rdfs:label "Authorization group rule"@en ;
+  v-fc:targetType v-s:GroupRule ;
 .
 
 v-s:GroupRuleRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Заявки на делегирование"@ru;
-  rdfs:label "Delegation requests"@en;
+  rdfs:label "Правила групп авторизации"@ru ;
+  rdfs:label "Authorization group rules"@en ;
   v-fs:searchBlank v-s:GroupRuleBlank ;
   v-fs:searchBlankTemplate v-s:GroupRuleTemplate ;
   v-fs:searchResultTemplate v-s:GroupRuleRegistryResultTemplate ;
@@ -227,8 +240,6 @@ v-s:GroupRuleRegistryResultTemplate
       <th class="orderby" data-orderby="v-s:authProperty"><span about="v-s:authProperty" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authExpression"><span about="v-s:authExpression" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:dateFrom"><span about="v-s:dateFrom" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:dateTo"><span about="v-s:dateTo" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
     </tr>
@@ -242,8 +253,57 @@ v-s:GroupRuleRegistryResultTemplate
       <td about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:authExpression"></td>
       <td about="@" property="v-s:authValue"></td>
-      <td about="@" property="v-s:dateFrom"></td>
-      <td about="@" property="v-s:dateTo"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:created"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-s:PermissionRuleBlank
+  a v-fc:Blank ;
+  rdfs:label "Право для правила группы авторизации"@ru ;
+  rdfs:label "Permission rule for authorization group rule"@en ;
+  v-fc:targetType v-s:PermissionRule ;
+.
+
+v-s:PermissionRuleRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Права для правил групп авторизации"@ru ;
+  rdfs:label "Permission rules for authorization group rules"@en ;
+  v-fs:searchBlank v-s:PermissionRuleBlank ;
+  v-fs:searchBlankTemplate v-s:PermissionRuleTemplate ;
+  v-fs:searchResultTemplate v-s:PermissionRuleRegistryResultTemplate ;
+.
+
+v-s:PermissionRuleRegistryResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра v-s:PermissionRule"@ru ;
+  rdfs:label "v-s:PermissionRule registry result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="11" about="v-s:PermissionRule" property="rdfs:label"></th>
+    </tr>
+    <tr class="active">
+      <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:forGroupRule"><span about="v-s:forGroupRule" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td><input type="checkbox" class="toggle-select"></td>
+      <td class="serial-number"></td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td about="@" rel="v-s:forGroupRule" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" property="v-s:authValue"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
     </tr>
@@ -343,7 +403,7 @@ try {
     if (authProperty) {
       fn = new Function("veda", "return ( veda.Util.getFirstValue(this['" + authProperty + "']) );");
     } else if (authExpression) {
-      fn = new Function("veda", "return (" + authExpression + ");");
+      fn = new Function("veda", "return " + authExpression);
     }
     fn.rule = rule_uri;
     fn.value = authValue;
@@ -431,43 +491,21 @@ cfg:Event_PermissionRule
   """ ;
 .
 
-cfg:Event_GroupRuleHandler
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт обработки правил распределения авторизации" ;
-  v-s:triggerByType v-s:GroupRule ;
-  v-s:script """
-veda.GroupRules = undefined;
-  """ ;
-.
-
 ##### Type distribution rule #####
 
-v-s:GroupRule_Class
-  rdf:type v-s:GroupRule ;
-  v-s:authClass v-s:ClassAuthorized ;
-  v-s:authProperty rdf:type ;
-  rdfs:label "Auth distribution rule: put individual to class group" ;
-.
-
-v-s:GroupRule_SuperClass
-  rdf:type v-s:GroupRule ;
-  v-s:authClass rdfs:Class ;
-  v-s:authProperty rdfs:subClassOf ;
-  rdfs:label "Auth distribution rule: put class to super class group" ;
-.
-
-v-s:GroupRule_ClassGroupToSuperClassGroup
-  rdf:type v-s:GroupRule ;
-  v-s:authClass v-s:Group ;
-  v-s:authExpression """
-(function () {
-
-})()
-  """ ;
-  rdfs:label "Auth distribution rule: put class individuals group to super class individuals group" ;
-.
-
+# v-s:GroupRule_Class
+#   rdf:type v-s:GroupRule ;
+#   v-s:authClass v-s:ClassAuthorized ;
+#   v-s:authProperty rdf:type ;
+#   rdfs:label "Auth distribution rule: put individual to class group" ;
+# .
+#
+# v-s:GroupRule_SuperClass
+#   rdf:type v-s:GroupRule ;
+#   v-s:authClass rdfs:Class ;
+#   v-s:authProperty rdfs:subClassOf ;
+#   rdfs:label "Auth distribution rule: put class to super class group" ;
+# .
 
 # Сделал первый подход к мандатам (правилам распределения индивидов по авторизационным группам).
 #

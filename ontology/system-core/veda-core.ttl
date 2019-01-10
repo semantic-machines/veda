@@ -365,7 +365,6 @@ v-s:hasStatusStatement
 v-s:canCreate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:PermissionRule ;
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
@@ -376,7 +375,6 @@ v-s:canCreate
 v-s:canDelete
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:PermissionRule ;
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
@@ -387,7 +385,6 @@ v-s:canDelete
 v-s:canRead
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:PermissionRule ;
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
@@ -398,7 +395,6 @@ v-s:canRead
 v-s:canUpdate
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:PermissionStatement ;
-  rdfs:domain v-s:PermissionRule ;
   rdfs:domain v-s:Membership ;
   rdfs:domain v-s:StatusStatement ;
   rdfs:domain v-s:BackwardLink ;
