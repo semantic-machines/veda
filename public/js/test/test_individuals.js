@@ -397,7 +397,6 @@ for (i = 0; i < 1; i++)
 
             Backend.wait_module(m_fulltext_indexer, res.op_id);
             Backend.wait_module(m_subject, res.op_id);
-            Backend.wait_module(m_scripts, res.op_id);
 
             var data = Backend.query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 

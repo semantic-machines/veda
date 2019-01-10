@@ -203,7 +203,7 @@ func (ths *Consumer) get_info() bool {
 
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)], ";")
-		if len(ch) != 5 {
+		if len(ch) != 4 {
 			ths.isReady = false
 			return false
 		}
@@ -461,7 +461,7 @@ func (ths *Queue) get_info() bool {
 
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)-1], ";")
-		if len(ch) != 5 {
+		if len(ch) != 4 {
 			ths.isReady = false
 			return false
 		}
