@@ -505,6 +505,7 @@ class Queue
                     mode = _mode;
 
                 //writeln("open ", text (mode));
+                string part_name;
 
                 if (mode == Mode.RW)
                 {
@@ -519,6 +520,16 @@ class Queue
                         ff_info_queue_w = new File(file_name_info_queue, "w");
                         put_info_queue(false);
                         ff_info_queue_w.flush();
+
+                        part_name = name ~ "-" ~ text(id);
+
+                        try
+                        {
+                            mkdir(path ~ "/" ~ part_name);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
                     }
                     else
                     {
@@ -529,13 +540,14 @@ class Queue
                             return false;
                         }
                         log.trace("Queue [%s] current id = %d", name, id);
+                        part_name = name ~ "-" ~ text(id);
                     }
 
                     if (file_name_queue is null)
                     {
-                        file_name_queue     = path ~ "/" ~ name ~ "_queue";
-                        file_name_info_push = path ~ "/" ~ name ~ "_info_push";
-                        file_name_lock      = path ~ "/" ~ name ~ "_queue.lock";
+                        file_name_queue     = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+                        file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
+                        file_name_lock      = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue.lock";
                     }
                     std.file.write(file_name_lock, text(id));
 
@@ -562,8 +574,9 @@ class Queue
 
                         if (file_name_queue is null)
                         {
-                            file_name_queue     = path ~ "/" ~ name ~ "_queue";
-                            file_name_info_push = path ~ "/" ~ name ~ "_info_push";
+                            part_name           = name ~ "-" ~ text(id);
+                            file_name_queue     = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+                            file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
                         }
                     }
 
@@ -676,7 +689,7 @@ class Queue
         {
             try
             {
-                ff_info_queue_r = new File(path ~ "/" ~ name ~ "_info_queue", "r");
+                ff_info_queue_r = new File(file_name_info_queue, "r");
             }
             catch (Throwable tr)
             {
@@ -741,7 +754,7 @@ class Queue
         {
             try
             {
-                ff_info_push_r = new File(path ~ "/" ~ name ~ "_info_push", "r");
+                ff_info_push_r = new File(file_name_info_push, "r");
             }
             catch (Throwable tr)
             {
