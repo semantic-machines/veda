@@ -79,9 +79,10 @@ v-s:forGroupRule
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
-v-s:GroupRuleTemplate
+v-s:GroupRuleUri
   rdf:type v-s:Bundle ;
-  rdfs:label "ID группы для выбранного значения"@ru ;
+  rdfs:label "URI группы для выбранного значения"@ru ;
+  rdfs:label "Group rule URI"@en ;
 .
 
 v-s:GroupRuleTemplate
@@ -121,7 +122,9 @@ v-s:GroupRuleTemplate
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
   <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
-
+  <em about="v-s:GroupRuleUri" property="rdfs:label"></em>
+  <code class="group-rule-uri"></code>
+  <br>
   <br>
   <div class="actions view edit -search">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
@@ -132,10 +135,20 @@ v-s:GroupRuleTemplate
   template.one("remove", function () {
     individual.off("propertyModified", handler);
   });
+  handler();
 
   function handler() {
-    if (individual.hasValue)
+    var $groupRuleUri = $(".group-rule-uri", template);
+    if ( individual.hasValue("v-s:authValue") ) {
+      var group_concat_uri = individual.id + " " + individual["v-s:authValue"][0].toString();
+      var hash = Sha256.hash(group_concat_uri).substring(32);
+      var group_uri = "d:grp-" + hash;
+      $groupRuleUri.text(group_uri);
+    } else {
+      $groupRuleUri.text("");
+    }
   }
+
   //# sourceURL=v-s:GroupRuleTemplate_post
 </script>
 """ ;
