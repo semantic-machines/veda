@@ -269,13 +269,13 @@ class Consumer
             {
                 id = to!uint (ch[ 4 ]);
 
-                if (id != queue.id)
-                {
-                    log.trace("consumer:get_info:consumer.id [%d] != queue.id [%d]", id, queue.id);
-                    isReady = false;
-                    status  = QueueCode.ConsumerIdNotEqual;
-                    return false;
-                }
+                //if (id != queue.id)
+                //{
+                //    log.trace("consumer:get_info:consumer.id [%d] != queue.id [%d]", id, queue.id);
+                //    isReady = false;
+                //    status  = QueueCode.ConsumerIdNotEqual;
+                //    return false;
+                //}
             }
         }
 
@@ -304,7 +304,7 @@ class Consumer
             return null;
         }
 
-        if (queue.get_info_push() == false)
+        if (queue.get_info_push(id) == false)
         {
             log.trace("ERR! queue:pop: queue %s not ready", queue.name);
             return null;
@@ -312,10 +312,28 @@ class Consumer
 
         if (count_popped >= queue.count_pushed)
         {
+            if (queue.id != id)
+            {
+                log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part", queue.id, id);
+                id = id + 1;
+                if (queue.get_info_push(id) == false)
+                {
+                    log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+                    return null;
+                }
+                remove();
+
+                count_popped  = 0;
+                first_element = 0;
+
+                open();
+                put_info(true);
+            }
+
             return null;
         }
 
-        File *ff_queue_r = queue.get_r_queue_file();
+        File *ff_queue_r = queue.get_r_queue_file(id);
         ff_queue_r.seek(first_element);
 
         ff_queue_r.rawRead(header_buff);
@@ -364,7 +382,7 @@ class Consumer
             return false;
         }
 
-        queue.get_info_push();
+        queue.get_info_push(id);
 
         if (count_popped >= queue.count_pushed)
         {
@@ -505,6 +523,7 @@ class Queue
                     mode = _mode;
 
                 //writeln("open ", text (mode));
+                string part_name;
 
                 if (mode == Mode.RW)
                 {
@@ -529,13 +548,28 @@ class Queue
                             return false;
                         }
                         log.trace("Queue [%s] current id = %d", name, id);
+
+                        id           = id + 1;
+                        count_pushed = 0;
+                        right_edge   = 0;
+
+                        put_info_queue(false);
+                    }
+
+                    part_name = name ~ "-" ~ text(id);
+                    try
+                    {
+                        mkdir(path ~ "/" ~ part_name);
+                    }
+                    catch (Exception ex)
+                    {
                     }
 
                     if (file_name_queue is null)
                     {
-                        file_name_queue     = path ~ "/" ~ name ~ "_queue";
-                        file_name_info_push = path ~ "/" ~ name ~ "_info_push";
-                        file_name_lock      = path ~ "/" ~ name ~ "_queue.lock";
+                        file_name_queue     = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+                        file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
+                        file_name_lock      = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue.lock";
                     }
                     std.file.write(file_name_lock, text(id));
 
@@ -552,22 +586,14 @@ class Queue
                     get_info_push(false);
                 }
 
-                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_queue_w !is null && ff_queue_w !is null || mode == Mode.R)
-                {
+                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_queue_w !is null && ff_queue_w !is null)
                     isReady = true;
 
-                    if (mode == Mode.R)
-                    {
-                        get_info_queue();
+                if (mode == Mode.R)
+                {
+//                        get_info_queue();
 
-                        if (file_name_queue is null)
-                        {
-                            file_name_queue     = path ~ "/" ~ name ~ "_queue";
-                            file_name_info_push = path ~ "/" ~ name ~ "_info_push";
-                        }
-                    }
-
-                    //put_info();
+                    isReady = true;
                 }
             }
         }
@@ -582,10 +608,16 @@ class Queue
         return isReady;
     }
 
-    private File *get_r_queue_file()
+    private File *get_r_queue_file(int part_id)
     {
-        if (ff_queue_r is null)
+        if (id != part_id || ff_queue_r is null)
+        {
+            id = part_id;
+            string part_name = name ~ "-" ~ text(id);
+            file_name_queue = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+
             ff_queue_r = new File(file_name_queue, "r");
+        }
 
         return ff_queue_r;
     }
@@ -665,6 +697,7 @@ class Queue
 
         ff_info_queue_w.write(writer.data);
         ff_info_queue_w.writeln(hash_hex);
+        ff_info_queue_w.flush();
     }
 
     public bool get_info_queue(bool is_check_ready = true)
@@ -676,7 +709,7 @@ class Queue
         {
             try
             {
-                ff_info_queue_r = new File(path ~ "/" ~ name ~ "_info_queue", "r");
+                ff_info_queue_r = new File(file_name_info_queue, "r");
             }
             catch (Throwable tr)
             {
@@ -732,21 +765,23 @@ class Queue
         ff_info_push_w.writeln(hash_hex);
     }
 
-    public bool get_info_push(bool is_check_ready = true)
+    public bool get_info_push(int part_id, bool is_check_ready = true)
     {
         if (is_check_ready && !isReady)
             return false;
 
-        if (ff_info_push_r is null)
+        if (id != part_id || ff_info_push_r is null)
         {
             try
             {
-                ff_info_push_r = new File(path ~ "/" ~ name ~ "_info_push", "r");
+                string part_name = name ~ "-" ~ text(id);
+                file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
+                ff_info_push_r      = new File(file_name_info_push, "r");
             }
             catch (Throwable tr)
             {
                 isReady = false;
-                log.trace("ERR! queue:get_info: fail open file %s", path ~ "/" ~ name ~ "_info_push");
+                log.trace("ERR! queue:get_info: fail open file %s", file_name_info_push);
                 return false;
             }
         }

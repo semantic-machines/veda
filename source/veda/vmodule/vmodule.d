@@ -282,7 +282,7 @@ class VedaModule : VedaModuleBasic
         {
             main_queue.close();
             main_queue.open();
-            main_queue.get_info_push();
+            main_queue.get_info_queue();
 
             if (main_queue.isReady == false)
             {
