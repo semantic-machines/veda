@@ -76,6 +76,7 @@ veda.Module(function (veda) { "use strict";
     var match,
         pre_render_src,
         pre_render,
+        pre_result,
         post_render_src,
         post_render;
 
@@ -95,29 +96,33 @@ veda.Module(function (veda) { "use strict";
       post_render = new Function("veda", "individual", "container", "template", "mode", "extra", "\"use strict\";" + post_render_src);
     }
     if (pre_render) {
-      pre_render.call(individual, veda, individual, container, template, mode, extra);
+      pre_result = pre_render.call(individual, veda, individual, container, template, mode, extra);
     }
-    return processTemplate(individual, container, template, mode).then(function (processedTemplate) {
+    return (pre_result instanceof Promise ? pre_result : Promise.resolve(pre_result)).then(function () {
 
-      processedTemplate.trigger(mode);
+      return processTemplate(individual, container, template, mode).then(function (processedTemplate) {
 
-      if (toEmpty) {
-        container.empty();
-      }
-      container.append(processedTemplate);
+        processedTemplate.trigger(mode);
 
-      if (post_render) {
-        post_render.call(individual, veda, individual, container, processedTemplate, mode, extra);
-      }
+        if (toEmpty) {
+          container.empty();
+        }
+        container.append(processedTemplate);
 
-      // Watch server-side updates
-      var updateService = new veda.UpdateService();
-      updateService.subscribe(individual.id);
-      processedTemplate.one("remove", function () {
-        updateService.unsubscribe(individual.id);
+        if (post_render) {
+          post_render.call(individual, veda, individual, container, processedTemplate, mode, extra);
+        }
+
+        // Watch server-side updates
+        var updateService = new veda.UpdateService();
+        updateService.subscribe(individual.id);
+        processedTemplate.one("remove", function () {
+          updateService.unsubscribe(individual.id);
+        });
+
+        return processedTemplate;
+
       });
-
-      return processedTemplate;
 
     });
   }
