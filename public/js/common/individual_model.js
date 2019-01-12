@@ -28,7 +28,7 @@ veda.Module(function (veda) { "use strict";
       isLoaded: typeof uri === "object",
       uri: uri
     };
-    this.properties = {};
+    this.properties = typeof uri === "object" ? uri : {};
     this.filtered = {};
 
     if (this._.cache) {
@@ -234,7 +234,7 @@ veda.Module(function (veda) { "use strict";
         return Promise.resolve(this._.rights);
       }
       return veda.Backend.get_rights(veda.ticket, this.id).then(function (rightsJSON) {
-        return self._.rights = new veda.IndividualModel( rightsJSON, false ).load();
+        return self._.rights = new veda.IndividualModel( rightsJSON, false );
       }).catch(function  (error) {
         console.log("rights error", self.id, error);
         return self._.rights = new veda.IndividualModel({ cache: false });
@@ -250,7 +250,7 @@ veda.Module(function (veda) { "use strict";
       if (this._.rightsOrigin) { return Promise.resolve(this._.rightsOrigin); }
       return veda.Backend.get_rights_origin(veda.ticket, this.id).then(function (rightsOriginArr) {
         return self._.rightsOrigin = Promise.all(rightsOriginArr.map(function (item) {
-          return new veda.IndividualModel( item, false ).load();
+          return new veda.IndividualModel( item, false );
         }));
       }).catch(function  (error) {
         console.log("rights error", self.id, error);
@@ -267,16 +267,16 @@ veda.Module(function (veda) { "use strict";
    * @param {String} uri individual uri
    */
   proto.load = function () {
+    this.trigger("beforeLoad");
+    if ( this.isLoaded() ) {
+      this.trigger("afterLoad", this);
+      return Promise.resolve( this );
+    } else if ( this.isLoading() ) {
+      return this.isLoading();
+    }
     var self = this;
     var uri = this._.uri ;
-    this.trigger("beforeLoad");
     if (typeof uri === "string") {
-      if ( this.isLoaded() ) {
-        this.trigger("afterLoad", this);
-        return Promise.resolve( this );
-      } else if ( this.isLoading() ) {
-        return this.isLoading();
-      }
       var loadingPromise = veda.Backend.get_individual(veda.ticket, uri).then(function (individualJson) {
         self.isLoading(false);
         self.isNew(false);
@@ -378,6 +378,7 @@ veda.Module(function (veda) { "use strict";
     return veda.Backend.put_individual(veda.ticket, this.properties).then(function () {
       self.isNew(false);
       self.isSync(true);
+      self.isLoaded(true);
       self.trigger("afterSave");
       return self;
     });
@@ -419,6 +420,7 @@ veda.Module(function (veda) { "use strict";
       });
       self.isNew(false);
       self.isSync(true);
+      self.isLoaded(true);
       self.trigger("afterReset");
       return self;
     }).catch(function (error) {
