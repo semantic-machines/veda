@@ -265,8 +265,7 @@ v-fs:AttributiveSearchModel
         sort: self["v-fs:sortOrder"][0],
         top: self["v-fs:top"][0] || veda.user.displayedElements || 10,
         limit: self["v-fs:limit"][0] || 10000,
-        from: self["v-fs:cursor"][0],
-        async: true
+        from: self["v-fs:cursor"][0]
       }).then(function (results) {
         self["v-fs:estimated"] = [ results.estimated ];
         self["v-fs:cursor"] = [ results.cursor ];
@@ -282,8 +281,7 @@ v-fs:AttributiveSearchModel
         if (prefetch.length) {
           return veda.Backend.get_individuals({
             ticket: veda.ticket,
-            uris: prefetch,
-            async: true
+            uris: prefetch
           }).then(function (prefetched) {
             prefetched.forEach(function (json) {
               var fetched = new veda.IndividualModel(json);
@@ -992,7 +990,7 @@ v-fs:AttributiveSearchInlineTemplate
   // Render search form
   if ( searchBlank ) {
     searchBlank.load().then(function(searchBlank) {
-    searchBlank.initBlank();
+      searchBlank.initBlank();
       if ( searchBlankTemplate && searchBlankContainer.length ) {
         searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
       }
