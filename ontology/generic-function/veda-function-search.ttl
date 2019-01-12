@@ -909,7 +909,6 @@ v-fs:AttributiveSearchInlineTemplate
       statsTop = $(".stats-top", template);
 
   // Set columns
-  var resultContainer = $(".result-container", template);
   individual.hiddenColumns = individual.hiddenColumns || {};
   var checksContainer = $(".set-columns-wrapper .dropdown-menu", template).on('click', function (e) {
     e.stopPropagation();
