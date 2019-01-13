@@ -44,7 +44,7 @@ v-s:MainPageTemplate
       </div>
       <div class="collapse navbar-collapse" id="navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
-          <li about="v-s:Favorites" data-template="v-s:FavoritesIndicatorTemplate" style="border-right:1px solid #eee;"></li>
+          <li about="v-s:Favorites" data-template="v-s:FavoritesIndicatorTemplate" style="border-right:1px solid #ddd;"></li>
           <li about="v-s:Contacts">
             <script>
               template.tooltip({
@@ -72,7 +72,7 @@ v-s:MainPageTemplate
           <li id="user-info"></li>
           <li id="menu" class="dropdown" about="v-s:MainMenu" data-template="v-s:MenuTemplate"></li>
           <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
-          <li style="padding-left:10px; margin-left:10px; border-left:1px solid #eee;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
+          <li style="padding-left:10px; margin-left:10px; border-left:1px solid #ddd;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
         </ul>
       </div>
     </div>

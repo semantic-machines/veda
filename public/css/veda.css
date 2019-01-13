@@ -423,7 +423,7 @@ footer {
   padding: 0px 15px;
 }*/
 .navbar a, .navbar .navbar-text  {
-  color: #666;
+  color: #555;
 }
 .navbar-collapse.collapse.in li , .navbar-collapse.collapsing li {
   display: inline-block!important;
