@@ -241,7 +241,6 @@ v-s:PersonalAspectTemplate
 //# sourceURL=v-s:PersonalAspectTemplate_pre
 </script>
 <div class="container">
-  <br/>
   <ul id="personal-tabs" class="nav nav-right" role="tablist">
     <li class="pull-left"><h2 class="no-margin" about="v-s:PersonalAspectTemplate" property="rdfs:comment" style="color:#5c5c5c;"></h2></li>
     <li class="pull-right"><span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span></li>
@@ -460,9 +459,8 @@ v-s:AspectTemplate
   v-ui:forClass v-s:Aspect ;
   v-ui:template """
 <div class="container" style="position:relative;">
-  <h1 property="rdfs:label" class="text-center" style="color:#5c5c5c"></h1>
-  <br>
-  <div class="row" about="@" rel="v-s:hasApplication" style="display: flex; flex-flow: row wrap;">
+  <h2 property="rdfs:label" class="text-center" style="color:#5c5c5c"></h2>
+  <div class="row margin-xl" about="@" rel="v-s:hasApplication" style="display: flex; flex-flow: row wrap;">
     <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="display: flex;">
       <div about="@" data-template="v-s:ApplicationSmallCardTemplate" style="display: flex; width:100%;"></div>
     </div>
