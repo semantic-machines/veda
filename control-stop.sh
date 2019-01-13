@@ -6,7 +6,7 @@ TIMESTAMP=`date +%Y-%m-%d_%H_%M`
 #cp ./logs/*-stderr.log ./logs/$TIMESTAMP
 
 #tarantoolctl stop init_tarantool.lua
-#pkill tarantool
+pkill tarantool
 
 start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
 start-stop-daemon -Kp $PWD/veda-pid $PWD/veda

@@ -387,10 +387,15 @@ class FanoutProcess : VedaModule
                         string[] attachment_ids;
                         message_body = extract_cids(message_body, attachment_ids);
 
+                        string header = "\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"utf-8\"";
+
+                        if (message_body.toLower().indexOf("<html>") >= 0)
+                            header = "\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"";
+
                         message = SmtpMessage(
                                               Recipient(email_from, from_label),
                                               rr_email_to,
-                                              subject ~ "\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"utf-8\"",
+                                              subject ~ header,
                                               message_body,
                                               str_email_reply_to
                                               );

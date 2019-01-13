@@ -91,14 +91,15 @@ var crc [4]uint8
 //////////////////////////////////////////// Consumer //////////////////////////////////////////////
 
 type Consumer struct {
-	isReady       bool
-	queue         *Queue
-	name          string
+	isReady bool
+	queue   *Queue
+	name    string
+	id      uint32
+
 	first_element uint64
 	count_popped  uint32
 	last_read_msg []uint8
 	mode          Mode
-	chunk         int32
 
 	ff_info_pop_w *os.File
 	ff_info_pop_r *os.File
@@ -174,7 +175,7 @@ func (ths *Consumer) put_info(is_sync_data bool) bool {
 	_, err = ths.ff_info_pop_w.Seek(0, 0)
 
 	if err == nil {
-		_, err = ths.ff_info_pop_w.WriteString(ths.queue.name + ";" + strconv.FormatInt(int64(ths.queue.chunk), 10) + ";" + ths.name + ";" + strconv.FormatUint(ths.first_element, 10) + ";" + strconv.FormatUint(uint64(ths.count_popped), 10))
+		_, err = ths.ff_info_pop_w.WriteString(ths.queue.name + ";" + ths.name + ";" + strconv.FormatUint(ths.first_element, 10) + ";" + strconv.FormatUint(uint64(ths.count_popped), 10) + ";" + strconv.FormatUint(uint64(ths.id), 10))
 
 		if err == nil {
 			if is_sync_data {
@@ -184,7 +185,7 @@ func (ths *Consumer) put_info(is_sync_data bool) bool {
 	}
 
 	if err != nil {
-		//	       log.Printf("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, queue.chunk, name, first_element, count_popped, tr.msg);
+		//	       log.Printf("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, name, first_element, count_popped, tr.msg);
 		return false
 	}
 
@@ -204,7 +205,7 @@ func (ths *Consumer) get_info() bool {
 
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)], ";")
-		if len(ch) != 5 && len(ch) != 6 {
+		if len(ch) != 5 {
 			ths.isReady = false
 			return false
 		}
@@ -216,22 +217,14 @@ func (ths *Consumer) get_info() bool {
 			return false
 		}
 
-		var _chunk int64
-		_chunk, err = strconv.ParseInt(ch[1], 10, 0)
-		if int32(_chunk) != ths.queue.chunk {
-			log.Printf("consumer:get_info:queue chunk from info [%d] != consumer.queue.chunk[%d]", _chunk, ths.queue.chunk)
-			ths.isReady = false
-			return false
-		}
-
-		_name = ch[2]
+		_name = ch[1]
 		if _name != ths.name {
 			log.Printf("consumer:get_info:consumer name from info[%s] != consumer.name[%s]", _name, ths.name)
 			ths.isReady = false
 			return false
 		}
 
-		nn, err := strconv.ParseInt(ch[3], 10, 0)
+		nn, err := strconv.ParseInt(ch[2], 10, 0)
 
 		if err != nil {
 			ths.isReady = false
@@ -240,13 +233,21 @@ func (ths *Consumer) get_info() bool {
 
 		ths.first_element = uint64(nn)
 
-		nn, err = strconv.ParseInt(ch[4], 10, 0)
+		nn, err = strconv.ParseInt(ch[3], 10, 0)
 		if err != nil {
 			ths.isReady = false
 			return false
 		}
 
 		ths.count_popped = uint32(nn)
+
+		nn, err = strconv.ParseInt(ch[4], 10, 0)
+		if err != nil {
+			ths.isReady = false
+			return false
+		}
+
+		ths.id = uint32(nn)
 	}
 
 	//log.Printf("get_info:%s", ths)
@@ -260,7 +261,7 @@ func (ths *Consumer) pop() string {
 		return ""
 	}
 
-	ths.queue.get_info(ths.chunk)
+	ths.queue.get_info_push()
 
 	if ths.count_popped >= ths.queue.count_pushed {
 		return ""
@@ -269,7 +270,6 @@ func (ths *Consumer) pop() string {
 
 	ths.queue.ff_queue_r.Read(header_buff)
 	ths.header.from_buff(header_buff)
-	//log.Printf("@header=%s, ths.count_popped=%d", ths.header.toString(), ths.count_popped)
 
 	if ths.header.start_pos != ths.first_element {
 		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %v\n", ths.header.start_pos, ths.first_element, ths.header)
@@ -314,7 +314,7 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 		return false
 	}
 
-	ths.queue.get_info(ths.chunk)
+	ths.queue.get_info_push()
 
 	if ths.count_popped >= ths.queue.count_pushed {
 		log.Printf("ERR! queue[%s][%s]:commit_and_next:count_popped(%d) >= queue.count_pushed(%d)", ths.queue.name, ths.name, ths.count_popped,
@@ -354,25 +354,27 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 //////////////////////////////////////////// Queue //////////////////////////////////////////////
 
 type Queue struct {
-	isReady      bool
-	name         string
-	chunk        int32
+	isReady bool
+	name    string
+	id      uint32
+
 	right_edge   uint64
 	count_pushed uint32
 	mode         Mode
 
-	ff_info_push_r *os.File
+	ff_info_push_r  *os.File
+	ff_info_queue_r *os.File
 
 	ff_queue_r *os.File
 
-	file_name_info_push string
-	file_name_queue     string
+	file_name_info_push  string
+	file_name_info_queue string
+	file_name_queue      string
 
 	// --- tmp ---
 	header Header
 	hash   hash.Hash32
 }
-
 
 func NewQueue(_name string, _mode Mode) *Queue {
 	p := new(Queue)
@@ -383,9 +385,6 @@ func NewQueue(_name string, _mode Mode) *Queue {
 	p.isReady = false
 	buff = make([]uint8, 4096*100)
 	header_buff = make([]uint8, p.header.length())
-
-	p.file_name_info_push = queue_db_path + "/" + p.name + "_info_push_" + strconv.Itoa(int(p.chunk))
-	p.file_name_queue = queue_db_path + "/" + p.name + "_queue_" + strconv.Itoa(int(p.chunk))
 
 	p.hash = crc32.NewIEEE()
 	return p
@@ -407,6 +406,13 @@ func (ths *Queue) open(_mode Mode) bool {
 		return false
 	}
 
+	ths.isReady = true
+	ths.get_info_queue()
+
+	part := ths.name + "-" + strconv.FormatUint(uint64(ths.id), 10)
+	ths.file_name_info_push = queue_db_path + "/" + part + "/" + ths.name + "_info_push"
+	ths.file_name_queue = queue_db_path + "/" + part + "/" + ths.name + "_queue"
+
 	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 
 	if err != nil {
@@ -418,8 +424,7 @@ func (ths *Queue) open(_mode Mode) bool {
 		return false
 	}
 
-	ths.isReady = true
-	ths.get_info(ths.chunk)
+	ths.get_info_push()
 
 	var queue_r_info os.FileInfo
 
@@ -447,10 +452,10 @@ func (ths *Queue) reopen_reader() {
 		ths.isReady = false
 		return
 	}
-	ths.get_info(ths.chunk)
+	ths.get_info_push()
 }
 
-func (ths *Queue) get_info(chunk int32) bool {
+func (ths *Queue) get_info_push() bool {
 
 	if !ths.isReady {
 		return false
@@ -458,9 +463,8 @@ func (ths *Queue) get_info(chunk int32) bool {
 
 	var err error
 
-	file_name_info_push := queue_db_path + "/" + ths.name + "_info_push_" + strconv.Itoa(int(chunk))
 	ths.ff_info_push_r.Close()
-	ths.ff_info_push_r, err = os.OpenFile(file_name_info_push, os.O_RDONLY, 0644)
+	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 	if err != nil {
 		ths.isReady = false
 		return false
@@ -473,7 +477,7 @@ func (ths *Queue) get_info(chunk int32) bool {
 
 	if str != "" && err == nil {
 		ch := strings.Split(str[0:len(str)-1], ";")
-		if len(ch) != 5 && len(ch) != 6 {
+		if len(ch) != 4 {
 			ths.isReady = false
 			return false
 		}
@@ -484,24 +488,53 @@ func (ths *Queue) get_info(chunk int32) bool {
 		}
 		ths.name = ch[0]
 
-		var chunk int64
-		chunk, err = strconv.ParseInt(ch[1], 10, 0)
-
-		ths.chunk = int32(chunk)
-
 		var right_edge int64
-		right_edge, err = strconv.ParseInt(ch[2], 10, 0)
+		right_edge, err = strconv.ParseInt(ch[1], 10, 0)
 
 		ths.right_edge = uint64(right_edge)
 
 		var count_pushed int64
-		count_pushed, err = strconv.ParseInt(ch[3], 10, 0)
+		count_pushed, err = strconv.ParseInt(ch[2], 10, 0)
 
 		ths.count_pushed = uint32(count_pushed)
 		//string hash_hex = ch[ 4 ];
 	}
 
-	//log.Printf("@queue info=%s", ths)
+	return true
+}
+
+func (ths *Queue) get_info_queue() bool {
+	var err error
+
+	ths.file_name_info_queue = queue_db_path + "/" + ths.name + "_info_queue"
+	ths.ff_info_queue_r.Close()
+	ths.ff_info_queue_r, err = os.OpenFile(ths.file_name_info_queue, os.O_RDONLY, 0644)
+	if err != nil {
+		ths.isReady = false
+		return false
+	}
+
+	ths.ff_info_push_r.Seek(0, 0)
+
+	rr := bufio.NewReader(ths.ff_info_push_r)
+	str, err := Readln(rr)
+
+	if str != "" && err == nil {
+		ch := strings.Split(str[0:len(str)-1], ";")
+		if len(ch) != 3 {
+			ths.isReady = false
+			return false
+		}
+
+		if ch[0] != ths.name {
+			ths.isReady = false
+			return false
+		}
+
+		id, _ := strconv.ParseInt(ch[1], 10, 0)
+		ths.id = uint32(id)
+
+	}
 
 	return true
 }

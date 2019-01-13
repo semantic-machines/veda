@@ -264,79 +264,12 @@ class VedaModule : VedaModuleBasic
 
     abstract void receive_msg(string msg);
 
-    //public void subscribe_on_prefetch(string uri)
-    //{
-    //    subsrc[ uri.idup ] = true;
-    //}
-
-    //public void unsubscribe_on_prefetch(string uri)
-    //{
-    //    subsrc.remove(uri.dup);
-    //}
-
     abstract void event_of_change(string uri);
 
     public void prepare_batch()
     {
         open_perapare_batch_queue(false);
     }
-
-/*
-    private void configuration_found_in_queue()
-    {
-        string data;
-
-        while (true)
-        {
-            data = main_cs_prefetch.pop();
-            if (data is null)
-            {
-                //log.trace("PREFETCH: pop return null");
-                break;
-            }
-
-            Individual imm;
-            if (data !is null && imm.deserialize(data) < 0)
-            {
-                log.trace("ERR! read from queue: invalid individual:[%s]", data);
-                continue;
-            }
-            string uri = imm.getFirstLiteral("uri");
-            //log.trace("PREFETCH %s", uri);
-
-            if (context.get_config_uri() == uri)
-            {
-                log.trace("prefetch: found change in config [%s]", uri);
-                string new_bin = imm.getFirstLiteral("new_state");
-                if (new_bin !is null && node.deserialize(new_bin) < 0)
-                {
-                    log.trace("ERR! read configuration in queue: invalid individual:[%s]", new_bin);
-                }
-                else
-                {
-                    log.trace("prefetch: reconfigure, use [%s]", node);
-                    close();
-                    open();
-                    context.get_onto();
-                    configure();
-                }
-            }
-            else if ((uri in subsrc) !is null)
-            {
-                event_of_change(uri);
-            }
-
-            //Thread.sleep(dur!("seconds")(1));
-            main_cs_prefetch.commit_and_next(false);
-        }
-        main_cs_prefetch.sync();
-    }
- */
-    /+private int priority(string user_uri)
-       {
-        stderr.writefln("basic user uri %s", user_uri);
-        return 0;
-       }+/
 
     private void prepare_queue(string msg)
     {
@@ -349,7 +282,7 @@ class VedaModule : VedaModuleBasic
         {
             main_queue.close();
             main_queue.open();
-            main_queue.get_info(main_queue.chunk);
+            main_queue.get_info_queue();
 
             if (main_queue.isReady == false)
             {
@@ -369,9 +302,13 @@ class VedaModule : VedaModuleBasic
             if (f_listen_exit == true)
                 break;
 
-            //configuration_found_in_queue();
-
             string data = main_cs[ i ].pop();
+
+            if (main_cs[ i ].isReady == false && main_cs[ i ].status == QueueCode.ConsumerIdNotEqual)
+            {
+                // need recreate consumer
+                break;
+            }
 
             count_pushed = main_queue.count_pushed;
             count_popped = main_cs[ i ].count_popped;
