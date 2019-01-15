@@ -103,7 +103,12 @@ v-s:PsDatesRequestDelegation
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
 .
-
+# ------------------------------------------------------------ СТРОКИ --
+v-s:validity_Bundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Период действия"@ru ;
+  rdfs:label "Период действия"@en ;
+.
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
 v-s:RequestDelegationTemplate
@@ -124,68 +129,128 @@ v-s:RequestDelegationTemplate
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
-<div class="container sheet">
-  <h2 about="v-s:RequestDelegation" property="rdfs:label"></h2>
-  <hr>
-  <div class="row">
-    <div class="col-md-6 col-xs-12">
-      <em about="v-s:delegator" property="rdfs:label"></em>
-      <div about="@" id="delegator-value" rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
-      <div rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
-      <veda-control id="delegator-control" data-type="link" rel="v-s:delegator" class="-view -edit search fulltext"></veda-control>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-xs-12">
-      <em about="v-s:delegatedPosition" property="rdfs:label"></em>
-      <div rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view edit search"></div>
-      <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext"></veda-control>
-      <div id="positions" class="-view edit -search">
-        <div class="checkbox">
-          <label>
-            <input class="input" type="checkbox" value="">
-            <span class="position-label"></span>
-          </label>
+
+<div>
+  <style>
+    .section-header {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      margin-top: 1.5em;
+      margin-bottom: 1em;
+    }
+    .row-attribute {
+      margin-top: 1em;
+    }
+    .row-attribute > div:first-child {
+      text-align: right;
+      font-weigth: bold;
+    }
+  </style>
+  <div class="container sheet">
+    <h3>
+      <span about="v-s:RequestDelegation" property="rdfs:label"></span>
+    </h3>
+    <section id="MainProperties">
+      <h4 class="section-header" about="v-s:MainProperties" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:delegator" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div about="@" id="delegator-value" rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+          <div rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+          <veda-control id="delegator-control" data-type="link" rel="v-s:delegator" class="-view -edit search fulltext"></veda-control>
         </div>
       </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:delegatedPosition" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view edit search"></div>
+          <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext"></veda-control>
+          <div id="positions" class="-view edit -search">
+            <div class="checkbox">
+              <label>
+                <input class="input" type="checkbox" value="">
+                <span class="position-label"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:delegate" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div rel="v-s:delegate" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+          <veda-control data-type="link" rel="v-s:delegate" class="-view edit search fulltext"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="rdfs:label" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div property="rdfs:label" class="view -edit -search"></div>
+          <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute -view -edit search">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:validity_Bundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="form-inline">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <span property="v-s:dateFrom" class="view -edit search"></span>
+                  <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <span property="v-s:dateTo" class="view -edit search"></span>
+                  <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row row-attribute view edit -search">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:validity_Bundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="form-inline">
+            <div class="form-group">
+              <span property="v-s:dateFrom" class="view -edit search"></span>
+              <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+            </div>
+            <span class="view -edit -search">&mdash;&nbsp;&nbsp;&nbsp;</span>
+            <div class="form-group">
+              <span property="v-s:dateTo" class="view -edit search"></span>
+              <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <br>
+    <div class="view -edit -search">
+      <em about="v-s:createdAppointment" property="rdfs:label"></em>
+      <ul about="@" rel="v-s:createdAppointment">
+        <li><a href="#/@" property="rdfs:label"></a></li>
+      </ul>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-xs-12">
-      <em about="v-s:delegate" property="rdfs:label"></em>
-      <div rel="v-s:delegate" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
-      <veda-control data-type="link" rel="v-s:delegate" class="-view edit search fulltext"></veda-control>
+    <br>
+    <div class="actions view edit -search">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
     </div>
-  </div>
-  <div class="row" id="custom-label">
-    <div class="col-md-6 col-xs-12">
-      <em about="rdfs:label" property="rdfs:label"></em>
-      <div property="rdfs:label" class="view -edit -search"></div>
-      <veda-control data-type="multilingualString" property="rdfs:label" class="-view edit search"></veda-control>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-3 col-xs-6">
-      <em about="v-s:dateFrom" property="rdfs:label"></em>
-      <div property="v-s:dateFrom" class="view -edit search"></div>
-      <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
-    </div>
-    <div class="col-md-3 col-xs-6">
-      <em about="v-s:dateTo" property="rdfs:label"></em>
-      <div property="v-s:dateTo" class="view -edit search"></div>
-      <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
-    </div>
-  </div>
-  <br>
-  <div class="view -edit -search">
-    <em about="v-s:createdAppointment" property="rdfs:label"></em>
-    <ul about="@" rel="v-s:createdAppointment">
-      <li><a href="#/@" property="rdfs:label"></a></li>
-    </ul>
-  </div>
-  <br>
-  <div class="actions view edit -search">
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
 <script>
