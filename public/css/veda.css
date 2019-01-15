@@ -155,6 +155,12 @@ body {
   width: 100%;
 }
 
+.container .container-fluid {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 .modal .container {
   width: 100%;
 }
@@ -391,12 +397,12 @@ footer {
   background-color: transparent;
 }
 .navbar-veda {
-  padding:9px 0px;
-  margin-bottom:15px;
+  padding: 9px 0px;
+  /*margin-bottom: 15px;*/
+  margin-bottom: 0;
   background-image: none;
-  background-color: #fff;
-  border-bottom: 1px solid #ddd;
-  box-shadow: none;
+  /*background-color: #fff;
+  border-bottom: 1px solid #ddd;*/
 }
 #copyright {
   font-size: 0.8em;
@@ -417,7 +423,7 @@ footer {
   padding: 0px 15px;
 }*/
 .navbar a, .navbar .navbar-text  {
-  color: #666;
+  color: #555;
 }
 .navbar-collapse.collapse.in li , .navbar-collapse.collapsing li {
   display: inline-block!important;
@@ -463,8 +469,8 @@ textarea {
   margin-bottom: 15px;
 }
 .margin-xl {
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 .margin-xs-h {
   margin-left: 2px;
@@ -483,8 +489,8 @@ textarea {
   margin-right: 15px;
 }
 .margin-xl-h {
-  margin-left: 30px;
-  margin-right: 30px;
+  margin-left: 25px;
+  margin-right: 25px;
 }
 .no-padding {
   padding: 0px!important;
@@ -497,6 +503,9 @@ textarea {
 }
 .padding-lg {
   padding: 15px;
+}
+.padding-xl {
+  padding: 25px;
 }
 .no-border {
   border: none;
