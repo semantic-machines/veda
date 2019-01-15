@@ -88,6 +88,14 @@ v-s:EmailTemplate
   <hr class="view edit -search">
   <div class="row">
     <div class="col-sm-6">
+      <em about="v-wf:from" property="rdfs:label" ></em>
+      <div about="@" property="v-wf:from" class="-view edit -search"></div>
+      <div property="v-wf:from" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-wf:from" class="-view -edit search"></veda-control>
+      <em about="v-wf:to" property="rdfs:label" ></em>
+      <div about="@" property="v-wf:to" class="-view edit -search"></div>
+      <div property="v-wf:to" class="view -edit search"></div>
+      <veda-control data-type="string" property="v-wf:to" class="-view -edit search"></veda-control>
       <em about="v-s:senderMailbox" property="rdfs:label" ></em>
       <div about="@" property="v-s:senderMailbox" class="-view edit -search"></div>
       <div property="v-s:senderMailbox" class="view -edit search"></div>
@@ -107,6 +115,9 @@ v-s:EmailTemplate
       <br>
     </div>
   </div>
+  <hr>
+  <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
+  <br>
   <div class="actions">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete"></span>
   </div>
