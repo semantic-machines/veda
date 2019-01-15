@@ -298,11 +298,11 @@ void main(string[] args)
             }
         }
 
-        if (Queue.is_lock(queue_db_path, "individuals-flow"))
-        {
-            stderr.writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
-            is_exist_lock = true;
-        }
+//        if (Queue.is_lock(queue_db_path, "individuals-flow"))
+//        {
+//            stderr.writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
+//            is_exist_lock = true;
+//        }
 
         if (is_exist_lock)
             return;

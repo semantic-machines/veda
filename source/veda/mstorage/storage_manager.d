@@ -212,7 +212,20 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
         if (storage_id == P_MODULE.subject_manager)
         {
             individual_queue = new Queue(queue_db_path, "individuals-flow", Mode.RW, log);
-            individual_queue.open();
+            if (individual_queue.open() == false)
+            {
+                writefln("thread [%s] terminated", process_name);
+                // SEND ready
+                receive((Tid tid_response_reciever)
+                        {
+                            send(tid_response_reciever, false);
+                        });
+                core.thread.Thread.sleep(dur!("seconds")(1));
+
+                return;
+            }
+
+
 
             uris_queue = new Queue(uris_db_path, "uris-db", Mode.RW, log);
             uris_queue.open();
