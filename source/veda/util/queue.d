@@ -312,6 +312,9 @@ class Consumer
 
         if (count_popped >= queue.count_pushed)
         {
+            if (queue.id == id)
+                queue.get_info_queue(true);
+
             if (queue.id != id)
             {
                 log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part", queue.id, id);

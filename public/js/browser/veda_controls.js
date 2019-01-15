@@ -1902,8 +1902,17 @@
       }
 
       var suggestions = $(".suggestions", control);
+      var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
-        var tmpl = $(this);
+        if (dblTimeout) { 
+          return;
+        } else {
+          dblTimeout = setTimeout(dblHandler, 0, e);
+        }
+      });
+
+      var dblHandler = function (e) {
+        var tmpl = $(e.target);
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
         tmpl.toggleClass("selected");
@@ -1928,6 +1937,17 @@
             }).concat(suggestion);
           }
         }
+        clearTimeout(dblTimeout);
+        dblTimeout = undefined;
+      };
+
+      suggestions.on("dblclick", ".suggestion", function (e) {
+        $(".form-control", control).val("");
+        var tmpl = $(this);
+        var suggestion_uri = tmpl.attr("resource");
+        var suggestion = new veda.IndividualModel(suggestion_uri);
+        individual.set(rel_uri, selected);
+        fulltextMenu.hide();
       });
 
       var clickOutsideMenuHandler = function (event) {

@@ -132,13 +132,17 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(rr.CommonRC))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.CommonRC, timestamp)
 		return
+	} else if len(rr.OpRC) == 0 {
+		log.Println("ERR! get_individual: DECODING INDIVIDUAL")
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
+		return
 	} else if rr.OpRC[0] != Ok {
 		ctx.Write(codeToJsonException(rr.OpRC[0]))
 		ctx.Response.SetStatusCode(int(rr.OpRC[0]))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.OpRC[0], timestamp)
 		return
 	} else {
-
 		if rr.GetCount() == 0 {
 			log.Println("ERR! get_individual: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -181,7 +185,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	jsonArgs := map[string]interface{}{"uris": jsonData["uris"]}
 
 	if jsonData["ticket"] != nil {
-	    ticketKey = jsonData["ticket"].(string)
+		ticketKey = jsonData["ticket"].(string)
 	}
 
 	rc, ticket := getTicket(ticketKey)

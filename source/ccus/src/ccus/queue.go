@@ -261,9 +261,31 @@ func (ths *Consumer) pop() string {
 		return ""
 	}
 
-	ths.queue.get_info_push()
+	ths.queue.get_info_push(ths.id)
 
 	if ths.count_popped >= ths.queue.count_pushed {
+
+		if ths.queue.id == ths.id {
+			ths.queue.get_info_queue()
+		}
+
+		if ths.queue.id != ths.id {
+			log.Printf("INFO: queue.id=%d, consumer.id=%d, set reader on next part", ths.queue.id, ths.id)
+			ths.id = ths.id + 1
+			if ths.queue.get_info_push(ths.id) == false {
+				log.Printf("ERR! queue:pop: queue %s not ready", ths.queue.name)
+				return ""
+			}
+
+			ths.remove()
+
+			ths.count_popped = 0
+			ths.first_element = 0
+
+			ths.open()
+			ths.put_info(true)
+		}
+
 		return ""
 	}
 	ths.queue.ff_queue_r.Seek(int64(ths.first_element), 0)
@@ -314,7 +336,7 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 		return false
 	}
 
-	ths.queue.get_info_push()
+	ths.queue.get_info_push(ths.id)
 
 	if ths.count_popped >= ths.queue.count_pushed {
 		log.Printf("ERR! queue[%s][%s]:commit_and_next:count_popped(%d) >= queue.count_pushed(%d)", ths.queue.name, ths.name, ths.count_popped,
@@ -424,7 +446,7 @@ func (ths *Queue) open(_mode Mode) bool {
 		return false
 	}
 
-	ths.get_info_push()
+	ths.get_info_push(ths.id)
 
 	var queue_r_info os.FileInfo
 
@@ -452,10 +474,10 @@ func (ths *Queue) reopen_reader() {
 		ths.isReady = false
 		return
 	}
-	ths.get_info_push()
+	ths.get_info_push(ths.id)
 }
 
-func (ths *Queue) get_info_push() bool {
+func (ths *Queue) get_info_push(part_id uint32) bool {
 
 	if !ths.isReady {
 		return false
@@ -464,6 +486,8 @@ func (ths *Queue) get_info_push() bool {
 	var err error
 
 	ths.ff_info_push_r.Close()
+	part := ths.name + "-" + strconv.FormatUint(uint64(part_id), 10)
+	ths.file_name_info_push = queue_db_path + "/" + part + "/" + ths.name + "_info_push"
 	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 	if err != nil {
 		ths.isReady = false
@@ -514,9 +538,9 @@ func (ths *Queue) get_info_queue() bool {
 		return false
 	}
 
-	ths.ff_info_push_r.Seek(0, 0)
+	ths.ff_info_queue_r.Seek(0, 0)
 
-	rr := bufio.NewReader(ths.ff_info_push_r)
+	rr := bufio.NewReader(ths.ff_info_queue_r)
 	str, err := Readln(rr)
 
 	if str != "" && err == nil {
@@ -533,7 +557,6 @@ func (ths *Queue) get_info_queue() bool {
 
 		id, _ := strconv.ParseInt(ch[1], 10, 0)
 		ths.id = uint32(id)
-
 	}
 
 	return true
