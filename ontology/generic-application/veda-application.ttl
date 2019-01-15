@@ -104,7 +104,7 @@ v-s:ApplicationTemplate
   <div class="sheet">
     <div class="clearfix">
       <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
-      <h2 class="pull-left margin-lg-h" style="color: #5c5c5c;">
+      <h2 class="pull-left margin-lg-h" style="color: #555;">
         <span href="#/@" property="rdfs:label"></span>
         <small property="rdfs:comment"></small>
       </h2>
