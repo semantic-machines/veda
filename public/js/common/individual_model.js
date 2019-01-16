@@ -205,6 +205,12 @@ veda.Module(function (veda) { "use strict";
     enumerable: false
   });
 
+  proto.memberOf = function () {
+    return this.membership.hasValue("v-s:memberOf") ? this.membership.properties["v-s:memberOf"].map(function (group_item) {
+      return group_item.data;
+    }) : [];
+  };
+
   proto.isMemberOf = function (group_uri) {
     return this.membership.hasValue("v-s:memberOf", group_uri);
   };
