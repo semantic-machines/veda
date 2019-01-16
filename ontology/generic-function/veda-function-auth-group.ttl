@@ -69,12 +69,36 @@ v-s:PermissionGenerator
   v-ui:hasTemplate v-s:PermissionGeneratorTemplate ;
 .
 
-v-s:forGroupGenerator
+v-s:objectGroupGenerator
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:PermissionGenerator ;
-  rdfs:label "Генератор групп авторизации"@ru ;
-  rdfs:label "Auth group generator"@en ;
+  rdfs:label "Генератор группы объекта"@ru ;
+  rdfs:label "Object group generator"@en ;
   rdfs:range v-s:GroupGenerator ;
+.
+
+v-s:objectGroupGeneratorValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Значение генератора группы объекта"@ru ;
+  rdfs:label "Object group generator value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:subjectGroupGenerator
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Генератор группы субъекта"@ru ;
+  rdfs:label "Subject group generator"@en ;
+  rdfs:range v-s:GroupGenerator ;
+.
+
+v-s:subjectGroupGeneratorValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Значение генератора группы субъекта"@ru ;
+  rdfs:label "Subject group generator value"@en ;
+  rdfs:range rdfs:Resource ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
@@ -178,13 +202,29 @@ v-s:PermissionGeneratorTemplate
   <div rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
   <veda-control data-type="link" rel="v-s:permissionSubject" class="-view edit search fulltext dropdown"></veda-control>
 
-  <em about="v-s:forGroupGenerator" property="rdfs:label"></em>
-  <div rel="v-s:forGroupGenerator" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:forGroupGenerator" class="-view edit search fulltext dropdown"></veda-control>
+  <em about="v-s:subjectGroupGenerator" property="rdfs:label"></em>
+  <div rel="v-s:subjectGroupGenerator" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:subjectGroupGenerator" class="-view edit search fulltext dropdown"></veda-control>
 
-  <em about="v-s:authValue" property="rdfs:label"></em>
-  <div property="v-s:authValue" class="view -edit -search"></div>
-  <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
+  <em about="v-s:subjectGroupGeneratorValue" property="rdfs:label"></em>
+  <div property="v-s:subjectGroupGeneratorValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:subjectGroupGeneratorValue" class="-view edit search"></veda-control>
+
+  <hr>
+
+  <em about="v-s:permissionObject" property="rdfs:label"></em>
+  <div rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:permissionObject" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:objectGroupGenerator" property="rdfs:label"></em>
+  <div rel="v-s:objectGroupGenerator" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:objectGroupGenerator" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:objectGroupGeneratorValue" property="rdfs:label"></em>
+  <div property="v-s:objectGroupGeneratorValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:objectGroupGeneratorValue" class="-view edit search"></veda-control>
+
+  <hr>
 
   <div class="checkbox">
     <label>
@@ -302,15 +342,19 @@ v-s:PermissionGeneratorRegistryResultTemplate
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="11" about="v-s:PermissionGenerator" property="rdfs:label"></th>
+      <th colspan="12" about="v-s:PermissionGenerator" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th><span about="v-s:permissionSubject" property="rdfs:label"></span></th>
-      <th><span about="v-s:forGroupGenerator" property="rdfs:label"></span></th>
-      <th><span about="v-s:authValue" property="rdfs:label"></span></th>
+      <th><span about="v-s:subjectGroupGenerator" property="rdfs:label"></span></th>
+      <th><span about="v-s:subjectGroupGeneratorValue" property="rdfs:label"></span></th>
+      <th><span about="v-s:Rights" property="rdfs:label"></span></th>
+      <th><span about="v-s:permissionObject" property="rdfs:label"></span></th>
+      <th><span about="v-s:objectGroupGenerator" property="rdfs:label"></span></th>
+      <th><span about="v-s:objectGroupGeneratorValue" property="rdfs:label"></span></th>
       <th><span about="v-s:creator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
     </tr>
@@ -321,11 +365,23 @@ v-s:PermissionGeneratorRegistryResultTemplate
       <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td about="@" rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate"></td>
-      <td about="@" rel="v-s:forGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
-      <td about="@" property="v-s:authValue"></td>
+      <td about="@" rel="v-s:subjectGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" property="v-s:subjectGroupGeneratorValue"></td>
+      <td class="rights"></td>
+      <td about="@" rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" rel="v-s:ObjectGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" property="v-s:ObjectGroupGeneratorValue"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
     </tr>
+    <script>
+      var rights = "";
+      rights += (this.hasValue("v-s:canCreate", true) ? "C" : "");
+      rights += (this.hasValue("v-s:canRead", true)   ? "R" : "");
+      rights += (this.hasValue("v-s:canUpdate", true) ? "U" : "");
+      rights += (this.hasValue("v-s:canDelete", true) ? "D" : "");
+      $(".rights", template).text(rights);
+    </script>
   </tbody>
 </table>
   """ ;
@@ -507,10 +563,10 @@ cfg:Event_PermissionGenerator
  */
 try {
   var permissionGenerator = document;
-  if (veda.Util.hasValue(permissionGenerator, "v-s:forGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:authValue") && veda.Util.hasValue(permissionGenerator, "v-s:permissionSubject")) {
-    var groupGenerator = veda.Util.getUri(permissionGenerator["v-s:forGroupGenerator"]);
-    var authValue = permissionGenerator["v-s:authValue"][0].data;
-    var group_concat_uri = groupGenerator + " " + authValue;
+  if (veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGeneratorValue") && veda.Util.hasValue(permissionGenerator, "v-s:permissionSubject")) {
+    var objectGroupGenerator = veda.Util.getUri(permissionGenerator["v-s:objectGroupGenerator"]);
+    var objectGroupGeneratorValue = permissionGenerator["v-s:objectGroupGeneratorValue"][0].data;
+    var group_concat_uri = objectGroupGenerator + " " + objectGroupGeneratorValue;
     var group_hash = Sha256.hash(group_concat_uri).substring(32);
     var group_uri = "d:grp-" + group_hash;
     var permission_concat_uri = veda.Util.getUri(permissionGenerator["v-s:permissionSubject"]) + " " + group_uri;
@@ -549,8 +605,8 @@ v-s:PermissionGenerator_AllUsersGroup_D_Person
   rdfs:label "Permission generator: cfg:AllUsersGroup '---D' v-s:Person class individuals" ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canDelete true ;
-  v-s:forGroupGenerator v-s:GroupGenerator_Class ;
-  v-s:authValue v-s:Person ;
+  v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
+  v-s:objectGroupGeneratorValue v-s:Person ;
 .
 
 v-s:GroupGenerator_Person_label_Administrator
@@ -570,8 +626,8 @@ v-s:PermissionGenerator_AllUsersGroup_D_Person_label_Administrator
   rdfs:label "Permission generator: cfg:AllUsersGroup '---D' v-s:Person if 'Administrator' label" ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canDelete true ;
-  v-s:forGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
-  v-s:authValue true ;
+  v-s:objectGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
+  v-s:objectGroupGeneratorValue true ;
 .
 
 v-s:PermissionGenerator_AllUsersGroup_C_Person_label_Administrator
@@ -579,8 +635,8 @@ v-s:PermissionGenerator_AllUsersGroup_C_Person_label_Administrator
   rdfs:label "Permission generator: cfg:AllUsersGroup 'C---' v-s:Person if not 'Administrator' label" ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate true ;
-  v-s:forGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
-  v-s:authValue false ;
+  v-s:objectGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
+  v-s:objectGroupGeneratorValue false ;
 .
 
 # Сделал первый подход к мандатам (автоматическое распределение индивидов по авторизационным группам).
@@ -605,6 +661,6 @@ v-s:PermissionGenerator_AllUsersGroup_C_Person_label_Administrator
 # Uri Записи о включении в группу вычисляется так:
 # "d:mem-" + Sha256.hash(object_uri + " " + group_uri).substring(32)
 # 8) Права можно выдавать традиционным способом - зная uri группы объекта и субъекта, создать запись о правах.
-# 9) (пока не реализовано, может и не надо) Или создавать генераторы прав, где указываются не группы субъекта и объекта, а их генераторы и соответствующие целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе генераторов прав создаются обычные записи о правах (1 к 1).
+# 9) Или создавать генераторы прав, где указываются не группы субъекта и объекта, а их генераторы и соответствующие целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе генераторов прав создаются обычные записи о правах (1 к 1).
 #
 # Таким образом, предлагаемый механизм является надстройкой над уже существующей системой авторизации и фактически повторяет возможности мандатов в СЭД.
