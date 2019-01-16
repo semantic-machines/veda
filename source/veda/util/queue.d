@@ -459,10 +459,11 @@ class Queue
     private File   *ff_info_push_r  = null;
     private File   *ff_info_queue_r = null;
 
+    private File   *ff_lock_w = null;
+
     private string file_name_queue;
     private string file_name_info_push;
     private string file_name_info_queue;
-    private string file_name_lock;
 
     // tmp
     private Header header;
@@ -530,11 +531,24 @@ class Queue
 
                 if (mode == Mode.RW)
                 {
-                    if (exists(file_name_lock))
+                    string file_name_lock = path ~ "/" ~ name ~ "_queue.lock";
+                    if (exists(file_name_lock) == false)
                     {
-                        log.trace("Queue [%s] already open, or not deleted lock file", name);
-                        return false;
+                        ff_lock_w = new File(file_name_lock, "w");
+                        ff_lock_w.write(text(id));
                     }
+                    else
+                    {
+                        ff_lock_w = new File(file_name_lock, "r+");
+                    }
+
+                    if (ff_lock_w.tryLock(LockType.readWrite) == false)
+                    {
+                        isReady = false;
+                        log.trace("ERR! queue %s already open", name);
+                        return isReady;
+                    }
+                    ff_lock_w.flush();
 
                     if (exists(file_name_info_queue) == false)
                     {
@@ -572,9 +586,7 @@ class Queue
                     {
                         file_name_queue     = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
                         file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
-                        file_name_lock      = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue.lock";
                     }
-                    std.file.write(file_name_lock, text(id));
 
                     if (exists(file_name_info_push) == false)
                         ff_info_push_w = new File(file_name_info_push, "w");
@@ -625,22 +637,6 @@ class Queue
         return ff_queue_r;
     }
 
-    private void remove_lock()
-    {
-        if (mode == Mode.R)
-            return;
-
-        try
-        {
-            std.file.remove(file_name_lock);
-            log.trace("queue:remove lock file %s", file_name_lock);
-        }
-        catch (Throwable tr)
-        {
-            log.trace("queue:fail remove %s", tr.msg);
-        }
-    }
-
     public void close()
     {
         if (isReady == true)
@@ -677,8 +673,6 @@ class Queue
 
                 ff_queue_w.close();
                 ff_queue_w = null;
-
-                remove_lock();
             }
             isReady = false;
         }

@@ -24,9 +24,6 @@ echo ""
 echo "Count: $count"
 
 rm -f -r .pids
-rm -f data/module-info/*.lock
-rm -f data/queue/*.lock
-rm -f data/uris/*.lock
 
 if [ $1 == "all" ] ; then
     echo STOP ALL VEDA MODULES

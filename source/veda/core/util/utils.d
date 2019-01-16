@@ -27,10 +27,10 @@ int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
 {
     if (key.length < 1)
     {
-    	if (log_if_err !is null)
-			log_if_err.trace("ERR! key2slot, key is empty");    		
+        if (log_if_err !is null)
+            log_if_err.trace("ERR! key2slot, key is empty");
         return -1;
-    }    
+    }
 
     if (key[ 0 ] == '#')
     {
@@ -41,22 +41,22 @@ int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
         }
         catch (Throwable tr)
         {
-	    	if (log_if_err !is null)
-				log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);    		
+            if (log_if_err !is null)
+                log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);
 
             return -1;
         }
     }
 
-	int slot = key2slot.get(key, -1);
-	
-	if (slot < 0)
-	{
-    	if (log_if_err !is null)
-			log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);    		
-	}
-	
-	return slot;
+    int slot = key2slot.get(key, -1);
+
+    if (slot < 0)
+    {
+        if (log_if_err !is null)
+            log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);
+    }
+
+    return slot;
 }
 
 public void subject2Ticket(ref Individual ticket, Ticket *tt)
@@ -64,10 +64,10 @@ public void subject2Ticket(ref Individual ticket, Ticket *tt)
     string when;
     long   duration;
 
-    tt.id       = ticket.uri;
+    tt.id         = ticket.uri;
     tt.user_login = ticket.getFirstLiteral(ticket__login);
-    tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
-    when        = ticket.getFirstLiteral(ticket__when);
+    tt.user_uri   = ticket.getFirstLiteral(ticket__accessor);
+    when          = ticket.getFirstLiteral(ticket__when);
     string dd = ticket.getFirstLiteral(ticket__duration);
 
     try
@@ -187,9 +187,10 @@ bool wait_starting_module(P_MODULE tid_idx, Tid tid)
             {
                 res = isReady;
                 //if (trace_msg[ 50 ] == 1)
-                log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
                 if (res == false)
                     log.trace("FAIL START THREAD: %s", text(tid_idx));
+                else
+                    log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
             });
     return res;
 }
