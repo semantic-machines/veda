@@ -752,7 +752,9 @@ v-s:AppointmentForContactTemplate
   var parentOrganization = individual['v-s:parentOrganization'][0].id;
   var personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
   $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
-  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+parentOrganization+"'";
+  
+  var parentUnit = individual['v-s:parentUnit'][0].id;
+  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+parentUnit+"'";
   $('#select-Occupation veda-control', template).attr('data-query-prefix', occupQueryPrefixString);
 //# sourceURL=v-s:AppointmentForContactTemplate_pre
 </script>
