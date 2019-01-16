@@ -23,7 +23,7 @@ v-s:GroupGenerator
   rdfs:label "Генератор групп авторизации"@ru ;
   rdfs:label "Auth groups generator"@en ;
   rdfs:comment "Используется для распределения индивидов в группы авторизации на основе вычисленного от объекта значения предиката/выражения."@ru ;
-  rdfs:comment "Used to distribute individuals to auth groups rule based on calculated value predicate or expression."@en ;
+  rdfs:comment "Used to distribute individuals to auth groups based on calculated value predicate or expression."@en ;
   rdfs:subClassOf v-s:SystemThing ;
   v-ui:hasTemplate v-s:GroupGeneratorTemplate ;
 .
@@ -123,7 +123,7 @@ v-s:GroupGeneratorTemplate
   <div property="v-s:authValue" class="view -edit -search"></div>
   <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
   <em about="v-s:GroupGeneratorUri" property="rdfs:label"></em>
-  <code class="group-rule-uri"></code>
+  <code class="group-uri"></code>
   <br>
   <br>
   <div class="actions view edit -search">
@@ -138,14 +138,14 @@ v-s:GroupGeneratorTemplate
   handler();
 
   function handler() {
-    var $groupRuleUri = $(".group-rule-uri", template);
+    var $groupUri = $(".group-uri", template);
     if ( individual.hasValue("v-s:authValue") ) {
       var group_concat_uri = individual.id + " " + individual["v-s:authValue"][0].toString();
       var hash = Sha256.hash(group_concat_uri).substring(32);
       var group_uri = "d:grp-" + hash;
-      $groupRuleUri.text(group_uri);
+      $groupUri.text(group_uri);
     } else {
-      $groupRuleUri.text("");
+      $groupUri.text("");
     }
   }
 
@@ -308,10 +308,10 @@ v-s:PermissionGeneratorRegistryResultTemplate
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th class="orderby" data-orderby="v-s:permissionSubject"><span about="v-s:permissionSubject" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:forGroupGenerator"><span about="v-s:forGroupGenerator" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th><span about="v-s:permissionSubject" property="rdfs:label"></span></th>
+      <th><span about="v-s:forGroupGenerator" property="rdfs:label"></span></th>
+      <th><span about="v-s:authValue" property="rdfs:label"></span></th>
+      <th><span about="v-s:creator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
     </tr>
   </thead>
@@ -412,19 +412,19 @@ cfg:Event_GroupGenerator
  */
 
 try {
-  veda.GroupGenerators = veda.GroupGenerators || query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, rule_uri) {
-    var rule = get_individual(veda.ticket, rule_uri);
-    var authClass = veda.Util.getUri(rule["v-s:authClass"]);
-    var authProperty = veda.Util.getUri(rule["v-s:authProperty"]);
-    var authExpression = veda.Util.getFirstValue(rule["v-s:authExpression"]);
-    var authValue = veda.Util.getFirstValue(rule["v-s:authValue"]);
+  veda.GroupGenerators = veda.GroupGenerators || query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
+    var generator = get_individual(veda.ticket, generator_uri);
+    var authClass = veda.Util.getUri(generator["v-s:authClass"]);
+    var authProperty = veda.Util.getUri(generator["v-s:authProperty"]);
+    var authExpression = veda.Util.getFirstValue(generator["v-s:authExpression"]);
+    var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
     var fn;
     if (authProperty) {
       fn = new Function("veda", "return ( veda.Util.getFirstValue(this['" + authProperty + "']) );");
     } else if (authExpression) {
       fn = new Function("veda", "return " + authExpression);
     }
-    fn.rule = rule_uri;
+    fn.generator = generator_uri;
     fn.value = authValue;
     acc[authClass] = (acc[authClass] || []).concat(fn);
     return acc;
@@ -445,7 +445,7 @@ try {
         } else {
           fn_value = (fn.value.toString() === fn.call(document, veda).toString()) && fn.value;
         }
-        var group_concat_uri = fn.rule + " " + fn_value.toString();
+        var group_concat_uri = fn.generator + " " + fn_value.toString();
         var hash = Sha256.hash(group_concat_uri).substring(32);
         var group_uri = "d:grp-" + hash;
         var group = get_individual(veda.ticket, group_uri);
@@ -453,7 +453,7 @@ try {
           group = {
             "@": group_uri,
             "rdf:type": veda.Util.newUri("v-s:Group"),
-            "rdfs:label": veda.Util.newStr("Auth group. Group rule: " + fn.rule + ", value: " + fn_value)
+            "rdfs:label": veda.Util.newStr("Auth group. Generator: " + fn.generator + ", value: " + fn_value)
           };
           put_individual(veda.ticket, group);
         }
@@ -463,7 +463,7 @@ try {
           mem = {
             "@": mem_uri,
             "rdf:type": veda.Util.newUri("v-s:Membership"),
-            "rdfs:label": veda.Util.newStr("Membership. Group rule: " + fn.rule + ", value: " + fn_value),
+            "rdfs:label": veda.Util.newStr("Membership. Generator: " + fn.generator + ", value: " + fn_value),
             "v-s:resource": veda.Util.newUri(document["@"]),
             "v-s:memberOf": veda.Util.newUri(group_uri)
           }
@@ -506,26 +506,26 @@ cfg:Event_PermissionGenerator
  * super_classes = super classes of the document.
  */
 try {
-  var permissionRule = document;
-  if (veda.Util.hasValue(permissionRule, "v-s:forGroupGenerator") && veda.Util.hasValue(permissionRule, "v-s:authValue") && veda.Util.hasValue(permissionRule, "v-s:permissionSubject")) {
-    var groupRule = veda.Util.getUri(permissionRule["v-s:forGroupGenerator"]);
-    var authValue = permissionRule["v-s:authValue"][0].data;
-    var group_concat_uri = groupRule + " " + authValue;
+  var permissionGenerator = document;
+  if (veda.Util.hasValue(permissionGenerator, "v-s:forGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:authValue") && veda.Util.hasValue(permissionGenerator, "v-s:permissionSubject")) {
+    var groupGenerator = veda.Util.getUri(permissionGenerator["v-s:forGroupGenerator"]);
+    var authValue = permissionGenerator["v-s:authValue"][0].data;
+    var group_concat_uri = groupGenerator + " " + authValue;
     var group_hash = Sha256.hash(group_concat_uri).substring(32);
     var group_uri = "d:grp-" + group_hash;
-    var permission_concat_uri = veda.Util.getUri(permissionRule["v-s:permissionSubject"]) + " " + group_uri;
+    var permission_concat_uri = veda.Util.getUri(permissionGenerator["v-s:permissionSubject"]) + " " + group_uri;
     var permission_hash = Sha256.hash(permission_concat_uri).substring(32);
     var permission_uri = "d:per-" + permission_hash;
     var permission = {
       "@": permission_uri,
       "rdf:type": veda.Util.newUri("v-s:PermissionStatement"),
-      "rdfs:label": veda.Util.newStr("Permission. Permission rule: " + permissionRule["@"] + ", group rule: " + groupRule + ", value: " + authValue),
-      "v-s:permissionSubject": permissionRule["v-s:permissionSubject"],
+      "rdfs:label": veda.Util.newStr("Permission. Permission generator: " + permissionGenerator["@"] + ", group generator: " + groupGenerator + ", value: " + authValue),
+      "v-s:permissionSubject": permissionGenerator["v-s:permissionSubject"],
       "v-s:permissionObject": veda.Util.newUri(group_uri),
-      "v-s:canCreate": permissionRule["v-s:canCreate"],
-      "v-s:canRead": permissionRule["v-s:canRead"],
-      "v-s:canUpdate": permissionRule["v-s:canUpdate"],
-      "v-s:canDelete": permissionRule["v-s:canDelete"]
+      "v-s:canCreate": permissionGenerator["v-s:canCreate"],
+      "v-s:canRead": permissionGenerator["v-s:canRead"],
+      "v-s:canUpdate": permissionGenerator["v-s:canUpdate"],
+      "v-s:canDelete": permissionGenerator["v-s:canDelete"]
     }
     put_individual(ticket, permission);
   }
@@ -535,7 +535,7 @@ try {
   """ ;
 .
 
-##### Type distribution rule #####
+##### Class groups generator #####
 
 v-s:GroupGenerator_Class
   rdf:type v-s:GroupGenerator ;
@@ -567,7 +567,7 @@ v-s:GroupGenerator_Person_label_Administrator
 
 v-s:PermissionGenerator_AllUsersGroup_D_Person_label_Administrator
   rdf:type v-s:PermissionGenerator ;
-  rdfs:label "Permission rule: cfg:AllUsersGroup '---D' v-s:Person with Administrator label" ;
+  rdfs:label "Permission generator: cfg:AllUsersGroup '---D' v-s:Person if 'Administrator' label" ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canDelete true ;
   v-s:forGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
@@ -576,35 +576,35 @@ v-s:PermissionGenerator_AllUsersGroup_D_Person_label_Administrator
 
 v-s:PermissionGenerator_AllUsersGroup_C_Person_label_Administrator
   rdf:type v-s:PermissionGenerator ;
-  rdfs:label "Permission rule: cfg:AllUsersGroup 'C---' v-s:Person with Administrator label" ;
+  rdfs:label "Permission generator: cfg:AllUsersGroup 'C---' v-s:Person if not 'Administrator' label" ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate true ;
   v-s:forGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
   v-s:authValue false ;
 .
 
-# Сделал первый подход к мандатам (правилам распределения индивидов по авторизационным группам).
+# Сделал первый подход к мандатам (автоматическое распределение индивидов по авторизационным группам).
 #
 # В принципе получается универсальный инструмент.
 # Хочу перевести на него наши существующие скрипты по созданию групп и включению в них индивидов (например, группа индивидов классов, иерархия групп индивидов классов в соответствии с  иерархией классов, иерархия групп орг. структуры).
 #
 # Работает так:
 # 1) Есть скрипт, обрабатывающий объекты класса v-s:ClassAuthorized (просто для теста, от него наследуется v-s:UserThing).
-# 2) Скрипт ведет в инстансе JsVm список всех существующих правил распределения по группам.
-# 3) Для каждого индивида пойманного скриптом проверяется наличие правила распределения. Проверка делается для класса и всех суперклассов индивида. Подходящие правила выполняются по отношению к индивиду.
-# 4) Каждое правило описывает:
-#   - целевой класс, для которого выполняется правило;
+# 2) Скрипт ведет в инстансе JsVm список всех существующих генераторов групп авторизации.
+# 3) Для каждого индивида пойманного скриптом проверяется наличие генератора. Проверка делается для класса и всех суперклассов индивида. Подходящие генераторы выполняются по отношению к индивиду.
+# 4) Каждый генератор описывает:
+#   - целевой класс, для которого выполняется генератор;
 #   - целевое свойство (для распределение по значению свойства индивида).
 #   - целевое выражение - скрипт, который должен вернуть произвольное значение на основе индивида.
 #   - целевое значение - если указано, то производится проверка на соответствие целевого значения и значения целевого свойства или целевого выражения. Если значения совпадают, объект помещается в соответствующую группу.
 # Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
-# 5) Задача правила - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое свойством равно количеству уникальных целевых значений.
+# 5) Задача генератора - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое генератором равно количеству уникальных целевых значений.
 # 6) Uri Авторизационной группы вычисляется так:
-# "d:grp-" + Sha256.hash(rule_uri + " " value).substr(32)
+# "d:grp-" + Sha256.hash(generator_uri + " " value).substr(32)
 # 7) Объект добавляется в вычисленную (созданную) группу.
 # Uri Записи о включении в группу вычисляется так:
 # "d:mem-" + Sha256.hash(object_uri + " " + group_uri).substring(32)
 # 8) Права можно выдавать традиционным способом - зная uri группы объекта и субъекта, создать запись о правах.
-# 9) (пока не реализовано, может и не надо) Или создавать специальные записи о правах, где указываются не группы, а правила для групп субъекта и объекта и их целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе специальных записей создаются обычные записи о правах (1 к 1).
+# 9) (пока не реализовано, может и не надо) Или создавать генераторы прав, где указываются не группы субъекта и объекта, а их генераторы и соответствующие целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе генераторов прав создаются обычные записи о правах (1 к 1).
 #
 # Таким образом, предлагаемый механизм является надстройкой над уже существующей системой авторизации и фактически повторяет возможности мандатов в СЭД.
