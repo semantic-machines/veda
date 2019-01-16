@@ -563,26 +563,41 @@ cfg:Event_PermissionGenerator
  */
 try {
   var permissionGenerator = document;
-  if (veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGeneratorValue") && veda.Util.hasValue(permissionGenerator, "v-s:permissionSubject")) {
+  var subjectGroup_uri;
+  var objectGroup_uri;
+  if (veda.Util.hasValue(permissionGenerator, "v-s:permissionSubject")) {
+    subjectGroup_uri = veda.Util.getUri(permissionGenerator["v-s:permissionSubject"]);
+  } else if (veda.Util.hasValue(permissionGenerator, "v-s:subjectGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:subjectGroupGeneratorValue")) {
+    var subjectGroupGenerator = veda.Util.getUri(permissionGenerator["v-s:subjectGroupGenerator"]);
+    var subjectGroupGeneratorValue = permissionGenerator["v-s:subjectGroupGeneratorValue"][0].data;
+    var subjectGroup_concat_uri = subjectGroupGenerator + " " + subjectGroupGeneratorValue;
+    var subjectGroup_hash = Sha256.hash(subjectGroup_concat_uri).substring(32);
+    subjectGroup_uri = "d:grp-" + subjectGroup_hash;
+  }
+  if (veda.Util.hasValue(permissionGenerator, "v-s:permissionObject")) {
+    objectGroup_uri = veda.Util.getUri(permissionGenerator["v-s:permissionObject"]);
+  } else if (veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGeneratorValue")) {
     var objectGroupGenerator = veda.Util.getUri(permissionGenerator["v-s:objectGroupGenerator"]);
     var objectGroupGeneratorValue = permissionGenerator["v-s:objectGroupGeneratorValue"][0].data;
-    var group_concat_uri = objectGroupGenerator + " " + objectGroupGeneratorValue;
-    var group_hash = Sha256.hash(group_concat_uri).substring(32);
-    var group_uri = "d:grp-" + group_hash;
-    var permission_concat_uri = veda.Util.getUri(permissionGenerator["v-s:permissionSubject"]) + " " + group_uri;
+    var objectGroup_concat_uri = objectGroupGenerator + " " + objectGroupGeneratorValue;
+    var objectGroup_hash = Sha256.hash(objectGroup_concat_uri).substring(32);
+    objectGroup_uri = "d:grp-" + objectGroup_hash;
+  }
+  if (subjectGroup_uri && objectGroup_uri) {
+    var permission_concat_uri = subjectGroup_uri + " " + objectGroup_uri;
     var permission_hash = Sha256.hash(permission_concat_uri).substring(32);
     var permission_uri = "d:per-" + permission_hash;
     var permission = {
       "@": permission_uri,
       "rdf:type": veda.Util.newUri("v-s:PermissionStatement"),
       "rdfs:label": veda.Util.newStr("Permission. Permission generator: " + permissionGenerator["@"] + ", group generator: " + groupGenerator + ", value: " + authValue),
-      "v-s:permissionSubject": permissionGenerator["v-s:permissionSubject"],
-      "v-s:permissionObject": veda.Util.newUri(group_uri),
+      "v-s:permissionSubject": veda.Util.newUri(subjectGroup_uri),
+      "v-s:permissionObject": veda.Util.newUri(objectGroup_uri),
       "v-s:canCreate": permissionGenerator["v-s:canCreate"],
       "v-s:canRead": permissionGenerator["v-s:canRead"],
       "v-s:canUpdate": permissionGenerator["v-s:canUpdate"],
       "v-s:canDelete": permissionGenerator["v-s:canDelete"]
-    }
+    };
     put_individual(ticket, permission);
   }
 } catch (error) {
