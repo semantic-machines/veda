@@ -174,6 +174,10 @@ v-s:PermissionRuleTemplate
   <div property="rdfs:comment" class="view -edit -search"></div>
   <veda-control data-type="text" rows="2" property="rdfs:comment" class="-view edit search"></veda-control>
 
+  <em about="v-s:permissionSubject" property="rdfs:label"></em>
+  <div rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:permissionSubject" class="-view edit search fulltext dropdown"></veda-control>
+
   <em about="v-s:forGroupRule" property="rdfs:label"></em>
   <div rel="v-s:forGroupRule" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
   <veda-control data-type="link" rel="v-s:forGroupRule" class="-view edit search fulltext dropdown"></veda-control>
@@ -304,6 +308,7 @@ v-s:PermissionRuleRegistryResultTemplate
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:permissionSubject"><span about="v-s:permissionSubject" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:forGroupRule"><span about="v-s:forGroupRule" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
@@ -315,6 +320,7 @@ v-s:PermissionRuleRegistryResultTemplate
       <td><input type="checkbox" class="toggle-select"></td>
       <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td about="@" rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate"></td>
       <td about="@" rel="v-s:forGroupRule" data-template="v-ui:LabelLinkTemplate"></td>
       <td about="@" property="v-s:authValue"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
@@ -458,7 +464,7 @@ try {
           mem = {
             "@": mem_uri,
             "rdf:type": veda.Util.newUri("v-s:Membership"),
-            "rdfs:label": veda.Util.newStr("Membership for rule " + fn.rule),
+            "rdfs:label": veda.Util.newStr("Membership for group rule: " + fn.rule),
             "v-s:resource": veda.Util.newUri(document["@"]),
             "v-s:memberOf": veda.Util.newUri(group_uri)
           }
@@ -500,25 +506,54 @@ cfg:Event_PermissionRule
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
-
+try {
+  var permissionRule = document;
+  if (veda.Util.hasValue(permissionRule, "v-s:forGroupRule") && veda.Util.hasValue(permissionRule, "v-s:authValue") && veda.Util.hasValue(permissionRule, "v-s:permissionSubject")) {
+    var groupRule = veda.Util.getUri(permissionRule["v-s:forGroupRule"]);
+    var authValue = permissionRule["v-s:authValue"][0].data
+    var group_concat_uri = groupRule + " " + authValue;
+    var group_hash = Sha256.hash(group_concat_uri).substring(32);
+    var group_uri = "d:grp-" + group_hash;
+    var permission_concat_uri = veda.Util.getUri(permissionRule["v-s:permissionSubject"]) + " " + group_uri;
+    var permission_hash = Sha256.hash(permission_concat_uri).substring(32);
+    var permission_uri = "d:per-" + permission_hash;
+    var permission = {
+      "@": permission_uri,
+      "rdfs:label": veda.Util.newStr("Permission for permission rule: " + permissionRule["@"]),
+      "rdfs:comment": veda.Util.newStr("Group rule: " + groupRule + ", value: " + authValue),
+      "v-s:permissionSubject": permissionRule["v-s:permissionSubject"],
+      "v-s:permissionObject": veda.Util.newUri(group_uri),
+      "v-s:canCreate": permissionRule["v-s:canCreate"],
+      "v-s:canRead": permissionRule["v-s:canRead"],
+      "v-s:canUpdate": permissionRule["v-s:canUpdate"],
+      "v-s:canDelete": permissionRule["v-s:canDelete"]
+    }
+    put_individual(ticket, permission);
+    console.log("New permission for permission rule", JSON.stringify(permission));
+  }
+} catch (error) {
+  console.log("Error: ", error);
+}
   """ ;
 .
 
 ##### Type distribution rule #####
 
-# v-s:GroupRule_Class
-#   rdf:type v-s:GroupRule ;
-#   v-s:authClass v-s:ClassAuthorized ;
-#   v-s:authProperty rdf:type ;
-#   rdfs:label "Auth distribution rule: put individual to class group" ;
-# .
-#
-# v-s:GroupRule_SuperClass
-#   rdf:type v-s:GroupRule ;
-#   v-s:authClass rdfs:Class ;
-#   v-s:authProperty rdfs:subClassOf ;
-#   rdfs:label "Auth distribution rule: put class to super class group" ;
-# .
+v-s:GroupRule_Class
+  rdf:type v-s:GroupRule ;
+  v-s:authClass v-s:ClassAuthorized ;
+  v-s:authProperty rdf:type ;
+  rdfs:label "Auth distribution rule: put individual to class group" ;
+.
+
+v-s:PermissionRule_AllUsersGroup_D_Person
+  rdf:type v-s:PermissionRule ;
+  v-s:forGroupRule v-s:GroupRule_Class ;
+  v-s:authValue v-s:Person ;
+  rdfs:label "Permission rule: cfg:AllUsersGroup '---D' v-s:Person class individuals " ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canDelete true ;
+.
 
 # Сделал первый подход к мандатам (правилам распределения индивидов по авторизационным группам).
 #
