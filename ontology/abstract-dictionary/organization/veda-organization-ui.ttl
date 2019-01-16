@@ -933,7 +933,7 @@ v-s:AppointmentForContactTemplate
     }
 
     if (defaultAppointment){
-      tempEmployee['v-s:defaultAppointment'] = [defaultAppointment]
+      tempEmployee['v-s:defaultAppointment'] = [new veda.IndividualModel(defaultAppointment)]
     } else {
       tempEmployee['v-s:defaultAppointment'] = [individual];
     }
