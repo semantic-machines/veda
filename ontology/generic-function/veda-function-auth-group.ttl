@@ -10,27 +10,27 @@
 
 <http://semantic-machines.com/veda/veda-function-property-authorization>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства'"@ru ;
-  rdfs:label "Veda system ontology. Function 'Authorization on property value'"@en ;
+  rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства/выражения'"@ru ;
+  rdfs:label "Veda system ontology. Function 'Authorization on predicate/expression value'"@en ;
 #  owl:versionInfo "1.3" ;
   v-s:loadPriority 6 ;
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
 
-v-s:GroupRule
+v-s:GroupGenerator
   rdf:type owl:Class ;
-  rdfs:label "Правило группы авторизации"@ru ;
-  rdfs:label "Authorization group rule"@en ;
-  rdfs:comment "Правило распределения индивидов в группы авторизации на основе связки класс, предикат и объект."@ru ;
-  rdfs:comment "Authorization group distribution rule based on union of class, predicate and object."@en ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth groups generator"@en ;
+  rdfs:comment "Используется для распределения индивидов в группы авторизации на основе вычисленного от объекта значения предиката/выражения."@ru ;
+  rdfs:comment "Used to distribute individuals to auth groups rule based on calculated value predicate or expression."@en ;
   rdfs:subClassOf v-s:SystemThing ;
-  v-ui:hasTemplate v-s:GroupRuleTemplate ;
+  v-ui:hasTemplate v-s:GroupGeneratorTemplate ;
 .
 
 v-s:authClass
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:GroupRule ;
+  rdfs:domain v-s:GroupGenerator ;
   rdfs:label "Авторизуемый класс"@ru ;
   rdfs:label "Authorized class"@en ;
   rdfs:range rdfs:Class ;
@@ -38,7 +38,7 @@ v-s:authClass
 
 v-s:authProperty
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:GroupRule ;
+  rdfs:domain v-s:GroupGenerator ;
   rdfs:label "Авторизуемое свойство"@ru ;
   rdfs:label "Authorized property"@en ;
   rdfs:range rdf:Property ;
@@ -46,7 +46,7 @@ v-s:authProperty
 
 v-s:authExpression
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:GroupRule ;
+  rdfs:domain v-s:GroupGenerator ;
   rdfs:label "Авторизуемое выражение"@ru ;
   rdfs:label "Authorized expression"@en ;
   rdfs:range xsd:string ;
@@ -54,48 +54,48 @@ v-s:authExpression
 
 v-s:authValue
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:GroupRule ;
-  rdfs:domain v-s:PermissionRule ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:domain v-s:PermissionGenerator ;
   rdfs:label "Авторизуемое значение"@ru ;
   rdfs:label "Authorized value"@en ;
   rdfs:range rdfs:Resource ;
 .
 
-v-s:PermissionRule
+v-s:PermissionGenerator
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:PermissionStatement ;
-  rdfs:label "Право для правила группы авторизации"@ru ;
-  rdfs:label "Permission rule for authorization group rule"@en ;
-  v-ui:hasTemplate v-s:PermissionRuleTemplate ;
+  rdfs:label "Генератор прав"@ru ;
+  rdfs:label "Permissions generator"@en ;
+  v-ui:hasTemplate v-s:PermissionGeneratorTemplate ;
 .
 
-v-s:forGroupRule
+v-s:forGroupGenerator
   rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:PermissionRule ;
-  rdfs:label "Правило группы авторизации"@ru ;
-  rdfs:label "Authorization group rule"@en ;
-  rdfs:range v-s:GroupRule ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth group generator"@en ;
+  rdfs:range v-s:GroupGenerator ;
 .
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
-v-s:GroupRuleUri
+v-s:GroupGeneratorUri
   rdf:type v-s:Bundle ;
-  rdfs:label "URI группы для выбранного значения"@ru ;
-  rdfs:label "Group rule URI"@en ;
+  rdfs:label "URI группы авторизации для выбранного значения"@ru ;
+  rdfs:label "Auth group URI for chosen value"@en ;
 .
 
-v-s:GroupRuleTemplate
+v-s:GroupGeneratorTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-s:GroupRule ;
-  rdfs:label "Шаблон для класса v-s:GroupRule"@ru ;
-  rdfs:label "Template for v-s:GroupRule class"@en ;
+  v-ui:forClass v-s:GroupGenerator ;
+  rdfs:label "Шаблон для класса v-s:GroupGenerator"@ru ;
+  rdfs:label "Template for v-s:GroupGenerator class"@en ;
   v-ui:template """
 <script>
-  //# sourceURL=v-s:GroupRuleTemplate_pre
+  //# sourceURL=v-s:GroupGeneratorTemplate_pre
 </script>
 <div class="container sheet">
-  <h2 about="v-s:GroupRule" property="rdfs:label"></h2>
+  <h2 about="v-s:GroupGenerator" property="rdfs:label"></h2>
   <hr>
   <em about="rdfs:label" property="rdfs:label"></em>
   <div property="rdfs:label" class="view -edit -search"></div>
@@ -122,7 +122,7 @@ v-s:GroupRuleTemplate
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
   <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
-  <em about="v-s:GroupRuleUri" property="rdfs:label"></em>
+  <em about="v-s:GroupGeneratorUri" property="rdfs:label"></em>
   <code class="group-rule-uri"></code>
   <br>
   <br>
@@ -149,22 +149,22 @@ v-s:GroupRuleTemplate
     }
   }
 
-  //# sourceURL=v-s:GroupRuleTemplate_post
+  //# sourceURL=v-s:GroupGeneratorTemplate_post
 </script>
 """ ;
 .
 
-v-s:PermissionRuleTemplate
+v-s:PermissionGeneratorTemplate
   rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-s:GroupRule ;
-  rdfs:label "Шаблон для класса v-s:PermissionRule"@ru ;
-  rdfs:label "Template for v-s:PermissionRule class"@en ;
+  v-ui:forClass v-s:GroupGenerator ;
+  rdfs:label "Шаблон для класса v-s:PermissionGenerator"@ru ;
+  rdfs:label "Template for v-s:PermissionGenerator class"@en ;
   v-ui:template """
 <script>
-  //# sourceURL=v-s:PermissionRuleTemplate_pre
+  //# sourceURL=v-s:PermissionGeneratorTemplate_pre
 </script>
 <div class="container sheet">
-  <h2 about="v-s:PermissionRule" property="rdfs:label"></h2>
+  <h2 about="v-s:PermissionGenerator" property="rdfs:label"></h2>
   <hr>
   <em about="rdfs:label" property="rdfs:label"></em>
   <div property="rdfs:label" class="view -edit -search"></div>
@@ -178,9 +178,9 @@ v-s:PermissionRuleTemplate
   <div rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
   <veda-control data-type="link" rel="v-s:permissionSubject" class="-view edit search fulltext dropdown"></veda-control>
 
-  <em about="v-s:forGroupRule" property="rdfs:label"></em>
-  <div rel="v-s:forGroupRule" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
-  <veda-control data-type="link" rel="v-s:forGroupRule" class="-view edit search fulltext dropdown"></veda-control>
+  <em about="v-s:forGroupGenerator" property="rdfs:label"></em>
+  <div rel="v-s:forGroupGenerator" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:forGroupGenerator" class="-view edit search fulltext dropdown"></veda-control>
 
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
@@ -216,38 +216,38 @@ v-s:PermissionRuleTemplate
   </div>
 </div>
 <script>
-  //# sourceURL=v-s:PermissionRuleTemplate_post
+  //# sourceURL=v-s:PermissionGeneratorTemplate_post
 </script>
 """ ;
 .
 
 # ------------- РЕЕСТРЫ ---------------
 
-v-s:GroupRuleBlank
+v-s:GroupGeneratorBlank
   a v-fc:Blank ;
-  rdfs:label "Правило группы авторизации"@ru ;
-  rdfs:label "Authorization group rule"@en ;
-  v-fc:targetType v-s:GroupRule ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth group generator"@en ;
+  v-fc:targetType v-s:GroupGenerator ;
 .
 
-v-s:GroupRuleRegistry
+v-s:GroupGeneratorRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Правила групп авторизации"@ru ;
-  rdfs:label "Authorization group rules"@en ;
-  v-fs:searchBlank v-s:GroupRuleBlank ;
-  v-fs:searchBlankTemplate v-s:GroupRuleTemplate ;
-  v-fs:searchResultTemplate v-s:GroupRuleRegistryResultTemplate ;
+  rdfs:label "Генераторы групп авторизации"@ru ;
+  rdfs:label "Auth group generators"@en ;
+  v-fs:searchBlank v-s:GroupGeneratorBlank ;
+  v-fs:searchBlankTemplate v-s:GroupGeneratorTemplate ;
+  v-fs:searchResultTemplate v-s:GroupGeneratorRegistryResultTemplate ;
 .
 
-v-s:GroupRuleRegistryResultTemplate
+v-s:GroupGeneratorRegistryResultTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон результатов реестра v-s:GroupRule"@ru ;
-  rdfs:label "v-s:GroupRule registry result template"@en ;
+  rdfs:label "Шаблон результатов реестра v-s:GroupGenerator"@ru ;
+  rdfs:label "v-s:GroupGenerator registry result template"@en ;
   v-ui:template """
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="11" about="v-s:GroupRule" property="rdfs:label"></th>
+      <th colspan="11" about="v-s:GroupGenerator" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
@@ -278,38 +278,38 @@ v-s:GroupRuleRegistryResultTemplate
   """ ;
 .
 
-v-s:PermissionRuleBlank
+v-s:PermissionGeneratorBlank
   a v-fc:Blank ;
-  rdfs:label "Право для правила группы авторизации"@ru ;
-  rdfs:label "Permission rule for authorization group rule"@en ;
-  v-fc:targetType v-s:PermissionRule ;
+  rdfs:label "Генератор прав"@ru ;
+  rdfs:label "Permissions generator"@en ;
+  v-fc:targetType v-s:PermissionGenerator ;
 .
 
-v-s:PermissionRuleRegistry
+v-s:PermissionGeneratorRegistry
   a v-fs:AttributiveSearch;
-  rdfs:label "Права для правил групп авторизации"@ru ;
-  rdfs:label "Permission rules for authorization group rules"@en ;
-  v-fs:searchBlank v-s:PermissionRuleBlank ;
-  v-fs:searchBlankTemplate v-s:PermissionRuleTemplate ;
-  v-fs:searchResultTemplate v-s:PermissionRuleRegistryResultTemplate ;
+  rdfs:label "Генераторы прав"@ru ;
+  rdfs:label "Permissions generators"@en ;
+  v-fs:searchBlank v-s:PermissionGeneratorBlank ;
+  v-fs:searchBlankTemplate v-s:PermissionGeneratorTemplate ;
+  v-fs:searchResultTemplate v-s:PermissionGeneratorRegistryResultTemplate ;
 .
 
-v-s:PermissionRuleRegistryResultTemplate
+v-s:PermissionGeneratorRegistryResultTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон результатов реестра v-s:PermissionRule"@ru ;
-  rdfs:label "v-s:PermissionRule registry result template"@en ;
+  rdfs:label "Шаблон результатов реестра v-s:PermissionGenerator"@ru ;
+  rdfs:label "v-s:PermissionGenerator registry result template"@en ;
   v-ui:template """
 <table class="table table-bordered">
   <thead class="result-header">
     <tr>
-      <th colspan="11" about="v-s:PermissionRule" property="rdfs:label"></th>
+      <th colspan="11" about="v-s:PermissionGenerator" property="rdfs:label"></th>
     </tr>
     <tr class="active">
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th class="orderby" data-orderby="v-s:permissionSubject"><span about="v-s:permissionSubject" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:forGroupRule"><span about="v-s:forGroupRule" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:forGroupGenerator"><span about="v-s:forGroupGenerator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
@@ -321,7 +321,7 @@ v-s:PermissionRuleRegistryResultTemplate
       <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td about="@" rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate"></td>
-      <td about="@" rel="v-s:forGroupRule" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" rel="v-s:forGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
       <td about="@" property="v-s:authValue"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
@@ -333,67 +333,67 @@ v-s:PermissionRuleRegistryResultTemplate
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
 
-v-s:GroupRule_BaseUser
+v-s:GroupGenerator_BaseUser
   rdf:type v-s:Group ;
-  rdfs:label "Основные пользователи v-s:GroupRule"@ru ;
-  rdfs:label "Users v-s:GroupRule"@en ;
+  rdfs:label "Основные пользователи v-s:GroupGenerator"@ru ;
+  rdfs:label "Users v-s:GroupGenerator"@en ;
 .
 
-v-s:GroupRule_Admin
+v-s:GroupGenerator_Admin
   rdf:type v-s:Group ;
-  rdfs:label "Администраторы v-s:GroupRule"@ru ;
-  rdfs:label "Administrators v-s:GroupRule"@en ;
+  rdfs:label "Администраторы v-s:GroupGenerator"@ru ;
+  rdfs:label "Administrators v-s:GroupGenerator"@en ;
 .
 
-v-s:GroupRule_permission1
+v-s:GroupGenerator_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:GroupRule ;
-  v-s:permissionObject v-s:GroupRule_group ;
-  v-s:permissionObject v-s:GroupRuleBlank ;
-  v-s:permissionObject v-s:GroupRuleRegistry ;
-  v-s:permissionObject v-s:GroupRuleRegistryBlank ;
-  v-s:permissionSubject v-s:GroupRule_BaseUser ;
+  v-s:permissionObject v-s:GroupGenerator ;
+  v-s:permissionObject v-s:GroupGenerator_group ;
+  v-s:permissionObject v-s:GroupGeneratorBlank ;
+  v-s:permissionObject v-s:GroupGeneratorRegistry ;
+  v-s:permissionObject v-s:GroupGeneratorRegistryBlank ;
+  v-s:permissionSubject v-s:GroupGenerator_BaseUser ;
   v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "R. Все пользователи. Индивиды v-s:GroupRule" ;
+  rdfs:label "R. Все пользователи. Индивиды v-s:GroupGenerator" ;
 .
 
-v-s:GroupRule_permission2
+v-s:GroupGenerator_permission2
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:GroupRuleUser ;
-  v-s:permissionSubject v-s:GroupRule_BaseUser ;
+  v-s:permissionObject v-s:GroupGeneratorUser ;
+  v-s:permissionSubject v-s:GroupGenerator_BaseUser ;
   v-s:canCreate "true"^^xsd:boolean ;
-  rdfs:label "C. Админы. Класс v-s:GroupRule" ;
+  rdfs:label "C. Админы. Класс v-s:GroupGenerator" ;
 .
 
-v-s:GroupRule_permission3
+v-s:GroupGenerator_permission3
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:GroupRule ;
-  v-s:permissionObject v-s:GroupRule_group ;
-  v-s:permissionObject v-s:GroupRuleUserBlank ;
-  v-s:permissionObject v-s:GroupRuleRegistry ;
-  v-s:permissionObject v-s:GroupRuleRegistryBlank ;
-  v-s:permissionObject v-s:GroupRuleAdminBlank ;
-  v-s:permissionObject v-s:GroupRuleAdmin ;
-  v-s:permissionObject v-s:GroupRuleAdmin_group ;
-  v-s:permissionSubject v-s:GroupRule_Admin ;
+  v-s:permissionObject v-s:GroupGenerator ;
+  v-s:permissionObject v-s:GroupGenerator_group ;
+  v-s:permissionObject v-s:GroupGeneratorUserBlank ;
+  v-s:permissionObject v-s:GroupGeneratorRegistry ;
+  v-s:permissionObject v-s:GroupGeneratorRegistryBlank ;
+  v-s:permissionObject v-s:GroupGeneratorAdminBlank ;
+  v-s:permissionObject v-s:GroupGeneratorAdmin ;
+  v-s:permissionObject v-s:GroupGeneratorAdmin_group ;
+  v-s:permissionSubject v-s:GroupGenerator_Admin ;
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canRead "true"^^xsd:boolean ;
   v-s:canUpdate "true"^^xsd:boolean ;
   v-s:canDelete "true"^^xsd:boolean ;
-  rdfs:label "CRUD. Админы. Индивиды v-s:GroupRule" ;
+  rdfs:label "CRUD. Админы. Индивиды v-s:GroupGenerator" ;
 .
 
 v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
   rdf:type v-s:Membership ;
-  v-s:memberOf v-s:GroupRule_BaseUser ;
+  v-s:memberOf v-s:GroupGenerator_BaseUser ;
   v-s:resource cfg:AllUsersGroup ;
-  v-s:resource v-s:GroupRule_Admin ;
-  rdfs:label "Все пользователи входят в группу Основные пользователи v-s:GroupRule" ;
+  v-s:resource v-s:GroupGenerator_Admin ;
+  rdfs:label "Все пользователи входят в группу Основные пользователи v-s:GroupGenerator" ;
 .
 
 # ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
 
-cfg:Event_GroupRule
+cfg:Event_GroupGenerator
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт распределения по группам авторизации" ;
@@ -412,7 +412,7 @@ cfg:Event_GroupRule
  */
 
 try {
-  veda.GroupRules = veda.GroupRules || query(veda.ticket, "'rdf:type' === 'v-s:GroupRule'").result.reduce(function (acc, rule_uri) {
+  veda.GroupGenerators = veda.GroupGenerators || query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, rule_uri) {
     var rule = get_individual(veda.ticket, rule_uri);
     var authClass = veda.Util.getUri(rule["v-s:authClass"]);
     var authProperty = veda.Util.getUri(rule["v-s:authProperty"]);
@@ -435,16 +435,16 @@ try {
   _super.push(type);
 
   for (var i = 0, _class; (_class = _super[i]); i++) {
-    if (_class in veda.GroupRules) {
-      var fns = veda.GroupRules[_class];
+    if (_class in veda.GroupGenerators) {
+      var fns = veda.GroupGenerators[_class];
       for (var j = 0, fn; (fn = fns[j]); j++) {
         var fn_value;
-        if (typeof fn.value === "undefined") {
+        if (fn.value === undefined) {
           fn_value = fn.call(document, veda);
+          if (fn_value === undefined) { continue; }
         } else {
-          fn_value = (fn.value === fn.call(document, veda)) && fn.value;
+          fn_value = (fn.value.toString() === fn.call(document, veda).toString()) && fn.value;
         }
-        if (typeof fn_value === "undefined") { continue; }
         var group_concat_uri = fn.rule + " " + fn_value.toString();
         var hash = Sha256.hash(group_concat_uri).substring(32);
         var group_uri = "d:grp-" + hash;
@@ -453,10 +453,9 @@ try {
           group = {
             "@": group_uri,
             "rdf:type": veda.Util.newUri("v-s:Group"),
-            "rdfs:label": veda.Util.newStr(group_concat_uri)
+            "rdfs:label": veda.Util.newStr("Auth group. Group rule: " + fn.rule + ", value: " + fn_value)
           };
           put_individual(veda.ticket, group);
-          console.log("Auth group created:", group_uri);
         }
         var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
         var mem = get_individual(veda.ticket, mem_uri);
@@ -464,7 +463,7 @@ try {
           mem = {
             "@": mem_uri,
             "rdf:type": veda.Util.newUri("v-s:Membership"),
-            "rdfs:label": veda.Util.newStr("Membership for group rule: " + fn.rule),
+            "rdfs:label": veda.Util.newStr("Membership. Group rule: " + fn.rule + ", value: " + fn_value),
             "v-s:resource": veda.Util.newUri(document["@"]),
             "v-s:memberOf": veda.Util.newUri(group_uri)
           }
@@ -479,21 +478,21 @@ try {
   """ ;
 .
 
-cfg:Event_GroupRulesReset
+cfg:Event_GroupGeneratorsReset
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт обработки правил распределения авторизации" ;
-  v-s:triggerByType v-s:GroupRule ;
+  rdfs:label "Скрипт обработки генераторов групп авторизации" ;
+  v-s:triggerByType v-s:GroupGenerator ;
   v-s:script """
-veda.GroupRules = undefined;
+veda.GroupGenerators = undefined;
   """ ;
 .
 
-cfg:Event_PermissionRule
+cfg:Event_PermissionGenerator
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт обработки объектов v-s:PermissionRule" ;
-  v-s:triggerByType v-s:PermissionRule ;
+  rdfs:label "Скрипт обработки генераторов прав" ;
+  v-s:triggerByType v-s:PermissionGenerator ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
@@ -508,9 +507,9 @@ cfg:Event_PermissionRule
  */
 try {
   var permissionRule = document;
-  if (veda.Util.hasValue(permissionRule, "v-s:forGroupRule") && veda.Util.hasValue(permissionRule, "v-s:authValue") && veda.Util.hasValue(permissionRule, "v-s:permissionSubject")) {
-    var groupRule = veda.Util.getUri(permissionRule["v-s:forGroupRule"]);
-    var authValue = permissionRule["v-s:authValue"][0].data
+  if (veda.Util.hasValue(permissionRule, "v-s:forGroupGenerator") && veda.Util.hasValue(permissionRule, "v-s:authValue") && veda.Util.hasValue(permissionRule, "v-s:permissionSubject")) {
+    var groupRule = veda.Util.getUri(permissionRule["v-s:forGroupGenerator"]);
+    var authValue = permissionRule["v-s:authValue"][0].data;
     var group_concat_uri = groupRule + " " + authValue;
     var group_hash = Sha256.hash(group_concat_uri).substring(32);
     var group_uri = "d:grp-" + group_hash;
@@ -519,8 +518,8 @@ try {
     var permission_uri = "d:per-" + permission_hash;
     var permission = {
       "@": permission_uri,
-      "rdfs:label": veda.Util.newStr("Permission for permission rule: " + permissionRule["@"]),
-      "rdfs:comment": veda.Util.newStr("Group rule: " + groupRule + ", value: " + authValue),
+      "rdf:type": veda.Util.newUri("v-s:PermissionStatement"),
+      "rdfs:label": veda.Util.newStr("Permission. Permission rule: " + permissionRule["@"] + ", group rule: " + groupRule + ", value: " + authValue),
       "v-s:permissionSubject": permissionRule["v-s:permissionSubject"],
       "v-s:permissionObject": veda.Util.newUri(group_uri),
       "v-s:canCreate": permissionRule["v-s:canCreate"],
@@ -529,7 +528,6 @@ try {
       "v-s:canDelete": permissionRule["v-s:canDelete"]
     }
     put_individual(ticket, permission);
-    console.log("New permission for permission rule", JSON.stringify(permission));
   }
 } catch (error) {
   console.log("Error: ", error);
@@ -539,20 +537,50 @@ try {
 
 ##### Type distribution rule #####
 
-v-s:GroupRule_Class
-  rdf:type v-s:GroupRule ;
+v-s:GroupGenerator_Class
+  rdf:type v-s:GroupGenerator ;
   v-s:authClass v-s:ClassAuthorized ;
   v-s:authProperty rdf:type ;
-  rdfs:label "Auth distribution rule: put individual to class group" ;
+  rdfs:label "Auth group generator: put individual to class group" ;
 .
 
-v-s:PermissionRule_AllUsersGroup_D_Person
-  rdf:type v-s:PermissionRule ;
-  v-s:forGroupRule v-s:GroupRule_Class ;
-  v-s:authValue v-s:Person ;
-  rdfs:label "Permission rule: cfg:AllUsersGroup '---D' v-s:Person class individuals " ;
+v-s:PermissionGenerator_AllUsersGroup_D_Person
+  rdf:type v-s:PermissionGenerator ;
+  rdfs:label "Permission generator: cfg:AllUsersGroup '---D' v-s:Person class individuals" ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canDelete true ;
+  v-s:forGroupGenerator v-s:GroupGenerator_Class ;
+  v-s:authValue v-s:Person ;
+.
+
+v-s:GroupGenerator_Person_label_Administrator
+  rdf:type v-s:GroupGenerator ;
+  rdfs:label "Auth group generator: person label is 'Administrator'" ;
+  v-s:authClass v-s:Person ;
+  v-s:authExpression """
+(function () {
+  console.log("!!!!!!!!!!!");
+  return veda.Util.hasValue(this, "rdfs:label", {data: "Administrator ", type: "String"});
+})();
+  """ ;
+.
+
+v-s:PermissionGenerator_AllUsersGroup_D_Person_label_Administrator
+  rdf:type v-s:PermissionGenerator ;
+  rdfs:label "Permission rule: cfg:AllUsersGroup '---D' v-s:Person with Administrator label" ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canDelete true ;
+  v-s:forGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
+  v-s:authValue true ;
+.
+
+v-s:PermissionGenerator_AllUsersGroup_C_Person_label_Administrator
+  rdf:type v-s:PermissionGenerator ;
+  rdfs:label "Permission rule: cfg:AllUsersGroup 'C---' v-s:Person with Administrator label" ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate true ;
+  v-s:forGroupGenerator v-s:GroupGenerator_Person_label_Administrator ;
+  v-s:authValue false ;
 .
 
 # Сделал первый подход к мандатам (правилам распределения индивидов по авторизационным группам).
