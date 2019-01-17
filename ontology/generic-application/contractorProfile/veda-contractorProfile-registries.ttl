@@ -76,7 +76,7 @@ v-s:ContractorProfileRegistryBlankTemplate
   <hr>
   <div about="@" data-template="v-ui:SystemPropertiesTemplate" data-embedded="true"></div>
   <br>
-  <div about="@" rel="v-s:backwardTarget" data-embedded="true" data-template="mnd-s:OrganizationSearchBlankTemplate"></div>
+  <div about="@" rel="v-s:backwardTarget" data-embedded="true" data-template="v-s:OrganizationRegistryEmbededBlankTemplate"></div>
 </div>
 
   """ ;
