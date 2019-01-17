@@ -44,11 +44,11 @@ v-s:authProperty
   rdfs:range rdf:Property ;
 .
 
-v-s:authExpression
+v-s:authFunction
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:GroupGenerator ;
-  rdfs:label "Авторизуемое выражение"@ru ;
-  rdfs:label "Authorized expression"@en ;
+  rdfs:label "Функция для вычисления авторизуемого значения"@ru ;
+  rdfs:label "Function to calculate authorized value"@en ;
   rdfs:range xsd:string ;
 .
 
@@ -139,9 +139,9 @@ v-s:GroupGeneratorTemplate
   <div rel="v-s:authProperty" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
   <veda-control data-type="link" rel="v-s:authProperty" class="-view edit search fulltext"></veda-control>
 
-  <em about="v-s:authExpression" property="rdfs:label"></em>
-  <div property="v-s:authExpression" class="view -edit -search"></div>
-  <veda-control data-type="text" rows="2" property="v-s:authExpression" class="-view edit search"></veda-control>
+  <em about="v-s:authFunction" property="rdfs:label"></em>
+  <div property="v-s:authFunction" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="v-s:authFunction" class="-view edit search"></veda-control>
 
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
@@ -295,7 +295,7 @@ v-s:GroupGeneratorRegistryResultTemplate
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
       <th class="orderby" data-orderby="v-s:authClass"><span about="v-s:authClass" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authProperty"><span about="v-s:authProperty" property="rdfs:label"></span></th>
-      <th class="orderby" data-orderby="v-s:authExpression"><span about="v-s:authExpression" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authFunction"><span about="v-s:authFunction" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
       <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
@@ -308,7 +308,7 @@ v-s:GroupGeneratorRegistryResultTemplate
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
       <td about="@" rel="v-s:authClass" data-template="v-ui:LabelTemplate"></td>
       <td about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate"></td>
-      <td about="@" property="v-s:authExpression"></td>
+      <td about="@" property="v-s:authFunction"></td>
       <td about="@" property="v-s:authValue"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
@@ -369,8 +369,8 @@ v-s:PermissionGeneratorRegistryResultTemplate
       <td about="@" property="v-s:subjectGroupGeneratorValue"></td>
       <td class="rights"></td>
       <td about="@" rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate"></td>
-      <td about="@" rel="v-s:ObjectGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
-      <td about="@" property="v-s:ObjectGroupGeneratorValue"></td>
+      <td about="@" rel="v-s:objectGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" property="v-s:objectGroupGeneratorValue"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
     </tr>
@@ -449,7 +449,13 @@ v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
 
 # ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
 
-cfg:Event_GroupGenerator
+v-s:GroupsGeneratorsAreActual
+  rdf:type rdfs:Resource ;
+  rdfs:label "Признак актуальности генераторов групп" ;
+  rdf:value false ;
+.
+
+v-s:Event_GroupGenerator
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт распределения по группам авторизации" ;
@@ -468,65 +474,111 @@ cfg:Event_GroupGenerator
  */
 
 try {
-  veda.GroupGenerators = veda.GroupGenerators || query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
-    var generator = get_individual(veda.ticket, generator_uri);
-    var authClass = veda.Util.getUri(generator["v-s:authClass"]);
-    var authProperty = veda.Util.getUri(generator["v-s:authProperty"]);
-    var authExpression = veda.Util.getFirstValue(generator["v-s:authExpression"]);
-    var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
-    var fn;
-    if (authProperty) {
-      fn = new Function("veda", "return ( veda.Util.getFirstValue(this['" + authProperty + "']) );");
-    } else if (authExpression) {
-      fn = new Function("veda", "return " + authExpression);
+  var areActual = get_individual(ticket, "v-s:GroupsGeneratorsAreActual");
+  areActual = areActual && areActual["rdf:value"] && areActual["rdf:value"][0].data;
+  veda.GroupGenerators = areActual && veda.GroupGenerators;
+
+  if (!veda.GroupGenerators) {
+    console.log("(Re)build group generators");
+    veda.GroupGenerators = query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
+      var generator = get_individual(veda.ticket, generator_uri);
+      var authClass = veda.Util.getUri(generator["v-s:authClass"]);
+      var authProperty = veda.Util.getUri(generator["v-s:authProperty"]);
+      var authFunction = veda.Util.getFirstValue(generator["v-s:authFunction"]);
+      var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
+      var fn;
+      if (authProperty) {
+        fn = new Function("veda", "return veda.Util.getFirstValue(this['" + authProperty + "']);");
+      } else if (authFunction) {
+        fn = new Function("veda", authFunction);
+      }
+      fn.generator = generator_uri;
+      fn.value = authValue;
+      acc[authClass] = (acc[authClass] || []).concat(fn);
+      return acc;
+    }, {});
+    set_in_individual(ticket, {
+      "@": "v-s:GroupsGeneratorsAreActual",
+      "rdf:value": veda.Util.newBool(true)
+    });
+  }
+
+  var currGroups = generateGroups(document),
+      currGroupsUris = Object.keys(currGroups).sort(),
+      prevGroups = generateGroups(prev_state),
+      prevGroupsUris = Object.keys(prevGroups).sort(),
+      i = 0,
+      j = 0,
+      currGroup,
+      prevGroup;
+
+  while ((currGroup = currGroupsUris[i]) && (prevGroup = prevGroupsUris[j])) {
+    if (prevGroup < currGroup) {
+      removeMembership(prevGroup);
+      j++;
+    } else if (prevGroup > currGroup) {
+      addMembership(currGroup);
+      i++;
+    } else {
+      i++;
+      j++;
     }
-    fn.generator = generator_uri;
-    fn.value = authValue;
-    acc[authClass] = (acc[authClass] || []).concat(fn);
-    return acc;
-  }, {});
+  }
+  while (prevGroup = prevGroupsUris[j]) {
+    removeMembership(prevGroup);
+    j++;
+  }
+  while (currGroup = currGroupsUris[i]) {
+    addMembership(currGroup);
+    i++;
+  }
 
-  var type = veda.Util.getUri(document["rdf:type"]);
-  var _super = JSON.parse(super_classes);
-  _super.push(type);
+  function addMembership(group_uri) {
+    var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
+    var groupLabel = currGroups[group_uri];
+    var mem = {
+      "@": mem_uri,
+      "rdf:type": veda.Util.newUri("v-s:Membership"),
+      "rdfs:label": veda.Util.newStr("Membership. " + groupLabel),
+      "v-s:resource": veda.Util.newUri(document["@"]),
+      "v-s:memberOf": veda.Util.newUri(group_uri)
+    };
+    put_individual(ticket, mem);
+    console.log("added to", group_uri, currGroups[group_uri]);
+  }
 
-  for (var i = 0, _class; (_class = _super[i]); i++) {
-    if (_class in veda.GroupGenerators) {
-      var fns = veda.GroupGenerators[_class];
-      for (var j = 0, fn; (fn = fns[j]); j++) {
-        var fn_value;
-        if (fn.value === undefined) {
-          fn_value = fn.call(document, veda);
-          if (fn_value === undefined) { continue; }
-        } else {
-          fn_value = (fn.value.toString() === fn.call(document, veda).toString()) && fn.value;
-        }
-        var group_concat_uri = fn.generator + " " + fn_value.toString();
-        var hash = Sha256.hash(group_concat_uri).substring(32);
-        var group_uri = "d:grp-" + hash;
-        var group = get_individual(veda.ticket, group_uri);
-        if ( !group ) {
-          group = {
-            "@": group_uri,
-            "rdf:type": veda.Util.newUri("v-s:Group"),
-            "rdfs:label": veda.Util.newStr("Auth group. Generator: " + fn.generator + ", value: " + fn_value)
-          };
-          put_individual(veda.ticket, group);
-        }
-        var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
-        var mem = get_individual(veda.ticket, mem_uri);
-        if ( !mem ) {
-          mem = {
-            "@": mem_uri,
-            "rdf:type": veda.Util.newUri("v-s:Membership"),
-            "rdfs:label": veda.Util.newStr("Membership. Generator: " + fn.generator + ", value: " + fn_value),
-            "v-s:resource": veda.Util.newUri(document["@"]),
-            "v-s:memberOf": veda.Util.newUri(group_uri)
+  function removeMembership(group_uri) {
+    var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
+    remove_individual(ticket, mem_uri);
+    console.log("removed from", group_uri, prevGroups[group_uri]);
+  }
+
+  function generateGroups(document) {
+    var groups = {};
+    if (!document) { return groups; }
+    var type = veda.Util.getUri(document["rdf:type"]);
+    var _super = JSON.parse(super_classes);
+    _super.push(type);
+
+    for (var i = 0, _class; (_class = _super[i]); i++) {
+      if (_class in veda.GroupGenerators) {
+        var fns = veda.GroupGenerators[_class];
+        for (var j = 0, fn; (fn = fns[j]); j++) {
+          var fn_value;
+          if (fn.value === undefined) {
+            fn_value = fn.call(document, veda);
+            if (fn_value === undefined) { continue; }
+          } else {
+            fn_value = (fn.value.toString() === fn.call(document, veda).toString()) && fn.value;
           }
-          put_individual(veda.ticket, mem);
+          var group_concat_uri = fn.generator + " " + fn_value.toString();
+          var hash = Sha256.hash(group_concat_uri).substring(32);
+          var group_uri = "d:grp-" + hash;
+          groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
         }
       }
     }
+    return groups;
   }
 } catch (error) {
   console.log("Error: ", error);
@@ -534,17 +586,22 @@ try {
   """ ;
 .
 
-cfg:Event_GroupGeneratorsReset
+v-s:Event_GroupGeneratorsReset
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки генераторов групп авторизации" ;
   v-s:triggerByType v-s:GroupGenerator ;
+  v-s:runAt "V8.LowPriority" ;
   v-s:script """
 veda.GroupGenerators = undefined;
+set_in_individual(ticket, {
+  "@": "v-s:GroupsGeneratorsAreActual",
+  "rdf:value": veda.Util.newBool(false)
+});
   """ ;
 .
 
-cfg:Event_PermissionGenerator
+v-s:Event_PermissionGenerator
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки генераторов прав" ;
@@ -612,7 +669,7 @@ v-s:GroupGenerator_Class
   rdf:type v-s:GroupGenerator ;
   v-s:authClass v-s:ClassAuthorized ;
   v-s:authProperty rdf:type ;
-  rdfs:label "Auth group generator: put individual to class group" ;
+  rdfs:label "Auth group generator: put individual to class group " ;
 .
 
 v-s:PermissionGenerator_AllUsersGroup_D_Person
@@ -628,11 +685,8 @@ v-s:GroupGenerator_Person_label_Administrator
   rdf:type v-s:GroupGenerator ;
   rdfs:label "Auth group generator: person label is 'Administrator'" ;
   v-s:authClass v-s:Person ;
-  v-s:authExpression """
-(function () {
-  console.log("!!!!!!!!!!!");
-  return veda.Util.hasValue(this, "rdfs:label", {data: "Administrator ", type: "String"});
-})();
+  v-s:authFunction """
+return this["v-s:lastName"][0].data === "Administrator";
   """ ;
 .
 

@@ -411,6 +411,38 @@ v-s:PermissionStatementRegistryBlank
   v-fc:targetType v-s:PermissionStatement ;
 .
 
+v-s:GroupGeneratorBlank_Admin
+  a v-fc:Blank ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth group generator"@en ;
+  v-fc:targetType v-s:GroupGenerator ;
+.
+
+v-s:GroupGeneratorRegistry_Admin
+  a v-fs:AttributiveSearch;
+  rdfs:label "Генераторы групп авторизации"@ru ;
+  rdfs:label "Auth group generators"@en ;
+  v-fs:searchBlank v-s:GroupGeneratorBlank_Admin ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+.
+
+v-s:PermissionGeneratorBlank_Admin
+  a v-fc:Blank ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth group generator"@en ;
+  v-fc:targetType v-s:PermissionGenerator ;
+.
+
+v-s:PermissionGeneratorRegistry_Admin
+  a v-fs:AttributiveSearch;
+  rdfs:label "Генераторы групп авторизации"@ru ;
+  rdfs:label "Auth group generators"@en ;
+  v-fs:searchBlank v-s:PermissionGeneratorBlank_Admin ;
+  v-fs:searchBlankTemplate v-ui:AdminBlankTemplate ;
+  v-fs:searchResultTemplate v-ui:AdminResultTemplate ;
+.
+
 # -- ОШИБКИ --
 
 v-s:PermissionStatementBlank
@@ -782,17 +814,15 @@ v-ui:AdministrationAspectTemplate
         <div class="col-md-6">
           <h3 about="v-s:AuthGroupGeneratorsBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
-            <div class="panel-heading"><span about="v-s:GroupGenerator" property="rdfs:label"></span><a href="#/v-s:GroupGeneratorBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
-            <div class="panel-body" about="v-s:GroupGeneratorRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+            <div class="panel-heading"><span about="v-s:GroupGenerator" property="rdfs:label"></span><a href="#/v-s:GroupGeneratorBlank_Admin" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+            <div class="panel-body" about="v-s:GroupGeneratorRegistry_Admin" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
-      </div>
-      <div class="row">
         <div class="col-md-6">
           <h3 about="v-s:PermissionGeneratorsBundle" property="rdfs:label"></h3>
           <div class="panel panel-default">
-            <div class="panel-heading"><span about="v-s:PermissionGeneratorRegistry" property="rdfs:label"></span><a href="#/v-s:PermissionGeneratorBlank" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
-            <div class="panel-body" about="v-s:PermissionGeneratorRegistry" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
+            <div class="panel-heading"><span about="v-s:PermissionGeneratorRegistry" property="rdfs:label"></span><a href="#/v-s:PermissionGeneratorBlank_Admin" about="v-s:CreateBundle" property="rdfs:label" class="btn btn-xs btn-default pull-right"></a></div>
+            <div class="panel-body" about="v-s:PermissionGeneratorRegistry_Admin" data-template="v-fs:AttributiveSearchInlineTemplate"></div>
           </div>
         </div>
       </div>
