@@ -470,7 +470,7 @@ v-s:Event_GroupGenerator
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт распределения по группам авторизации" ;
-  v-s:triggerByType v-s:ClassAuthorized ;
+  v-s:triggerByType v-s:Authorized ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
 /* Available variables:
