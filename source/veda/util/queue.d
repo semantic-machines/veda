@@ -315,10 +315,11 @@ class Consumer
             if (queue.id == id)
                 queue.get_info_queue(true);
 
-            if (queue.id != id)
+            if (queue.id > id)
             {
-                log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part", queue.id, id);
+                log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part %d", queue.id, id, id + 1);
                 id = id + 1;
+                queue.id = id;
                 if (queue.get_info_push(id) == false)
                 {
                     log.trace("ERR! queue:pop: queue %s not ready", queue.name);
@@ -344,7 +345,8 @@ class Consumer
 
         if (header.start_pos != first_element)
         {
-            log.trace("ERR! queue:pop: invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
+            log.trace("ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != first_element[%d] : %s, count_popped : %d, queue.count_pushed : %d", 
+            	queue.id, header.start_pos, first_element, text(header), count_popped, queue.count_pushed);
             return null;
         }
 
@@ -771,7 +773,7 @@ class Queue
         {
             try
             {
-                string part_name = name ~ "-" ~ text(id);
+                string part_name = name ~ "-" ~ text(part_id);
                 file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
                 ff_info_push_r      = new File(file_name_info_push, "r");
             }
