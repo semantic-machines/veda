@@ -700,7 +700,7 @@ if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
     var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
     if (deleted) {
       remove_individual(ticket, uri, _event_id);
-      print("membership removed", uri);
+      //print("membership removed", uri);
     } else {
       var membership = {
         '@' : uri,
@@ -710,7 +710,7 @@ if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
         'rdfs:comment' : veda.Util.newStr("выдан cfg:Event_4")
       };
       put_individual (ticket, membership, _event_id);
-      print("membership added", uri);
+      //print("membership added", uri);
     }
   });
 }
@@ -724,7 +724,7 @@ if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "
   var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_');
   if (deleted) {
     remove_individual(ticket, uri, _event_id);
-    print("membership removed", uri);
+    //print("membership removed", uri);
   } else {
     var membership = {
       '@' : uri,
@@ -734,7 +734,7 @@ if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "
       'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике cfg:Event_4'),
     };
     put_individual (ticket, membership, _event_id);
-    print("membership added", uri);
+    //print("membership added", uri);
   }
 }
   """ ;
