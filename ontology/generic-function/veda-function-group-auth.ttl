@@ -703,25 +703,24 @@ if (subjectGroup_uri && objectGroup_uri) {
   """ ;
 .
 
-##### Class groups generator #####
+##### Permission and group generator example #####
 
-v-s:GroupGenerator_Class
-  rdf:type v-s:GroupGenerator ;
-  v-s:authClass v-s:Person ;
-  v-s:authProperty rdf:type ;
-  v-s:authValue v-s:Person ;
-  rdfs:label "Auth group generator: put individual to class group" ;
-.
-
-v-s:PermissionGenerator_Persons_R_Person
-  rdf:type v-s:PermissionGenerator ;
-  rdfs:label "Permission generator: All indivduals of v-s:Person class '-R--' All indivduals of v-s:Person class" ;
-  v-s:subjectGroupGenerator v-s:GroupGenerator_Class ;
-  v-s:subjectGroupGeneratorValue v-s:Person ;
-  v-s:canRead true ;
-  v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
-  v-s:objectGroupGeneratorValue v-s:Person ;
-.
+# v-s:GroupGenerator_Class
+#   rdf:type v-s:GroupGenerator ;
+#   v-s:authClass v-s:Person ;
+#   v-s:authProperty rdf:type ;
+#   v-s:authValue v-s:Person ;
+#   rdfs:label "Auth group generator: put individual to class group" ;
+# .
+#
+# v-s:PermissionGenerator_Persons_R_Person
+#   rdf:type v-s:PermissionGenerator ;
+#   rdfs:label "Permission generator: All indivduals of v-s:Person class '-R--' All indivduals of v-s:Person class" ;
+#   v-s:permissionSubject cfg:AllUsersGroup ;
+#   v-s:canRead true ;
+#   v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
+#   v-s:objectGroupGeneratorValue v-s:Person ;
+# .
 
 # Обработка v-s:ClassAuthorized ----------------------------------------
 
