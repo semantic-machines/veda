@@ -700,7 +700,7 @@ if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
     var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
     if (deleted) {
       remove_individual(ticket, uri, _event_id);
-      print("membership removed", uri);
+      //print("membership removed", uri);
     } else {
       var membership = {
         '@' : uri,
@@ -710,7 +710,7 @@ if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
         'rdfs:comment' : veda.Util.newStr("выдан cfg:Event_4")
       };
       put_individual (ticket, membership, _event_id);
-      print("membership added", uri);
+      //print("membership added", uri);
     }
   });
 }
@@ -724,7 +724,7 @@ if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "
   var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_');
   if (deleted) {
     remove_individual(ticket, uri, _event_id);
-    print("membership removed", uri);
+    //print("membership removed", uri);
   } else {
     var membership = {
       '@' : uri,
@@ -734,7 +734,7 @@ if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "
       'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике cfg:Event_4'),
     };
     put_individual (ticket, membership, _event_id);
-    print("membership added", uri);
+    //print("membership added", uri);
   }
 }
   """ ;
@@ -869,139 +869,6 @@ membership = {
   'rdfs:comment' : veda.Util.newStr('выдан cfg:Event_6')
 };
 put_individual (ticket, membership, _event_id);
-  """ ;
-.
-
-cfg:Event_7
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
-  rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
-  v-s:triggerByType v-s:ClassAuthorized ;
-  v-s:preventByType v-s:Version;
-  v-s:script """
-/* Available variables:
- * ticket = superuser ticket
- * document = captured document
- * user_uri = user whose actions triggered event
- * prev_state = previous state of the captured document
- * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_script_id = id of the parent script that triggered this event.
- * parent_document_id = id of the document that triggered this event.
- * super_classes = super classes of the document.
- */
-
-if (parent_document_id && parent_document_id === document['@']) {
-  // print("Not first class event. Exit.");
-  return;
-}
-
-var doc_uri = document["@"],
-  _classes = veda.Util.getUris( document["rdf:type"] );
-
-_classes.map(function (class_uri) {
-  var class_group_uri = class_uri + '_group', // uri группы индивидов класса
-      uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_');
-
-  var membership = {
-    '@' : uri,
-    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-    'v-s:memberOf' : veda.Util.newUri(class_group_uri),
-    'v-s:resource' : veda.Util.newUri(doc_uri),
-    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_7')
-  };
-  put_individual (ticket, membership, _event_id);
-});
-  """ ;
-.
-
-cfg:Event_8
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
-  rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
-  v-s:triggerByType rdfs:Class ;
-  v-s:script """
-/* Available variables:
- * ticket = superuser ticket
- * document = captured document
- * user_uri = user whose actions triggered event
- * prev_state = previous state of the captured document
- * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_script_id = id of the parent script that triggered this event.
- * parent_document_id = id of the document that triggered this event.
- * super_classes = super classes of the document.
- */
-
-// First class event
-if (parent_script_id) {
-  // print("Not first class event. Exit.");
-  return;
-}
-
-if (parent_document_id && parent_document_id === document['@']) {
-  // print("Not first class event. Exit.");
-  return;
-}
-
-var _class = document,
-  class_uri = _class["@"],
-  class_group_uri = class_uri + "_group",
-  class_deleted = veda.Util.hasValue(_class, "v-s:deleted", { data: true, type: "Boolean" } ),
-  class_group = get_individual(ticket, class_group_uri);
-
-if ( !class_group ) {
-  var class_group = {
-    '@' : class_group_uri,
-    'rdf:type'     : veda.Util.newUri('v-s:Group'),
-    'rdfs:label' : veda.Util.newStr("Группа индивидов класса " + class_uri),
-    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_8')
-  };
-  put_individual (ticket, class_group, _event_id);
-  //print("cfg:Event_8 class group", class_group_uri);
-}
-
-if ( !veda.Util.hasValue(_class, "rdfs:subClassOf") ) { return; }
-
-var _super_classes = veda.Util.getUris( _class["rdfs:subClassOf"] );
-
-_super_classes.map(function (super_uri) {
-  if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
-    return;
-  }
-
-  // class memberOf superclass
-  var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
-    membership = get_individual(ticket, uri);
-  if (!membership) {
-    membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:memberOf' : veda.Util.newUri(super_uri),
-      'v-s:resource' : veda.Util.newUri(class_uri),
-      'rdfs:comment' : veda.Util.newStr('1. создано cfg:Event_8')
-    }
-    put_individual (ticket, membership, _event_id);
-    //print('cfg:Event_8 membership (class -> superclass)', uri);
-  }
-
-  // class_group memberOf superclass_group
-  var super_group_uri = super_uri + "_group",
-    uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
-    membership = get_individual(ticket, uri);
-
-  if (!membership) {
-    membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:memberOf' : veda.Util.newUri(super_group_uri),
-      'v-s:resource' : veda.Util.newUri(class_group_uri),
-      'rdfs:comment' : veda.Util.newStr('2. создано cfg:Event_8')
-    };
-    put_individual (ticket, membership, _event_id);
-  }
-  //print('cfg:Event_8 membership', uri);
-});
   """ ;
 .
 

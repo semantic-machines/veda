@@ -121,9 +121,10 @@
   };
   $.fn.veda_generic.defaults = {
     template: $("#string-control-template").html(),
-    isSingle: false,
     parser: function (input) {
-      if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
+      if (!input || !input.trim()) {
+        return null;
+      } else if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
         return moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).toDate();
       } else if ( !isNaN( input.split(" ").join("").split(",").join(".") ) ) {
         return parseFloat( input.split(" ").join("").split(",").join(".") );
@@ -135,7 +136,7 @@
         var individ = new veda.IndividualModel(input);
         if ( individ.isSync() && !individ.isNew() ) { return individ; }
       }
-      return input || null;
+      return input;
     }
   };
 
@@ -773,7 +774,14 @@
     function renderValue (value) {
       if (template) {
         var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          try {
+            return eval(match);
+          } catch (error) {
+            console.log(error);
+            return "";
+          }
+        });
       } else {
         return veda.Util.formatValue(value);
       }
@@ -784,10 +792,22 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return ( options = eval(match) );
+          try {
+            return ( options = eval(match) );
+          } catch (error) {
+            console.log(error);
+            return ( options = [] );
+          }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          try {
+            return eval(match);
+          } catch (error) {
+            console.log(error);
+            return "";
+          }
+        });
         ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
@@ -888,7 +908,12 @@
     function renderValue (value) {
       if (template) {
         var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        try {
+          return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        } catch (error) {
+          console.log(error);
+          return "";
+        }
       } else {
         return veda.Util.formatValue(value);
       }
@@ -899,10 +924,22 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return ( options = eval(match) );
+          try {
+            return ( options = eval(match) );
+          } catch (error) {
+            console.log(error);
+            return ( options = [] );
+          }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          try {
+            return eval(match);
+          } catch (error) {
+            console.log(error);
+            return "";
+          }
+        });
         ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
@@ -1014,7 +1051,14 @@
     function renderValue (value) {
       if (template) {
         var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          try {
+            return eval(match);
+          } catch (error) {
+            console.log(error);
+            return "";
+          }
+        });
       } else {
         return veda.Util.formatValue(value);
       }
@@ -1025,10 +1069,22 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return ( options = eval(match) );
+          try {
+            return ( options = eval(match) );
+          } catch (error) {
+            console.log(error);
+            return "";
+          }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+          try {
+            return eval(match);
+          } catch (error) {
+            console.log(error);
+            return "";
+          }
+        });
         ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
         return;
       }
@@ -1608,11 +1664,25 @@
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
-      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        try {
+          return eval(match);
+        } catch (error) {
+          console.log(error);
+          return "";
+        }
+      });
     }
 
     if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        try {
+          return eval(match);
+        } catch (error) {
+          console.log(error);
+          return "";
+        }
+      });
     } else {
       var relRange = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"];
       if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
@@ -1871,7 +1941,7 @@
       var suggestions = $(".suggestions", control);
       var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
-        if (dblTimeout) { 
+        if (dblTimeout) {
           return;
         } else {
           dblTimeout = setTimeout(dblHandler, 0, e);
