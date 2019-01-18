@@ -185,7 +185,7 @@ func (ths *Consumer) put_info(is_sync_data bool) bool {
 	}
 
 	if err != nil {
-		//	       log.Printf("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, name, first_element, count_popped, tr.msg);
+			       log.Printf("consumer:put_info [%s;%d;%s;%d;%d] %s\n", ths.queue.name, ths.name, ths.first_element, ths.count_popped, err);
 		return false
 	}
 
@@ -269,9 +269,9 @@ func (ths *Consumer) pop() string {
 			ths.queue.get_info_queue()
 		}
 
-		if ths.queue.id != ths.id {
-			log.Printf("INFO: queue.id=%d, consumer.id=%d, set reader on next part", ths.queue.id, ths.id)
+		if ths.queue.id > ths.id {
 			ths.id = ths.id + 1
+			ths.queue.id = ths.id
 			if ths.queue.get_info_push(ths.id) == false {
 				log.Printf("ERR! queue:pop: queue %s not ready", ths.queue.name)
 				return ""
@@ -288,13 +288,15 @@ func (ths *Consumer) pop() string {
 
 		return ""
 	}
+
+	ths.queue.set_r_queue_file(ths.id) 
 	ths.queue.ff_queue_r.Seek(int64(ths.first_element), 0)
 
 	ths.queue.ff_queue_r.Read(header_buff)
 	ths.header.from_buff(header_buff)
 
 	if ths.header.start_pos != ths.first_element {
-		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %v\n", ths.header.start_pos, ths.first_element, ths.header)
+		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %v, queue.id : %d, consumer.id : %d\n", ths.header.start_pos, ths.first_element, ths.header, ths.queue.id, ths.id)
 		return ""
 	}
 
@@ -412,6 +414,17 @@ func NewQueue(_name string, _mode Mode) *Queue {
 	return p
 }
 
+func (ths *Queue) set_r_queue_file(part_id uint32) {
+
+        if (ths.id != part_id || ths.ff_queue_r == nil) {
+            ths.id = part_id;
+			part := ths.name + "-" + strconv.FormatUint(uint64(ths.id), 10)
+			ths.file_name_queue = queue_db_path + "/" + part + "/" + ths.name + "_queue"
+
+			ths.ff_queue_r, _ = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
+        }
+    }
+
 func (ths *Queue) open(_mode Mode) bool {
 
 	if ths.isReady == false {
@@ -420,7 +433,7 @@ func (ths *Queue) open(_mode Mode) bool {
 		}
 	}
 
-	var err error
+	//var err error
 	//defer log.Printf("ERR! queue, not open: ex: %s", ex.msg);
 
 	//writeln("open ", text (mode));
@@ -429,52 +442,58 @@ func (ths *Queue) open(_mode Mode) bool {
 	}
 
 	ths.isReady = true
-	ths.get_info_queue()
+	ths.isReady = ths.get_info_queue()
 
-	part := ths.name + "-" + strconv.FormatUint(uint64(ths.id), 10)
-	ths.file_name_info_push = queue_db_path + "/" + part + "/" + ths.name + "_info_push"
-	ths.file_name_queue = queue_db_path + "/" + part + "/" + ths.name + "_queue"
+	//part := ths.name + "-" + strconv.FormatUint(uint64(ths.id), 10)
+	//ths.file_name_info_push = queue_db_path + "/" + part + "/" + ths.name + "_info_push"
+	//ths.file_name_queue = queue_db_path + "/" + part + "/" + ths.name + "_queue"
 
-	ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
+	//ths.ff_info_push_r, err = os.OpenFile(ths.file_name_info_push, os.O_RDONLY, 0644)
 
-	if err != nil {
-		return false
-	}
-	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
+	//if err != nil {
+	//	return false
+	//}
 
-	if err != nil {
-		return false
-	}
+	//ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
 
-	ths.get_info_push(ths.id)
+	//if err != nil {
+	//	return false
+	//}
 
-	var queue_r_info os.FileInfo
+	//ths.get_info_push(ths.id)
 
-	queue_r_info, err = os.Stat(ths.file_name_queue)
+//	var queue_r_info os.FileInfo
 
-	if ths.mode == R && queue_r_info.Size() < int64(ths.right_edge) || ths.mode == RW && queue_r_info.Size() != int64(ths.right_edge) {
-		ths.isReady = false
-		log.Printf("ERR! queue:open(%v): [%v].size (%d) != right_edge=%v\n", ths.mode, ths.file_name_queue, queue_r_info.Size(), ths.right_edge)
-	} else {
-		ths.isReady = true
+//	queue_r_info, _ = os.Stat(ths.file_name_queue)
+
+//	if ths.mode == R && queue_r_info.Size() < int64(ths.right_edge) || ths.mode == RW && queue_r_info.Size() != int64(ths.right_edge) {
+//		ths.isReady = false
+//		log.Printf("ERR! queue:open(%v): [%v].size (%d) != right_edge=%v\n", ths.mode, ths.file_name_queue, queue_r_info.Size(), ths.right_edge)
+//	} else {
+//		ths.isReady = true
 		//ths.put_info()
-	}
+//	}
 
 	return ths.isReady
 }
 
 func (ths *Queue) reopen_reader() {
-	var err error
+	//var err error
 
 	if ths.ff_queue_r != nil {
 		ths.ff_queue_r.Close()
 	}
-	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
-	if err != nil {
-		ths.isReady = false
-		return
-	}
-	ths.get_info_push(ths.id)
+
+	ths.ff_queue_r = nil
+	ths.set_r_queue_file (ths.id)
+
+//	ths.ff_queue_r, err = os.OpenFile(ths.file_name_queue, os.O_RDONLY, 0644)
+//	if err != nil {
+//		log.Printf("ERR! reopen_reader ths.file_name_queue=%s \n", ths.file_name_queue)
+//		ths.isReady = false
+//		return
+//	}
+//	ths.get_info_push(ths.id)
 }
 
 func (ths *Queue) get_info_push(part_id uint32) bool {
