@@ -204,16 +204,21 @@ veda.Module(function (veda) { "use strict";
 
     // Define handlers
     function saveHandler (e, parent) {
-      if (parent !== individual.id) {
-        if (embedded.length) {
-          individual.isSync(false);
-        }
+      if (parent !== individual.id && !individual.isSync()) {
         individual.save();
+        container.trigger("embeddedSaved");
       }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
+
+    function embeddedSavedHandler (e) {
+      individual.isSync(false);
+      individual.save();
+      e.stopPropagation();
+    }
+    template.on("embeddedSaved", embeddedSavedHandler);
 
     function draftHandler (e, parent) {
       if (parent !== individual.id) {
