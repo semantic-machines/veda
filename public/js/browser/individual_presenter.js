@@ -206,16 +206,19 @@ veda.Module(function (veda) { "use strict";
     function saveHandler (e, parent) {
       if (parent !== individual.id && !individual.isSync()) {
         individual.save();
-        container.trigger("embeddedSaved");
+        container.trigger("embeddedSaved", individual.id);
       }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
 
-    function embeddedSavedHandler (e) {
-      individual.isSync(false);
-      individual.save();
+    function embeddedSavedHandler (e, childId) {
+      if ( individual.hasValue(undefined, childId) ) {
+        individual.isSync(false);
+        individual.save();
+        container.trigger("embeddedSaved", individual.id);
+      }
       e.stopPropagation();
     }
     template.on("embeddedSaved", embeddedSavedHandler);
