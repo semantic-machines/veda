@@ -597,7 +597,9 @@ function generateGroups(document) {
           fn_value = fn.call(document, veda);
           if (fn_value === undefined) { continue; }
         } else {
-          fn_value = (fn.value.toString() === fn.call(document, veda).toString()) && fn.value;
+          fn_value = (fn.value.toString() === fn.call(document, veda).toString());
+          if (fn_value === false) { continue; }
+          fn_value = fn.value;
         }
         var group_concat_uri = fn.generator + " " + fn_value.toString();
         var hash = Sha256.hash(group_concat_uri).substring(32);
