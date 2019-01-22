@@ -41,6 +41,7 @@ if [ $1 == "all" ] ; then
     killall -9 veda-server
     killall -9 veda-ttlreader
     killall -9 veda-webserver
+    killall -9 veda-input-queue
     killall -9 veda-gowebserver
     killall -9 veda-ft-query
     killall -9 veda-lmdb-srv

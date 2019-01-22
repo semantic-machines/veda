@@ -526,3 +526,22 @@ class VedaModule : VedaModuleBasic
         }
     }
 }
+
+public string subsystem_byte_to_string(ubyte src)
+{
+    string res = "";
+
+    foreach (el;
+             [ SUBSYSTEM.ACL, SUBSYSTEM.FANOUT_EMAIL, SUBSYSTEM.FANOUT_SQL, SUBSYSTEM.FULL_TEXT_INDEXER, SUBSYSTEM.SCRIPTS, SUBSYSTEM.STORAGE,
+     SUBSYSTEM.USER_MODULES_TOOL ])
+    {
+        if ((src & el) == el)
+        {
+            if (res != "")
+                res ~= ",";
+            res ~= get_name_of_subsystem_id(el);
+        }
+    }
+
+    return res;
+}
