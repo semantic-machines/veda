@@ -202,20 +202,29 @@ veda.Module(function (veda) { "use strict";
     var notify = veda.Notify ? new veda.Notify() : function () {};
 
     function saveHandler (e, parent) {
-      if (parent !== individual.id) {
-        if (embedded.length) {
-          individual.isSync(false);
-        }
+      if (parent !== individual.id && !individual.isSync()) {
         individual.save().then(function () {
-          template.trigger("view");
+          container.trigger("embeddedSaved", individual.id);
           notify("success", {name: "Объект сохранен"});
         }).catch(function (error) {
           notify("danger", {name: "Объект не сохранен"});
         });
       }
+      template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
+
+    function embeddedSavedHandler (e, childId) {
+      if ( individual.hasValue(undefined, childId) ) {
+        individual.isSync(false);
+        individual.save().then(function (individual) {
+          container.trigger("embeddedSaved", individual.id);
+        });
+      }
+      e.stopPropagation();
+    }
+    template.on("embeddedSaved", embeddedSavedHandler);
 
     function cancelHandler (e, parent) {
       if (parent !== individual.id) {

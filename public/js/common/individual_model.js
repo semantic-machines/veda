@@ -217,6 +217,12 @@ veda.Module(function (veda) { "use strict";
     enumerable: false
   });
 
+  proto.memberOf = function () {
+    return this.membership.hasValue("v-s:memberOf") ? this.membership.properties["v-s:memberOf"].map(function (group_item) {
+      return group_item.data;
+    }) : [];
+  };
+
   proto.isMemberOf = function (group_uri) {
     return this.membership.hasValue("v-s:memberOf", group_uri);
   };
@@ -481,6 +487,14 @@ veda.Module(function (veda) { "use strict";
    * @return {boolean} is requested property exists in this individual
    */
   proto.hasValue = function (property_uri, value) {
+    if (!property_uri && typeof value !== "undefined" && value !== null) {
+      var found = false;
+      for (var property_uri in this.properties) {
+        if (property_uri === "@") { continue; }
+        found = found || this.hasValue(property_uri, value);
+      }
+      return found;
+    }
     var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
     if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);

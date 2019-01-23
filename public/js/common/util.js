@@ -1319,4 +1319,29 @@ veda.Module(function (veda) { "use strict";
     return [{type: "String", data: ruString, lang: "RU"}, {type: "String", data: enString, lang: "EN"}];
   };
 
+  // Returns literal value or resource id for given property chain
+  veda.Util.getPropertyChain = function () {
+    var value = arguments[0];
+    var argsLength = arguments.length;
+    if (typeof value === "string") {
+      value = get_individual(veda.ticket, value);
+    }
+    var i, property_uri, type;
+    for (i = 1; i < argsLength; i++) {
+      property_uri = arguments[i];
+      if ( veda.Util.hasValue(value, property_uri) ) {
+        type = value[property_uri][0].type;
+        value = value[property_uri][0].data;
+        if (i === (argsLength - 1) ) {
+          return value;
+        } else if (type === "Uri") {
+          value = get_individual(veda.ticket, value);
+          continue;
+        }
+      }
+      return;
+    }
+    return value;
+  };
+
 });

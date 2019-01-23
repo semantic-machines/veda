@@ -54,15 +54,6 @@ v-s:Exportable
   rdfs:label "Выгружаемая сущность"@ru ;
   rdfs:label "Exportable thing"@en ;
 .
-# ------------------------------------------------------------
-v-s:ClassAuthorized
-  rdf:type owl:Class ;
-  rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Ресурс авторизуемый по классу"@ru ;
-  rdfs:label "Class authorized resource"@en ;
-  rdfs:comment "Superclass for classes whose individuals should be authorized by class"@ru ;
-  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
-.
 ### ------------------------------------------------------
 v-s:Embedded
   rdf:type owl:Class ;

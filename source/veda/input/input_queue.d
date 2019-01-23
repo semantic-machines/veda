@@ -2,7 +2,8 @@ module veda.input.input_queue;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import veda.util.properd;
-private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual,
+               veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
 private import veda.core.common.context;
 private import veda.vmodule.vmodule;
@@ -22,6 +23,7 @@ class InputQueueProcess : VedaModule
 {
     string main_queue_path;
     string my_consumer_path = "data/input-queue";
+    ubyte  target_maks;
 
     this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
@@ -72,8 +74,7 @@ class InputQueueProcess : VedaModule
 
         //cmd = INDV_OP.PUT;
 
-        ulong target_maks = SUBSYSTEM.STORAGE | SUBSYSTEM.ACL | SUBSYSTEM.FULL_TEXT_INDEXER | SUBSYSTEM.FANOUT_SQL | SUBSYSTEM.USER_MODULES_TOOL;
-        auto  rc          = context.update(null, transaction_id, &sticket, cmd, &new_indv, event_id, target_maks, OptFreeze.NONE, OptAuthorize.NO).result;
+        auto rc = context.update(null, transaction_id, &sticket, cmd, &new_indv, event_id, target_maks, OptFreeze.NONE, OptAuthorize.NO).result;
 
         if (rc != ResultCode.Ok)
         {
@@ -115,6 +116,19 @@ class InputQueueProcess : VedaModule
             return false;
         }
 
+        string[ string ] properties;
+        properties = readProperties("./veda.properties");
+
+        string t_targets_for_input_flow = properties.as!(string)("targets_for_input_flow");
+        if (t_targets_for_input_flow !is null && t_targets_for_input_flow.length > 2)
+        {
+            string[] els = t_targets_for_input_flow.split(",");
+            foreach (el; els)
+                target_maks = target_maks | get_subsystem_id_of_name(el);
+
+            log.trace("INFO! target subsystems=%s", subsystem_byte_to_string(target_maks));
+        }
+
         log.trace("use input_queue_path=%s", main_queue_path);
 
         return true;
@@ -130,5 +144,3 @@ class InputQueueProcess : VedaModule
         configure();
     }
 }
-
-
