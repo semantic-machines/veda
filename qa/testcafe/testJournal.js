@@ -55,6 +55,6 @@ import { Selector, t } from 'testcafe';
       .click('button#journal')
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
       .wait(1000)
-      .expect(documentUpdated).eql(3)
-      .expect(journal).eql(4)
+      .expect(documentUpdated).eql(2)
+      .expect(journal).eql(3)
 });
