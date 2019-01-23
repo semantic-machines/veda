@@ -523,19 +523,27 @@ v-ui:StandardButtonsTemplate
     e.preventDefault();
     var journal_uri = individual.id + "j",
         journal = new veda.IndividualModel(journal_uri);
-    if (journal.hasValue("rdf:type") && journal["rdf:type"][0].id !== "rdfs:Resource") {
-      riot.route("#/" + journal_uri);
-    } else {
-      var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty")["rdfs:label"].join(" ");
-      alert(journalEmpty);
-    }
+    journal.load().then(function (journal) {
+      if ( !journal.isNew() ) {
+        riot.route("#/" + journal_uri);
+      } else {
+        var journalEmpty = new veda.IndividualModel("v-s:JournalEmpty").load().then(function (journalEmpty) {
+          alert(journalEmpty["rdfs:label"].join(" "));
+        });
+      }
+    });
   });
   $("#journal-dms", template).on("click", function (e) {
-    var uri = individual.id.substring(2,100);
-    var journalDMS_url = (new veda.IndividualModel("cfg:JournalDMSUrl"))["rdf:value"][0];
-    if (journalDMS_url) {
-      window.open(journalDMS_url + uri, "journal-dms");
-    }
+    var uri = individual.id.substring(2);
+    var journalDMS_cfg = new veda.IndividualModel("cfg:JournalDMSUrl").load()
+      .then(function (journalDMS_cfg) {
+        return journalDMS_cfg["rdf:value"][0];
+      })
+      .then(function (journalDMS_url) {
+        if (journalDMS_url) {
+          window.open(journalDMS_url + uri, "journal-dms");
+        }
+      });
   });
   $("#send", template).on("click", function (e) {
     // template.parent().closest("[resource]").trigger("save");
@@ -1737,17 +1745,15 @@ v-ui:SimplifiedJournalTemplate
 
   function buildJournal() {
     tbody.empty();
-    var tasks = query({
+    var tasks = veda.Backend.query({
       ticket: veda.ticket,
       query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
-      sort: "'v-s:created' asc",
-      async: true
+      sort: "'v-s:created' asc"
     }).then(function (query_res) {
       var tasks_uris = query_res.result;
-      return get_individuals({
+      return veda.Backend.get_individuals({
         ticket: veda.ticket,
-        uris: tasks_uris,
-        async: true
+        uris: tasks_uris
       }).then(function (tasks) {
         tasks.forEach(function (task, index) {
           var task_individual = new veda.IndividualModel(task);
