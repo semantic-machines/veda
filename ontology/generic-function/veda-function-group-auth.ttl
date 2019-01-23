@@ -459,7 +459,7 @@ v-s:GroupGenerator_permission3
   rdfs:label "CRUD. Админы. Индивиды v-s:GroupGenerator" ;
 .
 
-v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
+v-s:AllUsersGroup_GroupGenerator_BaseUser_membership
   rdf:type v-s:Membership ;
   v-s:memberOf v-s:GroupGenerator_BaseUser ;
   v-s:resource cfg:AllUsersGroup ;
