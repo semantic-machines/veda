@@ -158,11 +158,11 @@ veda.Module(function (veda) { "use strict";
     if (typeof report === "string" || report instanceof String) {
       report = new veda.IndividualModel(report);
     }
-    var jasperServer = new veda.IndividualModel('cfg:jasperServerAddress').load();
-    Promise.all([report.load(), jasperServer.load()]).then(function (loaded) {
+    var jasperServerCfg = new veda.IndividualModel('cfg:jasperServerAddress');
+    Promise.all([report.load(), jasperServerCfg.load()]).then(function (loaded) {
       var report = loaded[0];
-      var jasperServer = loaded[1];
-      var jasperServerAddress = jasperServer['rdf:value'][0];
+      var jasperServerCfg = loaded[1];
+      var jasperServerAddress = jasperServerCfg['rdf:value'][0];
 
       var form = document.createElement("form");
       form.setAttribute("method", "post");
