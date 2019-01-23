@@ -514,10 +514,15 @@ v-ui:StandardButtonsTemplate
     e.preventDefault();
     var action = this.id;
     if (action === "delete" || action === "destroy") {
-      var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
-      if ( !confirm(warning) ) { return; }
+      var warning = new veda.IndividualModel("v-s:AreYouSure");
+      warning.load().then(function (warning) {
+        if ( confirm( warning["rdfs:label"].join(" ") ) ) {
+          template.parent().closest("[resource]").trigger(action);
+        }
+      });
+    } else {
+      template.parent().closest("[resource]").trigger(action);
     }
-    template.parent().closest("[resource]").trigger(action);
   });
   $("#journal", template).on("click", function (e) {
     e.preventDefault();
@@ -546,10 +551,11 @@ v-ui:StandardButtonsTemplate
       });
   });
   $("#send", template).on("click", function (e) {
-    // template.parent().closest("[resource]").trigger("save");
     veda.Util.send(individual, template.parent().closest("[resource]"));
   });
-  $("#rights", template).on("click", function () { veda.Util.showRights(individual); });
+  $("#rights", template).on("click", function () {
+    veda.Util.showRights(individual);
+  });
 
   // Standard tasks
   template.on("click", "ul#standard-tasks a", function (e) {
