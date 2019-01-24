@@ -204,16 +204,30 @@ veda.Module(function (veda) { "use strict";
 
     // Define handlers
     function saveHandler (e, parent) {
-      if (parent !== individual.id) {
-        if (embedded.length) {
-          individual.isSync(false);
-        }
+      if (parent !== individual.id && !individual.isSync()) {
         individual.save();
+        if (parent) {
+          container.trigger("embeddedSaved", individual.id);
+        }
       }
       template.trigger("view");
       e.stopPropagation();
     }
     template.on("save", saveHandler);
+
+    var saveTimeout;
+    function embeddedSavedHandler (e, childId) {
+      if ( individual.isSync() && individual.hasValue(undefined, childId) && !saveTimeout) {
+        saveTimeout = setTimeout(function () {
+          individual.isSync(false);
+          individual.save();
+          container.trigger("embeddedSaved", individual.id);
+          saveTimeout = undefined;
+        });
+      }
+      e.stopPropagation();
+    }
+    template.on("embeddedSaved", embeddedSavedHandler);
 
     function draftHandler (e, parent) {
       if (parent !== individual.id) {
