@@ -186,10 +186,6 @@ veda.Module(function (veda) { "use strict";
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
   };
 
-  veda.Util.applyTransform = function (individualList, transform) {
-    return veda.Util.transformation(veda.ticket, individualList, transform, null, null);
-  };
-
   veda.Util.forSubIndividual = function (net, property, id, func) {
     if (net[property] === undefined) { return; }
     net[property].forEach(function(el) {
@@ -357,8 +353,8 @@ veda.Module(function (veda) { "use strict";
    * @returns veda.IndividualModel - start form
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
-    var startForm = new veda.IndividualModel(transfromResult[0]);
+    var transformResult = veda.Util.transformation(veda.ticket, individual.properties, transform.properties);
+    var startForm = new veda.IndividualModel(transformResult[0]);
     startForm.isNew(true);
     startForm.isSync(false);
     return startForm;
@@ -1006,14 +1002,7 @@ veda.Module(function (veda) { "use strict";
     }
     catch (e)
     {
-      if (typeof window === "undefined")
-      {
-        print(e.stack);
-      }
-      else
-      {
-        console.log(e.stack);
-      }
+      console.log(e.stack);
     }
   };
 
