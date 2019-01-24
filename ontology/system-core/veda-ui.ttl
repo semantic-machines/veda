@@ -1757,17 +1757,19 @@ v-ui:SimplifiedJournalTemplate
       sort: "'v-s:created' asc"
     }).then(function (query_res) {
       var tasks_uris = query_res.result;
-      return veda.Backend.get_individuals({
-        ticket: veda.ticket,
-        uris: tasks_uris
-      }).then(function (tasks) {
-        tasks.forEach(function (task, index) {
-          var task_individual = new veda.IndividualModel(task);
-          task_individual.present(tbody, task_template).then(function (renderedTemplate) {
-            $(".sequence-number", renderedTemplate).text(index + 1);
+      if (tasks_uris.length) {
+        return veda.Backend.get_individuals({
+          ticket: veda.ticket,
+          uris: tasks_uris
+        }).then(function (tasks) {
+          tasks.forEach(function (task, index) {
+            var task_individual = new veda.IndividualModel(task);
+            task_individual.present(tbody, task_template).then(function (renderedTemplate) {
+              $(".sequence-number", renderedTemplate).text(index + 1);
+            });
           });
         });
-      });
+      }
     });
   };
 
