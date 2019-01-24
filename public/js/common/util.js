@@ -1066,8 +1066,8 @@ veda.Module(function (veda) { "use strict";
           });
           var result = {
             data: replaced,
-            type: "String",
-            lang: language
+            lang: language,
+            type: "String"
           };
           acc.push(result);
         });
@@ -1350,6 +1350,23 @@ veda.Module(function (veda) { "use strict";
       return;
     }
     return value;
+  };
+
+  veda.Util.areEqual = function (x, y) {
+    if ( x === y ) return true;
+    if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    if ( x.constructor !== y.constructor ) return false;
+    for ( var p in x ) {
+      if ( ! x.hasOwnProperty( p ) ) continue;
+      if ( ! y.hasOwnProperty( p ) ) return false;
+      if ( x[ p ] === y[ p ] ) continue;
+      if ( typeof( x[ p ] ) !== "object" ) return false;
+      if ( ! veda.Util.areEqual( x[ p ],  y[ p ] ) ) return false;
+    }
+    for ( p in y ) {
+      if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+    }
+    return true;
   };
 
 });
