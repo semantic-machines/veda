@@ -945,8 +945,8 @@ v-s:AppointmentForContactTemplate
     }
     individual['v-s:employee'] = [tempEmployee];
 
-    var label = individual['v-s:employee'][0]['v-s:lastName'][0]+ ' ' + individual['v-s:employee'][0]['v-s:firstName'][0] + ' : ' + individual['v-s:occupation'][0]['rdfs:label'][0];
-    individual['rdfs:label'] = [label];
+    // var label = individual['v-s:employee'][0]['v-s:lastName'][0]+ ' ' + individual['v-s:employee'][0]['v-s:firstName'][0] + ' : ' + individual['v-s:occupation'][0]['rdfs:label'][0];
+    // individual['rdfs:label'] = [label];
     return false;
   }
   individual.one('beforeSave', beforeSaveHandler);
