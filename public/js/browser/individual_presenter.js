@@ -204,8 +204,10 @@ veda.Module(function (veda) { "use strict";
     function saveHandler (e, parent) {
       if (parent !== individual.id && !individual.isSync()) {
         individual.save().then(function () {
-          container.trigger("embeddedSaved", individual.id);
           notify("success", {name: "Объект сохранен"});
+          if (parent) {
+            container.trigger("embeddedSaved", individual.id);
+          }
         }).catch(function (error) {
           notify("danger", {name: "Объект не сохранен"});
         });
@@ -215,11 +217,15 @@ veda.Module(function (veda) { "use strict";
     }
     template.on("save", saveHandler);
 
+    var saveTimeout;
     function embeddedSavedHandler (e, childId) {
-      if ( individual.hasValue(undefined, childId) ) {
-        individual.isSync(false);
-        individual.save().then(function (individual) {
-          container.trigger("embeddedSaved", individual.id);
+      if ( individual.isSync() && individual.hasValue(undefined, childId) && !saveTimeout) {
+        saveTimeout = setTimeout(function () {
+          individual.isSync(false);
+          individual.save().then(function (individual) {
+            container.trigger("embeddedSaved", individual.id);
+          });
+          saveTimeout = undefined;
         });
       }
       e.stopPropagation();
