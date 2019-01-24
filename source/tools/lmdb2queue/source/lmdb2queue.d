@@ -32,7 +32,7 @@ void main(string[] args)
     LmdbDriver   individual_lmdb_driver = new LmdbDriver(individuals_db_path, DBMode.R, "cnv", log);
 
     Queue        individual_queue;
-    individual_queue = new Queue("./out", "individuals", Mode.RW, log);
+    individual_queue = new Queue("./out/queue", "individuals", Mode.RW, log);
     if (individual_queue.open() == false)
     {
         log.trace("fail create queue");
