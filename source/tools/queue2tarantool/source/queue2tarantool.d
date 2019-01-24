@@ -59,38 +59,37 @@ public long convert(KeyValueDB dest, bool[ string ] opt)
     long count;
 
     auto individual_queue = new Queue("./input/queue", "individuals", Mode.R, log);
+
     if (individual_queue.open() == false)
     {
-            log.trace("ERR! fail open queue");		
-            return -1;
-	}
+        log.trace("ERR! fail open queue");
+        return -1;
+    }
 
     auto new_id        = "cs_0";
     auto individual_cs = new Consumer(individual_queue, "./", new_id ~ "", Mode.RW, log);
     if (individual_cs.open() == false)
     {
-            log.trace("ERR! fail open consumer");		
-            return -1;		
-	}
+        log.trace("ERR! fail open consumer");
+        return -1;
+    }
 
     count = individual_cs.count_popped;
     auto sw = StopWatch(AutoStart.no);
 
     while (true)
     {
-		log.trace("@1");
         string data = individual_cs.pop();
-        
-            if (individual_cs.isReady == false)
-            {
-				log.trace("ERR! consumer not ready");
-                break;
-            }
-        
+
+        if (individual_cs.isReady == false)
+        {
+            log.trace("ERR! consumer not ready");
+            break;
+        }
+
         if (data is null)
             break;
 
-		log.trace("@2");
         if (count % delta_to_print_count == 0)
         {
             long tt = sw.peek.total !"msecs";
@@ -100,7 +99,6 @@ public long convert(KeyValueDB dest, bool[ string ] opt)
             log.trace("count=%d, cps=%s", count, cps);
         }
 
-		log.trace("@3");
         count++;
         Individual indv;
         if (indv.deserialize(data) < 0)
@@ -109,12 +107,9 @@ public long convert(KeyValueDB dest, bool[ string ] opt)
         }
         else
         {
-		log.trace("@4");
-			
             bool need_store = true;
             if (opt.get("check", false))
             {
-		log.trace("@5");
                 Individual indv1;
 
                 sw.start();
@@ -134,19 +129,15 @@ public long convert(KeyValueDB dest, bool[ string ] opt)
 
             if (need_store == true)
             {
-		log.trace("@6");
-				
                 string new_bin = indv.serialize();
                 dest.store(indv.uri, new_bin, -1);
                 log.trace("OK, %d KEY=[%s]", individual_cs.count_popped, indv.uri);
             }
         }
-		log.trace("@7");
 
 
         individual_cs.commit_and_next(true);
     }
-		log.trace("@8");
 
     log.trace("count=%d", count);
 
