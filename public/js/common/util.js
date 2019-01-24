@@ -1051,11 +1051,18 @@ veda.Module(function (veda) { "use strict";
         var pattern = type["v-s:labelPattern"][0].data;
         languages.forEach(function (language) {
           var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
+            var indexes = null;
+            if (group.indexOf(' ') != -1) {
+              var temp = group.split(' ');
+              group = temp[0];
+              indexes = temp[1].substring(1, temp[1].length-1).split(',');
+            }
             var chain = group.split(".");
             if (chain[0] === "@") {
               chain[0] = individual["@"];
             }
-            return get_localized_chain.apply({}, [language].concat(chain));
+            var localedChain = get_localized_chain.apply({}, [language].concat(chain));
+            return indexes == null? localedChain : localedChain.substring(+indexes[0], +indexes[1]);
           });
           var result = {
             data: replaced,
