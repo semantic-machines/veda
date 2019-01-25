@@ -317,7 +317,7 @@ v-s:ContactsTemplate
   template.on("click", "a.expand.glyphicon-chevron-right", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     var row = self.closest('div.value-row');
     var uri = row.attr('resource');
     self.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
@@ -328,7 +328,7 @@ v-s:ContactsTemplate
   template.on("click", "a.expanded.glyphicon-chevron-down", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     self.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
     var row = self.closest('div.value-row');
     row.children('div.childs').hide();
@@ -338,7 +338,7 @@ v-s:ContactsTemplate
   template.on("click", "a.glyphicon-zoom-in", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     var row = self.closest('div.value-row');
     var uri = row.attr('resource');
     var obj = new veda.IndividualModel(uri);
@@ -359,7 +359,7 @@ v-s:ContactsTemplate
   template.on("click", "div.value-row", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     var item = self.children('.item');
     if (!item.hasClass('warning')) {
       $('.item.warning', template).removeClass('warning');
@@ -379,7 +379,7 @@ v-s:ContactsTemplate
   template.on("click", "#add-Department", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     var row = self.closest('div.value-row');
     var parentUri = row.attr('resource');
 
@@ -403,7 +403,7 @@ v-s:ContactsTemplate
   template.on("click", "#add-Appointment", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     var row = self.closest('div.value-row');
     var parentUri = row.attr('resource');
 
@@ -428,7 +428,7 @@ v-s:ContactsTemplate
   template.on("click", "#delete-Appointment", function (e) {
     e.stopPropagation();
     e.preventDefault();
-    self = $(this);
+    var self = $(this);
     var currentRow = self.closest('div.value-row');
     var parentRow = currentRow.parent().closest("[resource]");
     //var delUri = row.attr('resource');

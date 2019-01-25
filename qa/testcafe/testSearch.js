@@ -6,7 +6,7 @@ import { Selector, t } from 'testcafe';
   test('testSearch', async t => {
     basic.login('karpovrt', '123');
     await t
-      .expect(Selector('#user-info').innerText).eql('Администратор2\n')
+      .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
       .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .click('button#search-button')
       var search = Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container tr[typeof="v-ui:TestUIClass"]');

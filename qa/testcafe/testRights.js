@@ -16,5 +16,5 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     basic.fullTextSearch(timeFillips, '1');
     await t
-      .expect(Selector('ul.nav.navbar-nav.navbar-right li#user-info').innerText).eql('Администратор2\n');
+      .expect(Selector('ul.nav.navbar-nav.navbar-right li#user-info').innerText).eql('Администратор2 .\n');
   });

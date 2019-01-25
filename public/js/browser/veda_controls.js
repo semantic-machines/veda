@@ -1956,13 +1956,13 @@
       var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
         if (dblTimeout) {
-          return;
+          dblclickHandler(e);
         } else {
-          dblTimeout = setTimeout(dblHandler, 0, e);
+          clickHandler(e);
         }
       });
 
-      var dblHandler = function (e) {
+      var clickHandler = function (e) {
         var tmpl = $(e.target);
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
@@ -1988,18 +1988,16 @@
             }).concat(suggestion);
           }
         }
-        clearTimeout(dblTimeout);
-        dblTimeout = undefined;
+        dblTimeout = setTimeout(function () {
+          dblTimeout = undefined;
+        }, 300);
       };
 
-      suggestions.on("dblclick", ".suggestion", function (e) {
-        $(".form-control", control).val("");
-        var tmpl = $(this);
-        var suggestion_uri = tmpl.attr("resource");
-        var suggestion = new veda.IndividualModel(suggestion_uri);
+      var dblclickHandler = function (e) {
         individual.set(rel_uri, selected);
         fulltextMenu.hide();
-      });
+        dblTimeout = clearTimeout(dblTimeout);
+      }
 
       var clickOutsideMenuHandler = function (event) {
         if( !$(event.target).closest(fulltextMenu).length ) {
