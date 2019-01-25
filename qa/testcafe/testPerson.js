@@ -8,7 +8,7 @@ import { Selector, t } from 'testcafe';
     const timeStamp = ''+Math.round(+new Date()/1000);
     basic.createTestUI('Вася Пупкин', timeStamp);
     await t
-      .expect(Selector('#user-info').innerText).eql('Администратор2\n')
+      .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
       .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .typeText('veda-control#comment', timeStamp)
       .click('button#search-button')

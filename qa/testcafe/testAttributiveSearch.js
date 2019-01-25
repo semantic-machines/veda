@@ -12,7 +12,7 @@ import { Selector, t } from 'testcafe';
     basic.createTestUiForAttributiveSearch(last+'b', first+'cbb', middle+'Q', birth);
     basic.createTestUiForAttributiveSearch('a'+last, first+'bcc', 'T'+middle, birth);
     await t
-      .expect(Selector('#user-info').innerText).eql('Администратор2\n')
+      .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
       .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .typeText('veda-control#label', 'a' + last)
       .click('veda-control#comment')
@@ -73,7 +73,7 @@ import { Selector, t } from 'testcafe';
   test('testSearchOrderBy', async t => {
     basic.login('karpovrt', '123');
     await t
-      .expect(Selector('#user-info').innerText).eql('Администратор2\n')
+      .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
       .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .click('button#search-button')
       .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
