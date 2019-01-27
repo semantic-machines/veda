@@ -449,14 +449,14 @@ v-s:OrganizationTemplate
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
-                  <span property="v-s:dateFrom" class="view -edit search"></span>
-                  <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+                  <span property="v-s:dateFromFact" class="view -edit search"></span>
+                  <veda-control property="v-s:dateFromFact" data-type="date" class="-view edit search"></veda-control>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
-                  <span property="v-s:dateTo" class="view -edit search"></span>
-                  <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+                  <span property="v-s:dateToFact" class="view -edit search"></span>
+                  <veda-control property="v-s:dateToFact" data-type="date" class="-view edit search"></veda-control>
                 </div>
               </div>
             </div>
@@ -470,12 +470,12 @@ v-s:OrganizationTemplate
         <div class="col-sm-9 col-xs-7">
           <div class="form-inline">
             <div class="form-group">
-              <span property="v-s:dateFrom" class="view -edit search"></span>
-              <veda-control property="v-s:dateFrom" data-type="date" class="-view edit search"></veda-control>
+              <span property="v-s:dateFromFact" class="view -edit search"></span>
+              <veda-control property="v-s:dateFromFact" data-type="date" class="-view edit search"></veda-control>
             </div>
             <div class="form-group">
-              <span property="v-s:dateTo" class="view -edit search"></span>
-              <veda-control property="v-s:dateTo" data-type="date" class="-view edit search"></veda-control>
+              <span property="v-s:dateToFact" class="view -edit search"></span>
+              <veda-control property="v-s:dateToFact" data-type="date" class="-view edit search"></veda-control>
             </div>
           </div>
         </div>
