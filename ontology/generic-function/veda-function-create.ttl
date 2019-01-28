@@ -170,7 +170,7 @@ var stopList = [
 
 this.initBlank = function () {
   if (self.object) { return; }
-  self.object = new veda.IndividualModel(),
+  self.object = new veda.IndividualModel();
   self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
   Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
@@ -187,6 +187,9 @@ this.initBlank = function () {
     } else {
       self.object.set(property_uri, self.get(property_uri).slice(0));
     }
+  });
+  self.object.one("afterSave afterReset", function () {
+    delete self.object;
   });
 }
 
