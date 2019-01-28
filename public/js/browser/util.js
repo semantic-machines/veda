@@ -269,8 +269,11 @@ veda.Module(function (veda) { "use strict";
     if ( transformId ) {
       template.trigger("save");
       var transform = new veda.IndividualModel(transformId);
-      var startForm = veda.Util.buildStartFormByTransformation(individual, transform);
-      veda.Util.showModal(startForm, startFormTemplate, "edit");
+      transform.load().then(function (transform) {
+        veda.Util.buildStartFormByTransformation(individual, transform).then(function (startForm) {
+          veda.Util.showModal(startForm, startFormTemplate, "edit");
+        });
+      });
     } else {
       individual["v-wf:hasStatusWorkflow"] = [ new veda.IndividualModel("v-wf:ToBeSent") ];
       template.trigger("save");
@@ -284,11 +287,12 @@ veda.Module(function (veda) { "use strict";
    * @returns veda.IndividualModel - start form
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    var transformResult = veda.Util.transformation(veda.ticket, individual.properties, transform.properties);
-    var startForm = new veda.IndividualModel(transformResult[0]);
-    startForm.isNew(true);
-    startForm.isSync(false);
-    return startForm;
+    veda.Util.transformation(individual.properties, transform.properties).then(function (transformResult) {
+      var startForm = new veda.IndividualModel(transformResult[0]);
+      startForm.isNew(true);
+      startForm.isSync(false);
+      return startForm;
+    });
   };
 
   /**
@@ -301,60 +305,23 @@ veda.Module(function (veda) { "use strict";
    * @param work_order контекст рабочего задания
    * @returns {Array}
    */
-  veda.Util.transformation = function (ticket, individuals, transform, executor, work_order, process)
-  {
-    try
-    {
+  veda.Util.transformation = function (individuals, transform) {
+
+    if ( !Array.isArray(individuals) ) {
+      individuals = [individuals];
+    }
+
+    var rules = veda.Util.getValues(transform['v-wf:transformRule']);
+
+    if (!rules.length) { return Promise.resolve(); }
+
+    return veda.Backend.get_individuals(veda.ticket, rules).then(function (rules) {
+
       var out_data0 = {};
-
-      if (Array.isArray(individuals) !== true)
-      {
-        individuals = [individuals];
-      }
-
-      var rules = transform['v-wf:transformRule'];
-
-      if (!rules || !rules.length)
-        return;
-
-      var tmp_rules = [];
-
-      for (var i in rules)
-      {
-        var rul = get_individual(ticket, rules[i].data);
-        if (!rul)
-        {
-          print("not read rule [", veda.Util.toJson(rul), "]");
-          continue;
-        }
-        else
-          tmp_rules.push(rul);
-      }
-      rules = tmp_rules;
 
       var out_data0_el = {};
 
       /* PUT functions [BEGIN] */
-      var putFieldOfIndividFromElement = (function()
-      {
-        return function(name, field)
-        {
-          var rr = get_individual(ticket, veda.Util.getUri(element));
-          if (!rr)
-            return;
-
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(rr[field]);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
 
       var putFieldOfObject = (function()
       {
@@ -558,100 +525,6 @@ veda.Module(function (veda) { "use strict";
         };
       })();
 
-      var putExecutor = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(executor) === true)
-          {
-            for (var key3 in executor)
-            {
-              out_data0_el_arr.push(executor[key3]);
-            }
-          }
-          else
-            out_data0_el_arr.push(executor);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putWorkOrder = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(work_order) === true)
-          {
-            for (var key3 in work_order)
-            {
-              out_data0_el_arr.push(work_order[key3]);
-            }
-          }
-          else
-            out_data0_el_arr.push(work_order);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putThisProcess = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(process) === true)
-          {
-            for (var key3 in process)
-            {
-              out_data0_el_arr.push(process[key3]);
-            }
-          }
-          else
-            out_data0_el_arr.push(process);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var removeThisProcess = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(process) === true)
-          {
-            for (var key3 in process)
-            {
-              out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process[key3];});
-            }
-          }
-          else
-          {
-            out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process;});
-          }
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
       /* PUT functions [END] */
 
       for (var key in individuals)
@@ -714,39 +587,6 @@ veda.Module(function (veda) { "use strict";
                 else
                   out_data0_el_arr.push(element);
               }
-
-              out_data0_el[name] = out_data0_el_arr;
-            };
-          })();
-
-          var putValueFrom = (function()
-          {
-            return function(name, path, transform)
-            {
-              var out_data0_el_arr = out_data0_el[name];
-              if (!out_data0_el_arr)
-                out_data0_el_arr = [];
-
-              var element_uri;
-
-              if (Array.isArray(element) === true)
-                element_uri = veda.Util.getUri (element);
-              else
-                element_uri = element.data ? element.data : element;
-
-              var curelem;
-
-              curelem = get_individual(ticket, element_uri);
-
-              for (var i = 0; i < path.length - 1; i++)
-              {
-                if (!curelem || !curelem[path[i]]) return;
-                var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
-                curelem = get_individual(ticket, uri);
-              }
-              if (!curelem || !curelem[path[path.length - 1]]) return;
-
-              out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
 
               out_data0_el[name] = out_data0_el_arr;
             };
@@ -928,11 +768,12 @@ veda.Module(function (veda) { "use strict";
       }
 
       return out_data;
-    }
-    catch (e)
-    {
-      console.log(e.stack);
-    }
+
+    }).catch(function (error) {
+
+      console.log(error);
+
+    });
   };
 
 });
