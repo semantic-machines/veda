@@ -188,9 +188,6 @@ this.initBlank = function () {
       self.object.set(property_uri, self.get(property_uri).slice(0));
     }
   });
-  self.object.one("afterSave afterReset", function () {
-    delete self.object;
-  });
 }
 
 this.updateBlank = function () {
@@ -246,10 +243,12 @@ v-fc:BlankTemplate
     $("#no-rights", template).removeClass("hidden");
   }
   function cancelHandler () {
+    delete self.object;
     window.history.back();
   }
   function saveHandler () {
     setTimeout(function () {
+      delete self.object;
       riot.route("#/" + object.id);
     }, 250);
   }
@@ -318,7 +317,7 @@ v-fc:CreateManagementTemplate
         var personalCreateBlank = createBlank.clone();
         personalCreate["v-fc:hasBlank"] = [ personalCreateBlank ];
         personalCreateBlank["rdfs:isDefinedBy"] = [];
-        personalCreateBlank.object = createBlank.object;
+        personalCreateBlank.object = createBlank.object.clone();
         personalCreateBlank.updateBlank();
         personalCreateBlank.save();
       }
