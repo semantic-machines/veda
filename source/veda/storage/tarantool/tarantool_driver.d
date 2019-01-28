@@ -33,6 +33,11 @@ public class TarantoolDriver : KeyValueDB
         space_id   = _space_id;
     }
 
+	public DBType get_type ()
+	{
+		return DBType.TARANTOOL;
+	}
+
     public void get_individual(string uri, ref Individual individual)
     {
         string individual_as_binobj = get_binobj(uri);
@@ -127,7 +132,8 @@ public class TarantoolDriver : KeyValueDB
         }
         finally
         {
-            tnt_reply_free(reply);
+            if (reply !is null)
+                tnt_reply_free(reply);
 
             if (tuple !is null)
                 tnt_stream_free(tuple);
@@ -136,43 +142,47 @@ public class TarantoolDriver : KeyValueDB
 
     public ResultCode store(string in_key, string in_value, long op_id)
     {
-        tnt_stream *tuple = tnt_object(null);
+        tnt_reply_ *reply = null;
+        tnt_stream *tuple = null;
 
-        if (db_is_opened != true)
+        try
         {
-            open();
+            tuple = tnt_object(null);
+
             if (db_is_opened != true)
-                return ResultCode.ConnectError;
+            {
+                open();
+                if (db_is_opened != true)
+                    return ResultCode.ConnectError;
+            }
+
+            if (in_value.length < 3)
+                return ResultCode.InternalServerError;
+
+            tuple = tnt_object_as(tuple, cast(char *)in_value, in_value.length);
+
+            tnt_replace(tnt, space_id, tuple);
+            tnt_flush(tnt);
+
+            reply = tnt_reply_init(null);
+            tnt.read_reply(tnt, reply);
+            if (reply.code != 0)
+            {
+                log.trace("Insert failed [%s][%s] errcode=%s msg=%s", in_key, in_value, reply.code, to!string(reply.error));
+                return ResultCode.InternalServerError;
+            }
+
+            return ResultCode.Ok;
         }
-
-        if (in_value.length < 3)
-            return ResultCode.InternalServerError;
-
-//        auto field_type = mp_typeof(*cast(char*)in_value);
-        //stderr.writefln ("\n@PUT in_value=%s", in_value);
-
-        tuple = tnt_object_as(tuple, cast(char *)in_value, in_value.length);
-
-//        tnt_object_add_array(tuple, 2);
-//        tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
-//        tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
-
-        tnt_replace(tnt, space_id, tuple);
-        tnt_flush(tnt);
-        tnt_stream_free(tuple);
-
-        tnt_reply_ *reply;
-        reply = tnt_reply_init(null);
-        tnt.read_reply(tnt, reply);
-        if (reply.code != 0)
+        finally
         {
-            log.trace("Insert failed [%s][%s] errcode=%s msg=%s", in_key, in_value, reply.code, to!string(reply.error));
-            tnt_reply_free(reply);
-            return ResultCode.InternalServerError;
+            if (reply !is null)
+                tnt_reply_free(reply);
+
+            if (tuple !is null)
+                tnt_stream_free(tuple);
         }
 
-        tnt_reply_free(reply);
-        return ResultCode.Ok;
     }
 
     public ResultCode remove(string in_key)
@@ -184,27 +194,37 @@ public class TarantoolDriver : KeyValueDB
                 return ResultCode.ConnectError;
         }
 
-        tnt_stream *tuple = tnt_object(null);
-        tnt_object_add_array(tuple, 1);
-
-        tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
-
-        tnt_delete(tnt, space_id, 0, tuple);
-        tnt_flush(tnt);
-        tnt_stream_free(tuple);
-
-        tnt_reply_ *reply;
-        reply = tnt_reply_init(null);
-        tnt.read_reply(tnt, reply);
-        if (reply.code != 0)
+        tnt_reply_ *reply = null;
+        tnt_stream *tuple = null;
+        
+        try
         {
-            log.trace("Remove failed [%s] errcode=%s msg=%s", in_key, reply.code, to!string(reply.error));
-            tnt_reply_free(reply);
-            return ResultCode.InternalServerError;
-        }
+            tuple = tnt_object(null);
+            tnt_object_add_array(tuple, 1);
 
-        tnt_reply_free(reply);
-        return ResultCode.Ok;
+            tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
+
+            tnt_delete(tnt, space_id, 0, tuple);
+            tnt_flush(tnt);
+
+            reply = tnt_reply_init(null);
+            tnt.read_reply(tnt, reply);
+            if (reply.code != 0)
+            {
+                log.trace("Remove failed [%s] errcode=%s msg=%s", in_key, reply.code, to!string(reply.error));
+                return ResultCode.InternalServerError;
+            }
+
+            return ResultCode.Ok;
+        }
+        finally
+        {
+            if (reply !is null)
+                tnt_reply_free(reply);
+
+            if (tuple !is null)
+                tnt_stream_free(tuple);
+        }
     }
 
     public void open()
