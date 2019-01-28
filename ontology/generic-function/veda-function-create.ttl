@@ -168,7 +168,7 @@ var stopList = [
 
 this.initBlank = function () {
   if (self.object) { return; }
-  self.object = new veda.IndividualModel(),
+  self.object = new veda.IndividualModel();
   self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
   Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
@@ -253,10 +253,12 @@ v-fc:BlankTemplate
     }
 
     function cancelHandler () {
+      delete self.object;
       window.history.back();
     }
     function saveHandler () {
       setTimeout(function () {
+        delete self.object;
         riot.route("#/" + object.id);
       }, 250);
     }

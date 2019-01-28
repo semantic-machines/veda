@@ -278,3 +278,21 @@ byte CMD_SET       = 50;
 /// Убрать
 byte CMD_START     = 52;
 
+public string subsystem_byte_to_string(long src)
+{
+    string res = "";
+
+    foreach (el;
+             [ SUBSYSTEM.ACL, SUBSYSTEM.FANOUT_EMAIL, SUBSYSTEM.FANOUT_SQL, SUBSYSTEM.FULL_TEXT_INDEXER, SUBSYSTEM.SCRIPTS, SUBSYSTEM.STORAGE,
+               SUBSYSTEM.USER_MODULES_TOOL ])
+    {
+        if ((src & el) == el)
+        {
+            if (res != "")
+                res ~= ",";
+            res ~= get_name_of_subsystem_id(el);
+        }
+    }
+
+    return res;
+}

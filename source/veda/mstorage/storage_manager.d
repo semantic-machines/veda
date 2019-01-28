@@ -89,7 +89,8 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
     return rc;
 }
 
-public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id, OptFreeze opt_freeze,
+public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id,
+                       OptFreeze opt_freeze,
                        out long op_id)
 {
     ResultCode rc;
@@ -225,8 +226,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                 return;
             }
 
-
-
             uris_queue = new Queue(uris_db_path, "uris-db", Mode.RW, log);
             uris_queue.open();
 
@@ -300,12 +299,15 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                     if (last_reopen_rw_op_id == 0)
                                         last_reopen_rw_op_id = op_id;
 
-                                    if (op_id - last_reopen_rw_op_id > max_count_updates)
+                                    if (storage.get_type == DBType.LMDB)
                                     {
-                                        log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
-                                        storage.close();
-                                        storage.open();
-                                        last_reopen_rw_op_id = op_id;
+                                        if (op_id - last_reopen_rw_op_id > max_count_updates)
+                                        {
+                                            log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
+                                            storage.close();
+                                            storage.open();
+                                            last_reopen_rw_op_id = op_id;
+                                        }
                                     }
 
                                     committed_op_id = op_id;
@@ -366,7 +368,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 return;
                             }
                         },
-                        (string src, OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze, Tid tid_response_reciever)
+                        (string src, OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id, OptFreeze opt_freeze,
+                         Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.NotReady;
                             if (tiz.length == 0)
@@ -377,6 +380,14 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                             }
 
                             immutable TransactionItem ti = tiz[ 0 ];
+
+                            //log.trace("@storage_manager ti.assigned_subsystems=%s", subsystem_byte_to_string(ti.assigned_subsystems));
+
+                            if (ti.assigned_subsystems != ALL_MODULES && (ti.assigned_subsystems & SUBSYSTEM.STORAGE) != SUBSYSTEM.STORAGE)
+                            {
+                                send(tid_response_reciever, rc, thisTid);
+                                return;
+                            }
 
                             if (opt_freeze == OptFreeze.NONE && is_freeze && ti.cmd == INDV_OP.PUT)
                                 send(tid_response_reciever, rc, thisTid);
