@@ -165,7 +165,7 @@ veda.Module(function (veda) { "use strict";
               if ( veda.Util.hasValue(indv, "rdf:type", {data: "v-s:Variable", type: "Uri"}) )
               {
                   var varName = veda.Util.getFirstValue(indv['v-s:variableName']);
-                  var varValue = veda.Util.getStrings(indv['v-s:variableValue']);
+                  var varValue = veda.Util.getValues(indv['v-s:variableValue']);
                   res[varName] = varValue;
               }
           }
