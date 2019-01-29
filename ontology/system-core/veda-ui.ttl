@@ -2624,13 +2624,13 @@ v-ui:json
 
   $(".save-json", template).click(function (e) {
     try {
-      individual.undraft();
-      put_individual(veda.ticket, individual.properties);
+      veda.Backend.put_individual(veda.ticket, individual.properties);
       individual.isNew(false);
       individual.isSync(true);
       template.trigger("view");
       notify("success", {name: "Saved"});
     } catch (error) {
+      console.log(error);
       notify("danger", {name: "Save error"});
     }
   });
