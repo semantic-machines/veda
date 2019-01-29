@@ -287,11 +287,11 @@ veda.Module(function (veda) { "use strict";
    * @returns veda.IndividualModel - start form
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    veda.Util.transformation(individual.properties, transform.properties).then(function (transformResult) {
+    return veda.Util.transformation(individual.properties, transform.properties).then(function (transformResult) {
       var startForm = new veda.IndividualModel(transformResult[0]);
       startForm.isNew(true);
       startForm.isSync(false);
-      return startForm;
+      return startForm.init();
     });
   };
 
