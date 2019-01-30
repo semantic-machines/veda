@@ -1,6 +1,6 @@
 #!/bin/bash
 username="admin"
-password="4d1af0e10dab5fe07ae8d23bad5650b46804fb110cfb92f119213bc86aa03d34"
+password=""
 
 individual='{"@":"cfg:'$1'","rdf:type":[{"type":"Uri","data":"rdfs:Resource"}]}'
 echo "individual = $individual"
@@ -20,7 +20,7 @@ echo "auth_request = $auth_request"
 auth_result=$($auth_request)
 echo "auth_result = $auth_result"
 
-ticket="$(echo $auth_result | grep -oE '"id":"[^"]*"' | grep -oE '[^"]{3,}')"
+ticket=$(echo $auth_result | grep -oP '(?<="id":")[\w\d-]+(?=")')
 echo "ticket = $ticket"
 
 payload='{"ticket":"'$ticket'","individual":'$individual',"prepare_events":true,"event_id":"","transaction_id":""}'
