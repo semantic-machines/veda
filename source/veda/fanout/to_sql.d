@@ -29,7 +29,7 @@ public class FanoutProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start)
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
         ResultCode rc;
 
@@ -53,7 +53,7 @@ public class FanoutProcess : VedaModule
             }
 
             main_cs_r.reopen();
-            while (main_cs_r.count_popped < count_popped)
+            while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
             {
                 log.tracec("INFO: queue.my=%d > queue.main=%d, sleep...", count_popped, main_cs_r.count_popped);
                 core.thread.Thread.sleep(dur!("seconds")(1));

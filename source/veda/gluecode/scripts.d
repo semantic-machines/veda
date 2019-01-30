@@ -83,7 +83,7 @@ class ScriptProcessLowPriority : ScriptProcess
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
                                 long count_popped, long op_id_on_start,
-                                long count_from_start)
+                                long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
@@ -100,7 +100,7 @@ class ScriptProcessLowPriority : ScriptProcess
         }
 
         main_cs_r.reopen();
-        while (main_cs_r.count_popped < count_popped)
+        while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
         {
             log.tracec("INFO: sleep, scripts_main=%d, my=%d", main_cs_r.count_popped, count_popped);
             core.thread.Thread.sleep(dur!("seconds")(1));
@@ -109,7 +109,7 @@ class ScriptProcessLowPriority : ScriptProcess
 
         return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
                              count_popped, op_id_on_start,
-                             count_from_start);
+                             count_from_start, cs_id);
     }
 }
 
@@ -161,7 +161,7 @@ class ScriptProcess : VedaModule
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
                                 long count_popped, long op_id_on_start,
-                                long count_from_start)
+                                long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
