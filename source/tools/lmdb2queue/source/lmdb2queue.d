@@ -15,6 +15,9 @@ Logger log()
     return _log;
 }
 
+bool   to_queue;
+string after_id;
+
 void main(string[] args)
 {
     if (args.length < 3)
@@ -25,6 +28,13 @@ void main(string[] args)
 
     string output_queue_name = args[ 1 ];
     string queue_type        = args[ 2 ];
+
+    to_queue = true;
+    if (args.length == 4)
+    {
+        to_queue = false;
+        after_id = args[ 3 ];
+    }
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
@@ -142,6 +152,12 @@ public long convert(LmdbDriver src, Queue dest, string queue_type)
                 string value = cast(string)(data.mv_data[ 0..data.mv_size ]).dup;
 
                 if (value.length == 0)
+                    continue;
+
+                if (after_id !is null && str_key == after_id)
+                    to_queue = true;
+
+                if (to_queue == false)
                     continue;
 
                 Individual indv;
