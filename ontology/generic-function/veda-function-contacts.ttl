@@ -184,15 +184,16 @@ v-s:ContactsTemplate
     return controls; 
   }
 
-  function generateAppointmentControls(){
+  function generateAppointmentControls(targetAppointment){
     var controls = $('<div id="controlButtons" style="float:right"></div>');
     var delAppointmentControl = '<button id="delete-Appointment" class="btn btn-xs margin-sm-h btn-danger">Удалить назначение</button>';
     if (veda.appointment.id != 'cfg:AdministratorAppointment') {
       if (!veda.appointment['v-s:parentOrganization']) return "";
       if (veda.appointment['v-s:parentOrganization'][0].id == individual['v-s:managedOrganization'][0].id) {
-        var _appointment =  new veda.IndividualModel("v-s:Appointment");
+        //var _appointment =  new veda.IndividualModel("v-s:Appointment");
+        var _appointment =  new veda.IndividualModel(targetAppointment);
         var canDeleteAppointment = _appointment.rights.hasValue("v-s:canDelete", true);
-        console.log('canDeleteAppointment='+canDeleteAppointment);
+        //console.log('canDeleteAppointment='+canDeleteAppointment);
         if (canDeleteAppointment) {
           controls.append(delAppointmentControl);
         }
@@ -208,7 +209,6 @@ v-s:ContactsTemplate
     orgTree.empty();
     if (individual.hasValue('v-s:managedOrganization')) {
       departmentButtons = generateDepartmentControls();
-      appointmentButtons = generateAppointmentControls();
       var org = individual['v-s:managedOrganization'][0];
       var tmpl = getTemplate(org);
       drawRow(org, orgTree, tmpl);
@@ -347,6 +347,8 @@ v-s:ContactsTemplate
       obj = obj['v-s:employee'][0];
       // tmpl = new veda.IndividualModel('v-s:PersonalInfoTemplate', 'view');
       tmpl = undefined;
+      riot.route( ["#", obj.id].join("/") );
+      return false;
     } else if (obj.is('v-s:Department')) {
       tmpl = new veda.IndividualModel('v-s:DepartmentTemplate', 'view');
     } else if (obj.is('v-s:Organization')) {
@@ -368,6 +370,7 @@ v-s:ContactsTemplate
       item.addClass('warning');
       item.append(zoomIn);
       if (self.attr('typeof') == 'v-s:Appointment') {
+        appointmentButtons = generateAppointmentControls(self.attr('resource'));
         item.append(appointmentButtons);
       } else {
         item.append(departmentButtons);
