@@ -129,24 +129,7 @@ v-s:RequestDelegationTemplate
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
-
 <div>
-  <style>
-    .section-header {
-      background-color: #f5f5f5;
-      padding: 10px;
-      border-top: 1px solid #ccc;
-      margin-top: 1.5em;
-      margin-bottom: 1em;
-    }
-    .row-attribute {
-      margin-top: 1em;
-    }
-    .row-attribute > div:first-child {
-      text-align: right;
-      font-weigth: bold;
-    }
-  </style>
   <div class="container sheet">
     <h3>
       <span about="v-s:RequestDelegation" property="rdfs:label"></span>
