@@ -1470,3 +1470,23 @@ svg.process-path-highlight path
   color: #337ab7;
   content: "\25BC";
 }
+.section-header {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+}
+veda-control .radio:first-child, veda-control .checkbox:first-child {
+  margin-top: 0;
+}
+veda-control .radio:last-child, veda-control .checkbox:last-child {
+  margin-bottom: 0;
+}
+.row-attribute {
+  margin-top: 1em;
+}
+.row-attribute > div:first-child {
+  text-align: right;
+  font-weight: bold;
+}

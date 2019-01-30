@@ -142,7 +142,7 @@ var conn Connector
 //socket is nanomsg socket connected to server
 var g_mstorage_ch *nanomsg.Socket
 
-//var mstorage_ch_Mutex = sync.RWMutex{}
+var mstorage_ch_Mutex = sync.RWMutex{}
 
 //endpoint is nanomsg endpoint connected to server
 //var endpoint *nanomsg.Endpoint

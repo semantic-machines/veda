@@ -39,7 +39,7 @@ class FanoutProcess : VedaModule
                                 string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start)
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;

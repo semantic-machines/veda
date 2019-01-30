@@ -256,24 +256,31 @@ v-s:PositionCode
 .
 v-s:NonUniqueDepartmentCode
   rdf:type v-s:Bundle ;
-  rdfs:label "Сообщение об не уникальном коде подразделения"@ru ;
+  rdfs:label "Сообщение о не уникальном коде подразделения"@ru ;
   rdfs:label "Non unique department code message"@en ;
   rdfs:comment "Подразделение с таким кодом уже существует"@ru ;
   rdfs:comment "Department with this code already exists"@en ;
 .
 v-s:NonUniquePositionCode
   rdf:type v-s:Bundle ;
-  rdfs:label "Сообщение об не уникальном коде должности"@ru ;
+  rdfs:label "Сообщение о не уникальном коде должности"@ru ;
   rdfs:label "Non unique position code message"@en ;
   rdfs:comment "Должность с таким кодом уже существует"@ru ;
   rdfs:comment "Position with this code already exists"@en ;
 .
 v-s:NonUniqueTabNumber
   rdf:type v-s:Bundle ;
-  rdfs:label "Сообщение об не уникальном табельном номере"@ru ;
+  rdfs:label "Сообщение о не уникальном табельном номере"@ru ;
   rdfs:label "Non unique tab number message"@en ;
   rdfs:comment "Персона с таким табельным номером уже существует"@ru ;
   rdfs:comment "Person with this tab number already exists"@en ;
+.
+v-s:NotValidCode
+  rdf:type v-s:Bundle ;
+  rdfs:label "Сообщение о не корректном коде (должности, подразделения, табельном номере)"@ru ;
+  rdfs:label "Not valid subject code message"@en ;
+  rdfs:comment "Поле может содержать только латинские буквы и цифры"@ru ;
+  rdfs:comment "Field must consist only a-z character and digits"@en ;
 .
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
@@ -632,7 +639,13 @@ v-s:DepartmentTemplate
       result["v-s:subjectCode"] = {
         state: state,
         cause: ["v-s:NonUniqueDepartmentCode"]
-      } 
+      }
+      if (subjectCode.match('^[a-zA-z0-9]*$') == null) {
+        result["v-s:subjectCode"] = {
+          state: false,
+          cause: ["v-s:NotValidCode"]
+        } 
+      }
     } else {
       result["v-s:subjectCode"] = {
         state: false,
@@ -866,6 +879,7 @@ v-s:AppointmentForContactTemplate
       NewOccupation = new veda.IndividualModel();
       NewOccupation['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
       NewOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      NewOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
       var tmpl = NewOccupation.present($("<div>"), 'v-s:OccupationEmbeddedTemplate', 'edit');
       tmpl.on("validate", function () {
         template.trigger('special-validate');
@@ -921,13 +935,16 @@ v-s:AppointmentForContactTemplate
     };
     var occupationCode = individual['v-s:occupation'][0]['v-s:subjectCode'][0];
     var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
-    individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+occupationCode;
+    var parentUnitUri = individual['v-s:parentUnit'][0].id;
+    //console.log(personTabNumber + ' ' + occupationCode);
+    individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+parentUnitUri+'_'+occupationCode;
+    //console.log(individual.id);
     var tempEmployee = individual['v-s:employee'][0];
     var tempOccupation = individual['v-s:occupation'][0];
     if (tempOccupation.isNew()) {
       tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
       tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
-      tempOccupation.id = 'd:'+orgINN+'_position_'+occupationCode;
+      tempOccupation.id = 'd:'+orgINN+'_position_'+parentUnitUri+'_'+occupationCode;
       tempOccupation.save();
       individual['v-s:occupation'] = [tempOccupation];
     }
@@ -969,6 +986,7 @@ v-s:EmployeeEmbeddedTemplate
     var result = {};
     var prevNumber = "";
     var state = false;
+
     if (!individual.hasValue('v-s:tabNumber')) {
       result["v-s:tabNumber"] = {
         state: false,
@@ -986,7 +1004,13 @@ v-s:EmployeeEmbeddedTemplate
       result["v-s:tabNumber"] = {
         state: state,
         cause: ["v-s:NonUniqueTabNumber"]
-      } 
+      }
+      if (tabNumber.match('^[a-zA-z0-9]*$') == null) {
+        result["v-s:tabNumber"] = {
+          state: false,
+          cause: ["v-s:NotValidCode"]
+        } 
+      }
     }
     template.trigger("validated", result);
   });
@@ -1063,7 +1087,7 @@ v-s:OccupationEmbeddedTemplate
       var subjectCode = individual["v-s:subjectCode"][0].toString();
       if (prevSubjectCode != subjectCode) {
         prevSubjectCode = subjectCode;
-        var futureUri = "d:"+orgINN+'_position_'+subjectCode;
+        var futureUri = "d:"+orgINN+'_position_'+individual['v-s:parentUnit'][0].id+'_'+subjectCode;
         var queryString = "'@'==='" + futureUri + "'";
         var tmp = query(veda.ticket, queryString).result;
         state = tmp.length == 0? true : (tmp.length == 1 &&  tmp[0] == individual.id);
@@ -1071,7 +1095,13 @@ v-s:OccupationEmbeddedTemplate
       result["v-s:subjectCode"] = {
         state: state,
         cause: ["v-s:NonUniquePositionCode"]
-      } 
+      }
+      if (subjectCode.match('^[a-zA-z0-9]*$') == null) {
+        result["v-s:subjectCode"] = {
+          state: false,
+          cause: ["v-s:NotValidCode"]
+        } 
+      }
     }
     if (!individual.hasValue('rdfs:label')) {
       result["rdfs:label"] = {

@@ -3,7 +3,7 @@ import std.stdio, std.file, std.datetime, std.conv, std.digest.ripemd, std.bigin
 alias core.thread.Thread core_thread;
 import veda.core.common.define;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header;
-import veda.storage.common, veda.common.type, veda.onto.individual, veda.util.queue;
+import veda.storage.common, veda.common.type, veda.onto.individual, veda.onto.resource, veda.util.queue;
 import veda.util.properd;
 import veda.common.logger;
 
@@ -15,13 +15,26 @@ Logger log()
     return _log;
 }
 
+bool   to_queue;
+string after_id;
+
 void main(string[] args)
 {
-//    if (args.length < 3)
-//    {
-//        stderr.writeln("use individual_lmdb_dump_2_tarantool start_pos end_pos");
-//        return;
-//    }
+    if (args.length < 3)
+    {
+        stderr.writeln("use lmdb_2_queue [output_queue_name] veda_queue/simple_queue");
+        return;
+    }
+
+    string output_queue_name = args[ 1 ];
+    string queue_type        = args[ 2 ];
+
+    to_queue = true;
+    if (args.length == 4)
+    {
+        to_queue = false;
+        after_id = args[ 3 ];
+    }
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
@@ -32,7 +45,7 @@ void main(string[] args)
     LmdbDriver   individual_lmdb_driver = new LmdbDriver(individuals_db_path, DBMode.R, "cnv", log);
 
     Queue        individual_queue;
-    individual_queue = new Queue("./out/queue", "individuals", Mode.RW, log);
+    individual_queue = new Queue("./out/queue", output_queue_name, Mode.RW, log);
     if (individual_queue.open() == false)
     {
         log.trace("fail create queue");
@@ -43,13 +56,13 @@ void main(string[] args)
     log.trace("migrate individuals");
 
 
-    convert(individual_lmdb_driver, individual_queue);
-    
-    individual_queue.close ();
+    convert(individual_lmdb_driver, individual_queue, queue_type);
+
+    individual_queue.close();
 }
 
 
-public long convert(LmdbDriver src, Queue dest)
+public long convert(LmdbDriver src, Queue dest, string queue_type)
 {
     src.open();
 
@@ -141,6 +154,12 @@ public long convert(LmdbDriver src, Queue dest)
                 if (value.length == 0)
                     continue;
 
+                if (after_id !is null && str_key == after_id)
+                    to_queue = true;
+
+                if (to_queue == false)
+                    continue;
+
                 Individual indv;
                 if (indv.deserialize(value) < 0)
                 {
@@ -148,9 +167,37 @@ public long convert(LmdbDriver src, Queue dest)
                 }
                 else
                 {
-                    string new_bin = indv.serialize();
-                    dest.push(new_bin);
-                    log.trace("OK, %d KEY=[%s]", count, str_key);
+                    if (queue_type == "veda_queue")
+                    {
+                        Individual imm;
+                        imm.uri = text(count);
+                        imm.addResource("cmd", Resource(DataType.Integer, 1));
+
+                        imm.addResource("uri", Resource(DataType.Uri, indv.uri));
+
+                        imm.addResource("new_state", Resource(DataType.String, indv.serialize()));
+
+                        imm.addResource("tnx_id", Resource(count));
+
+                        imm.addResource("src", Resource("?"));
+                        imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                        imm.addResource("op_id", Resource(count));
+                        imm.addResource("u_count", Resource(count));
+                        imm.addResource("assigned_subsystems", Resource(0));
+
+                        //log.trace ("imm=[%s]", imm);
+
+                        string binobj = imm.serialize();
+
+                        dest.push(binobj);
+                        log.trace("OK, %d KEY=[%s]", count, str_key);
+                    }
+                    else if (queue_type == "simple_queue")
+                    {
+                        string new_bin = indv.serialize();
+                        dest.push(new_bin);
+                        log.trace("OK, %d KEY=[%s]", count, str_key);
+                    }
                 }
             }
             else

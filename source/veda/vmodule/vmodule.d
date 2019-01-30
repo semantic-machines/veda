@@ -252,7 +252,7 @@ class VedaModule : VedaModuleBasic
                                 string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start);
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id);
 
     abstract bool configure();
     abstract bool close();
@@ -352,7 +352,7 @@ class VedaModule : VedaModuleBasic
                         {
                             rc =
                                 prepare(main_cs[ i ].name, null, INDV_OP.PUT, sticket.user_uri, null, prev_indv, data, indv, "", -1, -1, count_pushed,
-                                        count_popped, opid_on_start, count_readed);
+                                        count_popped, opid_on_start, count_readed, main_cs[ i ].get_id());
                         }
                         catch (Throwable tr)
                         {
@@ -458,7 +458,7 @@ class VedaModule : VedaModuleBasic
                 ResultCode res =
                     prepare(main_cs[ i ].name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id,
                             count_pushed,
-                            count_popped, opid_on_start, count_readed);
+                            count_popped, opid_on_start, count_readed, main_cs[ i ].get_id());
 
                 if (res == ResultCode.Ok)
                 {

@@ -12,6 +12,9 @@ start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
 start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
 
 target=".pids/"
+
+if [ -e $target ] ; then
+
 let count=0
 for f in "$target"/*
 do
@@ -25,8 +28,16 @@ echo "Count: $count"
 
 rm -f -r .pids
 
+fi
+
+if [ -z $1 ] ; then
+
+    echo "STOP VEDA MODULES"
+
+else
+
 if [ $1 == "all" ] ; then
-    echo STOP ALL VEDA MODULES
+    echo "STOP ALL VEDA MODULES"
 
     start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
     killall -9 veda
@@ -51,5 +62,6 @@ if [ $1 == "all" ] ; then
 
 fi
 
+fi
 
 exit 0

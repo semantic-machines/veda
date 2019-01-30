@@ -83,7 +83,7 @@ class ScriptProcessLowPriority : ScriptProcess
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
                                 long count_popped, long op_id_on_start,
-                                long count_from_start)
+                                long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
@@ -100,7 +100,7 @@ class ScriptProcessLowPriority : ScriptProcess
         }
 
         main_cs_r.reopen();
-        while (main_cs_r.count_popped < count_popped)
+        while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
         {
             log.tracec("INFO: sleep, scripts_main=%d, my=%d", main_cs_r.count_popped, count_popped);
             core.thread.Thread.sleep(dur!("seconds")(1));
@@ -109,9 +109,11 @@ class ScriptProcessLowPriority : ScriptProcess
 
         return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
                              count_popped, op_id_on_start,
-                             count_from_start);
+                             count_from_start, cs_id);
     }
 }
+
+int MAX_COUNT_LOOPS = 100;
 
 class ScriptProcess : VedaModule
 {
@@ -159,7 +161,7 @@ class ScriptProcess : VedaModule
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
                                 long count_popped, long op_id_on_start,
-                                long count_from_start)
+                                long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
@@ -234,6 +236,15 @@ class ScriptProcess : VedaModule
         //log.trace("indv=%s, indv_types=%s, event_scripts_order.length=%d", individual_id, indv_types, wpl.scripts_order.length);
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
+        string   last_part_event_id;
+        string[] full_path_els;
+        if (event_id != null && event_id.length > 0)
+        {
+            full_path_els = event_id.split(";");
+            if (full_path_els.length > 0)
+                last_part_event_id = full_path_els[ 0 ];
+        }
+
         foreach (_script_id; wpl.scripts_order)
         {
             script_id = _script_id;
@@ -253,19 +264,6 @@ class ScriptProcess : VedaModule
 
                 g_event_id = run_script_id ~ ";" ~ event_id;
 
-                //log.trace("look script:%s", script_id);
-                if (script.unsafe == false)
-                {
-                    if (event_id !is null && event_id.length > 1)
-                    {
-                        if ((event_id.indexOf(run_script_id) >= 0) || event_id == "IGNORE")
-                        {
-                            log.trace("ERR! skip script, found looped sequence, path: [%s]", g_event_id);
-                            continue;
-                        }
-                    }
-                }
-
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
                 if (is_filter_pass(&script, individual_id, indv_types, context.get_onto()) == false)
@@ -278,13 +276,41 @@ class ScriptProcess : VedaModule
                     log.trace("WARN! this script is UNSAFE!, %s", script_id);
 
                 //log.trace("filter pass script:%s", script_id);
+                //log.trace("look script:%s", script_id);
+
+                log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id,
+                          event_id);
+
+                if (script.unsafe == false)
+                {
+                    if (event_id !is null && event_id.length > 1)
+                    {
+                        //log.trace("@ last_part_event_id=%s", last_part_event_id);
+
+                        if ((last_part_event_id == run_script_id) || last_part_event_id == "IGNORE")
+                        {
+                            log.trace("ERR! skip script, found looped sequence, path: [%s]", last_part_event_id);
+                            continue;
+                        }
+
+                        int count_loops;
+                        foreach (el; full_path_els)
+                        {
+                            if (el == run_script_id)
+                                count_loops++;
+                        }
+
+                        if (count_loops > MAX_COUNT_LOOPS)
+                            log.trace("ERR! skip script, counted (%d) loops in sequencee > %d, path: [%s]", count_loops, MAX_COUNT_LOOPS, event_id);
+
+                        if (count_loops > 1)
+                            log.trace("WARN! found %d loops in sequence, path: [%s]", count_loops, event_id);
+                    }
+                }
 
                 try
                 {
                     tnx.reset();
-
-                    log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id,
-                              event_id);
 
                     //count++;
                     script.compiled_script.run();

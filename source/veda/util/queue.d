@@ -132,6 +132,11 @@ class Consumer
         header_buff = new ubyte[ header.length() ];
     }
 
+    public uint get_id()
+    {
+    	return id;
+    }
+
     public string get_name()
     {
         return name;

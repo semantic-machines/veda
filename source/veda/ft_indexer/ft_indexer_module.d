@@ -86,7 +86,7 @@ class FTIndexerProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
                                 string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start)
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
         ictx.index_msg(new_indv, prev_indv, cmd, op_id, context);
 
