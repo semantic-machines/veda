@@ -22,8 +22,9 @@ import { Selector, t } from 'testcafe';
       .click('button#save')
       .click('button#journal')
       //Проверяем количество записей в журнале
+      .wait(1000)
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
-      .wait(10000)
+      .wait(5000)
       .expect(documentCreated).eql(1)
       .expect(journal).eql(1)
       //Изменяем shortLabel -> Проверяем количество записей в журнале
@@ -32,8 +33,9 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control[property="v-s:shortLabel"] textarea.form-control[lang="RU"]', '123')
       .click('button#save')
       .click('button#journal')
+      .wait(1000)
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
-      .wait(10000)
+      .wait(5000)
       .expect(documentUpdated).eql(1)
       .expect(journal).eql(2)
       //не изменяем shortlabel -> Проверяем количество записей в журнале
@@ -41,8 +43,9 @@ import { Selector, t } from 'testcafe';
       .click('button#edit')
       .click('button#save')
       .click('button#journal')
+      .wait(1000)
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
-      .wait(10000)
+      .wait(5000)
       .expect(documentUpdated).eql(1)
       .expect(journal).eql(2)
       //Изменяем shortLabel -> Проверяем количество записей в журнале
@@ -51,8 +54,9 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control[property="v-s:shortLabel"] textarea.form-control[lang="RU"]', '321')
       .click('button#save')
       .click('button#journal')
+      .wait(1000)
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
-      .wait(10000)
+      .wait(5000)
       .expect(documentUpdated).eql(2)
       .expect(journal).eql(3)
 });
