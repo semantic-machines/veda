@@ -858,7 +858,7 @@ v-ft:TaskResultTemplate
           e.stopPropagation();
           var isRead = individual.hasValue("v-wf:read", true);
           toggleRead(!isRead);
-          set_in_individual({
+          veda.Backend.set_in_individual({
             ticket: veda.ticket,
             individual: {
               "@": individual.id,
