@@ -2604,8 +2604,7 @@ v-ui:json
     <a id="ttl" class="btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
   <div class="actions pull-left">
-    <button class="btn btn-success -view edit -search save-json" about="v-s:Save" property="rdfs:label"></button>
-    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit cancel delete destroy"></span>
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
 <script>
@@ -2667,27 +2666,6 @@ v-ui:json
   function anchorize (string) {
     return string.replace(/([a-z0-9_-]+:[a-z0-9_-]*)/gi, "<a class='text-black' href='#/$1//v-ui:json'>$1</a>");
   };
-
-  $(".save-json", template).click(function (e) {
-    try {
-      individual.undraft();
-      put_individual(veda.ticket, individual.properties);
-      individual.isNew(false);
-      individual.isSync(true);
-      template.trigger("view");
-      notify("success", {name: "Saved"});
-    } catch (error) {
-      notify("danger", {name: "Save error"});
-    }
-  });
-  template.on("internal-validated", function (e, validation) {
-    var saveBtn = $(".save-json", template);
-    if (validation.state) {
-      saveBtn.removeAttr("disabled");
-    } else {
-      saveBtn.attr("disabled", "disabled");
-    }
-  });
 
   //# sourceURL=v-ui:json
 </script>
