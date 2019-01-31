@@ -847,10 +847,10 @@ v-ui:AppointmentPopoverTemplate
   rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
 <div class="media" style="margin-top:0px;">
-  <span class="close">&times;</span>
-  <div class="media-left" rel="v-s:employee" style="width:128px">
-    <a href="#/@" rel="v-s:hasImage">
-      <div rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
+  <span class="close">&nbsp;&times;</span>
+  <div class="media-left" about="@" rel="v-s:employee" style="width:96px">
+    <a href="#/@" about="@" rel="v-s:hasImage">
+      <div about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
     </a>
   </div>
   <div class="media-body" style="width:auto;">
@@ -860,7 +860,9 @@ v-ui:AppointmentPopoverTemplate
     <hr class="no-margin">
     <div about="@" rel="v-s:occupation">
       <div>
-        <small about="@" property="v-s:title"></small><br>
+        <small about="@" property="v-s:title"></small>
+      </div>
+      <div>
         <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
       </div>
     </div>
@@ -881,17 +883,11 @@ v-ui:PersonPopoverTemplate
   rdfs:label "Шаблон персоны с фотографией"@ru ;
   rdfs:label "Person template with photo"@en ;
   v-ui:template """
-<script>
-  if (!individual.hasValue("v-s:hasImage")) {
-    $(".media-left", template).hide();
-  }
-//# sourceURL=v-ui:PersonPopoverTemplate_pre
-</script>
 <div class="media" style="margin-top:0px;">
-  <span class="close">&times;</span>
-  <div class="media-left" style="width:128px">
-    <a href="#/@" rel="v-s:hasImage">
-      <div rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
+  <span class="close">&nbsp;&times;</span>
+  <div class="media-left" style="width:96px">
+    <a href="#/@" about="@" rel="v-s:hasImage">
+      <div about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></div>
     </a>
   </div>
   <div class="media-body" style="width:auto">
@@ -917,7 +913,7 @@ v-ui:PositionPopoverTemplate
   rdfs:label "Position template"@en ;
   v-ui:template """
 <div class="media" style="margin-top:0px;">
-  <span class="close">&times;</span>
+  <span class="close">&nbsp;&times;</span>
   <div class="media-body" style="width:auto">
     <strong class="media-heading" about="@" property="rdfs:label"></strong>
     <hr class="no-margin">
@@ -994,31 +990,44 @@ v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
-    if (individual.is("v-s:Appointment") || individual.is("v-s:Person") || individual.is("v-s:Position")) {
-      template.popover({
-        trigger: "hover click",
-        delay: { "show": 750, "hide": 100 },
-        placement: "auto top",
-        html: true,
-        container: "body",
-        content: function () {
-          var cntr = $("<div></div>");
-          var content;
-          if (individual.is("v-s:Appointment")) {
-            content = individual.present(cntr, "v-ui:AppointmentPopoverTemplate");
-          } else if (individual.is("v-s:Person")) {
-            content = individual.present(cntr, "v-ui:PersonPopoverTemplate");
-          } else {
-            content = individual.present(cntr, "v-ui:PositionPopoverTemplate");
-          }
-          return content.on("click", ".close", function (e) {
-            e.stopPropagation();
-            template.click();
-          });
-        }
-      });
-      template.one("remove", function () {
+
+    var done;
+    var initPopoverTimeout;
+    var type = individual.hasValue("rdf:type") && individual["rdf:type"][0].id;
+    if ( type === "v-s:Appointment" || type === "v-s:Person" || type === "v-s:Position" ) {
+      template.mouseenter(function () {
+        if (done || initPopoverTimeout) { return; }
+        initPopoverTimeout = setTimeout(initPopover, 750);
+      }).mouseleave(function () {
+        initPopoverTimeout = clearTimeout(initPopoverTimeout);
+      }).one("remove", function () {
         template.popover("destroy");
+      });
+    }
+    var initPopover = function () {
+      var cntr = $("<div></div>");
+      var tmpl;
+      if (type === "v-s:Appointment") {
+        tmpl = "v-ui:AppointmentPopoverTemplate";
+      } else if (type === "v-s:Person") {
+        tmpl = "v-ui:PersonPopoverTemplate";
+      } else {
+        tmpl = "v-ui:PositionPopoverTemplate";
+      }
+      individual.present(cntr, tmpl).then(function () {
+        done = true;
+        template.popover({
+          trigger: "hover click",
+          delay: { "show": 750, "hide": 100 },
+          placement: "auto top",
+          html: true,
+          container: "body",
+          content: cntr
+        }).popover("show");
+        cntr.on("click", ".close", function (e) {
+          e.stopPropagation();
+          template.click();
+        });
       });
     }
     //# sourceURL=v-ui:LabelTemplate
