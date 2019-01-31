@@ -60,7 +60,14 @@ veda.Module(function (veda) { "use strict";
   function beforeSaveHandler() {
     var now = new Date();
     var user = veda.appointment ? veda.appointment : veda.user;
-    if (
+    if ( !this.hasValue("v-s:creator") && !this.hasValue("v-s:created") ) {
+      this.set("v-s:creator", [user]);
+      this.set("v-s:created", [now]);
+    }
+
+    if (veda.user.id === "cfg:Administrator") {
+      return;
+    } else if (
       !this.hasValue("v-s:lastEditor")
       || !this.hasValue("v-s:edited")
       || this.get("v-s:lastEditor")[0].id !== user.id
@@ -68,10 +75,6 @@ veda.Module(function (veda) { "use strict";
     ) {
       this.set("v-s:edited", [now]);
       this.set("v-s:lastEditor", [user]);
-    }
-    if ( !this.hasValue("v-s:creator") && !this.hasValue("v-s:created") ) {
-      this.set("v-s:creator", [user]);
-      this.set("v-s:created", [now]);
     }
   }
 
