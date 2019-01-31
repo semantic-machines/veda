@@ -987,6 +987,16 @@ v-s:EmployeeEmbeddedTemplate
     var prevNumber = "";
     var state = false;
 
+    if (individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName')) {
+      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"' && 'v-s:lastName'=='"+individual['v-s:lastName'][0]+"' && 'v-s:firstName'=='"+individual['v-s:firstName'][0]+"'";
+      var tmp = query(veda.ticket, queryString).result;
+      if (tmp.length == 0) {
+        $('#warningPerson').addClass('hide');
+      } else {
+        $('#warningPerson').removeClass('hide');
+      }
+    }
+
     if (!individual.hasValue('v-s:tabNumber')) {
       result["v-s:tabNumber"] = {
         state: false,
@@ -1016,6 +1026,9 @@ v-s:EmployeeEmbeddedTemplate
   });
 </script>
 <div>
+  <div id="warningPerson" class="alert alert-warning hide">
+    <span>Внимание. Пользователь с такими ФИО уже существует. Возможно Вам следует выбрать его.</span>
+  </div>
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:lastName" property="rdfs:label"></em>
@@ -1108,11 +1121,23 @@ v-s:OccupationEmbeddedTemplate
         state: false,
         cause: ["v-ui:minCardinality"]
       };
+    } else {
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"' && 'rdfs:label'=='"+individual['rdfs:label'][0]+"' && 'v-s:parentUnit'=='"+individual['v-s:parentUnit'][0].id+"'";
+      console.log(queryString)
+      var tmp = query(veda.ticket, queryString).result;
+      if (tmp.length == 0) {
+        $('#warningOccupation').addClass('hide');
+      } else {
+        $('#warningOccupation').removeClass('hide');
+      }
     }
     template.trigger("validated", result);
   });
 </script>
 <div>
+  <div id="warningOccupation" class="alert alert-warning hide">
+    <span>Внимание. Должность с похожим названием уже существует в выбранном подразделении. Возможно Вам следует использовать ее.</span>
+  </div>
   <div class="row">
     <div class="col-md-6">
       <em about="v-s:title" property="rdfs:label"></em>
