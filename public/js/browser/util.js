@@ -279,7 +279,10 @@ veda.Module(function (veda) { "use strict";
       template.trigger("save");
       template.closest(".modal").modal("hide").remove();
       var notify = veda.Notify ? new veda.Notify() : function () {};
-      notify("success", {name: "Успешно отправлено / Successfully sent"});
+      var sendSuccess = new veda.IndividualModel("v-s:SendSuccess");
+      sendSuccess.load().then(function (sendSuccess) {
+        notify("success", {name: sendSuccess});
+      });
     }
   };
 
