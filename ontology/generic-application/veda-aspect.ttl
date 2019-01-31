@@ -179,11 +179,18 @@ v-s:FavoritesIndicatorTemplate
     container: template,
     placement: "bottom",
     trigger: "hover",
-    title: function () {
-      var current = getCurrent(location.hash);
-      var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
-      return title.toString();
-    }
+    title: (function () {
+      var titleStr;
+      return function () {
+        var current = getCurrent(location.hash);
+        var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
+        title.load().then(function (title) {
+          titleStr = title.toString();
+          template.find(".tooltip-inner").text(titleStr);
+        });
+        return titleStr ? titleStr : "...";
+      }
+    })()
   }).click(function (e) {
     var aspect = veda.user.aspect;
     e.preventDefault();
