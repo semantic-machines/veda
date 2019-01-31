@@ -50,9 +50,11 @@ veda.Module(function (veda) { "use strict";
     ) {
       this["v-s:creator"] = [ user ];
       this["v-s:created"] = [ now ];
-    };
+    }
 
-    if (
+    if (veda.user.id === "cfg:Administrator") {
+      return;
+    } else if (
       !this.hasValue("v-s:lastEditor")
       || !this.hasValue("v-s:edited")
       || this["v-s:lastEditor"][0].id !== user.id
@@ -60,7 +62,7 @@ veda.Module(function (veda) { "use strict";
     ) {
       this["v-s:lastEditor"] = [ user ];
       this["v-s:edited"] = [ now ];
-    };
+    }
   }
 
   var proto = veda.IndividualModel.prototype;
