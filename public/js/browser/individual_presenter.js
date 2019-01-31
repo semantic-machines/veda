@@ -204,12 +204,19 @@ veda.Module(function (veda) { "use strict";
     function saveHandler (e, parent) {
       if (parent !== individual.id && !individual.isSync()) {
         individual.save().then(function () {
-          notify("success", {name: "Объект сохранен"});
           if (parent) {
             container.trigger("embeddedSaved", individual.id);
+          } else {
+            var saveSuccess = new veda.IndividualModel("v-s:SaveSuccess");
+            saveSuccess.load().then(function (saveSuccess) {
+              notify("success", {name: saveSuccess});
+            });
           }
         }).catch(function (error) {
-          notify("danger", {name: "Объект не сохранен"});
+          var saveError = new veda.IndividualModel("v-s:SaveError");
+          saveError.load().then(function (saveError) {
+            notify("danger", {name: saveError});
+          });
         });
       }
       template.trigger("view");
