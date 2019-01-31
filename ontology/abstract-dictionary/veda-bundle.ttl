@@ -124,6 +124,26 @@ v-s:Save
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;
 .
+v-s:SaveSuccess
+  rdf:type v-s:Bundle ;
+  rdfs:label "Успешно сохранено"@ru ;
+  rdfs:label "Successfully saved"@en ;
+.
+v-s:SaveError
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ошибка сохранения"@ru ;
+  rdfs:label "Save error"@en ;
+.
+v-s:SendSuccess
+  rdf:type v-s:Bundle ;
+  rdfs:label "Успешно отправлено"@ru ;
+  rdfs:label "Successfully sent"@en ;
+.
+v-s:SendError
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ошибка отправки"@ru ;
+  rdfs:label "Send error"@en ;
+.
 v-s:Update
   rdf:type v-s:Bundle ;
   rdfs:label "Обновить"@ru ;
