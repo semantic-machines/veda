@@ -559,12 +559,12 @@ cfg:Event_3
  * super_classes = super classes of the document.
  */
 
-if (user_uri === "cfg:VedaSystem") { return; } // #245
+var isAdmin = (user_uri === "cfg:Administrator" || user_uri === "cfg:VedaSystem");
 
 // Get latest document state
 document = get_individual(ticket, document["@"]);
 
-if (super_classes.indexOf("v-s:AutomaticallyVersioned") >= 0) {
+if (super_classes.indexOf("v-s:AutomaticallyVersioned") >= 0 && !isAdmin) {
   veda.Util.create_version(ticket, document, prev_state, user_uri, _event_id);
 }
 
@@ -576,13 +576,10 @@ if (super_classes.indexOf("v-s:Journaling") >= 0) {
   if (!publisher) { return; }
 
   var employee_uri;
-  if ( veda.Util.hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) )
-  {
+  if ( veda.Util.hasValue(publisher, "rdf:type", {data: "v-s:Appointment", type: "Uri"}) ) {
     employee_uri = publisher["v-s:employee"];
     if (!employee_uri) { return; }
-  }
-  else
-  {
+  } else {
     employee_uri = publisher_uri;
   }
 
@@ -599,8 +596,9 @@ if (super_classes.indexOf("v-s:Journaling") >= 0) {
 
   var actor = veda.Util.newUri(actor_uri);
 
-  if (exist_journal)
-  {
+  if (exist_journal && isAdmin) {
+    return;
+  } else if (exist_journal && !isAdmin) {
     // UPDATE DOCUMENT
     var journal_record = veda.Util.newJournalRecord(journal_uri);
     if ( document["v-s:actualVersion"] && document["v-s:actualVersion"][0].data == document["@"] ) {
