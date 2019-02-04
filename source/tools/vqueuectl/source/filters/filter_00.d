@@ -13,7 +13,7 @@ public void check_links_00(string data, ref Queue queue_new, LmdbDriver individu
     {
         queue_new = new Queue("./tmp/uris", "uris", Mode.RW, log);
         queue_new.open();
-        queue_new.get_info(0);
+        queue_new.get_info_push(0);
     }
 
     if (data !is null && imm.deserialize(data) < 0)
