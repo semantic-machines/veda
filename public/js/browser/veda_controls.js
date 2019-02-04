@@ -358,7 +358,7 @@
     }
 
     control.datetimepicker({
-      locale: Object.keys(veda.user.language).length === 1 ? Object.keys(veda.user.language)[0] : 'EN',
+      locale: Object.keys(veda.user.preferences.language).length === 1 ? Object.keys(veda.user.preferences.language)[0] : 'EN',
       allowInputToggle: true,
       format: format,
       sideBySide: true,
@@ -482,7 +482,7 @@
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       timeout;
 
-    Object.keys(veda.user.language).map(function (language_name) {
+    Object.keys(veda.user.preferences.language).map(function (language_name) {
       var localedInput = inputTemplate.clone();
 
       localedInput.find(".language-tag").text(language_name);

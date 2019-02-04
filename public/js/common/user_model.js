@@ -84,7 +84,7 @@ veda.Module(function (veda) { "use strict";
     preferences.on("v-ui:preferredLanguage", setLanguage);
     setLanguage();
     function setLanguage() {
-      self.language = preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
+      preferences.language = preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
         acc[lang.id.substr(lang.id.indexOf(":") + 1)] = lang;
         return acc;
       }, {});
@@ -96,7 +96,7 @@ veda.Module(function (veda) { "use strict";
     preferences.on("v-ui:displayedElements", setDisplayedElements);
     setDisplayedElements();
     function setDisplayedElements() {
-      self.displayedElements = preferences["v-ui:displayedElements"][0] || 10;
+      preferences.displayedElements = preferences["v-ui:displayedElements"][0] || 10;
       if ( !preferences.isSync() ) {
         preferences.save();
       }

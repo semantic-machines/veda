@@ -86,7 +86,7 @@ veda.Module(function (veda) { "use strict";
     self.filtered[property_uri] = [];
     return self.properties[property_uri]
       .filter(function (value) {
-        var condition = !value.lang || value.lang === "NONE" || ( veda.user && veda.user.language && value.lang in veda.user.language ) ;
+        var condition = !value.lang || value.lang === "NONE" || ( veda.user && veda.user.preferences && veda.user.preferences.language && value.lang in veda.user.preferences.language ) ;
         return condition ? condition : ( self.filtered[property_uri].push(value), condition );
       })
       .map( parser );

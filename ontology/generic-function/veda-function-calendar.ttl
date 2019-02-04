@@ -168,7 +168,7 @@ v-cal:FunctionCalendarTemplate
       start: '8:00',
       end: '18:00'
     },
-    locale: Object.keys(veda.user.language)[0].toLowerCase(),
+    locale: Object.keys(veda.user.preferences.language)[0].toLowerCase(),
     timezone: 'local',
     height: function () {
       var top = $('#fullcalendar', template).offset().top;

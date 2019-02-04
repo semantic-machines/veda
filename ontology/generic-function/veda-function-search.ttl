@@ -231,7 +231,7 @@ v-fs:AttributiveSearchModel
 
   // Defaults
   this["v-fs:cursor"] = [ this["v-fs:cursor"][0] || 0 ];
-  this["v-fs:top"] = [ veda.user.displayedElements || 10 ];
+  this["v-fs:top"] = [ veda.user.preferences.displayedElements || 10 ];
   this["v-fs:limit"] = [ this["v-fs:limit"][0] || 10000 ];
   this["v-fs:estimated"] = [ this["v-fs:estimated"][0] || 0 ];
   this["v-fs:authorized"] = [ this["v-fs:authorized"][0] || 0 ];
@@ -263,7 +263,7 @@ v-fs:AttributiveSearchModel
         ticket: veda.ticket,
         query: queryString,
         sort: self["v-fs:sortOrder"][0],
-        top: self["v-fs:top"][0] || veda.user.displayedElements || 10,
+        top: self["v-fs:top"][0] || veda.user.preferences.displayedElements || 10,
         limit: self["v-fs:limit"][0] || 10000,
         from: self["v-fs:cursor"][0]
       }).then(function (results) {
@@ -1005,7 +1005,7 @@ v-fs:AttributiveSearchInlineTemplate
         }
       }
       function formHandler () {
-        self.top = veda.user.displayedElements || 10;
+        self.top = veda.user.preferences.displayedElements || 10;
         self.search().then(renderResult);
       }
     });
@@ -1131,7 +1131,7 @@ v-fs:AttributiveSearchInlineTemplate
       $(".orderby a", template).addClass("text-muted");
       var dir = $this.hasClass("glyphicon-sort-by-attributes-alt") ? " asc" : " desc";
       $this.removeClass("text-muted").toggleClass("glyphicon-sort-by-attributes glyphicon-sort-by-attributes-alt");
-      self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.language)[0].toLowerCase() + "'" + dir ];
+      self["v-fs:sortOrder"] = [ "'" + property_uri + "'" + dir + " , " + "'" + property_uri + "_" + Object.keys(veda.user.preferences.language)[0].toLowerCase() + "'" + dir ];
       searchHandler.call(this);
     });
   });
