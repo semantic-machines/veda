@@ -46,30 +46,32 @@ cfg:Guest
   v-s:author cfg:VedaSystem ;
   v-s:firstName "Гость"@ru ;
   v-s:firstName "Guest"@en ;
+  rdfs:label "Гость"@ru ;
+  rdfs:label "Guest"@en ;
   v-s:hasAccount cfg:GuestAccount ;
   v-s:hasAppointment cfg:GuestAppointment ;
   v-s:defaultAppointment cfg:GuestAppointment ;
   v-s:hasAspect cfg:Guest_aspect ;
   v-ui:hasPreferences cfg:Guest_pref ;
   v-s:parentOrganization cfg:org_Veda ;
-  rdfs:label "Гость"@ru ;
-  rdfs:label "Guest"@en ;
+  v-s:owner cfg:Guest ;
 .
 cfg:GuestAccount
   rdf:type v-s:Account ;
-  rdfs:label "Guest account"@en ;
-  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "Guest. Учетная запись"@ru ;
   rdfs:label "Guest. Account"@en ;
+  v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
+  v-s:owner cfg:Guest ;
 .
 cfg:GuestAppointment
   rdf:type v-s:Appointment ;
   v-s:author cfg:VedaSystem ;
-  v-s:employee cfg:Guest ;
-  v-s:occupation cfg:User_position;
   rdfs:label "Гость"@ru ;
   rdfs:label "Guest"@en ;
+  v-s:employee cfg:Guest ;
+  v-s:occupation cfg:User_position;
   v-s:parentUnit cfg:User_department;
+  v-s:owner cfg:Guest ;
 .
 cfg:Guest_pref
   rdf:type v-ui:Preferences ;
@@ -79,13 +81,14 @@ cfg:Guest_pref
   rdfs:label "Guest. Preferences"@en ;
   v-ui:preferredLanguage v-ui:RU ;
   v-ui:displayedElements 10 ;
+  v-s:owner cfg:Guest ;
 .
 cfg:Guest_aspect
   rdf:type v-s:PersonalAspect ;
   v-s:author cfg:VedaSystem ;
-  v-s:owner cfg:Guest ;
   rdfs:label "Guest. Аспект"@ru ;
   rdfs:label "Guest. Aspect"@en ;
+  v-s:owner cfg:Guest ;
 .
 
 ### -------------------------------------------------------
@@ -263,7 +266,7 @@ cfg:AdministratorAppointment
 cfg:Administrator_pref
   rdf:type v-ui:Preferences ;
   v-s:author cfg:Administrator ;
-  v-ui:displayedElements "10"^^xsd:integer ;
+  v-ui:displayedElements 10 ;
   v-ui:preferredLanguage v-ui:RU ;
 .
 cfg:Administrator_aspect

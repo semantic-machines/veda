@@ -394,11 +394,15 @@ v-ui:LanguageSwitchTemplate
     var lang_uri = target.attr("resource");
     var lang = new veda.IndividualModel(lang_uri);
     var lang_name = lang["rdf:value"][0].toString();
-    if (lang_name in veda.user.language && Object.keys(veda.user.language).length == 1) return;
-    lang_name in veda.user.language ? delete veda.user.language[lang_name] : veda.user.language[lang_name] = veda.user.availableLanguages[lang_name];
-    veda.user.preferences["v-ui:preferredLanguage"] = Object.keys(veda.user.language).map ( function (lang_name) {
-      return veda.user.language[lang_name];
-    });
+    var hasLanguage = veda.user.preferences.hasValue("v-ui:preferredLanguage", lang);
+    var languageCount = veda.user.preferences["v-ui:preferredLanguage"].length;
+    if ( !hasLanguage ) {
+      veda.user.preferences.addValue("v-ui:preferredLanguage", lang);
+    } else if ( hasLanguage && languageCount > 1 ) {
+      veda.user.preferences.removeValue("v-ui:preferredLanguage", lang);
+    } else {
+      return;
+    }
   };
   //# sourceURL=v-ui:LanguageSwitchTemplate
 </script>
