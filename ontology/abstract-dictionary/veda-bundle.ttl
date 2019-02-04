@@ -209,11 +209,6 @@ v-s:InvertSelection
   rdfs:label "Инвертировать"@ru ;
   rdfs:label "Invert"@en ;
 .
-v-s:Clear
-  rdf:type v-s:Bundle ;
-  rdfs:label "Очистить"@ru ;
-  rdfs:label "Clear"@en ;
-.
 v-s:Create
   rdf:type v-s:Bundle ;
   rdfs:label "Создать"@ru ;
