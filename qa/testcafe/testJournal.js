@@ -20,6 +20,7 @@ import { Selector, t } from 'testcafe';
       .click('div.suggestions div.suggestion[resource="td:RomanKarpov-Analyst1"]')
       .typeText('veda-control[property="v-s:shortLabel"] textarea.form-control[lang="RU"]', 'shortLabel')
       .click('button#save')
+      .wait(5000)
       .click('button#journal')
       //Проверяем количество записей в журнале
       .wait(1000)
