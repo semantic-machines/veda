@@ -1533,5 +1533,5 @@ veda-control .radio:last-child, veda-control .checkbox:last-child {
 }
 .row-attribute > div:first-child {
   text-align: right;
-  font-weigth: bold;
+  font-weight: bold;
 }
