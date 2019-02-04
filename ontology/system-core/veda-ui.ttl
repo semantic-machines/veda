@@ -48,6 +48,12 @@ v-ui:preferredLanguage
   rdfs:label "Preferred language"@en ;
   rdfs:range v-ui:Language ;
 .
+v-ui:DefaultDisplayedElements
+  rdf:type rdfs:Resource ;
+  rdf:value 10 ;
+  rdfs:label "Количество отображаемых элементов по-умолчанию"@ru ;
+  rdfs:label "Default displayed elements count"@en ;
+.
 v-ui:forClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ClassTemplate ;
