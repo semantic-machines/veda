@@ -746,8 +746,9 @@
 
     populate();
 
-    select.focus(function () {
+    select.on("focusin", function () {
       populate();
+      select.click(); //IE workaround
     });
 
     select.change(function () {
