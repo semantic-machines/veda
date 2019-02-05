@@ -50,9 +50,11 @@ veda.Module(function (veda) { "use strict";
     ) {
       this["v-s:creator"] = [ user ];
       this["v-s:created"] = [ now ];
-    };
+    }
 
-    if (
+    if (veda.user.id === "cfg:Administrator") {
+      return;
+    } else if (
       !this.hasValue("v-s:lastEditor")
       || !this.hasValue("v-s:edited")
       || this["v-s:lastEditor"][0].id !== user.id
@@ -60,7 +62,7 @@ veda.Module(function (veda) { "use strict";
     ) {
       this["v-s:lastEditor"] = [ user ];
       this["v-s:edited"] = [ now ];
-    };
+    }
   }
 
   var proto = veda.IndividualModel.prototype;
@@ -204,6 +206,12 @@ veda.Module(function (veda) { "use strict";
     configurable: false,
     enumerable: false
   });
+
+  proto.memberOf = function () {
+    return this.membership.hasValue("v-s:memberOf") ? this.membership.properties["v-s:memberOf"].map(function (group_item) {
+      return group_item.data;
+    }) : [];
+  };
 
   proto.isMemberOf = function (group_uri) {
     return this.membership.hasValue("v-s:memberOf", group_uri);
@@ -505,6 +513,14 @@ veda.Module(function (veda) { "use strict";
    * @return {boolean} is requested property exists in this individual
    */
   proto.hasValue = function (property_uri, value) {
+    if (!property_uri && typeof value !== "undefined" && value !== null) {
+      var found = false;
+      for (var property_uri in this.properties) {
+        if (property_uri === "@") { continue; }
+        found = found || this.hasValue(property_uri, value);
+      }
+      return found;
+    }
     var result = !!(this.properties[property_uri] && this.properties[property_uri].length);
     if (typeof value !== "undefined" && value !== null) {
       var serialized = serializer(value);

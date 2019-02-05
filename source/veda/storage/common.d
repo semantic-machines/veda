@@ -14,6 +14,12 @@ enum DBMode
     RW = false
 }
 
+enum DBType
+{
+    LMDB  = 1,
+    TARANTOOL = 2
+}
+
 public interface KeyValueDB
 {
     public string get_binobj(string uri);
@@ -28,4 +34,6 @@ public interface KeyValueDB
 
     public ResultCode store(string in_key, string in_value, long op_id);
     public ResultCode remove(string in_key);
+    
+    public DBType get_type ();
 }

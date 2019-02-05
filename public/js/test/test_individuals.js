@@ -393,10 +393,10 @@ for (i = 0; i < 1; i++)
             res = Backend.put_individual(ticket_user1.id, new_test_doc5, false);
             res = Backend.put_individual(ticket_user1.id, new_test_doc6, false);
 
-//            Backend.flush (m_fulltext_indexer, res.op_id);
-
             Backend.wait_module(m_fulltext_indexer, res.op_id);
             Backend.wait_module(m_subject, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
+            Backend.wait_module(m_acl, res.op_id);
 
             var data = Backend.query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 

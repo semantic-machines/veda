@@ -305,7 +305,7 @@ v-s:disabled
 .
 v-s:runAt
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Event, v-s:UserScript ;
+  rdfs:domain v-s:Event ;
   rdfs:label "Исполнять в"@ru ;
   rdfs:label "Run at"@en ;
   rdfs:range xsd:string ;

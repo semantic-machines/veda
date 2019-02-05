@@ -49,6 +49,11 @@ public class LmdbDriver : KeyValueDB
 //        reopen_db();
     }
 
+	public DBType get_type ()
+	{
+		return DBType.LMDB;
+	}
+
     @property
     string path()
     {

@@ -20,23 +20,6 @@ struct Module
     bool     is_main;
     bool     is_enable;
     int      priority;
-
-    void     unlock()
-    {
-        foreach (el; wr_components)
-        {
-            string lock_path = "data/module-info/" ~ el ~ "_info.lock";
-            try
-            {
-                remove(lock_path);
-                stderr.writeln("remove lock_path=", lock_path);
-            }
-            catch (Throwable tr)
-            {
-                stderr.writeln("unable remove lock_path=", lock_path);
-            }
-        }
-    }
 }
 
 struct RunModuleInfo
@@ -284,29 +267,6 @@ void main(string[] args)
 
     while (is_main_loop)
     {
-        bool is_exist_lock = false;
-
-        foreach (ml; modules)
-        {
-            foreach (cc; ml.wr_components)
-            {
-                if (ModuleInfoFile.is_lock(cc) == true)
-                {
-                    stderr.writefln("Modile_info [%s] already open, or not deleted lock file", ml);
-                    is_exist_lock = true;
-                }
-            }
-        }
-
-//        if (Queue.is_lock(queue_db_path, "individuals-flow"))
-//        {
-//            stderr.writefln("Queue [%s] already open, or not deleted lock file", "individuals-flow");
-//            is_exist_lock = true;
-//        }
-
-        if (is_exist_lock)
-            return;
-
         is_found_modules = kill_prev_instance(modules.keys);
 
         if (is_found_modules == true)
@@ -507,8 +467,6 @@ void main(string[] args)
                         }
                         else
                         {
-                            ml.mdl.unlock();
-
                             auto _logFile = File("logs/" ~ ml.mdl.name ~ "-stderr.log", "w");
                             stderr.writeln("restart " ~ ml.mdl.name);
                             auto _pid = spawnProcess(ml.args.split(" "),
@@ -532,8 +490,6 @@ void main(string[] args)
                             }
                             else
                             {
-                                ml.mdl.unlock();
-
                                 auto _logFile = File("logs/" ~ ml.mdl.name ~ "-stderr.log", "w");
                                 stderr.writeln("restart " ~ ml.mdl.name);
                                 auto _pid = spawnProcess(ml.args.split(" "),

@@ -5,7 +5,8 @@ module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
 private import std.concurrency;
-private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual,
+               veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
@@ -76,11 +77,13 @@ class ScriptProcessLowPriority : ScriptProcess
         super(_vm_id, _subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start)
+                                long count_popped, long op_id_on_start,
+                                long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
@@ -97,16 +100,20 @@ class ScriptProcessLowPriority : ScriptProcess
         }
 
         main_cs_r.reopen();
-        while (main_cs_r.count_popped < count_popped)
+        while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
         {
             log.tracec("INFO: sleep, scripts_main=%d, my=%d", main_cs_r.count_popped, count_popped);
             core.thread.Thread.sleep(dur!("seconds")(1));
             main_cs_r.reopen();
         }
 
-        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed, count_popped, op_id_on_start, count_from_start);
+        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
+                             count_popped, op_id_on_start,
+                             count_from_start, cs_id);
     }
 }
+
+int MAX_COUNT_LOOPS = 100;
 
 class ScriptProcess : VedaModule
 {
@@ -148,11 +155,13 @@ class ScriptProcess : VedaModule
     }
 
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start)
+                                long count_popped, long op_id_on_start,
+                                long count_from_start, uint cs_id)
     {
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
@@ -227,10 +236,19 @@ class ScriptProcess : VedaModule
         //log.trace("indv=%s, indv_types=%s, event_scripts_order.length=%d", individual_id, indv_types, wpl.scripts_order.length);
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
+        string   last_part_event_id;
+        string[] full_path_els;
+        if (event_id != null && event_id.length > 0)
+        {
+            full_path_els = event_id.split(";");
+            if (full_path_els.length > 0)
+                last_part_event_id = full_path_els[ 0 ];
+        }
+
         foreach (_script_id; wpl.scripts_order)
         {
-            script_id  = _script_id;
-            g_event_id = new_indv.uri ~ '+' ~ script_id;
+            script_id = _script_id;
+            string     run_script_id = individual_id ~ '+' ~ script_id;
 
             ScriptInfo script = wpl.scripts[ script_id ];
 
@@ -244,12 +262,7 @@ class ScriptProcess : VedaModule
                         continue;
                 }
 
-                //log.trace("look script:%s", script_id);
-                if (script.unsafe == false && (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE")))
-                {
-                    //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
-                    continue;
-                }
+                g_event_id = run_script_id ~ ";" ~ event_id;
 
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
@@ -263,12 +276,41 @@ class ScriptProcess : VedaModule
                     log.trace("WARN! this script is UNSAFE!, %s", script_id);
 
                 //log.trace("filter pass script:%s", script_id);
+                //log.trace("look script:%s", script_id);
+
+                log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id,
+                          event_id);
+
+                if (script.unsafe == false)
+                {
+                    if (event_id !is null && event_id.length > 1)
+                    {
+                        //log.trace("@ last_part_event_id=%s", last_part_event_id);
+
+                        if ((last_part_event_id == run_script_id) || last_part_event_id == "IGNORE")
+                        {
+                            log.trace("ERR! skip script, found looped sequence, path: [%s]", last_part_event_id);
+                            continue;
+                        }
+
+                        int count_loops;
+                        foreach (el; full_path_els)
+                        {
+                            if (el == run_script_id)
+                                count_loops++;
+                        }
+
+                        if (count_loops > MAX_COUNT_LOOPS)
+                            log.trace("ERR! skip script, counted (%d) loops in sequencee > %d, path: [%s]", count_loops, MAX_COUNT_LOOPS, event_id);
+
+                        if (count_loops > 1)
+                            log.trace("WARN! found %d loops in sequence, path: [%s]", count_loops, event_id);
+                    }
+                }
 
                 try
                 {
                     tnx.reset();
-
-                    log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
@@ -406,19 +448,24 @@ class ScriptProcess : VedaModule
 
     private void set_g_parent_script_id_etc(string event_id)
     {
-        //writeln ("@d event_id=", event_id);
         string[] aa;
 
         if (event_id !is null)
         {
+            aa = event_id.split(";");
+            if (aa.length > 0)
+                event_id = aa[ 0 ];
+
             aa = event_id.split("+");
 
-            if (aa.length == 2)
+            if (aa.length >= 2)
             {
                 g_parent_script_id.data     = cast(char *)aa[ 1 ];
                 g_parent_script_id.length   = cast(int)aa[ 1 ].length;
                 g_parent_document_id.data   = cast(char *)aa[ 0 ];
                 g_parent_document_id.length = cast(int)aa[ 0 ].length;
+
+                //log.trace ("DEBUG! parent_script_id=%s, parent_document_id=%s", aa[ 1 ], aa[ 0 ]);
             }
             else
             {

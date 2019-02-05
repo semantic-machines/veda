@@ -48,11 +48,7 @@ v-s:LabelEvent
 document = get_individual(ticket, document["@"]);
 var prev_label = document["rdfs:label"] || [];
 var new_label = veda.Util.complexLabel(document);
-var prev_label_json = JSON.stringify( prev_label );
-var new_label_json = JSON.stringify( new_label );
-print("prev_label_json", prev_label_json);
-print("new_label_json", new_label_json);
-if (prev_label_json !== new_label_json) {
+if ( !veda.Util.areEqual(new_label, prev_label) ) {
   document["rdfs:label"] = new_label;
   put_individual(ticket, document, _event_id);
 }

@@ -72,6 +72,11 @@ public class LmdbClient : KeyValueDB
         log     = _log;
     }
 
+        public DBType get_type ()
+        {
+                return DBType.LMDB;
+        }
+
     public string get_binobj(string uri)
     {
         return reqrep_binobj_2_srv(space_name ~ "," ~ uri);

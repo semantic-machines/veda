@@ -18,7 +18,7 @@
 # ------------------------------------------------------------ КЛАССЫ --
 
 # ------------------------------------------------------------ДОСЬЕ_КОНТРАГЕНТА_ПО_БЕЗОПАСНОСТИ
-v-s:ContractorProfileSafety  
+v-s:ContractorProfileSafety
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:Temporal ;
@@ -56,8 +56,15 @@ v-s:hasProfession
 v-s:hasMedicalCheckupCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Мед осмотр"@ru ;
-  rdfs:label "Medical checkup"@en ;
+  rdfs:label "Мед осмотр (ИТР)"@ru ;
+  rdfs:label "Medical checkup (ETW)"@en ;
+  rdfs:range v-s:MedicalCheckupCertificationDocument ;
+.
+v-s:hasMedicalCheckupCertificateForWorkers
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Мед осмотр (рабочие)"@ru ;
+  rdfs:label "Medical checkup (workers)"@en ;
   rdfs:range v-s:MedicalCheckupCertificationDocument ;
 .
 v-s:hasMedicalCheckupCertificateForDriver
@@ -72,6 +79,13 @@ v-s:hasLaborSafetyCertificate
   rdfs:domain v-s:EmployeeProfile ;
   rdfs:label "Проверка знаний по ОТ"@ru ;
   rdfs:label "Labor safety certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:hasLaborSafetyCertificateForWorkers
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Проверка знаний по ОТ (рабочие)"@ru ;
+  rdfs:label "Labor safety certificate (workers)"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasWorkAtHighAltitudeCertificate

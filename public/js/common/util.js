@@ -1051,16 +1051,23 @@ veda.Module(function (veda) { "use strict";
         var pattern = type["v-s:labelPattern"][0].data;
         languages.forEach(function (language) {
           var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
+            var indexes = null;
+            if (group.indexOf(' ') != -1) {
+              var temp = group.split(' ');
+              group = temp[0];
+              indexes = temp[1].substring(1, temp[1].length-1).split(',');
+            }
             var chain = group.split(".");
             if (chain[0] === "@") {
               chain[0] = individual["@"];
             }
-            return get_localized_chain.apply({}, [language].concat(chain));
+            var localedChain = get_localized_chain.apply({}, [language].concat(chain));
+            return indexes == null? localedChain : localedChain.substring(+indexes[0], +indexes[1]);
           });
           var result = {
             data: replaced,
-            type: "String",
-            lang: language
+            lang: language,
+            type: "String"
           };
           acc.push(result);
         });
@@ -1318,6 +1325,48 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util.mlstring = function (ruString, enString) {
     return [{type: "String", data: ruString, lang: "RU"}, {type: "String", data: enString, lang: "EN"}];
+  };
+
+  // Returns literal value or resource id for given property chain
+  veda.Util.getPropertyChain = function () {
+    var value = arguments[0];
+    var argsLength = arguments.length;
+    if (typeof value === "string") {
+      value = get_individual(veda.ticket, value);
+    }
+    var i, property_uri, type;
+    for (i = 1; i < argsLength; i++) {
+      property_uri = arguments[i];
+      if ( veda.Util.hasValue(value, property_uri) ) {
+        type = value[property_uri][0].type;
+        value = value[property_uri][0].data;
+        if (i === (argsLength - 1) ) {
+          return value;
+        } else if (type === "Uri") {
+          value = get_individual(veda.ticket, value);
+          continue;
+        }
+      }
+      return;
+    }
+    return value;
+  };
+
+  veda.Util.areEqual = function (x, y) {
+    if ( x === y ) return true;
+    if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    if ( x.constructor !== y.constructor ) return false;
+    for ( var p in x ) {
+      if ( ! x.hasOwnProperty( p ) ) continue;
+      if ( ! y.hasOwnProperty( p ) ) return false;
+      if ( x[ p ] === y[ p ] ) continue;
+      if ( typeof( x[ p ] ) !== "object" ) return false;
+      if ( ! veda.Util.areEqual( x[ p ],  y[ p ] ) ) return false;
+    }
+    for ( p in y ) {
+      if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+    }
+    return true;
   };
 
 });

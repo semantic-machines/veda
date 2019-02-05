@@ -9,8 +9,10 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid, std.random;
     import veda.util.properd, veda.core.impl.app_context_creator;
-    import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
-    import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
+    import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context,
+           veda.search.xapian.xapian_search;
+    import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource,
+           veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
@@ -317,7 +319,8 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
     }
 
     log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
-                                                                                                                                  UTC()).toISOExtString(),
+                                                                                                                                  UTC()).
+              toISOExtString(),
               SysTime(ticket.end_time, UTC()).toISOExtString());
 
     return ticket;
@@ -1031,7 +1034,8 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
                 {
                     log.trace("commit: item.rc=%s", item.rc);
                     if (item.rc == ResultCode.Ok)
-                        rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                        rc = prepare_event(rdfType, item.assigned_subsystems, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto,
+                                           item.op_id);
                 }
                 rcs ~= OpResult(rc, op_id);
             }
@@ -1058,7 +1062,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         opt_request = OptAuthorize.NO;
     }
 
-    //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
+    //log.trace("@add_to_transaction: target=%s op=%s indv=%s", subsystem_byte_to_string(cast(ubyte)assigned_subsystems), text(cmd), *indv);
 
     OpResult res = OpResult(ResultCode.FailStore, -1);
 
@@ -1273,7 +1277,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.Ok)
-            res.result = prepare_event(rdfType, prev_state, new_state, is_acl_element, is_onto, res.op_id);
+            res.result = prepare_event(rdfType, assigned_subsystems, prev_state, new_state, is_acl_element, is_onto, res.op_id);
 
         return res;
     }
@@ -1289,12 +1293,17 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     }
 }
 
-private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto,
+private ResultCode prepare_event(ref MapResource rdfType, long assigned_subsystems, string prev_binobj, string new_binobj, bool is_acl_element,
+                                 bool is_onto,
                                  long op_id)
 {
     ResultCode res;
-
     Tid        tid_acl;
+
+    //log.trace("@prepare_event assigned_subsystems=%s", subsystem_byte_to_string(assigned_subsystems));
+
+    if (assigned_subsystems != ALL_MODULES && (assigned_subsystems & SUBSYSTEM.ACL) != SUBSYSTEM.ACL)
+        return ResultCode.Ok;
 
     if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
         rdfType.anyExists(veda_schema__PermissionFilter) == true)
@@ -1306,9 +1315,7 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
         }
     }
 
-    res = ResultCode.Ok;
-
-    return res;
+    return ResultCode.Ok;
 }
 
 private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)

@@ -40,9 +40,11 @@ v-s:ScheduledAction
   rdfs:subClassOf v-s:Action ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:label "Запланированное событие"@ru ;
   rdfs:label "Scheduled action"@en ;
   v-ui:hasTemplate v-s:SingleScheduledActionTemplate ;
+  v-s:labelPattern "{@.v-s:dateToPlan} - {@.v-s:description [0,100]}" ;
 .
 # v-s:parent
 # rdfs:label

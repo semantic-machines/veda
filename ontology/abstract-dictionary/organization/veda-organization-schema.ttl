@@ -211,8 +211,10 @@ v-s:Appointment
   rdfs:label "Назначение"@ru ;
   rdfs:label "Appointment"@en ;
   rdfs:subClassOf v-s:HRRecord ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
+  v-s:labelPattern "{@.v-s:employee.rdfs:label} {@.v-s:occupation.rdfs:label}" ;
 .
 v-s:official
   rdf:type owl:DatatypeProperty ;
@@ -234,7 +236,7 @@ v-s:Person
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
   v-ui:hasTemplate v-s:PersonalInfoTemplate ;
-  v-s:labelPattern "{@.v-s:firstName} {@.v-s:lastName}" ;
+  v-s:labelPattern "{@.v-s:lastName} {@.v-s:firstName} {@.v-s:middleName [0,1]}." ;
 .
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;

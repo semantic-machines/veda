@@ -1,0 +1,888 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
+@prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-function-property-authorization>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства/выражения'"@ru ;
+  rdfs:label "Veda system ontology. Function 'Authorization on predicate/expression value'"@en ;
+#  owl:versionInfo "1.3" ;
+  v-s:loadPriority 6 ;
+.
+
+# ------------------------------------------------------------ КЛАССЫ --
+
+v-s:GroupAuthorized
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Авторизуемый ресурс"@ru ;
+  rdfs:label "Authorized resource"@en ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по сгенерированным группам."@ru ;
+  rdfs:comment "Superclass for classes whose individuals should be authorized by auto generated groups class."@en ;
+.
+
+v-s:ClassAuthorized
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Ресурс авторизуемый по классу"@ru ;
+  rdfs:label "Class authorized resource"@en ;
+  rdfs:comment "Superclass for classes whose individuals should be authorized by class"@ru ;
+  rdfs:comment "Суперкласс всех классов, индивиды которых могут авторизоваться по классу"@en ;
+.
+
+v-s:GroupGenerator
+  rdf:type owl:Class ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth groups generator"@en ;
+  rdfs:comment "Используется для распределения индивидов в группы авторизации на основе вычисленного от объекта значения предиката или функции."@ru ;
+  rdfs:comment "Used to distribute individuals to auth groups based on calculated value of predicate or function."@en ;
+  rdfs:subClassOf v-s:SystemThing ;
+  v-ui:hasTemplate v-s:GroupGeneratorTemplate ;
+.
+
+v-s:authClass
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Авторизуемый класс"@ru ;
+  rdfs:label "Authorized class"@en ;
+  rdfs:range rdfs:Class ;
+.
+
+v-s:authProperty
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Авторизуемое свойство"@ru ;
+  rdfs:label "Authorized property"@en ;
+  rdfs:range rdf:Property ;
+.
+
+v-s:authFunction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Функция для вычисления авторизуемого значения"@ru ;
+  rdfs:label "Function to calculate authorized value"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:authValue
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Авторизуемое значение"@ru ;
+  rdfs:label "Authorized value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:PermissionGenerator
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:PermissionStatement ;
+  rdfs:label "Генератор прав"@ru ;
+  rdfs:label "Permissions generator"@en ;
+  v-ui:hasTemplate v-s:PermissionGeneratorTemplate ;
+.
+
+v-s:objectGroupGenerator
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Генератор группы объекта"@ru ;
+  rdfs:label "Object group generator"@en ;
+  rdfs:range v-s:GroupGenerator ;
+.
+
+v-s:objectGroupGeneratorValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Значение генератора группы объекта"@ru ;
+  rdfs:label "Object group generator value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:subjectGroupGenerator
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Генератор группы субъекта"@ru ;
+  rdfs:label "Subject group generator"@en ;
+  rdfs:range v-s:GroupGenerator ;
+.
+
+v-s:subjectGroupGeneratorValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:PermissionGenerator ;
+  rdfs:label "Значение генератора группы субъекта"@ru ;
+  rdfs:label "Subject group generator value"@en ;
+  rdfs:range rdfs:Resource ;
+.
+
+# ------------------------------------------------------------ ШАБЛОНЫ --
+
+v-s:GroupGeneratorUri
+  rdf:type v-s:Bundle ;
+  rdfs:label "URI группы авторизации для выбранного значения"@ru ;
+  rdfs:label "Auth group URI for chosen value"@en ;
+.
+
+v-s:GroupGeneratorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:GroupGenerator ;
+  rdfs:label "Шаблон для класса v-s:GroupGenerator"@ru ;
+  rdfs:label "Template for v-s:GroupGenerator class"@en ;
+  v-ui:template """
+<script>
+  //# sourceURL=v-s:GroupGeneratorTemplate_pre
+</script>
+<div class="container sheet">
+  <h2 about="v-s:GroupGenerator" property="rdfs:label"></h2>
+  <hr>
+  <em about="rdfs:label" property="rdfs:label"></em>
+  <div property="rdfs:label" class="view -edit -search"></div>
+  <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <div property="rdfs:comment" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="rdfs:comment" class="-view edit search"></veda-control>
+
+  <em about="v-s:authClass" property="rdfs:label"></em>
+  <div about="@" rel="v-s:authClass" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+  <div rel="v-s:authClass" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:authClass" class="-view edit search fulltext"></veda-control>
+
+  <em about="v-s:authProperty" property="rdfs:label"></em>
+  <div about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+  <div rel="v-s:authProperty" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:authProperty" class="-view edit search fulltext"></veda-control>
+
+  <em about="v-s:authFunction" property="rdfs:label"></em>
+  <div property="v-s:authFunction" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="v-s:authFunction" class="-view edit search"></veda-control>
+
+  <em about="v-s:authValue" property="rdfs:label"></em>
+  <div property="v-s:authValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
+  <em about="v-s:GroupGeneratorUri" property="rdfs:label"></em>
+  <code class="group-uri"></code>
+  <br>
+  <br>
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  individual.on("propertyModified", handler);
+  template.one("remove", function () {
+    individual.off("propertyModified", handler);
+  });
+  handler();
+
+  function handler() {
+    var $groupUri = $(".group-uri", template);
+    if ( individual.hasValue("v-s:authValue") ) {
+      var group_concat_uri = individual.id + " " + individual["v-s:authValue"][0].toString();
+      var hash = Sha256.hash(group_concat_uri).substring(32);
+      var group_uri = "d:grp-" + hash;
+      $groupUri.text(group_uri);
+    } else {
+      $groupUri.text("");
+    }
+  }
+
+  //# sourceURL=v-s:GroupGeneratorTemplate_post
+</script>
+""" ;
+.
+
+v-s:PermissionGeneratorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:GroupGenerator ;
+  rdfs:label "Шаблон для класса v-s:PermissionGenerator"@ru ;
+  rdfs:label "Template for v-s:PermissionGenerator class"@en ;
+  v-ui:template """
+<script>
+  //# sourceURL=v-s:PermissionGeneratorTemplate_pre
+</script>
+<div class="container sheet">
+  <h2 about="v-s:PermissionGenerator" property="rdfs:label"></h2>
+  <hr>
+  <em about="rdfs:label" property="rdfs:label"></em>
+  <div property="rdfs:label" class="view -edit -search"></div>
+  <veda-control data-type="string" property="rdfs:label" class="-view edit search"></veda-control>
+
+  <em about="rdfs:comment" property="rdfs:label"></em>
+  <div property="rdfs:comment" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="rdfs:comment" class="-view edit search"></veda-control>
+
+  <hr>
+
+  <em about="v-s:permissionSubject" property="rdfs:label"></em>
+  <div rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:permissionSubject" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:subjectGroupGenerator" property="rdfs:label"></em>
+  <div rel="v-s:subjectGroupGenerator" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:subjectGroupGenerator" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:subjectGroupGeneratorValue" property="rdfs:label"></em>
+  <div property="v-s:subjectGroupGeneratorValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:subjectGroupGeneratorValue" class="-view edit search"></veda-control>
+
+  <hr>
+
+  <em about="v-s:permissionObject" property="rdfs:label"></em>
+  <div rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:permissionObject" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:objectGroupGenerator" property="rdfs:label"></em>
+  <div rel="v-s:objectGroupGenerator" data-template="v-ui:LabelLinkTemplate" class="view -edit search"></div>
+  <veda-control data-type="link" rel="v-s:objectGroupGenerator" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="v-s:objectGroupGeneratorValue" property="rdfs:label"></em>
+  <div property="v-s:objectGroupGeneratorValue" class="view -edit -search"></div>
+  <veda-control data-type="generic" property="v-s:objectGroupGeneratorValue" class="-view edit search"></veda-control>
+
+  <hr>
+
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canCreate" data-type="boolean"></veda-control>
+      <em about="v-s:canCreate" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canRead" data-type="boolean"></veda-control>
+      <em about="v-s:canRead" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canUpdate" data-type="boolean"></veda-control>
+      <em about="v-s:canUpdate" property="rdfs:label"></em>
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <veda-control property="v-s:canDelete" data-type="boolean"></veda-control>
+      <em about="v-s:canDelete" property="rdfs:label"></em>
+    </label>
+  </div>
+  <br>
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+  </div>
+</div>
+<script>
+  //# sourceURL=v-s:PermissionGeneratorTemplate_post
+</script>
+""" ;
+.
+
+# ------------- РЕЕСТРЫ ---------------
+
+v-s:GroupGeneratorBlank
+  a v-fc:Blank ;
+  rdfs:label "Генератор групп авторизации"@ru ;
+  rdfs:label "Auth group generator"@en ;
+  v-fc:targetType v-s:GroupGenerator ;
+.
+
+v-s:GroupGeneratorRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Генераторы групп авторизации"@ru ;
+  rdfs:label "Auth group generators"@en ;
+  v-fs:searchBlank v-s:GroupGeneratorBlank ;
+  v-fs:searchBlankTemplate v-s:GroupGeneratorTemplate ;
+  v-fs:searchResultTemplate v-s:GroupGeneratorRegistryResultTemplate ;
+.
+
+v-s:GroupGeneratorRegistryResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра v-s:GroupGenerator"@ru ;
+  rdfs:label "v-s:GroupGenerator registry result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="11" about="v-s:GroupGenerator" property="rdfs:label"></th>
+    </tr>
+    <tr class="active">
+      <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th class="orderby" data-orderby="v-s:authClass"><span about="v-s:authClass" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authProperty"><span about="v-s:authProperty" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authFunction"><span about="v-s:authFunction" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:authValue"><span about="v-s:authValue" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td><input type="checkbox" class="toggle-select"></td>
+      <td class="serial-number"></td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td about="@" rel="v-s:authClass" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" rel="v-s:authProperty" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:authFunction"></td>
+      <td about="@" property="v-s:authValue"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:created"></td>
+    </tr>
+  </tbody>
+</table>
+  """ ;
+.
+
+v-s:PermissionGeneratorBlank
+  a v-fc:Blank ;
+  rdfs:label "Генератор прав"@ru ;
+  rdfs:label "Permissions generator"@en ;
+  v-fc:targetType v-s:PermissionGenerator ;
+.
+
+v-s:PermissionGeneratorRegistry
+  a v-fs:AttributiveSearch;
+  rdfs:label "Генераторы прав"@ru ;
+  rdfs:label "Permissions generators"@en ;
+  v-fs:searchBlank v-s:PermissionGeneratorBlank ;
+  v-fs:searchBlankTemplate v-s:PermissionGeneratorTemplate ;
+  v-fs:searchResultTemplate v-s:PermissionGeneratorRegistryResultTemplate ;
+.
+
+v-s:PermissionGeneratorRegistryResultTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон результатов реестра v-s:PermissionGenerator"@ru ;
+  rdfs:label "v-s:PermissionGenerator registry result template"@en ;
+  v-ui:template """
+<table class="table table-bordered">
+  <thead class="result-header">
+    <tr>
+      <th colspan="12" about="v-s:PermissionGenerator" property="rdfs:label"></th>
+    </tr>
+    <tr class="active">
+      <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
+      <th width="1%">#</th>
+      <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+      <th><span about="v-s:permissionSubject" property="rdfs:label"></span></th>
+      <th><span about="v-s:subjectGroupGenerator" property="rdfs:label"></span></th>
+      <th><span about="v-s:subjectGroupGeneratorValue" property="rdfs:label"></span></th>
+      <th><span about="v-s:Rights" property="rdfs:label"></span></th>
+      <th><span about="v-s:permissionObject" property="rdfs:label"></span></th>
+      <th><span about="v-s:objectGroupGenerator" property="rdfs:label"></span></th>
+      <th><span about="v-s:objectGroupGeneratorValue" property="rdfs:label"></span></th>
+      <th><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+    </tr>
+  </thead>
+  <tbody class="result-container">
+    <tr>
+      <td><input type="checkbox" class="toggle-select"></td>
+      <td class="serial-number"></td>
+      <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+      <td about="@" rel="v-s:permissionSubject" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" rel="v-s:subjectGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" property="v-s:subjectGroupGeneratorValue"></td>
+      <td><strong class="rights"></strong></td>
+      <td about="@" rel="v-s:permissionObject" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" rel="v-s:objectGroupGenerator" data-template="v-ui:LabelLinkTemplate"></td>
+      <td about="@" property="v-s:objectGroupGeneratorValue"></td>
+      <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:created"></td>
+    </tr>
+    <script>
+      var rights = "";
+      rights += (this.hasValue("v-s:canCreate", true) ? "C" : "");
+      rights += (this.hasValue("v-s:canRead",   true) ? "R" : "");
+      rights += (this.hasValue("v-s:canUpdate", true) ? "U" : "");
+      rights += (this.hasValue("v-s:canDelete", true) ? "D" : "");
+      $(".rights", template).text(rights);
+    </script>
+  </tbody>
+</table>
+  """ ;
+.
+
+# ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
+
+v-s:GroupGenerator_BaseUser
+  rdf:type v-s:Group ;
+  rdfs:label "Основные пользователи v-s:GroupGenerator"@ru ;
+  rdfs:label "Users v-s:GroupGenerator"@en ;
+.
+
+v-s:GroupGenerator_Admin
+  rdf:type v-s:Group ;
+  rdfs:label "Администраторы v-s:GroupGenerator"@ru ;
+  rdfs:label "Administrators v-s:GroupGenerator"@en ;
+.
+
+v-s:GroupGenerator_permission1
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:GroupGenerator ;
+  v-s:permissionObject v-s:GroupGenerator_group ;
+  v-s:permissionObject v-s:GroupGeneratorBlank ;
+  v-s:permissionObject v-s:GroupGeneratorRegistry ;
+  v-s:permissionObject v-s:GroupGeneratorRegistryBlank ;
+  v-s:permissionSubject v-s:GroupGenerator_BaseUser ;
+  v-s:canRead "true"^^xsd:boolean ;
+  rdfs:label "R. Все пользователи. Индивиды v-s:GroupGenerator" ;
+.
+
+v-s:GroupGenerator_permission2
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:GroupGeneratorUser ;
+  v-s:permissionSubject v-s:GroupGenerator_BaseUser ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Админы. Класс v-s:GroupGenerator" ;
+.
+
+v-s:GroupGenerator_permission3
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:GroupGenerator ;
+  v-s:permissionObject v-s:GroupGenerator_group ;
+  v-s:permissionObject v-s:GroupGeneratorUserBlank ;
+  v-s:permissionObject v-s:GroupGeneratorRegistry ;
+  v-s:permissionObject v-s:GroupGeneratorRegistryBlank ;
+  v-s:permissionObject v-s:GroupGeneratorAdminBlank ;
+  v-s:permissionObject v-s:GroupGeneratorAdmin ;
+  v-s:permissionObject v-s:GroupGeneratorAdmin_group ;
+  v-s:permissionSubject v-s:GroupGenerator_Admin ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:canUpdate "true"^^xsd:boolean ;
+  v-s:canDelete "true"^^xsd:boolean ;
+  rdfs:label "CRUD. Админы. Индивиды v-s:GroupGenerator" ;
+.
+
+v-s:AllUsersGroup_GroupGenerator_BaseUser_membership
+  rdf:type v-s:Membership ;
+  v-s:memberOf v-s:GroupGenerator_BaseUser ;
+  v-s:resource cfg:AllUsersGroup ;
+  v-s:resource v-s:GroupGenerator_Admin ;
+  rdfs:label "Все пользователи входят в группу Основные пользователи v-s:GroupGenerator" ;
+.
+
+# ------------------------------------------------------------ СЕРВЕРНЫЕ СКРИПТЫ --
+
+v-s:GroupsGeneratorsAreActual
+  rdf:type rdfs:Resource ;
+  rdfs:label "Признак актуальности генераторов групп" ;
+  rdf:value false ;
+.
+
+v-s:Event_GroupGenerator
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт распределения по группам авторизации" ;
+  v-s:triggerByType v-s:GroupAuthorized ;
+  v-s:preventByType v-s:Version;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+var areActual = get_individual(veda.ticket, "v-s:GroupsGeneratorsAreActual");
+areActual = areActual && areActual["rdf:value"] && areActual["rdf:value"][0].data;
+veda.GroupGenerators = areActual && veda.GroupGenerators;
+
+if (!veda.GroupGenerators) {
+  console.log("(Re)build group generators");
+  veda.GroupGenerators = query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
+    var generator = get_individual(veda.ticket, generator_uri);
+    var authClass = veda.Util.getUri(generator["v-s:authClass"]);
+    var authProperty = veda.Util.getUri(generator["v-s:authProperty"]);
+    var authFunction = veda.Util.getFirstValue(generator["v-s:authFunction"]);
+    var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
+    var fn;
+    if (authProperty) {
+      fn = new Function("veda", "return veda.Util.getFirstValue(this['" + authProperty + "']);");
+    } else if (authFunction) {
+      fn = new Function("veda", authFunction);
+    }
+    fn.generator = generator_uri;
+    fn.value = authValue;
+    acc[authClass] = (acc[authClass] || []).concat(fn);
+    return acc;
+  }, {});
+  set_in_individual(veda.ticket, {
+    "@": "v-s:GroupsGeneratorsAreActual",
+    "rdf:value": veda.Util.newBool(true)
+  });
+}
+
+var currGroups = generateGroups(document),
+    currGroupsUris = Object.keys(currGroups).sort(),
+    prevGroups = generateGroups(prev_state),
+    prevGroupsUris = Object.keys(prevGroups).sort(),
+    i = 0,
+    j = 0,
+    currGroup,
+    prevGroup;
+
+while ((currGroup = currGroupsUris[i]) && (prevGroup = prevGroupsUris[j])) {
+  if (prevGroup < currGroup) {
+    removeMembership(prevGroup);
+    j++;
+  } else if (prevGroup > currGroup) {
+    addMembership(currGroup);
+    i++;
+  } else {
+    checkAddMembership(currGroup);
+    i++;
+    j++;
+  }
+}
+while (prevGroup = prevGroupsUris[j]) {
+  removeMembership(prevGroup);
+  j++;
+}
+while (currGroup = currGroupsUris[i]) {
+  addMembership(currGroup);
+  i++;
+}
+
+function addMembership(group_uri) {
+  var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
+  var groupLabel = currGroups[group_uri];
+  var mem = {
+    "@": mem_uri,
+    "rdf:type": veda.Util.newUri("v-s:Membership"),
+    "rdfs:label": veda.Util.newStr("Membership. " + groupLabel),
+    "v-s:resource": veda.Util.newUri(document["@"]),
+    "v-s:memberOf": veda.Util.newUri(group_uri)
+  };
+  put_individual(veda.ticket, mem);
+  //console.log("added to", group_uri, currGroups[group_uri]);
+}
+
+function removeMembership(group_uri) {
+  var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
+  remove_individual(veda.ticket, mem_uri);
+  //console.log("removed from", group_uri, prevGroups[group_uri]);
+}
+
+function checkAddMembership(group_uri) {
+  var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
+  var mem = get_individual(veda.ticket, mem_uri);
+  if (!mem) {
+    addMembership(group_uri);
+  }
+}
+
+function generateGroups(document) {
+  var groups = {};
+  if (!document) { return groups; }
+  var type = veda.Util.getUri(document["rdf:type"]);
+  var _super = JSON.parse(super_classes);
+  _super.push(type);
+
+  for (var i = 0, _class; (_class = _super[i]); i++) {
+    if (_class in veda.GroupGenerators) {
+      var fns = veda.GroupGenerators[_class];
+      for (var j = 0, fn; (fn = fns[j]); j++) {
+        var fn_value;
+        if (fn.value === undefined) {
+          fn_value = fn.call(document, veda);
+          if (fn_value === undefined) { continue; }
+        } else {
+          fn_value = (fn.value.toString() === fn.call(document, veda).toString());
+          if (fn_value === false) { continue; }
+          fn_value = fn.value;
+        }
+        var group_concat_uri = fn.generator + " " + fn_value.toString();
+        var hash = Sha256.hash(group_concat_uri).substring(32);
+        var group_uri = "d:grp-" + hash;
+        groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
+
+        var group = get_individual(veda.ticket, group_uri);
+        if ( !group ) {
+          group = {
+            "@": group_uri,
+            "rdf:type": veda.Util.newUri("v-s:Group"),
+            "rdfs:label": veda.Util.newStr("Auth group. Generator: " + fn.generator + ", value: " + fn_value)
+          };
+          put_individual(veda.ticket, group);
+        }
+      }
+    }
+  }
+  return groups;
+}
+  """ ;
+.
+
+v-s:Event_GroupGeneratorsReset
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки генераторов групп авторизации" ;
+  v-s:triggerByType v-s:GroupGenerator ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+console.log("Reset group generators");
+veda.GroupGenerators = undefined;
+set_in_individual(veda.ticket, {
+  "@": "v-s:GroupsGeneratorsAreActual",
+  "rdf:value": veda.Util.newBool(false)
+});
+  """ ;
+.
+
+v-s:Event_PermissionGenerator
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт обработки генераторов прав" ;
+  v-s:triggerByType v-s:PermissionGenerator ;
+  v-s:runAt "V8.LowPriority" ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+var isDeleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
+var permissionGenerator = document;
+var subjectGroup_uri;
+var objectGroup_uri;
+
+if (veda.Util.hasValue(permissionGenerator, "v-s:permissionSubject")) {
+  subjectGroup_uri = veda.Util.getUri(permissionGenerator["v-s:permissionSubject"]);
+} else if (veda.Util.hasValue(permissionGenerator, "v-s:subjectGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:subjectGroupGeneratorValue")) {
+  var subjectGroupGenerator = veda.Util.getUri(permissionGenerator["v-s:subjectGroupGenerator"]);
+  var subjectGroupGeneratorValue = permissionGenerator["v-s:subjectGroupGeneratorValue"][0].data;
+  var subjectGroup_concat_uri = subjectGroupGenerator + " " + subjectGroupGeneratorValue;
+  var subjectGroup_hash = Sha256.hash(subjectGroup_concat_uri).substring(32);
+  subjectGroup_uri = "d:grp-" + subjectGroup_hash;
+}
+if (veda.Util.hasValue(permissionGenerator, "v-s:permissionObject")) {
+  objectGroup_uri = veda.Util.getUri(permissionGenerator["v-s:permissionObject"]);
+} else if (veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGenerator") && veda.Util.hasValue(permissionGenerator, "v-s:objectGroupGeneratorValue")) {
+  var objectGroupGenerator = veda.Util.getUri(permissionGenerator["v-s:objectGroupGenerator"]);
+  var objectGroupGeneratorValue = permissionGenerator["v-s:objectGroupGeneratorValue"][0].data;
+  var objectGroup_concat_uri = objectGroupGenerator + " " + objectGroupGeneratorValue;
+  var objectGroup_hash = Sha256.hash(objectGroup_concat_uri).substring(32);
+  objectGroup_uri = "d:grp-" + objectGroup_hash;
+}
+if (subjectGroup_uri && objectGroup_uri) {
+  var permission_concat_uri = subjectGroup_uri + " " + objectGroup_uri;
+  var permission_hash = Sha256.hash(permission_concat_uri).substring(32);
+  var permission_uri = "d:per-" + permission_hash;
+  var permission = {
+    "@": permission_uri,
+    "rdf:type": veda.Util.newUri("v-s:PermissionStatement"),
+    "rdfs:label": veda.Util.newStr("Permission. Permission generator: " + permissionGenerator["@"]),
+    "rdfs:comment": veda.Util.newStr("Subject group generator: " + subjectGroupGenerator + ", value: " + subjectGroupGeneratorValue + ", Object group generator: " + objectGroupGenerator + ", value: " + objectGroupGeneratorValue),
+    "v-s:permissionSubject": veda.Util.newUri(subjectGroup_uri),
+    "v-s:permissionObject": veda.Util.newUri(objectGroup_uri),
+    "v-s:canCreate": permissionGenerator["v-s:canCreate"],
+    "v-s:canRead":   permissionGenerator["v-s:canRead"],
+    "v-s:canUpdate": permissionGenerator["v-s:canUpdate"],
+    "v-s:canDelete": permissionGenerator["v-s:canDelete"]
+  };
+  if (!isDeleted) {
+    put_individual(veda.ticket, permission);
+  } else {
+    remove_individual(veda.ticket, permission_uri);
+  }
+}
+  """ ;
+.
+
+##### Permission and group generator example #####
+
+# v-s:GroupGenerator_Class
+#   rdf:type v-s:GroupGenerator ;
+#   v-s:authClass v-s:Person ;
+#   v-s:authProperty rdf:type ;
+#   v-s:authValue v-s:Person ;
+#   rdfs:label "Auth group generator: put individual to class group" ;
+# .
+#
+# v-s:PermissionGenerator_Persons_R_Person
+#   rdf:type v-s:PermissionGenerator ;
+#   rdfs:label "Permission generator: All indivduals of v-s:Person class '-R--' All indivduals of v-s:Person class" ;
+#   v-s:permissionSubject cfg:AllUsersGroup ;
+#   v-s:canRead true ;
+#   v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
+#   v-s:objectGroupGeneratorValue v-s:Person ;
+# .
+
+# Обработка v-s:ClassAuthorized ----------------------------------------
+
+cfg:Event_7
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
+  rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
+  v-s:triggerByType v-s:ClassAuthorized ;
+  v-s:preventByType v-s:Version;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+if (parent_document_id && parent_document_id === document['@']) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
+var doc_uri = document["@"],
+  _classes = veda.Util.getUris( document["rdf:type"] );
+
+_classes.map(function (class_uri) {
+  var class_group_uri = class_uri + '_group', // uri группы индивидов класса
+      uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_');
+
+  var membership = {
+    '@' : uri,
+    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+    'v-s:memberOf' : veda.Util.newUri(class_group_uri),
+    'v-s:resource' : veda.Util.newUri(doc_uri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_7')
+  };
+  put_individual (ticket, membership, _event_id);
+});
+  """ ;
+.
+
+cfg:Event_8
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
+  rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
+  v-s:triggerByType rdfs:Class ;
+  v-s:script """
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
+if (parent_document_id && parent_document_id === document['@']) {
+  // print("Not first class event. Exit.");
+  return;
+}
+
+var _class = document,
+  class_uri = _class["@"],
+  class_group_uri = class_uri + "_group",
+  class_deleted = veda.Util.hasValue(_class, "v-s:deleted", { data: true, type: "Boolean" } ),
+  class_group = get_individual(ticket, class_group_uri);
+
+if ( !class_group ) {
+  var class_group = {
+    '@' : class_group_uri,
+    'rdf:type'     : veda.Util.newUri('v-s:Group'),
+    'rdfs:label' : veda.Util.newStr("Группа индивидов класса " + class_uri),
+    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_8')
+  };
+  put_individual (ticket, class_group, _event_id);
+  //print("cfg:Event_8 class group", class_group_uri);
+}
+
+if ( !veda.Util.hasValue(_class, "rdfs:subClassOf") ) { return; }
+
+var _super_classes = veda.Util.getUris( _class["rdfs:subClassOf"] );
+
+_super_classes.map(function (super_uri) {
+  if ( super_uri === "owl:Thing" || class_uri === "rdfs:Resource" ) {
+    return;
+  }
+
+  // class memberOf superclass
+  var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
+    membership = get_individual(ticket, uri);
+  if (!membership) {
+    membership = {
+      '@' : uri,
+      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf' : veda.Util.newUri(super_uri),
+      'v-s:resource' : veda.Util.newUri(class_uri),
+      'rdfs:comment' : veda.Util.newStr('1. создано cfg:Event_8')
+    }
+    put_individual (ticket, membership, _event_id);
+    //print('cfg:Event_8 membership (class -> superclass)', uri);
+  }
+
+  // class_group memberOf superclass_group
+  var super_group_uri = super_uri + "_group",
+    uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
+    membership = get_individual(ticket, uri);
+
+  if (!membership) {
+    membership = {
+      '@' : uri,
+      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
+      'v-s:memberOf' : veda.Util.newUri(super_group_uri),
+      'v-s:resource' : veda.Util.newUri(class_group_uri),
+      'rdfs:comment' : veda.Util.newStr('2. создано cfg:Event_8')
+    };
+    put_individual (ticket, membership, _event_id);
+  }
+  //print('cfg:Event_8 membership', uri);
+});
+  """ ;
+.
+
+# ----------------------------------------------------------------------
+
+# Сделал первый подход к мандатам (автоматическое распределение индивидов по авторизационным группам).
+#
+# В принципе получается универсальный инструмент.
+# Хочу перевести на него наши существующие скрипты по созданию групп и включению в них индивидов (например, группа индивидов классов, иерархия групп индивидов классов в соответствии с  иерархией классов, иерархия групп орг. структуры).
+#
+# Работает так:
+# 1) Есть скрипт, обрабатывающий объекты класса v-s:ClassAuthorized (просто для теста, от него наследуется v-s:UserThing).
+# 2) Скрипт ведет в инстансе JsVm список всех существующих генераторов групп авторизации.
+# 3) Для каждого индивида пойманного скриптом проверяется наличие генератора. Проверка делается для класса и всех суперклассов индивида. Подходящие генераторы выполняются по отношению к индивиду.
+# 4) Каждый генератор описывает:
+#   - целевой класс, для которого выполняется генератор;
+#   - целевое свойство (для распределение по значению свойства индивида).
+#   - целевое выражение - скрипт, который должен вернуть произвольное значение на основе индивида.
+#   - целевое значение - если указано, то производится проверка на соответствие целевого значения и значения целевого свойства или целевого выражения. Если значения совпадают, объект помещается в соответствующую группу.
+# Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
+# 5) Задача генератора - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое генератором равно количеству уникальных целевых значений.
+# 6) Uri Авторизационной группы вычисляется так:
+# "d:grp-" + Sha256.hash(generator_uri + " " value).substr(32)
+# 7) Объект добавляется в вычисленную (созданную) группу.
+# Uri Записи о включении в группу вычисляется так:
+# "d:mem-" + Sha256.hash(object_uri + " " + group_uri).substring(32)
+# 8) Права можно выдавать традиционным способом - зная uri группы объекта и субъекта, создать запись о правах.
+# 9) Или создавать генераторы прав, где указываются не группы субъекта и объекта, а их генераторы и соответствующие целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе генераторов прав создаются обычные записи о правах (1 к 1).
+#
+# Таким образом, предлагаемый механизм является надстройкой над уже существующей системой авторизации и фактически повторяет возможности мандатов в СЭД.

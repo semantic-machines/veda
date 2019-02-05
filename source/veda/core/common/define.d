@@ -125,6 +125,41 @@ public enum SUBSYSTEM : ubyte
     USER_MODULES_TOOL = 64
 }
 
+private string[ SUBSYSTEM ] sn;
+private SUBSYSTEM[ string ] ns;
+
+public SUBSYSTEM get_subsystem_id_of_name(string name)
+{
+    if (ns.length == 0)
+    {
+        ns[ "ACL" ]               = SUBSYSTEM.ACL;
+        ns[ "FANOUT_EMAIL" ]      = SUBSYSTEM.FANOUT_EMAIL;
+        ns[ "FANOUT_SQL" ]        = SUBSYSTEM.FANOUT_SQL;
+        ns[ "FULL_TEXT_INDEXER" ] = SUBSYSTEM.FULL_TEXT_INDEXER;
+        ns[ "SCRIPTS" ]           = SUBSYSTEM.SCRIPTS;
+        ns[ "STORAGE" ]           = SUBSYSTEM.STORAGE;
+        ns[ "USER_MODULES_TOOL" ] = SUBSYSTEM.USER_MODULES_TOOL;
+    }
+
+    return ns.get(name, SUBSYSTEM.NONE);
+}
+
+public string get_name_of_subsystem_id(SUBSYSTEM id)
+{
+    if (sn.length == 0)
+    {
+        sn[ SUBSYSTEM.ACL ]               = "ACL";
+        sn[ SUBSYSTEM.FANOUT_EMAIL ]      = "FANOUT_EMAIL";
+        sn[ SUBSYSTEM.FANOUT_SQL ]        = "FANOUT_SQL";
+        sn[ SUBSYSTEM.FULL_TEXT_INDEXER ] = "FULL_TEXT_INDEXER";
+        sn[ SUBSYSTEM.SCRIPTS ]           = "SCRIPTS";
+        sn[ SUBSYSTEM.STORAGE ]           = "STORAGE";
+        sn[ SUBSYSTEM.USER_MODULES_TOOL ] = "USER_MODULES_TOOL";
+    }
+
+    return sn.get(id, "");
+}
+
 /// id компонентов
 public enum COMPONENT : ubyte
 {
@@ -243,3 +278,21 @@ byte CMD_SET       = 50;
 /// Убрать
 byte CMD_START     = 52;
 
+public string subsystem_byte_to_string(long src)
+{
+    string res = "";
+
+    foreach (el;
+             [ SUBSYSTEM.ACL, SUBSYSTEM.FANOUT_EMAIL, SUBSYSTEM.FANOUT_SQL, SUBSYSTEM.FULL_TEXT_INDEXER, SUBSYSTEM.SCRIPTS, SUBSYSTEM.STORAGE,
+               SUBSYSTEM.USER_MODULES_TOOL ])
+    {
+        if ((src & el) == el)
+        {
+            if (res != "")
+                res ~= ",";
+            res ~= get_name_of_subsystem_id(el);
+        }
+    }
+
+    return res;
+}

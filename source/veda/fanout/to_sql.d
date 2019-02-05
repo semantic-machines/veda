@@ -12,10 +12,13 @@ private import veda.vmodule.vmodule;
 
 public class FanoutProcess : VedaModule
 {
-    Mysql  mysql_conn;
-    string database_name;
-    string low_priority_user;
-    string priority;
+    Mysql    mysql_conn;
+    string   database_name;
+    string   low_priority_user;
+    string   priority;
+    bool     is_ready;
+    Consumer main_cs_r;
+    string   main_queue_cs = "fanout_sql_np0";
 
     this(SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log, string _priority)
     {
@@ -26,18 +29,43 @@ public class FanoutProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start)
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
         ResultCode rc;
 
+        if (is_ready == false)
+            return ResultCode.NotReady;
+
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
+
+        if (priority == "low")
+        {
+            if (main_cs_r is null)
+            {
+                log.trace("INFO: open %s, %s, %s", main_queue, my_consumer_path, main_queue_cs);
+                main_cs_r = new Consumer(main_queue, my_consumer_path, main_queue_cs, Mode.R, log);
+                while (main_cs_r.open(true, Mode.R) == false)
+                {
+                    log.trace("WARN: main queue consumer not open, sleep and repeate");
+                    core.thread.Thread.sleep(dur!("seconds")(1));
+                }
+            }
+
+            main_cs_r.reopen();
+            while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
+            {
+                log.tracec("INFO: queue.my=%d > queue.main=%d, sleep...", count_popped, main_cs_r.count_popped);
+                core.thread.Thread.sleep(dur!("seconds")(1));
+                main_cs_r.reopen();
+            }
+        }
 
         if (priority == "low" && user_uri == low_priority_user || priority == "normal" && user_uri != low_priority_user)
         {
             try
             {
-                rc = push_to_mysql(prev_indv, new_indv);
+                rc = push_to_mysql(prev_indv, new_indv, user_uri);
             }
             catch (Throwable ex)
             {
@@ -77,8 +105,11 @@ public class FanoutProcess : VedaModule
     {
         //context.set_vql (new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
-
         connect_to_mysql(context);
+
+        log.trace("low_priority_user : %s", low_priority_user);
+        log.trace("my priority : %s", priority);
+
         return true;
     }
 
@@ -103,7 +134,7 @@ public class FanoutProcess : VedaModule
 
     bool[ string ] existsTable;
 
-    private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv)
+    private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv, string user_uri)
     {
         if (mysql_conn is null)
             return ResultCode.ConnectError;
@@ -152,6 +183,8 @@ public class FanoutProcess : VedaModule
 
             if (need_prepare)
             {
+                log.trace("prepare uri=%s, user=%s", new_indv.uri, user_uri);
+
                 mysql_conn.startTransaction();
 
                 // создаем таблицы если их не было
@@ -364,6 +397,7 @@ public class FanoutProcess : VedaModule
     {
         try
         {
+            is_ready = false;
             Ticket    sticket = context.sys_ticket();
 
             Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
@@ -392,7 +426,7 @@ public class FanoutProcess : VedaModule
                             mysql_conn.query("SET NAMES 'utf8'");
 
                             log.trace("CONNECT TO MYSQL IS OK, %s", text(mysql_conn));
-                            log.trace("low_priority_user = %s", low_priority_user);
+                            is_ready = true;
                         }
                         catch (Throwable ex)
                         {

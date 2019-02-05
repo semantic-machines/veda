@@ -12,6 +12,9 @@ start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
 start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
 
 target=".pids/"
+
+if [ -e $target ] ; then
+
 let count=0
 for f in "$target"/*
 do
@@ -24,12 +27,17 @@ echo ""
 echo "Count: $count"
 
 rm -f -r .pids
-rm -f data/module-info/*.lock
-#rm -f data/queue/*.lock
-#rm -f data/uris/*.lock
+
+fi
+
+if [ -z $1 ] ; then
+
+    echo "STOP VEDA MODULES"
+
+else
 
 if [ $1 == "all" ] ; then
-    echo STOP ALL VEDA MODULES
+    echo "STOP ALL VEDA MODULES"
 
     start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
     killall -9 veda
@@ -44,6 +52,7 @@ if [ $1 == "all" ] ; then
     killall -9 veda-server
     killall -9 veda-ttlreader
     killall -9 veda-webserver
+    killall -9 veda-input-queue
     killall -9 veda-gowebserver
     killall -9 veda-ft-query
     killall -9 veda-lmdb-srv
@@ -53,5 +62,6 @@ if [ $1 == "all" ] ; then
 
 fi
 
+fi
 
 exit 0
