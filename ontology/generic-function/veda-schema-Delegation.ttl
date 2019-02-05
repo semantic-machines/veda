@@ -154,7 +154,7 @@ v-s:RequestDelegationTemplate
           <div rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view edit search"></div>
           <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext"></veda-control>
           <div id="positions" class="-view edit -search">
-            <div class="checkbox">
+            <div class="checkbox no-margin">
               <label>
                 <input class="input" type="checkbox" value="">
                 <span class="position-label"></span>
