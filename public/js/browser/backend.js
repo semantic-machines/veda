@@ -86,15 +86,7 @@ veda.Module(function (veda) { "use strict";
         var xhr = new XMLHttpRequest();
         xhr.onload = function () {
           if (this.status == 200) {
-            resolve(
-              JSON.parse(
-                this.response,
-                function (key, value) {
-                return key === "data" && this.type === "Datetime" ? new Date(value) :
-                       key === "data" && this.type === "Decimal" ? parseFloat(value) : value;
-                }
-              )
-            );
+            resolve( JSON.parse(this.response, veda.Util.decimalDatetimeReviver) );
           } else {
             reject( new BackendError(this) );
           }
@@ -147,13 +139,7 @@ veda.Module(function (veda) { "use strict";
       }
       if (xhr.status === 200) {
         // Parse with date & decimal reviver
-        return JSON.parse(
-          xhr.responseText,
-          function (key, value) {
-            return key === "data" && this.type === "Datetime" ? new Date(value) :
-                   key === "data" && (this.type === "Decimal" || this.type === "Decimal") ? parseFloat(value) : value;
-          }
-        );
+        return JSON.parse(xhr.responseText, veda.Util.decimalDatetimeReviver);
       } else {
         throw new BackendError(xhr);
       }

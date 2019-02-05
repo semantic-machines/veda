@@ -6,6 +6,10 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
+  veda.Util.decimalDatetimeReviver = function (key, value) {
+    return key === "data" && this.type === "Datetime" ? new Date(value) : key === "data" && this.type === "Decimal" ? parseFloat(value) : value ;
+  };
+
   // Уcтанавливает cookie
   // name - Название cookie
   // value - Значение cookie (строка)

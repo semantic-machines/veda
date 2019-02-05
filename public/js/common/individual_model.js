@@ -88,7 +88,11 @@ veda.Module(function (veda) { "use strict";
     }
     var uniq = unique(serialized);
     if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
-      this.properties[property_uri] = uniq;
+      if (uniq.length) {
+        this.properties[property_uri] = uniq;
+      } else {
+        delete this.properties[property_uri];
+      }
       if ( !silently ) {
         this.trigger("propertyModified", property_uri, values);
         this.trigger(property_uri, values);
@@ -414,7 +418,7 @@ veda.Module(function (veda) { "use strict";
     if ( this.isNew() ) {
       self.undraft();
       self.trigger("afterReset");
-      return Promise.resolve();
+      return Promise.resolve(self);
     }
     return new Promise(function(resolve, reject) {
       var got = get_individual(veda.ticket, self.id);
@@ -710,9 +714,9 @@ veda.Module(function (veda) { "use strict";
    * @return {veda.IndividualModel} clone of this individual with different id.
    */
   proto.clone = function () {
-    var individual = JSON.parse( JSON.stringify(this.properties) );
-    individual["@"] = veda.Util.genUri();
-    var clone = new veda.IndividualModel(individual);
+    var cloneProperties = JSON.parse( JSON.stringify(this.properties), veda.Util.decimalDatetimeReviver );
+    cloneProperties["@"] = veda.Util.genUri();
+    var clone = new veda.IndividualModel(cloneProperties);
     clone.isNew(true);
     clone.isSync(false);
     return clone;
