@@ -837,8 +837,8 @@ for (i = 0; i < 1; i++)
             //#2
             res = test_fail_read(assert, ticket2, new_test_doc1['@'], new_test_doc1);
 
-            var doc_group = 'g:doc_group_' + guid();
-            var user_group = 'g:user_group_' + guid();
+            var doc_group = 'g:doc_g1roup_' + guid();
+            var user_group = 'g:user_g1roup_' + guid();
 
             res = addToGroup(ticket1, doc_group, new_test_doc1['@']);
             res = addToGroup(ticket1, user_group, ticket2.user_uri);
@@ -1270,7 +1270,7 @@ for (i = 0; i < 1; i++)
             var res;
             var doc1 = create_test_document1(ticket1);
             var doc2 = create_test_document1(ticket1);
-            var doc_group1_uri = 'g:doc_group_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1321,9 +1321,9 @@ for (i = 0; i < 1; i++)
             var doc1 = create_test_document1(ticket1, 'doc1_');
             var doc2 = create_test_document1(ticket1, 'doc2_');
             var doc3 = create_test_document1(ticket1, 'doc3_');
-            var doc_group1_uri = 'g:doc_group1_' + guid();
-            var doc_group2_uri = 'g:doc_group2_' + guid();
-            var doc_group3_uri = 'g:doc_group3_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup1_' + guid();
+            var doc_group2_uri = 'g:doc_g1roup2_' + guid();
+            var doc_group3_uri = 'g:doc_g1roup3_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1404,9 +1404,9 @@ for (i = 0; i < 1; i++)
             var doc1 = create_test_document1(ticket1, 'doc1_');
             var doc2 = create_test_document1(ticket1, 'doc2_');
             var doc3 = create_test_document1(ticket1, 'doc3_');
-            var doc_group1_uri = 'g:doc_group1_' + guid();
-            var doc_group2_uri = 'g:doc_group2_' + guid();
-            var doc_group3_uri = 'g:doc_group3_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup1_' + guid();
+            var doc_group2_uri = 'g:doc_g1roup2_' + guid();
+            var doc_group3_uri = 'g:doc_g1roup3_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1489,9 +1489,9 @@ for (i = 0; i < 1; i++)
             var doc1 = create_test_document1(ticket1, 'doc1_');
             var doc2 = create_test_document1(ticket1, 'doc2_');
             var doc3 = create_test_document1(ticket1, 'doc3_');
-            var doc_group1_uri = 'g:doc_group1_' + guid();
-            var doc_group2_uri = 'g:doc_group2_' + guid();
-            var doc_group3_uri = 'g:doc_group3_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup1_' + guid();
+            var doc_group2_uri = 'g:doc_g1roup2_' + guid();
+            var doc_group3_uri = 'g:doc_g1roup3_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
