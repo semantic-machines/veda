@@ -146,8 +146,6 @@ veda.Module(function (veda) { "use strict";
       if (!oldvalue && attName === 'v-s:actualVersion') return true;
       if (!oldvalue && attName === 'v-s:previousVersion') return true;
       if (!oldvalue && attName === 'v-s:nextVersion') return true;
-      if (attName === 'v-s:isDraftOf') return true;
-      if (attName === 'v-s:hasDraft') return true;
       if (attName === 'v-wf:hasStatusWorkflow') return true;
       return false;
   };
@@ -401,7 +399,7 @@ veda.Module(function (veda) { "use strict";
 
     if (elem['v-wf:isProcess']) {
       elem['v-wf:isProcess'].forEach(function(p) {
-	  var df = get_individual(ticket, p.data);
+        var df = get_individual(ticket, p.data);
         if (!df['v-wf:isCompleted'] || df['v-wf:isCompleted'][0].data == false) {
           df['v-wf:isStopped'] = veda.Util.newBool(true);
           put_individual(ticket, df, _event_id);
