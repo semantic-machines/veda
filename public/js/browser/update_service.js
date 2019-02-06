@@ -74,7 +74,7 @@ veda.Module(function (veda) { "use strict";
               uri = tmp[0],
               updateCounter = parseInt(tmp[1]),
               individual = new veda.IndividualModel(uri);
-          if ( individual.hasValue("v-s:updateCounter", updateCounter) ) { continue; }
+          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.isDraft() ) { continue; }
           if (self.list[uri]) {
             self.list[uri].updateCounter = updateCounter;
           }

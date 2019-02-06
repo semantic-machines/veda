@@ -412,16 +412,14 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to database
    */
   proto.reset = function () {
-    var self = this;
     this.trigger("beforeReset");
-    if ( this.isDraft() ) {
-      if ( this.isNew() ) {
-        this.undraft();
-      }
-      this.trigger("afterReset");
-      return Promise.resolve(this);
+    var self = this;
+    self.filtered = {};
+    if ( this.isNew() ) {
+      self.undraft();
+      self.trigger("afterReset");
+      return Promise.resolve(self);
     }
-    this.filtered = {};
     return new Promise(function(resolve, reject) {
       var got = get_individual(veda.ticket, self.id);
       got ? resolve(got) : reject(got);
