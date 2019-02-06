@@ -32,7 +32,7 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 	if jsonData["ticket"] != nil {
 		ticketKey = jsonData["ticket"].(string)
 	} else {
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+		log.Printf("ERR! empty ticket, request=%v\n", string(ctx.Request.Body()))
 		rc := BadRequest
 		ctx.Response.SetStatusCode(int(rc))
 		trail1(ticketKey, "", "remove_from", string(ctx.Request.Body()), "", rc, timestamp)
