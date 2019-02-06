@@ -6,6 +6,83 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
+  veda.Util.decimalDatetimeReviver = function (key, value) {
+    return key === "data" && this.type === "Datetime" ? new Date(value) : key === "data" && this.type === "Decimal" ? parseFloat(value) : value ;
+  };
+
+  veda.Util.mergeMutualChanges = function (high, low, base) {
+    var key, merged = {};
+    for (key in base) {
+      merged[key] = base[key];
+    }
+    var highBaseDiff = veda.Util.diff(high, base);
+    var lowBaseDiff = veda.Util.diff(low, base);
+    var highLowDiff = veda.Util.diff(high, low);
+    var lowHighDiff = veda.Util.diff(low, high);
+    for (key in lowBaseDiff.missing) {
+      delete merged[key];
+    }
+    for (key in highBaseDiff.missing) {
+      delete merged[key];
+    }
+    for (key in lowBaseDiff.added) {
+      merged[key] = lowBaseDiff.added[key];
+    }
+    for (key in highBaseDiff.added) {
+      merged[key] = highBaseDiff.added[key];
+    }
+    for (key in lowBaseDiff.differ) {
+      merged[key] = lowBaseDiff.differ[key];
+    }
+    for (key in highBaseDiff.diff) {
+      merged[key] = highBaseDiff.differ[key];
+    }
+    return {
+      merged: merged,
+      conflicts: {
+        high: highLowDiff.differ,
+        low: lowHighDiff.differ
+      }
+    };
+  };
+
+  veda.Util.diff = function (changed, base) {
+    var delta = {
+      added: {},
+      missing: {},
+      differ: {}
+    }
+    var key, values, value, length, i, hasValue;
+    for (key in base) {
+      if ( !(key in changed) ) {
+        delta.missing[key] = base[key];
+      } else {
+        if (key === "@") {
+          if (changed[key] !== base[key]) {
+            delta.differ[key] = changed[key];
+          }
+          continue;
+        }
+        values = base[key];
+        length = values.length;
+        hasValue = true;
+        for (i = 0; i < length && hasValue; i++) {
+          value = values[i];
+          hasValue = hasValue && veda.Util.hasValue(changed, key, value);
+        }
+        if ( !hasValue ) {
+          delta.differ[key] = changed[key];
+        }
+      }
+    }
+    for (key in changed) {
+      if ( !(key in base) ) {
+        delta.added[key] = changed[key];
+      }
+    }
+    return delta;
+  };
+
   // Уcтанавливает cookie
   // name - Название cookie
   // value - Значение cookie (строка)

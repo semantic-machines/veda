@@ -88,15 +88,7 @@ veda.Module(function Backend(veda) { "use strict";
       var xhr = new XMLHttpRequest();
       xhr.onload = function () {
         if (this.status == 200) {
-          resolve(
-            JSON.parse(
-              this.response,
-              function (key, value) {
-              return key === "data" && this.type === "Datetime" ? new Date(value) :
-                     key === "data" && this.type === "Decimal" ? parseFloat(value) : value;
-              }
-            )
-          );
+          resolve( JSON.parse(this.response, veda.Util.decimalDatetimeReviver) );
         } else {
           var error = new BackendError(this);
           reject(error);

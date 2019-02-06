@@ -146,8 +146,6 @@ veda.Module(function (veda) { "use strict";
       if (!oldvalue && attName === 'v-s:actualVersion') return true;
       if (!oldvalue && attName === 'v-s:previousVersion') return true;
       if (!oldvalue && attName === 'v-s:nextVersion') return true;
-      if (attName === 'v-s:isDraftOf') return true;
-      if (attName === 'v-s:hasDraft') return true;
       if (attName === 'v-wf:hasStatusWorkflow') return true;
       return false;
   };

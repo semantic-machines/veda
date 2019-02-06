@@ -1,4 +1,4 @@
-import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv, std.string;
+import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv, std.string, std.datetime;
 import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator_rlmdb;
 import veda.core.common.context, veda.core.common.type;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
@@ -78,7 +78,7 @@ void main(string[] args)
 
     Queue queue = new Queue(path, name, Mode.R, log);
     queue.open();
-    queue.get_info(0);
+    queue.get_info_push(0);
 
     Context ctx;
     Ticket  sticket;
@@ -147,14 +147,14 @@ void main(string[] args)
     {
         queue_new = new Queue("./tmp/" ~ name ~ "/repair", name, Mode.RW, log);
         queue_new.open();
-        queue_new.get_info(0);
+        queue_new.get_info_push(0);
     }
 
     if (command == "extract_uris")
     {
         queue_new = new Queue("./tmp/uris", "uris", Mode.RW, log);
         queue_new.open();
-        queue_new.get_info(0);
+        queue_new.get_info_push(0);
     }
 
     while (true)
@@ -340,7 +340,7 @@ private void check_links(string data, ref Queue queue_new, LmdbDriver individual
     {
         queue_new = new Queue("./tmp/extracted", "individuals-flow", Mode.RW, log);
         queue_new.open();
-        queue_new.get_info(0);
+        queue_new.get_info_push(0);
     }
 
     if (data !is null && imm.deserialize(data) < 0)
@@ -461,8 +461,11 @@ private void message_to_json(string data)
     }
     else
     {
-        string     new_bin = imm.getFirstLiteral("new_state");
-
+        string    new_bin = imm.getFirstLiteral("new_state");
+        long      date = imm.getFirstDatetime("date");
+        string str_date = (SysTime(unixTimeToStdTime(date), UTC()).toISOExtString());
+        
+        
         Individual new_indv;
         if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
         {
@@ -476,7 +479,7 @@ private void message_to_json(string data)
             long      update_counter = new_indv.getFirstInteger("v-s:updateCounter");
             bool      deleted        = new_indv.getFirstBoolean("v-s:deleted");
 
-            log.trace("uri=%s, user=%s, type=%s, counter=%d, is_deleted=%s \n %s", new_indv.uri, user, type, update_counter, text(deleted), jj);
+            log.trace("\ndate=%s uri=%s, user=%s, type=%s, counter=%d, is_deleted=%s \n %s", str_date, new_indv.uri, user, type, update_counter, text(deleted), jj);
         }
     }
 }

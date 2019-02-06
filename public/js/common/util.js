@@ -16,7 +16,7 @@ veda.Module(function (veda) { "use strict";
     var any = !!(individual && individual[property] && individual[property].length);
     if (!value) return any;
     return !!(any && individual[property].filter( function(i) {
-        return (i.type === value.type && i.data === value.data);
+      return (i.type === value.type && i.data.valueOf() === value.data.valueOf());
     }).length);
   };
 

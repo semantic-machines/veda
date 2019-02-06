@@ -159,9 +159,6 @@ const PERMISSION_PREFIX: &str = "P";
 const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
 
-const ROLE_SUBJECT: u8 = 0;
-//const ROLE_OBJECT: u8 = 1;
-
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
@@ -169,11 +166,12 @@ pub struct Right {
     id: String,
     access: u8,
     is_deleted: bool,
+	level: u8
 }
 
 impl fmt::Debug for Right {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({}, {})", self.id, access_to_pretty_string(self.access))
+        write!(f, "({}, {}, {})", self.id, access_to_pretty_string(self.access), self.level)
     }
 }
 
@@ -276,6 +274,7 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
                 id: key.to_string(),
                 access: access as u8,
                 is_deleted: false,
+				level: 0
             };
             results.push(rr);
         } else {
@@ -525,7 +524,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 }
 
 fn get_resource_groups(
-    p_role: u8, azc: &mut AzContext, trace: &mut Trace, uri: &str, access: u8, results: &mut HashMap<String, Right>, filter_value: &str, level: u8, db: &Database,
+	walked_groups: &mut HashMap<String, u8>, tree_groups: &mut HashMap<String, String>, trace: &mut Trace, uri: &str, access: u8, results: &mut HashMap<String, Right>, filter_value: &str, level: u8, db: &Database,
 ) -> Result<bool, i64> {
     if level > 32 {
 //        if trace.is_info {
@@ -551,10 +550,9 @@ fn get_resource_groups(
                 //let orig_access = group.access;
                 group.access = new_access;
 
-                if p_role == ROLE_SUBJECT {
                     let mut preur_access = 0;
-                    if azc.walked_groups_s.contains_key(&group.id) {
-                        preur_access = azc.walked_groups_s[&group.id];
+                    if walked_groups.contains_key(&group.id) {
+                        preur_access = walked_groups[&group.id];
                         if (preur_access & new_access) == new_access {
  /*                           if trace.is_info {
                                 print_to_trace_info(
@@ -573,39 +571,12 @@ fn get_resource_groups(
                         }
                     }
                     
-                    azc.walked_groups_s.insert(group.id.clone(), new_access | preur_access);
+                    walked_groups.insert(group.id.clone(), new_access | preur_access);
 
    	                if trace.is_info {                    
-						azc.tree_groups_s.insert(group.id.clone(), uri.to_string());                                    
+						tree_groups.insert(group.id.clone(), uri.to_string());                                    
 					}
 
-                } else {
-                    let mut preur_access = 0;
-                    if azc.walked_groups_o.contains_key(&group.id) {
-                        preur_access = azc.walked_groups_o[&group.id];
-                        if (preur_access & new_access) == new_access {
- /*                           if trace.is_info {
-                                print_to_trace_info(
-                                    trace,
-                                    format!(
-                                        "{:1$} ({})GROUP [{}].access={} SKIP, ALREADY ADDED\n",
-                                        level * 2,
-                                        level as usize,
-                                        group.id,
-                                        access_to_pretty_string(preur_access)
-                                    ),
-                                );
-                            }
-*/
-                            continue;
-                        }
-                    }
-                    azc.walked_groups_o.insert(group.id.clone(), new_access | preur_access);
-                    
-	                if trace.is_info {                    
-						azc.tree_groups_o.insert(group.id.clone(), uri.to_string());                                    
-					}
-                }
 /*
                 if trace.is_info {
                     print_to_trace_info(
@@ -637,7 +608,7 @@ fn get_resource_groups(
                     continue;
                 }
 
-                match get_resource_groups(p_role, azc, trace, &group.id, 15, results, filter_value, level + 1, &db) {
+                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db) {
                     Ok(_res) => {}
                     Err(e) => {
                         if e < 0 {
@@ -652,6 +623,7 @@ fn get_resource_groups(
                         id: group.id.clone(),
                         access: group.access,
                         is_deleted: group.is_deleted,
+						level: level
                     },
                 );
             }
@@ -876,7 +848,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
  //       print_to_trace_info(trace, "READ SUBJECT GROUPS\n".to_string());
  //   }
 
-    match get_resource_groups(ROLE_SUBJECT, &mut azc, trace, user_uri, 15, s_groups, &filter_value, 0, &db) {
+    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, &db) {
         Ok(_res) => {},
         Err(e) => return Err(e),
     }
@@ -889,6 +861,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             id: user_uri.to_string(),
             access: 15,
             is_deleted: false,
+			level: 0	
         },
     );
 
