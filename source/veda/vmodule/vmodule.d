@@ -164,7 +164,7 @@ class VedaModule : VedaModuleBasic
         module_info = new ModuleInfoFile(process_name, _log, OPEN_MODE.WRITER);
         if (!module_info.is_ready)
         {
-            log.trace("%s terminated", process_name);
+            log.trace("%s ModuleInfo not ready, terminated", process_name);
             return;
         }
         opid_on_start = module_info.get_info().op_id;
