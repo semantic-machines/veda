@@ -182,11 +182,11 @@ veda.Module(function (veda) { "use strict";
     },
     set: function (value) {
       var previous = this.properties && this.properties["@"];
+      this.properties["@"] = value;
       if (previous && this._.cache && veda.cache.get(previous)) {
         veda.cache.remove(previous);
         veda.cache.set(this, this._.cache);
       }
-      this.properties["@"] = value;
       this.trigger("idChanged", value);
     }
   });
