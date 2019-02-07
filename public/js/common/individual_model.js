@@ -807,22 +807,33 @@ veda.Module(function (veda) { "use strict";
   proto.prefetch = function (depth) {
     var allowed_props = [].slice.call(arguments, 1);
     depth = depth || 1;
-    return prefetch.apply(this, [depth, [this.id]].concat(allowed_props) );
+    return this.load().then(function (self) {
+      return prefetch.apply(self, [[], depth, [self.id]].concat(allowed_props) );
+    });
   };
 
-  function prefetch(depth, uris) {
+  function prefetch(result, depth, uris) {
     var self = this;
-    var allowed_props = [].slice.call(arguments, 2);
+    var allowed_props = [].slice.call(arguments, 3);
     uris = veda.Util.unique( uris );
     var toGet = uris.filter(function (uri) {
-      return !veda.cache.get(uri);
+      var cached = veda.cache.get(uri);
+      if ( cached && result.indexOf(cached) < 0 ) {
+        result.push(cached);
+      }
+      return !cached;
     });
     return (toGet.length ? veda.Backend.get_individuals(veda.ticket, toGet) : Promise.resolve([])).then(function (got) {
       var nextUris = [];
-      got.forEach(function (uri) {
-        var individual = new veda.IndividualModel(uri);
+      got.forEach(function (json) {
+        if (json) {
+          var individual = new veda.IndividualModel(json);
+          if ( result.indexOf(individual) < 0 ) {
+            result.push(individual);
+          }
+        }
       });
-      if (depth - 1 === 0) { return self; }
+      if (depth - 1 === 0) { return result; }
       uris.forEach(function (uri) {
         var individual = new veda.IndividualModel(uri);
         var data = individual.properties;
@@ -835,8 +846,8 @@ veda.Module(function (veda) { "use strict";
           });
         });
       });
-      if (!nextUris.length) { return self; }
-      return prefetch.apply(self, [depth-1, nextUris].concat(allowed_props) );
+      if (!nextUris.length) { return result; }
+      return prefetch.apply(self, [result, depth-1, nextUris].concat(allowed_props) );
     });
   }
 
