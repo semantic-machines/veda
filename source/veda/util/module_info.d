@@ -42,7 +42,20 @@ class ModuleInfoFile
     {
         try
         {
-            module_name    = _module_name;
+            module_name = _module_name;
+
+            if (exists(module_info_path) == false)
+            {
+                try
+                {
+                    mkdir(module_info_path);
+                    writeln("create folder: ", module_info_path);
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
             fn_module_info = module_info_path ~ "/" ~ module_name ~ "_info";
             log            = _log;
             mode           = _mode;
