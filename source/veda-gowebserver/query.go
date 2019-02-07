@@ -133,13 +133,13 @@ func query(ctx *fasthttp.RequestCtx) {
 	request[6] = limit
 	request[7] = from
 
-	if ticketKey == "" {
-		log.Printf("ERR! empty ticket, request=%v\n", request)
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "query", query, "", rc, timestamp)
-		return
-	}
+//	if ticketKey == "" {		
+//		log.Printf("ERR! empty ticket, request=%v\n", request)
+//		rc := BadRequest
+//		ctx.Response.SetStatusCode(int(rc))
+//		trail1(ticketKey, "", "query", query, "", rc, timestamp)
+//		return
+//	}
 
 	defer func() {
 		if r := recover(); r != nil {
