@@ -801,36 +801,33 @@ jsWorkflow.ready = jsPlumb.ready;
        *@param {Object} workflowData A workflow object to create State transitions
        */
       instance.createNetView = function(net) {
-        return net.prefetch(3).then(function (net) {
+        return net.prefetch(Infinity, 'v-wf:consistsOf', 'v-wf:hasFlow').then(function (prefetched) {
+          net = prefetched[0];
           $('#workflow-net-name', template).text(net['rdfs:label'][0]);
-
-          return Promise.all(net['v-wf:consistsOf'].map(function(el) {
-            return el.load();
-          })).then(function (els) {
-            // Create states
-            var hasInput = false,
-                hasOutput = false;
-            els.forEach(function (el) {
-              instance.createState(el);
-              hasInput = hasInput || el.hasValue('rdf:type', 'v-wf:InputCondition');
-              hasOutput = hasOutput || el.hasValue('rdf:type', 'v-wf:OutputCondition');
-            });
-            // For empty net
-            if (!hasInput) {
-              instance.createEmptyNetElement('input');
+          netElements = prefetched.slice(1);
+          // Create states
+          var hasInput = false,
+              hasOutput = false;
+          netElements.forEach(function (element) {
+            if ( !element.hasValue('rdf:type', 'v-wf:Flow') ) {
+              instance.createState(element);
             }
-            if (!hasOutput) {
-              instance.createEmptyNetElement('output');
+            hasInput = hasInput || element.hasValue('rdf:type', 'v-wf:InputCondition');
+            hasOutput = hasOutput || element.hasValue('rdf:type', 'v-wf:OutputCondition');
+          });
+          // For empty net
+          if (!hasInput) {
+            instance.createEmptyNetElement('input');
+          }
+          if (!hasOutput) {
+            instance.createEmptyNetElement('output');
+          }
+          netElements.forEach(function (element) {
+            if ( element.hasValue('v-wf:hasFlow') ) {
+              element['v-wf:hasFlow'].forEach(function (flow) {
+                instance.createFlow(element, flow);
+              });
             }
-            els.forEach(function (el) {
-              if ( el.hasValue('v-wf:hasFlow') ) {
-                el['v-wf:hasFlow'].forEach(function (flow) {
-                  flow.load().then(function(flow) {
-                    instance.createFlow(el, flow);
-                  });
-                });
-              }
-            });
           });
           return net;
         });
@@ -901,208 +898,202 @@ jsWorkflow.ready = jsPlumb.ready;
         selectedElementSourceId = null;
       };
 
-      instance.loadProcessWorkItems = function(process, wis, usecache) {
-        if (process.hasValue('v-wf:workItemList')) {
-          process['v-wf:workItemList'].forEach(function(wi) {
-            wis.push(new veda.IndividualModel({uri: wi.id, cache: usecache}));
-            instance.loadProcessWorkItems(wi, wis, usecache);
-          });
-        }
+      instance.loadProcessWorkItems = function(process) {
+        return process.prefetch(Infinity, 'v-wf:workItemList');
       };
 
-      instance.createProcessView = function(process, reload) {
+      instance.createProcessView = function(process) {
         // Apply WorkItems to Net
-        var wis = [];
-        if (reload) {
-          instance.loadProcessWorkItems(process, wis, false);
+        instance.loadProcessWorkItems(process).then(function (wis) {
+          wis = wis.slice(1);
           $('.w', template).each(function(index) {
-            $("span", this ).text('');
+            $("span", this).text('');
             $( this ).css('background-color', 'white').attr('work-items-count',0).attr('colored-to','');
           });
-        } else {
-          instance.loadProcessWorkItems(process, wis, true);
-        }
-        wis.forEach(function(wi) {
-          if (wi.hasValue('v-wf:forNetElement')) {
-            var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id), template);
-            if ($(state).find('[work-item-id="'+veda.Util.escape4$(wi.id)+'"]').length == 0) {
-              $("<span/>", {
-                'type' :'work-item',
-                'work-item-id': wi.id
-              }).appendTo(state);
+
+          wis.forEach(function(wi) {
+            if (wi.hasValue('v-wf:forNetElement')) {
+              var state = $('#'+veda.Util.escape4$(wi['v-wf:forNetElement'][0].id), template);
+              if ($(state).find('[work-item-id="'+veda.Util.escape4$(wi.id)+'"]').length == 0) {
+                $("<span/>", {
+                  'type' :'work-item',
+                  'work-item-id': wi.id
+                }).appendTo(state);
+              }
+              var wic = parseInt(state.attr('work-items-count'));
+              var red = state.attr('colored-to')=='red';
+              if (wic>0) {
+                state.attr('work-items-count', wic+1);
+                $(".counter", state).remove();
+                $("<span/>", {
+                  "class" : "counter",
+                   "text" : 'x'+(wic+1)
+                }).appendTo(state);
+              } else {
+                state.attr('work-items-count', 1);
+              }
+              if (!wi.hasValue('v-wf:workOrderList')) {
+                state.css('background-color', '#FF3333');
+                state.attr('colored-to', 'red');
+              } else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
+                state.css('background-color', '#88B288');
+                state.attr('colored-to', 'green');
+              } else if (!red) {
+                state.css('background-color', '#FFB266');
+                state.attr('colored-to', 'red');
+              }
             }
-            var wic = parseInt(state.attr('work-items-count'));
-            var red = state.attr('colored-to')=='red';
-            if (wic>0) {
-              state.attr('work-items-count', wic+1);
-              $(".counter", state).remove();
-              $("<span/>", {
-                "class" : "counter",
-                 "text" : 'x'+(wic+1)
-              }).appendTo(state);
-            } else {
-              state.attr('work-items-count', 1);
-            }
-            if (!wi.hasValue('v-wf:workOrderList')) {
-              state.css('background-color', '#FF3333');
-              state.attr('colored-to', 'red');
-            } else if (wi.hasValue('v-wf:isCompleted') && wi['v-wf:isCompleted'][0]==true && !red) {
-              state.css('background-color', '#88B288');
-              state.attr('colored-to', 'green');
-            } else if (!red) {
-              state.css('background-color', '#FFB266');
-              state.attr('colored-to', 'red');
-            }
-          }
+          });
         });
       };
 
-      instance.createNetView(net).then(function () {
+      instance.createNetView(net).then(function (net) {
         if (net['currentScale']==1.0) {
           instance.optimizeView();
         } else {
           instance.changeScale(net['currentScale']);
         }
-      });
-      if (mode=='view') {
-        instance.createProcessView(process);
-      }
 
-      $('#'+veda.Util.escape4$(veda["workflow"+elementId+"-selectedElement"]), template).trigger("click");
+        if (mode=='view') {
+          instance.createProcessView(process);
+        }
 
-      /* CONTEXT MENU [BEGIN] */
-      var $contextMenu = $("#workflow-context-menu", template);
-      /* CONTEXT MENU [END]*/
+        $('#'+veda.Util.escape4$(veda["workflow"+elementId+"-selectedElement"]), template).trigger("click");
 
-      /* NET MENU [BEGIN] */
-      $('#workflow-save-button', template).on('click', function() {
-        // TODO REFACTOR - recursive save (based on type checking)
-        if (net.hasValue('v-wf:consistsOf')) {
-          net['v-wf:consistsOf'].forEach(function(el) {
-            function saveMapping(mapping, el) {
-              if (el.hasValue(mapping)) {
-                el[mapping].forEach(function(m) {
-                  if (m.hasValue('v-wf:mapToVariable')) {
-                    m['v-wf:mapToVariable'].forEach(function(v) {
-                      v.save();
-                    });
-                  }
-                  m.save();
+        /* CONTEXT MENU [BEGIN] */
+        var $contextMenu = $("#workflow-context-menu", template);
+        /* CONTEXT MENU [END]*/
+
+        /* NET MENU [BEGIN] */
+        $('#workflow-save-button', template).on('click', function() {
+          // TODO REFACTOR - recursive save (based on type checking)
+          if (net.hasValue('v-wf:consistsOf')) {
+            net['v-wf:consistsOf'].forEach(function(el) {
+              function saveMapping(mapping, el) {
+                if (el.hasValue(mapping)) {
+                  el[mapping].forEach(function(m) {
+                    if (m.hasValue('v-wf:mapToVariable')) {
+                      m['v-wf:mapToVariable'].forEach(function(v) {
+                        v.save();
+                      });
+                    }
+                    m.save();
+                 });
+                }
+              }
+              saveMapping('v-wf:startingMapping', el);
+              saveMapping('v-wf:completedMapping', el);
+              saveMapping('v-wf:startingExecutorJournalMap', el);
+              saveMapping('v-wf:completedExecutorJournalMap', el);
+              saveMapping('v-wf:startingJournalMap', el);
+              saveMapping('v-wf:completedJournalMap', el);
+              if (el.hasValue('v-wf:executor')) {
+                el['v-wf:executor'].forEach(function(e) {
+                  e.save();
+                });
+              }
+              el.save();
+            });
+          }
+          net.save();
+        });
+
+        $('#workflow-export-ttl', template).on('click', function() {
+          var list = [net].concat(net['v-wf:consistsOf']);
+          collectEntities(net, list);
+          veda.Util.exportTTL(list);
+        });
+
+        // Add new State event.
+        $(".create-state", template).bind("click", function() {
+          var _this = this,
+              stateId,
+              stateElement;
+          var individual = instance.createEmptyNetElement($(_this).hasClass('create-condition') ? 'condition' : 'task');
+          $('#' + veda.Util.escape4$(individual.id), template).click();
+          $(this).blur();
+        });
+
+        $('.delete-state', template).on('click', function() {
+          if (dragList.length > 0) {
+            dragList.forEach(function(item) {
+              instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(item.attr('id')))[0]);
+            });
+          } else if (selectedElementType == 'state') {
+            if (confirm('Delete state ' + selectedElementId + ' ?')) {
+              instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
+            }
+          } else if (selectedElementType == 'flow') {
+            if (confirm('Delete flow ' + selectedElementId + ' ?')) {
+              instance.getConnections({
+                source:selectedElementSourceId
+              }).forEach(function(connection) {
+                if (connection.id == selectedElementId) {
+                  instance.deleteFlow(connection, new veda.IndividualModel(selectedElementSourceId));
+                }
+              });
+            }
+          }
+        });
+
+        $('.process-refresh', template).on('click', function() {
+          instance.createProcessView(process);
+        });
+
+        $('.to-net-editor', template).on('click', function() {
+          riot.route("#/" + net.id + "///edit");
+        });
+
+        $('.copy-net-element', template).on('click', function() {
+          if (typeof selectedElementId !== "undefined") {
+            var individual = new veda.IndividualModel(selectedElementId);
+            if (individual.hasValue('rdf:type')) {
+              if (individual['rdf:type'][0].id === 'v-wf:Task' || individual['rdf:type'][0].id === 'v-wf:Condition') {
+                individual.clone().then(function (clone) {
+                  clone['v-wf:locationX'] = [individual['v-wf:locationX'][0] + 50];
+                  clone['v-wf:locationY'] = [individual['v-wf:locationY'][0] + 50];
+                  clone['v-wf:hasFlow'] = [];
+                  instance.createState(clone);
+                  net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat(clone);
                 });
               }
             }
-            saveMapping('v-wf:startingMapping', el);
-            saveMapping('v-wf:completedMapping', el);
-            saveMapping('v-wf:startingExecutorJournalMap', el);
-            saveMapping('v-wf:completedExecutorJournalMap', el);
-            saveMapping('v-wf:startingJournalMap', el);
-            saveMapping('v-wf:completedJournalMap', el);
-            if (el.hasValue('v-wf:executor')) {
-              el['v-wf:executor'].forEach(function(e) {
-                e.save();
-              });
-            }
-            el.save();
-          });
-        }
-        net.save();
-      });
-
-      $('#workflow-export-ttl', template).on('click', function() {
-        var list = [net].concat(net['v-wf:consistsOf']);
-        collectEntities(net, list);
-        veda.Util.exportTTL(list);
-      });
-
-      // Add new State event.
-      $(".create-state", template).bind("click", function() {
-        var _this = this,
-            stateId,
-            stateElement;
-        var individual = instance.createEmptyNetElement($(_this).hasClass('create-condition') ? 'condition' : 'task');
-        $('#' + veda.Util.escape4$(individual.id), template).click();
-        $(this).blur();
-      });
-
-      $('.delete-state', template).on('click', function() {
-        if (dragList.length > 0) {
-          dragList.forEach(function(item) {
-            instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(item.attr('id')))[0]);
-          });
-        } else if (selectedElementType == 'state') {
-          if (confirm('Delete state ' + selectedElementId + ' ?')) {
-            instance.deleteState(instance.getSelector('#'+veda.Util.escape4$(selectedElementId))[0]);
           }
-        } else if (selectedElementType == 'flow') {
-          if (confirm('Delete flow ' + selectedElementId + ' ?')) {
-            instance.getConnections({
-              source:selectedElementSourceId
-            }).forEach(function(connection) {
-              if (connection.id == selectedElementId) {
-                instance.deleteFlow(connection, new veda.IndividualModel(selectedElementSourceId));
-              }
-            });
+        });
+
+        /* ZOOM [BEGIN] */
+        $('.zoom-in', template).on('click', zoomIn);
+        $('.zoom-out', template).on('click', zoomOut);
+        wdata.bind('mousewheel', function(e) {
+          if( e.originalEvent.wheelDelta > 0 ) {
+            zoomIn();
+          } else {
+            zoomOut();
           }
+        });
+
+        function zoomIn() {
+          if (net['currentScale']<1) { return instance.changeScale(net['currentScale'] + 0.1); }
+          if (net['currentScale']<2) { return instance.changeScale(net['currentScale'] + 0.25); }
         }
-      });
-
-      $('.process-refresh', template).on('click', function() {
-        instance.createProcessView(process, true);
-      });
-
-      $('.to-net-editor', template).on('click', function() {
-        riot.route("#/" + net.id + "///edit");
-      });
-
-      $('.copy-net-element', template).on('click', function() {
-        if (typeof selectedElementId !== "undefined") {
-          var individual = new veda.IndividualModel(selectedElementId);
-          if (individual.hasValue('rdf:type')) {
-            if (individual['rdf:type'][0].id === 'v-wf:Task' || individual['rdf:type'][0].id === 'v-wf:Condition') {
-              individual.clone().then(function (clone) {
-                clone['v-wf:locationX'] = [individual['v-wf:locationX'][0] + 50];
-                clone['v-wf:locationY'] = [individual['v-wf:locationY'][0] + 50];
-                clone['v-wf:hasFlow'] = [];
-                instance.createState(clone);
-                net['v-wf:consistsOf'] = net['v-wf:consistsOf'].concat(clone);
-              });
-            }
-          }
+        function zoomOut() {
+          if (net['currentScale']>1) { return instance.changeScale(net['currentScale'] - 0.25); }
+          if (net['currentScale']>0.2) { return instance.changeScale(net['currentScale'] - 0.1); }
         }
+
+        $('.zoom-default', template).on('click', function() {
+          instance.optimizeView();
+        });
+
+        $('#full-width', template).on('click', function() {
+          instance.optimizeView();
+        });
+        /* ZOOM [END] */
+
+        /* NET MENU [END] */
+
+        return instance;
       });
-
-      /* ZOOM [BEGIN] */
-      $('.zoom-in', template).on('click', zoomIn);
-      $('.zoom-out', template).on('click', zoomOut);
-      wdata.bind('mousewheel', function(e) {
-        if( e.originalEvent.wheelDelta > 0 ) {
-          zoomIn();
-        } else {
-          zoomOut();
-        }
-      });
-
-      function zoomIn() {
-        if (net['currentScale']<1) { return instance.changeScale(net['currentScale'] + 0.1); }
-        if (net['currentScale']<2) { return instance.changeScale(net['currentScale'] + 0.25); }
-      }
-      function zoomOut() {
-        if (net['currentScale']>1) { return instance.changeScale(net['currentScale'] - 0.25); }
-        if (net['currentScale']>0.2) { return instance.changeScale(net['currentScale'] - 0.1); }
-      }
-
-      $('.zoom-default', template).on('click', function() {
-        instance.optimizeView();
-      });
-
-      $('#full-width', template).on('click', function() {
-        instance.optimizeView();
-      });
-      /* ZOOM [END] */
-
-      /* NET MENU [END] */
-
-      return instance;
     };
   });
 })();
