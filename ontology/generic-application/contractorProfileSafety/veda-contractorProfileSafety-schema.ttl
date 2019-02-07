@@ -77,8 +77,8 @@ v-s:hasMedicalCheckupCertificateForDriver
 v-s:hasLaborSafetyCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Проверка знаний по ОТ"@ru ;
-  rdfs:label "Labor safety certificate"@en ;
+  rdfs:label "Проверка знаний по ОТ (ИТР)"@ru ;
+  rdfs:label "Labor safety certificate (ETW)"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasLaborSafetyCertificateForWorkers
@@ -133,70 +133,70 @@ v-s:hasLiftDriverCertificate
 v-s:hasFireTechnicalMinimumCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Проверка знаний по Пож тех мини - ПТМ (удостоверение, протокол)"@ru ;
+  rdfs:label "Удостоверение/протокол Проверки знаний по Пож тех мини - ПТМ (удостоверение, протокол)"@ru ;
   rdfs:label "Fire technical minimum certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasElectricalSafetyCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверения/протокол по электробезопасности 2,3,4,5 до 1000 в. и более"@ru ;
+  rdfs:label "Удостоверение/протокол по электробезопасности 2,3,4,5 до 1000 в. и более"@ru ;
   rdfs:label "Electrical safety certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasGasCutterCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверения/протокол газорезчика"@ru ;
+  rdfs:label "Удостоверение/протокол газорезчика"@ru ;
   rdfs:label "Gas cutter certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasWelderCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверения/протокол сварщика"@ru ;
+  rdfs:label "Удостоверение/протокол сварщика"@ru ;
   rdfs:label "Welder certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasSafetyOfWorkWithLiftingStructureCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Ответственный за безопасность производство работ ПС"@ru ;
+  rdfs:label "Удостоверение/протокол Ответственного за безопасность производство работ ПС"@ru ;
   rdfs:label "Safety of work with lifting structure certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasSafetyOfWorkWithLiftingStructurePeopleCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Ответственный за безопасность производство работ с ПС для людей"@ru ;
+  rdfs:label "Удостоверение/протокол Ответственного за безопасность производство работ с ПС для людей"@ru ;
   rdfs:label "Safety of work with lifting structure people certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasDriverCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверения/протокол водителя АТС, трактора, погрузчика, машиниста"@ru ;
+  rdfs:label "Удостоверение/протокол водителя АТС, трактора, погрузчика, машиниста"@ru ;
   rdfs:label "Driver certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasRoadSafetyCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Протокол/протокол проверки БДД"@ru ;
+  rdfs:label "Удостоверение/протокол проверки БДД"@ru ;
   rdfs:label "Road safety certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasSlingerCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверения/протокол стропальщиков"@ru ;
+  rdfs:label "Удостоверение/протокол стропальщиков"@ru ;
   rdfs:label "Slinger certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasHoistmanCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверение крановщика"@ru ;
+  rdfs:label "Удостоверение/протокол крановщика"@ru ;
   rdfs:label "Hoistman certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
