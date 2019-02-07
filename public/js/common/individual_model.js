@@ -200,7 +200,6 @@ veda.Module(function (veda) { "use strict";
         veda.cache.remove(previous);
         veda.cache.set(this, this._.cache);
       }
-      this.trigger("idChanged", value);
     }
   });
 
