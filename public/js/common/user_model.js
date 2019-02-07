@@ -73,8 +73,8 @@ veda.Module(function (veda) { "use strict";
   proto.initLanguage = function (preferences) {
     var self = this;
     if ( !preferences.hasValue("v-ui:preferredLanguage") || !preferences.hasValue("v-ui:displayedElements")) {
-      defaultDisplayedElements = new veda.IndividualModel("v-ui:DefaultDisplayedElements");
-      defaultLanguage = new veda.IndividualModel("v-ui:DefaultLanguage");
+      var defaultDisplayedElements = new veda.IndividualModel("v-ui:DefaultDisplayedElements");
+      var defaultLanguage = new veda.IndividualModel("v-ui:DefaultLanguage");
       Promise.all([defaultLanguage, defaultDisplayedElements]).then(function (defaults) {
         preferences["v-ui:preferredLanguage"] = [ defaults[0]["rdf:value"][0] ];
         preferences["v-ui:displayedElements"] = [ defaults[1]["rdf:value"][0] ];
