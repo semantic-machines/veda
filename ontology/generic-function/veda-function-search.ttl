@@ -239,7 +239,6 @@ v-fs:AttributiveSearchModel
 
   // Search method
   this.search = function (cursor) {
-
     if (cursor > 0) {
       self["v-fs:cursor"] = [cursor];
     } else {
@@ -248,76 +247,80 @@ v-fs:AttributiveSearchModel
       self["v-fs:searchResult"] = [];
     }
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
-    var queryString = [];
-    if ( self.hasValue("v-fs:searchBlank") ) {
-      self["v-fs:searchBlank"][0].initBlank();
-      queryString.push( veda.Util.queryFromIndividual(self["v-fs:searchBlank"][0].object) );
-    }
+    var queryString = "";
     if ( self.hasValue("v-fs:fulltextQuery") ) {
-      queryString.push( self["v-fs:fulltextQuery"][0] )
+      queryString += self["v-fs:fulltextQuery"][0];
     }
-    queryString = queryString.join(" && ");
-    self["v-fs:query"] = [ queryString ];
-    if ( queryString ) {
-      return veda.Backend.query({
-        ticket: veda.ticket,
-        query: queryString,
-        sort: self["v-fs:sortOrder"][0],
-        top: self["v-fs:top"][0] || veda.user.preferences.displayedElements || 10,
-        limit: self["v-fs:limit"][0] || 10000,
-        from: self["v-fs:cursor"][0]
-      }).then(function (results) {
-        self["v-fs:estimated"] = [ results.estimated ];
-        self["v-fs:cursor"] = [ results.cursor ];
-        return results.result;
-      }).then(function (resultDelta) {
-
-        var prefetch = [];
-        resultDelta.map(function (uri) {
-          if ( !veda.cache.get(uri) ) {
-            prefetch.push( uri );
+    if ( self.hasValue("v-fs:searchBlank") ) {
+      return self["v-fs:searchBlank"][0].load()
+        .then(function (searchBlank) {
+          searchBlank.initBlank();
+          if ( queryString.length ) {
+            queryString += " && "
           }
-        });
-        if (prefetch.length) {
-          return veda.Backend.get_individuals({
-            ticket: veda.ticket,
-            uris: prefetch
-          }).then(function (prefetched) {
-            prefetched.forEach(function (json) {
-              var fetched = new veda.IndividualModel(json);
-            });
-            return resultDelta;
-          });
-        } else {
-          return resultDelta;
-        }
-      }).then(function (resultDelta) {
-        self["v-fs:authorized"] = [ self["v-fs:authorized"][0] + resultDelta.length ];
-        var delta = resultDelta.map(function (uri) {
-          return new veda.IndividualModel(uri);
-        });
-        self.addValue("v-fs:searchResult", delta);
-
-        if ( self.hasValue("v-fs:loadAll", true) && self["v-fs:cursor"][0] < self["v-fs:estimated"][0] ) {
-
-          return self.search( self["v-fs:cursor"][0] );
-
-        } else if ( self.hasValue("v-fs:loadAll", true) ) {
-
-          self.trigger("search:complete", self["v-fs:searchResult"]);
-          return self["v-fs:searchResult"];
-
-        } else {
-
-          self.trigger("search:delta", delta);
-          return delta ;
-
-        }
-      });
+          return queryString += veda.Util.queryFromIndividual(self["v-fs:searchBlank"][0].object);
+        })
+        .then(performQuery.bind(self));
     } else {
-      return Promise.resolve( self["v-fs:searchResult"] );
+      return performQuery.call(self, queryString);
     }
   };
+
+  function performQuery(queryString) {
+    var self = this;
+    this["v-fs:query"] = [ queryString ];
+    if ( !queryString ) {
+      this["v-fs:searchResult"] = [];
+      return Promise.resolve([]);
+    }
+    return veda.Backend.query({
+      ticket: veda.ticket,
+      query: queryString,
+      sort: self["v-fs:sortOrder"][0],
+      top: self["v-fs:top"][0] || veda.user.preferences.displayedElements || 10,
+      limit: self["v-fs:limit"][0] || 10000,
+      from: self["v-fs:cursor"][0]
+    }).then(function (results) {
+      self["v-fs:estimated"] = [ results.estimated ];
+      self["v-fs:cursor"] = [ results.cursor ];
+      return results.result;
+    }).then(function (resultDelta) {
+      var prefetch = [];
+      resultDelta.map(function (uri) {
+        if ( !veda.cache.get(uri) ) {
+          prefetch.push( uri );
+        }
+      });
+      if (prefetch.length) {
+        return veda.Backend.get_individuals({
+          ticket: veda.ticket,
+          uris: prefetch
+        }).then(function (prefetched) {
+          prefetched.forEach(function (json) {
+            var fetched = new veda.IndividualModel(json);
+          });
+          return resultDelta;
+        });
+      } else {
+        return resultDelta;
+      }
+    }).then(function (resultDelta) {
+      self["v-fs:authorized"] = [ self["v-fs:authorized"][0] + resultDelta.length ];
+      var delta = resultDelta.map(function (uri) {
+        return new veda.IndividualModel(uri);
+      });
+      self.addValue("v-fs:searchResult", delta);
+      if ( self.hasValue("v-fs:loadAll", true) && self["v-fs:cursor"][0] < self["v-fs:estimated"][0] ) {
+        return self.search( self["v-fs:cursor"][0] );
+      } else if ( self.hasValue("v-fs:loadAll", true) ) {
+        self.trigger("search:complete", self["v-fs:searchResult"]);
+        return self["v-fs:searchResult"];
+      } else {
+        self.trigger("search:delta", delta);
+        return delta ;
+      }
+    });
+  }
 
 //# sourceURL=v-fs:AttributiveSearchModel
   """ ;
