@@ -134,7 +134,7 @@ func query(ctx *fasthttp.RequestCtx) {
 	request[7] = from
 
 	if ticketKey == "" {
-		log.Printf("ERR! bad request=%v\n", request)
+		log.Printf("ERR! empty ticket, request=%v\n", request)
 		rc := BadRequest
 		ctx.Response.SetStatusCode(int(rc))
 		trail1(ticketKey, "", "query", query, "", rc, timestamp)

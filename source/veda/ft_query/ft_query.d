@@ -227,6 +227,8 @@ void main(string[] args)
         log_sufix = tpcs[ 2 ];
     }
 
+	Thread.sleep(dur!("seconds")(1));
+
     int sock;
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
 

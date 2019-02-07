@@ -65,7 +65,7 @@ class ModuleInfoFile
                 if (ff_lock_w.tryLock(LockType.readWrite) == false)
                 {
                     _is_ready = false;
-                    log.trace("ERR! component [%s] already started", module_name);
+                    log.trace("ERR! ModuleInfo [%s] already open on write", module_name);
                     return;
                 }
                 ff_lock_w.flush();
@@ -73,6 +73,7 @@ class ModuleInfoFile
         }
         catch (Throwable tr)
         {
+            log.trace("ERR! fail open ModuleInfo [%s], err=[%s]", module_name, tr.msg);
             _is_ready = false;
         }
     }
