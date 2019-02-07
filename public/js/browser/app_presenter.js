@@ -228,7 +228,4 @@ veda.Module(function (veda) { "use strict";
     }
   });
 
-  // Load ontology
-  veda.init();
-
 });
