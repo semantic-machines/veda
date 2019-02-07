@@ -75,7 +75,7 @@ veda.Module(function (veda) { "use strict";
     if ( !preferences.hasValue("v-ui:preferredLanguage") || !preferences.hasValue("v-ui:displayedElements")) {
       var defaultDisplayedElements = new veda.IndividualModel("v-ui:DefaultDisplayedElements");
       var defaultLanguage = new veda.IndividualModel("v-ui:DefaultLanguage");
-      Promise.all([defaultLanguage, defaultDisplayedElements]).then(function (defaults) {
+      Promise.all([defaultLanguage.load(), defaultDisplayedElements.load()]).then(function (defaults) {
         preferences["v-ui:preferredLanguage"] = [ defaults[0]["rdf:value"][0] ];
         preferences["v-ui:displayedElements"] = [ defaults[1]["rdf:value"][0] ];
         preferences.save();
