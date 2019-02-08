@@ -685,8 +685,7 @@ if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
   parents.map(function (parent_uri) {
     var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
     if (deleted) {
-      remove_individual(ticket, uri, _event_id);
-      //print("membership removed", uri);
+      return;
     } else {
       var membership = {
         '@' : uri,
