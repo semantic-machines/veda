@@ -79,6 +79,22 @@ v-s:authValue
   rdfs:range rdfs:Resource ;
 .
 
+v-s:authGroupFunction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Функция для вычисления авторизационной группы"@ru ;
+  rdfs:label "Function to calculate authorization group"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:keepMembershipOnDelete
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Функция для вычисления авторизационной группы"@ru ;
+  rdfs:label "Function to calculate authorization group"@en ;
+  rdfs:range xsd:boolean ;
+.
+
 v-s:PermissionGenerator
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:PermissionStatement ;
@@ -164,6 +180,11 @@ v-s:GroupGeneratorTemplate
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
   <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
+
+  <em about="v-s:authGroupFunction" property="rdfs:label"></em>
+  <div property="v-s:authGroupFunction" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="v-s:authGroupFunction" class="-view edit search"></veda-control>
+
   <em about="v-s:GroupGeneratorUri" property="rdfs:label"></em>
   <code class="group-uri"></code>
   <br>
@@ -501,19 +522,25 @@ if (!veda.GroupGenerators) {
   console.log("(Re)build group generators");
   veda.GroupGenerators = query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
     var generator = get_individual(veda.ticket, generator_uri);
-    var authClass = veda.Util.getUri(generator["v-s:authClass"]);
+    var authClasses = veda.Util.getUris(generator["v-s:authClass"]);
     var authProperty = veda.Util.getUri(generator["v-s:authProperty"]);
     var authFunction = veda.Util.getFirstValue(generator["v-s:authFunction"]);
+    var authGroupFunction = veda.Util.getFirstValue(generator["v-s:authGroupFunction"]);
     var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
     var fn;
     if (authProperty) {
       fn = new Function("veda", "return veda.Util.getFirstValue(this['" + authProperty + "']);");
     } else if (authFunction) {
       fn = new Function("veda", authFunction);
+    } else if (authGroupFunction) {
+      fn = new Function("veda", authGroupFunction);
+      fn.group = true;
     }
     fn.generator = generator_uri;
     fn.value = authValue;
-    acc[authClass] = (acc[authClass] || []).concat(fn);
+    authClasses.forEach(function (authClass) {
+      acc[authClass] = (acc[authClass] || []).concat(fn);
+    });
     return acc;
   }, {});
   set_in_individual(veda.ticket, {
@@ -588,25 +615,28 @@ function generateGroups(document) {
   var _super = JSON.parse(super_classes);
   _super.push(type);
 
-  for (var i = 0, _class; (_class = _super[i]); i++) {
+  for (var i = 0, _class, fns; (_class = _super[i]); i++) {
     if (_class in veda.GroupGenerators) {
-      var fns = veda.GroupGenerators[_class];
-      for (var j = 0, fn; (fn = fns[j]); j++) {
-        var fn_value;
-        if (fn.value === undefined) {
-          fn_value = fn.call(document, veda);
-          if (fn_value === undefined) { continue; }
+      fns = veda.GroupGenerators[_class];
+      for (var j = 0, fn, fn_value, group_concat_uri, hash, group_uri, group; (fn = fns[j]); j++) {
+        if ( !fn.group ) {
+          if (fn.value === undefined) {
+            fn_value = fn.call(document, veda);
+            if (fn_value === undefined) { continue; }
+          } else {
+            fn_value = (fn.value.toString() === fn.call(document, veda).toString());
+            if (fn_value === false) { continue; }
+            fn_value = fn.value;
+          }
+          group_concat_uri = fn.generator + " " + fn_value.toString();
+          hash = Sha256.hash(group_concat_uri).substring(32);
+          group_uri = "d:grp-" + hash;
+          groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
         } else {
-          fn_value = (fn.value.toString() === fn.call(document, veda).toString());
-          if (fn_value === false) { continue; }
-          fn_value = fn.value;
+          group_uri = fn.call(document, veda);
+          if (!group_uri) { continue; }
         }
-        var group_concat_uri = fn.generator + " " + fn_value.toString();
-        var hash = Sha256.hash(group_concat_uri).substring(32);
-        var group_uri = "d:grp-" + hash;
-        groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
-
-        var group = get_individual(veda.ticket, group_uri);
+        group = get_individual(veda.ticket, group_uri);
         if ( !group ) {
           group = {
             "@": group_uri,
@@ -707,22 +737,26 @@ if (subjectGroup_uri && objectGroup_uri) {
 
 ##### Permission and group generator example #####
 
-# v-s:GroupGenerator_Class
-#   rdf:type v-s:GroupGenerator ;
-#   v-s:authClass v-s:Person ;
-#   v-s:authProperty rdf:type ;
-#   v-s:authValue v-s:Person ;
-#   rdfs:label "Auth group generator: put individual to class group" ;
-# .
-#
-# v-s:PermissionGenerator_Persons_R_Person
-#   rdf:type v-s:PermissionGenerator ;
-#   rdfs:label "Permission generator: All indivduals of v-s:Person class '-R--' All indivduals of v-s:Person class" ;
-#   v-s:permissionSubject cfg:AllUsersGroup ;
-#   v-s:canRead true ;
-#   v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
-#   v-s:objectGroupGeneratorValue v-s:Person ;
-# .
+v-s:OrgStructureGroupOrganizer
+  rdf:type v-s:GroupGenerator ;
+  v-s:authClass v-s:Organization ;
+  v-s:authClass v-s:Department ;
+  v-s:authClass v-s:Position ;
+  v-s:authClass v-s:Appointment ;
+  v-s:authGroupFunction """
+return ( this.hasValue("v-s:parentUnit") ? this["v-s:parentUnit"][0].id : undefined );
+  """;
+  rdfs:label "Auth group generator: put individual to class group" ;
+.
+
+//v-s:PermissionGenerator_Persons_R_Person
+//  rdf:type v-s:PermissionGenerator ;
+//  rdfs:label "Permission generator: All indivduals of v-s:Person class '-R--' All indivduals of v-s:Person class" ;
+//  v-s:permissionSubject cfg:AllUsersGroup ;
+//  v-s:canRead true ;
+//  v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
+//  v-s:objectGroupGeneratorValue v-s:Person ;
+//.
 
 # Обработка v-s:ClassAuthorized ----------------------------------------
 
