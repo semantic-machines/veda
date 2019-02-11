@@ -1941,7 +1941,9 @@
       var suggestions = $(".suggestions", control);
       var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
-        if (dblTimeout) {
+        if (!e.originalEvent){
+          clickHandler(e);
+        } else if (dblTimeout) {
           dblclickHandler(e);
         } else {
           clickHandler(e);
