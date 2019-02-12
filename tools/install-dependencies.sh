@@ -28,4 +28,6 @@ sudo chmod 644 /usr/local/lib/libtarantool.so
 #libauthorization
 sudo cp $DIST_LIB_PATH/libauthorization.so /usr/local/lib
 
+./install-repo-libs.sh
+
 sudo ldconfig

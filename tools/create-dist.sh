@@ -19,6 +19,9 @@ cp -d /usr/local/lib/libtarantool.so $DIST_PATH/lib
 cp ../libauthorization.so $DIST_PATH/lib
 
 cp -r ../{cron,ontology,public} $DIST_PATH
+
 cp ../tools/control-backup.sh $DIST_PATH/tools
 cp ../tools/install-dependencies.sh $DIST_PATH/tools
+cp ../tools/install-repo-libs.sh $DIST_PATH/tools
+
 cp ../{control-start.sh,control-stop.sh,veda,veda-*,veda.properties} $DIST_PATH
