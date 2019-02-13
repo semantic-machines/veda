@@ -1,7 +1,8 @@
-import Basic from './basic'
+import Basic from './basic';
+import config from './config';
 import { Selector, t } from 'testcafe';
   fixture `test div controls`
-    .page `http://localhost:8080/`;
+    .page `${config.baseUrl}`;
   const basic = new Basic();
   const checkBox = Selector('veda-control[data-type="checkbox"] div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
   const radioButton = Selector('veda-control[data-type="radio"] div.radio').find('label').withText('Спецификация тестового календарного свойства');
