@@ -296,6 +296,10 @@ veda.Module(function (veda) { "use strict";
         )
       )
     ) {
+      var user = get_individual(ticket, user_uri);
+      var appointment_uri = veda.Util.getUri(user["v-s:defaultAppointment"]) || veda.Util.getUri(user["v-s:hasAppointment"]);
+      var actor_uri = appointment_uri || user_uri;
+
       if (!prev_state) prev_state = document;
       var actualId = document['@'];
       var versionId = veda.Util.genUri() + "-vr";
@@ -324,7 +328,7 @@ veda.Module(function (veda) { "use strict";
       );
       version['v-s:created'] = [{data: new Date(), type: "Datetime"}];
       version['v-s:edited'] = [];
-      version['v-s:creator'] = veda.Util.newUri(user_uri);
+      version['v-s:creator'] = veda.Util.newUri(actor_uri);
       version['v-s:lastEditor'] = [];
 
       put_individual(ticket, version, _event_id);
@@ -362,7 +366,7 @@ veda.Module(function (veda) { "use strict";
       }];
       document['v-s:nextVersion'] = [];
       document['v-s:edited'] = [{data: new Date(), type: "Datetime"}];
-      document['v-s:lastEditor'] = veda.Util.newUri(user_uri);
+      document['v-s:lastEditor'] = veda.Util.newUri(actor_uri);
       put_individual(ticket, document, _event_id);
     }
   };
