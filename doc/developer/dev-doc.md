@@ -136,10 +136,10 @@ VEDA - это платформа для создания и исполнения
 @prefix cs: <http://company-sales.com/sample/sales/> .
 
 <http://company-sales.com/sample/sales>
-rdf:type owl:Ontology ;
-rdfs:isDefinedBy cs: ;
-rdfs:label "Тестовый пример - Продажи"@ru ;
-rdfs:label "Sample - Sales"@en ;
+  rdf:type owl:Ontology ;
+  rdfs:isDefinedBy cs: ;
+  rdfs:label "Тестовый пример - Продажи"@ru ;
+  rdfs:label "Sample - Sales"@en ;
 .
 ```
 Рассмотрим из чего состоит заголовок файла:
@@ -154,10 +154,10 @@ rdfs:label "Sample - Sales"@en ;
 Далее идет сущность которая будет корневой для других сущностей нашей бизнес области.
 ```
 <http://company-sales.com/sample/sales>
-rdf:type owl:Ontology ;
-rdfs:isDefinedBy cs: ;
-rdfs:label "Тестовый пример - Продажи"@ru ;
-rdfs:label "Sample - Sales"@en ;
+  rdf:type owl:Ontology ;
+  rdfs:isDefinedBy cs: ;
+  rdfs:label "Тестовый пример - Продажи"@ru ;
+  rdfs:label "Sample - Sales"@en ;
 .
 ```
 
@@ -167,9 +167,9 @@ rdfs:label "Sample - Sales"@en ;
 
 ```
 cs:Customer
-rdf:type rdfs:Class ;
-rdfs:label "Customer"@en ;
-rdfs:label "Покупатель"@en ;
+  rdf:type rdfs:Class ;
+  rdfs:label "Customer"@en ;
+  rdfs:label "Покупатель"@en ;
 .
 
 ```
@@ -182,11 +182,11 @@ rdfs:label "Покупатель"@en ;
 
 ```
 cs:name
-rdf:type owl:DatatypeProperty ;
-rdfs:label "Имя"@ru ;
-rdfs:label "Name"@en ;
-rdfs:domain cs:Customer ;
-rdfs:range xsd:string ;
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Имя"@ru ;
+  rdfs:label "Name"@en ;
+  rdfs:domain cs:Customer ;
+  rdfs:range xsd:string ;
 .
 ```
 
@@ -207,10 +207,10 @@ rdfs:range xsd:string ;
 
 ```
 cs:email
-rdf:type owl:DatatypeProperty ;
-rdfs:label "email" ;
-rdfs:domain cs:Customer ;
-rdfs:range xsd:string ;
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "email" ;
+  rdfs:domain cs:Customer ;
+  rdfs:range xsd:string ;
 .
 ```
 
@@ -219,9 +219,9 @@ rdfs:range xsd:string ;
 
 ```
 cs:Order
-rdf:type rdfs:Class ;
-rdfs:label "Order"@en ;
-rdfs:label "Заказ"@en ;
+  rdf:type rdfs:Class ;
+  rdfs:label "Order"@en ;
+  rdfs:label "Заказ"@en ;
 .
 ```
 
@@ -229,10 +229,10 @@ rdfs:label "Заказ"@en ;
 
 ```
 cs:hasCustomer
-rdf:type owl:ObjectProperty ;
-rdfs:label "has customer"@en ;
-rdfs:domain cs:Order ;
-rdfs:range cs:Customer ;
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "has customer"@en ;
+  rdfs:domain cs:Order ;
+  rdfs:range cs:Customer ;
 .
 ```
 
@@ -242,17 +242,17 @@ rdfs:range cs:Customer ;
 
 ```
 cs:date
-rdf:type owl:DatatypeProperty ;
-rdfs:label "date" ;
-rdfs:domain cs:Order ;
-rdfs:range xsd:dateTime ;
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date" ;
+  rdfs:domain cs:Order ;
+  rdfs:range xsd:dateTime ;
 .
 
 cs:amount
-rdf:type owl:DatatypeProperty ;
-rdfs:label "amount" ;
-rdfs:domain cs:Order ;
-rdfs:range xsd:decimal ;
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "amount" ;
+  rdfs:domain cs:Order ;
+  rdfs:range xsd:decimal ;
 .
 ```
 
