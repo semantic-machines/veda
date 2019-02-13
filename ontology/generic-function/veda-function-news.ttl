@@ -29,7 +29,26 @@ v-s:News
   v-s:labelPattern "{@.v-s:title} {@.v-s:created}" ;
 .
 
-v-s:Notify
+v-s:newsAudience
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Аудитория новости"@ru ;
+  rdfs:label "News audience"@en ;
+  rdfs:domain v-s:News ;
+  rdfs:range rdfs:Resource ;
+.
+
+v-s:PS_newsAudience
+  rdf:type v-ui:ObjectPropertySpecification ;
+  rdfs:label "Спецификация свойства v-s:newsAudience для класса v-s:News"@ru ;
+  rdfs:label "v-s:newsAudience property specification for v-s:News class"@en ;
+  v-ui:forClass v-s:News ;
+  v-ui:forProperty v-s:newsAudience ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:queryPrefix "('rdf:type' == 'v-s:OrganizationUnit' || 'rdf:type' === 'v-s:Group')" ;
+.
+
+v-s:NotifyBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Уведомить пользователей"@ru ;
   rdfs:label "Notify users"@en ;
@@ -43,51 +62,61 @@ v-s:NewsTemplate
 <script>
   var actions = $(".actions", template);
   var scriptBlock = $(".script", template);
+  var audience = $(".audience", template);
   if ( !veda.user.isMemberOf("cfg:SuperUser") ) {
     actions.remove();
     scriptBlock.remove();
+    audience.remove();
   } else {
-    var notifyUsers = $(".notify-users", template);
+    var notify = $(".notify", template);
     var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
     if (clientNotification.hasValue("rdf:value", individual) ) {
-      notifyUsers.addClass("disabled").attr("disabled", "disabled");
+      notify.addClass("disabled").attr("disabled", "disabled");
     } else {
-      notifyUsers.click(function () {
-        try {
-          clientNotification["rdf:value"] = [individual];
-          clientNotification.save();
-          $(this).addClass("disabled").attr("disabled", "disabled");
-        } catch (error) {
-          var notify = new veda.Notify();
-          notify("danger", {name: error});
-        }
-      });
+      notify.removeClass("disabled").removeAttr("disabled");
     }
+    notify.click(function () {
+      try {
+        var newsLinks = clientNotification["rdf:value"];
+        newsLinks.unshift(individual);
+        clientNotification["rdf:value"] = newsLinks.slice(0, 5);
+        clientNotification.save();
+        notify.addClass("disabled").attr("disabled", "disabled");
+      } catch (error) {
+        var notification = new veda.Notify();
+        notification("danger", {name: error});
+      }
+    });
   }
   //# sourceURL=v-s:NewsTemplate_pre
 </script>
 <div class="container">
   <div class="sheet">
-    <h3 about="@" property="v-s:title" class="margin-md view -edit -search"></h3>
     <em about="v-s:title" property="rdfs:label" class="-view edit search"></em>
+    <h3 about="@" property="v-s:title" class="margin-md view -edit -search"></h3>
     <veda-control data-type="string" property="v-s:title" class="-view edit search"></veda-control>
-    <i about="@" property="v-s:description" class="markdown view -edit -search"></i>
     <em about="v-s:description" property="rdfs:label" class="-view edit search"></em>
+    <i about="@" property="v-s:description" class="markdown view -edit -search"></i>
     <veda-control data-type="text" rows="3" property="v-s:description" class="-view edit search"></veda-control>
-    <div about="@" property="v-s:content" class="markdown view -edit -search"></div>
     <em about="v-s:content" property="rdfs:label" class="-view edit search"></em>
+    <div about="@" property="v-s:content" class="markdown view -edit -search"></div>
     <veda-control data-type="text" rows="10" property="v-s:content" class="-view edit search"></veda-control>
-    <div class="script">
-      <pre about="@" property="v-s:script" class="markdown view -edit -search"></pre>
-      <em about="v-s:script" property="rdfs:label" class="-view edit -search"></em>
-      <veda-control data-type="source" rows="10" property="v-s:script" class="-view edit -search"></veda-control>
-    </div>
     <b><small about="@" property="v-s:created" class="view -edit -search"></small></b>
     <em about="v-s:created" property="rdfs:label" class="-view edit search"></em>
     <veda-control data-type="date" property="v-s:created" class="-view edit search"></veda-control>
+    <div class="script">
+      <em about="v-s:script" property="rdfs:label" class="view edit -search"></em>
+      <pre about="@" property="v-s:script" class="markdown view -edit -search"></pre>
+      <veda-control data-type="source" rows="10" property="v-s:script" class="-view edit -search"></veda-control>
+    </div>
+    <div class="audience">
+      <em about="v-s:newsAudience" property="rdfs:label" class="view edit search"></em>
+      <div rel="v-s:newsAudience" data-template="v-ui:LabelLinkTemplate" class="view edit search"></div>
+      <veda-control data-type="link" rel="v-s:newsAudience" class="-view edit search dropdown fulltext"></veda-control>
+    </div>
     <div class="actions margin-lg">
       <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
-      <button class="btn btn-warning view -edit -search notify-users" about="v-s:Notify" property="rdfs:label"></button>
+      <button class="btn btn-warning view -edit -search notify" about="v-s:NotifyBundle" property="rdfs:label"></button>
     </div>
   </div>
   <!--div about="@" class="sheet view -edit -search" data-template="v-s:CommentsTemplate"></div-->
@@ -258,4 +287,5 @@ v-s:NewsReloadPage
   Reload now?
   """@en;
   v-s:script "location.reload();";
+  v-s:newsAudience cfg:AllUsersGroup;
 .
