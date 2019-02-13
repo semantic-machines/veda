@@ -75,7 +75,7 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     await t
       .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
-      .navigateTo('${config.baseUrl}/#/v-ui:TestUIRegistry')
+      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
       .click('button#search-button')
       .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
       .expect(Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container td[property="v-ui:testInteger"]').innerText).eql('999')
