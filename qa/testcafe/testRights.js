@@ -1,7 +1,8 @@
-import Basic from './basic'
+import Basic from './basic';
+import config from './config';
 import { Selector, t } from 'testcafe';
   fixture `test Rights`
-    .page `http://localhost:8080/`
+    .page `${config.baseUrl}`;
   const basic = new Basic();
   test('testRights', async t => {
     basic.login('karpovrt', '123');

@@ -1,7 +1,8 @@
-import Basic from './basic'
+import Basic from './basic';
+import config from './config';
 import { Selector, t } from 'testcafe';
   fixture `test Delete And Recovery`
-  .page `http://localhost:8080/`
+    .page `${config.baseUrl}`;
   const basic = new Basic();
   const timeStamp = ''+Math.round(+new Date()/1000);
   const searchStartForm = "'rdfs:label' == '"+ timeStamp +"'" ;

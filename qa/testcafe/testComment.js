@@ -1,15 +1,17 @@
-import Basic from './basic'
+import Basic from './basic';
+import config from './config';
 import { Selector, t } from 'testcafe';
   fixture `test Comment`
-    .page `http://localhost:8080/`;
+    .page `${config.baseUrl}`;
   const basic = new Basic();
   const timeStamp = ''+Math.round(+new Date()/1000);
+  const pageForNavigateFromConfig = `${config.baseUrl}`+'#/v-ui:TestUIRegistry';
   test('testComment', async t => {
     basic.login('karpovrt', '123');
     basic.createTestUI('Тест комментария', timeStamp);
     await t
       .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
-      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .navigateTo( pageForNavigateFromConfig )
       .typeText('veda-control#comment', timeStamp)
       .click('button#search-button')
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
