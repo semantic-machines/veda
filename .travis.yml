@@ -56,7 +56,7 @@ script:
   - testcafe chromium qa/testcafe/testSimpleNetLowPriority.js
   - testcafe chromium qa/testcafe/testControls.js
   - testcafe chromium qa/testcafe/testDrafts.js
-  - testcafe chromium qa/testcafe/testDropDown.js
+#  - testcafe chromium qa/testcafe/testDropDown.js
 
 after_script:
   - ./control-stop.sh
