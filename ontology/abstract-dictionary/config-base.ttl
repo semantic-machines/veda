@@ -664,7 +664,8 @@ cfg:Event_4
   v-s:triggerByType v-s:Department ;
   v-s:triggerByType v-s:Position ;
   v-s:triggerByType v-s:Appointment ;
-  v-s:preventByType v-s:Version;
+  v-s:preventByType v-s:Version ;
+  v-s:disabled true ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
