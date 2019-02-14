@@ -357,7 +357,46 @@ v-ui:receiveMessageType
   rdfs:label "Receive these messages"@en ;
   rdfs:range v-s:MessageType ;
 .
+#----------------for dropdown----------------------------------
+d:2078749d2bcf42e0ae80c5d8287d19d1
+  rdf:type v-s:TransportKind ;
+  rdfs:label "Авиатранспорт"@ru;
+  rdfs:label "Air transport"@en;
+  v-s:updateCounter "1"^^xsd:integer.
 
+d:177b4624ed3f4ce6a1c89d7a3bd4f1c1
+  rdf:type v-s:TransportKind ;
+  rdfs:label "Железнодорожный транспорт"@ru;
+  rdfs:label "Railway transport"@en;
+  v-s:updateCounter "1"^^xsd:integer.
+
+d:62fbbbc27f8e407c8f51de71e10d0501
+  rdf:type v-s:TransportKind ;
+  rdfs:label "Автобус"@ru;
+  rdfs:label "Bus"@en;
+  v-s:updateCounter "1"^^xsd:integer.
+
+v-s:hasTransportKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид транспорта"@ru ;
+  rdfs:label "Transport kind"@en ;
+  rdfs:range v-s:TransportKind ;
+.
+v-s:PS_hasTransportKind_TestUi
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-s:hasTransportKind ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация свойства v-s:hasTransportKind для класса v-ui:TestUIClass"@ru ;
+  rdfs:label "v-s:hasTransportKind property specification for v-ui:TestUIClass"@en ;
+.
+v-s:TransportKind
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Вид транспорта"@ru ;
+  rdfs:label "Transport kind"@en ;
+.
 # --------------- System properties template ------------------
 
 v-ui:DraftsIndicatorTemplate
@@ -1583,6 +1622,9 @@ v-ui:TestUITemplate
   <veda-control rel="v-ui:testLink" data-type="checkbox"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="radio"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="select" class="-view edit search"></veda-control>
+  <em about="v-s:hasTransportKind" property="rdfs:label"></em>
+  <div rel="v-s:hasTransportKind" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+  <veda-control data-type="link" rel="v-s:hasTransportKind" class="-view edit search fulltext dropdown"></veda-control>
   <!--hr>
   <em about="v-ui:template" property="rdfs:label"></em>
   <veda-control property="v-ui:template" data-type="source"></veda-control>
