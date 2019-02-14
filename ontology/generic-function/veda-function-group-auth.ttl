@@ -530,15 +530,15 @@ if (!veda.GroupGenerators) {
     var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
     var fn;
     if (authProperty) {
-      fn = new Function("veda", "return veda.Util.getFirstValue(this['" + authProperty + "']);");
+      fn = new Function("veda", "return veda.Util.getValues(this['" + authProperty + "']);");
     } else if (authFunction) {
       fn = new Function("veda", authFunction);
     } else if (authGroupFunction) {
       fn = new Function("veda", authGroupFunction);
       fn.isGroupFn = true;
     }
-    fn.generator = generator_uri;
-    fn.value = authValue;
+    fn.generatorUri = generator_uri;
+    fn.authValue = authValue;
     authClasses.forEach(function (authClass) {
       acc[authClass] = (acc[authClass] || []).concat(fn);
     });
@@ -616,6 +616,21 @@ function checkAddMembership(group_uri) {
   }
 }
 
+function checkAddGroup(group_uri, group_label) {
+  var group = get_individual(veda.ticket, group_uri);
+  if ( !group ) {
+    group = {
+      "@": group_uri,
+      "rdf:type": veda.Util.newUri("v-s:Group"),
+      "rdfs:label": veda.Util.newStr(group_label),
+      "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
+      "v-s:created": veda.Util.newDate(new Date())
+    };
+    put_individual(veda.ticket, group);
+    console.log("group created", group_uri, group_label);
+  }
+}
+
 function generateGroups(document) {
   var groups = {};
   if (!document) { return groups; }
@@ -626,36 +641,42 @@ function generateGroups(document) {
   for (var i = 0, _class, fns; (_class = _super[i]); i++) {
     if (_class in veda.GroupGenerators) {
       fns = veda.GroupGenerators[_class];
-      for (var j = 0, fn, fn_value, group_concat_uri, hash, group_uri, group; (fn = fns[j]); j++) {
+      for (var j = 0, fn, fn_value, group_concat_uri, hash, group_uri, group_label; (fn = fns[j]); j++) {
         if ( !fn.isGroupFn ) {
-          if (fn.value === undefined) {
-            fn_value = fn.call(document, veda);
-            if (fn_value === undefined) { continue; }
+          fn_value = fn.call(document, veda);
+          if (typeof fn_value === "undefined") {
+            continue;
           } else {
-            fn_value = (fn.value.toString() === fn.call(document, veda).toString());
-            if (fn_value === false) { continue; }
-            fn_value = fn.value;
+            if ( !Array.isArray(fn_value) ) {
+              fn_value = [fn_value];
+            }
+            fn_value.forEach(function (fn_value_item) {
+              if (typeof fn_value_item === "undefined") { return; }
+              if (typeof fn.authValue !== "undefined") {
+                fn_value_item = (fn.authValue.toString() === fn_value_item.toString());
+                if (fn_value_item === false) { return; }
+                fn_value_item = fn.authValue;
+              }
+              group_concat_uri = fn.generatorUri + " " + fn_value_item;
+              hash = Sha256.hash(group_concat_uri).substring(32);
+              group_uri = "d:grp-" + hash;
+              group_label = "Auth group. Generator: " + fn.generatorUri + ", value: " + fn_value_item;
+              groups[group_uri] = group_label;
+              checkAddGroup(group_uri, group_label);
+            });
           }
-          group_concat_uri = fn.generator + " " + fn_value.toString();
-          hash = Sha256.hash(group_concat_uri).substring(32);
-          group_uri = "d:grp-" + hash;
-          groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
         } else {
           group_uri = fn.call(document, veda);
-          groups[group_uri] = "Auth group. Generator: " + fn.generator + ", calculated group";
           if (!group_uri) { continue; }
-        }
-        group = get_individual(veda.ticket, group_uri);
-        if ( !group ) {
-          group = {
-            "@": group_uri,
-            "rdf:type": veda.Util.newUri("v-s:Group"),
-            "rdfs:label": veda.Util.newStr(groups[group_uri]),
-            "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
-            "v-s:created": veda.Util.newDate(new Date())
-          };
-          put_individual(veda.ticket, group);
-          console.log("group created", group_uri, group["rdfs:label"][0].data);
+          if ( !Array.isArray(group_uri) ) {
+            group_uri = [group_uri];
+          }
+          group_label = "Auth group. Generator: " + fn.generatorUri + ", calculated group";
+          group_uri.forEach(function (group_uri_item) {
+            if (typeof group_uri_item === "undefined") { return; }
+            groups[group_uri_item] = group_label;
+            checkAddGroup(group_uri_item, group_label);
+          });
         }
       }
     }
@@ -937,8 +958,9 @@ _super_classes.map(function (super_uri) {
 # 4) Каждый генератор описывает:
 #   - целевой класс, для которого выполняется генератор;
 #   - целевое свойство (для распределение по значению свойства индивида).
-#   - целевое выражение - скрипт, который должен вернуть произвольное значение на основе индивида.
-#   - целевое значение - если указано, то производится проверка на соответствие целевого значения и значения целевого свойства или целевого выражения. Если значения совпадают, объект помещается в соответствующую группу.
+#   - функция вычисления целевого значения - скрипт, который должен вернуть произвольное значение на основе индивида. Функция может возвращать массив значений.
+#   - целевое значение - если указано, то производится проверка на соответствие целевого значения и значения целевого свойства или результата функции вычисления целевого значения. Если значения совпадают, объект помещается в соответствующую группу.
+#   - функция вычисления группы - если указано, то результат этой функции принимается в качестве идентификатора группы. Объект помещается в вычисленную группу. Функция может возвращать массив идентификаторов групп.
 # Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
 # 5) Задача генератора - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое генератором равно количеству уникальных целевых значений.
 # 6) Uri Авторизационной группы вычисляется так:
