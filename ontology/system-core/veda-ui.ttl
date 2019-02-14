@@ -386,7 +386,7 @@ v-s:PS_hasTransportKind_TestUi
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-s:hasTransportKind ;
-  v-ui:minCardinality 1 ;
+  v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
   rdfs:label "Спецификация свойства v-s:hasTransportKind для класса v-ui:TestUIClass"@ru ;
   rdfs:label "v-s:hasTransportKind property specification for v-ui:TestUIClass"@en ;
