@@ -23,6 +23,7 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Hierarchical ;
+  rdfs:subClassOf v-s:GroupAuthorized ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:label "Организационная единица"@ru ;
@@ -76,7 +77,7 @@ v-s:taxRegistrationCause
   rdfs:label "Tax registration cause classifier"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
-  rdfs:domain v-s:Contractor ;  
+  rdfs:domain v-s:Contractor ;
 .
 v-s:taxRegistrationNumber
   rdf:type owl:DatatypeProperty ;
