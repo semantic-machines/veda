@@ -25,13 +25,13 @@ v-s:CertificationDocumentType
 
 d:ub9l9kduz43gkkxyl66pmyznkf
   a v-s:CertificationDocumentType;
-  rdfs:label "Первичный. Об образовании"^^xsd:string;
+  rdfs:label "Первичная проверка. Документ об образовании"^^xsd:string;
 .
 d:ddn4y2e3fd4rsfsy97p5swk5al
   a v-s:CertificationDocumentType;
-  rdfs:label "Периодическая проверка знаний"^^xsd:string;
+  rdfs:label "Периодическая проверка, осмотр"^^xsd:string;
 .
 d:a0edmuunt1hp9hvhbtm24v4fdig
   a v-s:CertificationDocumentType;
-  rdfs:label "Внеплановая проверка знаний"^^xsd:string;
+  rdfs:label "Внеплановая проверка, осмотр"^^xsd:string;
 .
