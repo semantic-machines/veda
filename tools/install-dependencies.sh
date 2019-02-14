@@ -31,3 +31,8 @@ sudo cp $DIST_LIB_PATH/libauthorization.so /usr/local/lib
 ./install-repo-libs.sh
 
 sudo ldconfig
+
+if [ ! -f ../ontology/config.ttl ]
+then
+  cp ../ontology/config.ttl.cfg ../ontology/config.ttl
+fi
