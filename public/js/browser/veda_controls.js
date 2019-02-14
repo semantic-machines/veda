@@ -42,19 +42,17 @@
         var field = input[0];
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
-        try {
-          var start_shift = field.selectionStart - field.value.length;
-          var end_shift = field.selectionEnd - field.value.length;
-          if (field.value != value) {
+        if (field.value != value) {
+          try {
+            var start_shift = field.selectionStart - field.value.length;
+            var end_shift = field.selectionEnd - field.value.length;
             field.value = value;
-          }
-          field.selectionStart = value.length + start_shift;
-          field.selectionEnd = value.length + end_shift;
-        } catch (ex) {
-          if (field.value != value) {
+            field.selectionStart = value.length + start_shift;
+            field.selectionEnd = value.length + end_shift;
+          } catch (ex) {
             field.value = value;
+            console.log("selectionStart/End error:", property_uri, value, typeof value);
           }
-          console.log("selectionStart/End error:", property_uri, value, typeof value);
         }
       }
     }
@@ -544,7 +542,7 @@
         var that = this;
         var lang = this.lang;
         individual.get(property_uri).forEach(function (value) {
-          if ( value.language === lang || !value.language ) {
+          if ( value.language === lang || !value.language && that.value != value) {
             try {
               if (that === document.activeElement) {
                 var start_shift = that.selectionStart - that.value.length;
