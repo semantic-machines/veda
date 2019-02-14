@@ -5,7 +5,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<http://semantic-machines.com/veda/mondi-individual-InternalUserAccount>
+<http://semantic-machines.com/veda/demo-individual-InternalUserAccount>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология индивидов Демо. Учетные записи пользователей"@ru ;
   rdfs:label "Demo individuals. User Account"@en ;
@@ -35,6 +35,7 @@ d:org_RU1100220011_role_DocsRegistrar
   v-s:parentUnit d:org_RU1100220011;
   rdfs:label "Регистратор документов"@ru;
   rdfs:label "Docs registrar"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_3_role_DocsRegistrar
   a v-s:Appointment;
@@ -44,6 +45,7 @@ d:org_RU1100220011_employee_3_role_DocsRegistrar
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Красавина И.А. Регистратор документов"@ru;
   rdfs:label "Krasavina Irina. Docs registrar"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -52,7 +54,9 @@ d:demo_department_1
   rdfs:label "Руководство"@ru;
   rdfs:label "Management"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_1;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;  
 .
 
 #----
@@ -61,7 +65,9 @@ d:demo_department_2
   rdfs:label "Юридический отдел"@ru;
   rdfs:label "Legal department"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_4;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -70,7 +76,9 @@ d:demo_department_3
   rdfs:label "Бухгалтерия"@ru;
   rdfs:label "Accounting"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_7;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -79,7 +87,9 @@ d:demo_department_4
   rdfs:label "Отдел кадров"@ru;
   rdfs:label "HR department"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_10;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -88,7 +98,9 @@ d:demo_department_5
   rdfs:label "Отдел продаж"@ru;
   rdfs:label "Sales department"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_12;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -97,7 +109,9 @@ d:demo_department_6
   rdfs:label "Производственный отдел"@ru;
   rdfs:label "Production department"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_17;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -106,7 +120,9 @@ d:demo_department_6_1
   rdfs:label "Цех №1"@ru;
   rdfs:label "Shop #1"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_19;
   v-s:parentUnit d:demo_department_6;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -115,7 +131,9 @@ d:demo_department_6_2
   rdfs:label "Цех №2"@ru;
   rdfs:label "Shop #2"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_23;
   v-s:parentUnit d:demo_department_6;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -124,7 +142,9 @@ d:demo_department_7
   rdfs:label "Транспортный отдел"@ru;
   rdfs:label "Transport department"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief d:org_RU1100220011_employee_27;
   v-s:parentUnit d:org_RU1100220011;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -141,6 +161,7 @@ d:org_RU1100220011_employee_1
   v-s:hasAppointment d:org_RU1100220011_employee_1_position_1;
   rdfs:label "Куракин В.В."@ru;
   rdfs:label "Kurakin Vadim"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_kurakinv
   a v-s:Account;
@@ -157,6 +178,7 @@ d:org_RU1100220011_position_1
   v-s:parentUnit d:demo_department_1;
   rdfs:label "Генеральный директор"@ru;
   rdfs:label "CEO"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_1_position_1
   a v-s:Appointment;
@@ -166,6 +188,7 @@ d:org_RU1100220011_employee_1_position_1
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Куракин В.В. Генеральный директор ООО \"Демо\""@ru;
   rdfs:label "Kurakin Vadim. CEO LLC Demo"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -182,6 +205,7 @@ d:org_RU1100220011_employee_2
   v-s:hasAppointment d:org_RU1100220011_employee_2_position_2;
   rdfs:label "Петров С.И."@ru;
   rdfs:label "Petrov Sergey"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_petrovs
   a v-s:Account;
@@ -198,6 +222,7 @@ d:org_RU1100220011_position_2
   v-s:parentUnit d:demo_department_1;
   rdfs:label "Помощник генерального директора"@ru;
   rdfs:label "Assistant CEO"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_2_position_2
   a v-s:Appointment;
@@ -207,6 +232,7 @@ d:org_RU1100220011_employee_2_position_2
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Петров С.И. Помощник генерального директора"@ru;
   rdfs:label "Petrov Sergey. Assistant CEO"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -223,6 +249,7 @@ d:org_RU1100220011_employee_3
   v-s:hasAppointment d:org_RU1100220011_employee_3_position_3;
   rdfs:label "Красавина И.А."@ru;
   rdfs:label "Krasavina Irina"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_krasavinai
   a v-s:Account;
@@ -239,6 +266,7 @@ d:org_RU1100220011_position_3
   v-s:parentUnit d:demo_department_1;
   rdfs:label "Делопроизводитель"@ru;
   rdfs:label "Clerk"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_3_position_3
   a v-s:Appointment;
@@ -248,6 +276,7 @@ d:org_RU1100220011_employee_3_position_3
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Красавина И.А. Делопроизводитель"@ru;
   rdfs:label "Krasavina Irina. Clerk"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -264,6 +293,7 @@ d:org_RU1100220011_employee_4
   v-s:hasAppointment d:org_RU1100220011_employee_4_position_4;
   rdfs:label "Кузин П.В."@ru;
   rdfs:label "Kuzin Petr"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_kuzinp
   a v-s:Account;
@@ -280,6 +310,7 @@ d:org_RU1100220011_position_4
   v-s:parentUnit d:demo_department_2;
   rdfs:label "Руководитель юридического отдела"@ru;
   rdfs:label "Head Legal Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_4_position_4
   a v-s:Appointment;
@@ -289,6 +320,7 @@ d:org_RU1100220011_employee_4_position_4
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Кузин П.В. Руководитель юридического отдела"@ru;
   rdfs:label "Kuzin Petr. Head Legal Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -305,6 +337,7 @@ d:org_RU1100220011_employee_5
   v-s:hasAppointment d:org_RU1100220011_employee_5_position_5;
   rdfs:label "Маркова В.И."@ru;
   rdfs:label "Markova Valentina"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_markovav
   a v-s:Account;
@@ -321,6 +354,7 @@ d:org_RU1100220011_position_5
   v-s:parentUnit d:demo_department_2;
   rdfs:label "Ведущий юрист"@ru;
   rdfs:label "Leading lawyer"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_5_position_5
   a v-s:Appointment;
@@ -330,6 +364,7 @@ d:org_RU1100220011_employee_5_position_5
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Маркова В.И. Ведущий юрист"@ru;
   rdfs:label "Markova Valentina. Leading lawyer"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -346,6 +381,7 @@ d:org_RU1100220011_employee_6
   v-s:hasAppointment d:org_RU1100220011_employee_6_position_6;
   rdfs:label "Потапов И.Н."@ru;
   rdfs:label "Potapov Ivan"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_potapovi
   a v-s:Account;
@@ -362,6 +398,7 @@ d:org_RU1100220011_position_6
   v-s:parentUnit d:demo_department_2;
   rdfs:label "Юрист"@ru;
   rdfs:label "Lawyer"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_6_position_6
   a v-s:Appointment;
@@ -371,6 +408,7 @@ d:org_RU1100220011_employee_6_position_6
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Потапов И.Н. Юрист"@ru;
   rdfs:label "Potapov Ivan. Lawyer"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -387,6 +425,7 @@ d:org_RU1100220011_employee_7
   v-s:hasAppointment d:org_RU1100220011_employee_7_position_7;
   rdfs:label "Потапова В.А."@ru;
   rdfs:label "Potapova Vera"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_potapovav
   a v-s:Account;
@@ -403,6 +442,7 @@ d:org_RU1100220011_position_7
   v-s:parentUnit d:demo_department_3;
   rdfs:label "Главный бухгалтер"@ru;
   rdfs:label "Chief Accountant"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_7_position_7
   a v-s:Appointment;
@@ -412,6 +452,7 @@ d:org_RU1100220011_employee_7_position_7
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Потапова В.А. Главный бухгалтер"@ru;
   rdfs:label "Potapova Vera. Chief Accountant"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -428,6 +469,7 @@ d:org_RU1100220011_employee_8
   v-s:hasAppointment d:org_RU1100220011_employee_8_position_8;
   rdfs:label "Мухина Е.А."@ru;
   rdfs:label "Mukhina Elena"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_mukhinae
   a v-s:Account;
@@ -444,6 +486,7 @@ d:org_RU1100220011_position_8
   v-s:parentUnit d:demo_department_3;
   rdfs:label "Бухгалтер"@ru;
   rdfs:label "Accountant"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_8_position_8
   a v-s:Appointment;
@@ -453,6 +496,7 @@ d:org_RU1100220011_employee_8_position_8
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Мухина Е.А. Бухгалтер"@ru;
   rdfs:label "Mukhina Elena. Accountant"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -469,6 +513,7 @@ d:org_RU1100220011_employee_9
   v-s:hasAppointment d:org_RU1100220011_employee_9_position_9;
   rdfs:label "Левина Е.А."@ru;
   rdfs:label "Levina Elena"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_levinae
   a v-s:Account;
@@ -485,6 +530,7 @@ d:org_RU1100220011_position_9
   v-s:parentUnit d:demo_department_3;
   rdfs:label "Бухгалтер"@ru;
   rdfs:label "Accountant"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_9_position_9
   a v-s:Appointment;
@@ -494,6 +540,7 @@ d:org_RU1100220011_employee_9_position_9
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Левина Е.А. Бухгалтер"@ru;
   rdfs:label "Levina Elena. Accountant"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -510,6 +557,7 @@ d:org_RU1100220011_employee_10
   v-s:hasAppointment d:org_RU1100220011_employee_10_position_10;
   rdfs:label "Боброва Н.В."@ru;
   rdfs:label "Bobrova Nadezhda"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_bobrovan
   a v-s:Account;
@@ -526,6 +574,7 @@ d:org_RU1100220011_position_10
   v-s:parentUnit d:demo_department_4;
   rdfs:label "Начальник отдела кадров"@ru;
   rdfs:label "Chief HR Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_10_position_10
   a v-s:Appointment;
@@ -535,6 +584,7 @@ d:org_RU1100220011_employee_10_position_10
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Боброва Н.В. Начальник отдела кадров"@ru;
   rdfs:label "Bobrova Nadezhda. Chief HR Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -551,6 +601,7 @@ d:org_RU1100220011_employee_11
   v-s:hasAppointment d:org_RU1100220011_employee_11_position_11;
   rdfs:label "Куликова А.Г."@ru;
   rdfs:label "Kulikova Anna"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_kulikovaa
   a v-s:Account;
@@ -567,6 +618,7 @@ d:org_RU1100220011_position_11
   v-s:parentUnit d:demo_department_4;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_11_position_11
   a v-s:Appointment;
@@ -576,6 +628,7 @@ d:org_RU1100220011_employee_11_position_11
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Куликова А.Г. Специалист"@ru;
   rdfs:label "Kulikova Anna. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -592,6 +645,7 @@ d:org_RU1100220011_employee_12
   v-s:hasAppointment d:org_RU1100220011_employee_12_position_12;
   rdfs:label "Дмитриев А.В."@ru;
   rdfs:label "Dmitriev Alexander"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_dmitrieva
   a v-s:Account;
@@ -608,6 +662,7 @@ d:org_RU1100220011_position_12
   v-s:parentUnit d:demo_department_5;
   rdfs:label "Руководитель отдела продаж"@ru;
   rdfs:label "Head Sales Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_12_position_12
   a v-s:Appointment;
@@ -617,6 +672,7 @@ d:org_RU1100220011_employee_12_position_12
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Дмитриев А.В. Руководитель отдела продаж"@ru;
   rdfs:label "Dmitriev Alexander. Head Sales Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -633,6 +689,7 @@ d:org_RU1100220011_employee_13
   v-s:hasAppointment d:org_RU1100220011_employee_13_position_13;
   rdfs:label "Авдеев А.А."@ru;
   rdfs:label "Avdeev Anton"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_avdeeva
   a v-s:Account;
@@ -649,6 +706,7 @@ d:org_RU1100220011_position_13
   v-s:parentUnit d:demo_department_5;
   rdfs:label "Заместитель руководителя отдела продаж"@ru;
   rdfs:label "Deputy Head Sales Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_13_position_13
   a v-s:Appointment;
@@ -658,6 +716,7 @@ d:org_RU1100220011_employee_13_position_13
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Авдеев А.А. Заместитель руководителя отдела продаж"@ru;
   rdfs:label "Avdeev Anton. Deputy Head Sales Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -674,6 +733,7 @@ d:org_RU1100220011_employee_14
   v-s:hasAppointment d:org_RU1100220011_employee_14_position_14;
   rdfs:label "Попов Н.Д."@ru;
   rdfs:label "Popov Nikolai"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_popovn
   a v-s:Account;
@@ -690,6 +750,7 @@ d:org_RU1100220011_position_14
   v-s:parentUnit d:demo_department_5;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_14_position_14
   a v-s:Appointment;
@@ -699,6 +760,7 @@ d:org_RU1100220011_employee_14_position_14
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Попов Н.Д. Специалист"@ru;
   rdfs:label "Popov Nikolai. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -715,6 +777,7 @@ d:org_RU1100220011_employee_15
   v-s:hasAppointment d:org_RU1100220011_employee_15_position_15;
   rdfs:label "Денисов П.А."@ru;
   rdfs:label "Denisov Petr"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_denisovp
   a v-s:Account;
@@ -731,6 +794,7 @@ d:org_RU1100220011_position_15
   v-s:parentUnit d:demo_department_5;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_15_position_15
   a v-s:Appointment;
@@ -740,6 +804,7 @@ d:org_RU1100220011_employee_15_position_15
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Денисов П.А. Специалист"@ru;
   rdfs:label "Denisov Petr. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -756,6 +821,7 @@ d:org_RU1100220011_employee_16
   v-s:hasAppointment d:org_RU1100220011_employee_16_position_16;
   rdfs:label "Щукина Н.С."@ru;
   rdfs:label "Schukina Natalya"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_schukinan
   a v-s:Account;
@@ -772,6 +838,7 @@ d:org_RU1100220011_position_16
   v-s:parentUnit d:demo_department_5;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_16_position_16
   a v-s:Appointment;
@@ -781,6 +848,7 @@ d:org_RU1100220011_employee_16_position_16
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Щукина Н.С. Специалист"@ru;
   rdfs:label "Schukina Natalya. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -797,6 +865,7 @@ d:org_RU1100220011_employee_17
   v-s:hasAppointment d:org_RU1100220011_employee_17_position_17;
   rdfs:label "Быков В.В."@ru;
   rdfs:label "Bykov Vladislav"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_bykovv
   a v-s:Account;
@@ -813,6 +882,7 @@ d:org_RU1100220011_position_17
   v-s:parentUnit d:demo_department_6;
   rdfs:label "Руководитель производственного отдела"@ru;
   rdfs:label "Head Production Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_17_position_17
   a v-s:Appointment;
@@ -822,6 +892,7 @@ d:org_RU1100220011_employee_17_position_17
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Быков В.В. Руководитель производственного отдела"@ru;
   rdfs:label "Bykov Vladislav. Head Production Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -838,6 +909,7 @@ d:org_RU1100220011_employee_18
   v-s:hasAppointment d:org_RU1100220011_employee_18_position_18;
   rdfs:label "Самохин В.А."@ru;
   rdfs:label "Samohin Valery"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_samohinv
   a v-s:Account;
@@ -854,6 +926,7 @@ d:org_RU1100220011_position_18
   v-s:parentUnit d:demo_department_6;
   rdfs:label "Заместитель руководителя производственного отдела"@ru;
   rdfs:label "Deputy Head Production Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_18_position_18
   a v-s:Appointment;
@@ -863,6 +936,7 @@ d:org_RU1100220011_employee_18_position_18
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Самохин В.А. Заместитель руководителя производственного отдела"@ru;
   rdfs:label "Samohin Valery. Deputy Head Production Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -879,6 +953,7 @@ d:org_RU1100220011_employee_19
   v-s:hasAppointment d:org_RU1100220011_employee_19_position_19;
   rdfs:label "Тропин Р.А."@ru;
   rdfs:label "Tropin Roman"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_tropinr
   a v-s:Account;
@@ -895,6 +970,7 @@ d:org_RU1100220011_position_19
   v-s:parentUnit d:demo_department_6_1;
   rdfs:label "Начальник Цеха №1"@ru;
   rdfs:label "Chief Shop #1"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_19_position_19
   a v-s:Appointment;
@@ -904,6 +980,7 @@ d:org_RU1100220011_employee_19_position_19
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Тропин Р.А. Начальник Цеха №1"@ru;
   rdfs:label "Tropin Roman. Chief Shop #1"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -920,6 +997,7 @@ d:org_RU1100220011_employee_20
   v-s:hasAppointment d:org_RU1100220011_employee_20_position_20;
   rdfs:label "Ракин А.П."@ru;
   rdfs:label "Rakin Aleksey"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_rakina
   a v-s:Account;
@@ -936,6 +1014,7 @@ d:org_RU1100220011_position_20
   v-s:parentUnit d:demo_department_6_1;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_20_position_20
   a v-s:Appointment;
@@ -945,6 +1024,7 @@ d:org_RU1100220011_employee_20_position_20
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Ракин А.П. Специалист"@ru;
   rdfs:label "Rakin Aleksey. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -961,6 +1041,7 @@ d:org_RU1100220011_employee_21
   v-s:hasAppointment d:org_RU1100220011_employee_21_position_21;
   rdfs:label "Опарина О.А."@ru;
   rdfs:label "Oparina Olga"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_oparinao
   a v-s:Account;
@@ -977,6 +1058,7 @@ d:org_RU1100220011_position_21
   v-s:parentUnit d:demo_department_6_1;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_21_position_21
   a v-s:Appointment;
@@ -986,6 +1068,7 @@ d:org_RU1100220011_employee_21_position_21
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Опарина О.А. Специалист"@ru;
   rdfs:label "Oparina Olga. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1002,6 +1085,7 @@ d:org_RU1100220011_employee_22
   v-s:hasAppointment d:org_RU1100220011_employee_22_position_22;
   rdfs:label "Андреев С.С."@ru;
   rdfs:label "Andreev Semen"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_andreevs
   a v-s:Account;
@@ -1018,6 +1102,7 @@ d:org_RU1100220011_position_22
   v-s:parentUnit d:demo_department_6_1;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_22_position_22
   a v-s:Appointment;
@@ -1027,6 +1112,7 @@ d:org_RU1100220011_employee_22_position_22
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Андреев С.С. Специалист"@ru;
   rdfs:label "Andreev Semen. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1043,6 +1129,7 @@ d:org_RU1100220011_employee_23
   v-s:hasAppointment d:org_RU1100220011_employee_23_position_23;
   rdfs:label "Рыков В.В."@ru;
   rdfs:label "Rykov Vladimir"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_rykovv
   a v-s:Account;
@@ -1059,6 +1146,7 @@ d:org_RU1100220011_position_23
   v-s:parentUnit d:demo_department_6_2;
   rdfs:label "Начальник Цеха №2"@ru;
   rdfs:label "Chief Shop #2"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_23_position_23
   a v-s:Appointment;
@@ -1068,6 +1156,7 @@ d:org_RU1100220011_employee_23_position_23
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Рыков В.В. Начальник Цеха №2"@ru;
   rdfs:label "Rykov Vladimir. Chief Shop #2"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1084,6 +1173,7 @@ d:org_RU1100220011_employee_24
   v-s:hasAppointment d:org_RU1100220011_employee_24_position_24;
   rdfs:label "Юсупов А.А."@ru;
   rdfs:label "Yusupov Artem"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_yusupova
   a v-s:Account;
@@ -1100,6 +1190,7 @@ d:org_RU1100220011_position_24
   v-s:parentUnit d:demo_department_6_2;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_24_position_24
   a v-s:Appointment;
@@ -1109,6 +1200,7 @@ d:org_RU1100220011_employee_24_position_24
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Юсупов А.А. Специалист"@ru;
   rdfs:label "Yusupov Artem. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1125,6 +1217,7 @@ d:org_RU1100220011_employee_25
   v-s:hasAppointment d:org_RU1100220011_employee_25_position_25;
   rdfs:label "Вахнин Т.И."@ru;
   rdfs:label "Vahnin Timofey"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_vahnint
   a v-s:Account;
@@ -1141,6 +1234,7 @@ d:org_RU1100220011_position_25
   v-s:parentUnit d:demo_department_6_2;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_25_position_25
   a v-s:Appointment;
@@ -1150,6 +1244,7 @@ d:org_RU1100220011_employee_25_position_25
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Вахнин Т.И. Специалист"@ru;
   rdfs:label "Vahnin Timofey. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1166,6 +1261,7 @@ d:org_RU1100220011_employee_26
   v-s:hasAppointment d:org_RU1100220011_employee_26_position_26;
   rdfs:label "Семенова С.Р."@ru;
   rdfs:label "Semenova Svetlana"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_semenovas
   a v-s:Account;
@@ -1182,6 +1278,7 @@ d:org_RU1100220011_position_26
   v-s:parentUnit d:demo_department_6_2;
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_26_position_26
   a v-s:Appointment;
@@ -1191,6 +1288,7 @@ d:org_RU1100220011_employee_26_position_26
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Семенова С.Р. Специалист"@ru;
   rdfs:label "Semenova Svetlana. Specialist"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1207,6 +1305,7 @@ d:org_RU1100220011_employee_27
   v-s:hasAppointment d:org_RU1100220011_employee_27_position_27;
   rdfs:label "Сидоров Н.П."@ru;
   rdfs:label "Sidorov Nikolay"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_sidorovn
   a v-s:Account;
@@ -1223,6 +1322,7 @@ d:org_RU1100220011_position_27
   v-s:parentUnit d:demo_department_7;
   rdfs:label "Начальник транспортного отдела"@ru;
   rdfs:label "Chief Transport Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_27_position_27
   a v-s:Appointment;
@@ -1232,6 +1332,7 @@ d:org_RU1100220011_employee_27_position_27
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Сидоров Н.П. Начальник транспортного отдела"@ru;
   rdfs:label "Sidorov Nikolay. Chief Transport Department"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1248,6 +1349,7 @@ d:org_RU1100220011_employee_28
   v-s:hasAppointment d:org_RU1100220011_employee_28_position_28;
   rdfs:label "Иванов А.В."@ru;
   rdfs:label "Ivanov Aleksey"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_ivanova
   a v-s:Account;
@@ -1264,6 +1366,7 @@ d:org_RU1100220011_position_28
   v-s:parentUnit d:demo_department_7;
   rdfs:label "Водитель"@ru;
   rdfs:label "Driver"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_28_position_28
   a v-s:Appointment;
@@ -1273,6 +1376,7 @@ d:org_RU1100220011_employee_28_position_28
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Иванов А.В. Водитель"@ru;
   rdfs:label "Ivanov Aleksey. Driver"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1289,6 +1393,7 @@ d:org_RU1100220011_employee_29
   v-s:hasAppointment d:org_RU1100220011_employee_29_position_29;
   rdfs:label "Быстрых Л.Е."@ru;
   rdfs:label "Bystryh Leonid"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_bystryhl
   a v-s:Account;
@@ -1305,6 +1410,7 @@ d:org_RU1100220011_position_29
   v-s:parentUnit d:demo_department_7;
   rdfs:label "Водитель"@ru;
   rdfs:label "Driver"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_29_position_29
   a v-s:Appointment;
@@ -1314,6 +1420,7 @@ d:org_RU1100220011_employee_29_position_29
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Быстрых Л.Е. Водитель"@ru;
   rdfs:label "Bystryh Leonid. Driver"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -1330,6 +1437,7 @@ d:org_RU1100220011_employee_30
   v-s:hasAppointment d:org_RU1100220011_employee_30_position_30;
   rdfs:label "Самоделкин С.М."@ru;
   rdfs:label "Samodelkin Sergey"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:demo_account_samodelkins
   a v-s:Account;
@@ -1346,6 +1454,7 @@ d:org_RU1100220011_position_30
   v-s:parentUnit d:demo_department_7;
   rdfs:label "Механик"@ru;
   rdfs:label "Mechanic"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
 d:org_RU1100220011_employee_30_position_30
   a v-s:Appointment;
@@ -1355,4 +1464,5 @@ d:org_RU1100220011_employee_30_position_30
   v-s:official "true"^^xsd:boolean;
   rdfs:label "Самоделкин С.М. Механик"@ru;
   rdfs:label "Samodelkin Sergey. Mechanic"@en;
+  v-s:parentOrganization d:org_RU1100220011;
 .
