@@ -1,0 +1,21 @@
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/demo-individual-rights>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология индивидов Демо. Права"@ru ;
+  rdfs:label "Demo individuals. Rights"@en ;
+# owl:versionInfo "1.3" ;
+.
+
+d:BobrovaAdmin
+  rdf:type v-s:Membership ;
+  v-s:resource d:org_RU1100220011_employee_10 ;
+  v-s:memberOf cfg:SuperUser;
+  rdfs:label "Боброва - Администратор";
+.
