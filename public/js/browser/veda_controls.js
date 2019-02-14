@@ -45,11 +45,15 @@
         try {
           var start_shift = field.selectionStart - field.value.length;
           var end_shift = field.selectionEnd - field.value.length;
-          field.value = value;
+          if (field.value != value) {
+            field.value = value;
+          }
           field.selectionStart = value.length + start_shift;
           field.selectionEnd = value.length + end_shift;
         } catch (ex) {
-          field.value = value;
+          if (field.value != value) {
+            field.value = value;
+          }
           console.log("selectionStart/End error:", property_uri, value, typeof value);
         }
       }
@@ -2005,7 +2009,11 @@
 
       var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
-          fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
+          var rendered = renderTemplate( individual.get(rel_uri)[0]);
+          var value = fulltext.val();
+          if (value != rendered) {
+            fulltext.val(rendered);
+          }
         } else if ( isSingle ) {
           fulltext.val("");
         }
