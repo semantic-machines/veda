@@ -13,7 +13,7 @@
   rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства/выражения'"@ru ;
   rdfs:label "Veda system ontology. Function 'Authorization on predicate/expression value'"@en ;
 #  owl:versionInfo "1.3" ;
-  v-s:loadPriority 6 ;
+  v-s:loadPriority 2 ;
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
@@ -514,6 +514,7 @@ v-s:Event_GroupGenerator
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
 var areActual = get_individual(veda.ticket, "v-s:GroupsGeneratorsAreActual");
 areActual = areActual && areActual["rdf:value"] && areActual["rdf:value"][0].data;
 veda.GroupGenerators = areActual && veda.GroupGenerators;
@@ -534,7 +535,7 @@ if (!veda.GroupGenerators) {
       fn = new Function("veda", authFunction);
     } else if (authGroupFunction) {
       fn = new Function("veda", authGroupFunction);
-      fn.group = true;
+      fn.isGroupFn = true;
     }
     fn.generator = generator_uri;
     fn.value = authValue;
@@ -557,6 +558,9 @@ var currGroups = generateGroups(document),
     j = 0,
     currGroup,
     prevGroup;
+
+console.log("prev groups", JSON.stringify(prevGroups));
+console.log("curr groups", JSON.stringify(currGroups));
 
 while ((currGroup = currGroupsUris[i]) && (prevGroup = prevGroupsUris[j])) {
   if (prevGroup < currGroup) {
@@ -588,16 +592,18 @@ function addMembership(group_uri) {
     "rdf:type": veda.Util.newUri("v-s:Membership"),
     "rdfs:label": veda.Util.newStr("Membership. " + groupLabel),
     "v-s:resource": veda.Util.newUri(document["@"]),
-    "v-s:memberOf": veda.Util.newUri(group_uri)
+    "v-s:memberOf": veda.Util.newUri(group_uri),
+    "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
   put_individual(veda.ticket, mem);
-  //console.log("added to", group_uri, currGroups[group_uri]);
+  console.log("added to", group_uri, currGroups[group_uri]);
 }
 
 function removeMembership(group_uri) {
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
   remove_individual(veda.ticket, mem_uri);
-  //console.log("removed from", group_uri, prevGroups[group_uri]);
+  console.log("removed from", group_uri, prevGroups[group_uri]);
 }
 
 function checkAddMembership(group_uri) {
@@ -605,6 +611,8 @@ function checkAddMembership(group_uri) {
   var mem = get_individual(veda.ticket, mem_uri);
   if (!mem) {
     addMembership(group_uri);
+  } else {
+    console.log("membership exists", group_uri);
   }
 }
 
@@ -619,7 +627,7 @@ function generateGroups(document) {
     if (_class in veda.GroupGenerators) {
       fns = veda.GroupGenerators[_class];
       for (var j = 0, fn, fn_value, group_concat_uri, hash, group_uri, group; (fn = fns[j]); j++) {
-        if ( !fn.group ) {
+        if ( !fn.isGroupFn ) {
           if (fn.value === undefined) {
             fn_value = fn.call(document, veda);
             if (fn_value === undefined) { continue; }
@@ -634,6 +642,7 @@ function generateGroups(document) {
           groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
         } else {
           group_uri = fn.call(document, veda);
+          groups[group_uri] = "Auth group. Generator: " + fn.generator + ", calculated group";
           if (!group_uri) { continue; }
         }
         group = get_individual(veda.ticket, group_uri);
@@ -641,9 +650,12 @@ function generateGroups(document) {
           group = {
             "@": group_uri,
             "rdf:type": veda.Util.newUri("v-s:Group"),
-            "rdfs:label": veda.Util.newStr("Auth group. Generator: " + fn.generator + ", value: " + fn_value)
+            "rdfs:label": veda.Util.newStr(groups[group_uri]),
+            "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
+            "v-s:created": veda.Util.newDate(new Date())
           };
           put_individual(veda.ticket, group);
+          console.log("group created", group_uri, group["rdfs:label"][0].data);
         }
       }
     }
@@ -724,7 +736,9 @@ if (subjectGroup_uri && objectGroup_uri) {
     "v-s:canCreate": permissionGenerator["v-s:canCreate"],
     "v-s:canRead":   permissionGenerator["v-s:canRead"],
     "v-s:canUpdate": permissionGenerator["v-s:canUpdate"],
-    "v-s:canDelete": permissionGenerator["v-s:canDelete"]
+    "v-s:canDelete": permissionGenerator["v-s:canDelete"],
+    "v-s:creator": veda.Util.newUri("v-s:Event_PermissionGenerator"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
   if (!isDeleted) {
     put_individual(veda.ticket, permission);
@@ -737,16 +751,24 @@ if (subjectGroup_uri && objectGroup_uri) {
 
 ##### Permission and group generator example #####
 
-v-s:OrgStructureGroupOrganizer
+v-s:OrgStructureGroupGenerator
   rdf:type v-s:GroupGenerator ;
   v-s:authClass v-s:Organization ;
   v-s:authClass v-s:Department ;
   v-s:authClass v-s:Position ;
+  v-s:authGroupFunction """
+return veda.Util.getPropertyChain(this, "v-s:parentUnit");
+  """;
+  rdfs:label "Auth group generator: put organization unit to parent unit group" ;
+.
+
+v-s:PersonToPositionGroupGenerator
+  rdf:type v-s:GroupGenerator ;
   v-s:authClass v-s:Appointment ;
   v-s:authGroupFunction """
-return ( this.hasValue("v-s:parentUnit") ? this["v-s:parentUnit"][0].id : undefined );
+return veda.Util.getPropertyChain(this, "v-s:occupation");
   """;
-  rdfs:label "Auth group generator: put individual to class group" ;
+  rdfs:label "Auth group generator: put person unit to position group" ;
 .
 
 //v-s:PermissionGenerator_Persons_R_Person
@@ -779,7 +801,7 @@ cfg:Event_7
  * super_classes = super classes of the document.
  */
 
-if (parent_document_id && parent_document_id === document['@']) {
+if (parent_document_id && parent_document_id === document["@"]) {
   // print("Not first class event. Exit.");
   return;
 }
@@ -788,17 +810,19 @@ var doc_uri = document["@"],
   _classes = veda.Util.getUris( document["rdf:type"] );
 
 _classes.map(function (class_uri) {
-  var class_group_uri = class_uri + '_group', // uri группы индивидов класса
-      uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_');
+  var class_group_uri = class_uri + "_group", // uri группы индивидов класса
+      uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + class_group_uri.split(":").join("_");
 
   var membership = {
-    '@' : uri,
-    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-    'v-s:memberOf' : veda.Util.newUri(class_group_uri),
-    'v-s:resource' : veda.Util.newUri(doc_uri),
-    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_7')
+    "@" : uri,
+    "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+    "v-s:memberOf" : veda.Util.newUri(class_group_uri),
+    "v-s:resource" : veda.Util.newUri(doc_uri),
+    "rdfs:comment" : veda.Util.newStr("создано cfg:Event_7"),
+    "v-s:creator": veda.Util.newUri("cfg:Event_7"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
-  put_individual (ticket, membership, _event_id);
+  put_individual (ticket, membership);
 });
   """ ;
 .
@@ -827,7 +851,7 @@ if (parent_script_id) {
   return;
 }
 
-if (parent_document_id && parent_document_id === document['@']) {
+if (parent_document_id && parent_document_id === document["@"]) {
   // print("Not first class event. Exit.");
   return;
 }
@@ -840,12 +864,14 @@ var _class = document,
 
 if ( !class_group ) {
   var class_group = {
-    '@' : class_group_uri,
-    'rdf:type'     : veda.Util.newUri('v-s:Group'),
-    'rdfs:label' : veda.Util.newStr("Группа индивидов класса " + class_uri),
-    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_8')
+    "@" : class_group_uri,
+    "rdf:type"     : veda.Util.newUri("v-s:Group"),
+    "rdfs:label" : veda.Util.newStr("Группа индивидов класса " + class_uri),
+    "rdfs:comment" : veda.Util.newStr("создано cfg:Event_8"),
+    "v-s:creator": veda.Util.newUri("cfg:Event_8"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
-  put_individual (ticket, class_group, _event_id);
+  put_individual (ticket, class_group);
   //print("cfg:Event_8 class group", class_group_uri);
 }
 
@@ -859,36 +885,40 @@ _super_classes.map(function (super_uri) {
   }
 
   // class memberOf superclass
-  var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
+  var uri = "d:membership_" + class_uri.split(":").join("_") + "_" + super_uri.split(":").join("_"),
     membership = get_individual(ticket, uri);
   if (!membership) {
     membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:memberOf' : veda.Util.newUri(super_uri),
-      'v-s:resource' : veda.Util.newUri(class_uri),
-      'rdfs:comment' : veda.Util.newStr('1. создано cfg:Event_8')
+      "@" : uri,
+      "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+      "v-s:memberOf" : veda.Util.newUri(super_uri),
+      "v-s:resource" : veda.Util.newUri(class_uri),
+      "rdfs:comment" : veda.Util.newStr("1. создано cfg:Event_8"),
+      "v-s:creator": veda.Util.newUri("cfg:Event_8"),
+      "v-s:created": veda.Util.newDate(new Date())
     }
-    put_individual (ticket, membership, _event_id);
-    //print('cfg:Event_8 membership (class -> superclass)', uri);
+    put_individual (ticket, membership);
+    //print("cfg:Event_8 membership (class -> superclass)", uri);
   }
 
   // class_group memberOf superclass_group
   var super_group_uri = super_uri + "_group",
-    uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
+    uri = "d:membership_" + class_group_uri.split(":").join("_") + "_" + super_group_uri.split(":").join("_"),
     membership = get_individual(ticket, uri);
 
   if (!membership) {
     membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:memberOf' : veda.Util.newUri(super_group_uri),
-      'v-s:resource' : veda.Util.newUri(class_group_uri),
-      'rdfs:comment' : veda.Util.newStr('2. создано cfg:Event_8')
+      "@" : uri,
+      "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+      "v-s:memberOf" : veda.Util.newUri(super_group_uri),
+      "v-s:resource" : veda.Util.newUri(class_group_uri),
+      "rdfs:comment" : veda.Util.newStr("2. создано cfg:Event_8"),
+      "v-s:creator": veda.Util.newUri("cfg:Event_8"),
+      "v-s:created": veda.Util.newDate(new Date())
     };
-    put_individual (ticket, membership, _event_id);
+    put_individual (ticket, membership);
   }
-  //print('cfg:Event_8 membership', uri);
+  //print("cfg:Event_8 membership", uri);
 });
   """ ;
 .
