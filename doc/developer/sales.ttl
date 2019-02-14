@@ -1,0 +1,61 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix cs: <http://company-sales.com/sample/sales/> .
+
+<http://company-sales.com/sample/sales>
+  rdf:type owl:Ontology ;
+  rdfs:isDefinedBy cs: ;
+  rdfs:label "Тестовый пример - Продажи"@ru ;
+  rdfs:label "Sample - Sales"@en ;
+.
+
+cs:Customer
+  rdf:type rdfs:Class ;
+  rdfs:label "Customer"@en ;
+  rdfs:label "Покупатель"@en ;
+.
+
+cs:name
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Имя"@ru ;
+  rdfs:label "Name"@en ;
+  rdfs:domain cs:Customer ;
+  rdfs:range xsd:string ;
+.
+
+cs:email
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "email" ;
+  rdfs:domain cs:Customer ;
+  rdfs:range xsd:string ;
+.
+
+cs:Order
+  rdf:type rdfs:Class ;
+  rdfs:label "Order"@en ;
+  rdfs:label "Заказ"@en ;
+.
+
+cs:hasCustomer
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "has customer"@en ;
+  rdfs:domain cs:Order ;
+  rdfs:range cs:Customer ;
+.
+
+cs:date
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "date" ;
+  rdfs:domain cs:Order ;
+  rdfs:range xsd:dateTime ;
+.
+
+cs:amount
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "amount" ;
+  rdfs:domain cs:Order ;
+  rdfs:range xsd:decimal ;
+.
+
