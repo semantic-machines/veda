@@ -628,30 +628,37 @@ v-s:DepartmentTemplate
   template.on('validate', function() {
     var result = {};
     var subjectCode = individual.hasValue("v-s:subjectCode") && individual["v-s:subjectCode"][0].toString();
-    if (subjectCode) {
-      if (prevSubjectCode != subjectCode) {
-        prevSubjectCode = subjectCode;
-        var futureUri = 'd:'+orgINN+'_department_'+subjectCode;
-        var queryString = "'@'==='"+futureUri+"'";
-        var tmp = query(veda.ticket, queryString).result;
-        state = tmp.length == 0? true : tmp[0] == individual.id;
-      };
-      result["v-s:subjectCode"] = {
-        state: state,
-        cause: ["v-s:NonUniqueDepartmentCode"]
-      }
-      if (subjectCode.match('^[a-zA-z0-9]*$') == null) {
-        result["v-s:subjectCode"] = {
-          state: false,
-          cause: ["v-s:NotValidCode"]
-        } 
-      }
-    } else {
+    // if (subjectCode) {
+    //   if (prevSubjectCode != subjectCode) {
+    //     prevSubjectCode = subjectCode;
+    //     var futureUri = 'd:'+orgINN+'_department_'+subjectCode;
+    //     var queryString = "'@'==='"+futureUri+"'";
+    //     var tmp = query(veda.ticket, queryString).result;
+    //     state = tmp.length == 0? true : tmp[0] == individual.id;
+    //   };
+    //   result["v-s:subjectCode"] = {
+    //     state: state,
+    //     cause: ["v-s:NonUniqueDepartmentCode"]
+    //   }
+    //   if (subjectCode.match('^[a-zA-z0-9]*$') == null) {
+    //     result["v-s:subjectCode"] = {
+    //       state: false,
+    //       cause: ["v-s:NotValidCode"]
+    //     } 
+    //   }
+    // } else {
+    //   result["v-s:subjectCode"] = {
+    //     state: false,
+    //     cause: ["v-ui:minCardinality"]
+    //   }
+    // }
+    if (!subjectCode) {
       result["v-s:subjectCode"] = {
         state: false,
         cause: ["v-ui:minCardinality"]
-      }
+      }  
     }
+    
     template.trigger("validated", result);
   });
 </script>
@@ -719,15 +726,15 @@ v-s:DepartmentTemplate
   </div>
 </div>
 <script>
-  if (individual.isNew()) {
-    individual.one('beforeSave', function(){
-      var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
-      if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
-        orgINN = 'RU'+orgINN;
-      };
-      individual.id = 'd:'+orgINN+'_department_'+individual['v-s:subjectCode'][0].toString();
-    });
-  }
+  // if (individual.isNew()) {
+  //   individual.one('beforeSave', function(){
+  //     var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
+  //     if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
+  //       orgINN = 'RU'+orgINN;
+  //     };
+  //     individual.id = 'd:'+orgINN+'_department_'+individual['v-s:subjectCode'][0].toString();
+  //   });
+  // }
 //# sourceURL=v-s:DepartmentTemplate_post
 </script>
   """ ;
@@ -823,7 +830,7 @@ v-s:AppointmentForContactTemplate
 
   var defaultAppointment = undefined;
   template.on('click', '#radioBlock input[type="radio"]', function(){
-    console.log($(this).attr('value'));
+    //console.log($(this).attr('value'));
     defaultAppointment = $(this).attr('value');
   });
 
@@ -913,7 +920,7 @@ v-s:AppointmentForContactTemplate
           radioCont.append($('<div class="radio"></div>').append(label));
         })
         var newAppointLabel = individual['v-s:employee'][0]['rdfs:label'][0];
-        radioCont.append('<div class="radio"><label><input type="radio" name="defaultAppointment"/>Новое для '+newAppointLabel+'</label></div>');
+        radioCont.append('<div class="radio"><label><input type="radio" checked name="defaultAppointment"/>Новое для '+newAppointLabel+'</label></div>');
         $('#radioBlock').removeClass('hide');
         return;
       }
@@ -935,16 +942,11 @@ v-s:AppointmentForContactTemplate
     };
     var occupationCode = individual['v-s:occupation'][0]['v-s:subjectCode'][0];
     var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
-    var parentUnitUri = individual['v-s:parentUnit'][0].id;
-    //console.log(personTabNumber + ' ' + occupationCode);
-    individual.id = 'd:'+orgINN+'_'+personTabNumber+'_'+parentUnitUri+'_'+occupationCode;
-    //console.log(individual.id);
     var tempEmployee = individual['v-s:employee'][0];
     var tempOccupation = individual['v-s:occupation'][0];
     if (tempOccupation.isNew()) {
       tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
       tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
-      tempOccupation.id = 'd:'+orgINN+'_position_'+parentUnitUri+'_'+occupationCode;
       tempOccupation.save();
       individual['v-s:occupation'] = [tempOccupation];
     }
@@ -956,14 +958,10 @@ v-s:AppointmentForContactTemplate
     }
     tempEmployee['v-s:hasAppointment'] = tempEmployee['v-s:hasAppointment'].concat(individual);
     if (tempEmployee.isNew()) {
-      tempEmployee.id = 'd:'+orgINN+'_employee_'+personTabNumber;
       tempEmployee['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
       tempEmployee.save();
     }
     individual['v-s:employee'] = [tempEmployee];
-
-    // var label = individual['v-s:employee'][0]['v-s:lastName'][0]+ ' ' + individual['v-s:employee'][0]['v-s:firstName'][0] + ' : ' + individual['v-s:occupation'][0]['rdfs:label'][0];
-    // individual['rdfs:label'] = [label];
     return false;
   }
   individual.one('beforeSave', beforeSaveHandler);
@@ -978,15 +976,8 @@ v-s:EmployeeEmbeddedTemplate
   rdfs:label "Template for v-s:Person to create v-s:Appointment class"@en ;
   v-ui:template """
 <script>
-  var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
-  if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
-    orgINN = 'RU'+orgINN;
-  };
   template.on("validate", function () {
     var result = {};
-    var prevNumber = "";
-    var state = false;
-
     if (individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName')) {
       var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"' && 'v-s:lastName'=='"+individual['v-s:lastName'][0]+"' && 'v-s:firstName'=='"+individual['v-s:firstName'][0]+"'";
       var tmp = query(veda.ticket, queryString).result;
@@ -1002,25 +993,6 @@ v-s:EmployeeEmbeddedTemplate
         state: false,
         cause: ["v-ui:minCardinality"]
       };
-    } else {
-      var tabNumber = individual["v-s:tabNumber"][0].toString();
-      if (prevNumber != tabNumber) {
-        prevNumber = tabNumber;    
-        var futureUri = "d:"+orgINN+'_employee_'+tabNumber;
-        var queryString = "'@'==='" + futureUri + "'";
-        var tmp = query(veda.ticket, queryString).result;
-        state = tmp.length == 0? true : (tmp.length == 1 &&  tmp[0] == individual.id);
-      };
-      result["v-s:tabNumber"] = {
-        state: state,
-        cause: ["v-s:NonUniqueTabNumber"]
-      }
-      if (tabNumber.match('^[a-zA-z0-9]*$') == null) {
-        result["v-s:tabNumber"] = {
-          state: false,
-          cause: ["v-s:NotValidCode"]
-        } 
-      }
     }
     template.trigger("validated", result);
   });
@@ -1083,38 +1055,13 @@ v-s:OccupationEmbeddedTemplate
   rdfs:label "Template for v-s:Position to create v-s:Appointment class"@en ;
   v-ui:template """
 <script>
-  var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
-  if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
-    orgINN = 'RU'+orgINN;
-  };
   template.on("validate", function () {
     var result = {};
-    var prevSubjectCode = "";
-    var state = false;
     if (!individual.hasValue('v-s:subjectCode')) {
       result["v-s:subjectCode"] = {
         state: false,
         cause: ["v-ui:minCardinality"]
       };
-    } else {
-      var subjectCode = individual["v-s:subjectCode"][0].toString();
-      if (prevSubjectCode != subjectCode) {
-        prevSubjectCode = subjectCode;
-        var futureUri = "d:"+orgINN+'_position_'+individual['v-s:parentUnit'][0].id+'_'+subjectCode;
-        var queryString = "'@'==='" + futureUri + "'";
-        var tmp = query(veda.ticket, queryString).result;
-        state = tmp.length == 0? true : (tmp.length == 1 &&  tmp[0] == individual.id);
-      };
-      result["v-s:subjectCode"] = {
-        state: state,
-        cause: ["v-s:NonUniquePositionCode"]
-      }
-      if (subjectCode.match('^[a-zA-z0-9]*$') == null) {
-        result["v-s:subjectCode"] = {
-          state: false,
-          cause: ["v-s:NotValidCode"]
-        } 
-      }
     }
     if (!individual.hasValue('rdfs:label')) {
       result["rdfs:label"] = {
