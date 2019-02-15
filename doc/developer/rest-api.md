@@ -4,10 +4,21 @@
 | -------------------- | ------------------------------------------------------------ |
 | **URL**              | /authenticate                                                |
 | **Method**           | GET                                                          |
-| **URL Params**       | **Required:** <br />`login=[string], password=[string]`<br /><br />**Optional:**<br />secret=[string] |
-| **Success Response** | **Code:** 200 <br />**Content:** `{"end_time":636858783968914000,"id":"a7e13ad5-f2d7-4f8f-8543-aceda5fc4718","result":200,"user_uri":"td:RomanKarpov"}` |
+| **URL Params**       | **Required:** <br />`login=[string], password=[string]`<br /><br />**Optional:**<br />`secret=[string]` |
+| **Success Response** | **Code:** 200 <br />**Content:** <br />`{end_time:636858783968914000,id:"a7e13ad5-f2d7-4f8f-8543-aceda5fc4718",result:200,user_uri:"td:RomanKarpov"}` |
 | **Error Response**   | **Code:** 472 or 500                                         |
 | **Sample Call**      | `/authenticate?login=karpovrt&password=a665a45920422f9da04a1f3fff1fa07e998e86f7f7a27ae3` |
+
+
+
+|                      |                                               |
+| -------------------- | --------------------------------------------- |
+| **URL**              |                                               |
+| **Method**           | GET                                           |
+| **URL Params**       | **Required:** <br /><br />**Optional:**<br /> |
+| **Success Response** | **Code:** 200 <br />**Content:**              |
+| **Error Response**   | **Code:** 472 or 500                          |
+| **Sample Call**      |                                               |
 
 
 
