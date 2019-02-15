@@ -1,38 +1,17 @@
-Платформа Veda.
+### Платформа Veda. Методы REST интерфейса:
 
-Методы REST интерфейса:
+|                      | **User Authenticate**                                        |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /authenticate                                                |
+| **Method**           | GET                                                          |
+| **URL Params**       | **Required:** <br />`login=[string], password=[string]`<br /><br />**Optional:**<br />secret=[string] |
+| **Success Response** | **Code:** 200 <br />**Content:** `{"end_time":636858783968914000,"id":"a7e13ad5-f2d7-4f8f-8543-aceda5fc4718","result":200,"user_uri":"td:RomanKarpov"}` |
+| **Error Response**   | **Code:** 472 or 500                                         |
+| **Sample Call**      | `/authenticate?login=karpovrt&password=a665a45920422f9da04a1f3fff1fa07e998e86f7f7a27ae3` |
 
--------------------------------
 
-**Authorize resource**
-----
-  Returns calculate access byte
-
-* **URL**
-
-  /authorize
-
-* **Method:**
-
-  `GET`
-  
-*  **URL Params**
-
-   **Required:**
- 
-   `ticket=[string], uri=[string], access=[unsigned byte]`
-
-* **Success Response:**
-
-  * **Code:** 200 <br />
-    **Content:** `access=[unsigned byte]`
- 
-* **Error Response:**
-
-  * **Code:** 404 NOT FOUND <br />
 
 -------------------------------
-
 
 GET get_rights
     Json get_rights(string ticket, string uri);
@@ -42,9 +21,6 @@ GET get_rights_origin
 
 GET get_membership
     Json get_membership(string ticket, string uri);
-
-GET authenticate
-    Ticket authenticate(string login, string password);
 
 GET get_ticket_trusted
     Ticket get_ticket_trusted(string ticket, string login);
@@ -88,17 +64,3 @@ PUT set_in_individual
 
 PUT add_to_individual
     OpResult add_to_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
-
------------------------------------
-
-First Header       | Second Header
------------------- | -------------
-Content cell 1     | Content cell 2
-Content column 1   | Content column 2
-
-
-
-
-
-
-
