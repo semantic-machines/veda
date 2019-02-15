@@ -370,12 +370,13 @@ v-s:AppointmentSaveEvent
   rdf:type v-s:Event ;
   v-s:triggerByType v-s:Appointment ;
   v-s:script """
-if (document['v-s:occupation'] && document['v-s:occupation'].length > 0) {
-  var occupation = get_individual(ticket, document['v-s:occupation'][0].data);
-  if (occupation && occupation['v-s:parentUnit'] && occupation['v-s:parentUnit'].length > 0) {
-    document['v-s:parentUnit'] = occupation['v-s:parentUnit'];
-    put_individual (ticket, document, _event_id);
-  }
+document = get_individual(veda.ticket, document["@"]);
+var parentUnit = veda.Util.getPropertyChain(document, "v-s:occupation", "v-s:parentUnit");
+if ( !parentUnit ) { return; }
+if ( !veda.Util.hasValue(document, "v-s:parentUnit", {data: parentUnit, type: "Uri"}) ) {
+  document["v-s:parentUnit"] = veda.Util.newUri(parentUnit);
+  put_individual (veda.ticket, document);
+  console.log(document["@"], "---(v-s:parentUnit)--->", parentUnit);
 }
 """
 .
