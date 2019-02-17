@@ -70,10 +70,65 @@
 | -------------------- | ------------------------------------------------------------ |
 | **URL**              | /put_individual                                              |
 | **Method**           | PUT                                                          |
-| **Request Params**   | **Required:**  `ticket:[string], individual:[object]`  <br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id=[string], transaction_id:[string]` |
+| **Request Params**   | **Required:**  `ticket:[string], individual:[object]`  <br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id:[string], transaction_id:[string]` |
 | **Success Response** | **Code:** 200   <br />**Sample content:** `{ op_id:12246, result:200 }` |
 | **Error Response**   | **Code:** 473 or 500                                         |
 | **Sample Call**      | **Request:**<br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", individual:{"@":"v-s:Welcome", "rdf:type":[{data:"v-s:WelcomeAspect",type:"Uri"}], "rdfs:label":[{data:"Добро пожаловать", lang:"RU", type:"String"}, {data:"Welcome", lang:"EN",type:"String"}], "v-s:updateCounter":[{data:1,type:"Integer"}]}, assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
+
+
+
+|                      | Put more individuals                                         |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /put_individuals                                             |
+| **Method**           | PUT                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], individuals:[array of objects]`    <br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id:[string], transaction_id:[string]` |
+| **Success Response** | **Code:** 200<br />**Sample content:** `{ op_id:12246, result:200 }` |
+| **Error Response**   | **Code:**  400                                               |
+| **Sample Call**      | **Request:** <br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", individuals:[{"@":"v-s:Welcome", "rdf:type":[{data:"v-s:WelcomeAspect",type:"Uri"}], "rdfs:label":[{data:"Добро пожаловать", lang:"RU", type:"String"}, {data:"Welcome", lang:"EN",type:"String"}], "v-s:updateCounter":[{data:1,type:"Integer"}]}], assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
+
+
+
+|                      | Remove one individual                                        |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /remove_individual                                           |
+| **Method**           | PUT                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]` <br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id:[string], transaction_id:[string]` |
+| **Success Response** | **Code:** 200<br />**Sample content:** `{ op_id:12236, result:200 }` |
+| **Error Response**   | **Code:** 473 or 500                                         |
+| **Sample Call**      | **Request:** <br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", uri:"v-s:Welcome", assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
+
+
+
+|                      | Remove field from individual                                 |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /remove_from_individual                                      |
+| **Method**           | PUT                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]`  <br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id:[string], transaction_id:[string]` |
+| **Success Response** | **Code:** 200 <br />**Sample content:** `{ op_id:12236, result:200 }` |
+| **Error Response**   | **Code:** 473 or 500                                         |
+| **Sample Call**      | **Request:** <br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", individual:{"@":"v-s:Welcome", "v-s:updateCounter":[{data:1,type:"Integer"}]}, assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
+
+
+
+|                      | Set field into individual                                    |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /set_in_individual                                           |
+| **Method**           | PUT                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]`<br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id:[string], transaction_id:[string]` |
+| **Success Response** | **Code:** 200<br />**Sample content:** `{ op_id:11236, result:200 }` |
+| **Error Response**   | **Code:** 473 or 500                                         |
+| **Sample Call**      | **Request:** <br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", individual:{"@":"v-s:Welcome", "rdfs:comment":[{data:"Hello!", type:"String"}]}, assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
+
+
+
+|                      | Add field into individual                                    |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /add_to_individual                                           |
+|                      | PUT                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]`<br /><br />**Optional:**   `prepare_events:[bool], assigned_subsystems:[byte], event_id:[string], transaction_id:[string]` |
+| **Success Response** | **Code:** 200<br />**Sample content:** `{ op_id:11237, result:200 }` |
+| **Error Response**   | **Code:** 473 or 500                                         |
+| **Sample Call**      | **Request:**  <br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", individual:{"@":"v-s:Welcome", "rdfs:comment":[{data:"Приветствуем!", type:"String"}]}, assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
 
 -------------------------------
 
@@ -96,18 +151,3 @@ GET send_to_module
 
 GET flush
     void flush(int module_id, long wait_op_id);
-
-PUT put_individuals
-    OpResult[] put_individuals(string ticket, Json[] individual, string event_id, long assigned_subsystems = 0);
-
-PUT remove_individual
-    OpResult remove_individual(string ticket, string uri, string event_id, long assigned_subsystems = 0);
-
-PUT remove_from_individual
-    OpResult remove_from_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
-
-PUT set_in_individual
-    OpResult set_in_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
-
-PUT add_to_individual
-    OpResult add_to_individual(string ticket, Json individual, string event_id, long assigned_subsystems = 0);
