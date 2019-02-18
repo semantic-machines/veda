@@ -8,8 +8,8 @@
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix v-fs: <http://semantic-machines.com/veda/veda-function-search/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
-
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
 <http://semantic-machines.com/veda/veda-ui>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология пользовательского интерфейса системы Веда"@ru ;
@@ -1586,6 +1586,10 @@ v-ui:TestUITemplate
     </label>
   </div>
   <hr>
+  <em about="v-s:hasTransportKind" property="rdfs:label"></em>
+  <div rel="v-s:hasTransportKind" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+  <veda-control data-type="link" rel="v-s:hasTransportKind" class="-view edit search fulltext dropdown"></veda-control>
+  <hr>
   <em about="v-ui:testString" property="rdfs:label"></em>
   <div property="v-ui:testString"></div>
   <veda-control property="v-ui:testString" data-type="string" class="-view edit search" id="testString"></veda-control>
@@ -1622,9 +1626,6 @@ v-ui:TestUITemplate
   <veda-control rel="v-ui:testLink" data-type="checkbox"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="radio"></veda-control>
   <veda-control rel="v-ui:testLink" data-type="select" class="-view edit search"></veda-control>
-  <em about="v-s:hasTransportKind" property="rdfs:label"></em>
-  <div rel="v-s:hasTransportKind" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-  <veda-control data-type="link" rel="v-s:hasTransportKind" class="-view edit search fulltext dropdown"></veda-control>
   <!--hr>
   <em about="v-ui:template" property="rdfs:label"></em>
   <veda-control property="v-ui:template" data-type="source"></veda-control>

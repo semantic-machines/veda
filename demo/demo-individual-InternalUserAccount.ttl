@@ -54,9 +54,9 @@ d:demo_department_1
   rdfs:label "Руководство"@ru;
   rdfs:label "Management"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_1;
+  v-s:hasChief d:org_RU1100220011_employee_1_position_1;
   v-s:parentUnit d:org_RU1100220011;
-  v-s:parentOrganization d:org_RU1100220011;  
+  v-s:parentOrganization d:org_RU1100220011;
 .
 
 #----
@@ -65,7 +65,7 @@ d:demo_department_2
   rdfs:label "Юридический отдел"@ru;
   rdfs:label "Legal department"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_4;
+  v-s:hasChief d:org_RU1100220011_employee_4_position_4;
   v-s:parentUnit d:org_RU1100220011;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -76,7 +76,7 @@ d:demo_department_3
   rdfs:label "Бухгалтерия"@ru;
   rdfs:label "Accounting"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_7;
+  v-s:hasChief d:org_RU1100220011_employee_7_position_7;
   v-s:parentUnit d:org_RU1100220011;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -87,7 +87,7 @@ d:demo_department_4
   rdfs:label "Отдел кадров"@ru;
   rdfs:label "HR department"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_10;
+  v-s:hasChief d:org_RU1100220011_employee_10_position_10;
   v-s:parentUnit d:org_RU1100220011;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -98,7 +98,7 @@ d:demo_department_5
   rdfs:label "Отдел продаж"@ru;
   rdfs:label "Sales department"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_12;
+  v-s:hasChief d:org_RU1100220011_employee_12_position_12;
   v-s:parentUnit d:org_RU1100220011;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -109,7 +109,7 @@ d:demo_department_6
   rdfs:label "Производственный отдел"@ru;
   rdfs:label "Production department"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_17;
+  v-s:hasChief d:org_RU1100220011_employee_17_position_17;
   v-s:parentUnit d:org_RU1100220011;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -120,7 +120,7 @@ d:demo_department_6_1
   rdfs:label "Цех №1"@ru;
   rdfs:label "Shop #1"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_19;
+  v-s:hasChief d:org_RU1100220011_employee_19_position_19;
   v-s:parentUnit d:demo_department_6;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -131,7 +131,7 @@ d:demo_department_6_2
   rdfs:label "Цех №2"@ru;
   rdfs:label "Shop #2"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_23;
+  v-s:hasChief d:org_RU1100220011_employee_23_position_23;
   v-s:parentUnit d:demo_department_6;
   v-s:parentOrganization d:org_RU1100220011;
 .
@@ -142,7 +142,7 @@ d:demo_department_7
   rdfs:label "Транспортный отдел"@ru;
   rdfs:label "Transport department"@en;
   v-s:origin "admin"^^xsd:string;
-  v-s:hasChief d:org_RU1100220011_employee_27;
+  v-s:hasChief d:org_RU1100220011_employee_27_position_27;
   v-s:parentUnit d:org_RU1100220011;
   v-s:parentOrganization d:org_RU1100220011;
 .
