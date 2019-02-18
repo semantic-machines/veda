@@ -658,14 +658,10 @@ if (super_classes.indexOf("v-s:Journaling") >= 0) {
 cfg:Event_4
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
-  rdfs:comment "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
-  v-s:triggerByType v-s:Organization ;
-  v-s:triggerByType v-s:Department ;
-  v-s:triggerByType v-s:Position ;
+  rdfs:label "Скрипт включает персону в группу должности" ;
+  rdfs:comment "Скрипт включает персону в группу должности при сохранении назначения. Если назначение удаляется, включение персоны в группу должности также удаляется." ;
   v-s:triggerByType v-s:Appointment ;
   v-s:preventByType v-s:Version ;
-  v-s:disabled true ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -678,80 +674,32 @@ cfg:Event_4
  * super_classes = super classes of the document.
  */
 
-var doc_uri = document['@'],
+var doc_uri = document["@"],
     deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" }),
-    parents_uris = veda.Util.getUris( document["v-s:parentUnit"] ).sort(),
-    prev_parents_uris = veda.Util.hasValue(prev_state, "v-s:parentUnit") ? veda.Util.getUris( prev_state["v-s:parentUnit"] ).sort() : [],
-    parent_uri,
-    prev_parent_uri,
-    i = 0,
-    j = 0;
+    person_uri = veda.Util.getUri(document["v-s:employee"]),
+    position_uri = veda.Util.getUri(document["v-s:occupation"]);
 
-while ((parent_uri = parents_uris[i]) && (prev_parent_uri = prev_parents_uris[j])) {
-  if (prev_parent_uri < parent_uri) {
-    removeMembership(doc_uri, prev_parent_uri);
-    j++;
-  } else if (prev_parent_uri > parent_uri) {
-    addMembership(doc_uri, parent_uri);
-    i++;
-  } else {
-    checkAddMembership(doc_uri, parent_uri);
-    i++;
-    j++;
-  }
-}
-while (prev_parent_uri = prev_parents_uris[j]) {
-  removeMembership(doc_uri, prev_parent_uri);
-  j++;
-}
-while (parent_uri = parents_uris[i]) {
-  addMembership(doc_uri, parent_uri);
-  i++;
-}
+if (!person_uri || !position_uri) return;
 
-function addMembership(doc_uri, parent_uri) {
-  var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
-  var membership = {
-    '@' : uri,
-    'rdf:type'     : veda.Util.newUri("v-s:Membership"),
-    'v-s:resource' : veda.Util.newUri(doc_uri),
-    'v-s:memberOf' : veda.Util.newUri(parent_uri),
-    'rdfs:comment' : veda.Util.newStr("выдан cfg:Event_4")
-  };
-  put_individual (ticket, membership, _event_id);
-  console.log("Added membership", doc_uri, "--->", parent_uri);
-}
-
-function removeMembership(doc_uri, parent_uri) {
-  var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
+var uri = "d:membership_" + person_uri.split(":").join("_") + "_" + position_uri.split(":").join("_");
+var membership = get_individual(ticket, uri);
+if (deleted && membership) {
   remove_individual(ticket, uri);
-  console.log("Removed membership", doc_uri, "-/->", parent_uri);
-}
-
-function checkAddMembership (doc_uri, parent_uri) {
-  var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
-  var membership = get_individual(ticket, uri);
-  if ( !membership ) {
-    addMembership(parent_uri);
-  }
-}
-
-if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "Uri" }) ) {
-  var person_uri = veda.Util.getUri(document['v-s:employee']),
-      position_uri = veda.Util.getUri(document['v-s:occupation']);
-
-  if (!person_uri || !position_uri) return;
-
-  if (deleted) {
-    removeMembership(person_uri, position_uri);
-  } else {
-    checkAddMembership(person_uri, position_uri);
-  }
+} else (!deleted && !membership) {
+  membership = {
+    "@" : uri,
+    "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+    "v-s:resource" : veda.Util.newUri(person_uri),
+    "v-s:memberOf" : veda.Util.newUri(position_uri),
+    "rdfs:comment" : veda.Util.newStr("создано автоматически в обработчике cfg:Event_4"),
+  };
+  put_individual (ticket, membership);
 }
   """ ;
 .
 
 cfg:Event_5
+  v-s:disabled true ;
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
