@@ -134,7 +134,7 @@ class Consumer
 
     public uint get_id()
     {
-    	return id;
+        return id;
     }
 
     public string get_name()
@@ -323,7 +323,7 @@ class Consumer
             if (queue.id > id)
             {
                 log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part %d", queue.id, id, id + 1);
-                id = id + 1;
+                id       = id + 1;
                 queue.id = id;
                 if (queue.get_info_push(id) == false)
                 {
@@ -350,8 +350,9 @@ class Consumer
 
         if (header.start_pos != first_element)
         {
-            log.trace("ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != first_element[%d] : %s, count_popped : %d, queue.count_pushed : %d", 
-            	queue.id, header.start_pos, first_element, text(header), count_popped, queue.count_pushed);
+            log.trace(
+                      "ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != first_element[%d] : %s, count_popped : %d, queue.count_pushed : %d",
+                      queue.id, header.start_pos, first_element, text(header), count_popped, queue.count_pushed);
             return null;
         }
 
@@ -838,7 +839,10 @@ class Queue
         if (mode == Mode.R)
             return;
 
-        ubyte[] _buff2 = cast(ubyte[])msg;
+        if (msg.length == 0)
+            return;
+
+        ubyte[] _buff2 = cast(ubyte[])msg.dup;
 
         header.start_pos    = right_edge;
         header.msg_length   = _buff2.length;
@@ -859,6 +863,8 @@ class Queue
 
         ff_queue_w.rawWrite(header_buff);
         ff_queue_w.rawWrite(_buff2);
+
+        log.trace("@ %s %s, crc=%s", name, header, crc);
 
         right_edge += header_buff.length + _buff2.length;
     }
