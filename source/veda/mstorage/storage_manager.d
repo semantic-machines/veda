@@ -444,8 +444,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
                                             if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
                                                 imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
-                                            else
-                                                uris_queue.push(ti.uri);
+                                            //else
+                                            //    uris_queue.push(ti.uri);
 
                                             if (ti.event_id !is null && ti.event_id.length > 0)
                                                 imm.addResource("event_id", Resource(DataType.String, ti.event_id));

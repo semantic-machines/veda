@@ -397,7 +397,9 @@ class VedaModule : VedaModuleBasic
                 {
                     //log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
 
-                    main_cs[ i ].commit_and_next(true);
+                    if (main_cs[ i ].commit_and_next(true) == false)
+                        Thread.sleep(dur!("seconds")(10));
+
                     continue;
                 }
             }
@@ -408,14 +410,18 @@ class VedaModule : VedaModuleBasic
                 {
                     //log.trace("INFO! skip, assigned_subsystems[%d], subsystem_id[%d] ", assigned_subsystems, subsystem_id);
 
-                    main_cs[ i ].commit_and_next(true);
+                    if (main_cs[ i ].commit_and_next(true) == false)
+                        Thread.sleep(dur!("seconds")(10));
+
                     continue;
                 }
             }
 
             if (user_uri !is null && user_uri.length > 3 && priority(user_uri) != i)
             {
-                main_cs[ i ].commit_and_next(true);
+                if (main_cs[ i ].commit_and_next(true) == false)
+                    Thread.sleep(dur!("seconds")(10));
+
                 i = 0;
                 continue;
             }
@@ -462,8 +468,14 @@ class VedaModule : VedaModuleBasic
 
                 if (res == ResultCode.Ok)
                 {
-                    main_cs[ i ].commit_and_next(true);
-                    module_info.put_info(op_id, committed_op_id);
+                    if (main_cs[ i ].commit_and_next(true) == false)
+                    {
+                        Thread.sleep(dur!("seconds")(10));
+                    }
+                    else
+                    {
+                        module_info.put_info(op_id, committed_op_id);
+                    }
                     //log.trace("put info: op_id=%d, committed_op_id=%d", op_id, committed_op_id);
                 }
                 else if (res == ResultCode.ConnectError || res == ResultCode.InternalServerError || res == ResultCode.NotReady ||
@@ -474,9 +486,15 @@ class VedaModule : VedaModuleBasic
                 }
                 else
                 {
-                    main_cs[ i ].commit_and_next(true);
-                    module_info.put_info(op_id, committed_op_id);
-                    log.trace("ERR! message fail prepared (res=%s), skip.  count=%d", text(res), count_success_prepared);
+                    if (main_cs[ i ].commit_and_next(true) == false)
+                    {
+                        Thread.sleep(dur!("seconds")(10));
+                    }
+                    else
+                    {
+                        module_info.put_info(op_id, committed_op_id);
+                        log.trace("ERR! message fail prepared (res=%s), skip.  count=%d", text(res), count_success_prepared);
+                    }
                 }
                 i = 0;
             }
