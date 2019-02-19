@@ -429,6 +429,17 @@ class VedaModule : VedaModuleBasic
             INDV_OP cmd = cast(INDV_OP)imm.getFirstInteger("cmd");
             op_id = imm.getFirstInteger("op_id");
 
+/*
+            log.trace("INFO! read from queue, cmd=%s ", cmd);
+            log.trace("INFO! read from queue, op_id=%s ", op_id);
+            log.trace("INFO! read from queue, new_bin=%s ", new_bin);
+            log.trace("INFO! read from queue, prev_bin=%s ", prev_bin);
+            log.trace("INFO! read from queue, user_uri=%s ", user_uri);
+            log.trace("INFO! read from queue, event_id=%s ", event_id);
+            log.trace("INFO! read from queue, src=%s ", src);
+            log.trace("INFO! read from queue, transaction_id=%s ", transaction_id);
+            log.trace("INFO! read from queue, assigned_subsystems=%s ", assigned_subsystems);
+ */
             Individual prev_indv, new_indv;
             if (new_bin !is null && new_indv.deserialize(new_bin) < 0)
             {
@@ -436,12 +447,13 @@ class VedaModule : VedaModuleBasic
             }
             else
             {
-//                log.trace("@read from queue new_indv.uri=%s, op_id=%s", new_indv.uri, op_id);
+//                log.trace("@read from queue new_indv=%s, op_id=%s", new_indv, op_id);
 
                 if (prev_bin !is null && prev_indv.deserialize(prev_bin) < 0)
                 {
-                    log.trace("ERR!  read in queue, prev binobj is individual:[%s]", prev_bin);
+                    log.trace("ERR! read in queue, prev binobj is individual:[%s]", prev_bin);
                 }
+                //               log.trace("@read from queue prev_indv=%s, op_id=%s", prev_indv, op_id);
             }
 
             count_success_prepared++;
