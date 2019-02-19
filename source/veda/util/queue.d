@@ -1,6 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii, std.uuid;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii, std.uuid, std.outbuffer;
 import veda.common.logger;
 
 enum QMessageType
@@ -107,7 +107,7 @@ class Consumer
     private Queue   queue;
     private uint    id;
     private string  path;
-    private ulong   first_element;
+    private ulong   start_pos_record;
     private ubyte[] last_read_msg;
     private Mode    mode;
 
@@ -215,14 +215,14 @@ class Consumer
         try
         {
             ff_info_pop_w.seek(0);
-            ff_info_pop_w.writefln("%s;%s;%d;%d;%d", queue.name, name, first_element, count_popped, id);
+            ff_info_pop_w.writefln("%s;%s;%d;%d;%d", queue.name, name, start_pos_record, count_popped, id);
 
             if (is_sync_data)
                 ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
-            log.trace("consumer:put_info [%s;%s;%d;%d;%d] %s", queue.name, name, first_element, count_popped, id, tr.msg);
+            log.trace("consumer:put_info [%s;%s;%d;%d;%d] %s", queue.name, name, start_pos_record, count_popped, id, tr.msg);
             return false;
         }
         return true;
@@ -267,8 +267,8 @@ class Consumer
                 return false;
             }
 
-            first_element = to!ulong (ch[ 2 ]);
-            count_popped  = to!uint (ch[ 3 ]);
+            start_pos_record = to!ulong (ch[ 2 ]);
+            count_popped     = to!uint (ch[ 3 ]);
 
             if (ch.length == 5 && ch[ 4 ].length > 0)
             {
@@ -332,8 +332,8 @@ class Consumer
                 }
                 remove();
 
-                count_popped  = 0;
-                first_element = 0;
+                count_popped     = 0;
+                start_pos_record = 0;
 
                 open();
                 put_info(true);
@@ -343,16 +343,16 @@ class Consumer
         }
 
         File *ff_queue_r = queue.get_r_queue_file(id);
-        ff_queue_r.seek(first_element);
+        ff_queue_r.seek(start_pos_record);
 
         ff_queue_r.rawRead(header_buff);
         header.from_buff(header_buff);
 
-        if (header.start_pos != first_element)
+        if (header.start_pos != start_pos_record)
         {
             log.trace(
-                      "ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != first_element[%d] : %s, count_popped : %d, queue.count_pushed : %d",
-                      queue.id, header.start_pos, first_element, text(header), count_popped, queue.count_pushed);
+                      "ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != start_pos_record[%d] : %s, count_popped : %d, queue.count_pushed : %d",
+                      queue.id, header.start_pos, start_pos_record, text(header), count_popped, queue.count_pushed);
             return null;
         }
 
@@ -414,16 +414,16 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid last_read_msg[%s]: fail crc[%s] : %s", queue.name, name, last_read_msg, text(
-                                                                                                                                               crc),
+            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid msg, fail crc[%s] : %s", queue.name, name, text(crc),
                       text(header));
-            log.trace(text(last_read_msg.length));
-            log.trace(cast(string)last_read_msg);
+            OutBuffer ob = new OutBuffer();
+            hexdump(ob, last_read_msg);
+            log.trace("%d\n%s", last_read_msg.length, ob);
             return false;
         }
 
         count_popped++;
-        first_element += header.length + header.msg_length;
+        start_pos_record += header.length + header.msg_length;
 
         return put_info(is_sync_data);
     }
@@ -432,7 +432,7 @@ class Consumer
     {
         sink("consumer:" ~ name);
         sink(", queue:" ~ queue.name);
-        sink(", first_element=" ~ text(first_element));
+        sink(", start_pos_record=" ~ text(start_pos_record));
         sink(", count_popped=" ~ text(count_popped));
     }
 }
@@ -497,7 +497,7 @@ class Queue
     void toString(scope void delegate(const(char)[]) sink) const
     {
         sink("queue:" ~ name);
-//      sink (", first_element=" ~ text(first_element));
+//      sink (", start_pos_record=" ~ text(start_pos_record));
         sink(", right_edge=" ~ text(right_edge));
         sink(", count_pushed=" ~ text(count_pushed));
 //      sink (", count_popped=" ~ text(count_popped));
@@ -988,4 +988,33 @@ private void ulong_to_buff(ubyte[] _buff, int pos, ulong data)
     _buff[ pos + 5 ] = (data & 0x0000FF0000000000) >> 40;
     _buff[ pos + 6 ] = (data & 0x00FF000000000000) >> 48;
     _buff[ pos + 7 ] = (data & 0xFF00000000000000) >> 56;
+}
+
+void hexdump(T) (OutBuffer ob, T[] s)
+{
+    byte *b = cast(byte *)s.ptr;
+    int  N  = cast(int)(s.length * T.sizeof);
+
+    for (int i = 0; i < N; i++)
+    {
+        ob.writef("%2.2x ", b[ i ]);
+
+        if ((i & 7) == 7)
+            ob.writef(" ");
+
+        if ((i & 31) == 31)
+        {
+            ob.writef("    ");
+            for (int j = i - 31; j <= i; j++)
+            {
+                if (b[ j ] != 0)
+                    ob.writef("%s", cast(char)b[ j ]);
+                else
+                    ob.write(".");
+            }
+
+            ob.writef("\n");
+        }
+    }
+    ob.writefln("\n");
 }
