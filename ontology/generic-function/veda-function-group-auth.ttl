@@ -552,6 +552,16 @@ if (!veda.GroupGenerators) {
   });
 }
 
+var isDeleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"});
+if (isDeleted) {
+  var groupsToDeleteFrom = generateGroups(prev_state);
+  console.log("document deleted, groups to delete from =", Object.keys(groupsToDeleteFrom));
+  for(var group_uri in groupsToDeleteFrom) {
+    removeMembership(group_uri, groupsToDeleteFrom);
+  }
+  return;
+}
+
 var currGroups = generateGroups(document),
     currGroupsUris = Object.keys(currGroups).sort(),
     prevGroups = generateGroups(prev_state),
@@ -561,8 +571,8 @@ var currGroups = generateGroups(document),
     currGroup,
     prevGroup;
 
-console.log("prev groups", JSON.stringify(prevGroups));
-console.log("curr groups", JSON.stringify(currGroups));
+console.log("prev groups =", prevGroupsUris);
+console.log("curr groups =", currGroupsUris);
 
 while ((currGroup = currGroupsUris[i]) && (prevGroup = prevGroupsUris[j])) {
   if (prevGroup < currGroup) {
