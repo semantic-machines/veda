@@ -9,6 +9,7 @@ import (
 	"hash/crc32"
 	"log"
 	"os"
+	"time"
 	"strconv"
 	"strings"
 )
@@ -366,6 +367,7 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 		log.Printf("header CRC =[%d][%d][%d][%d]\n", ths.header.crc[0], ths.header.crc[1], ths.header.crc[2], ths.header.crc[3])
 		log.Printf("%v\n", len(ths.last_read_msg))
 		log.Printf("%v\n", ths.last_read_msg)
+                time.Sleep(10000 * time.Millisecond)
 		return false
 	}
 
