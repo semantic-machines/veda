@@ -13,7 +13,7 @@
   rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства/выражения'"@ru ;
   rdfs:label "Veda system ontology. Function 'Authorization on predicate/expression value'"@en ;
 #  owl:versionInfo "1.3" ;
-  v-s:loadPriority 2 ;
+  v-s:loadPriority 3 ;
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
@@ -524,7 +524,7 @@ if (!veda.GroupGenerators) {
   veda.GroupGenerators = query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
     var generator = get_individual(veda.ticket, generator_uri);
     var authClasses = veda.Util.getUris(generator["v-s:authClass"]);
-    var authProperty = veda.Util.getValues(generator["v-s:authProperty"]);
+    var authProperty = veda.Util.getFirstValue(generator["v-s:authProperty"]);
     var authFunction = veda.Util.getFirstValue(generator["v-s:authFunction"]);
     var authGroupFunction = veda.Util.getFirstValue(generator["v-s:authGroupFunction"]);
     var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
