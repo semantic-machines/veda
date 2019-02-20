@@ -233,7 +233,6 @@ v-s:Person
   rdfs:subClassOf v-s:UserThing ;
   rdfs:subClassOf v-s:ManuallyVersioned ;
   rdfs:subClassOf v-s:Labeled ;
-  rdfs:subClassOf v-s:GroupAuthorized ;
   rdfs:comment "A person." ;
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;

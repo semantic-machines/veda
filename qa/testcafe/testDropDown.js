@@ -40,4 +40,9 @@ import { Selector, t } from 'testcafe';
       .wait(1000)
       .doubleClick('veda-control[rel="v-s:hasTransportKind"] div.fulltext-menu div.suggestions div[resource="d:62fbbbc27f8e407c8f51de71e10d0501"]')
       .expect(Selector('div[rel="v-s:hasTransportKind"] span#label').innerText).eql('Автобус ')
+      .click('veda-control[rel="v-s:hasTransportKindSingle"] div.dropdown')
+      .click('veda-control[rel="v-s:hasTransportKindSingle"] div.fulltext-menu div.suggestions div[resource="d:2078749d2bcf42e0ae80c5d8287d19d1"]')
+      .expect(Selector('div[rel="v-s:hasTransportKindSingle"] span#label').innerText).eql('Авиатранспорт ')
+      //здесь проверяется закрылся ли div после выбора значения для единичного поля
+      .expect(Selector('veda-control[rel="v-s:hasTransportKindSingle"] div.fulltext-menu').visible).notOk();
 });

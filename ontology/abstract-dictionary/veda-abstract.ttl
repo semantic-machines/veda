@@ -346,6 +346,7 @@ v-s:UserThing
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:GroupAuthorized ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Пользовательская сущность"@ru ;
   rdfs:label "User thing"@en ;
