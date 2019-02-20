@@ -19,7 +19,8 @@ enum Mode
 struct Header
 {
     ulong        start_pos;
-    ulong        msg_length;
+    uint         msg_length;
+    uint         magic_marker;
     uint         count_pushed;
     ubyte[ 4 ] crc;
     QMessageType type;
@@ -32,8 +33,13 @@ struct Header
 
         ulong_to_buff(buff, pos, start_pos);
         pos += ulong.sizeof;
-        ulong_to_buff(buff, pos, msg_length);
-        pos += ulong.sizeof;
+        uint_to_buff(buff, pos, msg_length);
+        pos            += uint.sizeof;
+        buff[ pos + 0 ] = 0xEE;
+        buff[ pos + 1 ] = 0xFE;
+        buff[ pos + 2 ] = 0xEF;
+        buff[ pos + 3 ] = 0xEE;
+        pos            += uint.sizeof;
         uint_to_buff(buff, pos, count_pushed);
         pos            += uint.sizeof;
         buff[ pos ]     = type;
@@ -50,10 +56,12 @@ struct Header
     {
         int pos = 0;
 
-        start_pos    = ulong_from_buff(buff, pos);
-        pos         += ulong.sizeof;
-        msg_length   = ulong_from_buff(buff, pos);
-        pos         += ulong.sizeof;
+        start_pos  = ulong_from_buff(buff, pos);
+        pos       += ulong.sizeof;
+        msg_length = uint_from_buff(buff, pos);
+        pos       += uint.sizeof;
+        // this magic_marker
+        pos         += uint.sizeof;
         count_pushed = uint_from_buff(buff, pos);
         pos         += uint.sizeof;
         type         = cast(QMessageType)buff[ pos ];
@@ -293,25 +301,25 @@ class Consumer
     {
         if (!queue.isReady)
         {
-            log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+            log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
             return null;
         }
 
         if (!isReady)
         {
-            log.trace("ERR! queue:pop: consumer %s not ready", name);
+            log.trace("ERR! queue:consumer:pop, consumer %s not ready", name);
             return null;
         }
 
         if (mode == Mode.R)
         {
-            log.trace("ERR! queue:pop: consumer %s reads only", name);
+            log.trace("ERR! queue:consumer:pop, consumer %s reads only", name);
             return null;
         }
 
         if (queue.get_info_push(id) == false)
         {
-            log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+            log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
             return null;
         }
 
@@ -322,12 +330,12 @@ class Consumer
 
             if (queue.id > id)
             {
-                log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part %d", queue.id, id, id + 1);
+                log.trace("INFO: queue:consumer(%s):pop, queue.id=%d, consumer.id=%d, set reader on next part %d", name, queue.id, id, id + 1);
                 id       = id + 1;
                 queue.id = id;
                 if (queue.get_info_push(id) == false)
                 {
-                    log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+                    log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
                     return null;
                 }
                 remove();
@@ -351,14 +359,14 @@ class Consumer
         if (header.start_pos != start_pos_record)
         {
             log.trace(
-                      "ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != start_pos_record[%d] : %s, count_popped : %d, queue.count_pushed : %d",
-                      queue.id, header.start_pos, start_pos_record, text(header), count_popped, queue.count_pushed);
+                      "ERR! queue:consumer(%s):pop, queue.id: %d, invalid msg: header.start_pos[%d] != start_pos_record[%d] : %s, count_popped : %d, queue.count_pushed : %d",
+                      name, queue.id, header.start_pos, start_pos_record, text(header), count_popped, queue.count_pushed);
             return null;
         }
 
         if (header.msg_length >= buff.length)
         {
-            log.trace("INFO: queue:pop: inc buff size %d -> %d", buff.length, header.msg_length);
+            log.trace("INFO: queue:consumer(%s):pop, inc buff size %d -> %d", name, buff.length, header.msg_length);
             buff = new ubyte[ header.msg_length + 1 ];
         }
 
@@ -367,13 +375,13 @@ class Consumer
             last_read_msg = ff_queue_r.rawRead(buff[ 0..header.msg_length ]).dup;
             if (last_read_msg.length < header.msg_length)
             {
-                log.trace("ERR! queue:pop:invalid msg: msg.length < header.msg_length : %s", text(header));
+                log.trace("ERR! queue:consumer(%s):pop, invalid msg: msg.length < header.msg_length : %s", name, text(header));
                 return null;
             }
         }
         else
         {
-            log.trace("ERR! queue:pop: invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
+            log.trace("ERR! queue:consumer(%s):pop, invalid msg: header.msg_length[%d] < buff.length[%d] : %s", name, header.msg_length, buff.length, text(header));
             return null;
         }
 
@@ -842,10 +850,13 @@ class Queue
         if (msg.length == 0)
             return;
 
+        if (msg.length > uint.max / 2)
+            return;
+
         ubyte[] _buff2 = cast(ubyte[])msg.dup;
 
         header.start_pos    = right_edge;
-        header.msg_length   = _buff2.length;
+        header.msg_length   = cast(uint)_buff2.length;
         header.count_pushed = count_pushed;
         header.type         = type;
 

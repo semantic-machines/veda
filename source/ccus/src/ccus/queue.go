@@ -32,28 +32,12 @@ const (
 const queue_db_path string = "./data/queue"
 
 type Header struct {
-	start_pos    uint64
-	msg_length   uint64
-	count_pushed uint32
+	start_pos     uint64
+	msg_length    uint32
+	magick_marker uint32
+	count_pushed  uint32
 	crc          [4]uint8
 	_type        QMessageType
-}
-
-func (ths *Header) to_buff(buff []uint8) {
-	pos := 0
-
-	ulong_to_buff(buff, pos, ths.start_pos)
-	pos += 8
-	ulong_to_buff(buff, pos, ths.msg_length)
-	pos += 8
-	uint_to_buff(buff, pos, ths.count_pushed)
-	pos += 4
-	buff[pos] = uint8(ths._type)
-	pos += 1
-	buff[pos+0] = 0
-	buff[pos+1] = 0
-	buff[pos+2] = 0
-	buff[pos+3] = 0
 }
 
 func (ths *Header) from_buff(buff []uint8) {
@@ -61,8 +45,10 @@ func (ths *Header) from_buff(buff []uint8) {
 
 	ths.start_pos = ulong_from_buff(buff, pos)
 	pos += 8
-	ths.msg_length = ulong_from_buff(buff, pos)
-	pos += 8
+	ths.msg_length = uint_from_buff(buff, pos)
+	pos += 4
+	// this magic_marker
+	pos += 4
 	ths.count_pushed = uint_from_buff(buff, pos)
 	pos += 4
 	ths._type = QMessageType(buff[pos])
@@ -97,7 +83,7 @@ type Consumer struct {
 	name    string
 	id      uint32
 
-	first_element uint64
+	start_pos_record uint64
 	count_popped  uint32
 	last_read_msg []uint8
 	mode          Mode
@@ -176,7 +162,7 @@ func (ths *Consumer) put_info(is_sync_data bool) bool {
 	_, err = ths.ff_info_pop_w.Seek(0, 0)
 
 	if err == nil {
-		_, err = ths.ff_info_pop_w.WriteString(ths.queue.name + ";" + ths.name + ";" + strconv.FormatUint(ths.first_element, 10) + ";" + strconv.FormatUint(uint64(ths.count_popped), 10) + ";" + strconv.FormatUint(uint64(ths.id), 10))
+		_, err = ths.ff_info_pop_w.WriteString(ths.queue.name + ";" + ths.name + ";" + strconv.FormatUint(ths.start_pos_record, 10) + ";" + strconv.FormatUint(uint64(ths.count_popped), 10) + ";" + strconv.FormatUint(uint64(ths.id), 10))
 
 		if err == nil {
 			if is_sync_data {
@@ -186,7 +172,7 @@ func (ths *Consumer) put_info(is_sync_data bool) bool {
 	}
 
 	if err != nil {
-			       log.Printf("consumer:put_info [%s;%d;%s;%d;%d] %s\n", ths.queue.name, ths.name, ths.first_element, ths.count_popped, err);
+			       log.Printf("consumer:put_info [%s;%d;%s;%d;%d] %s\n", ths.queue.name, ths.name, ths.start_pos_record, ths.count_popped, err);
 		return false
 	}
 
@@ -232,7 +218,7 @@ func (ths *Consumer) get_info() bool {
 			return false
 		}
 
-		ths.first_element = uint64(nn)
+		ths.start_pos_record = uint64(nn)
 
 		nn, err = strconv.ParseInt(ch[3], 10, 0)
 		if err != nil {
@@ -281,7 +267,7 @@ func (ths *Consumer) pop() string {
 			ths.remove()
 
 			ths.count_popped = 0
-			ths.first_element = 0
+			ths.start_pos_record = 0
 
 			ths.open()
 			ths.put_info(true)
@@ -291,28 +277,28 @@ func (ths *Consumer) pop() string {
 	}
 
 	ths.queue.set_r_queue_file(ths.id) 
-	ths.queue.ff_queue_r.Seek(int64(ths.first_element), 0)
+	ths.queue.ff_queue_r.Seek(int64(ths.start_pos_record), 0)
 
 	ths.queue.ff_queue_r.Read(header_buff)
 	ths.header.from_buff(header_buff)
 
-	if ths.header.start_pos != ths.first_element {
-		log.Printf("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %v, queue.id : %d, consumer.id : %d\n", ths.header.start_pos, ths.first_element, ths.header, ths.queue.id, ths.id)
+	if ths.header.start_pos != ths.start_pos_record {
+		log.Printf("pop:invalid msg: header.start_pos[%d] != start_pos_record[%d] : %v, queue.id : %d, consumer.id : %d\n", ths.header.start_pos, ths.start_pos_record, ths.header, ths.queue.id, ths.id)
 		return ""
 	}
 
-	if ths.header.msg_length >= uint64(len(buff)) {
+	if ths.header.msg_length >= uint32(len(buff)) {
 		log.Printf("pop:inc buff size %d -> %d", len(buff), ths.header.msg_length)
 		buff = make([]uint8, ths.header.msg_length+1)
 	}
 
-	if ths.header.msg_length < uint64(len(buff)) {
+	if ths.header.msg_length < uint32(len(buff)) {
 		ths.queue.ff_queue_r.Read(buff[0:ths.header.msg_length])
 
 		ths.last_read_msg = make([]uint8, ths.header.msg_length)
 
 		copy(ths.last_read_msg, buff[0:ths.header.msg_length])
-		if uint64(len(ths.last_read_msg)) < ths.header.msg_length {
+		if uint32(len(ths.last_read_msg)) < ths.header.msg_length {
 			log.Printf("pop:invalid msg: msg.length < header.msg_length : %v\n", ths.header)
 			return ""
 		}
@@ -372,7 +358,7 @@ func (ths *Consumer) commit_and_next(is_sync_data bool) bool {
 	}
 
 	ths.count_popped++
-	ths.first_element += ths.header.length() + ths.header.msg_length
+	ths.start_pos_record += ths.header.length() + uint64(ths.header.msg_length)
 
 	return ths.put_info(is_sync_data)
 }
