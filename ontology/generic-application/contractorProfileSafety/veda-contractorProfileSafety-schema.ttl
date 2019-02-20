@@ -98,14 +98,7 @@ v-s:hasWorkAtHighAltitudeCertificate
 v-s:hasWorkAtHighAltitudeCertificateGroup1
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверение/протокол по работам на высоте (1 группа)"@ru ;
-  rdfs:label "Work at high altitude certificate"@en ;
-  rdfs:range v-s:CertificationDocument ;
-.
-v-s:hasWorkAtHighAltitudeCertificateGroup2
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверение/протокол по работам на высоте (2 группа)"@ru ;
+  rdfs:label "Удостоверение/протокол по работам на высоте (1 группа / 2 группа)"@ru ;
   rdfs:label "Work at high altitude certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
@@ -203,7 +196,7 @@ v-s:hasHoistmanCertificate
 v-s:hasSpidermanCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверение/протокол монтажник-высотник (промышленный альпенизм)"@ru ;
+  rdfs:label "Удостоверение/протокол промышленный альпенизм"@ru ;
   rdfs:label "Spiderman certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .

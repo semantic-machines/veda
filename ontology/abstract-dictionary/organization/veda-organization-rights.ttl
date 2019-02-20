@@ -72,7 +72,7 @@ v-s:OrganizationStructure_BaseUser_permission
   v-s:permissionObject v-s:OrganizationStructure_Environment ;
   v-s:permissionSubject v-s:OrganizationStructure_BaseUser ;
   v-s:canCreate "true"^^xsd:boolean ;
-  v-s:canRead "true"^^xsd:boolean ;
+  #v-s:canRead "true"^^xsd:boolean ;
   rdfs:label "CR. Основные пользователи OrganizationStructure. Окружение OrganizationStructure" ;
 .
 # ------------------------------------------------------------ ВКЛЮЧЕНИЯ В ГРУППЫ --

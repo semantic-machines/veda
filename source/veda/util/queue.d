@@ -1,6 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii, std.uuid;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii, std.uuid, std.outbuffer;
 import veda.common.logger;
 
 enum QMessageType
@@ -19,7 +19,8 @@ enum Mode
 struct Header
 {
     ulong        start_pos;
-    ulong        msg_length;
+    uint         msg_length;
+    uint         magic_marker;
     uint         count_pushed;
     ubyte[ 4 ] crc;
     QMessageType type;
@@ -32,8 +33,13 @@ struct Header
 
         ulong_to_buff(buff, pos, start_pos);
         pos += ulong.sizeof;
-        ulong_to_buff(buff, pos, msg_length);
-        pos += ulong.sizeof;
+        uint_to_buff(buff, pos, msg_length);
+        pos            += uint.sizeof;
+        buff[ pos + 0 ] = 0xEE;
+        buff[ pos + 1 ] = 0xFE;
+        buff[ pos + 2 ] = 0xEF;
+        buff[ pos + 3 ] = 0xEE;
+        pos            += uint.sizeof;
         uint_to_buff(buff, pos, count_pushed);
         pos            += uint.sizeof;
         buff[ pos ]     = type;
@@ -50,10 +56,12 @@ struct Header
     {
         int pos = 0;
 
-        start_pos    = ulong_from_buff(buff, pos);
-        pos         += ulong.sizeof;
-        msg_length   = ulong_from_buff(buff, pos);
-        pos         += ulong.sizeof;
+        start_pos  = ulong_from_buff(buff, pos);
+        pos       += ulong.sizeof;
+        msg_length = uint_from_buff(buff, pos);
+        pos       += uint.sizeof;
+        // this magic_marker
+        pos         += uint.sizeof;
         count_pushed = uint_from_buff(buff, pos);
         pos         += uint.sizeof;
         type         = cast(QMessageType)buff[ pos ];
@@ -107,7 +115,7 @@ class Consumer
     private Queue   queue;
     private uint    id;
     private string  path;
-    private ulong   first_element;
+    private ulong   start_pos_record;
     private ubyte[] last_read_msg;
     private Mode    mode;
 
@@ -134,7 +142,7 @@ class Consumer
 
     public uint get_id()
     {
-    	return id;
+        return id;
     }
 
     public string get_name()
@@ -215,14 +223,14 @@ class Consumer
         try
         {
             ff_info_pop_w.seek(0);
-            ff_info_pop_w.writefln("%s;%s;%d;%d;%d", queue.name, name, first_element, count_popped, id);
+            ff_info_pop_w.writefln("%s;%s;%d;%d;%d", queue.name, name, start_pos_record, count_popped, id);
 
             if (is_sync_data)
                 ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
-            log.trace("consumer:put_info [%s;%s;%d;%d;%d] %s", queue.name, name, first_element, count_popped, id, tr.msg);
+            log.trace("consumer:put_info [%s;%s;%d;%d;%d] %s", queue.name, name, start_pos_record, count_popped, id, tr.msg);
             return false;
         }
         return true;
@@ -267,8 +275,8 @@ class Consumer
                 return false;
             }
 
-            first_element = to!ulong (ch[ 2 ]);
-            count_popped  = to!uint (ch[ 3 ]);
+            start_pos_record = to!ulong (ch[ 2 ]);
+            count_popped     = to!uint (ch[ 3 ]);
 
             if (ch.length == 5 && ch[ 4 ].length > 0)
             {
@@ -293,25 +301,25 @@ class Consumer
     {
         if (!queue.isReady)
         {
-            log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+            log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
             return null;
         }
 
         if (!isReady)
         {
-            log.trace("ERR! queue:pop: consumer %s not ready", name);
+            log.trace("ERR! queue:consumer:pop, consumer %s not ready", name);
             return null;
         }
 
         if (mode == Mode.R)
         {
-            log.trace("ERR! queue:pop: consumer %s reads only", name);
+            log.trace("ERR! queue:consumer:pop, consumer %s reads only", name);
             return null;
         }
 
         if (queue.get_info_push(id) == false)
         {
-            log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+            log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
             return null;
         }
 
@@ -322,18 +330,18 @@ class Consumer
 
             if (queue.id > id)
             {
-                log.trace("INFO: queue.id=%d, consumer.id=%d, set reader on next part %d", queue.id, id, id + 1);
-                id = id + 1;
+                log.trace("INFO: queue:consumer(%s):pop, queue.id=%d, consumer.id=%d, set reader on next part %d", name, queue.id, id, id + 1);
+                id       = id + 1;
                 queue.id = id;
                 if (queue.get_info_push(id) == false)
                 {
-                    log.trace("ERR! queue:pop: queue %s not ready", queue.name);
+                    log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
                     return null;
                 }
                 remove();
 
-                count_popped  = 0;
-                first_element = 0;
+                count_popped     = 0;
+                start_pos_record = 0;
 
                 open();
                 put_info(true);
@@ -343,21 +351,22 @@ class Consumer
         }
 
         File *ff_queue_r = queue.get_r_queue_file(id);
-        ff_queue_r.seek(first_element);
+        ff_queue_r.seek(start_pos_record);
 
         ff_queue_r.rawRead(header_buff);
         header.from_buff(header_buff);
 
-        if (header.start_pos != first_element)
+        if (header.start_pos != start_pos_record)
         {
-            log.trace("ERR! queue:pop: queue.id: %d, invalid msg: header.start_pos[%d] != first_element[%d] : %s, count_popped : %d, queue.count_pushed : %d", 
-            	queue.id, header.start_pos, first_element, text(header), count_popped, queue.count_pushed);
+            log.trace(
+                      "ERR! queue:consumer(%s):pop, queue.id: %d, invalid msg: header.start_pos[%d] != start_pos_record[%d] : %s, count_popped : %d, queue.count_pushed : %d",
+                      name, queue.id, header.start_pos, start_pos_record, text(header), count_popped, queue.count_pushed);
             return null;
         }
 
         if (header.msg_length >= buff.length)
         {
-            log.trace("INFO: queue:pop: inc buff size %d -> %d", buff.length, header.msg_length);
+            log.trace("INFO: queue:consumer(%s):pop, inc buff size %d -> %d", name, buff.length, header.msg_length);
             buff = new ubyte[ header.msg_length + 1 ];
         }
 
@@ -366,13 +375,13 @@ class Consumer
             last_read_msg = ff_queue_r.rawRead(buff[ 0..header.msg_length ]).dup;
             if (last_read_msg.length < header.msg_length)
             {
-                log.trace("ERR! queue:pop:invalid msg: msg.length < header.msg_length : %s", text(header));
+                log.trace("ERR! queue:consumer(%s):pop, invalid msg: msg.length < header.msg_length : %s", name, text(header));
                 return null;
             }
         }
         else
         {
-            log.trace("ERR! queue:pop: invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
+            log.trace("ERR! queue:consumer(%s):pop, invalid msg: header.msg_length[%d] < buff.length[%d] : %s", name, header.msg_length, buff.length, text(header));
             return null;
         }
 
@@ -413,16 +422,16 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid last_read_msg[%s]: fail crc[%s] : %s", queue.name, name, last_read_msg, text(
-                                                                                                                                               crc),
+            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid msg, fail crc[%s] : %s", queue.name, name, text(crc),
                       text(header));
-            log.trace(text(last_read_msg.length));
-            log.trace(cast(string)last_read_msg);
+            OutBuffer ob = new OutBuffer();
+            hexdump(ob, last_read_msg);
+            log.trace("%d\n%s", last_read_msg.length, ob);
             return false;
         }
 
         count_popped++;
-        first_element += header.length + header.msg_length;
+        start_pos_record += header.length + header.msg_length;
 
         return put_info(is_sync_data);
     }
@@ -431,7 +440,7 @@ class Consumer
     {
         sink("consumer:" ~ name);
         sink(", queue:" ~ queue.name);
-        sink(", first_element=" ~ text(first_element));
+        sink(", start_pos_record=" ~ text(start_pos_record));
         sink(", count_popped=" ~ text(count_popped));
     }
 }
@@ -496,7 +505,7 @@ class Queue
     void toString(scope void delegate(const(char)[]) sink) const
     {
         sink("queue:" ~ name);
-//      sink (", first_element=" ~ text(first_element));
+//      sink (", start_pos_record=" ~ text(start_pos_record));
         sink(", right_edge=" ~ text(right_edge));
         sink(", count_pushed=" ~ text(count_pushed));
 //      sink (", count_popped=" ~ text(count_popped));
@@ -838,10 +847,16 @@ class Queue
         if (mode == Mode.R)
             return;
 
-        ubyte[] _buff2 = cast(ubyte[])msg;
+        if (msg.length == 0)
+            return;
+
+        if (msg.length > uint.max / 2)
+            return;
+
+        ubyte[] _buff2 = cast(ubyte[])msg.dup;
 
         header.start_pos    = right_edge;
-        header.msg_length   = _buff2.length;
+        header.msg_length   = cast(uint)_buff2.length;
         header.count_pushed = count_pushed;
         header.type         = type;
 
@@ -859,6 +874,8 @@ class Queue
 
         ff_queue_w.rawWrite(header_buff);
         ff_queue_w.rawWrite(_buff2);
+
+        log.trace("@ %s %s, crc=%s", name, header, crc);
 
         right_edge += header_buff.length + _buff2.length;
     }
@@ -982,4 +999,33 @@ private void ulong_to_buff(ubyte[] _buff, int pos, ulong data)
     _buff[ pos + 5 ] = (data & 0x0000FF0000000000) >> 40;
     _buff[ pos + 6 ] = (data & 0x00FF000000000000) >> 48;
     _buff[ pos + 7 ] = (data & 0xFF00000000000000) >> 56;
+}
+
+void hexdump(T) (OutBuffer ob, T[] s)
+{
+    byte *b = cast(byte *)s.ptr;
+    int  N  = cast(int)(s.length * T.sizeof);
+
+    for (int i = 0; i < N; i++)
+    {
+        ob.writef("%2.2x ", b[ i ]);
+
+        if ((i & 7) == 7)
+            ob.writef(" ");
+
+        if ((i & 31) == 31)
+        {
+            ob.writef("    ");
+            for (int j = i - 31; j <= i; j++)
+            {
+                if (b[ j ] != 0)
+                    ob.writef("%s", cast(char)b[ j ]);
+                else
+                    ob.write(".");
+            }
+
+            ob.writef("\n");
+        }
+    }
+    ob.writefln("\n");
 }

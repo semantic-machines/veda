@@ -1,13 +1,15 @@
-import Basic from './basic'
+import Basic from './basic';
+import config from './config';
 import { Selector, t } from 'testcafe';
   fixture `test search`
     .page `http://localhost:8080/`;
   const basic = new Basic();
+  const pageForNavigateFromConfig = `${config.baseUrl}`+'#/v-ui:TestUIRegistry';
   test('testSearch', async t => {
     basic.login('karpovrt', '123');
     await t
       .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
-      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .navigateTo( pageForNavigateFromConfig )
       .click('button#search-button')
       var search = Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container tr[typeof="v-ui:TestUIClass"]');
       var count = await search.count;

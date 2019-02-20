@@ -1552,7 +1552,13 @@ v-wf:WorkOrderTemplate
   v-ui:forClass v-wf:WorkOrder ;
   v-ui:template """
 <div>
-  <strong><span about="@" property="@"></span> <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a></strong>
+  <strong>
+    <button id="repeat-workOrder" type="button" class="btn btn-sm margin-sm-h btn-default">
+      <span>repeat</span>
+    </button>
+    <span about="@" property="@"></span> 
+    <a href="#/@"><i class='glyphicon glyphicon-share-alt'></i></a>
+  </strong>
   <div id="executor">
     <em about="v-wf:executor" property="rdfs:label"></em>
     <ul><li rel="v-wf:executor" data-template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
@@ -1577,6 +1583,22 @@ v-wf:WorkOrderTemplate
   <br/>
 </div>
 <script>
+  if (veda.appointment.id=="cfg:AdministratorAppointment" && individual.hasValue("v-wf:forWorkItem") 
+      && individual["v-wf:forWorkItem"][0].hasValue("v-wf:isCompleted", true) ) {
+    $("#repeat-workOrder", template).click(function(){
+      individual.properties["v-wf:enforceProcessing"] = [{"type": "Boolean", "data": true }];
+      var res = put_individual(veda.ticket, individual.toJson());
+      wait_module(2, res.op_id);
+      wait_module(16, res.op_id);      
+      setTimeout(function(){
+        delete individual.properties["v-wf:enforceProcessing"];
+        individual.isSync(false);
+        individual.save();
+      }, 1000)  
+    })
+  } else {
+    $("#repeat-workOrder", template).remove();
+  }
   if (!individual.hasValue("v-wf:decisionFormList")) $("#decisionFormList", template).remove();
   if (!individual.hasValue("v-wf:executor")) $("#executor", template).remove();
   if (!individual.hasValue("v-wf:outVars")) $("#outVars", template).remove();
@@ -2224,8 +2246,8 @@ v-wf:event_df4
 var deleted = veda.Util.hasValue(document, 'v-s:deleted', {data: true, type: "Boolean"}),
     enforce_processing = veda.Util.hasValue(document, 'v-wf:enforceProcessing', {data: true, type: "Boolean"}),
     triggeredByWf = parent_script_id === 'v-wf:event_df1' || parent_script_id === 'v-wf:event_df2' || parent_script_id === 'v-wf:event_df3' || parent_script_id === 'v-wf:event_df4' || parent_script_id === 'v-wf:event_df5';
-
-//print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
+print("################");
+print("Event df4: parent_document_id=", parent_document_id, ", parent_script_id=", parent_script_id, ", _event_id=", _event_id );
 if ( enforce_processing || triggeredByWf && !deleted ) {
   veda.Workflow.prepare_work_order (ticket, document);
 }

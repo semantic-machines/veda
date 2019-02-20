@@ -100,7 +100,7 @@ class ScriptProcessLowPriority : ScriptProcess
         }
 
         main_cs_r.reopen();
-        while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
+        while (main_cs_r.get_id() == cs_id && main_cs_r.count_popped < count_popped)
         {
             log.tracec("INFO: sleep, scripts_main=%d, my=%d", main_cs_r.count_popped, count_popped);
             core.thread.Thread.sleep(dur!("seconds")(1));
@@ -301,7 +301,10 @@ class ScriptProcess : VedaModule
                         }
 
                         if (count_loops > MAX_COUNT_LOOPS)
+                        {
                             log.trace("ERR! skip script, counted (%d) loops in sequencee > %d, path: [%s]", count_loops, MAX_COUNT_LOOPS, event_id);
+                            continue;
+                        }
 
                         if (count_loops > 1)
                             log.trace("WARN! found %d loops in sequence, path: [%s]", count_loops, event_id);
