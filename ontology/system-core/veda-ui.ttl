@@ -382,12 +382,27 @@ v-s:hasTransportKind
   rdfs:label "Transport kind"@en ;
   rdfs:range v-s:TransportKind ;
 .
+v-s:hasTransportKindSingle
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид транспорта единичный"@ru ;
+  rdfs:label "Transport kind single"@en ;
+  rdfs:range v-s:TransportKind ;
+.
 v-s:PS_hasTransportKind_TestUi
   rdf:type v-ui:PropertySpecification ;
   v-ui:forClass v-ui:TestUIClass ;
   v-ui:forProperty v-s:hasTransportKind ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация свойства v-s:hasTransportKind для класса v-ui:TestUIClass"@ru ;
+  rdfs:label "v-s:hasTransportKind property specification for v-ui:TestUIClass"@en ;
+.
+v-s:PS_hasTransportKindSingle_TestUi
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-ui:TestUIClass ;
+  v-ui:forProperty v-s:hasTransportKindSingle ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
   rdfs:label "Спецификация свойства v-s:hasTransportKind для класса v-ui:TestUIClass"@ru ;
   rdfs:label "v-s:hasTransportKind property specification for v-ui:TestUIClass"@en ;
 .
@@ -1589,6 +1604,9 @@ v-ui:TestUITemplate
   <em about="v-s:hasTransportKind" property="rdfs:label"></em>
   <div rel="v-s:hasTransportKind" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
   <veda-control data-type="link" rel="v-s:hasTransportKind" class="-view edit search fulltext dropdown"></veda-control>
+  <em about="v-s:hasTransportKindSingle" property="rdfs:label"></em>
+  <div rel="v-s:hasTransportKindSingle" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+  <veda-control data-type="link" rel="v-s:hasTransportKindSingle" class="-view edit search fulltext dropdown"></veda-control>
   <hr>
   <em about="v-ui:testString" property="rdfs:label"></em>
   <div property="v-ui:testString"></div>
