@@ -362,15 +362,15 @@ cfg:Permission_3
   rdfs:label "Permission to read ontology individuals for all users"@en ;
 .
 
-cfg:Permission_4
-  rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-  v-s:permissionObject v-s:OrganizationUnit_group ;
-  v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "Разрешение на чтение орг. структуры для всех пользователей"@ru ;
-  rdfs:label "Permission to read org. structure individuals for all users"@en ;
-.
+#cfg:Permission_4
+  #rdf:type v-s:PermissionStatement ;
+  #v-s:author cfg:VedaSystem ;
+  #v-s:permissionSubject cfg:AllUsersGroup ;
+  #v-s:permissionObject v-s:OrganizationUnit_group ;
+  #v-s:canRead "true"^^xsd:boolean ;
+  #rdfs:label "Разрешение на чтение орг. структуры для всех пользователей"@ru ;
+  #rdfs:label "Permission to read org. structure individuals for all users"@en ;
+#.
 
 cfg:Permission_5
   rdf:type v-s:PermissionStatement ;

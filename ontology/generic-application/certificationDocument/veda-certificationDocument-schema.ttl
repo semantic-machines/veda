@@ -23,6 +23,7 @@ v-s:CertificationDocument
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Удостоверяющий документ"@ru ;
   rdfs:label "Certification document"@en ;
   v-ui:hasTemplate v-s:CertificationDocumentTemplate ;
