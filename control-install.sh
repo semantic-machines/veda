@@ -1,20 +1,17 @@
 #!/bin/bash
 # скрипт устанавливает среду для последующей компиляции, берет исходники зависимостей из github, но не собирает
 
+./tools/install-repo-libs.sh
+
 DMD_VER=2.080.0
 DUB_VER=1.5.0
 GO_VER=go1.11.4
 MSGPUCK_VER=2.0
-TARANTOOL_VER=1.10.2
 NANOMSG_VER=1.1.5
 
 INSTALL_PATH=$PWD
 
 # Get other dependencies
-LIB_NAME[1]="libevent-pthreads-2.0-5"
-LIB_NAME[3]="libevent-dev"
-LIB_NAME[4]="libssl-dev"
-LIB_NAME[5]="libmysqlclient-dev"
 LIB_NAME[6]="cmake"
 LIB_NAME[7]="libtool-bin"
 LIB_NAME[8]="pkg-config"
@@ -138,36 +135,6 @@ go get github.com/divan/expvarmon
 go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
 ls $HOME/go
-
-### TARANTOOL SERVER ###
-
-if [ "$1" = force ] || ! tarantool -V | grep $TARANTOOL_VER ; then
-echo "--- INSTALL TARANTOOL ---"
-curl http://download.tarantool.org/tarantool/1.10/gpgkey | sudo apt-key add -
-release=`lsb_release -c -s`
-
-# install https download transport for APT
-sudo apt-get -y install apt-transport-https
-
-# append two lines to a list of source repositories
-sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
-sudo tee /etc/apt/sources.list.d/tarantool_1_0.list <<- EOF
-deb http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
-deb-src http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
-EOF
-
-# install
-sudo apt-get update
-sudo apt-get remove tarantool
-sudo apt-get remove tarantool-dev
-sudo apt-get -y install tarantool
-sudo apt-get -y install tarantool-dev
-
-tarantool -V
-
-else
-    echo "--- TARANTOOL INSTALLED ---"
-fi
 
 ### LIB NANOMSG ###
 

@@ -472,6 +472,10 @@ textarea {
   margin-top: 25px;
   margin-bottom: 25px;
 }
+.margin-xxl {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
 .margin-xs-h {
   margin-left: 2px;
   margin-right: 2px;
@@ -492,6 +496,10 @@ textarea {
   margin-left: 25px;
   margin-right: 25px;
 }
+.margin-xxl-h {
+  margin-left: 40px;
+  margin-right: 40px;
+}
 .no-padding {
   padding: 0px!important;
 }
@@ -506,6 +514,9 @@ textarea {
 }
 .padding-xl {
   padding: 25px;
+}
+.padding-xxl {
+  padding: 40px;
 }
 .no-border {
   border: none;

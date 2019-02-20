@@ -1,9 +1,11 @@
-import Basic from './basic'
+import Basic from './basic';
+import config from './config';
 import { Selector, t } from 'testcafe';
   fixture `test Attributive Search`
-    .page `http://localhost:8080/`
+    .page `${config.baseUrl}`;
   const basic = new Basic();
-  const first =  (new Date%9e6).toString(36);
+  const pageForNavigateFromConfig = `${config.baseUrl}`+'#/v-ui:TestUIRegistry';
+  const first = (new Date%9e6).toString(36);
   const last = (new Date%9e6).toString(36);
   const middle = (new Date%9e6).toString(36);
   const birth = '01.01.'+Math.floor(1000 + Math.random() * 9000);
@@ -13,7 +15,7 @@ import { Selector, t } from 'testcafe';
     basic.createTestUiForAttributiveSearch('a'+last, first+'bcc', 'T'+middle, birth);
     await t
       .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
-      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .navigateTo( pageForNavigateFromConfig )
       .typeText('veda-control#label', 'a' + last)
       .click('veda-control#comment')
       .click('button#search-button')
@@ -74,7 +76,7 @@ import { Selector, t } from 'testcafe';
     basic.login('karpovrt', '123');
     await t
       .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
-      .navigateTo('http://localhost:8080/#/v-ui:TestUIRegistry')
+      .navigateTo( pageForNavigateFromConfig )
       .click('button#search-button')
       .click('div.results div.search-result.table-responsive.noSwipe a.glyphicon.glyphicon-sort-by-attributes')
       .expect(Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container td[property="v-ui:testInteger"]').innerText).eql('999')

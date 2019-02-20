@@ -13,7 +13,7 @@
   rdfs:label "Онтология системы Veda. Функция 'Авторизация по значению свойства/выражения'"@ru ;
   rdfs:label "Veda system ontology. Function 'Authorization on predicate/expression value'"@en ;
 #  owl:versionInfo "1.3" ;
-  v-s:loadPriority 6 ;
+  v-s:loadPriority 3 ;
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
@@ -77,6 +77,22 @@ v-s:authValue
   rdfs:label "Авторизуемое значение"@ru ;
   rdfs:label "Authorized value"@en ;
   rdfs:range rdfs:Resource ;
+.
+
+v-s:authGroupFunction
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Функция для вычисления авторизационной группы"@ru ;
+  rdfs:label "Function to calculate authorization group"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:keepMembershipOnDelete
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:GroupGenerator ;
+  rdfs:label "Признак необходимости оставить включение объекта в группу после его удаления"@ru ;
+  rdfs:label "Flag to keep membership when object is deleted"@en ;
+  rdfs:range xsd:boolean ;
 .
 
 v-s:PermissionGenerator
@@ -164,6 +180,11 @@ v-s:GroupGeneratorTemplate
   <em about="v-s:authValue" property="rdfs:label"></em>
   <div property="v-s:authValue" class="view -edit -search"></div>
   <veda-control data-type="generic" property="v-s:authValue" class="-view edit search"></veda-control>
+
+  <em about="v-s:authGroupFunction" property="rdfs:label"></em>
+  <div property="v-s:authGroupFunction" class="view -edit -search"></div>
+  <veda-control data-type="text" rows="2" property="v-s:authGroupFunction" class="-view edit search"></veda-control>
+
   <em about="v-s:GroupGeneratorUri" property="rdfs:label"></em>
   <code class="group-uri"></code>
   <br>
@@ -493,6 +514,7 @@ v-s:Event_GroupGenerator
  * parent_document_id = id of the document that triggered this event.
  * super_classes = super classes of the document.
  */
+
 var areActual = get_individual(veda.ticket, "v-s:GroupsGeneratorsAreActual");
 areActual = areActual && areActual["rdf:value"] && areActual["rdf:value"][0].data;
 veda.GroupGenerators = areActual && veda.GroupGenerators;
@@ -501,25 +523,43 @@ if (!veda.GroupGenerators) {
   console.log("(Re)build group generators");
   veda.GroupGenerators = query(veda.ticket, "'rdf:type' === 'v-s:GroupGenerator'").result.reduce(function (acc, generator_uri) {
     var generator = get_individual(veda.ticket, generator_uri);
-    var authClass = veda.Util.getUri(generator["v-s:authClass"]);
-    var authProperty = veda.Util.getUri(generator["v-s:authProperty"]);
+    var authClasses = veda.Util.getUris(generator["v-s:authClass"]);
+    var authProperty = veda.Util.getFirstValue(generator["v-s:authProperty"]);
     var authFunction = veda.Util.getFirstValue(generator["v-s:authFunction"]);
+    var authGroupFunction = veda.Util.getFirstValue(generator["v-s:authGroupFunction"]);
     var authValue = veda.Util.getFirstValue(generator["v-s:authValue"]);
+    var keepMembershipOnDelete = veda.Util.getFirstValue(generator["v-s:keepMembershipOnDelete"]);
     var fn;
     if (authProperty) {
-      fn = new Function("veda", "return veda.Util.getFirstValue(this['" + authProperty + "']);");
+      fn = new Function("veda", "return veda.Util.getValues(this['" + authProperty + "']);");
     } else if (authFunction) {
       fn = new Function("veda", authFunction);
+    } else if (authGroupFunction) {
+      fn = new Function("veda", authGroupFunction);
+      fn.isGroupFn = true;
     }
-    fn.generator = generator_uri;
-    fn.value = authValue;
-    acc[authClass] = (acc[authClass] || []).concat(fn);
+    fn.generatorUri = generator_uri;
+    fn.authValue = authValue;
+    fn.keep = keepMembershipOnDelete;
+    authClasses.forEach(function (authClass) {
+      acc[authClass] = (acc[authClass] || []).concat(fn);
+    });
     return acc;
   }, {});
   set_in_individual(veda.ticket, {
     "@": "v-s:GroupsGeneratorsAreActual",
     "rdf:value": veda.Util.newBool(true)
   });
+}
+
+var isDeleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"});
+if (isDeleted) {
+  var groupsToDeleteFrom = generateGroups(prev_state);
+  console.log("document deleted, groups to delete from =", Object.keys(groupsToDeleteFrom));
+  for(var group_uri in groupsToDeleteFrom) {
+    removeMembership(group_uri, groupsToDeleteFrom);
+  }
+  return;
 }
 
 var currGroups = generateGroups(document),
@@ -531,53 +571,82 @@ var currGroups = generateGroups(document),
     currGroup,
     prevGroup;
 
+console.log("prev groups =", prevGroupsUris);
+console.log("curr groups =", currGroupsUris);
+
 while ((currGroup = currGroupsUris[i]) && (prevGroup = prevGroupsUris[j])) {
   if (prevGroup < currGroup) {
-    removeMembership(prevGroup);
+    removeMembership(prevGroup, prevGroups);
     j++;
   } else if (prevGroup > currGroup) {
-    addMembership(currGroup);
+    addMembership(currGroup, currGroups);
     i++;
   } else {
-    checkAddMembership(currGroup);
+    checkAddMembership(currGroup, currGroups);
     i++;
     j++;
   }
 }
 while (prevGroup = prevGroupsUris[j]) {
-  removeMembership(prevGroup);
+  removeMembership(prevGroup, prevGroups);
   j++;
 }
 while (currGroup = currGroupsUris[i]) {
-  addMembership(currGroup);
+  addMembership(currGroup, currGroups);
   i++;
 }
 
-function addMembership(group_uri) {
+function addMembership(group_uri, groups) {
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
-  var groupLabel = currGroups[group_uri];
+  var group_label = groups[group_uri].label;
   var mem = {
     "@": mem_uri,
     "rdf:type": veda.Util.newUri("v-s:Membership"),
-    "rdfs:label": veda.Util.newStr("Membership. " + groupLabel),
+    "rdfs:label": veda.Util.newStr("Membership. " + group_label),
     "v-s:resource": veda.Util.newUri(document["@"]),
-    "v-s:memberOf": veda.Util.newUri(group_uri)
+    "v-s:memberOf": veda.Util.newUri(group_uri),
+    "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
   put_individual(veda.ticket, mem);
-  //console.log("added to", group_uri, currGroups[group_uri]);
+  console.log("added to", group_uri, group_label);
 }
 
-function removeMembership(group_uri) {
+function removeMembership(group_uri, groups) {
+  var keep = groups[group_uri].keep;
+  var group_label = groups[group_uri].label;
+  if (keep) {
+    console.log("keep membership in", group_uri, group_label);
+    return;
+  }
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
   remove_individual(veda.ticket, mem_uri);
-  //console.log("removed from", group_uri, prevGroups[group_uri]);
+  console.log("removed from", group_uri, group_label);
 }
 
-function checkAddMembership(group_uri) {
+function checkAddMembership(group_uri, groups) {
   var mem_uri = "d:mem-" + Sha256.hash(document["@"] + " " + group_uri).substring(32);
   var mem = get_individual(veda.ticket, mem_uri);
+  var group_label = groups[group_uri].label;
   if (!mem) {
-    addMembership(group_uri);
+    addMembership(group_uri, groups);
+  } else {
+    console.log("membership exists", group_uri, group_label);
+  }
+}
+
+function checkAddGroup(group_uri, group_label) {
+  var group = get_individual(veda.ticket, group_uri);
+  if ( !group ) {
+    group = {
+      "@": group_uri,
+      "rdf:type": veda.Util.newUri("v-s:Group"),
+      "rdfs:label": veda.Util.newStr(group_label),
+      "v-s:creator": veda.Util.newUri("v-s:Event_GroupGenerator"),
+      "v-s:created": veda.Util.newDate(new Date())
+    };
+    put_individual(veda.ticket, group);
+    console.log("group created", group_uri, group_label);
   }
 }
 
@@ -588,32 +657,45 @@ function generateGroups(document) {
   var _super = JSON.parse(super_classes);
   _super.push(type);
 
-  for (var i = 0, _class; (_class = _super[i]); i++) {
+  for (var i = 0, _class, fns; (_class = _super[i]); i++) {
     if (_class in veda.GroupGenerators) {
-      var fns = veda.GroupGenerators[_class];
-      for (var j = 0, fn; (fn = fns[j]); j++) {
-        var fn_value;
-        if (fn.value === undefined) {
+      fns = veda.GroupGenerators[_class];
+      for (var j = 0, fn, fn_value, group_concat_uri, hash, group_uri, group_label; (fn = fns[j]); j++) {
+        if ( !fn.isGroupFn ) {
           fn_value = fn.call(document, veda);
-          if (fn_value === undefined) { continue; }
+          if (typeof fn_value === "undefined") {
+            continue;
+          } else {
+            if ( !Array.isArray(fn_value) ) {
+              fn_value = [fn_value];
+            }
+            fn_value.forEach(function (fn_value_item) {
+              if (typeof fn_value_item === "undefined") { return; }
+              if (typeof fn.authValue !== "undefined") {
+                fn_value_item = (fn.authValue.toString() === fn_value_item.toString());
+                if (fn_value_item === false) { return; }
+                fn_value_item = fn.authValue;
+              }
+              group_concat_uri = fn.generatorUri + " " + fn_value_item;
+              hash = Sha256.hash(group_concat_uri).substring(32);
+              group_uri = "d:grp-" + hash;
+              group_label = "Auth group. Generator: " + fn.generatorUri + ", value: " + fn_value_item;
+              groups[group_uri] = { "label": group_label, "keep": fn.keep };
+              checkAddGroup(group_uri, group_label);
+            });
+          }
         } else {
-          fn_value = (fn.value.toString() === fn.call(document, veda).toString());
-          if (fn_value === false) { continue; }
-          fn_value = fn.value;
-        }
-        var group_concat_uri = fn.generator + " " + fn_value.toString();
-        var hash = Sha256.hash(group_concat_uri).substring(32);
-        var group_uri = "d:grp-" + hash;
-        groups[group_uri] = "Auth group. Generator: " + fn.generator + ", value: " + fn_value;
-
-        var group = get_individual(veda.ticket, group_uri);
-        if ( !group ) {
-          group = {
-            "@": group_uri,
-            "rdf:type": veda.Util.newUri("v-s:Group"),
-            "rdfs:label": veda.Util.newStr("Auth group. Generator: " + fn.generator + ", value: " + fn_value)
-          };
-          put_individual(veda.ticket, group);
+          group_uri = fn.call(document, veda);
+          if (!group_uri) { continue; }
+          if ( !Array.isArray(group_uri) ) {
+            group_uri = [group_uri];
+          }
+          group_label = "Auth group. Generator: " + fn.generatorUri + ", calculated group";
+          group_uri.forEach(function (group_uri_item) {
+            if (typeof group_uri_item === "undefined") { return; }
+            groups[group_uri_item] = { "label": group_label, "keep": fn.keep };
+            checkAddGroup(group_uri_item, group_label);
+          });
         }
       }
     }
@@ -694,7 +776,9 @@ if (subjectGroup_uri && objectGroup_uri) {
     "v-s:canCreate": permissionGenerator["v-s:canCreate"],
     "v-s:canRead":   permissionGenerator["v-s:canRead"],
     "v-s:canUpdate": permissionGenerator["v-s:canUpdate"],
-    "v-s:canDelete": permissionGenerator["v-s:canDelete"]
+    "v-s:canDelete": permissionGenerator["v-s:canDelete"],
+    "v-s:creator": veda.Util.newUri("v-s:Event_PermissionGenerator"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
   if (!isDeleted) {
     put_individual(veda.ticket, permission);
@@ -707,22 +791,25 @@ if (subjectGroup_uri && objectGroup_uri) {
 
 ##### Permission and group generator example #####
 
-# v-s:GroupGenerator_Class
-#   rdf:type v-s:GroupGenerator ;
-#   v-s:authClass v-s:Person ;
-#   v-s:authProperty rdf:type ;
-#   v-s:authValue v-s:Person ;
-#   rdfs:label "Auth group generator: put individual to class group" ;
-# .
-#
-# v-s:PermissionGenerator_Persons_R_Person
-#   rdf:type v-s:PermissionGenerator ;
-#   rdfs:label "Permission generator: All indivduals of v-s:Person class '-R--' All indivduals of v-s:Person class" ;
-#   v-s:permissionSubject cfg:AllUsersGroup ;
-#   v-s:canRead true ;
-#   v-s:objectGroupGenerator v-s:GroupGenerator_Class ;
-#   v-s:objectGroupGeneratorValue v-s:Person ;
-# .
+v-s:GG_OrganizationStructure
+  rdf:type v-s:GroupGenerator ;
+  v-s:authClass v-s:Organization ;
+  v-s:authClass v-s:Department ;
+  v-s:authClass v-s:Position ;
+  v-s:authGroupFunction """
+return veda.Util.getPropertyChain(this, "v-s:parentUnit");
+  """;
+  rdfs:label "Auth group generator: put organization unit to parent unit group" ;
+.
+
+v-s:GG_PersonToAllUsersGroup
+  rdf:type v-s:GroupGenerator ;
+  v-s:authClass v-s:Person ;
+  v-s:authGroupFunction """
+return ( this["@"] !== "cfg:Guest" ? "cfg:AllUsersGroup" : undefined );
+  """;
+  rdfs:label "Auth group generator: put person to cfg:AllUsersGroup (except for cfg:Guest)" ;
+.
 
 # Обработка v-s:ClassAuthorized ----------------------------------------
 
@@ -745,7 +832,7 @@ cfg:Event_7
  * super_classes = super classes of the document.
  */
 
-if (parent_document_id && parent_document_id === document['@']) {
+if (parent_document_id && parent_document_id === document["@"]) {
   // print("Not first class event. Exit.");
   return;
 }
@@ -754,17 +841,19 @@ var doc_uri = document["@"],
   _classes = veda.Util.getUris( document["rdf:type"] );
 
 _classes.map(function (class_uri) {
-  var class_group_uri = class_uri + '_group', // uri группы индивидов класса
-      uri = 'd:membership_' + doc_uri.split(':').join('_') + '_' + class_group_uri.split(':').join('_');
+  var class_group_uri = class_uri + "_group", // uri группы индивидов класса
+      uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + class_group_uri.split(":").join("_");
 
   var membership = {
-    '@' : uri,
-    'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-    'v-s:memberOf' : veda.Util.newUri(class_group_uri),
-    'v-s:resource' : veda.Util.newUri(doc_uri),
-    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_7')
+    "@" : uri,
+    "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+    "v-s:memberOf" : veda.Util.newUri(class_group_uri),
+    "v-s:resource" : veda.Util.newUri(doc_uri),
+    "rdfs:comment" : veda.Util.newStr("создано cfg:Event_7"),
+    "v-s:creator": veda.Util.newUri("cfg:Event_7"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
-  put_individual (ticket, membership, _event_id);
+  put_individual (ticket, membership);
 });
   """ ;
 .
@@ -793,7 +882,7 @@ if (parent_script_id) {
   return;
 }
 
-if (parent_document_id && parent_document_id === document['@']) {
+if (parent_document_id && parent_document_id === document["@"]) {
   // print("Not first class event. Exit.");
   return;
 }
@@ -806,12 +895,14 @@ var _class = document,
 
 if ( !class_group ) {
   var class_group = {
-    '@' : class_group_uri,
-    'rdf:type'     : veda.Util.newUri('v-s:Group'),
-    'rdfs:label' : veda.Util.newStr("Группа индивидов класса " + class_uri),
-    'rdfs:comment' : veda.Util.newStr('создано cfg:Event_8')
+    "@" : class_group_uri,
+    "rdf:type"     : veda.Util.newUri("v-s:Group"),
+    "rdfs:label" : veda.Util.newStr("Группа индивидов класса " + class_uri),
+    "rdfs:comment" : veda.Util.newStr("создано cfg:Event_8"),
+    "v-s:creator": veda.Util.newUri("cfg:Event_8"),
+    "v-s:created": veda.Util.newDate(new Date())
   };
-  put_individual (ticket, class_group, _event_id);
+  put_individual (ticket, class_group);
   //print("cfg:Event_8 class group", class_group_uri);
 }
 
@@ -825,64 +916,66 @@ _super_classes.map(function (super_uri) {
   }
 
   // class memberOf superclass
-  var uri = 'd:membership_' + class_uri.split(':').join('_') + '_' + super_uri.split(':').join('_'),
+  var uri = "d:membership_" + class_uri.split(":").join("_") + "_" + super_uri.split(":").join("_"),
     membership = get_individual(ticket, uri);
   if (!membership) {
     membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:memberOf' : veda.Util.newUri(super_uri),
-      'v-s:resource' : veda.Util.newUri(class_uri),
-      'rdfs:comment' : veda.Util.newStr('1. создано cfg:Event_8')
+      "@" : uri,
+      "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+      "v-s:memberOf" : veda.Util.newUri(super_uri),
+      "v-s:resource" : veda.Util.newUri(class_uri),
+      "rdfs:comment" : veda.Util.newStr("1. создано cfg:Event_8"),
+      "v-s:creator": veda.Util.newUri("cfg:Event_8"),
+      "v-s:created": veda.Util.newDate(new Date())
     }
-    put_individual (ticket, membership, _event_id);
-    //print('cfg:Event_8 membership (class -> superclass)', uri);
+    put_individual (ticket, membership);
+    //print("cfg:Event_8 membership (class -> superclass)", uri);
   }
 
   // class_group memberOf superclass_group
   var super_group_uri = super_uri + "_group",
-    uri = 'd:membership_' + class_group_uri.split(':').join('_') + '_' + super_group_uri.split(':').join('_'),
+    uri = "d:membership_" + class_group_uri.split(":").join("_") + "_" + super_group_uri.split(":").join("_"),
     membership = get_individual(ticket, uri);
 
   if (!membership) {
     membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:memberOf' : veda.Util.newUri(super_group_uri),
-      'v-s:resource' : veda.Util.newUri(class_group_uri),
-      'rdfs:comment' : veda.Util.newStr('2. создано cfg:Event_8')
+      "@" : uri,
+      "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+      "v-s:memberOf" : veda.Util.newUri(super_group_uri),
+      "v-s:resource" : veda.Util.newUri(class_group_uri),
+      "rdfs:comment" : veda.Util.newStr("2. создано cfg:Event_8"),
+      "v-s:creator": veda.Util.newUri("cfg:Event_8"),
+      "v-s:created": veda.Util.newDate(new Date())
     };
-    put_individual (ticket, membership, _event_id);
+    put_individual (ticket, membership);
   }
-  //print('cfg:Event_8 membership', uri);
+  //print("cfg:Event_8 membership", uri);
 });
   """ ;
 .
 
 # ----------------------------------------------------------------------
 
-# Сделал первый подход к мандатам (автоматическое распределение индивидов по авторизационным группам).
-#
-# В принципе получается универсальный инструмент.
-# Хочу перевести на него наши существующие скрипты по созданию групп и включению в них индивидов (например, группа индивидов классов, иерархия групп индивидов классов в соответствии с  иерархией классов, иерархия групп орг. структуры).
+# Механизм автоматического распределения индивидов по авторизационным группам.
+# Является надстройкой над уже существующей системой авторизации.
 #
 # Работает так:
-# 1) Есть скрипт, обрабатывающий объекты класса v-s:ClassAuthorized (просто для теста, от него наследуется v-s:UserThing).
+# 1) Есть скрипт, обрабатывающий объекты класса v-s:GroupAuthorized (от него наследуется v-s:UserThing).
 # 2) Скрипт ведет в инстансе JsVm список всех существующих генераторов групп авторизации.
 # 3) Для каждого индивида пойманного скриптом проверяется наличие генератора. Проверка делается для класса и всех суперклассов индивида. Подходящие генераторы выполняются по отношению к индивиду.
 # 4) Каждый генератор описывает:
-#   - целевой класс, для которого выполняется генератор;
-#   - целевое свойство (для распределение по значению свойства индивида).
-#   - целевое выражение - скрипт, который должен вернуть произвольное значение на основе индивида.
-#   - целевое значение - если указано, то производится проверка на соответствие целевого значения и значения целевого свойства или целевого выражения. Если значения совпадают, объект помещается в соответствующую группу.
-# Целевое свойство и целевое выражение взаимно исключающие атрибуты, приоритет имеет целевое свойство.
-# 5) Задача генератора - вычислить целевое значение, на основании которого будет вычислена существующая авторизационная группа или создана новая. Таким образом количество групп авторизации порождаемое генератором равно количеству уникальных целевых значений.
-# 6) Uri Авторизационной группы вычисляется так:
-# "d:grp-" + Sha256.hash(generator_uri + " " value).substr(32)
-# 7) Объект добавляется в вычисленную (созданную) группу.
-# Uri Записи о включении в группу вычисляется так:
+#   - Целевой класс, для которого выполняется генератор.
+#   - Целевое свойство (для распределения по значению свойства индивида). Внутри преобразуется в функцию вычисления целевого значения.
+#   - Функция вычисления целевого значения - тело функции, которая должен вернуть произвольное значение на основе индивида. Может возвращать массив значений.
+#   - Целевое значение - если указано, то производится проверка на соответствие целевого значения и результата функции вычисления целевого значения. Если значения совпадают, объект помещается в соответствующую группу.
+#   - Функция вычисления группы - если указано, то результат этой функции принимается в качестве URI группы. Объект помещается в вычисленную группу. Функция может возвращать массив идентификаторов групп.
+#   - Признак необходимости сохранения членства в группе при удалении объекта. Если этот признак установлен, то при удалении объекта его членство в группах вычисленных генератором сохраняется.
+# Целевое свойство, функция вычисления целевого значения и функция вычисления группы взаимно исключающие атрибуты, приоритет имеет целевое свойство, затем функция вычисления целевого значения, затем функция вычисления группы.
+# 5) Задача генератора - для обрабатываемого индивида вычислить целевое значение, на основании которого будет сформирован URI авторизационной группы или непосредственно вычислить URI авторизационной группы.
+# 6) URI авторизационной при вычислении целевого значения формируется так:
+# "d:grp-" + Sha256.hash(generator_uri + " " + value).substr(32)
+# 7) Объект добавляется в вычисленную группу. Если группа с вычисленным URI не существует, она будет создана.
+# 8) URI Записи о включении в группу вычисляется так:
 # "d:mem-" + Sha256.hash(object_uri + " " + group_uri).substring(32)
-# 8) Права можно выдавать традиционным способом - зная uri группы объекта и субъекта, создать запись о правах.
-# 9) Или создавать генераторы прав, где указываются не группы субъекта и объекта, а их генераторы и соответствующие целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе генераторов прав создаются обычные записи о правах (1 к 1).
-#
-# Таким образом, предлагаемый механизм является надстройкой над уже существующей системой авторизации и фактически повторяет возможности мандатов в СЭД.
+# 9) Права можно выдавать традиционным способом - зная URI групп объекта и субъекта, создать запись о правах.
+# 10) Или создавать генераторы прав, где указываются не группы субъекта и объекта, а их генераторы и соответствующие целевые значения. Это позволит не вычислять вручную uri групп для прав. На основе генераторов прав создаются обычные записи о правах (1 к 1).

@@ -45,7 +45,7 @@ v-s:Contacts
   rdf:type v-s:ContactsFunction ;
   rdfs:label "Контакты"@ru ;
   rdfs:label "Contacts"@en ;
-  rdfs:comment "Оранизационная структура"@ru ;
+  rdfs:comment "Организационная структура"@ru ;
   rdfs:comment "Organization chart"@en ;
   v-ui:hasTemplate v-s:ContactsTemplate ;
 .

@@ -242,9 +242,9 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
     int[ string ] key2slot;
     rc = ResultCode.InternalServerError;
 
+    int idx = 0;
     try
     {
-        int idx = 0;
         foreach (record; csvReader!(Tuple!(string, int))(data))
         {
             if (record.length != 2)
@@ -263,7 +263,7 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
     }
     catch (Throwable tr)
     {
-        stderr.writeln("ERR! key2slot err=", tr.msg);
+        stderr.writeln("ERR! key2slot, row=%d, err=", idx, tr.msg);
         rc = ResultCode.UnprocessableEntity;
     }
 

@@ -1205,18 +1205,34 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
         if (cmd == INDV_OP.REMOVE)
         {
-            prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
-
-            new_state = prev_indv.serialize();
-            if (new_state.length > max_size_of_individual)
+            if (prev_state !is null)
             {
-                res.result = ResultCode.SizeTooLarge;
-                return res;
-            }
+                prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
-            immutable TransactionItem ti =
-                immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto, assigned_subsystems);
+                new_state = prev_indv.serialize();
+                if (new_state.length > max_size_of_individual)
+                {
+                    res.result = ResultCode.SizeTooLarge;
+                    return res;
+                }
+
+                immutable TransactionItem ti =
+                    immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
+                                              event_id, is_acl_element, is_onto, assigned_subsystems);
+
+
+                if (tnx.is_autocommit)
+                {
+                    res.result =
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                                 res.op_id);
+                }
+                else
+                    tnx.add_immutable(ti);
+            }
+            else
+                res.result = ResultCode.Ok;
+
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
@@ -1224,10 +1240,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             if (tnx.is_autocommit)
             {
-                res.result =
-                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                             res.op_id);
-
                 if (res.result == ResultCode.Ok)
                 {
                     res.result =
@@ -1237,7 +1249,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             }
             else
             {
-                tnx.add_immutable(ti);
                 tnx.add_immutable(ti1);
             }
         }

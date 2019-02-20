@@ -246,7 +246,7 @@ cfg:AdministratorAccount
   rdf:type v-s:Account ;
   v-s:author cfg:VedaSystem ;
   v-s:login "admin" ;
-  v-s:password "4d1af0e10dab5fe07ae8d23bad5650b46804fb110cfb92f119213bc86aa03d34" ;
+  v-s:usesCredential cfg:AdministratorAccount-crdt ;
   v-s:owner cfg:Administrator ;
   rdfs:label "Администратор. Учетная запись"@ru ;
   rdfs:label "Administrator. Account"@en ;
@@ -384,15 +384,15 @@ cfg:Permission_3
   rdfs:label "Permission to read ontology individuals for all users"@en ;
 .
 
-cfg:Permission_4
-  rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
-  v-s:permissionSubject cfg:AllUsersGroup ;
-  v-s:permissionObject v-s:OrganizationUnit_group ;
-  v-s:canRead "true"^^xsd:boolean ;
-  rdfs:label "Разрешение на чтение орг. структуры для всех пользователей"@ru ;
-  rdfs:label "Permission to read org. structure individuals for all users"@en ;
-.
+#cfg:Permission_4
+  #rdf:type v-s:PermissionStatement ;
+  #v-s:author cfg:VedaSystem ;
+  #v-s:permissionSubject cfg:AllUsersGroup ;
+  #v-s:permissionObject v-s:OrganizationUnit_group ;
+  #v-s:canRead "true"^^xsd:boolean ;
+  #rdfs:label "Разрешение на чтение орг. структуры для всех пользователей"@ru ;
+  #rdfs:label "Permission to read org. structure individuals for all users"@en ;
+#.
 
 cfg:Permission_5
   rdf:type v-s:PermissionStatement ;
@@ -680,13 +680,10 @@ if (super_classes.indexOf("v-s:Journaling") >= 0) {
 cfg:Event_4
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
-  rdfs:comment "Скрипт включает единицу орг. структуры в группу родительской единицы. Включает персону в группу должности." ;
-  v-s:triggerByType v-s:Organization ;
-  v-s:triggerByType v-s:Department ;
-  v-s:triggerByType v-s:Position ;
+  rdfs:label "Скрипт включает персону в группу должности" ;
+  rdfs:comment "Скрипт включает персону в группу должности при сохранении назначения. Если назначение удаляется, включение персоны в группу должности также удаляется." ;
   v-s:triggerByType v-s:Appointment ;
-  v-s:preventByType v-s:Version;
+  v-s:preventByType v-s:Version ;
   v-s:script """
 /* Available variables:
  * ticket = superuser ticket
@@ -699,56 +696,32 @@ cfg:Event_4
  * super_classes = super classes of the document.
  */
 
-var doc_uri = document['@'],
-    deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" });
+var doc_uri = document["@"],
+    deleted = veda.Util.hasValue(document, "v-s:deleted", { data: true, type: "Boolean" }),
+    person_uri = veda.Util.getUri(document["v-s:employee"]),
+    position_uri = veda.Util.getUri(document["v-s:occupation"]);
 
-if ( veda.Util.hasValue(document, "v-s:parentUnit") ) {
-  var parents = veda.Util.getUris( document["v-s:parentUnit"] );
-  parents.map(function (parent_uri) {
-    var uri = "d:membership_" + doc_uri.split(":").join("_") + "_" + parent_uri.split(":").join("_");
-    if (deleted) {
-      remove_individual(ticket, uri, _event_id);
-      //print("membership removed", uri);
-    } else {
-      var membership = {
-        '@' : uri,
-        'rdf:type'     : veda.Util.newUri("v-s:Membership"),
-        'v-s:resource' : veda.Util.newUri(doc_uri),
-        'v-s:memberOf' : veda.Util.newUri(parent_uri),
-        'rdfs:comment' : veda.Util.newStr("выдан cfg:Event_4")
-      };
-      put_individual (ticket, membership, _event_id);
-      //print("membership added", uri);
-    }
-  });
-}
+if (!person_uri || !position_uri) return;
 
-if ( veda.Util.hasValue(document, "rdf:type", { data: "v-s:Appointment", type: "Uri" }) ) {
-  var person_uri = veda.Util.getUri(document['v-s:employee']),
-      position_uri = veda.Util.getUri(document['v-s:occupation']);
-
-  if (!person_uri || !position_uri) return;
-
-  var uri = 'd:membership_' + person_uri.split(':').join('_') + '_' + position_uri.split(':').join('_');
-  if (deleted) {
-    remove_individual(ticket, uri, _event_id);
-    //print("membership removed", uri);
-  } else {
-    var membership = {
-      '@' : uri,
-      'rdf:type'     : veda.Util.newUri('v-s:Membership'),
-      'v-s:resource' : veda.Util.newUri(person_uri),
-      'v-s:memberOf' : veda.Util.newUri(position_uri),
-      'rdfs:comment' : veda.Util.newStr('создано автоматически в обработчике cfg:Event_4'),
-    };
-    put_individual (ticket, membership, _event_id);
-    //print("membership added", uri);
-  }
+var uri = "d:membership_" + person_uri.split(":").join("_") + "_" + position_uri.split(":").join("_");
+var membership = get_individual(ticket, uri);
+if (deleted && membership) {
+  remove_individual(ticket, uri);
+} else (!deleted && !membership) {
+  membership = {
+    "@" : uri,
+    "rdf:type"     : veda.Util.newUri("v-s:Membership"),
+    "v-s:resource" : veda.Util.newUri(person_uri),
+    "v-s:memberOf" : veda.Util.newUri(position_uri),
+    "rdfs:comment" : veda.Util.newStr("создано автоматически в обработчике cfg:Event_4"),
+  };
+  put_individual (ticket, membership);
 }
   """ ;
 .
 
 cfg:Event_5
+  v-s:disabled true ;
   rdf:type v-s:Event ;
   v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;

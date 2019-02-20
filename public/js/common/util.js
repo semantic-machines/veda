@@ -627,6 +627,16 @@ veda.Module(function (veda) { "use strict";
     return res;
   };
 
+  veda.Util.getValues = function (property_value) {
+    var res = [];
+    if (property_value) {
+      for (var i in property_value) {
+        res.push(property_value[i].data);
+      }
+    }
+    return res;
+  };
+
   veda.Util.getUri = function (property_value) {
     if (property_value && property_value.length > 0) {
       return property_value[0].data;

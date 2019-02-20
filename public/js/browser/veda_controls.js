@@ -42,15 +42,17 @@
         var field = input[0];
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
-        try {
-          var start_shift = field.selectionStart - field.value.length;
-          var end_shift = field.selectionEnd - field.value.length;
-          field.value = value;
-          field.selectionStart = value.length + start_shift;
-          field.selectionEnd = value.length + end_shift;
-        } catch (ex) {
-          field.value = value;
-          console.log("selectionStart/End error:", property_uri, value, typeof value);
+        if (field.value != value) {
+          try {
+            var start_shift = field.selectionStart - field.value.length;
+            var end_shift = field.selectionEnd - field.value.length;
+            field.value = value;
+            field.selectionStart = value.length + start_shift;
+            field.selectionEnd = value.length + end_shift;
+          } catch (ex) {
+            field.value = value;
+            console.log("selectionStart/End error:", property_uri, value, typeof value);
+          }
         }
       }
     }
@@ -540,7 +542,7 @@
         var that = this;
         var lang = this.lang;
         individual.get(property_uri).forEach(function (value) {
-          if ( value.language === lang || !value.language ) {
+          if ( value.language === lang || !value.language && that.value != value) {
             try {
               if (that === document.activeElement) {
                 var start_shift = that.selectionStart - that.value.length;
@@ -1956,7 +1958,9 @@
       var suggestions = $(".suggestions", control);
       var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
-        if (dblTimeout) {
+        if (!e.originalEvent){
+          clickHandler(e);
+        } else if (dblTimeout) {
           dblclickHandler(e);
         } else {
           clickHandler(e);
@@ -2018,7 +2022,11 @@
 
       var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
-          fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
+          var rendered = renderTemplate( individual.get(rel_uri)[0]);
+          var value = fulltext.val();
+          if (value != rendered) {
+            fulltext.val(rendered);
+          }
         } else if ( isSingle ) {
           fulltext.val("");
         }
