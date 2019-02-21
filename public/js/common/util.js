@@ -627,7 +627,7 @@ veda.Module(function (veda) { "use strict";
     return res;
   };
 
-  veda.Util.getValues = function (property_value) {
+  veda.Util.getStrings = function (property_value) {
     var res = [];
     if (property_value) {
       for (var i in property_value) {
