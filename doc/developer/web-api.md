@@ -130,24 +130,51 @@
 | **Error Response**   | **Code:** 473 or 500                                         |
 | **Sample Call**      | **Request:**  <br />`{ ticket:"f04f82a4-a7c2-4545-ba6c-b20f7022ca5c", individual:{"@":"v-s:Welcome", "rdfs:comment":[{data:"Приветствуем!", type:"String"}]}, assigned_subsystems:0, prepare_events:true, event_id:"", transaction_id:"" }` |
 
+
+
+|                      | Get access rights on uri                                     |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /get_rights                                                  |
+|                      | GET                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]`  <br />       |
+| **Success Response** | **Code:** 200 <br />**Sample content:** `{"@":"_", "rdf:type":[{data:"v-s:PermissionStatement", type:"Uri"}], "v-s:canCreate":[{data:true, type:"Boolean"}],"v-s:canDelete":[{data:true, type:"Boolean"}], "v-s:canRead":[{data:true, type:"Boolean"}], "v-s:canUpdate":[{data:true, type:"Boolean"}]}` |
+| **Error Response**   | **Code:**  500                                               |
+| **Sample Call**      | `/get_rights?ticket=b4f99ee5-c1d2-4f0c-9a14-30f6fd7e9f5c&uri=v-s:Welcome` |
+
+
+
+|                      | Get origin of access rights on uri                           |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /get_rights_origin                                           |
+|                      | GET                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]`               |
+| **Success Response** | **Code:** 200<br />**Sample content:** `[{"@": "_", "rdf:type": [{data: "v-s:PermissionStatement", type: "Uri"}], "v-s:canRead": [{data:true, type: "Boolean"}], "v-s:permissionObject": [{data: "v-s:AllResourcesGroup", type: "Uri"}], "v-s:permissionSubject": [{data: "cfg:SuperUser", type: "Uri"}]},{"@": "_", "rdf:type": [{data: "v-s:PermissionStatement", type: "Uri"}], "v-s:canUpdate": [{data:true,type: "Boolean"}], "v-s:permissionObject": [{data: "v-s:AllResourcesGroup", type: "Uri"}], "v-s:permissionSubject": [{data: "cfg:SuperUser", type: "Uri"}]},{"@": "_", "rdf:type": [{data: "v-s:PermissionStatement", type: "Uri"}], "rdfs:comment": [{data: "1 authorize uri=v-s:Welcome, user=cfg:Administrator, request_access=C R U D \n2 calc_bits=C , res=C \n3 OBJECT\n4 SUBJECT-\u003ecfg:SuperUser\n5 calc_bits=R , res=C R \n6 OBJECT\n7 SUBJECT\n8 calc_bits=U , res=C R U \n9 OBJECT\n10 SUBJECT\n11 calc_bits=D , res=C R U D \n12 OBJECT\n13 SUBJECT\n14 result: uri=v-s:Welcome, user=cfg:Administrator, request=C R U D , answer=C R U D \n\n", "lang": "NONE",type: "String"}], "v-s:permissionSubject": [{data: "?", type: "Uri"}]}` |
+| **Error Response**   | **Code:**  500                                               |
+| **Sample Call**      | /get_rights_origin?ticket=b4f99ee5-c1d2-4f0c-9a14-30f6fd7e9f5c&uri=v-s:Welcome |
+
+
+
+|                      | Get membership of uri                                        |
+| -------------------- | ------------------------------------------------------------ |
+| **URL**              | /get_membership                                              |
+|                      | GET                                                          |
+| **Request Params**   | **Required:**  `ticket:[string], uri:[string]`               |
+| **Success Response** | **Code:** 200<br />**Sample content:** `{"@":"_", "rdf:type":[{data:"v-s:Membership", type:"Uri"}], "v-s:memberOf":[{data:"v-s:AllResourcesGroup", type:"Uri"}, {data:"v-ui:DefaultLanguage", type:"Uri"},{data:"cfg:TTLResourcesGroup", type:"Uri"}], "v-s:resource":[{data:"v-ui:DefaultLanguage", type:"Uri"}]` |
+| **Error Response**   | **Code:**  500                                               |
+| **Sample Call**      | `/get_membership?ticket=b4f99ee5-c1d2-4f0c-9a14-30f6fd7e9f5c&uri=v-ui:DefaultLanguage` |
+
+
+
+|                      | Get membership of uri                                  |
+| -------------------- | ------------------------------------------------------ |
+| **URL**              | /get_operation_state                                   |
+|                      | GET                                                    |
+| **Request Params**   | **Required:**  `module_id:[int], wait_op_id:[long]`    |
+| **Success Response** | **Code:** 200<br />**Sample content:** `12374978`      |
+| **Error Response**   | **Code:**  500                                         |
+| **Sample Call**      | `/get_operation_state?module_id=4&wait_op_id=12374976` |
+
 -------------------------------
 
 
 
-GET get_rights
-    Json get_rights(string ticket, string uri);
-
-GET get_rights_origin
-    Json[] get_rights_origin(string ticket, string uri);
-
-GET get_membership
-    Json get_membership(string ticket, string uri);
-
-GET get_operation_state
-    long get_operation_state(int module_id, long wait_op_id);
-
-GET send_to_module
-    void send_to_module(int module_id, string msg);
-
-GET flush
-    void flush(int module_id, long wait_op_id);
