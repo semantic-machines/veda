@@ -801,15 +801,15 @@ jsWorkflow.ready = jsPlumb.ready;
        *@param {Object} workflowData A workflow object to create State transitions
        */
       instance.createNetView = function(net) {
-        return net.prefetch(Infinity, 'v-wf:consistsOf', 'v-wf:hasFlow').then(function (prefetched) {
+        return net.prefetch(Infinity, 'v-wf:consistsOf', 'v-wf:hasFlow', 'v-wf:executor').then(function (prefetched) {
           net = prefetched[0];
           $('#workflow-net-name', template).text(net['rdfs:label'][0]);
-          netElements = prefetched.slice(1);
+          var netElements = prefetched.slice(1);
           // Create states
           var hasInput = false,
               hasOutput = false;
           netElements.forEach(function (element) {
-            if ( !element.hasValue('rdf:type', 'v-wf:Flow') ) {
+            if ( element.hasValue('rdf:type', 'v-wf:Task') || element.hasValue('rdf:type', 'v-wf:Condition') || element.hasValue('rdf:type', 'v-wf:InputCondition') || element.hasValue('rdf:type', 'v-wf:OutputCondition') ) {
               instance.createState(element);
             }
             hasInput = hasInput || element.hasValue('rdf:type', 'v-wf:InputCondition');
