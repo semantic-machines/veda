@@ -1024,6 +1024,7 @@ class UserModulesTool : VedaModule
     {
         //context.set_vql (new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
+        sticket = context.sys_ticket();
 
         return true;
     }
