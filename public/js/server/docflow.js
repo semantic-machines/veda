@@ -640,7 +640,7 @@ veda.Module(function (veda) { "use strict";
                       }
                       else
                       {
-                          if (!split)
+                          if (!split || split == 'v-wf:None')
                           {
                               // условия нет, выполним переход
                               var nextNetElement = get_individual(ticket, veda.Util.getUri(flowsInto));
