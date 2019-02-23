@@ -139,10 +139,10 @@ v-s:ContactsTemplate
 </div>
 <script>
   var orgTree = $("#orgTree", template);
-  
+
   var controlBlock = '<div id="controlButtons" style="float:right"><div class="btn create btn-xs btn-primary"><i class="glyphicon glyphicon-plus"></i></div><div class="btn edit btn-xs btn-default"><i class="glyphicon glyphicon-pencil"></i></div><div class="btn remove btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></div></div>';
 
-  var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';  
+  var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';
 
   var controlButtons = "";
   var appointmentButtons = "";
@@ -181,7 +181,7 @@ v-s:ContactsTemplate
         controls.append(btn);
       });
     }
-    return controls; 
+    return controls;
   }
 
   function generateAppointmentControls(targetAppointment){
@@ -252,7 +252,7 @@ v-s:ContactsTemplate
     var queryPattern = "'v-s:parentUnit'=='" + parentUri + "' && ";
 
     var queryDepartments = queryPattern + "'rdf:type'=='v-s:Department'";
-    //отображение сначала должностей как корней, с аппоинтментами внутри 
+    //отображение сначала должностей как корней, с аппоинтментами внутри
     // var queryPosition = queryPattern + "'rdf:type'=='v-s:Position'";
     // var queryAppointment = "'rdf:type'=='v-s:Appointment' && 'v-s:occupation'=='"+parentUri+"'";
     // var queryStringArray = [queryOrganization, queryDepartments, queryOrgGroup, queryPosition, queryAppointment];
@@ -261,7 +261,7 @@ v-s:ContactsTemplate
     var queryAppointment = queryPattern + "'rdf:type'=='v-s:Appointment'";
     var queryStringArray = [];
     if (parent.is('v-s:Department')) {
-      queryStringArray = [queryDepartments, queryAppointment];  
+      queryStringArray = [queryDepartments, queryAppointment];
     } else if (parent.is('v-s:OrgGroup')) {
       queryStringArray = [queryAppointment];
     } else if (parent.is('v-s:Organization')) {
@@ -270,7 +270,7 @@ v-s:ContactsTemplate
       var queryOrganization = queryPattern + "'rdf:type'=='v-s:Organization'";
       queryStringArray = [queryOrganization, querySubsidiary, queryDepartments, queryOrgGroup, queryAppointment];
     }
-    
+
     var sort = "'rdfs:label' desc";
     for (var i = 0; i< queryStringArray.length; i++) {
       var result = query({ticket: veda.ticket, query: queryStringArray[i], sort: sort}).result;
@@ -280,7 +280,7 @@ v-s:ContactsTemplate
       }
     }
     return childsUries;
-    
+
   }
 
   function getTemplate(value, currentLvl){
@@ -648,28 +648,6 @@ v-s:ContactsInUnitSearchRegistryBlank
   v-fc:targetType v-s:OrgGroup ;
 .
 
-#v-s:ContactsInUnitSearchResultTemplate
-#  rdf:type v-ui:ClassTemplate ;
-#  rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;
-#  rdfs:label "Contacts search result template"@en ;
-#  v-ui:template """
-#<div>
-#  <div class="result-container">
-#    <script>
-#      if ( individual.hasValue("rdf:type", "v-s:Appointment") ) {
-#        template.attr("data-template", "v-s:AppointmentContactTemplate");
-#      } else if ( individual.hasValue("rdf:type", "v-s:Position") ) {
-#        template.attr("data-template", "v-s:PositionContactTemplate");
-#      } else if ( individual.hasValue("rdf:type", "v-s:Department") || individual.hasValue("rdf:type", "v-s:OrgGroup") ) {
-#        template.attr("data-template", "v-s:DepartmentContactTemplate");
-#      }
-#      //# sourceURL=v-s:ContactsInUnitSearchResultTemplate_inline
-#    </script>
-#    <span about="@"></span>
-#  </div>
-#</div>
-#  """ ;
-#.
 v-s:ContactsInUnitSearchResultTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон отображения результатов поиска для контактов"@ru ;

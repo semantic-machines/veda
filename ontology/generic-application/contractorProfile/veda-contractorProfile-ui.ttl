@@ -363,7 +363,7 @@ v-s:ContractorProfileTemplate
   rdfs:label "Шаблон для класса v-s:ContractorProfile"@ru ;
   rdfs:label "Template for v-s:ContractorProfile class"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var props = [
     "v-s:attachOrganizationProperties",
     "v-s:attachCertificateRegistrationLegal",
@@ -444,7 +444,7 @@ v-s:ContractorProfileTemplate
           <div>
             <veda-control  property="v-s:isOrganizationOk" data-type="boolean"></veda-control>
           </div>
-          <script>
+          <script><!--async-->
               if( individual.hasValue("v-s:isOrganizationOk", true) ) {
                 template.closest("tr").addClass("success");
               } else if ( individual.hasValue("v-s:isOrganizationOk", false) ) {
@@ -551,7 +551,7 @@ v-s:ContractorProfileTemplate
         </td>
         <td><span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span> <span about="@" property="v-s:created"></span></td>
       </tr>
-      <script>
+      <script><!--async-->
         var fn = individual["v-s:fileName"][0],
           idx = fn.lastIndexOf("."),
           ext = fn.substr(idx + 1);
@@ -569,7 +569,7 @@ v-s:ContractorProfileTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
   </div>
 </div>
-<script>
+<script><!--async-->
   $("#add-contractorCategoryRequest", template).click(function () {
     var _class = new veda.IndividualModel("v-s:ContractorCategoryRequest"),
         request = new veda.IndividualModel(),

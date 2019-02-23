@@ -213,7 +213,7 @@ v-ui:CommonOntologyTemplate
   rdfs:label "Общий шаблон онтологии"@ru ;
   rdfs:label "Common ontology template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   if ( this.isNew() ) {
     $("#uri", template)
       .prop("placeholder", this.id)
@@ -1136,7 +1136,7 @@ v-ui:ModuleTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="cancel delete"></span>
   </div>
 </div>
-<script>
+<script><!--async-->
   $("#copy-log", template).click(e=>{
     let temp = $("<textarea>");
     $(".modal").append(temp);

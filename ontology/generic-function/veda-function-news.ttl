@@ -129,7 +129,7 @@ v-s:NewsIndicatorTemplate
   rdfs:label "Шаблон индикатора новостей"@ru ;
   rdfs:label "News indicator template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.tooltip({
     container: template,
     placement: "bottom",
@@ -215,7 +215,7 @@ v-s:NewsSearchBlankTemplate
 <div>
   <veda-control property="*" data-type="string"></veda-control>
 </div>
-<script>
+<script><!--async-->
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;

@@ -149,9 +149,6 @@ v-s:GroupGeneratorTemplate
   rdfs:label "Шаблон для класса v-s:GroupGenerator"@ru ;
   rdfs:label "Template for v-s:GroupGenerator class"@en ;
   v-ui:template """
-<script>
-  //# sourceURL=v-s:GroupGeneratorTemplate_pre
-</script>
 <div class="container sheet">
   <h2 about="v-s:GroupGenerator" property="rdfs:label"></h2>
   <hr>
@@ -193,7 +190,7 @@ v-s:GroupGeneratorTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script>
+<script><!--async-->
   individual.on("propertyModified", handler);
   template.one("remove", function () {
     individual.off("propertyModified", handler);
@@ -223,9 +220,6 @@ v-s:PermissionGeneratorTemplate
   rdfs:label "Шаблон для класса v-s:PermissionGenerator"@ru ;
   rdfs:label "Template for v-s:PermissionGenerator class"@en ;
   v-ui:template """
-<script>
-  //# sourceURL=v-s:PermissionGeneratorTemplate_pre
-</script>
 <div class="container sheet">
   <h2 about="v-s:PermissionGenerator" property="rdfs:label"></h2>
   <hr>
@@ -296,9 +290,6 @@ v-s:PermissionGeneratorTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script>
-  //# sourceURL=v-s:PermissionGeneratorTemplate_post
-</script>
 """ ;
 .
 
@@ -415,7 +406,7 @@ v-s:PermissionGeneratorRegistryResultTemplate
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
     </tr>
-    <script>
+    <script><!--async-->
       var rights = "";
       rights += (this.hasValue("v-s:canCreate", true) ? "C" : "");
       rights += (this.hasValue("v-s:canRead",   true) ? "R" : "");

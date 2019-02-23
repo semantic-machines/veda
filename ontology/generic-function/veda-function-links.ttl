@@ -147,7 +147,7 @@ v-s:LinksTemplate
   rdfs:label "Шаблон для отображения связей документа"@ru ;
   rdfs:label "Template to view document links"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.one("remove", function () {
     individual.activeTab = $("#links-tabs li.active a", template).attr("href");
   });
@@ -194,7 +194,7 @@ v-s:LinksListTemplate
   rdfs:comment "Список"@ru ;
   rdfs:label "List"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var isMutual = container.attr("data-mutual") === "true";
   var rowTmpl = $("tbody", template).html();
 
@@ -218,12 +218,10 @@ v-s:LinksListTemplate
       Link.one("afterSave", function () {
         newRow.remove();
       });
-    });
-    setTimeout(function () {
       if ( individual.isNew() ) {
         newRow.find(".action#save").hide();
       }
-    }, 10);
+    });
   });
 
   individual.on("afterSave", saveHandler);
@@ -261,7 +259,7 @@ v-s:LinksListTemplate
       </tr>
     </thead>
     <tbody about="@" rel="v-s:hasLink" data-embedded="true">
-      <script>
+      <script><!--async-->
         var displayedDoc = container.closest("[resource]").attr("resource");
         if ( this.hasValue("v-s:from", displayedDoc) ) {
           $(".link-from", template).remove();
@@ -305,9 +303,6 @@ v-s:LinksTreeTemplate
   rdfs:comment "Дерево"@ru ;
   rdfs:label "Tree"@en ;
   v-ui:template """
-<script>
-//# sourceURL=v-s:LinksTreeTemplate_pre
-</script>
 <div>
   <style>
     .links-tree ul {
@@ -330,7 +325,7 @@ v-s:LinksTreeRecursiveTemplate
   rdfs:comment "Дерево"@ru ;
   rdfs:label "Tree"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var type = individual["rdf:type"][0];
   var linksTree;
   if ( !type.hasValue("v-s:hasLinksTree") ) {
@@ -454,7 +449,7 @@ v-s:LinksTreeRecursiveTemplate
       return "'" + inPropertyUri + "'==='" + individual.id + "'";
     }).join("||");
     var q = allowedTypeUriQuery + " && (" + inPropertiesUrisQuery + ")";
-    return !inPropertiesUrisQuery || allowedTypeUri === "v-s:Link" ? Promise.resolve([]) : query({
+    return !inPropertiesUrisQuery || allowedTypeUri === "v-s:Link" ? Promise.resolve([]) : veda.Backend.query({
       ticket: veda.ticket,
       query: q,
       limit: 500,
@@ -481,9 +476,6 @@ v-s:LinksTreeRecursiveTemplate
     </ul>
   </li>
 </ul>
-<script>
-//# sourceURL=v-s:LinksTreeRecursiveTemplate_post
-</script>
 """ ;
 .
 
@@ -492,22 +484,22 @@ v-s:TrimmedLinkTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
-  <script>
-    var re = new RegExp(".*?:");
-    var label = template.text();
-    template.attr("title", label);
-    if (label.length > 70) {
-      label = label.replace(re, function (typeName) {
-        return typeName.split(" ").reduce(function (abbr, word) {
-          return abbr += word.charAt(0);
-        }, "").toUpperCase() + ":";
-      });
-      label = label.substring(0, 70) + "...";
-      template.text(label);
-    }
-    //# sourceURL=v-s:TrimmedLinkTemplate_post
-  </script>
+<a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
+<script><!--async-->
+  var re = new RegExp(".*?:");
+  var label = template.text();
+  template.attr("title", label);
+  if (label.length > 70) {
+    label = label.replace(re, function (typeName) {
+      return typeName.split(" ").reduce(function (abbr, word) {
+        return abbr += word.charAt(0);
+      }, "").toUpperCase() + ":";
+    });
+    label = label.substring(0, 70) + "...";
+    template.text(label);
+  }
+  //# sourceURL=v-s:TrimmedLinkTemplate_post
+</script>
   """ ;
 .
 
@@ -518,10 +510,6 @@ v-s:LinksGraphTemplate
   rdfs:comment "Граф"@ru ;
   rdfs:label "Graph"@en ;
   v-ui:template """
-<script>
-
-//# sourceURL=v-s:LinksGraphTemplate_pre
-</script>
 <div about="@" data-template="v-ui:Graph"></div>
 """ ;
 .

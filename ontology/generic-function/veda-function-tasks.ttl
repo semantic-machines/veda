@@ -260,7 +260,7 @@ v-ft:FunctionTasksIndicatorTemplate
   rdfs:label "Шаблон индикатора для v-ft:FunctionInbox"@ru ;
   rdfs:label "V-ft:FunctionInbox indicator template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
   $("#counter", template).attr("about", counter_uri);*/
   template.tooltip({
@@ -433,7 +433,7 @@ v-ft:InboxTemplate
   rdfs:label "Шаблон бланка задачи"@ru ;
   rdfs:label "Task blank template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.one("remove", function () {
     if ( individual["v-fs:cursor"][0] >= individual["v-fs:top"][0] ) {
       individual["v-fs:top"] = individual["v-fs:cursor"];
@@ -450,7 +450,7 @@ v-ft:CompletedTaskBlankTemplate
   rdfs:label "Шаблон бланка выполненных задачи"@ru ;
   rdfs:label "Complete task blank template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
   $("#folder", template).attr("about", folder);
   $("#box-tabs", template)
@@ -497,7 +497,7 @@ v-ft:CompletedTaskBlankTemplate
     </div>
   </div>
 </div>
-<script>
+<script><!--async-->
   if (individual.advanced) {
     $(".advanced-search", template).removeClass("hidden");
   }
@@ -520,7 +520,7 @@ v-ft:TaskBlankTemplate
   rdfs:label "Шаблон бланка задачи"@ru ;
   rdfs:label "Task blank template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
   $("#folder", template).attr("about", folder);
   $("#box-tabs", template)
@@ -577,7 +577,7 @@ v-ft:TaskBlankTemplate
     </div>
   </div>
 </div>
-<script>
+<script><!--async-->
   if (individual.advanced) {
     $(".advanced-search", template).removeClass("hidden");
   }
@@ -600,7 +600,7 @@ v-ft:ActorFilterTemplate
   rdfs:label "Шаблон фильтра актора"@ru ;
   rdfs:label "Actor filter template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
   var actor_property = folder === "v-ft:Outbox" ? "v-wf:from" : "v-wf:to";
   var counter_prop = folder === "v-ft:Inbox" ? "v-ft:inboxCount" :
@@ -733,7 +733,7 @@ v-ft:CompletedResultTemplate
         <td>
           <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
           <div about="@" rel="v-wf:redirect_from_task">
-            <script>
+            <script><!--async-->
               if ( !individual.hasValue("v-wf:to") ) {
                 template.empty();
               }
@@ -766,7 +766,7 @@ v-ft:CompletedResultTemplate
           <div rel="v-s:creator" data-template="v-ui:LabelTemplate"></div>
         </td>
       </tr>
-      <script>
+      <script><!--async-->
         // Child task indicator
         if ( individual.hasValue("v-wf:hasChildTask") ) {
           template.find(".child-task")
@@ -808,7 +808,7 @@ v-ft:TaskResultTemplate
         <td>
           <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
           <div about="@" rel="v-wf:redirect_from_task">
-            <script>
+            <script><!--async-->
               if ( !individual.hasValue("v-wf:to") ) {
                 template.empty();
               }
@@ -833,7 +833,7 @@ v-ft:TaskResultTemplate
         <td about="@" property="v-s:created"></td>
         <td about="@" property="v-wf:dateGiven" class="date-given"></td>
       </tr>
-      <script>
+      <script><!--async-->
         // Remove completed tasks from inbox & outbox
         var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
         var remove = (folder !== "v-ft:Completed");
@@ -945,7 +945,7 @@ v-ft:TaskRelatedTasksTemplate
   rdfs:label "Шаблон связанных задач для задачи"@ru ;
   rdfs:label "Related tasks template for task"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var relatedTasks = new veda.IndividualModel("v-ft:RelatedTasks");
   return relatedTasks.load().then(function (relatedTasks) {
     var taskId = individual.id;
