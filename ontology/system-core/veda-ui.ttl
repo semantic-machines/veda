@@ -428,7 +428,7 @@ v-ui:LanguageSwitchTemplate
 <div about="@" class="btn-group" rel="rdf:value">
   <button about="@" property="rdfs:label" class="btn btn-xs btn-default navbar-btn"></button>
 </div>
-<script>
+<script><!--async-->
   var switches = $(".btn", template);
   veda.user.preferences.on("v-ui:preferredLanguage", langHandler);
   template.one("remove", function () {
@@ -474,7 +474,7 @@ v-ui:FullWidthSwitchTemplate
   rdfs:label "Шаблон переключения режима на всю ширину"@ru ;
   rdfs:label "Full width switch template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.click(function () {
     try {
       var value = veda.user.preferences["v-ui:fullWidth"][0];
@@ -559,7 +559,7 @@ v-ui:StandardButtonsTemplate
   rdfs:comment "Действия"@ru ;
   rdfs:comment "Actions"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   // var allButtons = "send edit save cancel delete destroy journal journal-dms task rights";
   var defaultButtons = "send edit save cancel delete journal task";
   individual.rights.then(function (rights) {
@@ -660,7 +660,7 @@ v-ui:StandardButtonsTemplate
     <span class="glyphicon glyphicon-chevron-left"></span>
   </button>
 </span>
-<script>
+<script><!--async-->
   $(".toggle-actions", template).click(function () {
     template.closest(".actions").children(":not(.toggle-actions)").toggleClass("hidden");
     var button = $(this);
@@ -731,7 +731,7 @@ v-ui:IconButtonsTemplate
   rdfs:label "Шаблон с набором стандартных кнопок"@ru ;
   rdfs:label "Template with standard buttons"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   // var allButtons = "edit save cancel delete";
   var defaultButtons = "edit save cancel delete";
   individual.rights.then(function (rights) {
@@ -750,27 +750,26 @@ v-ui:IconButtonsTemplate
     e.preventDefault();
     var action = this.id;
     if (action === "delete") {
-      var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
-      if ( !confirm(warning) ) { return; }
-    }
-    template.parent().closest("[resource]").trigger(action);
-  });
-  //# sourceURL=v-ui:IconButtonsTemplate_pre
-</script>
-<span>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Edit" type="button" class="action btn btn-xs btn-default view -edit -search glyphicon glyphicon-pencil" id="edit"></button>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Save" type="button" class="action btn btn-xs btn-success -view edit -search glyphicon glyphicon-ok" id="save"></button>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Cancel" type="button" class="action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
-  <button data-toggle="tooltip" data-placement="top" data-title="v-s:Delete" type="button" class="action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
-</span>
-<script>
-  $('[data-toggle="tooltip"]').tooltip({
-    title: function () {
-      var titleUri = $(this).data("title");
-      return new veda.IndividualModel(titleUri)["rdfs:label"].join(" ");
+      var warning = new veda.IndividualModel("v-s:AreYouSure");
+      warning.load().then(function (warning) {
+        if ( confirm( warning["rdfs:label"].join(" ") ) ) {
+          template.parent().closest("[resource]").trigger(action);
+        }
+      });
+    } else {
+      template.parent().closest("[resource]").trigger(action);
     }
   });
 
+  //# sourceURL=v-ui:IconButtonsTemplate_pre
+</script>
+<span>
+  <button title="v-s:Edit" type="button" class="action btn btn-xs btn-default view -edit -search glyphicon glyphicon-pencil" id="edit"></button>
+  <button title="v-s:Save" type="button" class="action btn btn-xs btn-success -view edit -search glyphicon glyphicon-ok" id="save"></button>
+  <button title="v-s:Cancel" type="button" class="action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
+  <button title="v-s:Delete" type="button" class="action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
+</span>
+<script><!--async-->
   // Respect validation state of parent template
   var closest = template.parent().closest("[resource]");
   closest.on("internal-validated", function (e, validation) {
@@ -801,7 +800,7 @@ v-ui:VersionTemplate
     </span>
   </p>
 </div>
-<script>
+<script><!--async-->
   setTimeout(function () {
     var renderedTemplates = $("[resource$='" + individual.id.substring(2) + "']");
     renderedTemplates.each(function () {
@@ -812,7 +811,7 @@ v-ui:VersionTemplate
         template.removeClass("hidden").prependTo(sheet.length ? sheet : renderedTemplate);
       }
     });
-  }, 100);
+  }, 300);
 </script>
 """ ;
 .
@@ -850,7 +849,7 @@ v-ui:VersionedTemplate
     </table>
   </div>
 </div>
-<script>
+<script><!--async-->
   var actual = individual["v-s:actualVersion"][0];
   if (!actual) { return; }
   var tmpl = ''
@@ -896,7 +895,7 @@ v-ui:IconPersonTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   if (individual.hasValue("v-s:hasAspect")) {
     template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
   }
@@ -993,7 +992,7 @@ v-ui:ResourceTemplate
   rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
-<script>
+<script><!--async-->
   var propСontainer = $(".properties-container", template);
   var tmpl = propСontainer.html();
   propСontainer.empty();
@@ -1050,7 +1049,7 @@ v-ui:LabelTemplate
   rdfs:label "Template with label"@en ;
   v-ui:template """
   <span class="label-template" about="@" property="rdfs:label"></span>
-  <script>
+  <script><!--async-->
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
@@ -1106,7 +1105,7 @@ v-ui:LabelTemplateWithEditLink
   <span class="label-template">
     # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
-  <script>
+  <script><!--async-->
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
@@ -1120,7 +1119,7 @@ v-ui:LabelLinkTemplate
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
   <a class="label-template" href="#/@"><span about="@" property="rdfs:label"></span></a>
-  <script>
+  <script><!--async-->
     if (!individual.hasValue("rdfs:label")) {
       template.children().first().text(individual.id);
     }
@@ -1135,7 +1134,7 @@ v-ui:IconModalTemplate
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
 <a href="#" class="glyphicon glyphicon-zoom-in"></a>
-<script>
+<script><!--async-->
   template.on("click", function (e) {
     e.preventDefault();
     var newMode = container.data("mode");
@@ -1159,10 +1158,11 @@ v-ui:IconModalTemplate
     ok.attr("disabled", "disabled");
     });
 
-    var tmpl = individual.present(cntr, undefined, newMode);
-    if (newMode === "edit") {
-      $(".actions", tmpl).remove();
-    }
+    individual.present(cntr, undefined, newMode).then(function (tmpl) {
+      if (newMode === "edit") {
+        $(".actions", tmpl).remove();
+      }
+    });
     individual.one("beforeReset", function () {
       modal.modal("hide").remove();
     });
@@ -1180,7 +1180,7 @@ v-ui:GenericModalTemplate
   rdfs:label "Шаблон отображения в модальном окне"@ru ;
   rdfs:label "Generic modal template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var lbl = $(".lbl", template);
   var labelUri = container.data("label");
   var modalTemplate = container.data("modal-template");
@@ -1205,7 +1205,7 @@ v-ui:LabelEmptyLinkTemplate
   rdfs:label "Template without class name, with label (modal)"@en ;
   v-ui:template """
 <a href="#" property="rdfs:label"></a>
-<script>
+<script><!--async-->
   if (!individual.hasValue("rdfs:label")) {
     template.text(individual.id);
   }
@@ -1218,13 +1218,13 @@ v-ui:LabelBlockLinkTemplate
   rdfs:label "Шаблон без имени класса, но с меткой, блочный"@ru ;
   rdfs:label "Template without class name, with label, blocked"@en ;
   v-ui:template """
-  <div><a id="label" href="#/@" property="rdfs:label"></a></div>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:LabelBlockLinkTemplate
-  </script>
+<div><a id="label" href="#/@" property="rdfs:label"></a></div>
+<script><!--async-->
+  if (!individual.hasValue("rdfs:label")) {
+    $("#label", template).text(individual.id);
+  }
+  //# sourceURL=v-ui:LabelBlockLinkTemplate
+</script>
   """ ;
 .
 v-ui:ClassNameLabelLinkTemplate
@@ -1232,13 +1232,13 @@ v-ui:ClassNameLabelLinkTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <a class="label-template" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
-  </script>
+<a class="label-template" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+<script><!--async-->
+  if (!individual.hasValue("rdfs:label")) {
+    $("#label", template).text(individual.id);
+  }
+  //# sourceURL=v-ui:ClassNameLabelLinkTemplate
+</script>
   """ ;
 .
 v-ui:ClassNameLabelLinkEditTemplate
@@ -1246,13 +1246,13 @@ v-ui:ClassNameLabelLinkEditTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <a class="label-template" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:ClassNameLabelLinkTemplate
-  </script>
+<a class="label-template" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
+<script><!--async-->
+  if (!individual.hasValue("rdfs:label")) {
+    $("#label", template).text(individual.id);
+  }
+  //# sourceURL=v-ui:ClassNameLabelLinkTemplate
+</script>
   """ ;
 .
 
@@ -1261,7 +1261,7 @@ v-ui:RabbitHole
   rdfs:label "Кроличья нора"@ru ;
   rdfs:label "Rabbit hole"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var defaultProperties = "v-s:backwardTarget v-s:parent";
   var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
   var name = mkName(individual);
@@ -1272,7 +1272,7 @@ v-ui:RabbitHole
       individual[property].forEach(function(prop){
         text = "<span title='" + name.title + "'>" + name.label + "</span>";
         visited = [ individual.id ];
-        var wrapper=temp.clone();
+        var wrapper = temp.clone();
         travel( prop );
         $("small", wrapper).append(text);
         template.append(wrapper);
@@ -1280,7 +1280,6 @@ v-ui:RabbitHole
       break;
     }
   }
-
 
   function travel(individual) {
     if ( visited.indexOf(individual.id) >= 0 ) {
@@ -1324,13 +1323,13 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <span class="label-template"><span about="@" property="rdf:type"></span>: <span id="label" about="@" property="rdfs:label"></span></span>
-  <script>
-    if (!individual.hasValue("rdfs:label")) {
-      $("#label", template).text(individual.id);
-    }
-    //# sourceURL=v-ui:ClassNameLabelTemplate
-  </script>
+<span class="label-template"><span about="@" property="rdf:type"></span>: <span id="label" about="@" property="rdfs:label"></span></span>
+<script><!--async-->
+  if (!individual.hasValue("rdfs:label")) {
+    $("#label", template).text(individual.id);
+  }
+  //# sourceURL=v-ui:ClassNameLabelTemplate
+</script>
   """ ;
 .
 
@@ -1670,7 +1669,7 @@ v-ui:FileTemplate
     </a>
   </div>
 </div>
-<script>
+<script><!--async-->
   var fn = individual["v-s:fileName"][0],
     idx = fn.lastIndexOf("."),
     ext = fn.substr(idx + 1);
@@ -1716,7 +1715,7 @@ v-ui:FileTemplateWithComment
     </i>
   </div>
 </div>
-<script>
+<script><!--async-->
   var fn = individual["v-s:fileName"][0];
   if (typeof fn === "string" || fn instanceof String) {
     var idx = fn.lastIndexOf("."),
@@ -1763,7 +1762,7 @@ v-ui:FileTemplateWithComment2
   </div>
   <!--/Remove-->
 </div>
-<script>
+<script><!--async-->
   var fn = individual["v-s:fileName"][0];
   if (typeof fn === "string" || fn instanceof String) {
     var idx = fn.lastIndexOf("."),
@@ -1779,7 +1778,7 @@ v-ui:ImageTemplate
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   if (individual.image) {
     template.children().attr("src", individual.image.src);
   } else {
@@ -1796,7 +1795,7 @@ v-ui:ModalImageTemplate
   rdfs:label "Image template"@en ;
   v-ui:template """
 <a class="show-modal" href="#" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></a>
-<script>
+<script><!--async-->
   if ( !individual.hasValue("v-s:thumbnail") ) {
     template.remove();
   }
@@ -1820,7 +1819,7 @@ v-ui:SimplifiedJournalTemplate
   rdfs:label "Simplified"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
-<script>
+<script><!--async-->
   var tbody = $("#tbody", template);
   var task_template = tbody.html();
   tbody.empty();
@@ -1895,7 +1894,7 @@ v-ui:SimplifiedJournalTemplate
           <td>
             <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
               <div about="@" rel="v-wf:redirect_from_task">
-                <script>
+                <script><!--async-->
                   if ( !individual.hasValue("v-wf:to") ) {
                     template.empty();
                   }
@@ -2009,7 +2008,7 @@ v-ui:JournalTemplate
   rdfs:label "Detailed"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
-<script>
+<script><!--async-->
   //individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 
   var doc_uri = this.id.replace(/.$/, "");
@@ -2082,7 +2081,7 @@ v-ui:DocumentEventTemplate
   rdfs:label "Document event template"@en ;
   v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
   v-ui:template """
-<script>
+<script><!--async-->
   if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) { template.empty(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
@@ -2124,7 +2123,7 @@ v-ui:DocumentEventTemplate
     <div class="col-md-7 col-sm-6 event-desc">
       <div about="@" rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div about="@" rel="v-wf:onProcess">
-        <script>
+        <script><!--async-->
           var href = null;
           var startForm = this.properties["v-wf:hasStartForm"];
           if (startForm) {
@@ -2163,24 +2162,31 @@ v-ui:DocumentEventTemplate
   </div>
   <div about="@" rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
-<script>
-  if (individual.hasValue("rdf:type") && individual["rdf:type"][0].id === 'v-s:ProcessStarted') {
+<script><!--async-->
+  if ( individual.hasValue("rdf:type", "v-s:ProcessStarted") ) {
     var process = individual['v-wf:onProcess'][0];
-    if ((!process.hasValue("v-wf:isStopped") || process["v-wf:isStopped"][0] === false) &&
-        (!process.hasValue("v-wf:isCompleted") || process["v-wf:isCompleted"][0] === false)) {
-      $(".stop-process", template).on("click", function (e) {
-        e.preventDefault();
-        var warn = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
-        if ( confirm(warn) ) {
-          process['v-wf:isStopped'] = [ true ];
-          process.save();
-          $(this).remove();
-        }
-      });
-    }
-    if (process.hasValue("v-wf:isStopped", true)) {
-      $(".start-process > #exp", template).trigger("click");
-    }
+    process.load().then(function (process) {
+      if (
+        (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false)) &&
+        (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
+      ) {
+        $(".stop-process", template).on("click", function (e) {
+          e.preventDefault();
+          var warn = new veda.IndividualModel("v-s:AreYouSure");
+          warn.load().then(function (warn) {
+            warn = warn["rdfs:label"].join(" ");
+            if ( confirm(warn) ) {
+              process['v-wf:isStopped'] = [ true ];
+              process.save();
+              $(this).remove();
+            }
+          });
+        });
+      }
+      if (process.hasValue("v-wf:isStopped", true)) {
+        $(".start-process > #exp", template).trigger("click");
+      }
+    });
   }
   //# sourceURL=v-ui:DocumentEventTemplate_post
 </script>
@@ -2193,7 +2199,7 @@ v-ui:PermissionsTemplate
   rdfs:label "Individual rights template"@en ;
   v-ui:forClass v-s:PermissionStatement ;
   v-ui:template """
-<script>
+<script><!--async-->
   var rightsContainer = $(".rights", template);
   var rightsTemplate = rightsContainer.html();
   rightsContainer.empty();
@@ -2571,7 +2577,7 @@ v-ui:TreeTemplate
       if (withDeleted) {
         q = "(" + q + ") || (" + q + " && 'v-s:deleted'== true )";
       }
-      query({
+      veda.Backend.query({
         ticket: veda.ticket,
         query: q,
         sort: sort,
@@ -2610,7 +2616,7 @@ v-ui:ttl
     <a id="ttl" class="disabled btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
 </div>
-<script>
+<script><!--async-->
   var list = [individual];
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
@@ -2641,7 +2647,7 @@ v-ui:json
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
-<script>
+<script><!--async-->
   var pre = $("pre", template),
       textarea = $("textarea", template),
       json = individual.properties;
@@ -2711,7 +2717,7 @@ v-ui:generic
   rdfs:label "Шаблон общий"@ru ;
   rdfs:label "Template generic"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   // Construct generic template
   var props = $("#properties", template);
   var propTmpl = props.html();
@@ -2966,78 +2972,79 @@ v-ui:Graph
     </ul>
   </div>
 </div>
-<script>
+<script><!--async-->
   function addNode (individual, opts) {
-    if ( nodes.get(individual.id) === null ) {
-      var node = {
-        id: individual.id,
-        label: individual["rdf:type"][0].toString() + String.fromCharCode(10, 13) + individual.toString(),
-        individual: individual
-      };
-      if (individual["rdf:type"][0]) {
-        switch ( individual["rdf:type"][0].id ) {
-          case "rdfs:Class" :
-          case "owl:Class" :
-            node.group = "_class";
-            break;
-          case "rdf:Property" :
-          case "owl:ObjectProperty" :
-            node.group = "objectProperty";
-            break;
-          case "owl:DatatypeProperty" :
-          case "owl:OntologyProperty" :
-          case "owl:AnnotationProperty" :
-            node.group = "datatypeProperty";
-            break;
-          case "v-ui:ClassTemplate" :
-            node.group = "template";
-            break;
-          case "v-ui:PropertySpecification" :
-          case "v-ui:DatatypePropertySpecification" :
-          case "v-ui:ObjectPropertySpecification" :
-            node.group = "specification";
-            break;
-          case "owl:Ontology" :
-            node.group = "ontology";
-            break;
-          default :
-            node.group = "individual";
-            break;
+    return individual.load().then(function (individual) {
+      if ( nodes.get(individual.id) === null ) {
+        var node = {
+          id: individual.id,
+          label: individual["rdf:type"][0].toString() + String.fromCharCode(10, 13) + individual.toString(),
+          individual: individual
+        };
+        if (individual["rdf:type"][0]) {
+          switch ( individual["rdf:type"][0].id ) {
+            case "rdfs:Class" :
+            case "owl:Class" :
+              node.group = "_class";
+              break;
+            case "rdf:Property" :
+            case "owl:ObjectProperty" :
+              node.group = "objectProperty";
+              break;
+            case "owl:DatatypeProperty" :
+            case "owl:OntologyProperty" :
+            case "owl:AnnotationProperty" :
+              node.group = "datatypeProperty";
+              break;
+            case "v-ui:ClassTemplate" :
+              node.group = "template";
+              break;
+            case "v-ui:PropertySpecification" :
+            case "v-ui:DatatypePropertySpecification" :
+            case "v-ui:ObjectPropertySpecification" :
+              node.group = "specification";
+              break;
+            case "owl:Ontology" :
+              node.group = "ontology";
+              break;
+            default :
+              node.group = "individual";
+              break;
+          }
         }
+        $.extend(node, opts);
+        nodes.add ([ node ]);
       }
-      $.extend(node, opts);
-      nodes.add ([ node ]);
-    }
+    });
   }
 
   function addOutLinks (id) {
     var individual = nodes.get(id).individual;
     Object.getOwnPropertyNames(individual.properties).map(function (property_uri) {
-      if(property_uri === "@") { return }
-      var values = individual[property_uri];
-      if (!values) return;
-      values.map(function (value) {
-        if (value instanceof veda.IndividualModel && value.id != individual.id) {
-          addNode(value);
-          var from = individual.id;
-          var to = value.id;
-          var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
-          var options = {
-            filter: function (item) {
-              return  item.from == from &&
-                  item.to == to &&
-                  item.label.toString() == label;
-            }
-          };
-          if ( !edges.get(options).length ) {
-            edges.add ([
-              {
-                from: from,
-                to: to,
-                label: label
+      if (property_uri === "@") { return; }
+      individual[property_uri].forEach(function (value) {
+        if (value instanceof veda.IndividualModel && value !== individual) {
+          addNode(value).then(function () {
+            var from = individual.id;
+            var to = value.id;
+            var label = (new veda.IndividualModel(property_uri))["rdfs:label"].join(", ");
+            var options = {
+              filter: function (item) {
+                return  item.from == from &&
+                    item.to == to &&
+                    item.label.toString() == label;
               }
-            ]);
-          }
+            };
+            if ( !edges.get(options).length ) {
+              edges.add ([
+                {
+                  from: from,
+                  to: to,
+                  label: label
+                }
+              ]);
+            }
+          });
         }
       });
     });
@@ -3046,26 +3053,31 @@ v-ui:Graph
   function addInLinks (id, queryStr) {
     var q = queryStr || "'*'=='{id}'";
     q = q.replace("{id}", id);
-    query(veda.ticket, q).result.forEach(function (uri) {
-      var res = new veda.IndividualModel(uri);
-      addNode(res);
-      var to = id;
-      var from = res.id;
-      Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
-        if (property_uri === "@") { return; }
-        if ( res.hasValue(property_uri, id) ) {
-          var label = new veda.IndividualModel(property_uri)["rdfs:label"].join(", ");
-          var options = {
-            filter: function (item) {
-              return  item.from === from &&
-                item.to === to &&
-                item.label.toString() === label;
+    veda.Backend.query(veda.ticket, q).then(function (queryResult) {
+      var uris = queryResult.result;
+      veda.Backend.get_individuals(veda.ticket, uris).then(function (individualsJSONs) {
+        individualsJSONs.forEach(function (individualJSON) {
+          var res = new veda.IndividualModel(individualJSON);
+          addNode(res);
+          var to = id;
+          var from = res.id;
+          Object.getOwnPropertyNames(res.properties).map(function (property_uri) {
+            if (property_uri === "@") { return; }
+            if ( res.hasValue(property_uri, id) ) {
+              var label = new veda.IndividualModel(property_uri)["rdfs:label"].join(", ");
+              var options = {
+                filter: function (item) {
+                  return  item.from === from &&
+                    item.to === to &&
+                    item.label.toString() === label;
+                }
+              };
+              if ( !edges.get(options).length ) {
+                edges.add([{from: from, to: to, label: label}]);
+              }
             }
-          };
-          if ( !edges.get(options).length ) {
-            edges.add([{from: from, to: to, label: label}]);
-          }
-        }
+          });
+        });
       });
     });
   }
@@ -3214,8 +3226,9 @@ v-ui:Graph
     edges: edges,
   };
 
-  addNode(root);
-  addOutLinks(root.id);
+  addNode(root).then(function () {
+    addOutLinks(root.id);
+  });
 
   var height = ( $("#copyright").offset().top - graph.offset().top - 50 ) + "px";
   var options = {
