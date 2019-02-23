@@ -6,6 +6,13 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util = veda.Util || {};
 
+  veda.Util.registerHandler = function (individual, template, event, handler) {
+    individual.on(event, handler);
+    template.one("remove", function () {
+      individual.off(event, handler);
+    });
+  };
+
   veda.Util.decimalDatetimeReviver = function (key, value) {
     return key === "data" && this.type === "Datetime" ? new Date(value) : key === "data" && this.type === "Decimal" ? parseFloat(value) : value ;
   };
