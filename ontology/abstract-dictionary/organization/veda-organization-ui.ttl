@@ -290,23 +290,30 @@ v-s:OrganizationTemplate
   rdfs:label "Шаблон для класса v-s:Organization"@ru ;
   rdfs:label "Template for v-s:Organization class"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var _class = new veda.IndividualModel("v-s:Subsidiary");
-  if ( !_class.rights.hasValue("v-s:canCreate", true) || !individual.rights.hasValue("v-s:canUpdate", true)) {
-    $("#add-subsidiary", template).remove();
-  }
+
+  Promise.all([_class.rights, individual.rights]).then(function (rights) {
+    var class_rights = rights[0],
+        individual_rights = rights[1];
+    if ( !class_rights.hasValue("v-s:canCreate", true) || !individual_rights.hasValue("v-s:canUpdate", true) ) {
+      $("#add-subsidiary", template).remove();
+    }
+  }).catch(function (error) {
+    console.log(error);
+  });
 
   var prevTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
 
   // Validation
   template.on("validate", function () {
-    var result = {},
+    var result = {state: true},
         regexp;
-    if ( individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) && individual.hasValue("v-s:hasClassifierLegalForm", new veda.IndividualModel("d:OKOPF_50102")) ){
+    if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && individual.hasValue("v-s:hasClassifierLegalForm", "d:OKOPF_50102") ) {
       regexp = /^([0-9]{12})$/gi;
-    } else if ( individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS")) ) {
+    } else if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") ) {
       regexp = /^([0-9]{10})$/gi;
-    } else if ( individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_NLD")) ){
+    } else if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_NLD") ) {
       regexp = /^[A-Z]{1,3}[0-9]{9}[B]{1}[0-9]{2}$/gi;
     } else if ( individual.hasValue("v-s:hasClassifierCountry") ) {
       regexp = /^[A-Z]{1,3}[0-9]{4,}$/gi;
@@ -317,10 +324,9 @@ v-s:OrganizationTemplate
         cause: ["v-ui:minCardinality"]
       }
     } else {
-
       // Check regexp
       var taxId = individual["v-s:taxId"][0].toString();
-      if(taxId != '0000000000' && taxId != '000000000000'){
+      if(taxId != '0000000000' && taxId != '000000000000') {
         result["v-s:taxId"] = {
           state: regexp.test( taxId ),
           cause: ["v-ui:regexp"]
@@ -332,21 +338,22 @@ v-s:OrganizationTemplate
         }
       }
 
-
       // Check unique
       var newTaxId = individual.hasValue("v-s:taxId") && individual["v-s:taxId"][0].toString();
-      console.log('123');
       if ( prevTaxId !== newTaxId ) { prevTaxId = newTaxId; }
       if ( result["v-s:taxId"].state ) {
-        var tmp = query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").result;
-        result["v-s:taxId"] = {
-          state: (!tmp.length || tmp[0] === individual.id),
-          cause: ["v-s:NonUniqueTaxId"]
-        }
+        veda.Backend.query(veda.ticket, "'rdf:type'==='v-s:Organization' && 'v-s:taxId'=='" + taxId + "'").then(function (queryResult) {
+          var queryResult = queryResult.result;
+          result["v-s:taxId"] = {
+            state: (!queryResult.length || queryResult[0] === individual.id),
+            cause: ["v-s:NonUniqueTaxId"]
+          }
+          template.trigger("validated", result);
+        });
       }
     }
     // Если значение поля v-s:hasClassifierCountry=d:Country_RUS то поле v-s:hasClassifierLegalForm Обязательное
-    if (individual.hasValue("v-s:hasClassifierCountry", new veda.IndividualModel("d:Country_RUS"))) {
+    if (individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") ) {
       result["v-s:hasClassifierLegalForm"] = {
         state: individual.hasValue("v-s:hasClassifierLegalForm"),
         cause: ["v-ui:minCardinality"]
@@ -491,21 +498,16 @@ v-s:OrganizationTemplate
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script>
+<script><!--async-->
   //Генерация Uri
-  function makeUri () {
-    var shortLabel = individual["v-s:hasClassifierCountry"][0]["v-s:shortLabel"] ;
+  veda.Util.registerHandler(individual, template, "beforeSave", function () {
+    var shortLabel = individual["v-s:hasClassifierCountry"][0]["v-s:shortLabel"];
     var taxId = individual["v-s:taxId"] ;
     if ( individual.hasValue("v-s:hasClassifierCountry", "d:Country_RUS") && individual.isNew() ){
       individual.id = "d:org_"+ shortLabel + taxId ;
     } else if ( individual.isNew() ) {
       individual.id = "d:org_"+ taxId ;
     }
-  }
-
-  individual.on("beforeSave", makeUri);
-  template.one("remove", function () {
-    individual.off("beforeSave", makeUri);
   });
 
   $("#add-subsidiary", template).click(function () {
@@ -610,55 +612,28 @@ v-s:DepartmentTemplate
   rdfs:label "Шаблон для класса v-s:Department"@ru ;
   rdfs:label "Template for v-s:Department class"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var parentOrganization = individual['v-s:parentOrganization'][0];
   var orgINN = parentOrganization['v-s:taxId'][0];
     if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
       orgINN = 'RU'+orgINN;
     };
-  var departmentQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='"+parentOrganization.id+"') || ('rdf:type'=='v-s:Organization' && '@'=='"+parentOrganization.id+"')";
+  var departmentQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='" + parentOrganization.id + "') || ('rdf:type'=='v-s:Organization' && '@'=='" + parentOrganization.id + "')";
   $('veda-control[rel="v-s:parentUnit"]', template).attr('data-query-prefix', departmentQueryPrefix);
 
-  var appointmentQueryPrefix = "'rdf:type'=='v-s:Appointment' && 'v-s:parentOrganization'=='"+parentOrganization.id+"'";
+  var appointmentQueryPrefix = "'rdf:type'=='v-s:Appointment' && 'v-s:parentOrganization'=='" + parentOrganization.id + "'";
   $('veda-control[rel="v-s:hasChief"]', template).attr('data-query-prefix', appointmentQueryPrefix);
   $('veda-control[rel="v-s:hasFieldChief"]', template).attr('data-query-prefix', appointmentQueryPrefix);
   $('veda-control[rel="v-s:hasFunctionalChief"]', template).attr('data-query-prefix', appointmentQueryPrefix);
-  var prevSubjectCode = "";
-  var state = false;
   template.on('validate', function() {
     var result = {};
     var subjectCode = individual.hasValue("v-s:subjectCode") && individual["v-s:subjectCode"][0].toString();
-    // if (subjectCode) {
-    //   if (prevSubjectCode != subjectCode) {
-    //     prevSubjectCode = subjectCode;
-    //     var futureUri = 'd:'+orgINN+'_department_'+subjectCode;
-    //     var queryString = "'@'==='"+futureUri+"'";
-    //     var tmp = query(veda.ticket, queryString).result;
-    //     state = tmp.length == 0? true : tmp[0] == individual.id;
-    //   };
-    //   result["v-s:subjectCode"] = {
-    //     state: state,
-    //     cause: ["v-s:NonUniqueDepartmentCode"]
-    //   }
-    //   if (subjectCode.match('^[a-zA-z0-9]*$') == null) {
-    //     result["v-s:subjectCode"] = {
-    //       state: false,
-    //       cause: ["v-s:NotValidCode"]
-    //     } 
-    //   }
-    // } else {
-    //   result["v-s:subjectCode"] = {
-    //     state: false,
-    //     cause: ["v-ui:minCardinality"]
-    //   }
-    // }
     if (!subjectCode) {
       result["v-s:subjectCode"] = {
         state: false,
         cause: ["v-ui:minCardinality"]
-      }  
+      }
     }
-    
     template.trigger("validated", result);
   });
 </script>
@@ -725,18 +700,6 @@ v-s:DepartmentTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal"></span>
   </div>
 </div>
-<script>
-  // if (individual.isNew()) {
-  //   individual.one('beforeSave', function(){
-  //     var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
-  //     if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
-  //       orgINN = 'RU'+orgINN;
-  //     };
-  //     individual.id = 'd:'+orgINN+'_department_'+individual['v-s:subjectCode'][0].toString();
-  //   });
-  // }
-//# sourceURL=v-s:DepartmentTemplate_post
-</script>
   """ ;
 .
 
@@ -746,7 +709,7 @@ v-s:AppointmentForContactTemplate
   rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
   rdfs:label "Template for v-s:Appointment class"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.on('validate', function() {
     var result = {};
     result["v-s:employee"] = {
@@ -759,22 +722,12 @@ v-s:AppointmentForContactTemplate
     };
     template.trigger("validated", result);
   });
-  template.on("special-validate", function (e, validStates) {
-    setTimeout(function(){
-      // console.log($('div.validating-block:not(.hide) veda-control.has-error', template));
-      if ($('div.validating-block:not(.hide) .has-error', template).length == 0) {
-        $('.action#save', template).removeAttr('disabled');
-      } else {
-        $('.action#save', template).attr('disabled', 'disabled');
-      }
-    },500);
-  });
   var parentOrganization = individual['v-s:parentOrganization'][0].id;
-  var personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
+  var personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='" + parentOrganization + "'";
   $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
-  
+
   var parentUnit = individual['v-s:parentUnit'][0].id;
-  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+parentUnit+"'";
+  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='" + parentUnit + "'";
   $('#select-Occupation veda-control', template).attr('data-query-prefix', occupQueryPrefixString);
 //# sourceURL=v-s:AppointmentForContactTemplate_pre
 </script>
@@ -824,14 +777,23 @@ v-s:AppointmentForContactTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
   </div>
 </div>
-<script>
-  var NewPerson = null;
-  var NewOccupation = null;
+<script><!--async-->
+  var NewPerson;
+  var NewOccupation;
 
-  var defaultAppointment = undefined;
-  template.on('click', '#radioBlock input[type="radio"]', function(){
-    //console.log($(this).attr('value'));
+  var defaultAppointment;
+  template.on('click', '#radioBlock input[type="radio"]', function () {
     defaultAppointment = $(this).attr('value');
+  });
+
+  template.on("special-validate", function (e, validStates) {
+    setTimeout(function () {
+      if ($('div.validating-block:not(.hide) .has-error', template).length == 0) {
+        $('.action#save', template).removeAttr('disabled');
+      } else {
+        $('.action#save', template).attr('disabled', 'disabled');
+      }
+    }, 500);
   });
 
   function toogleButtons(currentBtn) {
@@ -840,7 +802,7 @@ v-s:AppointmentForContactTemplate
     template.trigger('special-validate');
   }
 
-  $('#createPersonBtn', template).click(function(){
+  $('#createPersonBtn', template).click(function () {
     var self = $(this);
     if (self.hasClass('btn-primary')) return false;
     toogleButtons(self);
@@ -862,11 +824,10 @@ v-s:AppointmentForContactTemplate
     individual['v-s:employee'] = [NewPerson];
   });
 
-  $('#selectPersonBtn').click(function (){
+  $('#selectPersonBtn').click(function () {
     var self = $(this);
-    if (self.hasClass('btn-primary')) return false;
+    if (self.hasClass('btn-primary')) { return false; }
     toogleButtons(self);
-    // $('#radioBlock').toggleClass('hide');
     defaultAppointment = undefined;
     $('#select-Person').removeClass('hide');
     $('#fill-Person').addClass('hide');
@@ -874,9 +835,9 @@ v-s:AppointmentForContactTemplate
     individual.on('v-s:employee', setDefaultAppointment);
   });
 
-  $('#createOccupationBtn', template).click(function(){
+  $('#createOccupationBtn', template).click(function () {
     var self = $(this);
-    if (self.hasClass('btn-primary')) return false;
+    if (self.hasClass('btn-primary')) { return false; }
     toogleButtons(self);
     individual.off('v-s:employee', setDefaultAppointment);
     $('#select-Occupation').addClass('hide');
@@ -896,46 +857,48 @@ v-s:AppointmentForContactTemplate
     individual['v-s:occupation'] = [NewOccupation];
   });
 
-  $('#selectOccupationBtn').click(function (){
+  $('#selectOccupationBtn').click(function () {
     var self = $(this);
-    if (self.hasClass('btn-primary')) return false;
+    if (self.hasClass('btn-primary')) { return false; }
     toogleButtons(self);
     $('#select-Occupation').removeClass('hide');
     $('#fill-Occupation').addClass('hide');
     individual['v-s:occupation'] = [];
   });
 
-  function setDefaultAppointment(){
+  function setDefaultAppointment() {
     var radioCont = $('.radio', template).empty();
     if (individual.hasValue('v-s:employee')) {
       var employeeId = individual['v-s:employee'][0].id;
-      var queryString = "'rdf:type'=='v-s:Appointment' && 'v-s:employee'=='"+employeeId+"' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"'";
-      var appointments = query({ticket: veda.ticket, query: queryString}).result;
-      if (appointments.length > 0) {
-        appointments.forEach(function(appointUri) {
-          var label = $('<label></label>');
-          var radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointUri);
-          label.append(radio);
-          label.append( (new veda.IndividualModel(appointUri))['rdfs:label'][0] );
-          radioCont.append($('<div class="radio"></div>').append(label));
-        })
-        var newAppointLabel = individual['v-s:employee'][0]['rdfs:label'][0];
-        radioCont.append('<div class="radio"><label><input type="radio" checked name="defaultAppointment"/>Новое для '+newAppointLabel+'</label></div>');
-        $('#radioBlock').removeClass('hide');
-        return;
-      }
+      var queryString = "'rdf:type'==='v-s:Appointment' && 'v-s:employee'=='" + employeeId + "' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "'";
+      veda.Backend.query({ticket: veda.ticket, query: queryString}).then(function (queryResult) {
+        var appointmentsUris = queryResult.result;
+        if (appointmentsUris.length > 0) {
+          veda.Backend.get_individuals(veda.ticket, appointmentsUris).then(function (appointmentsJSONs) {
+            appointmentsJSONs.forEach(function (appointmentJSON) {
+              var label = $('<label></label>');
+              var radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointmentUri);
+              label.append(radio);
+              label.append( (new veda.IndividualModel(appointmentJSON))['rdfs:label'][0] );
+              radioCont.append($('<div class="radio"></div>').append(label));
+            });
+            var newAppointLabel = individual['v-s:employee'][0]['rdfs:label'][0];
+            radioCont.append('<div class="radio"><label><input type="radio" checked name="defaultAppointment"/>Новое для ' + newAppointLabel + '</label></div>');
+            $('#radioBlock').removeClass('hide');
+            return;
+          });
+        }
+      });
     }
     $('#radioBlock').addClass('hide');
-
   }
-
   setDefaultAppointment();
   individual.on('v-s:employee', setDefaultAppointment);
-  template.one('remove', function(){
+  template.one('remove', function () {
     individual.off('v-s:employee', setDefaultAppointment);
-  })
+  });
 
-  function beforeSaveHandler(){
+  function beforeSaveHandler() {
     var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
     if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
       orgINN = 'RU'+orgINN;
@@ -952,7 +915,7 @@ v-s:AppointmentForContactTemplate
     }
 
     if (defaultAppointment){
-      tempEmployee['v-s:defaultAppointment'] = [new veda.IndividualModel(defaultAppointment)]
+      tempEmployee['v-s:defaultAppointment'] = [ new veda.IndividualModel(defaultAppointment) ];
     } else {
       tempEmployee['v-s:defaultAppointment'] = [individual];
     }
@@ -961,7 +924,7 @@ v-s:AppointmentForContactTemplate
       tempEmployee['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
       tempEmployee.save();
     }
-    individual['v-s:employee'] = [tempEmployee];
+    individual['v-s:employee'] = [ tempEmployee ];
     return false;
   }
   individual.one('beforeSave', beforeSaveHandler);
@@ -975,17 +938,19 @@ v-s:EmployeeEmbeddedTemplate
   rdfs:label "Шаблон для класса v-s:Person при создании v-s:Appoinment"@ru ;
   rdfs:label "Template for v-s:Person to create v-s:Appointment class"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.on("validate", function () {
     var result = {};
-    if (individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName')) {
-      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"' && 'v-s:lastName'=='"+individual['v-s:lastName'][0]+"' && 'v-s:firstName'=='"+individual['v-s:firstName'][0]+"'";
-      var tmp = query(veda.ticket, queryString).result;
-      if (tmp.length == 0) {
-        $('#warningPerson').addClass('hide');
-      } else {
-        $('#warningPerson').removeClass('hide');
-      }
+    if ( individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName') ) {
+      var queryString = "'rdf:type'==='v-s:Person' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'v-s:lastName'=='" + individual['v-s:lastName'][0] + "' && 'v-s:firstName'=='" + individual['v-s:firstName'][0] + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningPerson').addClass('hide');
+        } else {
+          $('#warningPerson').removeClass('hide');
+        }
+      });
     }
 
     if (!individual.hasValue('v-s:tabNumber')) {
@@ -1054,7 +1019,7 @@ v-s:OccupationEmbeddedTemplate
   rdfs:label "Шаблон для класса v-s:Position при создании v-s:Appoinment"@ru ;
   rdfs:label "Template for v-s:Position to create v-s:Appointment class"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   template.on("validate", function () {
     var result = {};
     if (!individual.hasValue('v-s:subjectCode')) {
@@ -1069,14 +1034,15 @@ v-s:OccupationEmbeddedTemplate
         cause: ["v-ui:minCardinality"]
       };
     } else {
-      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='"+individual['v-s:parentOrganization'][0].id+"' && 'rdfs:label'=='"+individual['rdfs:label'][0]+"' && 'v-s:parentUnit'=='"+individual['v-s:parentUnit'][0].id+"'";
-      console.log(queryString)
-      var tmp = query(veda.ticket, queryString).result;
-      if (tmp.length == 0) {
-        $('#warningOccupation').addClass('hide');
-      } else {
-        $('#warningOccupation').removeClass('hide');
-      }
+      var queryString = "'rdf:type'==='v-s:Position' && 'v-s:parentOrganization'=='" + individual['v-s:parentOrganization'][0].id + "' && 'rdfs:label'=='" + individual['rdfs:label'][0] + "' && 'v-s:parentUnit'=='" + individual['v-s:parentUnit'][0].id + "'";
+      veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+        var tmp = queryResult.result;
+        if (tmp.length == 0) {
+          $('#warningOccupation').addClass('hide');
+        } else {
+          $('#warningOccupation').removeClass('hide');
+        }
+      });
     }
     template.trigger("validated", result);
   });
