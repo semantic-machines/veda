@@ -83,8 +83,8 @@ veda.Module(function (veda) { "use strict";
     template = template.trim();
 
     // Extract pre script, template and post script
-    // match = template.match(/^(?:<script[^>]*>([\s\S]*?)<\/script>)?([\s\S]*?)(?:<script[^>]*>(?![\s\S]*<script[^>]*>)([\s\S]*)<\/script>)?$/i);
-    match = preProcess(template);
+    match = template.match(/^(?:<script[^>]*>([\s\S]*?)<\/script>)?([\s\S]*?)(?:<script[^>]*>(?![\s\S]*<script[^>]*>)([\s\S]*)<\/script>)?$/i);
+    //match = preProcess(template);
     pre_render_src = match[1];
     template = $( match[2] );
     post_render_src = match[3];
@@ -375,6 +375,15 @@ veda.Module(function (veda) { "use strict";
       var self = $(this);
       var style = self.attr("style");
       self.attr("style", style.replace("@", individual.id));
+    });
+
+    template.find("[title]:not([rel] *):not([about] *)").addBack("[style*='@']:not([rel] *):not([about] *)").map( function () {
+      var self = $(this);
+      var title = self.attr("title");
+      var titleIndividual = new veda.IndividualModel(title);
+      titleIndividual.load().then(function (titleIndividual) {
+        self.attr("title", titleIndividual);
+      });
     });
 
     // Property values
