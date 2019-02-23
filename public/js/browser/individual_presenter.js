@@ -666,7 +666,7 @@ veda.Module(function (veda) { "use strict";
           validation[property_uri] = validationResult[property_uri];
         });
         validation.state = validation.state && validationResult.state;
-        template.trigger("internal-validated");
+        template.trigger("internal-validated", [validation]);
       }
     }
 
