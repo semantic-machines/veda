@@ -118,7 +118,7 @@ v-fc:CreateByTypeTemplate
   </div>
   <div id="holder"></div>
 </div>
-<script>
+<script><!--async-->
   var self = individual;
   function typeHandler(values) {
     var holder = $("#holder", template).empty();
@@ -126,7 +126,7 @@ v-fc:CreateByTypeTemplate
       var blank = new veda.IndividualModel();
       blank["v-fc:targetType"] = values;
       blank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
-      var renderedTemplate = blank.present(holder, "v-fc:BlankTemplate");
+      blank.present(holder, "v-fc:BlankTemplate");
     }
   }
   self.on("v-fc:targetType", typeHandler);
@@ -223,7 +223,7 @@ v-fc:BlankTemplate
   rdfs:label "V-fc:Blank class template"@en ;
 #  v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<script>
+<script><!--async-->
   individual.initBlank();
 </script>
 <div>
@@ -233,7 +233,7 @@ v-fc:BlankTemplate
     <button class="btn btn-default" about="v-fc:Back" property="rdfs:label" onclick="window.history.back();"></button>
   </div>
 </div>
-<script>
+<script><!--async-->
   var self = individual,
       objectContainer = $("#object-container", template),
       object = self.object;
@@ -311,7 +311,7 @@ v-fc:CreateManagementTemplate
   rdfs:label "v-fc:Create class template"@en ;
   v-ui:forClass v-fc:Blank ;
   v-ui:template """
-<script>
+<script><!--async-->
   var notify = new veda.Notify();
 
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {

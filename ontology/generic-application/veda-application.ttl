@@ -89,7 +89,7 @@ v-s:ApplicationTemplate
   rdfs:label "Template for Application class"@en ;
   v-ui:forClass v-s:Application ;
   v-ui:template """
-<script>
+<script><!--async-->
   if (!individual.hasValue("v-s:hasBlank") && !individual.hasValue("v-s:hasCreate")) {
     $(".blanks", template).remove();
   }

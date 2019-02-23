@@ -114,8 +114,8 @@ v-s:RequestDelegationTemplate
   rdfs:label "Шаблон для класса v-s:RequestDelegationUser"@ru ;
   rdfs:label "Template for v-s:RequestDelegationUser class"@en ;
   v-ui:template """
-<script>
-  if ( individual.hasValue("rdf:type", new veda.IndividualModel("v-s:RequestDelegationAdmin")) ) {
+<script><!--async-->
+  if ( individual.hasValue("rdf:type", "v-s:RequestDelegationAdmin") ) {
     $("#delegator-control", template).removeClass("-edit").addClass("edit");
     $("#delegator-value", template).removeClass("edit").addClass("-edit");
     $("#position-control", template).removeClass("-edit").addClass("edit");
