@@ -202,32 +202,24 @@ void main(char[][] args)
                                 continue;
 
                             _files ~= file_name;
+
+                            if (isDir(file_name))
+                            {
+                                log.trace("now watch dir, path=%s", file_name);
+                                watcher.watchDir(file_name);
+                            }
+                            else
+                            {
+                                log.trace("found change in file, path=%s", file_name);
+                            }
                         }
 
-//                        processed(files, context);
                         if (_files.length > 0)
                         {
                             Thread.sleep(dur!("seconds")(3));
                             bool is_need_check_changes = !need_reload_ontology;
                             processed(_files, context, is_need_check_changes);
                         }
-/*
-                        if (_files.length > 0)
-                        {
-                            auto oFiles = dirEntries(onto_path, SpanMode.depth);
-                            string[] files;
-
-                            foreach (o; oFiles)
-                            {
-                                if (extension(o.name) == ".ttl")
-                                {
-                                    files ~= o.name.dup;
-                                }
-                            }
-
-                            processed(files, context);
-                        }
- */
                     } while (cnt > 0);
                 });
 
@@ -287,38 +279,47 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
     foreach (fname; changes)
     {
-        if (extension(fname) == ".ttl" && fname.indexOf("#") < 0 && fname.indexOf("module.ttl") < 0)
+        if (extension(fname) != ".ttl")
+            continue;
+
+        if (fname.indexOf("#") >= 0)
+            continue;
+
+        if (fname.indexOf("module.ttl") >= 0)
         {
-            log.trace("check file %s", fname);
+            log.trace("is module.ttl, skip");
+            continue;
+        }
 
-            string     file_uri       = "d:" ~ baseName(fname);
-            Individual indv_ttrl_file = context.get_individual(file_uri);
+        log.trace("check file %s", fname);
 
-            if (!is_check)
+        string     file_uri       = "d:" ~ baseName(fname);
+        Individual indv_ttrl_file = context.get_individual(file_uri);
+
+        if (!is_check)
+        {
+            is_reload = true;
+            files_to_load ~= fname;
+            log.trace("file %s", fname);
+        }
+        else
+        {
+            if (indv_ttrl_file is Individual.init)
             {
                 is_reload = true;
                 files_to_load ~= fname;
-                log.trace("file %s", fname);
+                log.trace("file is new, %s", fname);
             }
             else
             {
-                if (indv_ttrl_file is Individual.init)
-                {
-                    is_reload = true;
-                    files_to_load ~= fname;
-                    log.trace("file is new, %s", fname);
-                }
-                else
-                {
-                    string new_hash = digestFile!MD5(fname);
-                    string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
+                string new_hash = digestFile!MD5(fname);
+                string old_hash = indv_ttrl_file.getFirstLiteral("v-s:hash");
 
-                    if (new_hash != old_hash)
-                    {
-                        log.trace("file is modifed (hash), %s", fname);
-                        files_to_load ~= fname;
-                        is_reload = true;
-                    }
+                if (new_hash != old_hash)
+                {
+                    log.trace("file is modifed (hash), %s", fname);
+                    files_to_load ~= fname;
+                    is_reload = true;
                 }
             }
         }
