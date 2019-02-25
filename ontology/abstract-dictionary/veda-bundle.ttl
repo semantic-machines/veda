@@ -375,3 +375,8 @@ v-s:CoordinationList
   rdfs:label "Лист согласования"@ru ;
   rdfs:label "Coordination list"@en ;
 .
+v-s:CreateBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+.
