@@ -1438,7 +1438,7 @@ svg.process-path-highlight path
 .bg-silver { background-color: rgba(189, 195, 199, 1.0); /*#bdc3c7;*/ }
 .bg-asbestos { background-color: rgba(127, 140, 141, 1.0); /*#7f8c8d;*/ }
 
-.bg-white * {  }
+.bg-white h1, .bg-white h1 small { color: #333; }
 .bg-turquoise * { color: #fff; text-shadow: 0px 1px 2px black; }
 .bg-emerald * { color: #fff; text-shadow: 0px 1px 2px black; }
 .bg-peter-river * { color: #fff; text-shadow: 0px 1px 2px black; }
