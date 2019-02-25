@@ -104,11 +104,7 @@ class UserModuleInfo
         context = _context;
         sticket = _sticket;
 
-//        if (context !is null)
-//            log = context.get_logger();
-//        else
-//            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
-        log = new ArrayLogger();
+        log = new ArrayLogger(context.get_logger());
 
         uri = module_indv.uri;
         url = module_indv.getFirstLiteral("v-s:moduleUrl");
@@ -121,11 +117,7 @@ class UserModuleInfo
         context    = _context;
         sticket    = _sticket;
 
-//        if (context !is null)
-//            log = context.get_logger();
-//        else
-//            stderr.writeln("ERR! fail create object UserModuleInfo, log not initalized");
-        log = new ArrayLogger();
+        log = new ArrayLogger(context.get_logger());
     }
 
     public void store_log()
