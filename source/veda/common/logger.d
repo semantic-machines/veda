@@ -61,10 +61,13 @@ private void logger_process()
 public class ArrayLogger
 {
     OutBuffer obuff;
+    Logger log;
+    
 
-    this()
+    this(Logger _log)
     {
         obuff = new OutBuffer();
+        log = _log;
     }
 
     public void trace(Char, A ...) (in Char[] fmt, A args)
@@ -85,6 +88,9 @@ public class ArrayLogger
         else
             obuff.writefln("%04d-%02d-%02d %02d:%02d:%02d.%06d", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
                            fsec);
+            
+        if (log !is null)
+	        log.trace (fmt, args);    
     }
 
     string raw()
