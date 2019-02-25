@@ -236,7 +236,7 @@ v-s:RequestDelegationTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script>
+<script><!--async-->
   individual.on("v-s:delegatedPosition", delegatedPositionHandler);
   individual.on("v-s:delegator v-s:delegate", delegatorDelegateHandler);
   individual.on("v-s:delegator", delegatorHandler);
