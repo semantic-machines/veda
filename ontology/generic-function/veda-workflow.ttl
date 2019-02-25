@@ -322,6 +322,15 @@ v-wf:executorExpression
   rdfs:range xsd:string ;
 .
 
+v-wf:enforceProcessing
+  rdf:type rdf:Property ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Обработать принудительно"@ru ;
+  rdfs:label "Enforce processing"@en ;
+  rdfs:domain v-wf:WorkOrder ;
+  rdfs:range xsd:boolean ;
+.
+
 #------------------------------------------------------
 v-wf:VarDefine
   rdf:type owl:Class ;
@@ -1582,20 +1591,16 @@ v-wf:WorkOrderTemplate
   </div>
   <br/>
 </div>
-<script>
-  if (veda.appointment.id=="cfg:AdministratorAppointment" && individual.hasValue("v-wf:forWorkItem")
-      && individual["v-wf:forWorkItem"][0].hasValue("v-wf:isCompleted", true) ) {
-    $("#repeat-workOrder", template).click(function(){
-      individual.properties["v-wf:enforceProcessing"] = [{"type": "Boolean", "data": true }];
-      var res = put_individual(veda.ticket, individual.toJson());
-      wait_module(2, res.op_id);
-      wait_module(16, res.op_id);
-      setTimeout(function(){
-        delete individual.properties["v-wf:enforceProcessing"];
-        individual.isSync(false);
-        individual.save();
-      }, 1000)
-    })
+<script><!--async-->
+  if (
+    veda.appointment.id === "cfg:AdministratorAppointment"
+    && individual.hasValue("v-wf:forWorkItem")
+    && individual["v-wf:forWorkItem"][0].hasValue("v-wf:isCompleted", true)
+  ) {
+    $("#repeat-workOrder", template).click(function () {
+      individual["v-wf:enforceProcessing"] = [ true ];
+      individual.save();
+    });
   } else {
     $("#repeat-workOrder", template).remove();
   }
