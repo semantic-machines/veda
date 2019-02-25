@@ -599,7 +599,10 @@ class XapianVQL
                         query_r = null;
                     }
                     else
-                        query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                    {
+                        if (query_r !is null)
+                            query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                    }
 
                     if (query is null)
                         throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
@@ -623,7 +626,10 @@ class XapianVQL
                             query_r = null;
                         }
                         else
-                            query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                        {
+                            if (query_r !is null)
+                                query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                        }
 
                         if (query is null)
                             throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
@@ -662,7 +668,10 @@ class XapianVQL
                     _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
 
                 if (query_l !is null)
-                    query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
+                {
+                    if (query_r !is null)
+                        query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
+                }
 
                 if (query is null)
                     throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
