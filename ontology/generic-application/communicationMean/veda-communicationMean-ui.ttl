@@ -130,10 +130,10 @@ v-s:CommunicationMeanTemplateEmbedded
     <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
   </td>
 </tr>
-<script>
+<script><!--async-->
   if (individual.hasValue('v-s:hasCommunicationMeanChannel', 'd:a1iwni0b54fvcz41vuts08bxqsh')) {
     template.find('div[property="v-s:description"]').remove();
-    template.find('a[property="v-s:description"]').attr("href", "mailto:" + individual["v-s:description"][0]);  
+    template.find('a[property="v-s:description"]').attr("href", "mailto:" + individual["v-s:description"][0]);
   } else {
     template.find('a[property="v-s:description"]').remove();
   }
