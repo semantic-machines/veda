@@ -37,8 +37,10 @@ veda.Module(function (veda) { "use strict";
         this.id = uri;
         cached = veda.cache.get(this.id);
       } else if (typeof uri === "object") {
-        this.properties = uri;
         cached = veda.cache.get(this.id);
+        if (cached && !cached.isLoaded()) {
+          cached.properties = uri;
+        }
       } else if (typeof uri === "undefined") {
         this.id = veda.Util.genUri();
       }
