@@ -2289,7 +2289,7 @@ v-ui:TreeTemplate
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<script>
+<script><!--async-->
   var tbody = $(".tbody", template);
   var thead = $(".thead", template);
 
@@ -2380,16 +2380,17 @@ v-ui:TreeTemplate
         thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
       } else {
         getChildren([], value, false).then(function (children) {
-          children.forEach(function (childUri) {
-            var child = new veda.IndividualModel(childUri);
-            renderRow(child, thatRow);
+          var renderedProms = children.map(function (childUri) {
+            return renderRow(childUri, thatRow);
           });
-          var newNextLvl = parseInt(thatRow.next().attr("data-level"));
-          if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
-            that.prev().css("width", 16 * (thatLvl + 1) - 2);
-            that.remove();
-            thatRow.find(".select-deep").remove();
-          }
+          Promise.all(renderedProms).then(function () {
+            var newNextLvl = parseInt(thatRow.next().attr("data-level"));
+            if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
+              that.prev().css("width", 16 * (thatLvl + 1) - 2);
+              that.remove();
+              thatRow.find(".select-deep").remove();
+            }
+          });
         });
       }
     } else {
@@ -2403,46 +2404,46 @@ v-ui:TreeTemplate
     return false;
   });
 
-  function renderRow(value, parentRow) {
-    var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1;
-    var cont = $("<div>"),
-        tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
-
-    if ( !allowedFilter.call(value) ) {
-      return;
-    }
-
-    $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
-    tmpl = value.present(cont, tmpl[0].outerHTML);
-
-    // Pre-check children
-    getChildren([], value, false).then(function (children) {
-      if (!children.length) {
-        tmpl.find(".expand").remove();
-        tmpl.find(".select-deep").remove();
+  function renderRow(valueUri, parentRow) {
+    var value = new veda.IndividualModel(valueUri);
+    return value.load().then(function (value) {
+      if ( !allowedFilter.call(value) ) {
+        return;
       }
+      var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1;
+      var cont = $("<div>"),
+          tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
+      $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+      return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
+        // Pre-check children
+        getChildren([], value, false).then(function (children) {
+          if (!children.length) {
+            tmpl.find(".expand").remove();
+            tmpl.find(".select-deep").remove();
+          }
+        });
+        var selectRow = $(".select-row", tmpl);
+        var selectDeep = $(".select-deep", tmpl);
+        selectRow.prop("checked", individual.hasValue(rel_uri, value));
+
+        if (value.deepSelected) {
+          selectDeep.removeClass("text-muted").addClass("text-danger");
+        } else {
+          selectDeep.addClass("text-muted").removeClass("text-danger");
+        }
+
+        if ( !selectableFilter.call(value) ) {
+          selectRow.remove();
+        }
+
+        if ( parentRow ) {
+          parentRow.after( tmpl );
+        } else {
+          tbody.append(tmpl);
+        }
+        cont.remove();
+      });
     });
-    var selectRow = $(".select-row", tmpl);
-    var selectDeep = $(".select-deep", tmpl);
-    var hasValue = individual.hasValue(rel_uri, value);
-    selectRow.prop("checked", hasValue);
-
-    if (value.deepSelected) {
-      selectDeep.removeClass("text-muted").addClass("text-danger");
-    } else {
-      selectDeep.addClass("text-muted").removeClass("text-danger");
-    }
-
-    if ( !selectableFilter.call(value) ) {
-      selectRow.remove();
-    }
-
-    if ( parentRow ) {
-      parentRow.after( tmpl );
-    } else {
-      tbody.append(tmpl);
-    }
-    cont.remove();
   }
 
   if (rel_uri) {
@@ -2517,7 +2518,7 @@ v-ui:TreeTemplate
 
   // Render tree
   individual.treeConfig.root.forEach( function (root, index, roots) {
-    renderRow(root);
+    renderRow(root.id);
     if (roots.length === 1) {
       tbody.find(".expand").click();
     }
