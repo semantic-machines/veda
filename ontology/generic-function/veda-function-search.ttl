@@ -1224,7 +1224,7 @@ v-fs:AttributiveSearchInlineTemplate
     if ( total === delta ) {
       resultContainer.empty();
     }
-    return resultDelta.map(function (result, i) {
+    resultDelta.forEach(function (result, i) {
       result.present(resultContainer, individual.resultTemplate).then(function (tmpl) {
         $(".serial-number", tmpl).text(total - delta + i + 1);
         if (result.id === self.marked) {
