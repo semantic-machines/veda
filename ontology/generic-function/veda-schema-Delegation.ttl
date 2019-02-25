@@ -222,43 +222,53 @@ v-s:RequestDelegationTemplate
     }
   }
   function delegatorDelegateHandler(property_uri, values) {
-    if (values.length && values[0]["rdf:type"][0].id === "v-s:Appointment") {
+    if ( values.length && values[0].hasValue("rdf:type", "v-s:Appointment") ) {
       individual[property_uri] = values[0]["v-s:employee"];
     }
   }
   function delegatorHandler(values) {
     $("#positions", template).empty();
     if (values.length) {
-      var delegator = individual["v-s:delegator"][0];
-      //var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "') || ('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "' && 'v-s:deleted' == true)").result;
-      var appointments_ids = query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')").result;
-      var appointments = get_individuals(veda.ticket, appointments_ids);
-      var positions_ids = appointments.map(function (appointment_json) {
-        var appointment = new veda.IndividualModel(appointment_json);
-        return appointment["v-s:occupation"][0].id;
-      });
-      var positions = get_individuals(veda.ticket, positions_ids);
-      positions.map(function (position_json) {
-        var position = new veda.IndividualModel(position_json);
-        var tmpl = $(positionTemplate);
-        var input = tmpl.find(".input");
-        var label = tmpl.find(".position-label");
-        if ( individual.hasValue("v-s:delegatedPosition", position) ) {
-          input.prop("checked", "checked");
-        }
-        input.prop( "id", position.id );
-        if (mode === "view") {
-          input.prop("disabled", "disabled");
-        }
-        label.text( position["rdfs:label"] );
-        tmpl.appendTo( $("#positions", template) );
+      var delegator = values[0];
+      veda.Backend.query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')")
+      .then(function (queryResult) {
+        return queryResult.result;
+      })
+      .then(function (appointments_ids) {
+        return veda.Backend.get_individuals(veda.ticket, appointments_ids);
+      })
+      .then(function (appointments) {
+        var positions_ids = appointments.map(function (appointment_json) {
+          var appointment = new veda.IndividualModel(appointment_json);
+          return appointment["v-s:occupation"][0].id;
+        });
+        return positions_ids;
+      })
+      .then(function (positions_ids) {
+        return veda.Backend.get_individuals(veda.ticket, positions_ids);
+      })
+      .then(function (positions) {
+        positions.map(function (position_json) {
+          var position = new veda.IndividualModel(position_json);
+          var tmpl = $(positionTemplate);
+          var input = tmpl.find(".input");
+          var label = tmpl.find(".position-label");
+          if ( individual.hasValue("v-s:delegatedPosition", position) ) {
+            input.prop("checked", "checked");
+          }
+          input.prop( "id", position.id );
+          if (mode === "view") {
+            input.prop("disabled", "disabled");
+          }
+          label.text( position.toString() );
+          tmpl.appendTo( $("#positions", template) );
+        });
       });
     }
   }
 
-  //if ( mode === "search") { return }
-  if ( mode === "edit" && individual.is("v-s:RequestDelegationUser") && individual.isNew() ) {
-    individual["v-s:delegator"] = [veda.user];
+  if ( mode === "edit" && individual.isNew() ) {
+    individual["v-s:delegator"] = [ veda.user ];
   }
 
   template.on("view edit", function (e) {
