@@ -170,9 +170,9 @@ this.initBlank = function () {
   if (self.object) { return; }
   self.object = new veda.IndividualModel();
   self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
-  Object.getOwnPropertyNames(self.properties).map( function (property_uri) {
+  Object.keys(self.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( self.hasValue(property_uri) && self.get(property_uri)[0] instanceof veda.IndividualModel && self.get(property_uri)[0].is("v-fc:Blank") ) {
+    if ( self.hasValue(property_uri) && self.get(property_uri)[0] instanceof veda.IndividualModel && self.get(property_uri)[0].hasValue("rdf:type", "v-fc:Blank") ) {
       self.object.set(property_uri, self.get(property_uri).map(function (item) {
         // Embedded blanks are for v-s:Embedded objects only
         // Prevent mutual v-s:parent links
