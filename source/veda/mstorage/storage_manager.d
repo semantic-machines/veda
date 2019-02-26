@@ -398,7 +398,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                             rc = ResultCode.FailStore;
                                     }
                                     else
-                                        rc = ResultCode.FailStore;
+                                        rc = ResultCode.Ok;
 
                                     return;
                                 }
