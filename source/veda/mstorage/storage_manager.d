@@ -390,15 +390,15 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                             {
                                 if (ti.cmd == INDV_OP.PUT || ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    //if (ti.assigned_subsystems == ALL_MODULES || ((ti.assigned_subsystems & SUBSYSTEM.STORAGE) == SUBSYSTEM.STORAGE))
+                                    if (ti.assigned_subsystems == ALL_MODULES || ((ti.assigned_subsystems & SUBSYSTEM.STORAGE) == SUBSYSTEM.STORAGE))
                                     {
                                         if (ti.cmd == INDV_OP.REMOVE)
                                             rc = storage.remove(ti.uri);
                                         else
                                             rc = storage.store(ti.uri, ti.new_binobj, op_id);
                                     }
-                                    //else
-                                    //    rc = ResultCode.Ok;
+                                    else
+                                        rc = ResultCode.Ok;
 
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
                                     if (rc == ResultCode.Ok)
