@@ -188,11 +188,11 @@ void main(char[][] args)
                     log.trace("Enter Handler (directory event captured), path=%s", onto_path);
                     DWChangeInfo[] changes = change_buf[];
                     uint cnt;
+                    string[] _files;
+
                     do
                     {
                         cnt = watcher.readChanges(changes);
-
-                        string[] _files;
 
                         foreach (i; 0 .. cnt)
                         {
@@ -213,14 +213,14 @@ void main(char[][] args)
                                 log.trace("found change in file, path=%s", file_name);
                             }
                         }
-
-                        if (_files.length > 0)
-                        {
-                            Thread.sleep(dur!("seconds")(3));
-                            bool is_need_check_changes = !need_reload_ontology;
-                            processed(_files, context, is_need_check_changes);
-                        }
+                        Thread.sleep(dur!("seconds")(3));
                     } while (cnt > 0);
+
+                    if (_files.length > 0)
+                    {
+                        bool is_need_check_changes = !need_reload_ontology;
+                        processed(_files, context, is_need_check_changes);
+                    }
                 });
 
     watcher.watchDir(onto_path);
