@@ -559,7 +559,7 @@ class UserModuleInfo
 
         string module_url;
         string[ string ] ver_2_url;
-        string[ int ] pos_2_ver;
+        string[ string ] date_2_ver;
 
         auto     o_url = url.parseURL;
         string[] pp    = o_url.path.split('/');
@@ -652,9 +652,8 @@ class UserModuleInfo
                 foreach (jv; jva.array())
                 {
                     string tag_name = jv[ "tag_name" ].str;
-                    ver_2_url[ tag_name ] = jv[ "zipball_url" ].str;
-                    pos_2_ver[ pos ]      = tag_name;
-                    pos++;
+                    ver_2_url[ tag_name ]                  = jv[ "zipball_url" ].str;
+                    date_2_ver[ jv[ "published_at" ].str ] = tag_name;
                 }
             }
             catch (Throwable tr)
@@ -666,12 +665,13 @@ class UserModuleInfo
                 return;
             }
 
-            if (ver is null && pos_2_ver.length > 0)
+            if (ver is null && date_2_ver.length > 0)
             {
-                string[] found_tags_in_project = pos_2_ver.values;
-                found_tags_in_project.sort();
+                string[] found_dates_in_project = date_2_ver.keys;
+                found_dates_in_project.sort();
 
-                ver = found_tags_in_project[ $ - 1 ];
+                string last_date = found_dates_in_project[ $ - 1 ];
+                ver = date_2_ver.get(last_date, null);
             }
         }
 
