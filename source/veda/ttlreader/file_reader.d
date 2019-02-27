@@ -213,7 +213,9 @@ void main(char[][] args)
                                 log.trace("found change in file, path=%s", file_name);
                             }
                         }
-                        Thread.sleep(dur!("seconds")(3));
+
+                        if (_files.length > 0)
+                            Thread.sleep(dur!("seconds")(3));
                     } while (cnt > 0);
 
                     if (_files.length > 0)
