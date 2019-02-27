@@ -183,6 +183,8 @@ void main(char[][] args)
 
     DWChangeInfo[ 5120 ] change_buf;
 
+    bool[ string ] prev_state_file_list;
+
     watcher.run(
                 {
                     log.trace("Watch activity");
@@ -198,10 +200,10 @@ void main(char[][] args)
 
                         if (c_loop == 0 && cnt == 0)
                         {
-                            log.trace("read changes return empty data, re-watch dir %s", onto_path);
-                            oFiles = dirEntries(onto_path, SpanMode.depth);
+                            log.trace("read changes return empty data, re-watch on dir %s", onto_path);
+                            auto files = dirEntries(onto_path, SpanMode.depth);
 
-                            foreach (o; oFiles)
+                            foreach (o; files)
                                 if (o.isDir)
                                     watcher.watchDir(o.name, DWFileEvent.ALL, true);
                         }
@@ -232,6 +234,24 @@ void main(char[][] args)
                         c_loop++;
                     } while (cnt > 0);
 
+                    auto files = dirEntries(onto_path, SpanMode.depth);
+
+                    bool[ string ] new_state_file_list;
+
+                    foreach (o; files)
+                    {
+                        string fnm = o.name.dup;
+                        if (!o.isDir)
+                        {
+                            if (prev_state_file_list.get(fnm, false) == false)
+                                _files ~= fnm;
+
+                            new_state_file_list[ fnm ] = true;
+                        }
+                    }
+
+                    prev_state_file_list = new_state_file_list;
+
                     if (_files.length > 0)
                     {
                         bool is_need_check_changes = !need_reload_ontology;
@@ -242,8 +262,11 @@ void main(char[][] args)
     watcher.watchDir(onto_path, DWFileEvent.ALL, true);
     foreach (o; oFiles)
     {
+        string fnm = o.name.dup;
         if (o.isDir)
-            watcher.watchDir(o.name, DWFileEvent.ALL, true);
+            watcher.watchDir(fnm, DWFileEvent.ALL, true);
+        else
+            prev_state_file_list[ fnm ] = true;
     }
 
     if (need_reload_ontology)
