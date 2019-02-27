@@ -92,8 +92,8 @@ v-s:InternalDocumentTemplate
   rdfs:label "Template for v-s:InternalDocument class"@en ;
   v-ui:template """
 <script><!--async-->
-  if (mode == "edit" && individual.isNew()) {
-    if (!individual.hasValue("v-s:initiator")){
+  if ( mode == "edit" && individual.isNew() ) {
+    if ( !individual.hasValue("v-s:initiator") ) {
      individual["v-s:initiator"] = [ veda.appointment["v-s:parentUnit"][0] ] ;
     }
   }
