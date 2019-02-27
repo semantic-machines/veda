@@ -5,7 +5,7 @@
 module veda.file_reader;
 
 import libasync, libasync.watcher, libasync.threads;
-import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd;
+import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.sync.mutex;
 import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, std.json, std.file, std.outbuffer, std.string, std.path,
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
@@ -42,7 +42,8 @@ extern (C) void handleTermination1(int _signal)
 shared static this()
 {
     bsd_signal(SIGINT, &handleTermination1);
-    process_name = "ttl_reader";
+    process_name         = "ttl_reader";
+    activity_monitor_mtx = new shared Mutex();
 }
 
 Ticket sticket;
@@ -78,6 +79,9 @@ private void wait_complete_operations(Context context, long last_op_id)
             break;
     }
 }
+
+
+shared Mutex activity_monitor_mtx;
 
 /// процесс отслеживающий появление новых файлов и добавление их содержимого в базу данных
 void main(char[][] args)
@@ -187,76 +191,103 @@ void main(char[][] args)
 
     watcher.run(
                 {
-                    log.trace("Watch activity");
-                    DWChangeInfo[] changes = change_buf[];
-                    uint cnt;
-                    string[] _files;
+                    activity_monitor_mtx.lock_nothrow();
 
-                    int c_loop = 0;
-
-                    do
+                    try
                     {
-                        cnt = watcher.readChanges(changes);
+                        log.trace("Watch activity");
+                        DWChangeInfo[] changes = change_buf[];
+                        uint cnt;
+                        string[] _files;
 
-                        if (c_loop == 0 && cnt == 0)
+                        int c_loop = 0;
+
+                        do
                         {
-                            log.trace("read changes return empty data, re-watch on dir %s", onto_path);
-                            auto files = dirEntries(onto_path, SpanMode.depth);
+                            cnt = watcher.readChanges(changes);
 
-                            foreach (o; files)
-                                if (o.isDir)
-                                    watcher.watchDir(o.name, DWFileEvent.ALL, true);
+                            if (c_loop == 0 && cnt == 0)
+                            {
+                                log.trace("read changes return empty data, re-watch on dir %s", onto_path);
+                                auto files = dirEntries(onto_path, SpanMode.depth);
+
+                                foreach (o; files)
+                                    if (o.isDir)
+                                        watcher.watchDir(o.name, DWFileEvent.ALL, true);
+                            }
+
+                            foreach (i; 0 .. cnt)
+                            {
+                                string file_name = changes[ i ].path.dup;
+
+                                bool is_dir = false;
+
+                                try
+                                {
+                                    is_dir = isDir(file_name);
+                                } catch (Throwable tr) {}
+
+
+                                if (is_dir)
+                                {
+                                    log.trace("now watch dir, path=%s", file_name);
+                                    watcher.watchDir(file_name, DWFileEvent.ALL, true);
+                                }
+                                else
+                                if (file_name.indexOf(".#") > 0 || file_name.indexOf(".ttl") < 0)
+                                    continue;
+
+                                if (!is_dir)
+                                {
+                                    _files ~= file_name;
+                                    log.trace("found change in file, path=%s", file_name);
+                                }
+                            }
+
+                            if (_files.length > 0)
+                            {
+                                log.trace("sleep for next check activity");
+                                Thread.sleep(dur!("seconds")(3));
+                            }
+
+                            c_loop++;
+                        } while (cnt > 0);
+
+
+                        bool[ string ] new_state_file_list;
+
+                        auto files = dirEntries(onto_path, SpanMode.depth);
+                        foreach (o; files)
+                        {
+                            string fnm = o.name.dup;
+                            if (!o.isDir)
+                            {
+                                if (fnm.indexOf(".#") > 0 || fnm.indexOf(".ttl") < 0)
+                                    continue;
+
+                                if (prev_state_file_list.get(fnm, false) == false)
+                                {
+                                    _files ~= fnm;
+                                }
+
+                                new_state_file_list[ fnm ] = true;
+                            }
                         }
 
-                        foreach (i; 0 .. cnt)
-                        {
-                            string file_name = changes[ i ].path.dup;
-
-                            if (isDir(file_name))
-                            {
-                                log.trace("now watch dir, path=%s", file_name);
-                                watcher.watchDir(file_name, DWFileEvent.ALL, true);
-                            }
-                            else
-                            if (file_name.indexOf(".#") > 0 || file_name.indexOf(".ttl") < 0)
-                                continue;
-
-                            if (!isDir(file_name))
-                            {
-                                _files ~= file_name;
-                                log.trace("found change in file, path=%s", file_name);
-                            }
-                        }
+                        prev_state_file_list = new_state_file_list;
 
                         if (_files.length > 0)
-                            Thread.sleep(dur!("seconds")(3));
-
-                        c_loop++;
-                    } while (cnt > 0);
-
-                    auto files = dirEntries(onto_path, SpanMode.depth);
-
-                    bool[ string ] new_state_file_list;
-
-                    foreach (o; files)
-                    {
-                        string fnm = o.name.dup;
-                        if (!o.isDir)
                         {
-                            if (prev_state_file_list.get(fnm, false) == false)
-                                _files ~= fnm;
-
-                            new_state_file_list[ fnm ] = true;
+                            bool is_need_check_changes = !need_reload_ontology;
+                            processed(_files, context, is_need_check_changes);
                         }
-                    }
-
-                    prev_state_file_list = new_state_file_list;
-
-                    if (_files.length > 0)
+                    } catch (Throwable tr)
                     {
-                        bool is_need_check_changes = !need_reload_ontology;
-                        processed(_files, context, is_need_check_changes);
+                        log.trace("ERR! %s", tr.msg);
                     }
+
+
+                    activity_monitor_mtx.unlock_nothrow();
                 });
 
     watcher.watchDir(onto_path, DWFileEvent.ALL, true);
@@ -266,7 +297,12 @@ void main(char[][] args)
         if (o.isDir)
             watcher.watchDir(fnm, DWFileEvent.ALL, true);
         else
+        {
+            if (fnm.indexOf(".#") > 0 || fnm.indexOf(".ttl") < 0)
+                continue;
+
             prev_state_file_list[ fnm ] = true;
+        }
     }
 
     if (need_reload_ontology)
