@@ -72,17 +72,10 @@ v-s:ContactsTemplate
   rdfs:label "Шаблон функции контакты"@ru ;
   rdfs:label "Contacts function template"@en ;
   v-ui:template """
-<script>
-  template.one("remove", function () {
-    individual.activeTab = $("#contacts-tabs li.active a", template).attr("href");
+<script><!--async-->
+  return veda.appointment.getOrganization().then(function (managedOrganization) {
+    individual["v-s:managedOrganization"] = [ managedOrganization ];
   });
-  individual.activeTab = individual.activeTab || "#structure";
-  $("#contacts-tabs a[href='" + individual.activeTab + "']", template).parent().addClass("active");
-  $("#contacts-tabs-content " + individual.activeTab, template).addClass("active");
-
-  if ( !individual.hasValue("v-s:managedOrganization") && veda.appointment && typeof veda.appointment.getOrganization === "function") {
-    individual["v-s:managedOrganization"] = [ veda.appointment.getOrganization() ];
-  }
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
 <div class="container sheet">
@@ -106,36 +99,20 @@ v-s:ContactsTemplate
       background-color: #faf2cc;
     }
   </style>
+  <h2 about="@" property="rdfs:label"></h2>
+  <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
   <br>
-  <ul class="nav nav-tabs nav-right" role="tablist" id="contacts-tabs">
-    <li role="presentation" class="pull-left"><h2 class="no-margin" about="@" property="rdfs:label"></h2></li>
-    <li role="presentation"><a href="#structure" role="tab" data-toggle="tab" about="v-s:Contacts" property="rdfs:comment"></a></li>
-  </ul>
-  <br>
-  <div class="tab-content" id="contacts-tabs-content">
-    <div role="tabpanel" class="tab-pane" id="structure">
-      <veda-control data-type="link" rel="v-s:managedOrganization" class="fulltext dropdown"></veda-control>
-      <br>
-      <div>
-        <div class="input-group">
-          <veda-control id="searchText" property="*" data-type="string"></veda-control>
-          <span class="input-group-btn">
-            <button id="searchButton" class="btn btn-primary" type="button" about="v-fs:Find" property="rdfs:label"></button>
-            <button id="resetButton" class="btn btn-warning" type="button" about="v-s:Reset" property="rdfs:label"></button>
-          </span>
-        </div>
-        <br>
-      </div>
-      <br>
-      <div>
-        <div>
-          <div>
-            <div id="orgTree" class="table-responsive"></div>
-          </div>
-        </div>
-      </div>
+  <div>
+    <div class="input-group">
+      <veda-control id="searchText" property="*" data-type="string"></veda-control>
+      <span class="input-group-btn">
+        <button id="searchButton" class="btn btn-primary" type="button" about="v-fs:Find" property="rdfs:label"></button>
+        <button id="resetButton" class="btn btn-warning" type="button" about="v-s:Reset" property="rdfs:label"></button>
+      </span>
     </div>
   </div>
+  <br>
+  <div id="orgTree" class="table-responsive"></div>
 </div>
 <script>
   var orgTree = $("#orgTree", template);
@@ -306,10 +283,6 @@ v-s:ContactsTemplate
     return $(rowTmpl);
   }
   function drawRow(value, rootElement, template){
-    // if (!value.hasValue('v-s:parentOrganization')) {
-    //   value['v-s:parentOrganization'] = individual['v-s:managedOrganization'];
-    //   value.save();
-    // }
     template = value.present($("<div>"), template[0].outerHTML);
     rootElement.append(template);
   }
@@ -439,8 +412,8 @@ v-s:ContactsTemplate
     if ( !confirm(warning) ) { return; }
     currentRow.closest("[resource]").trigger('delete');
     parentRow.find('.childs').remove();
-    setTimeout(function(){
-      drawChilds(parentRow.attr('resource'), parentRow)
+    setTimeout(function () {
+      drawChilds(parentRow.attr('resource'), parentRow);
     }, 500);
     return false;
   });
@@ -477,18 +450,16 @@ v-s:ContactsTemplate
       });
       drawChilds(undefined, orgTree, items);
       return items;
-    })
-  })
-  $('#resetButton', template).click(function(){
+    });
+  });
+  $('#resetButton', template).click(function () {
     $('#searchText input', template).val('');
     initialStructure();
-  })
+  });
   //# sourceURL=v-s:ContactsTemplate_post
 </script>
   """
 .
-
-
 
 v-s:ContactsSearchBlankTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -512,7 +483,7 @@ v-s:ContactsSearchBlankTemplate
     <br>
   </div>
 </div>
-<script>
+<script><!--async-->
   container.siblings("br").remove();
   var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
   var customFind = $(".custom-find", template);
@@ -609,14 +580,18 @@ v-s:OrganizationUnitContentTemplate
   rdfs:label "Organization unit template"@en ;
   v-ui:forClass v-s:OrganizationUnit ;
   v-ui:template """
-<script>
+<script><!--async-->
   var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
-  blank.initBlank();
-  if ( !blank.object.hasValue("v-s:parentUnit", individual) ) {
-    blank.object["v-s:parentUnit"] = [ individual ];
-    var search = new veda.IndividualModel("v-s:ContactsInUnitSearch");
-    search["v-fs:searchResult"] = [];
-  }
+  return blank.load().then(function (blank) {
+    blank.initBlank();
+    if ( !blank.object.hasValue("v-s:parentUnit", individual) ) {
+      blank.object["v-s:parentUnit"] = [ individual ];
+      var search = new veda.IndividualModel("v-s:ContactsInUnitSearch");
+      return search.load().then(function (search) {
+        search["v-fs:searchResult"] = [];
+      });
+    }
+  });
 //# sourceURL=v-s:OrganizationUnitContentTemplate_pre
 </script>
 <div>
@@ -655,12 +630,12 @@ v-s:ContactsInUnitSearchResultTemplate
   v-ui:template """
 <div>
   <div class="result-container">
-    <script>
-      if ( individual.is("v-s:Appointment") ) {
+    <script><!--async-->
+      if ( individual.hasValue("rdf:type", "v-s:Appointment") ) {
         template.children().not(".app").remove();
-      } else if ( individual.is("v-s:Department") || individual.is("v-s:OrgGroup") ) {
+      } else if ( individual.hasValue("rdf:type", "v-s:Department") || individual.hasValue("rdf:type", "v-s:OrgGroup") ) {
         template.children().not(".dep").remove();
-      } else if ( individual.is("v-s:Organization") ) {
+      } else if ( individual.hasValue("rdf:type", "v-s:Organization") ) {
         template.children().not(".org").remove();
       }
     //# sourceURL=v-s:ContactsInUnitSearchResultTemplate
@@ -682,7 +657,7 @@ v-s:ContactsInUnitSearchResultTemplate
       <span class="app" about="@" rel="v-s:employee">
         <span rel="v-s:hasAccount">
           <a class="view -edit -search" about="@" property="v-s:mailbox"></a>
-          <script>
+          <script><!--async-->
             template.attr("href", "mailto:" + individual["v-s:mailbox"][0]);
           </script>
         </span>
