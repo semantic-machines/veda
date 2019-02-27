@@ -181,27 +181,34 @@ void main(char[][] args)
     auto ev_loop = getThreadEventLoop();
     auto watcher = new AsyncDirectoryWatcher(ev_loop);
 
-    DWChangeInfo[ 512 ] change_buf;
+    DWChangeInfo[ 5120 ] change_buf;
 
     watcher.run(
                 {
-                    log.trace("Enter Handler (directory event captured), path=%s", onto_path);
+                    log.trace("Watch activity");
                     DWChangeInfo[] changes = change_buf[];
                     uint cnt;
                     string[] _files;
+
+                    int c_loop = 0;
 
                     do
                     {
                         cnt = watcher.readChanges(changes);
 
+                        if (c_loop == 0 && cnt == 0)
+                        {
+                            log.trace("read changes return empty data, re-watch dir %s", onto_path);
+                            oFiles = dirEntries(onto_path, SpanMode.depth);
+
+                            foreach (o; oFiles)
+                                if (o.isDir)
+                                    watcher.watchDir(o.name, DWFileEvent.ALL, true);
+                        }
+
                         foreach (i; 0 .. cnt)
                         {
                             string file_name = changes[ i ].path.dup;
-
-                            if (file_name.indexOf(".#") > 0 || file_name.indexOf(".ttl") < 0)
-                                continue;
-
-                            _files ~= file_name;
 
                             if (isDir(file_name))
                             {
@@ -209,13 +216,20 @@ void main(char[][] args)
                                 watcher.watchDir(file_name, DWFileEvent.ALL, true);
                             }
                             else
+                            if (file_name.indexOf(".#") > 0 || file_name.indexOf(".ttl") < 0)
+                                continue;
+
+                            if (!isDir(file_name))
                             {
+                                _files ~= file_name;
                                 log.trace("found change in file, path=%s", file_name);
                             }
                         }
 
                         if (_files.length > 0)
                             Thread.sleep(dur!("seconds")(3));
+
+                        c_loop++;
                     } while (cnt > 0);
 
                     if (_files.length > 0)
@@ -229,7 +243,7 @@ void main(char[][] args)
     foreach (o; oFiles)
     {
         if (o.isDir)
-            watcher.watchDir(o.name);
+            watcher.watchDir(o.name, DWFileEvent.ALL, true);
     }
 
     if (need_reload_ontology)
