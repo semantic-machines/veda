@@ -263,6 +263,25 @@ veda.Module(function (veda) { "use strict";
     enumerable: false
   });
 
+  proto.can = function (action) {
+    action = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase();
+    return this.rights.then(function (rights) {
+      return rights.hasValue("v-s:can" + action, true);
+    });
+  };
+  proto.canCreate = function () {
+    return this.can("Create");
+  };
+  proto.canRead = function () {
+    return this.can("Read");
+  };
+  proto.canUpdate = function () {
+    return this.can("Update");
+  };
+  proto.canDelete = function () {
+    return this.can("Delete");
+  };
+
   Object.defineProperty(proto, "rightsOrigin", {
     get: function () {
       var self = this;
