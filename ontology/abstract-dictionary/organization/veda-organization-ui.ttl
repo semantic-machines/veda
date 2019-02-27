@@ -37,15 +37,19 @@ v-s:OrganizationUnitModel
    * @return {boolean}.
    */
   this.isSubUnitOf = function (unit, depth) {
-    depth = depth || 0;
-    var self = this;
-    if (typeof unit.valueOf() === "string") {
-      unit = new veda.IndividualModel( unit.valueOf() );
+    if (unit instanceof veda.IndividualModel) {
+      unit = unit.id;
     }
-    if (!this.hasValue("v-s:parentUnit") || depth > 16) return false;
-    return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || (item.id === unit.id) || self.isSubUnitOf.call(item, unit, depth + 1);
-    }, false);
+    depth = depth || 0;
+    return this.load().then(function (self) {
+      if ( !self.hasValue("v-s:parentUnit") || depth > 16 ) {
+        return false;
+      } else if ( self.hasValue("v-s:parentUnit", unit) ) {
+        return true;
+      } else {
+        return self.isSubUnitOf.call(self["v-s:parentUnit"][0], unit, depth + 1);
+      }
+    });
   };
 
   /**
@@ -55,25 +59,25 @@ v-s:OrganizationUnitModel
    */
   this.getChief = function (chiefId, depth) {
     depth = depth || 0;
-    var self = this;
-    var chiefId = chiefId || this.id;
-    if ( (this.hasValue("v-s:hasChief") || depth > 16) && this["v-s:hasChief"][0].id !== chiefId ) {
-      return this["v-s:hasChief"][0];
-    }
-    return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || self.getChief.call(item, chiefId, depth + 1);
-    }, undefined);
+    return this.load().then(function (self) {
+      chiefId = chiefId || self.id;
+      if ( (self.hasValue("v-s:hasChief") || depth > 16) && self["v-s:hasChief"][0].id !== chiefId ) {
+        return self["v-s:hasChief"][0];
+      } else if ( self.hasValue("v-s:parentUnit") ) {
+        return self.getChief.call(self["v-s:parentUnit"][0], chiefId, depth + 1);
+      }
+    });
   };
 
   this.getFieldChief = function (depth) {
     depth = depth || 0;
-    var self = this;
-    if ( (this.hasValue("v-s:hasFieldChief") || depth > 16) ) {
-      return this["v-s:hasFieldChief"][0];
-    }
-    return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || self.getFieldChief.call(item, depth + 1);
-    }, undefined);
+    return this.load().then(function (self) {
+      if ( self.hasValue("v-s:hasFieldChief") || depth > 16 ) {
+        return self["v-s:hasFieldChief"][0];
+      } else if ( self.hasValue("v-s:parentUnit") ) {
+        return self.getFieldChief.call(self["v-s:parentUnit"][0], depth + 1);
+      }
+    });
   };
 
   /**
@@ -83,16 +87,16 @@ v-s:OrganizationUnitModel
    */
   this.getOrganization = function (depth) {
     depth = depth || 0;
-    var self = this;
-    if ( this.is("v-s:Organization") || depth > 16) {
-      return this;
-    }
-
-    return this["v-s:parentUnit"].reduce(function (state, item) {
-      return state || item.getOrganization(depth + 1);
-    }, undefined);
+    return this.load().then(function (self) {
+      if ( self.hasValue("rdf:type", "v-s:Organization") || depth > 16) {
+        return self;
+      } else if ( self.hasValue("v-s:parentOrganization", "v-s:Organization") ) {
+        return self["v-s:parentOrganization"][0];
+      } else if ( self.hasValue("v-s:parentUnit") ) {
+        return self.getOrganization.call(self["v-s:parentUnit"][0], depth + 1);
+      }
+    });
   };
-
   //# sourceURL=v-s:OrganizationUnitModel
   """ ;
 .
