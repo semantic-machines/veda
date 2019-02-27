@@ -383,35 +383,22 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
                             //log.trace("@storage_manager ti.assigned_subsystems=%s", subsystem_byte_to_string(ti.assigned_subsystems));
 
-                            if (ti.assigned_subsystems != ALL_MODULES && (ti.assigned_subsystems & SUBSYSTEM.STORAGE) != SUBSYSTEM.STORAGE)
-                            {
-                                send(tid_response_reciever, rc, thisTid);
-                                return;
-                            }
-
                             if (opt_freeze == OptFreeze.NONE && is_freeze && ti.cmd == INDV_OP.PUT)
                                 send(tid_response_reciever, rc, thisTid);
 
                             try
                             {
-                                if (ti.cmd == INDV_OP.REMOVE)
+                                if (ti.cmd == INDV_OP.PUT || ti.cmd == INDV_OP.REMOVE)
                                 {
-                                    if (storage.remove(ti.uri) == ResultCode.Ok)
+                                    if (ti.assigned_subsystems == ALL_MODULES || ((ti.assigned_subsystems & SUBSYSTEM.STORAGE) == SUBSYSTEM.STORAGE))
+                                    {
+                                        if (ti.cmd == INDV_OP.REMOVE)
+                                            rc = storage.remove(ti.uri);
+                                        else
+                                            rc = storage.store(ti.uri, ti.new_binobj, op_id);
+                                    }
+                                    else
                                         rc = ResultCode.Ok;
-                                    else
-                                        rc = ResultCode.FailStore;
-
-                                    send(tid_response_reciever, rc, thisTid);
-
-                                    return;
-                                }
-                                else if (ti.cmd == INDV_OP.PUT || ti.cmd == INDV_OP.REMOVE)
-                                {
-                                    if (ti.cmd == INDV_OP.REMOVE)
-                                        rc = storage.remove(ti.uri);
-                                    else
-                                        rc = storage.store(ti.uri, ti.new_binobj, op_id);
-
 
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
                                     if (rc == ResultCode.Ok)
