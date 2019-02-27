@@ -198,7 +198,7 @@ void main(char[][] args)
                         {
                             string file_name = changes[ i ].path.dup;
 
-                            if (file_name.indexOf(".#") > 0)
+                            if (file_name.indexOf(".#") > 0 || file_name.indexOf(".ttl") < 0)
                                 continue;
 
                             _files ~= file_name;
@@ -206,7 +206,7 @@ void main(char[][] args)
                             if (isDir(file_name))
                             {
                                 log.trace("now watch dir, path=%s", file_name);
-                                watcher.watchDir(file_name);
+                                watcher.watchDir(file_name, DWFileEvent.ALL, true);
                             }
                             else
                             {
@@ -223,7 +223,7 @@ void main(char[][] args)
                     }
                 });
 
-    watcher.watchDir(onto_path);
+    watcher.watchDir(onto_path, DWFileEvent.ALL, true);
     foreach (o; oFiles)
     {
         if (o.isDir)
