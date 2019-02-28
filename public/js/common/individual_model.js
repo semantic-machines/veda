@@ -822,6 +822,28 @@ veda.Module(function (veda) { "use strict";
   /**
    * @method
    * Prefetch linked objects. Useful for presenting objects with many links.
+   * @param {property_uri, ...} Property chain to get value.
+   */
+  proto.getPropertyChain = function () {
+    var args = Array.prototype.slice.call(arguments);
+    var property_uri = args.shift();
+    return this.load().then(function (self) {
+      if ( self.hasValue(property_uri) ) {
+        if ( !args.length ) {
+          return self[property_uri];
+        } else {
+          return self.getPropertyChain.apply(self[property_uri][0], args);
+        }
+      }
+      return;
+    }).catch(function (error) {
+      console.log(error);
+    });
+  };
+
+  /**
+   * @method
+   * Prefetch linked objects. Useful for presenting objects with many links.
    * @param {Number} Depth of the object tree to prefetch.
    * @param {allowed_property_uri, ...} Allowed property uri for links. If defined the tree is formed only for allowed properties.
    */
