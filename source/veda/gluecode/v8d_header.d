@@ -691,8 +691,17 @@ private void reload_ext_scripts(Context ctx)
                 fileName = path ~ fileName;
                 if (fileName.exists)
                 {
-                    DirEntry fileEntry = DirEntry(cast(string)fileName);
-                    oFiles ~= fileEntry;
+                    if (isDir(cast(string)fileName))
+                    {
+                        auto fls = dirEntries(cast(string)fileName, SpanMode.depth).array;
+                        foreach (o; fls)
+                            oFiles ~= o;
+                    }
+                    else
+                    {
+                        DirEntry fileEntry = DirEntry(cast(string)fileName);
+                        oFiles ~= fileEntry;
+                    }
                 }
             }
         }
@@ -705,7 +714,7 @@ private void reload_ext_scripts(Context ctx)
         {
             if (extension(o.name) == ".js")
             {
-                log.trace("load script:%s", o);
+                //log.trace("load script:%s", o);
                 auto str_js        = cast(ubyte[]) read(o.name);
                 auto str_js_script = script_vm.compile(cast(string)str_js);
                 if (str_js_script !is null)
