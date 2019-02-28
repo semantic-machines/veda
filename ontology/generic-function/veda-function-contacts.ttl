@@ -90,13 +90,22 @@ v-s:ContactsTemplate
       margin-top: 5px;
     }*/
     div.value-row > div.item {
-      padding: 5px;
+      padding: 8px;
     }
     div.item:hover {
       background-color: #fcf8e3;
     }
     div.item.warning {
       background-color: #faf2cc;
+    }
+    #searchText input {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+    .children {
+      border-left: 1px dashed #eee;
+      padding-left: 8px;
+      margin-left: 14px;
     }
   </style>
   <h2 about="@" property="rdfs:label"></h2>
@@ -112,179 +121,187 @@ v-s:ContactsTemplate
     </div>
   </div>
   <br>
-  <div id="orgTree" class="table-responsive"></div>
+  <div class="orgTree"></div>
 </div>
-<script>
-  var orgTree = $("#orgTree", template);
-
-  var controlBlock = '<div id="controlButtons" style="float:right"><div class="btn create btn-xs btn-primary"><i class="glyphicon glyphicon-plus"></i></div><div class="btn edit btn-xs btn-default"><i class="glyphicon glyphicon-pencil"></i></div><div class="btn remove btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></div></div>';
-
-  var zoomIn = '<a href="#" id="zoomIn" class="glyphicon glyphicon-zoom-in margin-sm-h"></a>';
-
+<script><!--async-->
+  var orgTree = $(".orgTree", template);
+  var controlBlock = '<div class="controlButtons" style="float:right"><div class="btn create btn-xs btn-primary"><i class="glyphicon glyphicon-plus"></i></div><div class="btn edit btn-xs btn-default"><i class="glyphicon glyphicon-pencil"></i></div><div class="btn remove btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></div></div>';
+  var zoomIn = '<a href="#" class="zoomIn glyphicon glyphicon-zoom-in margin-sm-h"></a>';
   var controlButtons = "";
   var appointmentButtons = "";
   var departmentButtons = "";
+
   function generateDepartmentControls() {
     var buttons = [];
-    var controls = "";
+    var controls = $('<div class="controlButtons" style="float:right"></div>');
     var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-primary">Добавить отдел</button>';
     var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Назначить сотрудника</button>';
-    if (veda.appointment.id != 'cfg:AdministratorAppointment') {
-      if (!veda.appointment['v-s:parentOrganization']) return "";
-      if (veda.appointment['v-s:parentOrganization'][0].id == individual['v-s:managedOrganization'][0].id) {
-        var _department =  new veda.IndividualModel("v-s:Department");
-        var canCreateDepartment = _department.rights.hasValue("v-s:canCreate", true);
-        if (canCreateDepartment) {
-          buttons.push(addDepartmentControl);
-        }
+    if (veda.appointment.id !== 'cfg:AdministratorAppointment') {
+      if ( !veda.appointment['v-s:parentOrganization'] ) {
+        return Promise.resolve(controls);
+      }
+      if ( veda.appointment['v-s:parentOrganization'][0] === individual['v-s:managedOrganization'][0] ) {
+        var department =  new veda.IndividualModel("v-s:Department");
+        var appointment =  new veda.IndividualModel("v-s:Appointment");
+        var position =  new veda.IndividualModel("v-s:Position");
+        var person =  new veda.IndividualModel("v-s:Person");
 
-        var _appointment =  new veda.IndividualModel("v-s:Appointment");
-        var canCreateAppointment = _appointment.rights.hasValue("v-s:canCreate", true);
-        var _position =  new veda.IndividualModel("v-s:Position");
-        var canCreatePosition = _position.rights.hasValue("v-s:canCreate", true);
-        var _person =  new veda.IndividualModel("v-s:Person");
-        var canCreatePerson = _person.rights.hasValue("v-s:canCreate", true);
-        if (canCreateAppointment && canCreatePosition && canCreatePerson) {
-          buttons.push(addAppointmentControl);
-        }
+        return Promise.all([department.canCreate(), appointment.canCreate(), position.canCreate(), person.canCreate()]).then(function (rights) {
+          var canCreateDepartment = rights[0];
+          var canCreateAppointment = rights[1];
+          var canCreatePosition = rights[2];
+          var canCreatePerson = rights[3];
+          if (canCreateDepartment) {
+            controls.append(addDepartmentControl);
+          }
+          if (canCreateAppointment && canCreatePosition && canCreatePerson) {
+            controls.append(addAppointmentControl);
+          }
+          return controls;
+        });
       }
     } else {
-      buttons.push(addDepartmentControl);
-      buttons.push(addAppointmentControl);
+      controls.append(addDepartmentControl);
+      controls.append(addAppointmentControl);
     }
-    if (buttons.length > 0) {
-      controls = $('<div id="controlButtons" style="float:right"></div>');
-      buttons.forEach(function(btn) {
-        controls.append(btn);
-      });
-    }
-    return controls;
+    return Promise.resolve(controls);
   }
 
   function generateAppointmentControls(targetAppointment){
-    var controls = $('<div id="controlButtons" style="float:right"></div>');
+    var controls = $('<div class="controlButtons" style="float:right"></div>');
     var delAppointmentControl = '<button id="delete-Appointment" class="btn btn-xs margin-sm-h btn-danger">Удалить назначение</button>';
-    if (veda.appointment.id != 'cfg:AdministratorAppointment') {
-      if (!veda.appointment['v-s:parentOrganization']) return "";
+    if (veda.appointment.id !== 'cfg:AdministratorAppointment') {
+      if (!veda.appointment['v-s:parentOrganization']) {
+        return Promise.resolve(controls);
+      }
       if (veda.appointment['v-s:parentOrganization'][0].id == individual['v-s:managedOrganization'][0].id) {
-        //var _appointment =  new veda.IndividualModel("v-s:Appointment");
-        var _appointment =  new veda.IndividualModel(targetAppointment);
-        var canDeleteAppointment = _appointment.rights.hasValue("v-s:canDelete", true);
-        //console.log('canDeleteAppointment='+canDeleteAppointment);
-        if (canDeleteAppointment) {
-          controls.append(delAppointmentControl);
-        }
+        var appointment =  new veda.IndividualModel(targetAppointment);
+        appointment.canDelete().then(function (canDeleteAppointment) {
+          if (canDeleteAppointment) {
+            controls.append(delAppointmentControl);
+          }
+          return controls;
+        });
       }
     } else {
       controls.append(delAppointmentControl);
     }
-    return controls;
+    return Promise.resolve(controls);
   }
 
-
-  function initialStructure(){
+  function initialStructure() {
     orgTree.empty();
-    if (individual.hasValue('v-s:managedOrganization')) {
-      departmentButtons = generateDepartmentControls();
-      var org = individual['v-s:managedOrganization'][0];
-      var tmpl = getTemplate(org);
-      drawRow(org, orgTree, tmpl);
-      $('.value-row a.expand', orgTree).click()
+    if ( individual.hasValue('v-s:managedOrganization') ) {
+      generateDepartmentControls().then(function (generatedButtons) {
+        departmentButtons = generatedButtons;
+        var org = individual['v-s:managedOrganization'][0];
+        getTemplate(org).then(function (tmpl) {
+          return org.present(orgTree, tmpl);
+        }).then(function (rendered) {
+          $('.value-row a.expand', rendered).click();
+        });
+      });
     }
   }
-  function drawChilds(parentUri, rootElement, filteredItems){
+
+  function drawChildren(parentUri, rootElement, filteredItems) {
     if (filteredItems) {
       orgTree.empty();
-      rootElement.append('<div class="childs"></div>');
-      childsContainer = rootElement.children('.childs');
+      rootElement.append('<div class="children"></div>');
+      childrenContainer = rootElement.children('.children');
       filteredItems.forEach(function (item) {
-        var tmpl = getTemplate(item);
-        drawRow(item, childsContainer, tmpl);
+        getTemplate(item).then(function (tmpl) {
+          item.present(childrenContainer, tmpl);
+        });
       });
     } else {
-      var childsContainer = rootElement.children('.childs');
-      if (childsContainer.length) {
-        childsContainer.show();
+      var childrenContainer = rootElement.children('.children');
+      if (childrenContainer.length) {
+        childrenContainer.show();
       } else {
-        rootElement.append('<div class="childs"></div>');
-        childsContainer = rootElement.children('.childs');
-
-        var childsUri = getChilds(new veda.IndividualModel(parentUri));
-        childsUri.forEach(function(uri) {
-          var child = new veda.IndividualModel(uri);
-          var tmpl = getTemplate(child);
-          drawRow(child, childsContainer, tmpl);
-        })
+        rootElement.append('<div class="children"></div>');
+        childrenContainer = rootElement.children('.children');
+        getChildren(new veda.IndividualModel(parentUri), true).then(function (childrenUris) {
+          childrenUris.forEach(function(childUri) {
+            var child = new veda.IndividualModel(childUri);
+            getTemplate(child).then(function (tmpl) {
+              child.present(childrenContainer, tmpl);
+            });
+          });
+        });
       }
     }
   }
 
-  function getChilds(parent, isPrefetch){
-    var childsUries = [];
-    if (parent.is('v-s:Appointment')) {
-      return childsUries;
+  function getChildren(parent, refresh) {
+    if (parent.children && !refresh) {
+      return Promise.resolve(parent.children);
+    }
+    var childrenUris = [];
+    if (parent.hasValue('rdf:type','v-s:Appointment')) {
+      return Promise.resolve([]);
     }
     var parentUri = parent.id;
     var parentOrgUri = individual["v-s:managedOrganization"][0].id;
     var queryPattern = "'v-s:parentUnit'=='" + parentUri + "' && ";
 
     var queryDepartments = queryPattern + "'rdf:type'=='v-s:Department'";
-    //отображение сначала должностей как корней, с аппоинтментами внутри
-    // var queryPosition = queryPattern + "'rdf:type'=='v-s:Position'";
-    // var queryAppointment = "'rdf:type'=='v-s:Appointment' && 'v-s:occupation'=='"+parentUri+"'";
-    // var queryStringArray = [queryOrganization, queryDepartments, queryOrgGroup, queryPosition, queryAppointment];
-
-    //отображение аппоинтментов как кроней
     var queryAppointment = queryPattern + "'rdf:type'=='v-s:Appointment'";
     var queryStringArray = [];
-    if (parent.is('v-s:Department')) {
+    if (parent.hasValue('rdf:type', 'v-s:Department')) {
       queryStringArray = [queryDepartments, queryAppointment];
-    } else if (parent.is('v-s:OrgGroup')) {
+    } else if (parent.hasValue('rdf:type', 'v-s:OrgGroup')) {
       queryStringArray = [queryAppointment];
-    } else if (parent.is('v-s:Organization')) {
+    } else if (parent.hasValue('rdf:type', 'v-s:Organization')) {
       var queryOrgGroup = queryPattern + "'rdf:type'=='v-s:OrgGroup'";
-      var querySubsidiary = "'v-s:parentOrganization'=='"+parentOrgUri+"' && 'rdf:type'=='v-s:Subsidiary'";
+      var querySubsidiary = "'v-s:parentOrganization'=='" + parentOrgUri + "' && 'rdf:type'=='v-s:Subsidiary'";
       var queryOrganization = queryPattern + "'rdf:type'=='v-s:Organization'";
       queryStringArray = [queryOrganization, querySubsidiary, queryDepartments, queryOrgGroup, queryAppointment];
     }
 
     var sort = "'rdfs:label' desc";
-    for (var i = 0; i< queryStringArray.length; i++) {
-      var result = query({ticket: veda.ticket, query: queryStringArray[i], sort: sort}).result;
-      childsUries = childsUries.concat(result);
-      if (isPrefetch && childsUries.length > 0) {
-        break;
-      }
-    }
-    return childsUries;
-
+    var queries = queryStringArray.map(function (queryString) {
+      return veda.Backend.query({ticket: veda.ticket, query: queryString, sort: sort});
+    });
+    return Promise.all(queries).then(function (queryResults) {
+      queryResults.forEach(function (queryResult) {
+        childrenUris = childrenUris.concat(queryResult.result);
+      });
+      parent.children = childrenUris;
+      return childrenUris;
+    });
   }
 
-  function getTemplate(value, currentLvl){
-    var icon = '';
-    var expand = '';
-    var textProperty = 'rdfs:label';
-    if (value.is('v-s:Appointment')) {
-      icon = 'fa-user-o';
-    } else {
-      var preCheckChilds = getChilds(value, true);
-      if (preCheckChilds.length > 0) {
-        expand = "<a href='#' class='expand glyphicon glyphicon-chevron-right'></a>";
-      };
-      if (value.is('v-s:Organization')) icon = 'fa-sitemap';
-      if (value.is('v-s:Department') || value.is('v-s:OrgGroup')) {
-        if (value.hasValue('v-s:title')) textProperty = 'v-s:title';
-        icon = 'fa-folder-o';
+
+  function getTemplate(value) {
+    return value.load().then(function (value) {
+      var rowTmpl = "<div class='value-row'>" +
+                      "<div class='item'>" +
+                        "{expand}" +
+                        "<span style='margin:0 5px;' class='fa fa-lg {icon}'></span>" +
+                        "<span about='@' data-template='v-ui:LabelTemplate'></span>" +
+                      "</div>" +
+                    "</div>";
+      var icon = "";
+      var expand = "";
+      if ( value.hasValue('rdf:type', 'v-s:Appointment') ) {
+        icon = "fa-user-o";
+        return rowTmpl.replace("{icon}", icon).replace("{expand}", expand);
+      } else {
+        return getChildren(value).then(function (children) {
+          if ( children.length > 0 ) {
+            expand = "<a href='#' class='expand glyphicon glyphicon-chevron-right'></a>";
+          }
+          if ( value.hasValue('rdf:type', 'v-s:Organization') ) {
+            icon = 'fa-sitemap';
+          }
+          if ( value.hasValue('rdf:type', 'v-s:Department' ) || value.hasValue('rdf:type', 'v-s:OrgGroup') ) {
+            icon = 'fa-folder-o';
+          }
+          return rowTmpl.replace("{icon}", icon).replace("{expand}", expand);
+        });
       }
-    }
-    var iconSpan = "<span style='margin:0 5px;' class='fa fa-lg " + icon + "'></span>"
-    var rowTmpl = "<div class='value-row margin-xs' style='padding-left:16px'><div class='item'>"+ expand + iconSpan +
-      "<span about='@' property='" + textProperty + "' data-template='v-ui:LabelTemplate'></span></div></div>";
-    return $(rowTmpl);
-  }
-  function drawRow(value, rootElement, template){
-    template = value.present($("<div>"), template[0].outerHTML);
-    rootElement.append(template);
+    });
   }
 
   template.on("click", "a.expand.glyphicon-chevron-right", function (e) {
@@ -294,7 +311,7 @@ v-s:ContactsTemplate
     var row = self.closest('div.value-row');
     var uri = row.attr('resource');
     self.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
-    drawChilds(uri, row);
+    drawChildren(uri, row);
     return false;
   });
 
@@ -304,7 +321,7 @@ v-s:ContactsTemplate
     var self = $(this);
     self.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
     var row = self.closest('div.value-row');
-    row.children('div.childs').hide();
+    row.children('div.children').hide();
     return false;
   });
 
@@ -315,17 +332,14 @@ v-s:ContactsTemplate
     var row = self.closest('div.value-row');
     var uri = row.attr('resource');
     var obj = new veda.IndividualModel(uri);
-    var person, tmpl;
-    if (obj.is('v-s:Appointment')) {
+    var tmpl;
+    if (obj.hasValue('rdf:type', 'v-s:Appointment')) {
       obj = obj['v-s:employee'][0];
-      // tmpl = new veda.IndividualModel('v-s:PersonalInfoTemplate', 'view');
       tmpl = undefined;
-      riot.route( ["#", obj.id].join("/") );
-      return false;
-    } else if (obj.is('v-s:Department')) {
-      tmpl = new veda.IndividualModel('v-s:DepartmentTemplate', 'view');
-    } else if (obj.is('v-s:Organization')) {
-      tmpl = new veda.IndividualModel('v-s:OrganizationTemplate', 'view');
+    } else if (obj.hasValue('rdf:type', 'v-s:Department')) {
+      tmpl = 'v-s:DepartmentTemplate';
+    } else if (obj.hasValue('rdf:type', 'v-s:Organization')) {
+      tmpl = 'v-s:OrganizationTemplate';
     }
     veda.Util.showModal(obj, tmpl);
     return false;
@@ -338,13 +352,14 @@ v-s:ContactsTemplate
     var item = self.children('.item');
     if (!item.hasClass('warning')) {
       $('.item.warning', template).removeClass('warning');
-      $('#controlButtons', template).remove();
-      $('#zoomIn', template).remove();
+      $('.controlButtons', template).remove();
+      $('.zoomIn', template).remove();
       item.addClass('warning');
       item.append(zoomIn);
       if (self.attr('typeof') == 'v-s:Appointment') {
-        appointmentButtons = generateAppointmentControls(self.attr('resource'));
-        item.append(appointmentButtons);
+        generateAppointmentControls(self.attr('resource')).then(function (appointmentButtons) {
+          item.append(appointmentButtons);
+        });
       } else {
         item.append(departmentButtons);
       }
@@ -361,18 +376,28 @@ v-s:ContactsTemplate
 
     var NewDepartment = new veda.IndividualModel();
     var _class = new veda.IndividualModel('v-s:Department');
-    var tmpl = new veda.IndividualModel('v-s:DepartmentTemplate');
+    var tmpl = 'v-s:DepartmentTemplate';
     NewDepartment['rdf:type'] = [_class];
     NewDepartment['v-s:parentUnit'] = [new veda.IndividualModel(parentUri)];
     NewDepartment['v-s:parentOrganization'] = individual['v-s:managedOrganization'];
     var modal = veda.Util.showModal(NewDepartment, tmpl, "edit");
-    NewDepartment.one("afterSave", function () {
-      modal.modal("hide").remove();
-      row.find('.childs').remove();
-      setTimeout(function(){
-        drawChilds(parentUri, row)
-      }, 500);
+
+    NewDepartment.one("afterSave", saveHandler)
+    NewDepartment.one("afterReset", resetHandler);
+    template.one("remove", function () {
+      NewDepartment.off("afterSave", saveHandler);
+      NewDepartment.off("afterReset", resetHandler);
     });
+    function saveHandler() {
+      modal.modal("hide").remove();
+      setTimeout(function () {
+        row.find('.children').remove();
+        drawChildren(parentUri, row);
+      }, 2000);
+    }
+    function resetHandler() {
+      modal.modal("hide").remove();
+    }
     return false;
   });
 
@@ -391,13 +416,22 @@ v-s:ContactsTemplate
     NewAppointment['v-s:parentOrganization'] = individual['v-s:managedOrganization'];
 
     var modal = veda.Util.showModal(NewAppointment, tmpl, "edit");
-    NewAppointment.one("afterSave", function () {
-      modal.modal("hide").remove();
-      row.find('.childs').remove();
-      setTimeout(function(){
-        drawChilds(parentUri, row)
-      }, 500);
+    NewAppointment.one("afterSave", saveHandler);
+    NewAppointment.one("afterReset", resetHandler);
+    template.one("remove", function () {
+      NewAppointment.off("afterSave", saveHandler);
+      NewAppointment.off("afterReset", resetHandler);
     });
+    function saveHandler() {
+      modal.modal("hide").remove();
+      setTimeout(function () {
+        row.find('.children').remove();
+        drawChildren(parentUri, row);
+      }, 2000);
+    }
+    function resetHandler() {
+      modal.modal("hide").remove();
+    }
     return false;
   });
 
@@ -407,14 +441,13 @@ v-s:ContactsTemplate
     var self = $(this);
     var currentRow = self.closest('div.value-row');
     var parentRow = currentRow.parent().closest("[resource]");
-    //var delUri = row.attr('resource');
     var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
     if ( !confirm(warning) ) { return; }
     currentRow.closest("[resource]").trigger('delete');
-    parentRow.find('.childs').remove();
     setTimeout(function () {
-      drawChilds(parentRow.attr('resource'), parentRow);
-    }, 500);
+      parentRow.find('.children').remove();
+      drawChildren(parentRow.attr('resource'), parentRow);
+    }, 2000);
     return false;
   });
 
@@ -428,11 +461,8 @@ v-s:ContactsTemplate
     var searchText = $('#searchText input', template).val();
     if (!searchText) return;
     var sort = "'rdfs:label' desc";
-
-    // var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'rdfs:label'=='"+ searchText +"*'";
-    //поиск с заполненным v-s:parentOrganization
     var q = "('rdf:type'==='v-s:OrgGroup' || 'rdf:type'==='v-s:Department' || 'rdf:type'==='v-s:Organization' || 'rdf:type'==='v-s:Appointment') && 'v-s:parentOrganization'=='"+ individual['v-s:managedOrganization'][0].id +"' && 'rdfs:label'=='"+ searchText +"*'";
-    query({
+    veda.Backend.query({
       ticket: veda.ticket,
       query: q,
       sort: sort,
@@ -442,16 +472,13 @@ v-s:ContactsTemplate
       var items = [];
       unique.forEach(function (item) {
         var temp = new veda.IndividualModel(item);
-        // if (temp.isSubUnitOf && temp.isSubUnitOf(individual['v-s:managedOrganization'][0])) {
-        //   items.push(new veda.IndividualModel(item));
-        // }
-        //поиск с заполненным v-s:parentOrganization
         items.push(new veda.IndividualModel(item));
       });
-      drawChilds(undefined, orgTree, items);
+      drawChildren(undefined, orgTree, items);
       return items;
     });
   });
+
   $('#resetButton', template).click(function () {
     $('#searchText input', template).val('');
     initialStructure();
