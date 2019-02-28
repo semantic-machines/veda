@@ -2027,8 +2027,12 @@ v-ui:JournalTemplate
 </script>
 <div class="container journal sheet">
   <style>
-    .journal-record > div > .sub-journal {margin-left: 5px; padding-left: 20px; border-left: 1px solid #ddd;}
-    .journal hr.margin-sm {margin: 10px 0px;}
+    .journal-record > div > .sub-journal {
+      margin-left: 5px; padding-left: 20px;
+    }
+    .journal hr.margin-sm {
+      margin: 10px 0px;
+    }
   </style>
   <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
