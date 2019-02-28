@@ -618,10 +618,6 @@ v-s:DepartmentTemplate
   v-ui:template """
 <script><!--async-->
   var parentOrganization = individual['v-s:parentOrganization'][0];
-  var orgINN = parentOrganization['v-s:taxId'][0];
-    if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
-      orgINN = 'RU'+orgINN;
-    };
   var departmentQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='" + parentOrganization.id + "') || ('rdf:type'=='v-s:Organization' && '@'=='" + parentOrganization.id + "')";
   $('veda-control[rel="v-s:parentUnit"]', template).attr('data-query-prefix', departmentQueryPrefix);
 
@@ -640,6 +636,7 @@ v-s:DepartmentTemplate
     }
     template.trigger("validated", result);
   });
+//# sourceURL=v-s:DepartmentTemplate_pre
 </script>
 <div class="container sheet">
   <h2>
@@ -657,7 +654,7 @@ v-s:DepartmentTemplate
     <!-- <veda-control data-type="link" rel="v-s:parentOrganization" class="-view edit search fulltext"></veda-control> -->
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
-    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
+    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext dropdown"></veda-control>
     <hr class="view -edit -search">
     <em about="rdfs:label" property="rdfs:label"></em>
     <div property="rdfs:label" class="view -edit -search"></div>
@@ -679,15 +676,15 @@ v-s:DepartmentTemplate
       <div class="col-sm-6">
         <em about="v-s:hasChief" property="rdfs:label"></em>
         <div rel="v-s:hasChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext"></veda-control>
+        <veda-control data-type="link" rel="v-s:hasChief" class="-view edit search fulltext dropdown"></veda-control>
         <em about="v-s:hasFieldChief" property="rdfs:label"></em>
         <div rel="v-s:hasFieldChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="v-s:hasFieldChief" class="-view edit search fulltext"></veda-control>
+        <veda-control data-type="link" rel="v-s:hasFieldChief" class="-view edit search fulltext dropdown"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:hasFunctionalChief" property="rdfs:label"></em>
         <div rel="v-s:hasFunctionalChief" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
-        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext"></veda-control>
+        <veda-control data-type="link" rel="v-s:hasFunctionalChief" class="-view edit search fulltext dropdown"></veda-control>
       </div>
     </div>
     <hr class="view -edit -search">
@@ -819,11 +816,12 @@ v-s:AppointmentForContactTemplate
       NewPerson = new veda.IndividualModel();
       NewPerson['rdf:type'] = [new veda.IndividualModel('v-s:Person')];
       NewPerson['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
-      var tmpl = NewPerson.present($("<div>"), 'v-s:EmployeeEmbeddedTemplate', 'edit');
-      tmpl.on("validate", function () {
-        template.trigger('special-validate');
+      NewPerson.present($("<div>"), 'v-s:EmployeeEmbeddedTemplate', 'edit').then(function (tmpl) {
+        tmpl.on("validate", function () {
+          template.trigger('special-validate');
+        });
+        $('#fill-Person').append(tmpl);
       });
-      $('#fill-Person').append(tmpl);
     }
     individual['v-s:employee'] = [NewPerson];
   });
@@ -852,11 +850,12 @@ v-s:AppointmentForContactTemplate
       NewOccupation['rdf:type'] = [new veda.IndividualModel('v-s:Position')];
       NewOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
       NewOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
-      var tmpl = NewOccupation.present($("<div>"), 'v-s:OccupationEmbeddedTemplate', 'edit');
-      tmpl.on("validate", function () {
-        template.trigger('special-validate');
+      NewOccupation.present($("<div>"), 'v-s:OccupationEmbeddedTemplate', 'edit').then(function (tmpl) {
+        tmpl.on("validate", function () {
+          template.trigger('special-validate');
+        });
+        $('#fill-Occupation').append(tmpl);
       });
-      $('#fill-Occupation').append(tmpl);
     }
     individual['v-s:occupation'] = [NewOccupation];
   });
@@ -881,7 +880,7 @@ v-s:AppointmentForContactTemplate
           veda.Backend.get_individuals(veda.ticket, appointmentsUris).then(function (appointmentsJSONs) {
             appointmentsJSONs.forEach(function (appointmentJSON) {
               var label = $('<label></label>');
-              var radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointmentUri);
+              var radio = $('<input type="radio" name="defaultAppointment"/>').attr('value', appointmentJSON["@"]);
               label.append(radio);
               label.append( (new veda.IndividualModel(appointmentJSON))['rdfs:label'][0] );
               radioCont.append($('<div class="radio"></div>').append(label));
@@ -903,10 +902,6 @@ v-s:AppointmentForContactTemplate
   });
 
   function beforeSaveHandler() {
-    var orgINN = individual['v-s:parentOrganization'][0]['v-s:taxId'][0];
-    if (orgINN.match('^([0-9]{10}|[0-9]{12})$')) {
-      orgINN = 'RU'+orgINN;
-    };
     var occupationCode = individual['v-s:occupation'][0]['v-s:subjectCode'][0];
     var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
     var tempEmployee = individual['v-s:employee'][0];
