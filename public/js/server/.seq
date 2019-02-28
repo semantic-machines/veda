@@ -1,5 +1,5 @@
 lib/mustache.js
 lib/synchronous-promise.js
 util.js
-modules
+$modules
 veda_init.js
