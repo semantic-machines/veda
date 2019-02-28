@@ -93,6 +93,8 @@ veda.Module(function (veda) { "use strict";
       //print("@@@ traceToJournal, journal_uri=" + journal_uri + ", " + veda.Util.toJson(journal_record));
   };
 
+
+// DEPRECATED
   veda.Util.isTecnicalChange = function (newdoc, olddoc)
   {
       if (newdoc['v-s:actualVersion'] && newdoc['v-s:actualVersion'][0].data != newdoc['@'])
@@ -141,6 +143,8 @@ veda.Module(function (veda) { "use strict";
       return true;
   };
 
+
+// DEPRECATED
   veda.Util.isTechnicalAttribute = function (attName, oldvalue)
   {
       if (!oldvalue && attName === 'v-s:actualVersion') return true;
