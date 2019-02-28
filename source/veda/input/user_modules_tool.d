@@ -2,7 +2,7 @@
 
  * user modules manager
  */
-module veda.ttlreader.user_modules_tool;
+module veda.input.user_modules_tool;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread, std.net.curl, std.algorithm;
 private import url, std.uuid, std.json, std.process;
