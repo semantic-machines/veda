@@ -1,7 +1,5 @@
-/lib/mustache.js
-/lib/synchronous-promise.js
-codelets.js
-docflow.js
-docflow-util.js
+lib/mustache.js
+lib/synchronous-promise.js
 util.js
 veda_init.js
+modules
