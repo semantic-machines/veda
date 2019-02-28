@@ -2,7 +2,7 @@
  * загрузка индивидов в базу данных из *.ttl
  * генерация doc/onto
  */
-module veda.file_reader;
+module veda.input.file_reader;
 
 import libasync, libasync.watcher, libasync.threads;
 import core.stdc.stdio, core.stdc.errno, core.stdc.string, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.sync.mutex;
@@ -10,7 +10,7 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.ttlreader.user_modules_tool, veda.util.properd;
+       veda.core.common.know_predicates, veda.core.common.log_msg, veda.input.user_modules_tool, veda.util.properd;
 import veda.core.common.type, veda.core.impl.app_context_creator;
 
 
