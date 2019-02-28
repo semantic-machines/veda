@@ -835,7 +835,7 @@ veda.Module(function (veda) { "use strict";
           return self.getPropertyChain.apply(self[property_uri][0], args);
         }
       }
-      return;
+      return [];
     }).catch(function (error) {
       console.log(error);
     });
