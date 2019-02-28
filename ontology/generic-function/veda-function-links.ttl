@@ -419,7 +419,7 @@ v-s:LinksTreeRecursiveTemplate
   });
 
   function presentTypeLink(link, typeLinksContainer) {
-    if ( link.is("v-s:Link") ) {
+    if ( link.hasValue("rdf:type", "v-s:Link") ) {
       if ( link.hasValue("v-s:from", individual) && link.hasValue("v-s:to") ) {
         link = link["v-s:to"][0];
       } else if ( link.hasValue("v-s:to", individual) && link.hasValue("v-s:from") ) {
