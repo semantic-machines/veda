@@ -30,6 +30,7 @@ cfg:User_department
   rdfs:label "Department"@en;
   v-s:origin "admin"^^xsd:string;
   v-s:parentUnit cfg:org_Veda;
+  v-s:parentOrganization cfg:org_Veda;
 .
 cfg:User_position
   a v-s:Position;
@@ -38,6 +39,7 @@ cfg:User_position
   rdfs:label "Специалист"@ru;
   rdfs:label "Specialist"@en;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
 .
 
 ### -------------------------------------------------------
@@ -71,6 +73,7 @@ cfg:GuestAppointment
   v-s:employee cfg:Guest ;
   v-s:occupation cfg:User_position;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner cfg:Guest ;
 .
 cfg:Guest_pref
@@ -122,6 +125,7 @@ cfg:ImportDMSToVedaAppointment
   rdfs:label "Утилита DMS to Veda"@ru ;
   rdfs:label "Import DMS to Veda"@en ;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
 .
 
 ### -------------------------------------------------------
@@ -155,6 +159,7 @@ cfg:ImportFromOtherSystemToVedaAppointment
   rdfs:label "Утилита импорта в Veda"@ru ;
   rdfs:label "Import From Other System to Veda"@en ;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
 .
 ### -------------------------------------------------------
 
@@ -189,6 +194,7 @@ cfg:VedaNTLMFilterAppointment
   rdfs:label "Veda NTLM Фильтр"@ru ;
   rdfs:label "Veda NTLM Filter"@en ;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
 .
 
 ### -------------------------------------------------------
@@ -224,6 +230,7 @@ cfg:VedaSystemAppointment
   v-s:employee cfg:VedaSystem ;
   v-s:occupation cfg:User_position;
   v-s:parentUnit cfg:User_department;
+  v-s:parentOrganization cfg:org_Veda;
 .
 
 ### -------------------------------------------------------
