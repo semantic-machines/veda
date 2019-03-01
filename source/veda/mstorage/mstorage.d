@@ -9,8 +9,7 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid, std.random;
     import veda.util.properd, veda.core.impl.app_context_creator;
-    import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context,
-           veda.search.xapian.xapian_search;
+    import veda.core.common.context, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
     import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource,
            veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
@@ -284,9 +283,9 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
 
     ticket.result = ResultCode.FailStore;
 
-    Resources type = [ Resource(ticket__Ticket) ];
+    Resources type = [ Resource("ticket:ticket") ];
 
-    new_ticket.resources[ rdf__type ] = type;
+    new_ticket.resources[ "rdf:type" ] = type;
 
     if (ticket_id !is null && ticket_id.length > 0)
         new_ticket.uri = ticket_id;
@@ -296,10 +295,10 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
         new_ticket.uri = new_id.toString();
     }
 
-    new_ticket.resources[ ticket__login ] ~= Resource(user_login);
-    new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
-    new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-    new_ticket.resources[ ticket__duration ] ~= Resource(duration);
+    new_ticket.resources[ "ticket:login" ] ~= Resource(user_login);
+    new_ticket.resources[ "ticket:accessor" ] ~= Resource(user_id);
+    new_ticket.resources[ "ticket:when" ] ~= Resource(getNowAsString());
+    new_ticket.resources[ "ticket:duration" ] ~= Resource(duration);
 
     // store ticket
     string     ss_as_binobj = new_ticket.serialize();
@@ -364,7 +363,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     }
 
     Individual[] candidate_users;
-    string       query = "'" ~ veda_schema__login ~ "' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
+    string       query = "'v-s:login' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
 
     ctx.get_vql().query(sticket.user_uri, query, null, null, 10, 10000, OptAuthorize.NO, false, candidate_users);
     auto storage = ctx.get_storage();
@@ -1045,6 +1044,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
     return rcs;
 }
 
+public string[]     owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty", "owl:Class", "rdfs:Class" ];
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
@@ -1199,8 +1199,8 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         if (rdfType.anyExists(owl_tags) == true)
             is_onto = true;
 
-        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
-            rdfType.anyExists(veda_schema__PermissionFilter) == true)
+        if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
+            rdfType.anyExists("v-s:PermissionFilter") == true)
             is_acl_element = true;
 
         if (cmd == INDV_OP.REMOVE)
@@ -1316,8 +1316,8 @@ private ResultCode prepare_event(ref MapResource rdfType, long assigned_subsyste
     if (assigned_subsystems != ALL_MODULES && (assigned_subsystems & SUBSYSTEM.ACL) != SUBSYSTEM.ACL)
         return ResultCode.Ok;
 
-    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
-        rdfType.anyExists(veda_schema__PermissionFilter) == true)
+    if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
+        rdfType.anyExists("v-s:PermissionFilter") == true)
     {
         tid_acl = getTid(P_MODULE.acl_preparer);
         if (tid_acl != Tid.init)
@@ -1336,7 +1336,7 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
     if (indv is null)
         return _types;
 
-    _types = indv.resources.get(rdf__type, Resources.init);
+    _types = indv.resources.get("rdf:type", Resources.init);
 
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
@@ -1442,7 +1442,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
 
             Ticket       sticket = sys_ticket(ctx);
 
-            string       query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+            string       query = "'v-s:login' == '" ~ login ~ "'";
 
             Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, query, OptAuthorize.NO);
 

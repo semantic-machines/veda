@@ -683,7 +683,7 @@ private void reload_ext_scripts(Context ctx)
     DirEntry[] _modules_de;
     if (modules_path.exists)
         _modules_de = dirEntries(modules_path, SpanMode.shallow).array;
-        
+
     foreach (o; _modules_de.array)
     {
         log.trace("found module [%s]", o.name);

@@ -1,8 +1,7 @@
 module veda.gluecode.script;
 
 import std.stdio, std.path, std.container.array, std.algorithm, std.conv, std.range;
-import veda.gluecode.v8d_bind, veda.core.common.context, veda.onto.individual, veda.core.common.log_msg, veda.core.common.know_predicates,
-       veda.onto.resource;
+import veda.gluecode.v8d_bind, veda.core.common.context, veda.onto.individual, veda.core.common.log_msg, veda.onto.resource;
 
 interface ScriptVM
 {
@@ -45,7 +44,7 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
 
     try
     {
-        if (ss.isExists(veda_schema__deleted, true) || ss.isExists("v-s:disabled", true))
+        if (ss.isExists("v-s:deleted", true) || ss.isExists("v-s:disabled", true))
         {
             log.trace("disable script %s", ss.uri);
             ScriptInfo script = wpl.scripts.get(ss.uri, ScriptInfo.init);
@@ -58,7 +57,7 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
             return;
         }
 
-        string scripts_text = ss.getFirstResource(veda_schema__script).literal;
+        string scripts_text = ss.getFirstResource("v-s:script").literal;
         if (scripts_text.length <= 0)
         {
             log.trace("script %s empty, skip", ss.uri);
