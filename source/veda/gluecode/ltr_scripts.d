@@ -8,7 +8,7 @@ private
     import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
     import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
     import veda.search.common.isearch, veda.search.ft_query.ft_query_client, veda.core.impl.app_context_creator;
-    import veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.gluecode.script, veda.gluecode.v8d_bind;
 }
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;

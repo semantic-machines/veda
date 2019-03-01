@@ -36,8 +36,7 @@ class XapianSearch : Search
         xr.reopen_dbs();
     }
 
-    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit,
-                     ref Individual[] individuals, OptAuthorize op_auth, bool trace)
+    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit, OptAuthorize op_auth, bool trace, ref Individual[] individuals)
     {
         int                       res_count;
 
