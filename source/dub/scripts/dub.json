@@ -32,7 +32,7 @@
 	    "../../veda/gluecode/script.d",
 	    "../../veda/gluecode/scripts.d", 
             "../../veda/gluecode/ltr_scripts.d",
-	    "../../veda/gluecode/v8d_header.d",
+	    "../../veda/gluecode/v8d_bind.d",
     	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
     	    "../../veda/util/queue.d",
