@@ -1,7 +1,7 @@
 /**
  * обвязка к v8d
  */
-module veda.gluecode.v8d_header;
+module veda.gluecode.v8d_bind;
 
 import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json, std.string;
 import veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
@@ -681,9 +681,9 @@ private void reload_ext_scripts(Context ctx)
     DirEntry[] modules_de;
 
     DirEntry[] _modules_de;
-
     if (modules_path.exists)
         _modules_de = dirEntries(modules_path, SpanMode.shallow).array;
+        
     foreach (o; _modules_de.array)
     {
         log.trace("found module [%s]", o.name);

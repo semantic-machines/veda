@@ -486,7 +486,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.query(user_uri, query_str, null, null, top, limit, res, op_auth, false);
+            _vql.query(user_uri, query_str, null, null, top, limit, op_auth, false, res);
             return res;
         }
         finally

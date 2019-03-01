@@ -10,7 +10,7 @@ private import veda.common.type, veda.core.common.type, veda.core.common.define,
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-private import veda.gluecode.script, veda.gluecode.v8d_header, veda.gluecode.ltr_scripts;
+private import veda.gluecode.script, veda.gluecode.v8d_bind, veda.gluecode.ltr_scripts;
 
 int main(string[] args)
 {
@@ -436,7 +436,7 @@ class ScriptProcess : VedaModule
         }
 
         vql.reopen_db();
-        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, res, OptAuthorize.NO, false);
+        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, OptAuthorize.NO, false, res);
 
         foreach (ss; res)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
