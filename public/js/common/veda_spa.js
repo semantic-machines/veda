@@ -15,10 +15,6 @@ var veda = {};
         veda.Module.on("ready", arg);
       }
 
-      veda.Module.on("ready", function (veda) {
-        this.ready = true;
-      });
-
     // veda.Module(conf) --> initialize the application
     } else {
 
@@ -32,6 +28,10 @@ var veda = {};
 
     }
 
+  });
+
+  veda.Module.on("ready", function (veda) {
+    this.ready = true;
   });
 
 })(veda);
