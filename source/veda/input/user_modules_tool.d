@@ -57,6 +57,7 @@ Individual create_request(string url, RequestCommand cmd)
 
 class UserModuleInfo
 {
+    Resources      label;
     string         request_uri;
     string         uri;
     string         url;
@@ -106,9 +107,10 @@ class UserModuleInfo
 
         log = new ArrayLogger(context.get_logger());
 
-        uri = module_indv.uri;
-        url = module_indv.getFirstLiteral("v-s:moduleUrl");
-        ver = module_indv.getFirstLiteral("v-s:moduleVersion");
+        uri   = module_indv.uri;
+        url   = module_indv.getFirstLiteral("v-s:moduleUrl");
+        label = module_indv.getResources("rdfs:label");
+        ver   = module_indv.getFirstLiteral("v-s:moduleVersion");
     }
 
     this(Context _context, Ticket _sticket, string _install_id)
@@ -361,8 +363,12 @@ class UserModuleInfo
         module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
         module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
         module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
+
         foreach (dep; dependencies)
             module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
+
+        if (label !is null && label.length > 0)
+            module_indv.setResources("rdfs:label", label);
 
         module_indv.setResources("rdfs:comment", [ Resource(DataType.String, log.raw()) ]);
 
@@ -809,6 +815,7 @@ class UserModuleInfo
 
         // go tree
         Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
+        label = l_individuals[ root_indv ].getResources("rdfs:label");
 
         //log.trace("@l_individuals=%s", l_individuals);
         //log.trace("@uri=%s", uri);
