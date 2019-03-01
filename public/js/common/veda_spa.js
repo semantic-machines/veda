@@ -9,7 +9,15 @@ var veda = {};
     // veda.Module(fn) --> add a new module
     if (typeof arg === "function") {
 
-      veda.Module.on("ready", arg);
+      if (veda.Module.ready) {
+        arg(veda);
+      } else {
+        veda.Module.on("ready", arg);
+      }
+
+      veda.Module.on("ready", function (veda) {
+        this.ready = true;
+      });
 
     // veda.Module(conf) --> initialize the application
     } else {
