@@ -2,7 +2,7 @@ module veda.authorization.az_lib;
 
 import std.conv, std.datetime, std.uuid, std.outbuffer, std.string, std.stdio;
 import veda.common.logger, veda.core.common.define, veda.core.common.type, veda.common.type;
-import veda.core.common.know_predicates, veda.util.module_info;
+import veda.util.module_info;
 import veda.authorization.authorization, veda.authorization.right_set, veda.authorization.cache;
 
 extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload);

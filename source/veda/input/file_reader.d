@@ -10,7 +10,7 @@ import std.conv, std.digest.ripemd, std.bigint, std.datetime, std.concurrency, s
        std.digest.md, std.utf, std.path, core.thread, core.memory, std.stdio : writeln, writefln, File;
 import veda.util.container, veda.core.util.utils, veda.common.logger, veda.util.raptor2individual, veda.search.ft_query.ft_query_client;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.impl.thread_context, veda.core.common.define,
-       veda.core.common.know_predicates, veda.core.common.log_msg, veda.input.user_modules_tool, veda.util.properd;
+       veda.core.common.log_msg, veda.input.user_modules_tool, veda.util.properd;
 import veda.core.common.type, veda.core.impl.app_context_creator;
 
 
@@ -417,7 +417,7 @@ Individual[ string ] check_and_read_changed(string[] changes, Context context, b
 
             foreach (uri, indv; l_individuals)
             {
-                if (indv.isExists(rdf__type, owl__Ontology))
+                if (indv.isExists("rdf:type", "owl:Ontology"))
                 {
                     string o_file = filename_2_prefix.get(indv.uri, null);
                     if (o_file !is null && o_file != filename)
@@ -598,7 +598,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
         {
             //log.trace ("prepare [%s] from file [%s], onto [%s]", ss.uri, filename, onto_name);
 
-            if (ss.isExists(rdf__type, owl__Ontology) && context !is null)
+            if (ss.isExists("rdf:type", "owl:Ontology") && context !is null)
             {
                 prefix = context.get_prefix_map.get(ss.uri, null);
                 Resources ress = Resources.init;
@@ -613,7 +613,7 @@ private void prepare_list(ref Individual[ string ] individuals, Individual *[] s
 
             indv_ttl_file.addResource("v-s:resource", Resource(DataType.Uri, ss.uri));
 
-            Resources type = ss.getResources(rdf__type);
+            Resources type = ss.getResources("rdf:type");
 
             if (type is Resources.init)
             {
