@@ -43,13 +43,17 @@ enum OperationResult
 
 UserModuleInfo[ string ] tmp_installed_modules;
 
-Individual create_request(string url, RequestCommand cmd)
+Individual create_request(string url, string ver, RequestCommand cmd)
 {
     Individual indv;
 
     indv.uri = "d:" ~ randomUUID().toString();
     indv.setResources("rdf:type", [ Resource(DataType.Uri, request_predicate) ]);
     indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
+
+    if (ver !is null && ver.length > 0)
+        indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
+
     indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
 
     return indv;
@@ -557,11 +561,11 @@ class UserModuleInfo
 
     void get_and_unpack(ref Individual module_indv)
     {
-        log.trace("GET AND UNPACK MODULE [%s]", module_indv.uri);
-
         uri = module_indv.uri;
         url = module_indv.getFirstLiteral("v-s:moduleUrl");
         ver = module_indv.getFirstLiteral("v-s:moduleVersion");
+
+        log.trace("GET AND UNPACK MODULE [%s][ver=%s], %s", module_indv.uri, ver, url);
 
         string module_url;
         string[ string ] ver_2_url;
@@ -937,7 +941,7 @@ class UserModulesTool : VedaModule
                 }
                 else
                 {
-                    Individual request = create_request(new_indv.getFirstLiteral("v-s:moduleUrl"), RequestCommand.INSTALL);
+                    Individual request = create_request(new_indv.getFirstLiteral("v-s:moduleUrl"), new_indv.getFirstLiteral("v-s:moduleVersion"), RequestCommand.INSTALL);
 
                     OpResult   orc = context.update(null, -1, &sticket, INDV_OP.PUT, &request, "", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 
