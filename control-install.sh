@@ -197,7 +197,7 @@ fi
 
 if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
-    TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
+    TTC=d93096a9d39e36c456af82e5e53c6ca4f4be608f
 
     mkdir tmp
     cd tmp
