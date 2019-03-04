@@ -266,3 +266,8 @@ fi
     cd ..
     cd ..
     cp ./tmp/lmdb-$LMDB_VER/libraries/liblmdb/liblmdb.a ./source/lib64
+
+
+### libv8d ###
+    cd ./source/lib64/ext-lib-bind-src/v8_d
+    make    
