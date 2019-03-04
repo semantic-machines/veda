@@ -282,6 +282,6 @@ fi
     cd tmp
     tar -xvzf v$XAPIAND_VER.tar.gz
     cd xapian-d-$XAPIAND_VER
-    ./make-xapian-d.sh
+#    ./make-xapian-d.sh
     cd $INSTALL_PATH
-    cp ./tmp/xapian-d-$XAPIAND_VER/libxapiand.a ./source/lib64
+    cp ./tmp/xapian-d-$XAPIAND_VER/lib64/libxapiand.a ./source/lib64
