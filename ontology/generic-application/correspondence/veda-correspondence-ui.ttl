@@ -313,8 +313,7 @@ v-s:LetterTemplate
   });
 
   $("#add-OutgoingLetter", template).click(function () {
-    var cntr = $("<div></div>"),
-        _class = new veda.IndividualModel("v-s:OutgoingLetter"),
+    var _class = new veda.IndividualModel("v-s:OutgoingLetter"),
         OutcomingLetter = new veda.IndividualModel(),
         tmpl = "v-s:LetterTemplate";
     OutcomingLetter["rdf:type"] = [_class];
@@ -340,8 +339,7 @@ v-s:LetterTemplate
   });
 
   $("#add-IncomingLetter", template).click(function () {
-    var cntr = $("<div></div>"),
-        _class = new veda.IndividualModel("v-s:IncomingLetter"),
+    var _class = new veda.IndividualModel("v-s:IncomingLetter"),
         IncomingLetter = new veda.IndividualModel(),
         tmpl = "v-s:LetterTemplate";
     IncomingLetter["rdf:type"] = [_class];

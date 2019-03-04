@@ -161,8 +161,7 @@ v-s:InternalDocumentTemplate
 </div>
 <script><!--async-->
   $("#make-copy", template).click(function () {
-    var cntr = $("<div></div>"),
-        _class = new veda.IndividualModel("v-s:InternalDocument"),
+    var _class = new veda.IndividualModel("v-s:InternalDocument"),
         InternalDocument = new veda.IndividualModel(),
         tmpl = "v-s:InternalDocumentTemplate" ;
     InternalDocument["rdf:type"] = [_class] ;
