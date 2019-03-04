@@ -254,7 +254,7 @@ fi
 ### LIB LMDB ###
 
     echo "--- INSTALL LIBLMDB ---"
-    # make nanomsg dependency
+    # make liblmdb dependency
     mkdir tmp
     wget https://github.com/itiu/lmdb/archive/$LMDB_VER.tar.gz -P tmp
     cd tmp
