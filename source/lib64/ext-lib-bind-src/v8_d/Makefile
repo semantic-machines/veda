@@ -1,6 +1,6 @@
 CC=g++
-INCLUDES=`pkg-config --cflags msgpack`
-LIBS=`pkg-config --libs msgpack`
+#INCLUDES=`pkg-config --cflags msgpack`
+#LIBS=`pkg-config --libs msgpack`
 CFLAGS=$(INCLUDES) $(LIBS) -std=c++03 -c -Wl,--start-group
 
 all:
