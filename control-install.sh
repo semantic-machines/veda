@@ -8,6 +8,7 @@ DUB_VER=1.5.0
 GO_VER=go1.11.4
 MSGPUCK_VER=2.0
 NANOMSG_VER=1.1.5
+LMDB_VER=0.9.22
 
 INSTALL_PATH=$PWD
 
@@ -249,3 +250,19 @@ fi
 #    echo "--- XAPIAN INSTALLED ---"
 #
 #fi
+
+### LIB LMDB ###
+
+    echo "--- INSTALL LIBLMDB ---"
+    # make nanomsg dependency
+    mkdir tmp
+    wget https://github.com/itiu/lmdb/archive/$LMDB_VER.tar.gz -P tmp
+    cd tmp
+    tar -xvzf $LMDB_VER.tar.gz
+    cd lmdb-$LMDB_VER/libraries/liblmdb
+    make
+    cd ..
+    cd ..
+    cd ..
+    cd ..
+    cp ./tmp/lmdb-$LMDB_VER/libraries/liblmdb/liblmdb.a ./source/lib64
