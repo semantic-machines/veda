@@ -291,10 +291,10 @@ v-s:LetterTemplate
         $('#delete.action', template).remove();
       } else if (individual.isNew() || canUpdate) {
         var complexTemplateUri;
-        if (individual.hasValue("rdf:type", "v-s:IncomingLetter") {
+        if ( individual.hasValue("rdf:type", "v-s:IncomingLetter") ) {
           complexTemplateUri = 'v-s:IncomingLetter_ComplexRouteStartForm_Template';
         }
-        if (individual.hasValue("rdf:type", "v-s:OutgoingLetter") {
+        if ( individual.hasValue("rdf:type", "v-s:OutgoingLetter") ) {
           complexTemplateUri = 'v-s:OutgoingLetter_ComplexRouteStartForm_Template';
         }
         $('#send.action', template).off("click");
