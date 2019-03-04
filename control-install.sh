@@ -9,6 +9,7 @@ GO_VER=go1.11.4
 MSGPUCK_VER=2.0
 NANOMSG_VER=1.1.5
 LMDB_VER=0.9.22
+XAPIAND_VER=1.0.0
 
 INSTALL_PATH=$PWD
 
@@ -236,21 +237,6 @@ fi
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
     sudo ldconfig
 
-#if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
-#
-#    echo "--- INSTALL XAPIAN ---"
-#
-#    cd source/lib64/libxapianm
-#    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
-#    sudo ldconfig
-#    cd $PWD
-#
-#else
-#
-#    echo "--- XAPIAN INSTALLED ---"
-#
-#fi
-
 ### LIB LMDB ###
 
     echo "--- INSTALL LIBLMDB ---"
@@ -271,3 +257,31 @@ fi
 ### libv8d ###
     cd ./source/lib64/ext-lib-bind-src/v8_d
     make    
+
+#if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
+#
+#    echo "--- INSTALL XAPIAN ---"
+#
+#    cd source/lib64/libxapianm
+#    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
+#    sudo ldconfig
+#    cd $PWD
+#
+#else
+#
+#    echo "--- XAPIAN INSTALLED ---"
+#
+#fi
+
+### libxapiand ###
+
+    cd $INSTALL_PATH
+    echo "--- INSTALL LIBXAPIAN ---"
+    mkdir tmp
+    wget https://github.com/itiu/xapian-d/archive/v$XAPIAND_VER.tar.gz -P tmp
+    cd tmp
+    tar -xvzf v$XAPIAND_VER.tar.gz
+    cd xapian-d-$XAPIAND_VER
+    ./make-xapian-d.sh
+    cd $INSTALL_PATH
+    cp ./tmp/xapian-d-$XAPIAND_VER/libxapiand.a ./source/lib64
