@@ -8,6 +8,8 @@ DUB_VER=1.5.0
 GO_VER=go1.11.4
 MSGPUCK_VER=2.0
 NANOMSG_VER=1.1.5
+LMDB_VER=0.9.22
+XAPIAND_VER=1.0.0
 
 INSTALL_PATH=$PWD
 
@@ -197,7 +199,7 @@ fi
 
 if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
-    TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
+    TTC=d93096a9d39e36c456af82e5e53c6ca4f4be608f
 
     mkdir tmp
     cd tmp
@@ -235,6 +237,27 @@ fi
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
     sudo ldconfig
 
+### LIB LMDB ###
+
+    echo "--- INSTALL LIBLMDB ---"
+    # make liblmdb dependency
+    mkdir tmp
+    wget https://github.com/itiu/lmdb/archive/$LMDB_VER.tar.gz -P tmp
+    cd tmp
+    tar -xvzf $LMDB_VER.tar.gz
+    cd lmdb-$LMDB_VER/libraries/liblmdb
+    make
+    cd ..
+    cd ..
+    cd ..
+    cd ..
+    cp ./tmp/lmdb-$LMDB_VER/libraries/liblmdb/liblmdb.a ./source/lib64
+
+
+### libv8d ###
+    cd ./source/lib64/ext-lib-bind-src/v8_d
+    make    
+
 #if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
 #
 #    echo "--- INSTALL XAPIAN ---"
@@ -249,3 +272,16 @@ fi
 #    echo "--- XAPIAN INSTALLED ---"
 #
 #fi
+
+### libxapiand ###
+
+    cd $INSTALL_PATH
+    echo "--- INSTALL LIBXAPIAN ---"
+    mkdir tmp
+    wget https://github.com/itiu/xapian-d/archive/v$XAPIAND_VER.tar.gz -P tmp
+    cd tmp
+    tar -xvzf v$XAPIAND_VER.tar.gz
+    cd xapian-d-$XAPIAND_VER
+#    ./make-xapian-d.sh
+    cd $INSTALL_PATH
+    cp ./tmp/xapian-d-$XAPIAND_VER/lib64/libxapiand.a ./source/lib64

@@ -1,9 +1,9 @@
 /**
  * обвязка к v8d
  */
-module veda.gluecode.v8d_header;
+module veda.gluecode.v8d_bind;
 
-import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json;
+import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json, std.string;
 import veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction, veda.search.common.isearch;
 import veda.util.container;
@@ -668,6 +668,8 @@ ScriptVM get_ScriptVM(Context ctx)
 
 private void reload_ext_scripts(Context ctx)
 {
+    string   modules_path = "./public/modules";
+
     Script[] scripts;
     string[] script_file_name;
     writeln("-");
@@ -675,6 +677,26 @@ private void reload_ext_scripts(Context ctx)
     string sticket = ctx.sys_ticket().id;
     g_ticket.data   = cast(char *)sticket;
     g_ticket.length = cast(int)sticket.length;
+
+    DirEntry[] modules_de;
+
+    DirEntry[] _modules_de;
+    if (modules_path.exists)
+        _modules_de = dirEntries(modules_path, SpanMode.shallow).array;
+
+    foreach (o; _modules_de.array)
+    {
+        log.trace("found module [%s]", o.name);
+        auto content_drs = dirEntries(o.name, SpanMode.depth).array;
+        foreach (o1; content_drs)
+        {
+            string nm = cast(string)o1.name;
+            if (nm.indexOf("/server/") > 0 || nm.indexOf("/common/") > 0)
+            {
+                modules_de ~= o1;
+            }
+        }
+    }
 
     foreach (path; [ "./public/js/common/", "./public/js/server/" ])
     {
@@ -688,11 +710,28 @@ private void reload_ext_scripts(Context ctx)
             auto fileNames = seqFile.byLine();
             foreach (fileName; fileNames)
             {
-                fileName = path ~ fileName;
-                if (fileName.exists)
+                if (fileName == "$modules")
                 {
-                    DirEntry fileEntry = DirEntry(cast(string)fileName);
-                    oFiles ~= fileEntry;
+                    foreach (o; modules_de)
+                        oFiles ~= o;
+                }
+                else
+                {
+                    fileName = path ~ fileName;
+                    if (fileName.exists)
+                    {
+                        if (isDir(cast(string)fileName))
+                        {
+                            auto fls = dirEntries(cast(string)fileName, SpanMode.depth).array;
+                            foreach (o; fls)
+                                oFiles ~= o;
+                        }
+                        else
+                        {
+                            DirEntry fileEntry = DirEntry(cast(string)fileName);
+                            oFiles ~= fileEntry;
+                        }
+                    }
                 }
             }
         }
@@ -705,7 +744,7 @@ private void reload_ext_scripts(Context ctx)
         {
             if (extension(o.name) == ".js")
             {
-                log.trace("load script:%s", o);
+                //log.trace("load script:%s", o);
                 auto str_js        = cast(ubyte[]) read(o.name);
                 auto str_js_script = script_vm.compile(cast(string)str_js);
                 if (str_js_script !is null)

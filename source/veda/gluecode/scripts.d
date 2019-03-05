@@ -5,12 +5,11 @@ module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
 private import std.concurrency;
-private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual,
-               veda.util.queue;
-private import veda.common.logger, veda.core.impl.thread_context;
-private import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
+private import veda.common.logger, veda.core.impl.thread_context, veda.util.queue;
+private import veda.core.common.context, veda.core.common.log_msg, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-private import veda.gluecode.script, veda.gluecode.v8d_header, veda.gluecode.ltr_scripts;
+private import veda.gluecode.script, veda.gluecode.v8d_bind, veda.gluecode.ltr_scripts;
 
 int main(string[] args)
 {
@@ -182,19 +181,19 @@ class ScriptProcess : VedaModule
 
         bool      prepare_if_is_script = false;
 
-        Resources types  = new_indv.resources.get(rdf__type, Resources.init);
+        Resources types  = new_indv.resources.get("rdf:type", Resources.init);
         string    run_at = new_indv.getFirstLiteral("v-s:runAt");
 
         string[]  indv_types = types.getAsArrayStrings();
         foreach (itype; indv_types)
         {
-            if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
+            if (itype == "v-s:PermissionStatement" || itype == "v-s:Membership")
             {
                 committed_op_id = op_id;
                 return ResultCode.Ok;
             }
 
-            if (itype == veda_schema__Event)
+            if (itype == "v-s:Event")
                 prepare_if_is_script = true;
         }
 
@@ -418,11 +417,9 @@ class ScriptProcess : VedaModule
         g_ticket.data   = cast(char *)sticket.id;
         g_ticket.length = cast(int)sticket.id.length;
 
-        Individual[] res;
+        auto si = context.get_info(MODULE.subject_manager);
 
-        auto         si = context.get_info(MODULE.subject_manager);
-
-        bool         is_ft_busy = true;
+        bool is_ft_busy = true;
         while (is_ft_busy)
         {
             auto mi = context.get_info(MODULE.fulltext_indexer);
@@ -435,10 +432,11 @@ class ScriptProcess : VedaModule
             core.thread.Thread.sleep(dur!("msecs")(1000));
         }
 
+        Individual[] script_indvs;
         vql.reopen_db();
-        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, res, OptAuthorize.NO, false);
+        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, OptAuthorize.NO, false, script_indvs);
 
-        foreach (ss; res)
+        foreach (ss; script_indvs)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
 
         string scripts_ordered_list;

@@ -10,8 +10,7 @@ private import veda.common.type;
 private import veda.bind.xapian_d_header;
 private import veda.core.util.utils, veda.common.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual;
-private import veda.core.common.define, veda.core.common.type, veda.core.common.know_predicates, veda.core.common.context, veda.core.common.log_msg,
-               veda.core.impl.thread_context;
+private import veda.core.common.define, veda.core.common.type, veda.core.common.context, veda.core.common.log_msg, veda.core.impl.thread_context;
 private import veda.search.common.vel, veda.search.xapian.xapian_vql, veda.search.common.indexer_property;
 
 // ////// Logger ///////////////////////////////////////////
@@ -206,10 +205,10 @@ public class IndexerContext
         //if (cmd == INDV_OP.REMOVE)
         //    is_deleted = true;
 
-        if (is_deleted == false && indv.isExists(veda_schema__deleted, true) == true)
+        if (is_deleted == false && indv.isExists("v-s:deleted", true) == true)
             is_deleted = true;
 
-        if (prev_indv.isExists(veda_schema__deleted, true) == true)
+        if (prev_indv.isExists("v-s:deleted", true) == true)
             prev_is_deleted = true;
 
         if (prev_is_deleted == true && is_deleted == false && use_db is null)
@@ -251,9 +250,9 @@ public class IndexerContext
                 if (trace_msg[ 220 ] == 1)
                     log.trace("index document:[%s]", indv.uri);
 
-                Resources types = indv.getResources(rdf__type);
+                Resources types = indv.getResources("rdf:type");
 
-                Resources prev_types  = prev_indv.getResources(rdf__type);
+                Resources prev_types  = prev_indv.getResources("rdf:type");
                 string    prev_dbname = "base";
                 foreach (_type; prev_types)
                 {
@@ -607,7 +606,7 @@ public class IndexerContext
                         {
                             // если это относится к class_property__2__indiviual, следует обновить
 
-                            //if (predicate != rdf__type)
+                            //if (predicate != "rdf:type")
                             {
                                 // используем информацию о типе
                                 foreach (_type; types)

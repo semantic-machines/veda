@@ -24,8 +24,7 @@ interface Search
     public void reopen_db();
     public bool close_db();
 
-    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit,
-                     ref Individual[] individuals, OptAuthorize op_auth, bool trace);
+    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit, OptAuthorize op_auth, bool trace, ref Individual[] out_individuals);
 
     public SearchResult query(string user_uri, string filter, string sort, string db_names, int from, int top, int limit, OptAuthorize op_auth, bool trace);
 }

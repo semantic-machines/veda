@@ -109,7 +109,6 @@ cfg:ImportDMSToVeda
 cfg:ImportDMSToVedaAccount
   rdf:type v-s:Account ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Import DMS to Veda account"@en ;
   v-s:owner cfg:ImportDMSToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   v-s:login "ImportDMSToVeda" ;
@@ -143,7 +142,6 @@ cfg:ImportFromOtherSystemToVeda
 cfg:ImportFromOtherSystemToVedaAccount
   rdf:type v-s:Account ;
   v-s:author cfg:VedaSystem ;
-  rdfs:label "Import DMS to Veda account"@en ;
   v-s:owner cfg:ImportFromOtherSystemToVeda;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   v-s:login "ImportFromOtherSystemToVeda" ;
@@ -177,7 +175,6 @@ cfg:VedaNTLMFilter
 
 cfg:VedaNTLMFilterAccount
   rdf:type v-s:Account ;
-  rdfs:label "VedaNTLMFilter account"@en ;
   v-s:owner cfg:VedaNTLMFilter;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   v-s:login "VedaNTLMFilter" ;

@@ -25,7 +25,6 @@
 	    "../../veda/common/type.d",
 	    "../../veda/core/common/type.d",
 	    "../../veda/util/properd.d",
-	    "../../veda/core/common/know_predicates.d",
 	    "../../veda/core/common/define.d"
 	],
 	"configurations": [
