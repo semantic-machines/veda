@@ -2,7 +2,7 @@
 
  * user modules manager
  */
-module veda.ttlreader.user_modules_tool;
+module veda.input.user_modules_tool;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread, std.net.curl, std.algorithm;
 private import url, std.uuid, std.json, std.process;
@@ -43,13 +43,17 @@ enum OperationResult
 
 UserModuleInfo[ string ] tmp_installed_modules;
 
-Individual create_request(string url, RequestCommand cmd)
+Individual create_request(string url, string ver, RequestCommand cmd)
 {
     Individual indv;
 
     indv.uri = "d:" ~ randomUUID().toString();
     indv.setResources("rdf:type", [ Resource(DataType.Uri, request_predicate) ]);
     indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
+
+    if (ver !is null && ver.length > 0)
+        indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
+
     indv.addResource("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
 
     return indv;
@@ -57,6 +61,7 @@ Individual create_request(string url, RequestCommand cmd)
 
 class UserModuleInfo
 {
+    Resources      label;
     string         request_uri;
     string         uri;
     string         url;
@@ -106,9 +111,10 @@ class UserModuleInfo
 
         log = new ArrayLogger(context.get_logger());
 
-        uri = module_indv.uri;
-        url = module_indv.getFirstLiteral("v-s:moduleUrl");
-        ver = module_indv.getFirstLiteral("v-s:moduleVersion");
+        uri   = module_indv.uri;
+        url   = module_indv.getFirstLiteral("v-s:moduleUrl");
+        label = module_indv.getResources("rdfs:label");
+        ver   = module_indv.getFirstLiteral("v-s:moduleVersion");
     }
 
     this(Context _context, Ticket _sticket, string _install_id)
@@ -361,8 +367,12 @@ class UserModuleInfo
         module_indv.setResources("rdf:type", [ Resource(DataType.Uri, "v-s:Module") ]);
         module_indv.setResources("v-s:moduleUrl", [ Resource(DataType.String, url) ]);
         module_indv.setResources("v-s:moduleVersion", [ Resource(DataType.String, ver) ]);
+
         foreach (dep; dependencies)
             module_indv.addResource("v-s:dependency", Resource(DataType.Uri, dep.uri));
+
+        if (label !is null && label.length > 0)
+            module_indv.setResources("rdfs:label", label);
 
         module_indv.setResources("rdfs:comment", [ Resource(DataType.String, log.raw()) ]);
 
@@ -551,11 +561,11 @@ class UserModuleInfo
 
     void get_and_unpack(ref Individual module_indv)
     {
-        log.trace("GET AND UNPACK MODULE [%s]", module_indv.uri);
-
         uri = module_indv.uri;
         url = module_indv.getFirstLiteral("v-s:moduleUrl");
         ver = module_indv.getFirstLiteral("v-s:moduleVersion");
+
+        log.trace("GET AND UNPACK MODULE [%s][ver=%s], %s", module_indv.uri, ver, url);
 
         string module_url;
         string[ string ] ver_2_url;
@@ -809,6 +819,7 @@ class UserModuleInfo
 
         // go tree
         Resources deps = l_individuals[ root_indv ].getResources("v-s:dependency");
+        label = l_individuals[ root_indv ].getResources("rdfs:label");
 
         //log.trace("@l_individuals=%s", l_individuals);
         //log.trace("@uri=%s", uri);
@@ -930,7 +941,7 @@ class UserModulesTool : VedaModule
                 }
                 else
                 {
-                    Individual request = create_request(new_indv.getFirstLiteral("v-s:moduleUrl"), RequestCommand.INSTALL);
+                    Individual request = create_request(new_indv.getFirstLiteral("v-s:moduleUrl"), new_indv.getFirstLiteral("v-s:moduleVersion"), RequestCommand.INSTALL);
 
                     OpResult   orc = context.update(null, -1, &sticket, INDV_OP.PUT, &request, "", ALL_MODULES, OptFreeze.NONE, OptAuthorize.NO);
 

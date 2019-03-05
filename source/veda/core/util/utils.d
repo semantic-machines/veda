@@ -9,7 +9,7 @@ private
     import core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency, std.digest.crc;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.core.common.type, veda.util.container, veda.core.common.know_predicates;
+    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.core.common.type, veda.util.container;
     import veda.common.type;
 }
 
@@ -65,10 +65,10 @@ public void subject2Ticket(ref Individual ticket, Ticket *tt)
     long   duration;
 
     tt.id         = ticket.uri;
-    tt.user_login = ticket.getFirstLiteral(ticket__login);
-    tt.user_uri   = ticket.getFirstLiteral(ticket__accessor);
-    when          = ticket.getFirstLiteral(ticket__when);
-    string dd = ticket.getFirstLiteral(ticket__duration);
+    tt.user_login = ticket.getFirstLiteral("ticket:login");
+    tt.user_uri   = ticket.getFirstLiteral("ticket:accessor");
+    when          = ticket.getFirstLiteral("ticket:when");
+    string dd = ticket.getFirstLiteral("ticket:duration");
 
     try
     {
@@ -110,7 +110,7 @@ public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual
 {
     if (prev_indv !is null)
     {
-        if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
+        if (prev_indv.resources.get("rdf:type", Resources.init).length == 0)
         {
             log.trace("WARN! stores individual does not contain any type: arg:[%s] prev_indv:[%s]", text(*indv), text(*prev_indv));
         }

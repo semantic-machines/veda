@@ -11,7 +11,7 @@ private
            std.json, std.regex, std.uuid;
     import veda.util.properd;
     import veda.common.logger, veda.core.util.utils, veda.onto.bj8individual.individual8json;
-    import veda.common.type, veda.core.common.type, veda.core.common.know_predicates, veda.core.common.define, veda.core.common.context;
+    import veda.common.type, veda.core.common.type, veda.core.common.define, veda.core.common.context;
     import veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.storage.common, veda.storage.storage;
     import veda.search.common.isearch, veda.core.common.transaction, veda.util.module_info, veda.common.logger;
     import veda.authorization.authorization;
@@ -71,9 +71,9 @@ class PThreadContext : Context
 
         ticket.result = ResultCode.FailStore;
 
-        Resources type = [ Resource(ticket__Ticket) ];
+        Resources type = [ Resource("ticket:ticket") ];
 
-        new_ticket.resources[ rdf__type ] = type;
+        new_ticket.resources[ "rdf:type" ] = type;
 
         if (ticket_id !is null && ticket_id.length > 0)
             new_ticket.uri = ticket_id;
@@ -83,10 +83,10 @@ class PThreadContext : Context
             new_ticket.uri = new_id.toString();
         }
 
-        new_ticket.resources[ ticket__login ] ~= Resource(user_login);
-        new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
-        new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-        new_ticket.resources[ ticket__duration ] ~= Resource(duration);
+        new_ticket.resources[ "ticket:login" ] ~= Resource(user_login);
+        new_ticket.resources[ "ticket:accessor" ] ~= Resource(user_id);
+        new_ticket.resources[ "ticket:when" ] ~= Resource(getNowAsString());
+        new_ticket.resources[ "ticket:duration" ] ~= Resource(duration);
 
         return ticket;
     }
@@ -486,7 +486,7 @@ class PThreadContext : Context
                 query_str = "'*' == '" ~ query_str ~ "'";
             }
 
-            _vql.query(user_uri, query_str, null, null, top, limit, res, op_auth, false);
+            _vql.query(user_uri, query_str, null, null, top, limit, op_auth, false, res);
             return res;
         }
         finally

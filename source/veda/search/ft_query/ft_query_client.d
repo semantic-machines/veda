@@ -49,7 +49,7 @@ class FTQueryClient : Search
     }
 
     public int query(string user_uri, string filter, string sort, string db_names, int top, int limit,
-                     ref Individual[] individuals, OptAuthorize op_auth, bool trace)
+                     OptAuthorize op_auth, bool trace, ref Individual[] individuals)
     {
         if (is_ready == false)
             connect();

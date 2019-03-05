@@ -1923,7 +1923,7 @@
           .catch(function (error) {
             console.log("Fulltext query error", error);
           });
-      }
+      };
 
       fulltext
         .on("keyup", keyupHandler)
@@ -1953,7 +1953,7 @@
           suggestions.empty();
           fulltextMenu.hide();
         }
-      }
+      };
 
       var suggestions = $(".suggestions", control);
       var dblTimeout;

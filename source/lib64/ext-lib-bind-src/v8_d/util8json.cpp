@@ -12,6 +12,7 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
+#include <stdexcept>
 
 #include "util8json.h"
 

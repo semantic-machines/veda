@@ -6,8 +6,7 @@ module veda.mstorage.acl_manager;
 
 import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
 import veda.util.properd;
-import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define,
-       veda.core.common.know_predicates;
+import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define;
 import veda.core.common.log_msg, veda.storage.common, veda.core.common.type, veda.core.util.utils, veda.common.logger, veda.util.module_info,
        veda.core.impl.thread_context;
 import veda.storage.common, veda.authorization.right_set;
@@ -140,17 +139,17 @@ void acl_manager(string thread_name)
                                     return;
                                 }
 
-                                Resources rdfType = new_ind.getResources(rdf__type);
+                                Resources rdfType = new_ind.getResources("rdf:type");
 
-                                if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
+                                if (rdfType.anyExists("v-s:PermissionStatement") == true)
                                 {
                                     prepare_permission_statement(prev_ind, new_ind, op_id, storage);
                                 }
-                                else if (rdfType.anyExists(veda_schema__Membership) == true)
+                                else if (rdfType.anyExists("v-s:Membership") == true)
                                 {
                                     prepare_membership(prev_ind, new_ind, op_id, storage);
                                 }
-                                else if (rdfType.anyExists(veda_schema__PermissionFilter) == true)
+                                else if (rdfType.anyExists("v-s:PermissionFilter") == true)
                                 {
                                     prepare_permission_filter(prev_ind, new_ind, op_id, storage);
                                 }
@@ -326,7 +325,7 @@ void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op
     if (trace_msg[ 114 ] == 1)
         log.trace("store Membership: [%s] op_id=%d", new_ind.uri, op_id);
 
-    prepare_right_set(prev_ind, new_ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,
+    prepare_right_set(prev_ind, new_ind, "v-s:resource", "v-s:memberOf", membership_prefix,
                       Access.can_create | Access.can_read | Access.can_update | Access.can_delete, op_id, storage);
 }
 
@@ -335,7 +334,7 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionFilter: [%s] op_id=%d", new_ind, op_id);
 
-    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__resource, filter_prefix, 0, op_id, storage);
+    prepare_right_set(prev_ind, new_ind, "v-s:permissionObject", "v-s:resource", filter_prefix, 0, op_id, storage);
 }
 
 void prepare_permission_statement(ref Individual prev_ind, ref Individual new_ind, long op_id, KeyValueDB storage)
@@ -343,6 +342,6 @@ void prepare_permission_statement(ref Individual prev_ind, ref Individual new_in
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionStatement: [%s] op_id=%d", new_ind, op_id);
 
-    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
+    prepare_right_set(prev_ind, new_ind, "v-s:permissionObject", "v-s:permissionSubject", permission_prefix, 0, op_id, storage);
 }
 

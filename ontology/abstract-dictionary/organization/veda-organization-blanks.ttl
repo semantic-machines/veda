@@ -22,4 +22,5 @@ v-s:OrganizationBlank
   rdfs:label "Организация"@ru ;
   rdfs:label "Organization"@en ;
   v-fc:targetType v-s:Organization ;
-.
+. 
+  

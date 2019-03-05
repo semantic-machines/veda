@@ -20,7 +20,8 @@ addons:
 
 # Build
 install:
-  - ./control-install.sh&>install.log 
+  - ./control-install.sh
+#&>install.log 
 #  - ./tools/send-to-chunk-io.sh
   - source $HOME/.cargo/env
   - npm install --save-dev testcafe

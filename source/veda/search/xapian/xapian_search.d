@@ -8,7 +8,7 @@ private
 {
     import std.string, std.stdio, std.conv, std.outbuffer, core.stdc.string;
     import veda.util.container, veda.common.logger, veda.core.util.utils;
-    import veda.core.common.context, veda.core.common.define, veda.core.common.type, veda.core.common.know_predicates, veda.common.type;
+    import veda.core.common.context, veda.core.common.define, veda.core.common.type, veda.common.type;
     import veda.search.common.isearch, veda.search.common.vel, veda.search.xapian.xapian_reader;
     import veda.onto.individual;
 }
@@ -36,8 +36,7 @@ class XapianSearch : Search
         xr.reopen_dbs();
     }
 
-    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit,
-                     ref Individual[] individuals, OptAuthorize op_auth, bool trace)
+    public int query(string user_uri, string filter, string sort, string db_names, int top, int limit, OptAuthorize op_auth, bool trace, ref Individual[] individuals)
     {
         int                       res_count;
 
