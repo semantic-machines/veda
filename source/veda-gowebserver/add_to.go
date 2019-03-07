@@ -30,13 +30,7 @@ func addToIndividual(ctx *fasthttp.RequestCtx) {
 
 	if jsonData["ticket"] != nil {
 		ticketKey = jsonData["ticket"].(string)
-	} else {
-		log.Printf("ERR! empty ticket, request=%v\n", string(ctx.Request.Body()))
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "add_to", string(ctx.Request.Body()), "", rc, timestamp)
-		return
-	}
+	} 
 
 	rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
 	if rc1 != Ok {
