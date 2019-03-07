@@ -384,7 +384,7 @@ hr.black {
 }
 
 #main {
-  margin-bottom:120px;
+  margin-bottom:40px;
 }
 .huge {
   font-size: 32px;
@@ -396,10 +396,11 @@ footer {
 .jumbotron {
   background-color: transparent;
 }
+
 .navbar-veda {
   padding: 9px 0px;
   /*margin-bottom: 15px;*/
-  margin-bottom: 0;
+  margin-bottom: 0px;
   background-image: none;
   /*background-color: #fff;
   border-bottom: 1px solid #ddd;*/
@@ -1416,6 +1417,7 @@ svg.process-path-highlight path
 }
 
 /* Background colors from flat-ui */
+.bg-none { background-color: transparent; }
 .bg-white { background-color: #fff; }
 .bg-turquoise { background-color: rgba(26, 188, 156, 1.0); /*#1abc9c;*/ }
 .bg-emerald { background-color: rgba(46, 204, 113, 1.0); /*#2ecc71;*/ }
@@ -1438,7 +1440,8 @@ svg.process-path-highlight path
 .bg-silver { background-color: rgba(189, 195, 199, 1.0); /*#bdc3c7;*/ }
 .bg-asbestos { background-color: rgba(127, 140, 141, 1.0); /*#7f8c8d;*/ }
 
-.bg-white h1, .bg-white h1 small { color: #333; }
+.bg-none h1, .bg-none p { color: #333; }
+.bg-white h1, .bg-white p { color: #333; }
 .bg-turquoise * { color: #fff; text-shadow: 0px 1px 2px black; }
 .bg-emerald * { color: #fff; text-shadow: 0px 1px 2px black; }
 .bg-peter-river * { color: #fff; text-shadow: 0px 1px 2px black; }
