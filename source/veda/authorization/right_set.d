@@ -7,17 +7,20 @@ public static string membership_prefix = "M";
 public static string permission_prefix = "P";
 public static string filter_prefix     = "F";
 
+const                M_EXCLUSIVE = 'X';
+
 struct Right
 {
     string id;
     ubyte  access;
+    char   marker;
     bool   is_deleted = false;
 
     void   toString(scope void delegate(const(char)[]) sink) const
     {
         string aaa = access_to_pretty_string1(access);
 
-        sink("(" ~ text(id) ~ ", " ~ aaa ~ ")");
+        sink("(" ~ text(id) ~ ", " ~ aaa ~ "," ~ marker ~ ")");
 //        sink("(" ~ text(id) ~ ", " ~ to!string(access, 16) ~ ", " ~ text(is_deleted) ~ ")");
 //        sink("(A:" ~ to!string(access, 16) ~ ", D:" ~ text(is_deleted) ~ ")");
     }
@@ -68,8 +71,13 @@ public bool rights_from_string(string src, RightSet new_rights)
             string key = tokens[ idx ].dup;
             if (key !is null && key.length > 0)
             {
-                ubyte access = parse!ubyte (tokens[ idx + 1 ], 16);
-                new_rights.data[ key ] = new Right(key, access, false);
+                string s_access = tokens[ idx + 1 ][ 0..2 ];
+                ubyte  access   = parse!ubyte (s_access, 16);
+                char   marker   = 0;
+                if (tokens[ idx + 1 ].length > 2)
+                    marker = tokens[ idx + 1 ][ 2 ];
+
+                new_rights.data[ key ] = new Right(key, access, marker, false);
             }
         }
         return true;
@@ -87,8 +95,13 @@ public bool rights_from_string(string src, ref Right *[] rights_list)
             string key = tokens[ idx ].dup;
             if (key !is null && key.length > 0)
             {
-                ubyte access = parse!ubyte (tokens[ idx + 1 ], 16);
-                rights_list ~= new Right(key, access, false);
+                string s_access = tokens[ idx + 1 ][ 0..2 ];
+                char   marker   = 0;
+                if (tokens[ idx + 1 ].length > 2)
+                    marker = tokens[ idx + 1 ][ 2 ];
+
+                ubyte access = parse!ubyte (s_access, 16);
+                rights_list ~= new Right(key, access, marker, false);
             }
         }
         return true;
@@ -110,6 +123,9 @@ public string rights_as_string(RightSet new_rights)
                 outbuff.write(right.id);
                 outbuff.write(';');
                 outbuff.write(to!string(right.access, 16));
+
+                if (right.marker > 0)
+                    outbuff.write(right.marker);
                 outbuff.write(';');
             }
         }
