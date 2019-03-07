@@ -159,12 +159,15 @@ const PERMISSION_PREFIX: &str = "P";
 const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
 
+const M_EXCLUSIVE: char = 'X';
+
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
 pub struct Right {
     id: String,
     access: u8,
+    marker: char,
     is_deleted: bool,
 	level: u8
 }
@@ -256,10 +259,19 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
             let key = tokens[idx];
             let mut access = 0;
             let mut shift = 0;
+            let mut marker = 0 as char;
 
             let mut element = tokens[idx + 1].chars();
 
+			let mut pos = 0;
+
             while let Some(c) = element.next() {
+
+				if pos == 2 {
+						marker = c;
+				}
+
+                pos = pos + 1;
                 match c.to_digit(16) {
                     Some(v) => access = access | (v << shift),
                     None => {
@@ -273,6 +285,7 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
             let rr = Right {
                 id: key.to_string(),
                 access: access as u8,
+                marker: marker,
                 is_deleted: false,
 				level: 0
             };
@@ -473,6 +486,57 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                 group.access = new_access;
 
                 let mut key = group.id.clone();
+
+/*                
+                //dbg!(key.clone ());
+                
+                if level == 0 && (key.find("_group") != None) {
+                    let mut res = false;
+                    //let mut res = true;
+                    dbg!("FOUND DIRECT CLASS GROUP");
+                    dbg!(&level);
+                    dbg!(&uri);
+                    dbg!(&key);
+
+                    let mut o_groups = HashMap::new();
+                    let mut walked_groups_o = HashMap::new();
+                    let mut tree_groups_o = HashMap::new();
+
+                    match get_resource_groups(&mut walked_groups_o, &mut tree_groups_o, trace, &key, 15, &mut o_groups, &filter_value, 0, &db) {
+                        Ok(_res) => {},
+                        Err(e) => return Err(e),
+                    }
+
+                    dbg!(&o_groups);
+
+                    let mut max_level = 0;
+
+                    for (_o_key, o_val) in &o_groups {
+                        if o_val.level > max_level {
+                            max_level = o_val.level.clone();
+                        }
+                    }
+
+                    dbg!(max_level);
+
+                    dbg!(&azc.subject_groups);
+
+                    for (_o_key, o_val) in &o_groups {
+                        if o_val.level == max_level {
+                            dbg!(o_val);
+                            if azc.subject_groups.contains_key(&o_val.id) {
+                                res = true;
+                                dbg!(res);
+                            }
+                        }
+                    }
+
+                    if res == false {
+                        return Ok(false);
+                    }
+                }
+*/
+
                 let mut preur_access = 0;
 
                 if azc.walked_groups_o.contains_key(&key) {
@@ -622,6 +686,7 @@ fn get_resource_groups(
                     Right {
                         id: group.id.clone(),
                         access: group.access,
+                        marker: group.marker,
                         is_deleted: group.is_deleted,
 						level: level
                     },
@@ -860,8 +925,9 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         Right {
             id: user_uri.to_string(),
             access: 15,
+            marker: 0 as char,
             is_deleted: false,
-			level: 0	
+			level: 0
         },
     );
 
