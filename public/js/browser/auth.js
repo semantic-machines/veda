@@ -165,15 +165,17 @@ veda.Module(function (veda) { "use strict";
     veda.ticket = storage.ticket = authResult.ticket;
     veda.end_time = storage.end_time = authResult.end_time;
     // Re-login on ticket expiration
-    var ticketDelay = parseInt(veda.end_time) - Date.now();
-    veda.Util.setCookie("ticket", authResult.ticket, { path:"/files" });
-    var ticketDelayHours = Math.floor(ticketDelay / 1000 / 60 / 60);
-    var ticketDelayMinutes = Math.floor(ticketDelay / 1000 / 60 - ticketDelayHours  * 60);
-    console.log("Ticket will expire in %d hrs. %d mins.", ticketDelayHours, ticketDelayMinutes);
-    setTimeout(function () {
-      console.log("Ticket expired, re-login.");
-      veda.trigger("login:failed");
-    }, ticketDelay);
+    if( veda.end_time ) {
+      var ticketDelay = parseInt(veda.end_time) - Date.now();
+      veda.Util.setCookie("ticket", authResult.ticket, { path:"/files" });
+      var ticketDelayHours = Math.floor(ticketDelay / 1000 / 60 / 60);
+      var ticketDelayMinutes = Math.floor(ticketDelay / 1000 / 60 - ticketDelayHours  * 60);
+      console.log("Ticket will expire in %d hrs. %d mins.", ticketDelayHours, ticketDelayMinutes);
+      setTimeout(function () {
+        console.log("Ticket expired, re-login.");
+        veda.trigger("login:failed");
+      }, ticketDelay);
+    }
     veda.start();
   });
 
@@ -188,31 +190,48 @@ veda.Module(function (veda) { "use strict";
   });
 
   // Init application
-  veda.init().then(function () {
-    // Check if ticket in cookies is valid
-    var ticket = storage.ticket,
-        user_uri = storage.user_uri,
-        end_time = ( new Date() < new Date(parseInt(storage.end_time)) ) && storage.end_time;
-    if (ticket && user_uri && end_time) {
-      return veda.Backend.is_ticket_valid(ticket);
-    } else {
-      veda.trigger("login:failed");
-      throw new Error("Auth expired");
-    }
-  }).then(function (valid) {
-    if (valid) {
-      veda.trigger("login:success", {
-        ticket: storage.ticket,
-        user_uri: storage.user_uri,
-        end_time: storage.end_time
-      });
-    } else {
-      veda.trigger("login:failed");
-      throw new Error("Auth expired");
-    }
-  }).catch(function (error) {
-    console.log( new Error("Auth expired") );
-    veda.trigger("login:failed");
-  });
+  veda.init()
+    .then(function () {
+      return new veda.IndividualModel("cfg:AuthRequired").load();
+    })
+    .then(function (authRequiredParam) {
+      if ( authRequiredParam && authRequiredParam.hasValue("rdf:value", false) ) {
+        throw new Error("Auth not required");
+      }
+    })
+    .then(function () {
+      // Check if ticket in cookies is valid
+      var ticket = storage.ticket,
+          user_uri = storage.user_uri,
+          end_time = ( new Date() < new Date(parseInt(storage.end_time)) ) && storage.end_time;
+      if (ticket && user_uri && end_time) {
+        return veda.Backend.is_ticket_valid(ticket);
+      } else {
+        veda.trigger("login:failed");
+        throw new Error("Auth expired");
+      }
+    }).then(function (valid) {
+      if (valid) {
+        veda.trigger("login:success", {
+          ticket: storage.ticket,
+          user_uri: storage.user_uri,
+          end_time: storage.end_time
+        });
+      } else {
+        veda.trigger("login:failed");
+        throw new Error("Auth expired");
+      }
+    }).catch(function (error) {
+      console.log( error );
+      if (error.message === "Auth not required") {
+        veda.trigger("login:success", {
+          ticket: "",
+          user_uri: "cfg:Guest",
+          end_time: 0
+        });
+      } else {
+        veda.trigger("login:failed");
+      }
+    });
 
 });
