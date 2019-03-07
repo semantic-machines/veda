@@ -252,22 +252,28 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     Resources removed_resource = get_disappeared(prev_resource, resource);
     Resources removed_in_set   = get_disappeared(prev_in_set, in_set);
 
-    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
+    bool      isExclusive = new_ind.getFirstBoolean("v-s:isExclusive");
+    char      marker      = 0;
+
+    if (isExclusive == true)
+        marker = M_EXCLUSIVE;
+
+    update_right_set(resource, in_set, marker, is_deleted, useFilter, prefix, access, op_id, storage);
 
     if (removed_resource.length > 0)
     {
         log.trace("- removed_resource=%s", removed_resource);
-        update_right_set(removed_resource, in_set, true, useFilter, prefix, access, op_id, storage);
+        update_right_set(removed_resource, in_set, marker, true, useFilter, prefix, access, op_id, storage);
     }
 
     if (removed_in_set.length > 0)
     {
         log.trace("- removed_in_set=%s", removed_in_set);
-        update_right_set(resource, removed_in_set, true, useFilter, prefix, access, op_id, storage);
+        update_right_set(resource, removed_in_set, marker, true, useFilter, prefix, access, op_id, storage);
     }
 }
 
-private void update_right_set(ref Resources resources, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
+private void update_right_set(ref Resources resources, ref Resources in_set, char marker, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
                               long op_id,
                               KeyValueDB storage)
 {
@@ -297,13 +303,14 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
             if (rr !is null)
             {
                 rr.is_deleted                = is_deleted;
+                rr.marker                    = marker;
                 rr.access                    = rr.access | access;
                 new_right_set.data[ mb.uri ] = rr;
                 //log.trace(" UPDATE [%s]", mb.uri);
             }
             else
             {
-                Right *nrr = new Right(mb.uri, access, is_deleted);
+                Right *nrr = new Right(mb.uri, access, marker, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
                 //log.trace(" NEW [%s]", mb.uri);
             }
