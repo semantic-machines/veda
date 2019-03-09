@@ -114,10 +114,11 @@ veda.Module(function (veda) { "use strict";
         }
 
         // Watch server-side updates
-        var updateService = new veda.UpdateService();
-        updateService.subscribe(individual.id);
-        processedTemplate.one("remove", function () {
-          updateService.unsubscribe(individual.id);
+        var updateService = new veda.UpdateService().then(function (updateService) {
+          updateService.subscribe(individual.id);
+          processedTemplate.one("remove", function () {
+            updateService.unsubscribe(individual.id);
+          });
         });
 
         return processedTemplate;
@@ -422,10 +423,11 @@ veda.Module(function (veda) { "use strict";
 
         if ( about !== individual ) {
           // Watch server-side updates
-          var updateService = new veda.UpdateService();
-          updateService.subscribe(about.id);
-          template.one("remove", function () {
-            updateService.unsubscribe(about.id);
+          var updateService = new veda.UpdateService().then(function (updateService) {
+            updateService.subscribe(about.id);
+            template.one("remove", function () {
+              updateService.unsubscribe(about.id);
+            });
           });
         }
 
