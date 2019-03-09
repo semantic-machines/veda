@@ -203,45 +203,46 @@ veda.Module(function (veda) { "use strict";
 
   // Listen to client notifications
   veda.on("started", function () {
-    var updateService = new veda.UpdateService();
-    var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
-    updateService.subscribe(clientNotification.id);
-    clientNotification.on("afterReset", checkNotification);
-    checkNotification();
-    function checkNotification() {
-      var browserNotificationList;
-      try {
-        browserNotificationList = JSON.parse(localStorage.clientNotification);
-      } catch (error) {
-        browserNotificationList = [];
-      }
-      var serverNotificationList = clientNotification["rdf:value"].map(function (item) { return item.id; });
-      if ( !veda.Util.areEqual(browserNotificationList, serverNotificationList) && serverNotificationList.length ) {
-        for (var i = 0, exit = false, notification, notification_uri; (notification_uri = serverNotificationList[i]) && !exit; i++) {
-          if (browserNotificationList.indexOf(notification_uri) >= 0) { continue; }
-          notification = new veda.IndividualModel(notification_uri);
-          if ( notification.hasValue("v-s:newsAudience") ) {
-            notification.properties["v-s:newsAudience"].forEach(function (audience) {
-              audience = audience.data;
-              if ( veda.user.isMemberOf(audience) ) {
-                veda.Util.confirm(notification).then(function (confirmed) {
-                  if ( confirmed ) {
-                    localStorage.clientNotification = JSON.stringify(serverNotificationList);
-                    if (notification.hasValue("v-s:script")) {
-                      var script = notification["v-s:script"][0].toString();
-                      eval(script);
-                    }
-                  }
-                });
-                exit = true;
-              }
-            });
-          }
+    var updateService = new veda.UpdateService().then(function (updateService) {
+      var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
+      updateService.subscribe(clientNotification.id);
+      clientNotification.on("afterReset", checkNotification);
+      checkNotification();
+      function checkNotification() {
+        var browserNotificationList;
+        try {
+          browserNotificationList = JSON.parse(localStorage.clientNotification);
+        } catch (error) {
+          browserNotificationList = [];
         }
-      } else {
-        localStorage.clientNotification = JSON.stringify(serverNotificationList);
+        var serverNotificationList = clientNotification["rdf:value"].map(function (item) { return item.id; });
+        if ( !veda.Util.areEqual(browserNotificationList, serverNotificationList) && serverNotificationList.length ) {
+          for (var i = 0, exit = false, notification, notification_uri; (notification_uri = serverNotificationList[i]) && !exit; i++) {
+            if (browserNotificationList.indexOf(notification_uri) >= 0) { continue; }
+            notification = new veda.IndividualModel(notification_uri);
+            if ( notification.hasValue("v-s:newsAudience") ) {
+              notification.properties["v-s:newsAudience"].forEach(function (audience) {
+                audience = audience.data;
+                if ( veda.user.isMemberOf(audience) ) {
+                  veda.Util.confirm(notification).then(function (confirmed) {
+                    if ( confirmed ) {
+                      localStorage.clientNotification = JSON.stringify(serverNotificationList);
+                      if (notification.hasValue("v-s:script")) {
+                        var script = notification["v-s:script"][0].toString();
+                        eval(script);
+                      }
+                    }
+                  });
+                  exit = true;
+                }
+              });
+            }
+          }
+        } else {
+          localStorage.clientNotification = JSON.stringify(serverNotificationList);
+        }
       }
-    }
+    });
   });
 
 });
