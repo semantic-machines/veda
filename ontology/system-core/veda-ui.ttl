@@ -1794,10 +1794,9 @@ v-ui:ModalImageTemplate
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<a class="show-modal" href="#" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></a>
 <script><!--async-->
   if ( !individual.hasValue("v-s:thumbnail") ) {
-    template.remove();
+    template.removeAttr("rel");
   }
   template.click(function (e) {
     e.preventDefault();
@@ -1811,6 +1810,7 @@ v-ui:ModalImageTemplate
   });
   //# sourceURL=v-ui:ModalImageTemplate
 </script>
+<a class="show-modal" href="#" about="@" rel="v-s:thumbnail" data-template="v-ui:ImageTemplate"></a>
   """ ;
 .
 v-ui:SimplifiedJournalTemplate
