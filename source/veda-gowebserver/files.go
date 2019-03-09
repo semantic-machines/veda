@@ -127,7 +127,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 	}
 
 	//If uri len is more then 3 and icket is valid than continue downloading
-	if utf8.RuneCountInString(uri) > 3 && ticketKey != "" {
+	if utf8.RuneCountInString(uri) > 3 {
 
 		//Check if ticket is valid, return fail code if ticket is not valid
 		rc, ticket := getTicket(ticketKey)
@@ -196,7 +196,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 		
 		trail1(ticket.Id, ticket.UserURI, "files", uri, "", Ok, timestamp)
 	} else {
-			log.Println("ERR! FILE uri < 3 or empty ticket")
+			log.Println("ERR! FILE uri < 3")
 			ctx.Response.SetStatusCode(int(InternalServerError))		
 	}
 	
