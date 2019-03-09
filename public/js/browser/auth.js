@@ -164,10 +164,10 @@ veda.Module(function (veda) { "use strict";
     veda.user_uri = storage.user_uri = authResult.user_uri;
     veda.ticket = storage.ticket = authResult.ticket;
     veda.end_time = storage.end_time = authResult.end_time;
+    veda.Util.setCookie("ticket", authResult.ticket, { path:"/files" });
     // Re-login on ticket expiration
     if( veda.end_time ) {
       var ticketDelay = parseInt(veda.end_time) - Date.now();
-      veda.Util.setCookie("ticket", authResult.ticket, { path:"/files" });
       var ticketDelayHours = Math.floor(ticketDelay / 1000 / 60 / 60);
       var ticketDelayMinutes = Math.floor(ticketDelay / 1000 / 60 - ticketDelayHours  * 60);
       console.log("Ticket will expire in %d hrs. %d mins.", ticketDelayHours, ticketDelayMinutes);
@@ -222,14 +222,15 @@ veda.Module(function (veda) { "use strict";
         throw new Error("Auth expired");
       }
     }).catch(function (error) {
-      console.log( error );
       if (error.message === "Auth not required") {
+        console.log( error.message );
         veda.trigger("login:success", {
           ticket: "",
           user_uri: "cfg:Guest",
           end_time: 0
         });
       } else {
+        console.log( error );
         veda.trigger("login:failed");
       }
     });
