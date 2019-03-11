@@ -3337,9 +3337,10 @@ v-ui:Graph
 
   };
 
+  var network;
+
   setTimeout(function () {
-    var graphCntr = graph.get(0);
-    var network = new vis.Network(graphCntr, data, options);
+    network = new vis.Network(graph.get(0), data, options);
     network.on("doubleClick", onDoubleClick);
     network.on("select", onSelect);
   });
@@ -3358,4 +3359,3 @@ v-ui:Graph
 </script>
   """ ;
 .
-
