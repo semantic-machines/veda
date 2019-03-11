@@ -50,7 +50,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
 			log.Printf("ERR! GET TICKET, ticket=%s, err=%v\n", ticketKey, rr.CommonRC)
-			return InternalServerError, ticket
+			return rr.CommonRC, ticket
 		}
 
 		//If operation code is not Ok return fail code
