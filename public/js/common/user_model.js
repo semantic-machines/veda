@@ -78,7 +78,9 @@ veda.Module(function (veda) { "use strict";
       Promise.all([defaultLanguage.load(), defaultDisplayedElements.load()]).then(function (defaults) {
         preferences["v-ui:preferredLanguage"] = [ defaults[0]["rdf:value"][0] ];
         preferences["v-ui:displayedElements"] = [ defaults[1]["rdf:value"][0] ];
-        preferences.save();
+        if (self.id !== "cfg:Guest") {
+          preferences.save();
+        }
       });
     }
     preferences.on("v-ui:preferredLanguage", setLanguage);
@@ -88,16 +90,16 @@ veda.Module(function (veda) { "use strict";
         acc[lang.id.substr(lang.id.indexOf(":") + 1)] = lang;
         return acc;
       }, {});
-      if ( !preferences.isSync() ) {
+      if ( !preferences.isSync() && self.id !== "cfg:Guest" ) {
         preferences.save();
-        veda.trigger("language:changed");
       }
+      veda.trigger("language:changed");
     }
     preferences.on("v-ui:displayedElements", setDisplayedElements);
     setDisplayedElements();
     function setDisplayedElements() {
       preferences.displayedElements = preferences["v-ui:displayedElements"][0] || 10;
-      if ( !preferences.isSync() ) {
+      if ( !preferences.isSync() && self.id !== "cfg:Guest" ) {
         preferences.save();
       }
     }
