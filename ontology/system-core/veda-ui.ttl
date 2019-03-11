@@ -426,7 +426,7 @@ v-ui:LanguageSwitchTemplate
   rdfs:label "Language switch template"@en ;
   v-ui:template """
 <div about="@" class="btn-group" rel="rdf:value">
-  <button about="@" property="rdfs:label" class="btn btn-xs btn-default navbar-btn"></button>
+  <button about="@" property="rdfs:label" class="lang btn btn-xs btn-default navbar-btn"></button>
 </div>
 <script><!--async-->
   var switches = $(".btn", template);
@@ -435,7 +435,7 @@ v-ui:LanguageSwitchTemplate
     veda.user.preferences.off("v-ui:preferredLanguage", langHandler);
   });
   langHandler();
-  template.on("click", toggleLanguage);
+  template.on("click", "button.lang", toggleLanguage);
   function langHandler() {
     var preferredLanguage = veda.user.preferences["v-ui:preferredLanguage"].map(function (language) { return language.id; });
     switches.each(function () {
