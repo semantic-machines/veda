@@ -2891,12 +2891,21 @@ v-ui:generic
   """ ;
 .
 
-v-ui:GraphInline
+v-ui:ExportToTTL
+  rdf:type v-s:Bundle ;
+  rdfs:label "Экспорт в TTL"@ru ;
+  rdfs:label "Export to TTL"@en ;
+.
+
+v-ui:Graph
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон графа"@ru ;
   rdfs:label "Template graph"@en ;
   v-ui:template """
-<div>
+<div class="container-fluid sheet">
+  <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
+  <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> <span about="v-ui:ExportToTTL" property="rdfs:label"></span></button>
+
   <div id="graph"></div>
   
   <div id="individual-context-menu">
@@ -3335,22 +3344,6 @@ v-ui:GraphInline
     network.on("select", onSelect);
   });
 
-  //# sourceURL=v-ui:GraphInline
-</script>
-  """ ;
-.
-
-v-ui:Graph
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон графа"@ru ;
-  rdfs:label "Template graph"@en ;
-  v-ui:template """
-<div class="container-fluid sheet">
-  <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
-  <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
-  <div about="@" data-template="v-ui:GraphInline"></div>
-</div>
-<script><!--async-->
   // Buttons
   var exportBtn = $("#export-ttl", template).click(function () {
     var list = nodes.get().map(function (item) { return item.individual; });
@@ -3360,6 +3353,7 @@ v-ui:Graph
     network.freezeSimulation = !network.freezeSimulation;
     $("i", this).toggleClass("glyphicon-pause glyphicon-play");
   });
+
   //# sourceURL=v-ui:Graph
 </script>
   """ ;
