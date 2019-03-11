@@ -1,0 +1,69 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+
+<http://semantic-machines.com/veda/veda-businessTrip-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Командировка. Схема."@ru ;
+  rdfs:label "Veda system ontology. Business trip. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+#----------------------------------КОМАНДИРОВКА-----------------------
+v-s:BusinessTrip
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Командировка"@ru ;
+  rdfs:label "Business trip"@en ;
+.
+v-s:hasBusinessTripRegistrationRecord
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:BusinessTrip ;
+  rdfs:range v-s:BusinessTripRegistrationRecord ;
+  rdfs:label "Регистрационная запись"@ru ;
+  rdfs:label "Registration record"@en ;
+.
+v-s:businessTripEmployee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Сотрудник"@ru ;
+  rdfs:label "Employee"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:businessTripDepartment
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Подразделение"@ru ;
+  rdfs:label "Department"@en ;
+  rdfs:range v-s:Department ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:businessTripGoal
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Цель"@ru ;
+  rdfs:label "Goal"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+# v-s:supplier
+# v-s:duration
+
+###----------------------------------РЕГ_ЗАПИСЬ_КОМАНДИРОВКИ---------------------
+v-s:BusinessTripRegistrationRecord
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:RegistrationRecord ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Enumerated ;
+  v-s:hasNumeration v-s:RegistrationNumberSimpleNumerationYear ;
+  rdfs:label "Регистрационная запись командировки"@ru ;
+  rdfs:label "Business trip registration record"@en ;
+.
+# --- В связи с вводом класса может использоваться предикат v-s:hasBusinessTripRegistrationRecord. Он описан в классе v-s:BusinessTrip

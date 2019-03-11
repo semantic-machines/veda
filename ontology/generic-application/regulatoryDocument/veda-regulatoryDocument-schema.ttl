@@ -1,0 +1,106 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+
+<http://semantic-machines.com/veda/veda-regulatoryDocument-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Нормативный документ. Схема."@ru ;
+  rdfs:label "Veda system ontology. Regulatory document. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:RegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Нормативный документ"@ru ;
+  rdfs:label "Regulatory document"@en ;
+.
+
+#---------------------------------------------------------
+v-s:LocalRegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:label "Локальный нормативный документ"@ru ;
+  rdfs:label "Local Regulatory document"@en ;
+.
+# v-s:hasDocumentKind
+# v-s:registrationNumber
+
+v-s:hasVersionOfLocalRegulatoryDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Версии документа"@ru ;
+  rdfs:label "Versions of document"@en ;
+  rdfs:range v-s:VersionOfLocalRegulatoryDocument ;
+  rdfs:domain v-s:LocalRegulatoryDocument ;
+.
+
+#---------------------------------------------------------
+v-s:VersionOfLocalRegulatoryDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:LocalRegulatoryDocument ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:label "Версия локального нормативного документа"@ru ;
+  rdfs:label "Verions of local regulatory document"@en ;
+.
+v-s:hasDescriptionOfChange
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Описание изменений"@ru ;
+  rdfs:label "Description of changes"@en ;
+  rdfs:range v-s:DescriptionOfChange ;
+  rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
+.
+v-s:hasAddendum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Приложение"@ru ;
+  rdfs:label "Addendum"@en ;
+  rdfs:range v-s:Addendum ;
+  rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
+.
+# --- В связи с вводом класса может использоваться предикат v-s:hasVersionOfLocalRegulatoryDocument. Он описан в классе v-s:LocalRegulatoryDocument
+
+#---------------------------------------------------------
+v-s:DescriptionOfChange
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Описание изменений"@ru ;
+  rdfs:label "Description of changes"@en ;
+.
+v-s:asis
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Было"@ru ;
+  rdfs:label "As is"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:DescriptionOfChange ;
+.
+v-s:tobe
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Стало"@ru ;
+  rdfs:label "To be"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:DescriptionOfChange ;
+.
+# --- В связи с вводом класса может использоваться предикат v-s:hasDescriptionOfChange. Он описан в классе v-s:VersionOfLocalRegulatoryDocument
+
+#---------------------------------------------------------
+v-s:Addendum
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:label "Addendum"@en ;
+  rdfs:label "Приложение"@ru ;
+  v-ui:hasTemplate v-s:AddendumTemplate ;
+.
+# --- В связи с вводом класса может использоваться предикат v-s:hasAddendum. Он описан в классе v-s:VersionOfLocalRegulatoryDocument

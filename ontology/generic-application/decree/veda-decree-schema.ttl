@@ -1,0 +1,38 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-decree-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Распорядительный документ. Схема."@ru ;
+  rdfs:label "Veda system ontology. Decree. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#----------------------------------РАСПОРЯДИТЕЛЬНЫЙ_ДОКУМЕНТ-----------------------
+v-s:Decree
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:label "Распорядительный документ"@ru ;
+  rdfs:label "Decree"@en ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:title
+
+v-s:hasDecreeKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид документа"@ru ;
+  rdfs:label "Decree kind"@en ;
+  rdfs:range v-s:DecreeKind ;
+  rdfs:domain v-s:Decree ;
+.
