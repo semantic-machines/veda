@@ -2891,17 +2891,14 @@ v-ui:generic
   """ ;
 .
 
-v-ui:Graph
+v-ui:GraphInline
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон графа"@ru ;
   rdfs:label "Template graph"@en ;
   v-ui:template """
-<div class="container-fluid sheet">
-  <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
-  <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
-
+<div>
   <div id="graph"></div>
-
+  
   <div id="individual-context-menu">
     <ul class="dropdown-menu" role="menu">
       <li role="presentation" class="dropdown-header">Индивид</li>
@@ -2979,10 +2976,10 @@ v-ui:Graph
       <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
       <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
     </ul>
-  </div>
+  </div>  
 </div>
 <script><!--async-->
-  function addNode (individual, opts) {
+  function addNode (individual) {
     return individual.load().then(function (individual) {
       if ( nodes.get(individual.id) === null ) {
         var node = {
@@ -3021,7 +3018,6 @@ v-ui:Graph
               break;
           }
         }
-        $.extend(node, opts);
         nodes.add ([ node ]);
       }
     });
@@ -3062,9 +3058,9 @@ v-ui:Graph
   function addInLinks (id, queryStr) {
     var q = queryStr || "'*'=='{id}'";
     q = q.replace("{id}", id);
-    veda.Backend.query(veda.ticket, q).then(function (queryResult) {
+    return veda.Backend.query(veda.ticket, q).then(function (queryResult) {
       var uris = queryResult.result;
-      veda.Backend.get_individuals(veda.ticket, uris).then(function (individualsJSONs) {
+      return veda.Backend.get_individuals(veda.ticket, uris).then(function (individualsJSONs) {
         individualsJSONs.forEach(function (individualJSON) {
           var res = new veda.IndividualModel(individualJSON);
           addNode(res);
@@ -3155,23 +3151,8 @@ v-ui:Graph
     $("#main").append(modal);
   }
 
-  var root = individual;
-
-  var nodes = new vis.DataSet(), edges = new vis.DataSet();
-  var body = $("body");
-  var select = {nodes: [], edges: []};
   var graph = $("#graph", template);
-
-  // Buttons
-  var exportBtn = $("#export-ttl", template).click(function () {
-    var list = nodes.get().map(function (item) { return item.individual; });
-    veda.Util.exportTTL(list);
-  });
-  var freezeBtn = $("#freeze", template).click(function () {
-    network.freezeSimulation = !network.freezeSimulation;
-    $("i", this).toggleClass("glyphicon-pause glyphicon-play");
-  });
-
+  
   // Context menu for selected node
   graph.contextmenu({
     target: $("#individual-context-menu", template),
@@ -3230,6 +3211,11 @@ v-ui:Graph
   });
 
   // Create a network
+
+  var root = individual;
+  var nodes = new vis.DataSet(), edges = new vis.DataSet();
+  var body = $("body");
+  var select = {nodes: [], edges: []};
   var data = {
     nodes: nodes,
     edges: edges,
@@ -3237,8 +3223,9 @@ v-ui:Graph
 
   addNode(root).then(function () {
     addOutLinks(root.id);
+    addInLinks(root.id);
   });
-
+  
   var height = ( $("#copyright").offset().top - graph.offset().top - 50 ) + "px";
   var options = {
     width: "100%",
@@ -3341,13 +3328,38 @@ v-ui:Graph
 
   };
 
-  var network = new vis.Network(graph.get(0), data, options);
+  setTimeout(function () {
+    var graphCntr = graph.get(0);
+    var network = new vis.Network(graphCntr, data, options);
+    network.on("doubleClick", onDoubleClick);
+    network.on("select", onSelect);
+  });
 
-  // Add event listeners
-  network.on("doubleClick", onDoubleClick);
+  //# sourceURL=v-ui:GraphInline
+</script>
+  """ ;
+.
 
-  network.on("select", onSelect);
-
+v-ui:Graph
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон графа"@ru ;
+  rdfs:label "Template graph"@en ;
+  v-ui:template """
+<div class="container-fluid sheet">
+  <button type="button" id="freeze" class="btn btn-success"><i class="glyphicon glyphicon-pause"></i></button>
+  <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> Экспорт в ttl</button>
+  <div about="@" data-template="v-ui:GraphInline"></div>
+</div>
+<script><!--async-->
+  // Buttons
+  var exportBtn = $("#export-ttl", template).click(function () {
+    var list = nodes.get().map(function (item) { return item.individual; });
+    veda.Util.exportTTL(list);
+  });
+  var freezeBtn = $("#freeze", template).click(function () {
+    network.freezeSimulation = !network.freezeSimulation;
+    $("i", this).toggleClass("glyphicon-pause glyphicon-play");
+  });
   //# sourceURL=v-ui:Graph
 </script>
   """ ;
