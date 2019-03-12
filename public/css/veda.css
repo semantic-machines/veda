@@ -127,6 +127,10 @@ body {
 }
 
 /* Sheets */
+.sheet:empty {
+  display: none;
+}
+
 .sheet {
   position: relative;
   background-color: #fff;
