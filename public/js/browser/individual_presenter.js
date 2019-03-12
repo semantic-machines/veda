@@ -814,7 +814,7 @@ veda.Module(function (veda) { "use strict";
     propertyContainer.empty();
     about.get(property_uri).map( function (value, i) {
       if (isAbout) {
-        propertyContainer.append( veda.Util.formatValue(value) + " " );
+        propertyContainer.text( veda.Util.formatValue(value) + " " );
       } else {
         var valueHolder = $("<span class='value-holder'></span>");
         propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
