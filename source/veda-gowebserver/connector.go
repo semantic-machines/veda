@@ -585,7 +585,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		}
 		if len(resp.Data) == 0 {
 			log.Println("ERR! webserver.GetTicket: Empty body of Insert")
-			rr.CommonRC = InternalServerError
+			rr.CommonRC = TicketNotFound
 		} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
 			log.Println("ERR! webserver.GetTicket: Unexpected body of Insert")
 			rr.CommonRC = InternalServerError

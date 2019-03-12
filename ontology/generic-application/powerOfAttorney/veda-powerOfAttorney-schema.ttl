@@ -1,0 +1,75 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-powerOfAttorney-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Доверенность. Схема."@ru ;
+  rdfs:label "Veda system ontology. Power of attorney. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+#---------------------------------------------------------
+v-s:PowerOfAttorney
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:AutomaticallyVersioned ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Доверенность"@ru ;
+  rdfs:label "Power of attorney"@en ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:hasComment
+# rdfs:label
+# v-s:grantor
+# v-s:grantee
+
+v-s:grantor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Доверитель"@ru ;
+  rdfs:label "Grantor"@en ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:grantee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Доверенный"@ru ;
+  rdfs:label "Grantee"@en ;
+  rdfs:range v-s:Correspondent ;
+  rdfs:domain v-s:Deliverable2 ;
+.
+v-s:hasReasonForPowerOfAttorney
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Причина (справочник)"@ru ;
+  rdfs:label "Reason"@en ;
+  rdfs:range v-s:ReasonForPowerOfAttorney ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:hasFormOfPowerOfAttorney
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Форма доверенности"@ru ;
+  rdfs:label "Form of power of attorney"@en ;
+  rdfs:range v-s:FormOfPowerOfAttorney ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:issuedForAbsencePeriodOfEmployee
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "На период отсутствия работника"@ru ;
+  rdfs:label "For the period of employee absence"@en ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.
+v-s:isIssuedForAbsencePeriodOfEmployee
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Оформляется на период отсутствия работника?"@ru ;
+  rdfs:label "Is issued for the period of absence of the employee?"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:PowerOfAttorney ;
+.

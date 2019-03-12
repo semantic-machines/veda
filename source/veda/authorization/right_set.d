@@ -74,8 +74,8 @@ public bool rights_from_string(string src, RightSet new_rights)
                 string s_access = tokens[ idx + 1 ][ 0..2 ];
                 ubyte  access   = parse!ubyte (s_access, 16);
                 char   marker   = 0;
-                if (tokens[ idx + 1 ].length > 2)
-                    marker = tokens[ idx + 1 ][ 2 ];
+                if (tokens[ idx + 1 ].length > 1)
+                    marker = tokens[ idx + 1 ][ 1 ];
 
                 new_rights.data[ key ] = new Right(key, access, marker, false);
             }
@@ -97,8 +97,8 @@ public bool rights_from_string(string src, ref Right *[] rights_list)
             {
                 string s_access = tokens[ idx + 1 ][ 0..2 ];
                 char   marker   = 0;
-                if (tokens[ idx + 1 ].length > 2)
-                    marker = tokens[ idx + 1 ][ 2 ];
+                if (tokens[ idx + 1 ].length > 1)
+                    marker = tokens[ idx + 1 ][ 1 ];
 
                 ubyte access = parse!ubyte (s_access, 16);
                 rights_list ~= new Right(key, access, marker, false);

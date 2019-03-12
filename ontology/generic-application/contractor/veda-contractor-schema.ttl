@@ -1,0 +1,68 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+
+<http://semantic-machines.com/veda/veda-contractor-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Контрагент. Схема."@ru ;
+  rdfs:label "Veda system ontology. Contractor. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+v-s:Contractor
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+#  rdfs:subClassOf v-s:Organization ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:label "Контрагент"@ru ;
+  rdfs:label "Contractor"@en ;
+  v-ui:hasTemplate v-s:ContractorTemplate ;
+.
+v-s:linkedOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Связанная организация"@ru ;
+  rdfs:label "linked organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractor ;
+.
+v-s:hasContractorLock
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "История блокировок"@ru ;
+  rdfs:label "Contractor lock history"@en ;
+  rdfs:range v-s:ContractorLock ;
+  rdfs:domain v-s:Contractor ;
+.
+v-s:forOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Контрагент для юр лица"@ru ;
+  rdfs:label "Contractor for organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Contractor ;
+.
+
+# ------------------------------------------------------------
+v-s:ContractorLock
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Блокировка контрагента"@ru ;
+  rdfs:label "Contractor lock"@en ;
+.
+# v-s:dateFrom
+# v-s:dateTo
+v-s:hasLockedReason
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Причина блокировки"@ru ;
+  rdfs:label "Locked reason"@en ;
+  rdfs:range v-s:LockedReason ;
+  rdfs:domain v-s:ContractorLock ;
+.
