@@ -31,7 +31,7 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
     match c_uri.to_str() {
         Ok(value) => uri = value,
         Err(e) => {
-            println!("ERR! invalid param uri {:?}", e);
+            eprintln!("ERR! invalid param uri {:?}", e);
             return ptr::null();
         },
     }
@@ -41,7 +41,7 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
     match c_user_uri.to_str() {
         Ok(value) => user_uri = value,
         Err(e) => {
-            println!("ERR! invalid param user_uri {:?}", e);
+            eprintln!("ERR! invalid param user_uri {:?}", e);
             return ptr::null();
         },
     }
@@ -89,7 +89,7 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
         trace_res = trace.info;
     }
 
-    //	println! ("trace_res={}", trace_res);
+    //	eprintln! ("trace_res={}", trace_res);
 
     //	let bytes = trace_res.into_bytes();
     let cres = CString::new(trace_res.clone()).unwrap();
@@ -111,7 +111,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
     match c_uri.to_str() {
         Ok(value) => uri = value,
         Err(e) => {
-            println!("ERR! invalid param uri {:?}", e);
+            eprintln!("ERR! invalid param uri {:?}", e);
             return 0;
         },
     }
@@ -121,7 +121,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
     match c_user_uri.to_str() {
         Ok(value) => user_uri = value,
         Err(e) => {
-            println!("ERR! invalid param user_uri {:?}", e);
+            eprintln!("ERR! invalid param user_uri {:?}", e);
             return 0;
         },
     }
@@ -138,7 +138,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
 
     for attempt in 1..10 {
         if attempt > 1 {
-            println!("ERR! AZ: attempt {:?}", attempt)
+            eprintln!("ERR! AZ: attempt {:?}", attempt)
         }
 
         match _authorize(uri, user_uri, request_access, is_check_for_reload, &mut trace) {
@@ -212,13 +212,13 @@ lazy_static! {
                 break
             },
             Err(e) => {
-                println! ("ERR! Authorize: Err opening environment: {:?}", e);
+                eprintln! ("ERR! Authorize: Err opening environment: {:?}", e);
                 thread::sleep(time::Duration::from_secs(3));
-                println! ("Retry");
+                eprintln! ("Retry");
             }
         }
     }
-    println! ("LIB_AZ: Opened environment ./data/acl-indexes");
+    eprintln! ("LIB_AZ: Opened environment ./data/acl-indexes");
     env1
     }));
 
@@ -234,7 +234,7 @@ fn get_from_db(key: &str, db: &Database) -> Result<String, i64> {
                 return Err(0);
             },
             _ => {
-                println!("ERR! Authorize: db.get {:?}, {}", e, key);
+                eprintln!("ERR! Authorize: db.get {:?}, {}", e, key);
                 return Err(-1);
             },
         },
@@ -269,7 +269,7 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
                 match c.to_digit(16) {
                     Some(v) => access = access | (v << shift),
                     None => {
-                        println!("ERR! rights_from_string, fail parse, access is not hex digit {}", src);
+                        eprintln!("ERR! rights_from_string, fail parse, access is not hex digit {}", src);
                         continue;
                     },
                 }
@@ -417,7 +417,7 @@ fn authorize_obj_group(
         },
         Err(e) => {
             if e < 0 {
-                println!("ERR! Authorize: authorize_obj_group:main, object_group_id={:?}", object_group_id);
+                eprintln!("ERR! Authorize: authorize_obj_group:main, object_group_id={:?}", object_group_id);
                 return Err(e);
             }
         },
@@ -431,7 +431,7 @@ fn authorize_obj_group(
                 print_to_trace_info(trace, format!("for [{}] found {:?}\n", acl_key, permissions));
             },
             Err(e) => if e < 0 {
-                println!("ERR! Authorize: authorize_obj_group:trace, object_group_id={:?}", object_group_id);
+                eprintln!("ERR! Authorize: authorize_obj_group:trace, object_group_id={:?}", object_group_id);
                 return Err(e);
             },
         }
@@ -476,7 +476,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                 let mut group = &mut groups_set[idx];
 
                 if group.id.is_empty() {
-                    println!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
+                    eprintln!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
                     continue;
                 }
 
@@ -580,7 +580,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
         },
         Err(e) => {
             if e < 0 {
-                println!("ERR! Authorize: prepare_obj_group {:?}", uri);
+                eprintln!("ERR! Authorize: prepare_obj_group {:?}", uri);
                 return Err(e);
             } else {
                 return Ok(false);
@@ -616,7 +616,7 @@ fn get_resource_groups(
                 let mut group = &mut groups_set[idx];
 
                 if group.id.is_empty() {
-                    println!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
+                    eprintln!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
                     continue;
                 }
 
@@ -705,7 +705,7 @@ fn get_resource_groups(
         },
         Err(e) => {
             if e < 0 {
-                println!("ERR! Authorize: get_resource_groups {:?}", uri);
+                eprintln!("ERR! Authorize: get_resource_groups {:?}", uri);
                 return Err(e);
             } else {
                 return Ok(false);
@@ -805,7 +805,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
 
             if new_time != prev_time {
                 LAST_MODIFIED_INFO.lock().unwrap().replace(new_time);
-                //println!("LAST_MODIFIED_INFO={:?}", new_time);
+                //eprintln!("LAST_MODIFIED_INFO={:?}", new_time);
                 return Ok(true);
             }
         }
@@ -815,7 +815,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
 
     if _is_check_for_reload == true {
         if let Ok(true) = check_for_reload() {
-            //println!("INFO: Authorize: reopen db");
+            //eprintln!("INFO: Authorize: reopen db");
 
             let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
@@ -824,7 +824,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                     ENV.lock().unwrap().replace(env_res);
                 },
                 Err(e) => {
-                    println!("ERR! Authorize: Err opening environment: {:?}", e);
+                    eprintln!("ERR! Authorize: Err opening environment: {:?}", e);
                 },
             }
         }
@@ -840,9 +840,9 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                 break;
             },
             Err(e) => {
-                println!("ERR! Authorize: Err opening db handle: {:?}", e);
+                eprintln!("ERR! Authorize: Err opening db handle: {:?}", e);
                 thread::sleep(time::Duration::from_secs(3));
-                println!("Retry");
+                eprintln!("Retry");
             },
         }
     }
@@ -855,8 +855,8 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             txn = txn1;
         },
         Err(e) => {
-            println!("ERR! Authorize:CREATING TRANSACTION {:?}", e);
-            println!("reopen db");
+            eprintln!("ERR! Authorize:CREATING TRANSACTION {:?}", e);
+            eprintln!("reopen db");
 
             let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
@@ -865,7 +865,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                     ENV.lock().unwrap().replace(env_res);
                 },
                 Err(e) => {
-                    println!("ERR! Authorize: Err opening environment: {:?}", e);
+                    eprintln!("ERR! Authorize: Err opening environment: {:?}", e);
                 },
             }
 
@@ -877,7 +877,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
 
     // 0. читаем фильтр прав у object (uri)
     let mut filter_value;
-    //println!("Authorize:filter_value=[{}]", filter_value);
+    //eprintln!("Authorize:filter_value=[{}]", filter_value);
     let mut filter_allow_access_to_other = 0;
     match get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db) {
         Ok(data) => {
@@ -900,7 +900,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             if e == 0 {
                 filter_value = String::new();
             } else {
-                println!("ERR! Authorize: _authorize {:?}", uri);
+                eprintln!("ERR! Authorize: _authorize {:?}", uri);
                 return Err(e);
             }
         },
