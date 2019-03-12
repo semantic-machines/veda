@@ -1,0 +1,56 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+
+<http://semantic-machines.com/veda/veda-passRequest-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Заявка на пропуск. Схема."@ru ;
+  rdfs:label "Veda system ontology. Pass request. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+###----------------------------------ЗАЯВКА_НА_ПРОПУСК---------------------
+v-s:PassRequest
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Initiative ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:label "Заявка на пропуск"@ru ;
+  rdfs:label "pass request"@en ;
+.
+# v-s:registrationNumber
+# v-s:registrationDate
+# v-s:initiator
+# v-s:customer
+# v-s:goal
+v-s:hasPass
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Пропуск"@ru ;
+  rdfs:label "Pass"@en ;
+  rdfs:range v-s:Pass ;
+  rdfs:domain v-s:PassRequest ;
+.
+# v-s:hasComment
+# rdfs:label
+
+###----------------------------------ПРОПУСК---------------------
+v-s:Pass
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Identification ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:label "Пропуск"@ru ;
+  rdfs:label "Pass"@en ;
+.
+# v-s:registrationNumber
+# v-s:dateFrom
+# v-s:dateTo
+# --- В связи с вводом класса может использоваться предикат v-s:hasPass. Он описан в классе v-s:PassRequest

@@ -1,0 +1,40 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+
+
+<http://semantic-machines.com/veda/veda-contract-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Контракт. Схема."@ru ;
+  rdfs:label "Veda system ontology. Contract. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+# ------------------------------------------------------------
+v-s:Contract
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Financial ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Measurable ;
+  rdfs:subClassOf v-s:Projectable ;
+  rdfs:subClassOf v-s:Controlled ;
+  rdfs:label "Контракт"@ru ;
+  rdfs:label "Contract"@en ;
+.
+v-s:hasRequestContractDetail
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Детализация заявки на контракт"@ru ;
+  rdfs:label "Request contract detail"@en ;
+  rdfs:range v-s:RequestContractDetail ;
+  rdfs:domain v-s:Contractual ;
+.

@@ -303,16 +303,16 @@ private void update_right_set(ref Resources resources, ref Resources in_set, cha
             if (rr !is null)
             {
                 rr.is_deleted                = is_deleted;
-                rr.marker                    = marker;
                 rr.access                    = rr.access | access;
+                rr.marker                    = marker;
                 new_right_set.data[ mb.uri ] = rr;
-                //log.trace(" UPDATE [%s]", mb.uri);
+                log.trace(" UPDATE [%s]", mb.uri);
             }
             else
             {
                 Right *nrr = new Right(mb.uri, access, marker, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
-                //log.trace(" NEW [%s]", mb.uri);
+                log.trace(" NEW [%s]", mb.uri);
             }
         }
 
@@ -323,7 +323,7 @@ private void update_right_set(ref Resources resources, ref Resources in_set, cha
 
         ResultCode res = storage.store(key, new_record, op_id);
 
-        //log.trace("[acl index] (%s) new right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
+        log.trace("[acl index] (%s) update right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
     }
 }
 
