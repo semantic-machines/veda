@@ -481,10 +481,10 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
             for idx in 0..groups_set.len() {
                 let mut group = &mut groups_set[idx];
 
-                if group.marker == M_EXCLUSIVE {
-                    eprintln!("WARN! skip, group is exclusive, uri={}, group.id={}", uri, group.id);
-                    continue;
-                }
+                //if group.marker == M_EXCLUSIVE {
+                //    eprintln!("WARN! skip, group is exclusive, uri={}, group.id={}", uri, group.id);
+                //    continue;
+                //}
 
                 if group.id.is_empty() {
                     eprintln!("WARN! skip, group is null, uri={}, group.id={}", uri, group.id);
