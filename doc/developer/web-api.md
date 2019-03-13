@@ -167,7 +167,7 @@
 
 
 
-| *                    | Get membership of uri                                  |
+| *                    | Get operation state                                    |
 | -------------------- | ------------------------------------------------------ |
 | **URL**              | /get_operation_state                                   |
 | **Method**           | GET                                                    |
