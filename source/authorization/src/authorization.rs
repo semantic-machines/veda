@@ -550,6 +550,10 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                 match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, &db) {
                     Ok(res) => {
                         if res == true {
+                            if azc.is_need_exclusive_az == false {
+                                return Ok(true);
+                            }
+
                             if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == true {
                                 return Ok(true);
                             }
@@ -1013,7 +1017,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                             return Ok(azc.calc_right_res);
                         }
                     }
-                } 
+                }
             },
             Err(e) => return Err(e),
         }
@@ -1047,7 +1051,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         if check_exclusive(&mut azc) {
                             return Ok(azc.calc_right_res);
                         }
-                    } 
+                    }
                 },
                 Err(e) => return Err(e),
             }
