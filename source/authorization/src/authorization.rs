@@ -1013,11 +1013,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                             return Ok(azc.calc_right_res);
                         }
                     }
-                } else {
-                    if check_exclusive(&mut azc) {
-                        return Ok(azc.calc_right_res);
-                    }
-                }
+                } 
             },
             Err(e) => return Err(e),
         }
@@ -1051,11 +1047,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         if check_exclusive(&mut azc) {
                             return Ok(azc.calc_right_res);
                         }
-                    } else {
-                        if check_exclusive(&mut azc) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    }
+                    } 
                 },
                 Err(e) => return Err(e),
             }
