@@ -67,47 +67,47 @@ veda.Module(function (veda) { "use strict";
   });
 
   function handleLoginError(error) {
-    var enterLoginPassword = $("#enter-login-password", loginForm).addClass("hidden");
-    var enterNewPassword = $("#enter-new-password", loginForm).addClass("hidden");
-    var loginFailedError = $("#login-failed-error", loginForm).addClass("hidden");
-    var passwordExpiredError = $("#password-expired-error", loginForm).addClass("hidden");
-    var newPasswordError = $("#password-expired-error", loginForm).addClass("hidden");
-    var invalidSecretError = $("#invalid-secret-error", loginForm).addClass("hidden");
-    var invalidPasswordError = $("#invalid-password-error", loginForm).addClass("hidden");
-    var secretRequestInfo = $("#secret-request-info", loginForm).addClass("hidden");
+    var enterLoginPassword = $("#enter-login-password", loginForm).hide();
+    var enterNewPassword = $("#enter-new-password", loginForm).hide();
+    var loginFailedError = $("#login-failed-error", loginForm).hide();
+    var passwordExpiredError = $("#password-expired-error", loginForm).hide();
+    var newPasswordError = $("#password-expired-error", loginForm).hide();
+    var invalidSecretError = $("#invalid-secret-error", loginForm).hide();
+    var invalidPasswordError = $("#invalid-password-error", loginForm).hide();
+    var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     switch (error.code) {
       case 465: // Empty password
       case 466: // New password is equal to old
       case 467: // Invalid password
-        enterNewPassword.removeClass("hidden");
-        invalidPasswordError.removeClass("hidden");
+        enterNewPassword.show();
+        invalidPasswordError.show();
         break;
       case 468: // Invalid secret
-        enterNewPassword.removeClass("hidden");
-        invalidSecretError.removeClass("hidden");
+        enterNewPassword.show();
+        invalidSecretError.show();
         break;
       case 469: // Password expired
-        enterNewPassword.removeClass("hidden");
-        passwordExpiredError.removeClass("hidden");
-        secretRequestInfo.removeClass("hidden");
+        enterNewPassword.show();
+        passwordExpiredError.show();
+        secretRequestInfo.show();
         break;
       case 472: // Not authorized
       case 473: // Authentication failed
-        enterLoginPassword.removeClass("hidden");
-        loginFailedError.removeClass("hidden");
+        enterLoginPassword.show();
+        loginFailedError.show();
         break;
     }
   }
 
   function handleLoginSuccess(authResult) {
-    var enterLoginPassword = $("#enter-login-password", loginForm).removeClass("hidden");
-    var enterNewPassword = $("#enter-new-password", loginForm).addClass("hidden");
-    var loginFailedError = $("#login-failed-error", loginForm).addClass("hidden");
-    var passwordExpiredError = $("#password-expired-error", loginForm).addClass("hidden");
-    var newPasswordError = $("#password-expired-error", loginForm).addClass("hidden");
-    var invalidSecretError = $("#invalid-secret-error", loginForm).addClass("hidden");
-    var invalidPasswordError = $("#invalid-password-error", loginForm).addClass("hidden");
-    var secretRequestInfo = $("#secret-request-info", loginForm).addClass("hidden");
+    var enterLoginPassword = $("#enter-login-password", loginForm).show();
+    var enterNewPassword = $("#enter-new-password", loginForm).hide();
+    var loginFailedError = $("#login-failed-error", loginForm).hide();
+    var passwordExpiredError = $("#password-expired-error", loginForm).hide();
+    var newPasswordError = $("#password-expired-error", loginForm).hide();
+    var invalidSecretError = $("#invalid-secret-error", loginForm).hide();
+    var invalidPasswordError = $("#invalid-password-error", loginForm).hide();
+    var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     veda.trigger("login:success", authResult);
   }
 
@@ -131,7 +131,7 @@ veda.Module(function (veda) { "use strict";
     if ( ntlm ) {
       iframe.one("load", function () {
         try {
-          loginForm.addClass("hidden");
+          loginForm.hide();
           var body = iframe.contents().find("body"),
             ticket = $("#ticket", body).text(),
             user_uri = $("#user_uri", body).text(),
@@ -148,19 +148,19 @@ veda.Module(function (veda) { "use strict";
           }
         } catch (err) {
           console.log(err);
-          loginForm.removeClass("hidden");
+          loginForm.show();
         }
       });
       document.domain = document.domain;
       iframe.attr("src", ntlm);
     } else {
-      loginForm.removeClass("hidden");
+      loginForm.show();
     }
   });
 
   // Initialize application if ticket is valid
   veda.on("login:success", function (authResult) {
-    loginForm.addClass("hidden");
+    loginForm.hide();
     veda.user_uri = storage.user_uri = authResult.user_uri;
     veda.ticket = storage.ticket = authResult.ticket;
     veda.end_time = storage.end_time = authResult.end_time;
@@ -186,7 +186,7 @@ veda.Module(function (veda) { "use strict";
     delete storage.user_uri;
     delete storage.end_time;
     veda.Util.delCookie("ticket");
-    loginForm.removeClass("hidden");
+    loginForm.show();
   });
 
   // Init application
