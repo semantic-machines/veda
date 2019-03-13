@@ -481,9 +481,11 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
             for idx in 0..groups_set.len() {
                 let mut group = &mut groups_set[idx];
 
+                //dbg!(&group);
+
                 //if group.marker == M_EXCLUSIVE {
-                //    eprintln!("WARN! skip, group is exclusive, uri={}, group.id={}", uri, group.id);
-                //    continue;
+                //    eprintln!("WARN! skip, group is exclusive, uri={}, group.id={}", uri,
+                // group.id);    continue;
                 //}
 
                 if group.id.is_empty() {
@@ -497,6 +499,30 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 
                 let mut key = group.id.clone();
                 //dbg!(&key);
+
+                if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == false {
+                    //dbg!("--------");
+                    //dbg!(&level);
+                    //dbg!(&uri);
+                    //dbg!(&group);
+
+                    if level == 0 || uri.contains("_group") || (level < 3 && group.id.contains("cfg:TTLResourcesGroup")) {
+                        if azc.subject_groups.contains_key(&key) {
+                            dbg!(&key);
+                            match azc.subject_groups.get(&key) {
+                                Some(s_val) => {
+                                    if s_val.marker == M_EXCLUSIVE {
+                                        dbg!(&s_val);
+                                        azc.is_found_exclusive_az = true;
+                                    }
+                                },
+                                None => (),
+                            }
+                        }
+                    } else {
+                        //dbg!("ignore");
+                    }
+                }
 
                 let mut preur_access = 0;
 
@@ -522,30 +548,6 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                 //	print_to_trace_info(trace, format!("({})prepare group: [{}]\n", level,
                 // uri));
                 //}
-
-                if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == false {
-                    //dbg!("--------");
-                    //dbg!(&level);
-                    //dbg!(&uri);
-                    //dbg!(&group);
-
-                    if level == 0 || uri.contains("_group") || (level < 3 && group.id.contains("cfg:TTLResourcesGroup")) {
-                        if azc.subject_groups.contains_key(&key) {
-                            //dbg!(&key);
-                            match azc.subject_groups.get(&key) {
-                                Some(s_val) => {
-                                    if s_val.marker == M_EXCLUSIVE {
-                                        //dbg!(&s_val);
-                                        azc.is_found_exclusive_az = true;
-                                    }
-                                },
-                                None => (),
-                            }
-                        }
-                    } else {
-                        //dbg!("ignore");
-                    }
-                }
 
                 match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, &db) {
                     Ok(res) => {
