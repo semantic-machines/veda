@@ -813,9 +813,10 @@ veda.Module(function (veda) { "use strict";
   function renderPropertyValues(about, isAbout, property_uri, propertyContainer, template, mode) {
     propertyContainer.empty();
     about.get(property_uri).map( function (value, i) {
+      var formattedValue = veda.Util.formatValue(value);
       if (isAbout) {
         var prevValue = propertyContainer.text();
-        propertyContainer.text( prevValue + " " + veda.Util.formatValue(value) );
+        propertyContainer.text( prevValue ? prevValue + " " + formattedValue : formattedValue );
       } else {
         var valueHolder = $("<span class='value-holder'></span>");
         propertyContainer.append(valueHolder.text( veda.Util.formatValue(value) ));
