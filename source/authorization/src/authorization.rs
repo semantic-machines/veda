@@ -508,7 +508,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 
                     if level == 0 || uri.contains("_group") || (level < 3 && group.id.contains("cfg:TTLResourcesGroup")) {
                         if azc.subject_groups.contains_key(&key) {
-                            dbg!(&key);
+//                            dbg!(&key);
                             match azc.subject_groups.get(&key) {
                                 Some(s_val) => {
                                     if s_val.marker == M_EXCLUSIVE {

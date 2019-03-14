@@ -1,4 +1,5 @@
-Платформа Veda. Протокол обмена c сервисом Client Cache Update Subscription
+Платформа Veda. 
+Протокол обмена c сервисом Client Cache Update Subscription.
 
 Клиент -> Сервер:
 
