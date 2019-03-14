@@ -1,4 +1,5 @@
-Поисковые возможности платформы Veda. VQL.
+Платформа Veda. 
+Поисковые возможности, VQL.
 
 VEDA FULL TEXT SEARCH QUERY LANGUAGE - VQL
 
