@@ -20,7 +20,7 @@
 
 v-s:Aspect
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:UserThing ;
   rdfs:label "Аспект"@ru ;
   rdfs:label "Aspect"@en ;
   v-ui:hasTemplate v-s:AspectTemplate ;
