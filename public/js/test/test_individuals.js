@@ -1766,9 +1766,18 @@ for (i = 0; i < 1; i++)
         var found = 0;
         res["v-s:memberOf"].forEach(function(item, i) {
             switch (res["v-s:memberOf"][i]["data"]) {
-                case "td:RomanKarpov_pref":
-                case "v-s:AllResourcesGroup":
-                case "cfg:TTLResourcesGroup":
+		case "v-s:AllResourcesGroup":
+		case "td:RomanKarpov_pref":
+		case "v-ui:Preferences_group":
+		case "v-s:UserThing_group":
+		case "v-s:Exportable_group":
+		case "rdfs:Resource_group":
+		case "v-s:ClassAuthorized_group":
+		case "v-s:Thing_group":
+		case "v-s:GroupAuthorized_group":
+		case "v-s:Embedded_group":
+		case "v-s:Labeled_group":
+		case "cfg:TTLResourcesGroup":
                     found++
                     break;
                 default:
@@ -1778,7 +1787,7 @@ for (i = 0; i < 1; i++)
         });
 
         //#1
-        assert.ok(check && (found == 3));
+        assert.ok(check && (found == 12));
     });
 
     QUnit.test("#025 test cycle of group", function(assert)
