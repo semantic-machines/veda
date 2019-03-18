@@ -83,6 +83,7 @@ v-s:ClassifiedFile
 v-s:Journal
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
+  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:isDefinedBy v-s: ;
   rdfs:comment "Журнал"@ru ;
   rdfs:comment "A journal"@en ;
