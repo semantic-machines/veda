@@ -356,7 +356,7 @@ cs:amount
 
 Компоненты системы veda и их взаимодействие:
 
-![компоненты veda](veda-schema.png)
+![компоненты veda](veda-schema.svg)
 
 
 
