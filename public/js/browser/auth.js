@@ -192,14 +192,6 @@ veda.Module(function (veda) { "use strict";
   // Init application
   veda.init()
     .then(function () {
-      return new veda.IndividualModel("cfg:AuthRequired").load();
-    })
-    .then(function (authRequiredParam) {
-      if ( authRequiredParam && authRequiredParam.hasValue("rdf:value", false) ) {
-        throw new Error("Auth not required");
-      }
-    })
-    .then(function () {
       // Check if ticket in cookies is valid
       var ticket = storage.ticket,
           user_uri = storage.user_uri,
@@ -207,10 +199,10 @@ veda.Module(function (veda) { "use strict";
       if (ticket && user_uri && end_time) {
         return veda.Backend.is_ticket_valid(ticket);
       } else {
-        veda.trigger("login:failed");
-        throw new Error("Auth expired");
+        return false;
       }
-    }).then(function (valid) {
+    })
+    .then(function (valid) {
       if (valid) {
         veda.trigger("login:success", {
           ticket: storage.ticket,
@@ -218,10 +210,18 @@ veda.Module(function (veda) { "use strict";
           end_time: storage.end_time
         });
       } else {
-        veda.trigger("login:failed");
         throw new Error("Auth expired");
       }
-    }).catch(function (error) {
+    })
+    .catch(function (error) {
+      return new veda.IndividualModel("cfg:AuthRequired").load();
+    })
+    .then(function (authRequiredParam) {
+      if ( authRequiredParam && authRequiredParam.hasValue("rdf:value", false) ) {
+        throw new Error("Auth not required");
+      }
+    })
+    .catch(function (error) {
       if (error.message === "Auth not required") {
         console.log( error.message );
         veda.trigger("login:success", {
