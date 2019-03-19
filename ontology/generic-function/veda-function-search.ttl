@@ -1051,8 +1051,15 @@ v-fs:AttributiveSearchInlineTemplate
       .then(renderResult)
       .then(clearSelected)
       .then(function () {
+        if (!self.scroll) {
+          var position = $(".results", template).offset().top;
+          scrollTo(position);
+        }
+      })
+      .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
           scrollTo(self.scroll);
+          delete self.scroll;
         }
         toggleSpin(searchButtons);
       })
@@ -1103,15 +1110,15 @@ v-fs:AttributiveSearchInlineTemplate
   }
 
   // Double click on result table row routes to search result
-  $(".search-result", template).on("dblclick", "table tbody tr", function () {
+  $(".search-result", template).on("dblclick", ".result-container > [resource]", function () {
     var uri = $(this).attr("resource");
     riot.route("#/" + uri);
   });
   // Mark clicked row
-  $(".search-result", template).on("click", "table tbody tr", function () {
+  $(".search-result", template).on("click", ".result-container > [resource]", function () {
     var that = $(this);
     that.addClass("warning").siblings(".warning").removeClass("warning");
-    self.marked = that.index();
+    self.marked = that.attr("resource");
   });
 
   // Manage sort
