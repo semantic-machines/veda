@@ -1273,9 +1273,10 @@ v-ui:RabbitHole
         text = "<span title='" + name.title + "'>" + name.label + "</span>";
         visited = [ individual.id ];
         var wrapper = temp.clone();
-        travel( prop );
-        $("small", wrapper).append(text);
-        template.append(wrapper);
+        travel( prop ).then(function(){
+          $("small", wrapper).append(text);
+          template.append(wrapper);
+        });
       })
       break;
     }
@@ -1283,18 +1284,20 @@ v-ui:RabbitHole
 
   function travel(individual) {
     if ( visited.indexOf(individual.id) >= 0 ) {
-      return;
+      return Promise.resolve();
     } else {
       visited.push(individual.id);
     }
-    var name = mkName(individual);
-    text = "<a href='#/" + individual.id + "' title='" + name.title + "'>" + name.label + "</a>" + " / " + text;
-    for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
-      if ( individual.hasValue(property) ) {
-        travel( individual[property][0] );
-        break;
+    return individual.load().then(function() {
+      var name = mkName(individual);
+      text = "<a href='#/" + individual.id + "' title='" + name.title + "'>" + name.label + "</a>" + " / " + text;
+      for (var i = 0, property; (property = allowedProperties[i]); i++ ) {
+        if ( individual.hasValue(property) ) {
+          travel( individual[property][0] );
+          break;
+        }
       }
-    }
+    })
   }
   function mkName(individual) {
     var label = individual["rdf:type"][0].toString() + ": " + individual.toString();
