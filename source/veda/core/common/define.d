@@ -86,16 +86,26 @@ string[]     paths_list            =
 
 
 private string[ string ] _xapian_search_db_path;
+private void init_xapiab_db_paths()
+{
+    _xapian_search_db_path =
+    [ "base":"data/xapian-search-base", "system":"data/xapian-search-system", "deleted":"data/xapian-search-deleted", "az":"data/xapian-search-az" ];
+}
 public string get_xapiab_db_path(string db_name)
 {
     if (_xapian_search_db_path.length == 0)
-        _xapian_search_db_path =
-        [ "base":"data/xapian-search-base", "system":"data/xapian-search-system", "deleted":"data/xapian-search-deleted" ];
+        init_xapiab_db_paths();
     return _xapian_search_db_path.get(db_name, null);
 }
+public string[] get_xapian_db_names()
+{
+    if (_xapian_search_db_path.length == 0)
+        init_xapiab_db_paths();
+    return _xapian_search_db_path.keys();
+}
 
-public const string xapian_metadata_doc_id = "ItIsADocumentContainingTheNameOfTheFieldTtheNumberOfSlots";
-public const int    xapian_db_type         = 1;
+
+public const int xapian_db_type = 1;
 
 void create_folder_struct()
 {
