@@ -757,15 +757,18 @@ public class IndexerContext
                 doc.add_boolean_term(uuid.ptr, uuid.length, &err);
                 doc.set_data(indv.uri.ptr, indv.uri.length, &err);
 
-                if (is_restored)
-                    index_dbs[ "deleted" ].delete_document(uuid.ptr, uuid.length, &err);
-
-                if (is_deleted && ("deleted" in index_dbs) !is null)
+                if (("deleted" in index_dbs) !is null)
                 {
-                    index_dbs[ "deleted" ].replace_document(uuid.ptr, uuid.length, doc, &err);
-                    doc = new_Document(&err);
-                    log.trace("index to [deleted], uri=[%s]", indv.uri);
-                    indexer.set_document(doc, &err);
+                    if (is_restored)
+                        index_dbs[ "deleted" ].delete_document(uuid.ptr, uuid.length, &err);
+
+                    if (is_deleted)
+                    {
+                        index_dbs[ "deleted" ].replace_document(uuid.ptr, uuid.length, doc, &err);
+                        doc = new_Document(&err);
+                        log.trace("index to [deleted], uri=[%s]", indv.uri);
+                        indexer.set_document(doc, &err);
+                    }
                 }
 
                 if ((dbname in index_dbs) !is null)
@@ -782,9 +785,6 @@ public class IndexerContext
 
                 if (counter % 5000 == 0)
                 {
-                    if (trace_msg[ 212 ] == 1)
-                        log.trace("commit index..");
-
                     if (key2slot.length > 0)
                         store__key2slot();
 
