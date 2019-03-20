@@ -1787,7 +1787,7 @@ for (i = 0; i < 1; i++)
         });
 
         //#1
-        assert.ok(check && (found == 12));
+        assert.ok(check && (found == 3));
     });
 
     QUnit.test("#025 test cycle of group", function(assert)
