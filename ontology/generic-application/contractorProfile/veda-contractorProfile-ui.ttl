@@ -788,7 +788,7 @@ v-s:PriceTemplate
 
   function handler(property_uri) {
     if ( (property_uri === "v-s:sum" || property_uri === "v-s:hasCurrency") && (individual.hasValue("v-s:sum") && individual.hasValue("v-s:hasCurrency")) ) {
-      var CER_uri = query({
+      var CER_uri = veda.Backend.query({
         ticket: veda.ticket,
         query: "'rdf:type'==='v-s:CurrencyExchangeRate' && 'v-s:hasCurrencySource'=='" + individual["v-s:hasCurrency"][0].id + "' && 'v-s:hasCurrencyTarget'=='d:currency_rub' && 'v-s:hasCurrencyExchangeRatePurpose'=='v-s:CER_Purpose_current'",
         sort: "'v-s:date' asc",
@@ -1217,7 +1217,9 @@ v-s:ContractorCategoryDecisionTemplate
       modal.modal("hide").remove();
     });
   });
-
+  var _classSecurity = new veda.IndividualModel('v-s:ContractorCategoryDecisionSecurity');
+  var _classLegal = new veda.IndividualModel('v-s:ContractorCategoryDecisionLegal');
+  var _classFinancial = new veda.IndividualModel('v-s:ContractorCategoryDecisionFinancial');
   Promise.all([_classSecurity.canCreate(), _classLegal.canCreate(), _classFinancial.canCreate(), individual.canUpdate()]).then(function (rights) {
     var canCreateSecurity = rights[0],
         canCreateLegal = rights[1],
@@ -1225,15 +1227,13 @@ v-s:ContractorCategoryDecisionTemplate
         canUpdateIndividual = rights[3],
         hasRightsSecurity = canCreateSecurity && canUpdateIndividual,
         hasRightsLegal = canCreateLegal && canUpdateIndividual,
-        hasRightsFinancial = canCreateFinancial && canUpdateIndividual,
-
-
+        hasRightsFinancial = canCreateFinancial && canUpdateIndividual;
     individual.on("v-s:hasContractorCategoryDecisionSecurity", handlerSecurity);
     template.one("remove", function () {
       individual.off("v-s:hasContractorCategoryDecisionSecurity", handlerSecurity);
     });
     function handlerSecurity(values) {
-      if (values.length || !hasRightsSecurity)) {
+      if (values.length || !hasRightsSecurity) {
         $("#add-ContractorCategoryDecisionSecurity", template).remove();
       }
     }
@@ -1244,7 +1244,7 @@ v-s:ContractorCategoryDecisionTemplate
       individual.off("v-s:hasContractorCategoryDecisionLegal", handlerLegal);
     });
     function handlerLegal(values) {
-      if (values.length || !hasRightsLegal)) {
+      if (values.length || !hasRightsLegal) {
         $("#add-ContractorCategoryDecisionLegal", template).remove();
       }
     }
@@ -1255,7 +1255,7 @@ v-s:ContractorCategoryDecisionTemplate
       individual.off("v-s:hasContractorCategoryDecisionFinancial", handlerFinancial);
     });
     function handlerFinancial(values) {
-      if (values.length || !hasRightsFinancial)) {
+      if (values.length || !hasRightsFinancial) {
         $("#add-ContractorCategoryDecisionFinancial", template).remove();
       }
     }
