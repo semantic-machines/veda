@@ -1758,15 +1758,24 @@
                 select(newVal);
                 modal.modal("hide").remove();
               });
-              var tmpl = newVal["rdf:type"][0].hasValue("v-ui:hasTemplate") ? $( newVal["rdf:type"][0]["v-ui:hasTemplate"][0]["v-ui:template"][0].toString() ) : undefined;
-              if (tmpl) {
-                $(".action", tmpl).remove();
-              }
-              newVal.present(cntr, tmpl, "edit");
-              var template = cntr.children("[resource]");
-              template.on("internal-validated", function (e, validation) {
-                validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
-              });
+              Promise.resolve().then(function() {
+                if (newVal["rdf:type"][0].hasValue("v-ui:hasTemplate")) {
+                  return newVal["rdf:type"][0]["v-ui:hasTemplate"][0].load().then(function(result) {
+                    return result["v-ui:template"][0].toString();
+                  })
+                } else {
+                  return undefined;
+                }  
+              }).then(function(tmpl) {
+                if (tmpl) {
+                  $(".action", tmpl).remove();
+                }
+                newVal.present(cntr, tmpl, "edit");
+                var template = cntr.children("[resource]");
+                template.on("internal-validated", function (e, validation) {
+                  validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
+                });
+              })
             } else {
               select(newVal);
             }
