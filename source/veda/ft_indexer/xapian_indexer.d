@@ -245,10 +245,8 @@ public class IndexerContext
                     log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
                     log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
 
-                    if (prev_dbname == "system")
-                        index_dbs[ "system" ].delete_document(uuid.ptr, uuid.length, &err);
-                    else
-                        index_dbs[ "base" ].delete_document(uuid.ptr, uuid.length, &err);
+                    if ((prev_dbname in index_dbs) !is null)
+                        index_dbs[ prev_dbname ].delete_document(uuid.ptr, uuid.length, &err);
                 }
 
                 if (is_deleted == false && dbname == "not-indexed")
@@ -770,21 +768,10 @@ public class IndexerContext
                     indexer.set_document(doc, &err);
                 }
 
-                if (dbname == "system")
+                if ((dbname in index_dbs) !is null)
                 {
-                    if (("system" in index_dbs) !is null)
-                    {
-                        log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
-                        index_dbs[ "system" ].replace_document(uuid.ptr, uuid.length, doc, &err);
-                    }
-                }
-                else
-                {
-                    if (("base" in index_dbs) !is null)
-                    {
-                        log.trace("index to [%s], uri=[%s]", dbname, indv.uri, );
-                        index_dbs[ "base" ].replace_document(uuid.ptr, uuid.length, doc, &err);
-                    }
+                    log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
+                    index_dbs[ dbname ].replace_document(uuid.ptr, uuid.length, doc, &err);
                 }
 
 //            if (counter % 100 == 0)
