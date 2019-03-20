@@ -29,7 +29,6 @@ v-s:Aspect
 v-s:PersonalAspect
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Aspect ;
-  rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:subClassOf v-s:Labeled ;
   v-s:labelPattern "{@.v-s:owner.rdfs:label}" ;
   rdfs:label "Персональный аспект"@ru ;
