@@ -538,7 +538,7 @@ v-fs:AttributiveSearchTemplate
         var i = 1;
         while (unique[name]) {
           name = file.name.replace(/(.*?).([^.]*)$/, "$1 ("+ i +").$2");
-          if (name === file.name) { name = file.name + "("+ i +")"; }
+          if (name === file.name) { name = file.name + " ("+ i +")"; }
           i++;
         }
         file.name = name;
