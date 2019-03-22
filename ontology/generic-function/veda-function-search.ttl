@@ -491,7 +491,7 @@ v-fs:AttributiveSearchTemplate
   // Export table to 'blob' or 'xls'
   var exportTable = (function () {
     var uri = 'data:application/vnd.ms-excel;base64,'
-      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table>{table}</table></body></html>'
+      , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><meta http-equiv="content-type" content="text/plain; charset=UTF-8"/></head><body><table border="1" cellspacing="0" bordercolor="#eee">{table}</table></body></html>'
       , format = function(s, c) { return s.replace(/{([a-z]+)}/g, function(m, p) { return c[p]; }) }
     return function(table, name, exportAs) {
       if (!table.nodeType) table = document.getElementById(table);
@@ -530,27 +530,33 @@ v-fs:AttributiveSearchTemplate
     e.preventDefault();
     var resultTable = $(".search-result table").clone();
     resultTable.find(".hidden").remove();
-    resultTable = resultTable.get(0);
 
     var filesPromises = $("[typeof='v-s:File']", resultTable).map(function () {
-      var $this = $(this);
-      var fileUri = $this.attr("resource").replace(":", "_");
-      var fileName = $("span", $this).text().replace(/([a-zA-Z0-9]+)$/, fileUri + ".$1");
-      var localFileUrl = "./files/" + fileName;
-      var link = $("a", $this);
+      var link = $("a", this);
+      var fileName = link.text().trim();
       var fileUrl = link.attr("href");
-      link.attr("href", localFileUrl);
       return filePromise(fileUrl, fileName);
     });
 
     Promise.all(filesPromises).then(function (files) {
       var zip = new JSZip();
-      var registry = exportTable(resultTable, individual["rdfs:label"].join(", "), "blob");
-      zip.file("registry.html", registry);
       var folder = zip.folder("files");
+      var unique = {};
       files.forEach(function (file) {
+        var name = file.name;
+        var i = 1;
+        while (unique[name]) {
+          name = file.name.replace(/(.*?).([^.]*)$/, "$1 ("+ i +").$2");
+          if (name === file.name) { name = file.name + " ("+ i +")"; }
+          i++;
+        }
+        file.name = name;
+        unique[file.name] = true;
+        $("[href=" + veda.Util.escape4$(file.url) + "]", resultTable).attr("href", "./files/" + file.name).text(file.name);
         folder.file(file.name, file);
       });
+      var registry = exportTable(resultTable.get(0), individual["rdfs:label"].join(", "), "blob");
+      zip.file("registry.html", registry);
       zip.generateAsync({type:"blob"}).then(function(content) {
         saveAs(content, "registry.zip");
         toggleSpin(btn);
@@ -572,6 +578,7 @@ v-fs:AttributiveSearchTemplate
         if (this.status == 200) {
           var file = new Blob([this.response], {type: 'application/octet-stream'});
           file.name = name;
+          file.url = url;
           resolve(file);
         } else {
           reject(xhr.statusText);
