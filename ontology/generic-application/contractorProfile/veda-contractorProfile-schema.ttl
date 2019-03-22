@@ -502,24 +502,6 @@ v-s:hasLockedReason
 # v-s:isCreditor
 # v-s:isDebitor
 
-v-s:hasContractorLock
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "История блокировок"@ru ;
-  rdfs:label "Contractor lock history"@en ;
-  rdfs:range v-s:ContractorLock ;
-  rdfs:domain v-s:Contractor ;
-  v-s:deleted "true"^^xsd:boolean ;
-.
-
-# ------------------------------------------------------------
-v-s:LockedReason
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Locked reason"@en ;
-  rdfs:label "Причина блокировки"@ru ;
-  v-s:deleted "true"^^xsd:boolean ;
-.
-
 #------------------Строки--------------------------------
 v-s:AddDateactions
   rdf:type v-s:Bundle ;

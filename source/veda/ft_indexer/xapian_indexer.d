@@ -28,17 +28,15 @@ protected byte err;
 
 public class IndexerContext
 {
-    Context                context;
+    Context         context;
 
-    IndexerProperty        iproperty;
+    IndexerProperty iproperty;
 
-    string                 use_db;
-    XapianWritableDatabase indexer_base_db;
-    XapianWritableDatabase indexer_system_db;
-    XapianWritableDatabase indexer_deleted_db;
+    string          use_db;
+    XapianWritableDatabase[ string ] index_dbs;
 
-    XapianTermGenerator    indexer;
-    string                 lang = "russian";
+    XapianTermGenerator indexer;
+    string              lang = "russian";
 
     int[ string ] key2slot;
     File   *ff_key2slot_w = null;
@@ -54,12 +52,8 @@ public class IndexerContext
 
     void close()
     {
-        if (indexer_base_db !is null)
-            indexer_base_db.close(&err);
-        if (indexer_system_db !is null)
-            indexer_system_db.close(&err);
-        if (indexer_deleted_db !is null)
-            indexer_deleted_db.close(&err);
+        foreach (db; index_dbs.values)
+            db.close(&err);
     }
 
     bool init(Ticket *_ticket, string _use_db, Context _context)
@@ -96,31 +90,18 @@ public class IndexerContext
         {
         }
 
-        string db_path_base    = get_xapiab_db_path("base");
-        string db_path_system  = get_xapiab_db_path("system");
-        string db_path_deleted = get_xapiab_db_path("deleted");
+        bool need_all_reindex = false;
 
-        bool   need_all_reindex = false;
+        byte count_created_db_folder = 0;
 
-        byte   count_created_db_folder = 0;
-        try
+        foreach (db_name; get_xapian_db_names)
         {
-            mkdir(db_path_base);
-            count_created_db_folder++;
-        } catch (Exception ex) {}
-
-        try
-        {
-            mkdir(db_path_system);
-            count_created_db_folder++;
-        } catch (Exception ex) {}
-
-        try
-        {
-            mkdir(db_path_deleted);
-            count_created_db_folder++;
+            try
+            {
+                mkdir(get_xapiab_db_path(db_name));
+                count_created_db_folder++;
+            } catch (Exception ex) {}
         }
-        catch (Exception ex) {}
 
         // check in key2slot for properties
         string[] props = context.get_onto().get_properies();
@@ -139,35 +120,19 @@ public class IndexerContext
 
         //bool       is_exist_db = exists(xapian_search_db_path);
 
-        if (use_db is null || use_db == "base")
+        foreach (db_name; get_xapian_db_names)
         {
-            this.indexer_base_db = new_WritableDatabase(db_path_base.ptr, cast(uint)db_path_base.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
-            if (err != 0)
+            if (use_db is null || use_db == db_name)
             {
-                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_base, get_xapian_err_msg(err));
-                return false;
-            }
-        }
-
-        if (use_db is null || use_db == "system")
-        {
-            this.indexer_system_db = new_WritableDatabase(db_path_system.ptr, cast(uint)db_path_system.length, DB_CREATE_OR_OPEN, xapian_db_type,
-                                                          &err);
-            if (err != 0)
-            {
-                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_system, get_xapian_err_msg(err));
-                return false;
-            }
-        }
-
-        if (use_db is null || use_db == "deleted")
-        {
-            this.indexer_deleted_db = new_WritableDatabase(db_path_deleted.ptr, cast(uint)db_path_deleted.length, DB_CREATE_OR_OPEN, xapian_db_type,
-                                                           &err);
-            if (err != 0)
-            {
-                log.trace("ERR! in new_WritableDatabase[%s], err=%s", db_path_deleted, get_xapian_err_msg(err));
-                return false;
+                string path = get_xapiab_db_path(db_name);
+                this.index_dbs[ db_name ] = new_WritableDatabase(path.ptr, cast(uint)path.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
+                if (err != 0)
+                {
+                    log.trace("ERR! in new_WritableDatabase[%s], err=%s", path, get_xapian_err_msg(err));
+                    return false;
+                }
+                else
+                    log.trace("INFO! create new_WritableDatabase[%s]", path);
             }
         }
 
@@ -280,10 +245,8 @@ public class IndexerContext
                     log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
                     log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
 
-                    if (prev_dbname == "system")
-                        indexer_system_db.delete_document(uuid.ptr, uuid.length, &err);
-                    else
-                        indexer_base_db.delete_document(uuid.ptr, uuid.length, &err);
+                    if ((prev_dbname in index_dbs) !is null)
+                        index_dbs[ prev_dbname ].delete_document(uuid.ptr, uuid.length, &err);
                 }
 
                 if (is_deleted == false && dbname == "not-indexed")
@@ -794,32 +757,24 @@ public class IndexerContext
                 doc.add_boolean_term(uuid.ptr, uuid.length, &err);
                 doc.set_data(indv.uri.ptr, indv.uri.length, &err);
 
-                if (is_restored)
-                    indexer_deleted_db.delete_document(uuid.ptr, uuid.length, &err);
-
-                if (is_deleted && indexer_deleted_db !is null)
+                if (("deleted" in index_dbs) !is null)
                 {
-                    indexer_deleted_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-                    doc = new_Document(&err);
-                    log.trace("index to [deleted], uri=[%s]", indv.uri);
-                    indexer.set_document(doc, &err);
-                }
+                    if (is_restored)
+                        index_dbs[ "deleted" ].delete_document(uuid.ptr, uuid.length, &err);
 
-                if (dbname == "system")
-                {
-                    if (indexer_system_db !is null)
+                    if (is_deleted)
                     {
-                        log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
-                        indexer_system_db.replace_document(uuid.ptr, uuid.length, doc, &err);
+                        index_dbs[ "deleted" ].replace_document(uuid.ptr, uuid.length, doc, &err);
+                        doc = new_Document(&err);
+                        log.trace("index to [deleted], uri=[%s]", indv.uri);
+                        indexer.set_document(doc, &err);
                     }
                 }
-                else
+
+                if ((dbname in index_dbs) !is null)
                 {
-                    if (indexer_base_db !is null)
-                    {
-                        log.trace("index to [%s], uri=[%s]", dbname, indv.uri, );
-                        indexer_base_db.replace_document(uuid.ptr, uuid.length, doc, &err);
-                    }
+                    log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
+                    index_dbs[ dbname ].replace_document(uuid.ptr, uuid.length, doc, &err);
                 }
 
 //            if (counter % 100 == 0)
@@ -830,9 +785,6 @@ public class IndexerContext
 
                 if (counter % 5000 == 0)
                 {
-                    if (trace_msg[ 212 ] == 1)
-                        log.trace("commit index..");
-
                     if (key2slot.length > 0)
                         store__key2slot();
 
@@ -852,30 +804,13 @@ public class IndexerContext
 
     void commit_all_db()
     {
-        if (indexer_base_db !is null)
+        log.trace("INFO: COMMIT");
+        foreach (name, db; index_dbs)
         {
-            indexer_base_db.commit(&err);
+            db.commit(&err);
             if (err != 0)
-                log.trace("EX! FT:commit:base fail=%d", counter);
+                log.trace("EX! FT:commit:%s fail=%d", name, counter);
         }
-
-
-        if (indexer_system_db !is null)
-        {
-            indexer_system_db.commit(&err);
-            if (err != 0)
-                log.trace("EX! FT:commit:system fail=%d", counter);
-        }
-
-        if (indexer_deleted_db !is null)
-        {
-            indexer_deleted_db.commit(&err);
-            if (err != 0)
-                log.trace("EX! FT:commit:deleted fail=%d", counter);
-        }
-
-//        set_count_indexed(counter);
-        //log.trace("@FT:commit=%d", counter);
     }
 
     private void store__key2slot()

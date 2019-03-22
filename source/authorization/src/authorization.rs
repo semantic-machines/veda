@@ -252,8 +252,6 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
 
     let tokens: Vec<&str> = src.split(';').collect();
 
-    //dbg! (&src);
-
     let mut idx = 0;
     loop {
         if idx + 1 < tokens.len() {
@@ -473,30 +471,57 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
         return Ok(false);
     }
 
+    let mut is_contain_suffix_group = false;
+    let groups_set_len;
+
     match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
             rights_vec_from_str(&groups_str, groups_set);
 
-            for idx in 0..groups_set.len() {
-                let mut group = &mut groups_set[idx];
+            groups_set_len = groups_set.len();
 
-                if group.marker == M_EXCLUSIVE {
-                    eprintln!("WARN! skip, group is exclusive, uri={}, group.id={}", uri, group.id);
-                    continue;
-                }
+            for idx in 0..groups_set_len {
+                let mut group = &mut groups_set[idx];
 
                 if group.id.is_empty() {
                     eprintln!("WARN! skip, group is null, uri={}, group.id={}", uri, group.id);
                     continue;
                 }
 
-                //let orig_access = group.access;
                 let new_access = group.access & access;
                 group.access = new_access;
 
                 let mut key = group.id.clone();
-                //dbg!(&key);
+
+                if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == false {
+                    if level == 0 {
+                        if group.id.contains("_group") {
+                            is_contain_suffix_group = true;
+                        }
+
+                        if idx == groups_set_len - 1 && is_contain_suffix_group == false {
+                            azc.is_found_exclusive_az = true;
+                        }
+
+                        if group.id.contains("cfg:TTLResourcesGroup") {
+                            azc.is_found_exclusive_az = true;
+                        }
+                    }
+
+                    if azc.is_found_exclusive_az == false && (level == 0 || uri.contains("_group")) {
+                        if azc.subject_groups.contains_key(&key) {
+                            match azc.subject_groups.get(&key) {
+                                Some(s_val) => {
+                                    if s_val.marker == M_EXCLUSIVE {
+                                        azc.is_found_exclusive_az = true;
+                                    }
+                                },
+                                None => (),
+                            }
+                        }
+                    }
+                }
 
                 let mut preur_access = 0;
 
@@ -523,33 +548,13 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                 // uri));
                 //}
 
-                if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == false {
-                    //dbg!("--------");
-                    //dbg!(&level);
-                    //dbg!(&uri);
-                    //dbg!(&group);
-
-                    if level == 0 || uri.contains("_group") || (level < 3 && group.id.contains("cfg:TTLResourcesGroup")) {
-                        if azc.subject_groups.contains_key(&key) {
-                            //dbg!(&key);
-                            match azc.subject_groups.get(&key) {
-                                Some(s_val) => {
-                                    if s_val.marker == M_EXCLUSIVE {
-                                        //dbg!(&s_val);
-                                        azc.is_found_exclusive_az = true;
-                                    }
-                                },
-                                None => (),
-                            }
-                        }
-                    } else {
-                        //dbg!("ignore");
-                    }
-                }
-
                 match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, &db) {
                     Ok(res) => {
                         if res == true {
+                            if azc.is_need_exclusive_az == false {
+                                return Ok(true);
+                            }
+
                             if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == true {
                                 return Ok(true);
                             }
@@ -564,6 +569,11 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
 
                 try!(prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db));
             }
+
+            if groups_set_len == 0 {
+                azc.is_found_exclusive_az = true;
+            }
+
             return Ok(false);
         },
         Err(e) => {
@@ -571,6 +581,9 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                 eprintln!("ERR! Authorize: prepare_obj_group {:?}", uri);
                 return Err(e);
             } else {
+                if level == 0 {
+                    azc.is_found_exclusive_az = true;
+                }
                 return Ok(false);
             }
         },
@@ -610,12 +623,7 @@ fn get_resource_groups(
                 }
 
                 let new_access = group.access & access;
-                //let orig_access = group.access;
                 group.access = new_access;
-
-                //dbg!(&uri);
-                //dbg!(&level);
-                //dbg!(&group);
 
                 let mut preur_access = 0;
                 if walked_groups.contains_key(&group.id) {
@@ -634,8 +642,6 @@ fn get_resource_groups(
                                                         );
                                                     }
                         */
-
-                        //dbg!("skip");
 
                         continue;
                     }
@@ -688,7 +694,6 @@ fn get_resource_groups(
                 }
 
                 if group.marker == M_EXCLUSIVE {
-                    //dbg! (&group);
                     *is_exclusive = true;
                 }
 
@@ -961,8 +966,6 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         },
     );
 
-    //dbg! (&azc.subject_groups);
-
     //    if trace.is_info {
     //        let str = format!("subject_groups={:?}\n", azc.subject_groups);
     //        print_to_trace_info(trace, str);
@@ -1013,10 +1016,6 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                             return Ok(azc.calc_right_res);
                         }
                     }
-                } else {
-                    if check_exclusive(&mut azc) {
-                        return Ok(azc.calc_right_res);
-                    }
                 }
             },
             Err(e) => return Err(e),
@@ -1048,10 +1047,6 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
-                            return Ok(azc.calc_right_res);
-                        }
-                    } else {
                         if check_exclusive(&mut azc) {
                             return Ok(azc.calc_right_res);
                         }

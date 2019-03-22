@@ -14,7 +14,7 @@
 cs:Customer
   rdf:type rdfs:Class ;
   rdfs:label "Customer"@en ;
-  rdfs:label "Покупатель"@en ;
+  rdfs:label "Покупатель"@ru ;
 .
 
 cs:name
@@ -35,7 +35,7 @@ cs:email
 cs:Order
   rdf:type rdfs:Class ;
   rdfs:label "Order"@en ;
-  rdfs:label "Заказ"@en ;
+  rdfs:label "Заказ"@ru ;
 .
 
 cs:hasCustomer
