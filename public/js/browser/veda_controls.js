@@ -793,12 +793,13 @@
         options = spec["v-ui:optionValue"];
       } else if (source) {
         source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          try {
-            return ( options = eval(match) );
-          } catch (error) {
+          return new Promise(function (resolve, reject) {
+            resolve( eval(match) );
+          })
+          .then(renderOptions)
+          .catch(function (error) {
             console.log(error);
-            return ( options = [] );
-          }
+          });
         });
       } else if (queryPrefix) {
         queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
@@ -809,8 +810,7 @@
             return "";
           }
         });
-        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        return;
+        return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
       }
       renderOptions(options);
     }
@@ -1765,7 +1765,7 @@
                   })
                 } else {
                   return undefined;
-                }  
+                }
               }).then(function(tmpl) {
                 if (tmpl) {
                   $(".action", tmpl).remove();
