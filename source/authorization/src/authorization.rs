@@ -1023,6 +1023,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
 
         if filter_value.is_empty() == false {
             azc.checked_groups.clear();
+            azc.walked_groups_o.clear();
 
             match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
                 Ok(res) => {
