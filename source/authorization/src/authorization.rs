@@ -910,7 +910,6 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
 
     // 0. читаем фильтр прав у object (uri)
     let mut filter_value;
-    //eprintln!("Authorize:filter_value=[{}]", filter_value);
     let mut filter_allow_access_to_other = 0;
     match get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db) {
         Ok(data) => {
@@ -928,6 +927,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                     filter_allow_access_to_other = el.access;
                 }
             }
+            //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
         },
         Err(e) => {
             if e == 0 {
@@ -1022,6 +1022,8 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
 
         if filter_value.is_empty() == false {
+            azc.checked_groups.clear();
+
             match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
@@ -1094,7 +1096,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                     }
                 } else {
                     if check_exclusive(&mut azc) {
-                        return Ok(azc.calc_right_res);
+                        //return Ok(azc.calc_right_res);
                     }
                 }
             },
@@ -1132,7 +1134,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         // ASAP\n"));                    }
                     } else {
                         if check_exclusive(&mut azc) {
-                            return Ok(azc.calc_right_res);
+                            //return Ok(azc.calc_right_res);
                         }
                     }
                 },
