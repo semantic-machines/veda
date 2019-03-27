@@ -343,9 +343,9 @@ fn authorize_obj_group(
         acl_key = PERMISSION_PREFIX.to_owned() + &object_group_id;
     }
 
-    //    if trace.is_info {
-    //        print_to_trace_info(trace, format!("look acl_key: [{}]\n", acl_key));
-    //    }
+    //        if trace.is_info {
+    //            print_to_trace_info(trace, format!("look acl_key: [{}]\n",
+    // acl_key));        }
 
     match get_from_db(&acl_key, &db) {
         Ok(str) => {
@@ -355,20 +355,21 @@ fn authorize_obj_group(
 
             for permission in permissions {
                 /*
-                                if trace.is_info {
-                                    let req_acs = request_access;
-                                    print_to_trace_info(
-                                        trace,
-                                        format!(
-                                            "restriction={} {}, permission={:?}, request={}\n",
-                                            object_group_id,
-                                            access_to_pretty_string(object_group_access),
-                                            permission,
-                                            access_to_pretty_string(req_acs)
-                                        ),
-                                    );
-                                }
+                                                if trace.is_info {
+                                                    let req_acs = request_access;
+                                                    print_to_trace_info(
+                                                        trace,
+                                                        format!(
+                                                            "restriction={} {}, permission={:?}, request={}\n",
+                                                            object_group_id,
+                                                            access_to_pretty_string(object_group_access),
+                                                            permission,
+                                                            access_to_pretty_string(req_acs)
+                                                        ),
+                                                    );
+                                                }
                 */
+
                 let subj_id = &permission.id;
                 if azc.subject_groups.contains_key(subj_id) {
                     let restriction_access = object_group_access;
@@ -386,17 +387,12 @@ fn authorize_obj_group(
                             calc_bits = access & permission_access;
 
                             if calc_bits > 0 {
+                                let prev_res = azc.calc_right_res;
+
                                 azc.calc_right_res = azc.calc_right_res | calc_bits;
 
                                 if (azc.calc_right_res & request_access) == request_access {
                                     if trace.is_info {
-                                        /*                                      let req_acs = request_access;
-                                                                                let crr_acs = azc.calc_right_res;
-                                                                                print_to_trace_info(
-                                                                                    trace,
-                                                                                    format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
-                                                                                );
-                                        */
                                     } else if trace.is_group == false && trace.is_acl == false {
                                         is_authorized = true;
                                         return Ok(is_authorized);
@@ -404,10 +400,35 @@ fn authorize_obj_group(
                                 }
 
                                 if trace.is_info {
-                                    let crr_acs = azc.calc_right_res;
-                                    print_to_trace_info(trace, format!("calc_bits={}, res={}\n", access_to_pretty_string(calc_bits), access_to_pretty_string(crr_acs)));
-                                    print_to_trace_info(trace, "OBJECT".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
-                                    print_to_trace_info(trace, "SUBJECT".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
+                                    if prev_res != azc.calc_right_res {
+                                        let mut f_log_str = "".to_owned();
+                                        if filter_value.is_empty() == false {
+                                            f_log_str = ", with filter ".to_owned() + filter_value;
+                                        }
+
+                                        print_to_trace_info(
+                                            trace,
+                                            format!(
+                                                "found permission S:[{}], O:[{}], access={} {}\n",
+                                                &subj_id,
+                                                &object_group_id,
+                                                access_to_pretty_string(permission_access),
+                                                f_log_str
+                                            ),
+                                        );
+
+                                        print_to_trace_info(
+                                            trace,
+                                            format!(
+                                                "access: request={}, calc={}, total={}\n",
+                                                access_to_pretty_string(request_access),
+                                                access_to_pretty_string(calc_bits),
+                                                access_to_pretty_string(azc.calc_right_res)
+                                            ),
+                                        );
+                                        print_to_trace_info(trace, "O:PATH".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
+                                        print_to_trace_info(trace, "S:PATH".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
+                                    }
                                 }
 
                                 if trace.is_acl {
@@ -981,6 +1002,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     if filter_value.is_empty() == false {
         request_access_t = request_access & filter_allow_access_to_other;
     }
+
     if trace.is_info == false && trace.is_group == false && trace.is_acl == false {
         match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) {
             Ok(res) => {
@@ -1105,6 +1127,13 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
 
         if filter_value.is_empty() == false {
+            if trace.is_info {
+                print_to_trace_info(trace, format!("USE FILTER: [{}]\n", filter_value));
+            }
+
+            azc.checked_groups.clear();
+            azc.walked_groups_o.clear();
+
             match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
