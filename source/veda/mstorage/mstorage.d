@@ -1044,7 +1044,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
     return rcs;
 }
 
-public string[]     owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty", "owl:Class", "rdfs:Class" ];
+public string[]   owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty", "owl:Class", "rdfs:Class" ];
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
