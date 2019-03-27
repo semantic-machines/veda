@@ -158,7 +158,8 @@ const PERMISSION_PREFIX: &str = "P";
 const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
 
-const M_EXCLUSIVE: char = 'X';
+const M_IS_EXCLUSIVE: char = 'X';
+const M_IGNORE_EXCLUSIVE: char = 'N';
 
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
@@ -265,7 +266,7 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
             let mut pos = 0;
 
             while let Some(c) = element.next() {
-                if c == M_EXCLUSIVE {
+                if c == M_IS_EXCLUSIVE {
                     marker = c;
                 } else {
                     pos = pos + 1;
@@ -534,7 +535,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                         if azc.subject_groups.contains_key(&key) {
                             match azc.subject_groups.get(&key) {
                                 Some(s_val) => {
-                                    if s_val.marker == M_EXCLUSIVE {
+                                    if s_val.marker == M_IS_EXCLUSIVE {
                                         azc.is_found_exclusive_az = true;
                                     }
                                 },
@@ -621,7 +622,8 @@ fn get_resource_groups(
     filter_value: &str,
     level: u8,
     db: &Database,
-    is_exclusive: &mut bool,
+    out_f_is_exclusive: &mut bool,
+    ignore_exclusive: bool,
 ) -> Result<bool, i64> {
     if level > 32 {
         //        if trace.is_info {
@@ -705,7 +707,13 @@ fn get_resource_groups(
                     continue;
                 }
 
-                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, is_exclusive) {
+                let mut t_ignore_exclusive = ignore_exclusive;
+
+                if ignore_exclusive == false && group.marker == M_IGNORE_EXCLUSIVE {
+                    t_ignore_exclusive = true;
+                }
+
+                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, out_f_is_exclusive, t_ignore_exclusive) {
                     Ok(_res) => {},
                     Err(e) => {
                         if e < 0 {
@@ -714,8 +722,8 @@ fn get_resource_groups(
                     },
                 }
 
-                if group.marker == M_EXCLUSIVE {
-                    *is_exclusive = true;
+                if ignore_exclusive == false && group.marker == M_IS_EXCLUSIVE {
+                    *out_f_is_exclusive = true;
                 }
 
                 let new_group_marker;
@@ -969,7 +977,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     //       print_to_trace_info(trace, "READ SUBJECT GROUPS\n".to_string());
     //   }
 
-    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, &db, &mut azc.is_need_exclusive_az) {
+    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, &db, &mut azc.is_need_exclusive_az, false) {
         Ok(_res) => {},
         Err(e) => return Err(e),
     }
