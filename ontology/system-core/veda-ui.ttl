@@ -1951,8 +1951,8 @@ v-ui:SimplifiedJournalTemplate
             </div>
           </td>
           <td class="docflow-button" style="display:none">
-            <button class="btn btn-warning" id="redirect" about="v-wf:DecisionRedirect" property="rdfs:label"></button>
-            <button class="btn btn-info" id="revoke" about="v-wf:DecisionRevokeTask" property="rdfs:label"></button>
+            <button class="btn btn-warning" id="redirect" about="v-wf:DecisionRedirect_Bundle" property="rdfs:label"></button>
+            <button class="btn btn-info" id="revoke" about="v-wf:DecisionRevoke_Bundle" property="rdfs:label"></button>
           </td>
         </tr>
         <script>
@@ -1992,7 +1992,7 @@ v-ui:SimplifiedJournalTemplate
             $("[rel='v-wf:takenDecision']", template).remove();
             $(".docflow-button", template).show();
 
-            function takeDecision(takenDecision, label) {
+            function takeDecision(takenDecision) {
               var modal = $("#notification-modal-template").html();
               modal = $(modal);
               modal.modal({"show": false});
@@ -2006,7 +2006,7 @@ v-ui:SimplifiedJournalTemplate
               var decision = new veda.IndividualModel();
               decision["rdf:type"] = [ decisionClass ];
               decision["v-s:backwardTarget"] = [ individual ];
-              decision["rdfs:label"] = [label];
+              decision["rdfs:label"] = decisionClass["rdfs:label"];
               decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
               decision["v-s:canRead"] = [ true ];
               decision.present(cntr, undefined, "edit");
@@ -2018,8 +2018,8 @@ v-ui:SimplifiedJournalTemplate
                 modal.modal("hide").remove();
               });
             };
-            $("#redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect", "Перенаправлено"));
-            $("#revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask", "Задача отозвана"));
+            $("#redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect"));
+            $("#revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask"));
           };
         </script>
       </tbody>
