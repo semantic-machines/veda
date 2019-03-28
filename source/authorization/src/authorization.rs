@@ -190,6 +190,9 @@ pub struct Trace<'a> {
 }
 
 pub struct AzContext<'a> {
+    uri: &'a str,
+    user_uri: &'a str,
+    request_access: u8,
     calc_right_res: u8,
     is_need_exclusive_az: bool,
     is_found_exclusive_az: bool,
@@ -723,6 +726,9 @@ fn get_resource_groups(
                 }
 
                 if ignore_exclusive == false && group.marker == M_IS_EXCLUSIVE {
+                    if trace.is_info {
+                        print_to_trace_info(trace, format!("FOUND EXCLUSIVE RESTRICTIONS, PATH={} \n", &get_path(tree_groups, group.id.clone())));
+                    }
                     *out_f_is_exclusive = true;
                 }
 
@@ -835,6 +841,9 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     let checked_groups = &mut HashMap::new();
 
     let mut azc = AzContext {
+        uri: uri,
+        user_uri: user_uri,
+        request_access: request_access,
         calc_right_res: 0,
         is_need_exclusive_az: false,
         is_found_exclusive_az: false,
@@ -865,16 +874,31 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         Ok(false)
     }
 
-    fn check_exclusive(azc: &mut AzContext) -> bool {
+    fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
+        let mut res = false;
+
         if azc.is_need_exclusive_az == false {
-            return true;
+            res = true;
         }
 
         if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == true {
-            return true;
+            res = true;
         }
 
-        return false;
+        if trace.is_info == true && res == true {
+            print_to_trace_info(
+                trace,
+                format!(
+                    "result: uri={}, user={}, request={}, answer={}\n\n",
+                    azc.uri,
+                    azc.user_uri,
+                    access_to_pretty_string(azc.request_access),
+                    access_to_pretty_string(azc.calc_right_res)
+                ),
+            );
+        }
+
+        return res;
     }
 
     if _is_check_for_reload == true {
@@ -1000,10 +1024,6 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     //        print_to_trace_info(trace, str);
     //    }
 
-    //    if trace.is_info {
-    //        print_to_trace_info(trace, format!("PREPARE OBJECT GROUPS\n"));
-    //    }
-
     let mut request_access_t = request_access;
     let empty_filter_value = String::new();
 
@@ -1016,7 +1036,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             Ok(res) => {
                 if res == true {
                     if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1029,7 +1049,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             Ok(res) => {
                 if res == true {
                     if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1042,7 +1062,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             Ok(res) => {
                 if res == true {
                     if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1058,7 +1078,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1069,7 +1089,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1080,7 +1100,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1098,6 +1118,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 }
             },
@@ -1111,6 +1135,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 }
             },
@@ -1126,8 +1154,8 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         // ASAP\n"));                    }
                     }
                 } else {
-                    if check_exclusive(&mut azc) {
-                        //return Ok(azc.calc_right_res);
+                    if final_check(&mut azc, trace) {
+                        return Ok(azc.calc_right_res);
                     }
                 }
             },
@@ -1148,6 +1176,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 },
                 Err(e) => return Err(e),
@@ -1159,6 +1191,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 },
                 Err(e) => return Err(e),
@@ -1171,8 +1207,8 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
                     } else {
-                        if check_exclusive(&mut azc) {
-                            //return Ok(azc.calc_right_res);
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
                         }
                     }
                 },
@@ -1181,17 +1217,20 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
     }
 
-    if trace.is_info {
-        let calc_right_res = azc.calc_right_res;
-        print_to_trace_info(
-            trace,
-            format!("result: uri={}, user={}, request={}, answer={}\n\n", uri, user_uri, access_to_pretty_string(request_access), access_to_pretty_string(calc_right_res)),
-        );
-    }
-
-    if check_exclusive(&mut azc) {
+    if final_check(&mut azc, trace) {
         return Ok(azc.calc_right_res);
     } else {
+        if trace.is_acl {
+            trace.acl.clear();
+        }
+
+        if trace.is_info {
+            print_to_trace_info(
+                trace,
+                format!("result: uri={}, user={}, request={}, answer={}\n\n", azc.uri, azc.user_uri, access_to_pretty_string(azc.request_access), access_to_pretty_string(0)),
+            );
+        }
+
         return Ok(0);
     }
 }
