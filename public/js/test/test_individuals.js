@@ -111,6 +111,73 @@ function generate_test_document2(ticket)
     return new_test_doc2;
 }
 
+function generate_test_document3(ticket)
+{
+  var new_test_doc3_uri = genUri();
+  var new_test_doc3 = {
+    '@': new_test_doc3_uri,
+    'rdf:type': newUri('rdfs:Resource1'),
+    'v-s:created': newDate(new Date()),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_doc3;
+}
+
+function create_test_document3(ticket)
+{
+  var new_test_doc3 = generate_test_document3(ticket)
+  var res = Backend.put_individual(ticket.id, new_test_doc3);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_doc3;
+}
+function generate_test_document4(ticket)
+{
+  var new_test_doc4_uri = genUri();
+  var new_test_doc4 = {
+    '@': new_test_doc4_uri,
+    'rdf:type': newUri('rdfs:Resource1'),
+    'v-s:created': newDate(new Date()),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_doc4;
+}
+
+function create_test_document4(ticket)
+{
+  var new_test_doc4 = generate_test_document4(ticket)
+  var res = Backend.put_individual(ticket.id, new_test_doc4);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_doc4;
+}
+
+function generate_test_membership1(ticket, doc_group)
+{
+  var new_test_membership1_uri = genUri();
+  var new_test_membership1 = {
+    '@': new_test_membership1_uri,
+    'rdf:type': newUri('v-s:Membership'),
+    'v-s:isExclusive': newBool(true),
+    'v-s:resource': newUri('td:ValeriyBushenev'),
+    'v-s:memberOf': newUri(doc_group),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_membership1;
+}
+
+function create_test_membership1(ticket, doc_group)
+{
+  var new_test_membership1 = generate_test_membership1(ticket, doc_group)
+  var res = Backend.put_individual(ticket.id, new_test_membership1);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_membership1;
+}
+
 function create_test_document1(ticket, prefix)
 {
     var new_test_doc1 = generate_test_document1(ticket)
@@ -2294,6 +2361,28 @@ for (i = 0; i < 1; i++)
             ticket = get_user1_ticket();
             assert.ok(ticket.id.length > 0);
         });
+
+  QUnit.test("#51 Test membership isExclusive",
+  function(assert){
+    var ticket1 = get_user1_ticket();
+    var doc_group = 'g:doc_resource_group';
+    var doc_group_another = 'g:doc_resource_another_group';
+    var new_test_doc3 = create_test_document3(ticket1);
+    // #1
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+    addToGroup(ticket1, doc_group, new_test_doc3['@']);
+    // #2
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+    var new_test_membership1 = create_test_membership1(ticket1, doc_group);
+    // #3
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+    var new_test_doc4 = create_test_document4(ticket1);
+    // #4
+    test_success_read(assert, ticket1, new_test_doc4['@'], new_test_doc4);
+    addToGroup(ticket1, doc_group_another, new_test_doc4['@']);
+    // #5
+    test_fail_read(assert, ticket1, new_test_doc4['@'], new_test_doc4);
+  });
 
 /*
     QUnit.test("#040 test create individual with rdf:type rdfs:Resource", function(assert)
