@@ -577,17 +577,17 @@ v-s:LetterRegistrationRecordTemplate
   </div>
 </div>
 <script>
-  var self = this;
+
   function date() {
-    if ( this.is("v-s:LetterRegistrationRecordEnumerated") && !this.hasValue("v-s:registrationNumber") ) {
+    if ( individual.is("v-s:LetterRegistrationRecordEnumerated") ) {
       var today = new Date();
       today.setHours(0, 0, 0, 0);
-      this["v-s:registrationDate"] = [ today ];
+      individual["v-s:registrationDate"] = [ today ];
     }
   }
-  this.on("beforeSave", date);
+  individual.on("beforeSave", date);
   template.one("remove", function () {
-    self.off("beforeSave", date);
+    individual.off("beforeSave", date);
   });
 
   if ( mode === "edit" || template.data("mode") === "edit" ) {
