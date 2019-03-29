@@ -1237,6 +1237,13 @@ veda.Module(function (veda) { "use strict";
     return [ value ];
   };
 
+  veda.Util.newStrFromBundle = function (_bundle1, _bundle2, _sep) {
+    if (!_sep)
+      _sep = ' ' ;
+    var str = _bundle1['rdfs:label'][0] + _sep + _bundle2['rdfs:label'][0] ;
+    return str ; 
+  };
+
   veda.Util.newBool = function (_data) {
     return [{
       data: _data,
