@@ -579,7 +579,7 @@ v-s:LetterRegistrationRecordTemplate
 <script>
 
   function date() {
-    if ( individual.is("v-s:LetterRegistrationRecordEnumerated") ) {
+    if ( individual.is("v-s:LetterRegistrationRecordEnumerated") && !individual.hasValue("v-s:registrationNumber") ) {
       var today = new Date();
       today.setHours(0, 0, 0, 0);
       individual["v-s:registrationDate"] = [ today ];
