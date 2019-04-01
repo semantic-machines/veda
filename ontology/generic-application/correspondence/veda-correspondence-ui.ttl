@@ -589,7 +589,7 @@ v-s:LetterRegistrationRecordTemplate
     if ( this.hasValue("rdf:type", "v-s:LetterRegistrationRecordEnumerated") && !this.hasValue("v-s:registrationNumber") ) {
       var today = new Date();
       today.setHours(0, 0, 0, 0);
-      this["v-s:registrationDate"] = [ today ];
+      individual["v-s:registrationDate"] = [ today ];
     }
   }
   this.on("beforeSave", setRegistrationDate);

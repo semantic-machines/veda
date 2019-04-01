@@ -56,8 +56,8 @@ v-s:hasProfession
 v-s:hasMedicalCheckupCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Мед осмотр (ИТР)"@ru ;
-  rdfs:label "Medical checkup (ETW)"@en ;
+  rdfs:label "Мед осмотр"@ru ;
+  rdfs:label "Medical checkup"@en ;
   rdfs:range v-s:MedicalCheckupCertificationDocument ;
 .
 v-s:hasMedicalCheckupCertificateForWorkers
@@ -149,6 +149,13 @@ v-s:hasWelderCertificate
   rdfs:domain v-s:EmployeeProfile ;
   rdfs:label "Удостоверение/протокол сварщика"@ru ;
   rdfs:label "Welder certificate"@en ;
+  rdfs:range v-s:CertificationDocument ;
+.
+v-s:hasLocksmithCertificate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:EmployeeProfile ;
+  rdfs:label "Удостоверение слесаря-ремонтника"@ru ;
+  rdfs:label "Locksmith certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
 v-s:hasSafetyOfWorkWithLiftingStructureCertificate

@@ -252,11 +252,14 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     Resources removed_resource = get_disappeared(prev_resource, resource);
     Resources removed_in_set   = get_disappeared(prev_in_set, in_set);
 
+    bool      ignoreExclusive = new_ind.getFirstBoolean("v-s:ignoreExclusive");
     bool      isExclusive = new_ind.getFirstBoolean("v-s:isExclusive");
     char      marker      = 0;
 
     if (isExclusive == true)
-        marker = M_EXCLUSIVE;
+        marker = M_IS_EXCLUSIVE;
+    else if (ignoreExclusive == true)
+        marker = M_IGNORE_EXCLUSIVE;
 
     update_right_set(resource, in_set, marker, is_deleted, useFilter, prefix, access, op_id, storage);
 
