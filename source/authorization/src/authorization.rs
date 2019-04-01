@@ -269,7 +269,7 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
             let mut pos = 0;
 
             while let Some(c) = element.next() {
-                if c == M_IS_EXCLUSIVE {
+                if c == M_IS_EXCLUSIVE || c == M_IGNORE_EXCLUSIVE {
                     marker = c;
                 } else {
                     pos = pos + 1;
