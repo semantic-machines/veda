@@ -397,8 +397,8 @@ v-ft:OutboxBlank
 
 v-ft:Completed
   rdf:type v-fs:AttributiveSearch ;
-  rdfs:label "Выполненные задачи"@ru ;
-  rdfs:label "Completed tasks"@en ;
+  rdfs:label "Выполненные входящие"@ru ;
+  rdfs:label "Completed inbox"@en ;
   v-fs:searchBlank v-ft:CompletedBlank ;
   v-fs:searchBlankTemplate v-ft:CompletedTaskBlankTemplate ;
   v-fs:searchResultTemplate v-ft:CompletedResultTemplate ;
@@ -406,6 +406,24 @@ v-ft:Completed
   v-ui:hasTemplate v-ft:InboxTemplate ;
 .
 v-ft:CompletedBlank
+  rdf:type v-fc:Blank ;
+  rdfs:label "Бланк выполненных задач"@ru ;
+  rdfs:label "Blank completed task"@en ;
+  v-fc:targetType v-wf:DecisionForm ;
+  v-wf:isCompleted true ;
+.
+
+v-ft:OutboxCompleted
+  rdf:type v-fs:AttributiveSearch ;
+  rdfs:label "Выполненные исходящие"@ru ;
+  rdfs:label "Completed outbox"@en ;
+  v-fs:searchBlank v-ft:OutboxCompletedBlank ;
+  v-fs:searchBlankTemplate v-ft:CompletedTaskBlankTemplate ;
+  v-fs:searchResultTemplate v-ft:CompletedResultTemplate ;
+  v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
+  v-ui:hasTemplate v-ft:InboxTemplate ;
+.
+v-ft:OutboxCompletedBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Бланк выполненных задач"@ru ;
   rdfs:label "Blank completed task"@en ;
@@ -478,6 +496,7 @@ v-ft:CompletedTaskBlankTemplate
   <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#/v-ft:OutboxCompleted" about="v-ft:OutboxCompleted" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Completed" about="v-ft:Completed" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Outbox" about="v-ft:Outbox" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Inbox" about="v-ft:Inbox" property="rdfs:label"></a></li>
@@ -548,6 +567,7 @@ v-ft:TaskBlankTemplate
   <br>
   <ul id="box-tabs" class="nav nav-tabs nav-right" role="tablist">
     <li class="pull-left"><h2 id="folder" class="no-margin" property="rdfs:label"></h2></li>
+    <li role="presentation"><a href="#/v-ft:OutboxCompleted" about="v-ft:OutboxCompleted" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Completed" about="v-ft:Completed" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Outbox" about="v-ft:Outbox" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#/v-ft:Inbox" about="v-ft:Inbox" property="rdfs:label"></a></li>
@@ -615,7 +635,12 @@ v-ft:ActorFilterTemplate
   v-ui:template """
 <script>
   var folder = decodeURIComponent(location.hash).substr(2).split("/")[0];
-  var actor_property = folder === "v-ft:Outbox" ? "v-wf:from" : "v-wf:to";
+
+  var actor_property = folder === "v-ft:Outbox" ? "v-wf:from" :
+                       folder === "v-ft:OutboxCompleted" ? "v-wf:from" :
+                       folder === "v-ft:Inbox" ? "v-wf:to" :
+                       folder === "v-ft:Completed" ? "v-wf:to" : "";
+
   var counter_prop = folder === "v-ft:Inbox" ? "v-ft:inboxCount" :
                      folder === "v-ft:Outbox" ? "v-ft:outboxCount" :
                      folder === "v-ft:Completed" ? "v-ft:completedCount" : "";
