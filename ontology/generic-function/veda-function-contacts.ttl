@@ -412,7 +412,7 @@ v-s:ContactsTemplate
 
     var NewAppointment = new veda.IndividualModel();
     var _class = new veda.IndividualModel('v-s:Appointment');
-    var tmpl = new veda.IndividualModel('v-s:AppointmentForContactTemplate');
+    var tmpl = new veda.IndividualModel('v-s:NewAppointmentTemplate');
     NewAppointment['rdf:type'] = [_class];
     NewAppointment['v-s:parentUnit'] = [new veda.IndividualModel(parentUri)];
     NewAppointment['v-s:parentOrganization'] = individual['v-s:managedOrganization'];
