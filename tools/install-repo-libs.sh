@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARANTOOL_VER=1.10.2
+TARANTOOL_VER=1.10.3
 INSTALL_PATH=$PWD
 
 # Get other dependencies
