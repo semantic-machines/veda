@@ -1939,6 +1939,13 @@ v-ui:SimplifiedJournalTemplate
               <button class="btn btn-warning redirect" about="v-wf:DecisionRedirect" property="rdfs:label"></button>
               <button class="btn btn-info revoke" about="v-wf:DecisionRevokeTask" property="rdfs:label"></button>
             </div>
+              <hr class="margin-sm">
+              <small about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></small> &middot; <small aboout="@" property="v-s:created"></small>
+            </div>
+          </td>
+          <td class="docflow-button" style="display:none">
+            <button class="btn btn-warning" id="redirect" about="v-wf:DecisionRedirect_Bundle" property="rdfs:label"></button>
+            <button class="btn btn-info" id="revoke" about="v-wf:DecisionRevoke_Bundle" property="rdfs:label"></button>
           </td>
         </tr>
         <script><!--async-->

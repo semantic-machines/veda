@@ -158,7 +158,8 @@ const PERMISSION_PREFIX: &str = "P";
 const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
 
-const M_EXCLUSIVE: char = 'X';
+const M_IS_EXCLUSIVE: char = 'X';
+const M_IGNORE_EXCLUSIVE: char = 'N';
 
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
@@ -189,6 +190,9 @@ pub struct Trace<'a> {
 }
 
 pub struct AzContext<'a> {
+    uri: &'a str,
+    user_uri: &'a str,
+    request_access: u8,
     calc_right_res: u8,
     is_need_exclusive_az: bool,
     is_found_exclusive_az: bool,
@@ -265,7 +269,7 @@ fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
             let mut pos = 0;
 
             while let Some(c) = element.next() {
-                if c == M_EXCLUSIVE {
+                if c == M_IS_EXCLUSIVE {
                     marker = c;
                 } else {
                     pos = pos + 1;
@@ -343,9 +347,9 @@ fn authorize_obj_group(
         acl_key = PERMISSION_PREFIX.to_owned() + &object_group_id;
     }
 
-    //    if trace.is_info {
-    //        print_to_trace_info(trace, format!("look acl_key: [{}]\n", acl_key));
-    //    }
+    //        if trace.is_info {
+    //            print_to_trace_info(trace, format!("look acl_key: [{}]\n",
+    // acl_key));        }
 
     match get_from_db(&acl_key, &db) {
         Ok(str) => {
@@ -355,20 +359,21 @@ fn authorize_obj_group(
 
             for permission in permissions {
                 /*
-                                if trace.is_info {
-                                    let req_acs = request_access;
-                                    print_to_trace_info(
-                                        trace,
-                                        format!(
-                                            "restriction={} {}, permission={:?}, request={}\n",
-                                            object_group_id,
-                                            access_to_pretty_string(object_group_access),
-                                            permission,
-                                            access_to_pretty_string(req_acs)
-                                        ),
-                                    );
-                                }
+                                                if trace.is_info {
+                                                    let req_acs = request_access;
+                                                    print_to_trace_info(
+                                                        trace,
+                                                        format!(
+                                                            "restriction={} {}, permission={:?}, request={}\n",
+                                                            object_group_id,
+                                                            access_to_pretty_string(object_group_access),
+                                                            permission,
+                                                            access_to_pretty_string(req_acs)
+                                                        ),
+                                                    );
+                                                }
                 */
+
                 let subj_id = &permission.id;
                 if azc.subject_groups.contains_key(subj_id) {
                     let restriction_access = object_group_access;
@@ -386,17 +391,12 @@ fn authorize_obj_group(
                             calc_bits = access & permission_access;
 
                             if calc_bits > 0 {
+                                let prev_res = azc.calc_right_res;
+
                                 azc.calc_right_res = azc.calc_right_res | calc_bits;
 
                                 if (azc.calc_right_res & request_access) == request_access {
                                     if trace.is_info {
-                                        /*                                      let req_acs = request_access;
-                                                                                let crr_acs = azc.calc_right_res;
-                                                                                print_to_trace_info(
-                                                                                    trace,
-                                                                                    format!("EXIT? request_access={}, res={}\n", access_to_pretty_string(req_acs), access_to_pretty_string(crr_acs)),
-                                                                                );
-                                        */
                                     } else if trace.is_group == false && trace.is_acl == false {
                                         is_authorized = true;
                                         return Ok(is_authorized);
@@ -404,10 +404,35 @@ fn authorize_obj_group(
                                 }
 
                                 if trace.is_info {
-                                    let crr_acs = azc.calc_right_res;
-                                    print_to_trace_info(trace, format!("calc_bits={}, res={}\n", access_to_pretty_string(calc_bits), access_to_pretty_string(crr_acs)));
-                                    print_to_trace_info(trace, "OBJECT".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
-                                    print_to_trace_info(trace, "SUBJECT".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
+                                    if prev_res != azc.calc_right_res {
+                                        let mut f_log_str = "".to_owned();
+                                        if filter_value.is_empty() == false {
+                                            f_log_str = ", with filter ".to_owned() + filter_value;
+                                        }
+
+                                        print_to_trace_info(
+                                            trace,
+                                            format!(
+                                                "found permission S:[{}], O:[{}], access={} {}\n",
+                                                &subj_id,
+                                                &object_group_id,
+                                                access_to_pretty_string(permission_access),
+                                                f_log_str
+                                            ),
+                                        );
+
+                                        print_to_trace_info(
+                                            trace,
+                                            format!(
+                                                "access: request={}, calc={}, total={}\n",
+                                                access_to_pretty_string(request_access),
+                                                access_to_pretty_string(calc_bits),
+                                                access_to_pretty_string(azc.calc_right_res)
+                                            ),
+                                        );
+                                        print_to_trace_info(trace, "O:PATH".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
+                                        print_to_trace_info(trace, "S:PATH".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
+                                    }
                                 }
 
                                 if trace.is_acl {
@@ -513,7 +538,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                         if azc.subject_groups.contains_key(&key) {
                             match azc.subject_groups.get(&key) {
                                 Some(s_val) => {
-                                    if s_val.marker == M_EXCLUSIVE {
+                                    if s_val.marker == M_IS_EXCLUSIVE {
                                         azc.is_found_exclusive_az = true;
                                     }
                                 },
@@ -600,7 +625,8 @@ fn get_resource_groups(
     filter_value: &str,
     level: u8,
     db: &Database,
-    is_exclusive: &mut bool,
+    out_f_is_exclusive: &mut bool,
+    ignore_exclusive: bool,
 ) -> Result<bool, i64> {
     if level > 32 {
         //        if trace.is_info {
@@ -684,7 +710,13 @@ fn get_resource_groups(
                     continue;
                 }
 
-                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, is_exclusive) {
+                let mut t_ignore_exclusive = ignore_exclusive;
+
+                if ignore_exclusive == false && group.marker == M_IGNORE_EXCLUSIVE {
+                    t_ignore_exclusive = true;
+                }
+
+                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, out_f_is_exclusive, t_ignore_exclusive) {
                     Ok(_res) => {},
                     Err(e) => {
                         if e < 0 {
@@ -693,8 +725,11 @@ fn get_resource_groups(
                     },
                 }
 
-                if group.marker == M_EXCLUSIVE {
-                    *is_exclusive = true;
+                if ignore_exclusive == false && group.marker == M_IS_EXCLUSIVE {
+                    if trace.is_info {
+                        print_to_trace_info(trace, format!("FOUND EXCLUSIVE RESTRICTIONS, PATH={} \n", &get_path(tree_groups, group.id.clone())));
+                    }
+                    *out_f_is_exclusive = true;
                 }
 
                 let new_group_marker;
@@ -806,6 +841,9 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     let checked_groups = &mut HashMap::new();
 
     let mut azc = AzContext {
+        uri: uri,
+        user_uri: user_uri,
+        request_access: request_access,
         calc_right_res: 0,
         is_need_exclusive_az: false,
         is_found_exclusive_az: false,
@@ -836,16 +874,31 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         Ok(false)
     }
 
-    fn check_exclusive(azc: &mut AzContext) -> bool {
+    fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
+        let mut res = false;
+
         if azc.is_need_exclusive_az == false {
-            return true;
+            res = true;
         }
 
         if azc.is_need_exclusive_az == true && azc.is_found_exclusive_az == true {
-            return true;
+            res = true;
         }
 
-        return false;
+        if trace.is_info == true && res == true {
+            print_to_trace_info(
+                trace,
+                format!(
+                    "result: uri={}, user={}, request={}, answer={}\n\n",
+                    azc.uri,
+                    azc.user_uri,
+                    access_to_pretty_string(azc.request_access),
+                    access_to_pretty_string(azc.calc_right_res)
+                ),
+            );
+        }
+
+        return res;
     }
 
     if _is_check_for_reload == true {
@@ -910,7 +963,6 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
 
     // 0. читаем фильтр прав у object (uri)
     let mut filter_value;
-    //eprintln!("Authorize:filter_value=[{}]", filter_value);
     let mut filter_allow_access_to_other = 0;
     match get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db) {
         Ok(data) => {
@@ -928,6 +980,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                     filter_allow_access_to_other = el.access;
                 }
             }
+            //eprintln!("Authorize:uri=[{}], filter_value=[{}]", uri, filter_value);
         },
         Err(e) => {
             if e == 0 {
@@ -948,7 +1001,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     //       print_to_trace_info(trace, "READ SUBJECT GROUPS\n".to_string());
     //   }
 
-    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, &db, &mut azc.is_need_exclusive_az) {
+    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, &db, &mut azc.is_need_exclusive_az, false) {
         Ok(_res) => {},
         Err(e) => return Err(e),
     }
@@ -971,22 +1024,19 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
     //        print_to_trace_info(trace, str);
     //    }
 
-    //    if trace.is_info {
-    //        print_to_trace_info(trace, format!("PREPARE OBJECT GROUPS\n"));
-    //    }
-
     let mut request_access_t = request_access;
     let empty_filter_value = String::new();
 
     if filter_value.is_empty() == false {
         request_access_t = request_access & filter_allow_access_to_other;
     }
+
     if trace.is_info == false && trace.is_group == false && trace.is_acl == false {
         match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) {
             Ok(res) => {
                 if res == true {
                     if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -999,7 +1049,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             Ok(res) => {
                 if res == true {
                     if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1012,7 +1062,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             Ok(res) => {
                 if res == true {
                     if filter_value.is_empty() || (filter_value.is_empty() == false && request_access == azc.calc_right_res) {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1022,10 +1072,13 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
 
         if filter_value.is_empty() == false {
+            azc.checked_groups.clear();
+            azc.walked_groups_o.clear();
+
             match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1036,7 +1089,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1047,7 +1100,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
             match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, &db) {
                 Ok(res) => {
                     if res == true {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1065,6 +1118,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 }
             },
@@ -1078,6 +1135,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 }
             },
@@ -1093,7 +1154,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         // ASAP\n"));                    }
                     }
                 } else {
-                    if check_exclusive(&mut azc) {
+                    if final_check(&mut azc, trace) {
                         return Ok(azc.calc_right_res);
                     }
                 }
@@ -1102,12 +1163,23 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
 
         if filter_value.is_empty() == false {
+            if trace.is_info {
+                print_to_trace_info(trace, format!("USE FILTER: [{}]\n", filter_value));
+            }
+
+            azc.checked_groups.clear();
+            azc.walked_groups_o.clear();
+
             match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
                 Ok(res) => {
                     if res == true {
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 },
                 Err(e) => return Err(e),
@@ -1119,6 +1191,10 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                    if trace.is_info {
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
+                    } else {
+                        if final_check(&mut azc, trace) {
+                            return Ok(azc.calc_right_res);
+                        }
                     }
                 },
                 Err(e) => return Err(e),
@@ -1131,7 +1207,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                         //                        print_to_trace_info(trace, format!("RETURN MY BE
                         // ASAP\n"));                    }
                     } else {
-                        if check_exclusive(&mut azc) {
+                        if final_check(&mut azc, trace) {
                             return Ok(azc.calc_right_res);
                         }
                     }
@@ -1141,17 +1217,20 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
         }
     }
 
-    if trace.is_info {
-        let calc_right_res = azc.calc_right_res;
-        print_to_trace_info(
-            trace,
-            format!("result: uri={}, user={}, request={}, answer={}\n\n", uri, user_uri, access_to_pretty_string(request_access), access_to_pretty_string(calc_right_res)),
-        );
-    }
-
-    if check_exclusive(&mut azc) {
+    if final_check(&mut azc, trace) {
         return Ok(azc.calc_right_res);
     } else {
+        if trace.is_acl {
+            trace.acl.clear();
+        }
+
+        if trace.is_info {
+            print_to_trace_info(
+                trace,
+                format!("result: uri={}, user={}, request={}, answer={}\n\n", azc.uri, azc.user_uri, access_to_pretty_string(azc.request_access), access_to_pretty_string(0)),
+            );
+        }
+
         return Ok(0);
     }
 }

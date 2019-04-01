@@ -7,7 +7,8 @@ public static string membership_prefix = "M";
 public static string permission_prefix = "P";
 public static string filter_prefix     = "F";
 
-const                M_EXCLUSIVE = 'X';
+const                M_IS_EXCLUSIVE     = 'X';
+const                M_IGNORE_EXCLUSIVE = 'N';
 
 struct Right
 {
