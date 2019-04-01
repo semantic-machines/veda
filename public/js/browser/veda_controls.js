@@ -1180,15 +1180,22 @@
       spec = opts.spec,
       holder = $(".radio", control),
       trueOption = {
-        label: spec && spec.hasValue("v-ui:trueLabel") ? spec.get("v-ui:trueLabel").join(" ") : new veda.IndividualModel("v-s:YesBundle").get("rdfs:label").join(" "),
+        label: spec && spec.hasValue("v-ui:trueLabel") ? 
+          Promise.resolve(spec.get("v-ui:trueLabel").join(" ")) : 
+          (new veda.IndividualModel("v-s:YesBundle")).load().then(function(loaded) {
+            return loaded.get("rdfs:label").join(" ");
+          }),
         value: true
       },
       falseOption = {
-        label: spec && spec.hasValue("v-ui:falseLabel") ? spec.get("v-ui:falseLabel").join(" ") : new veda.IndividualModel("v-s:NoBundle").get("rdfs:label").join(" "),
+        label: spec && spec.hasValue("v-ui:falseLabel") ? 
+          Promise.resolve(spec.get("v-ui:falseLabel").join(" ")) : 
+          (new veda.IndividualModel("v-s:NoBundle")).load().then(function(loaded) {
+            return loaded.get("rdfs:label").join(" ");
+          }),
         value: false
       },
       options = [trueOption, falseOption];
-
     renderOptions();
 
     individual.on(property_uri, changeHandler);
@@ -1200,18 +1207,20 @@
       control.empty();
       options.map(function (option) {
         var hld = holder.clone().appendTo(control);
-        var lbl = $("label", hld).append( option.label );
-        var rad = $("input", lbl).data("value", option.value);
-        var hasValue = individual.hasValue(property_uri, option.value);
-        rad.prop("checked", hasValue);
-        rad.change(function () {
-          if ( rad.is(":checked") ) {
-            individual.set(property_uri, [rad.data("value")]);
-          } else {
-            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
-              return i.valueOf() !== rad.data("value").valueOf();
-            }));
-          }
+        option.label.then(function(label) {
+          var lbl = $("label", hld).append( label );
+          var rad = $("input", lbl).data("value", option.value);
+          var hasValue = individual.hasValue(property_uri, option.value);
+          rad.prop("checked", hasValue);
+          rad.change(function () {
+            if ( rad.is(":checked") ) {
+              individual.set(property_uri, [rad.data("value")]);
+            } else {
+              individual.set(property_uri, individual.get(property_uri).filter( function (i) {
+                return i.valueOf() !== rad.data("value").valueOf();
+              }));
+            }
+          });
         });
       });
     }
