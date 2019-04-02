@@ -82,6 +82,8 @@ v-s:ContactsTemplate
 
   if ( !individual.hasValue("v-s:managedOrganization") && veda.appointment && typeof veda.appointment.getOrganization === "function") {
     individual["v-s:managedOrganization"] = [ veda.appointment.getOrganization() ];
+  } else {
+    console.log("Not found organization");
   }
 //# sourceURL=v-s:ContactsTemplate_pre
 </script>
@@ -153,8 +155,16 @@ v-s:ContactsTemplate
     var addDepartmentControl = '<button id="add-Department" class="btn btn-xs margin-sm-h btn-primary">Добавить отдел</button>';
     var addAppointmentControl = '<button id="add-Appointment" class="btn btn-xs margin-sm-h btn-info">Назначить сотрудника</button>';
     if (veda.appointment.id != 'cfg:AdministratorAppointment') {
-      if (!veda.appointment['v-s:parentOrganization']) return "";
-      if (veda.appointment['v-s:parentOrganization'][0].id == individual['v-s:managedOrganization'][0].id) {
+      if (veda.appointment['v-s:parentOrganization'].length == 0) return "";
+      var parentOrg = veda.appointment['v-s:parentOrganization'][0];
+      var allowedOrganizations = [parentOrg];
+      if (parentOrg.hasValue("v-s:hasContractorProfileSafety")) {
+        allowedOrganizations = allowedOrganizations.concat(parentOrg["mnd-s:subContractor"]);
+      }
+      var isAllowOrg = allowedOrganizations.some(function(org) {
+        return org.id === individual['v-s:managedOrganization'][0].id;
+      });
+      if (isAllowOrg) {
         var _department =  new veda.IndividualModel("v-s:Department");
         var canCreateDepartment = _department.rights.hasValue("v-s:canCreate", true);
         if (canCreateDepartment) {
