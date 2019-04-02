@@ -249,7 +249,7 @@ fn get_from_db(key: &str, db: &Database) -> Result<String, i64> {
     }
 }
 
-fn rights_vec_from_str(src: &str, results: &mut Vec<Right>) -> bool {
+fn get_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
     if src.is_empty() {
         return false;
     }
@@ -355,7 +355,7 @@ fn authorize_obj_group(
         Ok(str) => {
             let permissions: &mut Vec<Right> = &mut Vec::new();
 
-            rights_vec_from_str(&str, permissions);
+            get_elements_from_index(&str, permissions);
 
             for permission in permissions {
                 /*
@@ -430,8 +430,8 @@ fn authorize_obj_group(
                                                 access_to_pretty_string(azc.calc_right_res)
                                             ),
                                         );
-                                        print_to_trace_info(trace, "O:PATH".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
-                                        print_to_trace_info(trace, "S:PATH".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
+                                        print_to_trace_info(trace, "O-PATH".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
+                                        print_to_trace_info(trace, "S-PATH".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
                                     }
                                 }
 
@@ -456,7 +456,7 @@ fn authorize_obj_group(
         match get_from_db(&acl_key, &db) {
             Ok(str) => {
                 let permissions: &mut Vec<Right> = &mut Vec::new();
-                rights_vec_from_str(&str, permissions);
+                get_elements_from_index(&str, permissions);
                 print_to_trace_info(trace, format!("for [{}] found {:?}\n", acl_key, permissions));
             },
             Err(e) => if e < 0 {
@@ -502,7 +502,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
     match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
-            rights_vec_from_str(&groups_str, groups_set);
+            get_elements_from_index(&groups_str, groups_set);
 
             groups_set_len = groups_set.len();
 
@@ -546,6 +546,10 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                             }
                         }
                     }
+                }
+
+                if group.marker == M_IS_EXCLUSIVE {
+                    continue;
                 }
 
                 let mut preur_access = 0;
@@ -638,7 +642,7 @@ fn get_resource_groups(
     match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
-            rights_vec_from_str(&groups_str, groups_set);
+            get_elements_from_index(&groups_str, groups_set);
 
             for idx in 0..groups_set.len() {
                 let mut group = &mut groups_set[idx];
@@ -971,7 +975,7 @@ fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reloa
                 filter_value.clear();
             } else {
                 let filters_set: &mut Vec<Right> = &mut Vec::new();
-                rights_vec_from_str(&filter_value, filters_set);
+                get_elements_from_index(&filter_value, filters_set);
 
                 if filters_set.len() > 0 {
                     let mut el = &mut filters_set[0];
