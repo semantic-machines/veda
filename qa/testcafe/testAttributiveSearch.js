@@ -38,7 +38,7 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control#testString', middle)
       .click('veda-control#comment')
       .click('button#search-button')
-      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1')
+      .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql('1 ')
 
       .click('veda-control#testString')
       .pressKey('ctrl+a delete')
