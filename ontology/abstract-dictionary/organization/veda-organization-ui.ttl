@@ -842,7 +842,7 @@ v-s:NewAppointmentTemplate
       individual.present(container, tmpl.get(0), 'edit');
       template.trigger("validate");
     } else {
-      var parentUnitQueryPrefix = "'rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
+      var parentUnitQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='"+parentOrganization+"') || '@'==='"+parentOrganization+"'";
       $("#select-ParentUnit", template).attr('data-query-prefix', parentUnitQueryPrefix);  
     }
   }
