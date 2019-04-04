@@ -445,8 +445,8 @@ v-s:PersonalPreferencesTemplate
     </label>
   </div>
   <h3 about="v-s:MessageSettingsBundle" property="rdfs:label"></h3>
-  <em about="v-ui:receiveMessageType" property="rdfs:label"></em>
-  <veda-control rel="v-ui:receiveMessageType" data-type="checkbox"></veda-control>
+  <em about="v-ui:rejectMessageType" property="rdfs:label"></em>
+  <veda-control rel="v-ui:rejectMessageType" data-type="checkbox"></veda-control>
   <br/>
 </div>
   """ ;
