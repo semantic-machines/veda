@@ -56,7 +56,7 @@ v-s:hasProfession
 v-s:hasMedicalCheckupCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Мед осмотр"@ru ;
+  rdfs:label "Медосмотр"@ru ;
   rdfs:label "Medical checkup"@en ;
   rdfs:range v-s:MedicalCheckupCertificationDocument ;
 .
