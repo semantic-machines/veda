@@ -44,7 +44,7 @@ export default class basic {
       .pressKey('ctrl+a delete')
       .typeText('div.input-group input[name="v_s_userthing_*"]', query)
       .click('span.input-group-btn button[about="v-fs:Find"]')
-      .expect(Selector('small.stats-top.pull-right span.badge[property="v-fs:authorized"]').innerText.trim()).eql(eql)
+      .expect(Selector('small.stats-top.pull-right span.badge[property="v-fs:authorized"]').innerText).eql(eql)
   }
 
   async createTestUI(label, timeStamp) {
