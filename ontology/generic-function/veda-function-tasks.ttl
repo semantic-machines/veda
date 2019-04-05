@@ -18,7 +18,12 @@
 #  owl:versionInfo "0.1" ;
   v-s:loadPriority 9 ;
 .
-
+########## BUNDLE ###########
+v-s:TaskBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Задачи"@ru ;
+  rdfs:label "Tasks"@en ;
+.
 ########## TASKS INDEX ###########
 
 v-ft:UserTaskFormIndex_1
@@ -263,11 +268,12 @@ v-ft:FunctionTasksIndicatorTemplate
 <script>
   /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
   $("#counter", template).attr("about", counter_uri);*/
+  var tool = [new veda.IndividualModel("v-s:TaskBundle")] ;
   template.tooltip({
     container: template,
     placement: "bottom",
     trigger: "hover",
-    title: individual["rdfs:label"].join(" ")
+    title: tool[0]["rdfs:label"].join(" ")
   });
   //# sourceURL=v-ft:FunctionTasksIndicatorTemplate_pre
 </script>
