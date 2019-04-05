@@ -358,6 +358,9 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
+                if (from is null && senderMailbox is null && default_mail_sender !is null)
+                    from = default_mail_sender;
+
                 if ((from !is null || senderMailbox !is null || default_mail_sender !is null) && (to !is null || recipientMailbox !is null))
                 {
                     string from_label;
@@ -394,7 +397,6 @@ class FanoutProcess : VedaModule
                     foreach (Resource el; recipientMailbox)
                         rr_email_to_hash[ el.data() ] = Recipient(el.data(), "");
 
-                    // !!!! если ставить в отправителя (to) rr_email_to_hash.values, то письма дублируются, причина неизвестна
                     foreach (el; rr_email_to_hash)
                         rr_email_to ~= el;
 
