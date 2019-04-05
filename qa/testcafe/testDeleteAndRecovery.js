@@ -38,5 +38,5 @@ import { Selector, t } from 'testcafe';
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="*"] input.form-control', timeStamp)
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
-      .expect(Selector('small.stats-top.pull-right span[property="v-fs:estimated"]').innerText).eql('1');
+      .expect(Selector('small.stats-top.pull-right span[property="v-fs:estimated"]').innerText.trim()).eql('1');
   });
