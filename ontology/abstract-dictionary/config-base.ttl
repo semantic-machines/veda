@@ -683,7 +683,7 @@ var uri = "d:membership_" + person_uri.split(":").join("_") + "_" + position_uri
 var membership = get_individual(ticket, uri);
 if (deleted && membership) {
   remove_individual(ticket, uri);
-} else (!deleted && !membership) {
+} else if (!deleted && !membership) {
   membership = {
     "@" : uri,
     "rdf:type"     : veda.Util.newUri("v-s:Membership"),
