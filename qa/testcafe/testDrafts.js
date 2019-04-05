@@ -15,11 +15,11 @@ import { Selector, t } from 'testcafe';
       .typeText('div[rel="v-s:recipient"] veda-control[rel="v-s:correspondentOrganization"]', 'Веда')
       .click('div[rel="v-s:recipient"] div.suggestion[resource="cfg:org_Veda"]')
       .click('div.navbar-header')
-      .expect(Selector('li[about="v-s:Drafts"] span.label.label-default').innerText).eql('5')
+      .expect(Selector('li[about="v-s:Drafts"] span.label.label-default').innerText.trim()).eql('5')
       .click('li[about="v-s:Drafts"]')
       .click('ol#drafts-list span[typeof="v-s:IncomingLetter"]')
       .click('button#save')
       .wait(2000)
       .click('div.navbar-header')
-      .expect(Selector('li[about="v-s:Drafts"] span.label.label-default').innerText).eql('0')
+      .expect(Selector('li[about="v-s:Drafts"] span.label.label-default').innerText.trim()).eql('0')
 });

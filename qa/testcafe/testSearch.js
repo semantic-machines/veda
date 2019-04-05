@@ -8,11 +8,11 @@ import { Selector, t } from 'testcafe';
   test('testSearch', async t => {
     basic.login('karpovrt', '123');
     await t
-      .expect(Selector('#user-info').innerText).eql('Администратор2 .\n')
+      .expect(Selector('#user-info').innerText.trim()).eql('Администратор2 .')
       .navigateTo( pageForNavigateFromConfig )
       .click('button#search-button')
       var search = Selector('div.results div.search-result.table-responsive.noSwipe tbody.result-container tr[typeof="v-ui:TestUIClass"]');
       var count = await search.count;
       await t
-        .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).eql("" +count+ "");
+        .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText.trim()).eql("" +count+ "");
   });
