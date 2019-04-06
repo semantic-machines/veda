@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARANTOOL_VER=1.10.3
+TARANTOOL_VER=2.1.2
 INSTALL_PATH=$PWD
 
 # Get other dependencies
@@ -39,7 +39,7 @@ sudo apt-get install build-essential
 
 if [ "$1" = tarantool ] || [ "$1" = force ] || ! tarantool -V | grep $TARANTOOL_VER ; then
 echo "--- INSTALL TARANTOOL ---"
-curl http://download.tarantool.org/tarantool/1.10/gpgkey | sudo apt-key add -
+curl http://download.tarantool.org/tarantool/2x/gpgkey | sudo apt-key add -
 release=`lsb_release -c -s`
 
 # install https download transport for APT
@@ -48,8 +48,8 @@ sudo apt-get -y install apt-transport-https
 # append two lines to a list of source repositories
 sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
 sudo tee /etc/apt/sources.list.d/tarantool_1_0.list <<- EOF
-deb http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
-deb-src http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
+deb http://download.tarantool.org/tarantool/2x/ubuntu/ $release main
+deb-src http://download.tarantool.org/tarantool/2x/ubuntu/ $release main
 EOF
 
 # install
