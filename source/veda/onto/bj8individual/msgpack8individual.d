@@ -23,7 +23,7 @@ private ubyte[] write_individual(ref Individual ii)
 
     packer.beginMap(ii.resources.length);
 
-    foreach (key; predicate_order.keys)
+    foreach (key; predicate_order_l)
     {
         auto resources = ii.resources.get(key, Resources.init);
 
@@ -33,7 +33,7 @@ private ubyte[] write_individual(ref Individual ii)
 
     foreach (key; ii.resources.keys)
     {
-        if ((key in predicate_order) != null)
+        if ((key in predicate_2_order) != null)
             continue;
 
         auto resources = ii.resources.get(key, Resources.init);
