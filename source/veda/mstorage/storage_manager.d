@@ -449,7 +449,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                             imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
                                             imm.addResource("op_id", Resource(op_id));
                                             imm.addResource("u_count", Resource(ti.update_counter));
-                                            imm.addResource("assigned_subsystems", Resource(ti.assigned_subsystems));
+                                            imm.addResource("assigned_subsystems", Resource(DataType.Integer, ti.assigned_subsystems));
 
                                             //log.trace ("imm=[%s]", imm);
 

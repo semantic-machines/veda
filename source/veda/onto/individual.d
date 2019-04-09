@@ -22,6 +22,7 @@ public enum BOFormat : ubyte
 
 BOFormat binobj_format = BOFormat.UNKNOWN;
 
+public byte[ string ] predicate_order;
 
 /// Индивидуал
 public struct Individual
@@ -122,6 +123,14 @@ public struct Individual
             stderr.writefln("SET binobj_format=%s", text(binobj_format));
         }
 
+        if (predicate_order.length == 0)
+        {
+            predicate_order =
+            [
+                "assigned_subsystems":0, "new_type":1, "prev_type":2, "new_state":3, "prev_state":4,
+                "user_uri":5, "rdf:type":6, "v-s:deleted":7, "v-s:isDraftOf":8, "v-s:actualVersion":9, "v-s:previousVersion":10, "v-s:created":11, "v-s:runAt":12
+            ];
+        }
 
         if (binobj_format == BOFormat.CBOR)
             return individual2cbor(&this);

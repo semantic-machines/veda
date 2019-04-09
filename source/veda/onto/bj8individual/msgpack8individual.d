@@ -22,8 +22,25 @@ private ubyte[] write_individual(ref Individual ii)
     packer.beginArray(2).pack(ii.uri.dup);
 
     packer.beginMap(ii.resources.length);
-    foreach (key, resources; ii.resources)
-        write_resources(key, resources, packer);
+
+    foreach (key; predicate_order.keys)
+    {
+        auto resources = ii.resources.get(key, Resources.init);
+
+        if (resources.length > 0)
+            write_resources(key, resources, packer);
+    }
+
+    foreach (key; ii.resources.keys)
+    {
+        if ((key in predicate_order) != null)
+            continue;
+
+        auto resources = ii.resources.get(key, Resources.init);
+
+        if (resources.length > 0)
+            write_resources(key, resources, packer);
+    }
 
     //stderr.writefln("PACKED [%s]", cast(string)packer.stream.data);
 
