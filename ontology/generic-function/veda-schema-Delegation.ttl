@@ -431,6 +431,8 @@ var request_uri = document["@"],
     now = new Date(),
     delegator_uri = veda.Util.getUri(document["v-s:delegator"]) || "",
     delegate_uri = veda.Util.getUri(document["v-s:delegate"]),
+    delegate = get_individual(ticket, delegate_uri),
+    parent_uri = veda.Util.getUri(delegate["v-s:parentOrganization"]),
     position_uris = veda.Util.getUris(document["v-s:delegatedPosition"]),
     request_deleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
@@ -465,7 +467,8 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
 position_uris.map(function (position_uri) {
   var uri = "d:" + Sha256.hash( ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_") ).substring(40);
   var appointment = get_individual(ticket, uri);
-
+  
+  /* label calculates on server automatically
   // Compute label
   var appointment_label;
   if ( !custom_label ) {
@@ -489,15 +492,16 @@ position_uris.map(function (position_uri) {
       //print(error);
       appointment_label = veda.Util.newStr(uri);
     }
-  }
+  }*/
 
   if ( !appointment ) {
     appointment = {
       "@": uri,
       "rdf:type": veda.Util.newUri("v-s:Appointment"),
-      "rdfs:label": custom_label || appointment_label,
+      //"rdfs:label": custom_label || appointment_label,
       "v-s:employee": veda.Util.newUri(delegate_uri),
       "v-s:occupation": veda.Util.newUri(position_uri),
+      "v-s:parentOrganization": veda.Util.newUri(parent_uri),
       "v-s:dateFrom": dateFrom,
       "v-s:dateTo": dateTo,
       "v-s:official": veda.Util.newBool(true),
