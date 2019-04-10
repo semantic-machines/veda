@@ -363,6 +363,13 @@ v-ui:receiveMessageType
   rdfs:label "Receive these messages"@en ;
   rdfs:range v-s:MessageType ;
 .
+v-ui:rejectMessageType
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:Preferences ;
+  rdfs:label "Отказаться от этих сообщений"@ru ;
+  rdfs:label "Reject these messages"@en ;
+  rdfs:range v-s:MessageType ;
+.
 #----------------for dropdown----------------------------------
 d:2078749d2bcf42e0ae80c5d8287d19d1
   rdf:type v-s:TransportKind ;

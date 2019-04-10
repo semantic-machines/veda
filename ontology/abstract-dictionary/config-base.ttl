@@ -278,13 +278,13 @@ var doc_uri = document["@"],
 
 if (!person_uri || !position_uri) return;
 
-var uri = "d:membership_" + person_uri.split(":").join("_") + "_" + position_uri.split(":").join("_");
-var membership = get_individual(ticket, uri);
-if (deleted && membership) {
-  remove_individual(ticket, uri);
-} else (!deleted && !membership) {
-  membership = {
-    "@" : uri,
+var membership_uri = "d:membership_" + person_uri.split(":").join("_") + "_" + position_uri.split(":").join("_");
+
+if (deleted) {
+  remove_individual(ticket, membership_uri);
+} else {
+  var membership = {
+    "@" : membership_uri,
     "rdf:type"     : veda.Util.newUri("v-s:Membership"),
     "v-s:resource" : veda.Util.newUri(person_uri),
     "v-s:memberOf" : veda.Util.newUri(position_uri),

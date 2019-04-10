@@ -186,4 +186,5 @@ v-s:OtherNotification
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Прочие уведомления"@ru ;
   rdfs:label "Other notifications"@en ;
+  v-s:deleted true ;
 .
