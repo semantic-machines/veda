@@ -1976,7 +1976,7 @@
       var suggestions = $(".suggestions", control);
       var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
-        if (!e.originalEvent){
+        if (!e.originalEvent) {
           clickHandler(e);
         } else if (dblTimeout) {
           dblclickHandler(e);
@@ -2017,9 +2017,12 @@
       };
 
       var dblclickHandler = function (e) {
+        if ( !$(e.target).hasClass("selected") ) {
+          clickHandler(e);
+        }
         individual.set(rel_uri, selected);
-        fulltextMenu.hide();
         dblTimeout = clearTimeout(dblTimeout);
+        fulltextMenu.hide();
       }
 
       var clickOutsideMenuHandler = function (event) {

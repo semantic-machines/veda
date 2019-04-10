@@ -704,7 +704,55 @@ v-s:DepartmentTemplate
   """ ;
 .
 
-v-s:AppointmentForContactTemplate
+v-s:AppointmentTemplate
+  rdf:type v-ui:ClassTemplate ;
+  v-ui:forClass v-s:Appointment ;
+  rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
+  rdfs:label "Template for v-s:Appointment class"@en ;
+  v-ui:template """
+<script>
+  
+</script>
+<div class="container sheet">
+  <h2>
+    <span about="v-s:Appointment" property="rdfs:label"></span>
+    <!-- <small about="@" property="rdfs:label"></small> -->
+  </h2>
+  <hr>
+  <div class="form-inline">
+    <div class="form-group">
+      <label about="v-s:parentUnit" property="rdfs:label"></label>:
+      <span about="@" property="v-s:parentUnit" data-template="v-ui:LabelTemplate"></span>
+    </div>
+  </div>
+  <div class="form-inline">
+    <div class="form-group" about="@" rel="v-s:employee">
+      <label about="v-s:employee" property="rdfs:label"></label>:
+      <span class="view -edit -search">
+        <span about="@" property="rdfs:label"></span>
+        <span about="@" property="v-s:tabNumber"></span>
+      </span>
+    </div>
+  </div>
+  <div class="form-inline">
+    <div class="form-group" about="@" rel="v-s:occupation">
+      <label about="v-s:occupation" property="rdfs:label"></label>:
+      <span class="view -edit -search">
+        <span about="@" property="rdfs:label"></span>
+        <span about="@" property="v-s:parentOrganization" data-template="v-ui:LabelTemplate"></span>
+      </span>
+    </div>
+  </div>
+  <hr>
+  <!-- BUTTONS -->
+  <div class="actions">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="delete"></span>
+  </div>
+</div>
+<script></script>
+  """
+.
+v-s:NewAppointmentTemplate
   rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:Appointment ;
   rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
@@ -723,14 +771,52 @@ v-s:AppointmentForContactTemplate
     };
     template.trigger("validated", result);
   });
-  var parentOrganization = individual['v-s:parentOrganization'][0].id;
-  var personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='" + parentOrganization + "'";
-  $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
+  template.on("special-validate", function (e, validStates) {
+    setTimeout(function(){
+      // console.log($('div.validating-block:not(.hide) veda-control.has-error', template));
+      if ($('div.validating-block:not(.hide) .has-error', template).length == 0) {
+        $('.action#save', template).removeAttr('disabled');
+      } else {
+        $('.action#save', template).attr('disabled', 'disabled');
+      }
+    },500);
+  });
 
-  var parentUnit = individual['v-s:parentUnit'][0].id;
-  var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='" + parentUnit + "'";
-  $('#select-Occupation veda-control', template).attr('data-query-prefix', occupQueryPrefixString);
-//# sourceURL=v-s:AppointmentForContactTemplate_pre
+  var parentOrganization = "unknown";
+  if (individual.hasValue("v-s:parentOrganization")) { 
+    parentOrganization = individual['v-s:parentOrganization'][0].id;
+  }
+  var personQueryPrefixString;
+  if (individual.hasValue("v-s:employee")) {
+    $(".disabling", template).attr("disabled", "disabled");
+    personQueryPrefixString = "'@'==='"+individual["v-s:employee"][0].id+"'";
+  } else {
+    personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
+  }
+  $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
+  
+  function parentUnitHandler() {
+    if (individual.hasValue('v-s:parentUnit')) {
+      var parentUnit = individual['v-s:parentUnit'][0].id;
+      var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+parentUnit+"'";
+      var tmpl = $('<div><veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm"></veda-control></div>');
+      var container = $("#select-Occupation", template);
+      container.empty();
+      tmpl.children().first().attr('data-query-prefix', occupQueryPrefixString);
+      individual.present(container, tmpl.get(0), 'edit');
+      template.trigger("validate");
+    } else {
+      var parentUnitQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='"+parentOrganization+"') || '@'==='"+parentOrganization+"'";
+      $("#select-ParentUnit", template).attr('data-query-prefix', parentUnitQueryPrefix);  
+    }
+  }
+  parentUnitHandler();
+  individual.on("v-s:parentUnit", parentUnitHandler);
+  template.one("remove", function(){
+    individual.off("v-s:parentUnit", parentUnitHandler);
+  })
+  
+//# sourceURL=v-s:NewAppointmentTemplate_pre
 </script>
 <div class="container sheet">
   <h2>
@@ -741,13 +827,14 @@ v-s:AppointmentForContactTemplate
   <div id="mainProperties">
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <veda-control id="select-ParentUnit" rel="v-s:parentUnit" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
     <hr class="view -edit -search">
     <div class="row">
       <div class="col-md-6">
         <em about="v-s:employee" property="rdfs:label"></em>
         <div class="btn-group">
-          <button id="selectPersonBtn" class="btn btn-sm btn-primary navbar-btn">Выбрать</button>
-          <button id="createPersonBtn" class="btn btn-sm btn-default navbar-btn">Создать</button>
+          <button id="selectPersonBtn" class="btn btn-sm btn-primary navbar-btn disabling">Выбрать</button>
+          <button id="createPersonBtn" class="btn btn-sm btn-default navbar-btn disabling">Создать</button>
         </div>
         <div id="select-Person" class="validating-block">
           <veda-control data-type="link" rel="v-s:employee" class="fulltext dropdown margin-sm"></veda-control>
@@ -927,7 +1014,7 @@ v-s:AppointmentForContactTemplate
     return false;
   }
   individual.one('beforeSave', beforeSaveHandler);
-  //# sourceURL=v-s:AppointmentsForContactsTemplate_post
+  //# sourceURL=v-s:NewAppointmentTemplate_post
 </script>
   """ ;
 .

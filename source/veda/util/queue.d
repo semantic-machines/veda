@@ -875,7 +875,7 @@ class Queue
         ff_queue_w.rawWrite(header_buff);
         ff_queue_w.rawWrite(_buff2);
 
-        log.trace("@ %s %s, crc=%s", name, header, crc);
+        //log.trace("@ %s %s, crc=%s", name, header, crc);
 
         right_edge += header_buff.length + _buff2.length;
     }

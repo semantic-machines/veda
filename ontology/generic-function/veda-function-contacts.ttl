@@ -140,7 +140,15 @@ v-s:ContactsTemplate
       if ( !veda.appointment['v-s:parentOrganization'] ) {
         return Promise.resolve(controls);
       }
-      if ( veda.appointment['v-s:parentOrganization'][0] === individual['v-s:managedOrganization'][0] ) {
+      var parentOrg = veda.appointment['v-s:parentOrganization'][0];
+      var allowedOrganizations = [parentOrg];
+      if (parentOrg.hasValue("v-s:hasContractorProfileSafety")) {
+        allowedOrganizations = allowedOrganizations.concat(parentOrg["mnd-s:subContractor"]);
+      }
+      var isAllowedOrg = allowedOrganizations.some(function(org) {
+        return org.id === individual['v-s:managedOrganization'][0].id;
+      });
+      if ( isAllowedOrg ) {
         var department =  new veda.IndividualModel("v-s:Department");
         var appointment =  new veda.IndividualModel("v-s:Appointment");
         var position =  new veda.IndividualModel("v-s:Position");
@@ -410,7 +418,7 @@ v-s:ContactsTemplate
 
     var NewAppointment = new veda.IndividualModel();
     var _class = new veda.IndividualModel('v-s:Appointment');
-    var tmpl = new veda.IndividualModel('v-s:AppointmentForContactTemplate');
+    var tmpl = new veda.IndividualModel('v-s:NewAppointmentTemplate');
     NewAppointment['rdf:type'] = [_class];
     NewAppointment['v-s:parentUnit'] = [new veda.IndividualModel(parentUri)];
     NewAppointment['v-s:parentOrganization'] = individual['v-s:managedOrganization'];

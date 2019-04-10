@@ -149,21 +149,44 @@ class FanoutProcess : VedaModule
         if (prs.getStatus() != ResultCode.Ok || prs.isExists("v-s:deleted", true) == true)
             return null;
 
-        string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
-        if (preference_uri !is null)
+        if (hasMessageType != null)
         {
-            Individual preference = context.get_individual(preference_uri);
-            if (preference.getStatus() == ResultCode.Ok)
+            string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
+            if (preference_uri !is null)
             {
-                string receiveMessageType = prs.getFirstLiteral("v-ui:receiveMessageType");
+                Individual preference = context.get_individual(preference_uri);
 
-                if (receiveMessageType !is null)
+                if (preference.getStatus() == ResultCode.Ok)
                 {
-                    if ((hasMessageType !is null && receiveMessageType == hasMessageType) == false)
-                        return null;
+                    log.trace("DEBUG! for [%s] found preferences, has message type [%s]", p_uri, hasMessageType);
 
-                    if ((hasMessageType is null && receiveMessageType == "v-s:OtherNotification") == false)
+                    Resources receiveMessageTypes = preference.getResources("v-ui:rejectMessageType");
+
+                    bool      need_send = true;
+                    foreach (r_receiveMessageType; receiveMessageTypes)
+                    {
+                        string receiveMessageType = r_receiveMessageType.uri;
+                        log.trace("DEBUG! check preference %s", receiveMessageType);
+
+                        if ((hasMessageType !is null && receiveMessageType == hasMessageType) == true)
+                        {
+                            need_send = false;
+                            break;
+                        }
+
+                        if ((hasMessageType is null && receiveMessageType == "v-s:OtherNotification") == true)
+                        {
+                            need_send = false;
+                            break;
+                        }
+                    }
+
+                    if (need_send == false)
+                    {
+                        log.trace("DEBUG! decine send message");
+
                         return null;
+                    }
                 }
             }
         }
@@ -335,6 +358,9 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
+                if (from is null && senderMailbox is null && default_mail_sender !is null)
+                    from = default_mail_sender;
+
                 if ((from !is null || senderMailbox !is null || default_mail_sender !is null) && (to !is null || recipientMailbox !is null))
                 {
                     string from_label;
@@ -371,7 +397,6 @@ class FanoutProcess : VedaModule
                     foreach (Resource el; recipientMailbox)
                         rr_email_to_hash[ el.data() ] = Recipient(el.data(), "");
 
-                    // !!!! если ставить в отправителя (to) rr_email_to_hash.values, то письма дублируются, причина неизвестна
                     foreach (el; rr_email_to_hash)
                         rr_email_to ~= el;
 
