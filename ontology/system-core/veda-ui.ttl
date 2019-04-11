@@ -436,7 +436,7 @@ v-ui:LanguageSwitchTemplate
   <button about="@" property="rdfs:label" class="lang btn btn-xs btn-default navbar-btn"></button>
 </div>
 <script><!--async-->
-  var switchBehaviour = container.attr("data-switch-behaviour") || "checkbox";
+  var switchBehavior = container.attr("data-switch-behavior") || "checkbox";
   var switches = $(".btn", template);
   veda.user.preferences.on("v-ui:preferredLanguage", langHandler);
   template.one("remove", function () {
@@ -465,7 +465,7 @@ v-ui:LanguageSwitchTemplate
     var hasLanguage = veda.user.preferences.hasValue("v-ui:preferredLanguage", lang);
     var languageCount = veda.user.preferences["v-ui:preferredLanguage"].length;
     if ( !hasLanguage ) {
-      if (switchBehaviour === "checkbox") {
+      if (switchBehavior === "checkbox") {
         veda.user.preferences.addValue("v-ui:preferredLanguage", lang);
       } else {
         veda.user.preferences.set("v-ui:preferredLanguage", [lang]);
