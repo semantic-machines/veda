@@ -38,3 +38,58 @@ v-s:hasRequestContractDetail
   rdfs:range v-s:RequestContractDetail ;
   rdfs:domain v-s:Contractual ;
 .
+
+# ------------------------------------------------------------
+v-s:ContractParticipant
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Embedded ;
+  rdfs:label "Contract participant"@en ;
+  rdfs:label "Участник контракта"@ru ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+v-s:hasRoleInContract
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Роль в контракте"@ru ;
+  rdfs:label "Role in contract"@en ;
+  rdfs:range v-s:RoleInContract ;
+  rdfs:domain v-s:ContractParticipant ;
+.
+# rdfs:comment
+
+# ------------------------------------------------------------
+v-s:ContractParticipantCustomer
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Заказчик"@ru ;
+  rdfs:label "Customer"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+# ------------------------------------------------------------
+v-s:ContractParticipantSupplier
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Исполнитель"@ru ;
+  rdfs:label "Supplier"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
+# ------------------------------------------------------------
+v-s:ContractParticipantStakeholder
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:ContractParticipant ;
+  rdfs:label "Заинтересованная сторона"@ru ;
+  rdfs:label "Stakeholder"@en ;
+.
+# v-s:hasContractor
+# v-s:hasOrganization
+# v-s:hasRoleInContract
+# rdfs:comment
