@@ -16,70 +16,6 @@
 # ------------------------------------------------------------ КЛАССЫ --
 
 # ------------------------------------------------------------
-v-s:ContractParticipant
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Contractual ;
-  rdfs:subClassOf v-s:BackwardLink ;
-  rdfs:subClassOf v-s:Embedded ;
-  rdfs:label "Contract participant"@en ;
-  rdfs:label "Участник контракта"@ru ;
-.
-# v-s:hasContractor
-# v-s:hasOrganization
-v-s:hasRoleInContract
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Роль в контракте"@ru ;
-  rdfs:label "Role in contract"@en ;
-  rdfs:range v-s:RoleInContract ;
-  rdfs:domain v-s:ContractParticipant ;
-.
-# rdfs:comment
-
-# ------------------------------------------------------------
-v-s:ContractParticipantCustomer
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:ContractParticipant ;
-  rdfs:label "Заказчик"@ru ;
-  rdfs:label "Customer"@en ;
-.
-# v-s:hasContractor
-# v-s:hasOrganization
-# v-s:hasRoleInContract
-# rdfs:comment
-# ------------------------------------------------------------
-v-s:ContractParticipantSupplier
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:ContractParticipant ;
-  rdfs:label "Исполнитель"@ru ;
-  rdfs:label "Supplier"@en ;
-.
-# v-s:hasContractor
-# v-s:hasOrganization
-# v-s:hasRoleInContract
-# rdfs:comment
-# ------------------------------------------------------------
-v-s:ContractParticipantStakeholder
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:ContractParticipant ;
-  rdfs:label "Заинтересованная сторона"@ru ;
-  rdfs:label "Stakeholder"@en ;
-.
-# v-s:hasContractor
-# v-s:hasOrganization
-# v-s:hasRoleInContract
-# rdfs:comment
-
-# ------------------------------------------------------------
-v-s:RoleInContract
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Роль в контракте"@ru ;
-  rdfs:label "Role in contract"@en ;
-.
-
-
-# ------------------------------------------------------------
 v-s:Price
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -124,32 +60,6 @@ v-s:PShasCurrencyPrice
   rdfs:label "v-s:hasCurrency specification for v-s:Price class"@en ;
 .
 
-v-s:PSBoleanAllContractor
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Contractor ;
-  v-ui:forProperty v-s:lockedInOrigin ;
-  v-ui:forProperty v-s:deletedInOrigin ;
-  v-ui:forProperty v-s:isCreditor ;
-  v-ui:forProperty v-s:isDebitor ;
-  v-ui:forProperty v-s:linkedOrganization ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  rdfs:label "Спецификация свойства BoleanAllContractor для класса v-s:Contractor"@ru ;
-  rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
-.
-v-s:taxRegistrationCauseForContractor
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:Contractor ;
-  v-ui:forProperty v-s:taxRegistrationCause;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 1;
-  v-ui:regexp "^[0-9]{9}$";
-  rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Contractor"@ru ;
-  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Contractor"@en ;
-  v-ui:tooltip "Числовое значение, 9 символов, например: 123456789"@ru ;
-  v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
-.
-
 # ------------------------------------------------------------
 v-s:Cost
   rdf:type owl:Class ;
@@ -171,18 +81,6 @@ v-s:PShasPriceCost
 .
 
 # v-s:description
-
-
-# ------------------------------------------------------------
-v-s:ContractRequest
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Request ;
-  rdfs:subClassOf v-s:Contractual ;
-  rdfs:subClassOf v-s:Financial ;
-  rdfs:subClassOf v-s:Projectable ;
-  rdfs:label "Заявка на контракт"@ru ;
-  rdfs:label "ContractRequest"@en ;
-.
 
 # ------------------------------------------------------------
 v-s:BudgetCategory
@@ -321,40 +219,3 @@ v-s:AccountingDoc
 
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
-v-s:ContractParticipantTemplate
-  rdf:type v-ui:ClassTemplate ;
-  v-ui:forClass v-s:ContractParticipantCustomer ;
-  v-ui:forClass v-s:ContractParticipantSupplier ;
-  v-ui:forClass v-s:ContractParticipantStakeholder ;
-  rdfs:label "Шаблон для класса v-s:ContractParticipantCustomer ContractParticipantSupplier"@ru ;
-  rdfs:label "Template for v-s:ContractParticipantCustomer ContractParticipantSupplier class"@en ;
-  v-ui:template """
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title" about="@" rel="v-s:hasRoleInContract" class="view -edit -search" data-template="v-ui:LabelTemplate"></h3>
-      <veda-control data-type="link" rel="v-s:hasRoleInContract" class="-view edit search dropdown fulltext"></veda-control>
-    </div>
-    <div class="panel-body">
-      <em about="v-s:hasContractor" property="rdfs:label"></em>
-      <div rel="v-s:hasContractor" class="view edit search">
-        <a href="#/@">
-          <span about="@" property="rdfs:label"></span>,
-          <span about="@" property="v-s:registrationNumber"></span>
-        </a>
-      </div>
-      <veda-control data-type="link" rel="v-s:hasContractor" class="-view edit search fulltext" data-template="{individual['rdfs:label'].join(' ') + ', ' + individual['v-s:registrationNumber'][0]}"></veda-control>
-      <em about="stg:OrganizationBundleContract" property="rdfs:label"></em>
-      <div rel="v-s:hasOrganization" class="view edit search">
-        <a href="#/@">
-          <span about="@" property="rdfs:label"></span>,
-          <span about="@" property="v-s:taxId"></span>
-        </a>
-      </div>
-      <veda-control data-type="link" rel="v-s:hasOrganization" class="-view edit search fulltext" data-template="{individual['v-s:shortLabel'].join(' ') + ', ' + individual['v-s:taxId'][0]}"></veda-control>
-      <em about="rdfs:comment" property="rdfs:label"></em>
-      <div property="rdfs:comment" class="view -edit -search"></div>
-      <veda-control property="rdfs:comment" data-type="string" class="-view edit search"></veda-control>
-    </div>
-  </div>
-  """ ;
-.
