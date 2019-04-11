@@ -48,6 +48,32 @@ v-s:forOrganization
   rdfs:domain v-s:Contractor ;
 .
 
+v-s:PSBoleanAllContractor
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Contractor ;
+  v-ui:forProperty v-s:lockedInOrigin ;
+  v-ui:forProperty v-s:deletedInOrigin ;
+  v-ui:forProperty v-s:isCreditor ;
+  v-ui:forProperty v-s:isDebitor ;
+  v-ui:forProperty v-s:linkedOrganization ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства BoleanAllContractor для класса v-s:Contractor"@ru ;
+  rdfs:label "BoleanAllContractor specification for v-s:Contractor class"@en ;
+.
+v-s:taxRegistrationCauseForContractor
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Contractor ;
+  v-ui:forProperty v-s:taxRegistrationCause;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1;
+  v-ui:regexp "^[0-9]{9}$";
+  rdfs:label "Спецификация свойств v-s:taxRegistrationCause для класса v-s:Contractor"@ru ;
+  rdfs:label "v-s:taxRegistrationCause property specification for v-s:Contractor"@en ;
+  v-ui:tooltip "Числовое значение, 9 символов, например: 123456789"@ru ;
+  v-ui:tooltip "Numeric value, 9 characters, i.e. 123456789"@en ;
+.
+
 # ------------------------------------------------------------
 v-s:ContractorLock
   rdf:type owl:Class ;
