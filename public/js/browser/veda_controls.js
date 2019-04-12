@@ -778,7 +778,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+            return template.replace(/^{.*}$/g, function (match) { return eval(match); })
           } else {
             return individual.toString();
           }
@@ -791,8 +791,10 @@
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
+        renderOptions(options);
+        return;
       } else if (source) {
-        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        source.replace(/^{.*}$/g, function (match) {
           return new Promise(function (resolve, reject) {
             resolve( eval(match) );
           })
@@ -802,7 +804,7 @@
           });
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        queryPrefix = queryPrefix.replace(/^{.*}$/g, function (match) {
           try {
             return eval(match);
           } catch (error) {
@@ -812,7 +814,6 @@
         });
         return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
       }
-      renderOptions(options);
     }
 
     function renderOptions(options) {
@@ -912,7 +913,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+            return template.replace(/^{.*}$/g, function (match) { return eval(match); })
           } else {
             return individual.toString();
           }
@@ -925,8 +926,10 @@
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
+        renderOptions(options);
+        return;
       } else if (source) {
-        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        source.replace(/^{.*}$/g, function (match) {
           try {
             return ( options = eval(match) );
           } catch (error) {
@@ -935,7 +938,7 @@
           }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        queryPrefix = queryPrefix.replace(/^{.*}$/g, function (match) {
           try {
             return eval(match);
           } catch (error) {
@@ -943,10 +946,8 @@
             return "";
           }
         });
-        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        return;
+        return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
       }
-      renderOptions(options);
     }
 
     function renderOptions(options) {
@@ -1057,7 +1058,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); })
+            return template.replace(/^{.*}$/g, function (match) { return eval(match); })
           } else {
             return individual.toString();
           }
@@ -1070,8 +1071,10 @@
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
+        renderOptions(options);
+        return;
       } else if (source) {
-        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        source.replace(/^{.*}$/g, function (match) {
           try {
             return ( options = eval(match) );
           } catch (error) {
@@ -1080,7 +1083,7 @@
           }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+        queryPrefix = queryPrefix.replace(/^{.*}$/g, function (match) {
           try {
             return eval(match);
           } catch (error) {
@@ -1088,10 +1091,8 @@
             return "";
           }
         });
-        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        return;
+        return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
       }
-      renderOptions(options);
     }
 
     function renderOptions(options) {
@@ -1180,16 +1181,16 @@
       spec = opts.spec,
       holder = $(".radio", control),
       trueOption = {
-        label: spec && spec.hasValue("v-ui:trueLabel") ? 
-          Promise.resolve(spec.get("v-ui:trueLabel").join(" ")) : 
+        label: spec && spec.hasValue("v-ui:trueLabel") ?
+          Promise.resolve(spec.get("v-ui:trueLabel").join(" ")) :
           (new veda.IndividualModel("v-s:YesBundle")).load().then(function(loaded) {
             return loaded.get("rdfs:label").join(" ");
           }),
         value: true
       },
       falseOption = {
-        label: spec && spec.hasValue("v-ui:falseLabel") ? 
-          Promise.resolve(spec.get("v-ui:falseLabel").join(" ")) : 
+        label: spec && spec.hasValue("v-ui:falseLabel") ?
+          Promise.resolve(spec.get("v-ui:falseLabel").join(" ")) :
           (new veda.IndividualModel("v-s:NoBundle")).load().then(function(loaded) {
             return loaded.get("rdfs:label").join(" ");
           }),
@@ -1678,7 +1679,7 @@
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
-      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+      return template.replace(/^{.*}$/g, function (match) {
         try {
           return eval(match);
         } catch (error) {
@@ -1689,7 +1690,7 @@
     }
 
     if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) {
+      queryPrefix = queryPrefix.replace(/^{.*}$/g, function (match) {
         try {
           return eval(match);
         } catch (error) {
