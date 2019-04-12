@@ -230,7 +230,7 @@ v-s:UserScriptTemplate
   </div>
 
 </div>
-<script><!--async-->
+<script>
   // Clear output on save
   individual.on("beforeSave", clearOutput);
   template.one("remove", function () {
@@ -504,7 +504,7 @@ v-s:OperationFooterTemplate
   rdfs:label "Шаблон для класса v-s:Operation"@ru ;
   rdfs:label "Template for v-s:Operation class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   $(".action#start", template).click(function () {
     individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
     individual.save();
@@ -575,7 +575,7 @@ v-s:OperationStatusTemplate
   rdfs:label "Шаблон для класса v-s:Operation"@ru ;
   rdfs:label "Template for v-s:Operation class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   $(".action#start", template).click(function () {
     individual["v-s:hasStatus"] = [new veda.IndividualModel("v-s:StatusStarted")];
     individual.save();
@@ -654,7 +654,7 @@ v-s:OperationProgressTemplate
   rdfs:label "Шаблон для класса v-s:Operation"@ru ;
   rdfs:label "Template for v-s:Operation class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   progressHandler();
   statusHandler();
   individual.on("v-s:progress", progressHandler);

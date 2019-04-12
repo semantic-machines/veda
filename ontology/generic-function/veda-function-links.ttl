@@ -147,7 +147,7 @@ v-s:LinksTemplate
   rdfs:label "Шаблон для отображения связей документа"@ru ;
   rdfs:label "Template to view document links"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   template.one("remove", function () {
     individual.activeTab = $("#links-tabs li.active a", template).attr("href");
   });
@@ -194,7 +194,7 @@ v-s:LinksListTemplate
   rdfs:comment "Список"@ru ;
   rdfs:label "List"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var isMutual = container.attr("data-mutual") === "true";
   var rowTmpl = $("tbody", template).html();
 
@@ -259,7 +259,7 @@ v-s:LinksListTemplate
       </tr>
     </thead>
     <tbody about="@" rel="v-s:hasLink" data-embedded="true">
-      <script><!--async-->
+      <script>
         var displayedDoc = container.closest("[resource]").attr("resource");
         if ( this.hasValue("v-s:from", displayedDoc) ) {
           $(".link-from", template).remove();
@@ -325,7 +325,7 @@ v-s:LinksTreeRecursiveTemplate
   rdfs:comment "Дерево"@ru ;
   rdfs:label "Tree"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var type = individual["rdf:type"][0];
   var linksTree;
   if ( !type.hasValue("v-s:hasLinksTree") ) {
@@ -485,7 +485,7 @@ v-s:TrimmedLinkTemplate
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
 <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
-<script><!--async-->
+<script>
   var re = new RegExp(".*?:");
   var label = template.text();
   template.attr("title", label);

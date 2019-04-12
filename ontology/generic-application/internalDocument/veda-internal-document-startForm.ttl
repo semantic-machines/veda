@@ -23,7 +23,7 @@ v-s:InternalDocument_ComplexRouteStartForm_Template
   rdfs:label "Шаблон стартовых данных комплексного маршрута Внутренний документ"@ru ;
   rdfs:label "InternalDocument complex route start form template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var stages = ['coordination1', 'coordination2', 'coordination3', 'sign', 'approval', 'review', 'examination', 'instruction'];
   var complex = "s-wf:ComplexRouteStartForm_";
   var simple = "s-wf:SimpleRouteStartForm_";

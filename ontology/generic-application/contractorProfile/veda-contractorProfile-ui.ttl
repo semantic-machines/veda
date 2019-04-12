@@ -363,7 +363,7 @@ v-s:ContractorProfileTemplate
   rdfs:label "Шаблон для класса v-s:ContractorProfile"@ru ;
   rdfs:label "Template for v-s:ContractorProfile class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var props = [
     "v-s:attachOrganizationProperties",
     "v-s:attachCertificateRegistrationLegal",
@@ -444,7 +444,7 @@ v-s:ContractorProfileTemplate
           <div>
             <veda-control  property="v-s:isOrganizationOk" data-type="boolean"></veda-control>
           </div>
-          <script><!--async-->
+          <script>
               if( individual.hasValue("v-s:isOrganizationOk", true) ) {
                 template.closest("tr").addClass("success");
               } else if ( individual.hasValue("v-s:isOrganizationOk", false) ) {
@@ -551,7 +551,7 @@ v-s:ContractorProfileTemplate
         </td>
         <td><span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span> <span about="@" property="v-s:created"></span></td>
       </tr>
-      <script><!--async-->
+      <script>
         var fn = individual["v-s:fileName"][0],
           idx = fn.lastIndexOf("."),
           ext = fn.substr(idx + 1);
@@ -569,7 +569,7 @@ v-s:ContractorProfileTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete journal journal-dms task"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#add-contractorCategoryRequest", template).click(function () {
     var _class = new veda.IndividualModel("v-s:ContractorCategoryRequest"),
         request = new veda.IndividualModel(),
@@ -591,7 +591,7 @@ v-s:ContractorCategoryRequestTemplate
   rdfs:label "Шаблон для класса v-s:ContractorCategoryRequest"@ru ;
   rdfs:label "Template for v-s:ContractorCategoryRequest class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var hideAndshowsubContractorOf = $("#hideAndshowsubContractorOf", template);
   individual.on("v-s:hasContractorInteractionCategory", handler);
   template.one("remove", function () {
@@ -700,7 +700,7 @@ v-s:ContractorCategoryRequestTemplate
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script><!--async-->
+<script>
   $("#add-ContractorCategoryDecision", template).click(function () {
     var modal = $("#notification-modal-template").html();
     modal = $(modal);
@@ -780,7 +780,7 @@ v-s:PriceTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   individual.on("propertyModified", handler);
   template.one("remove", function () {
     individual.off("propertyModified", handler);
@@ -823,7 +823,7 @@ v-s:ContractorProfileEmbeddedTemplate
   rdfs:label "Вложенный шаблон для класса v-s:ContractorProfile"@ru ;
   rdfs:label "Template embedded for v-s:ContractorProfile class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var props = [
     "v-s:attachOrganizationProperties",
     "v-s:attachCertificateRegistrationLegal",
@@ -1044,7 +1044,7 @@ v-s:ContractorProfileEmbeddedTemplate
         </td>
         <td><span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span> <span about="@" property="v-s:created"></span></td>
       </tr>
-      <script><!--async-->
+      <script>
         var fn = individual["v-s:fileName"][0],
           idx = fn.lastIndexOf("."),
           ext = fn.substr(idx + 1);
@@ -1054,7 +1054,7 @@ v-s:ContractorProfileEmbeddedTemplate
     </tbody>
   </table>
 </div>
-<script><!--async-->
+<script>
   $('#save_and_start_process', template).on('click', function () {
      veda.Util.send(individual, template, 's-wf:complexRouteTransform');
   });
@@ -1071,7 +1071,7 @@ v-s:ContractorCategoryDecisionTemplate
   rdfs:label "Шаблон для класса v-s:ContractorCategoryDecision"@ru ;
   rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var decisionContractorCategoryState = $("#decisionContractorCategoryState", template);
 
   individual.on("v-s:isOrganizationOk", handler);
@@ -1134,7 +1134,7 @@ v-s:ContractorCategoryDecisionTemplate
     <button type="button" class="action btn btn-info view -edit -search" id="createReport" about="v-s:PrintBlank" property="rdfs:label"/>
   </div>
 </div>
-<script><!--async-->
+<script>
   $('#createReport', template).on('click', function (e) {
     e.preventDefault();
     veda.Util.createReport('v-s:ContractorCategoryDecision_printBlank', individual);
@@ -1319,7 +1319,7 @@ v-s:ContractorCategoryDecisionSecurityTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#descriptionClose", template).remove();
 </script>
  """ ;
@@ -1345,7 +1345,7 @@ v-s:ContractorCategoryDecisionSecurityEmbeddedTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionSecurity");
   _class.canCreate().then(function (canCreate) {
     if (!canCreate) {
@@ -1386,7 +1386,7 @@ v-s:ContractorCategoryDecisionLegalTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#descriptionClose", template).remove();
 </script>
  """ ;
@@ -1412,7 +1412,7 @@ v-s:ContractorCategoryDecisionLegalEmbeddedTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionLegal");
   _class.canCreate().then(function (canCreate) {
     if (!canCreate) {
@@ -1447,7 +1447,7 @@ v-s:ContractorCategoryDecisionFinancialTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#descriptionClose", template).remove();
 </script>
    """ ;
@@ -1473,7 +1473,7 @@ v-s:ContractorCategoryDecisionFinancialEmbeddedTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecisionFinancial");
   _class.canCreate().then(function (canCreate) {
     if (!canCreate) {
@@ -1489,7 +1489,7 @@ v-s:ContractorCategoryDecisionEmbeddedTemplate
   rdfs:label "Шаблон для класса v-s:ContractorCategoryDecision"@ru ;
   rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var _class = new veda.IndividualModel("v-s:ContractorCategoryDecision");
   _class.canCreate().then(function (canCreate) {
     if (!canCreate) {
@@ -1560,7 +1560,7 @@ v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate
   rdfs:label "Шаблон для класса v-s:ContractorCategoryDecision"@ru ;
   rdfs:label "Template for v-s:ContractorCategoryDecision class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   try {
     var types = {
       "v-s:ContractorCategoryDecisionSecurity": {

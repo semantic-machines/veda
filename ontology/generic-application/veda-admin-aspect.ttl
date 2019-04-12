@@ -518,7 +518,7 @@ v-ui:AdminBlankTemplate
 <div>
   <veda-control property="*" data-type="string"></veda-control>
 </div>
-<script><!--async-->
+<script>
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;
@@ -570,7 +570,7 @@ v-ui:ModulesBlankTemplate
   rdfs:label "Шаблон бланка поиска персоны"@ru ;
   rdfs:label "Person search blank template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   container.siblings(".search-button.pull-right").remove();
 </script>
   """ ;
@@ -896,7 +896,7 @@ v-ui:AdministrationAspectTemplate
 
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#install-Module").click(function(){
     let url=$("#moduleUrl",template).val();
     if (url) {

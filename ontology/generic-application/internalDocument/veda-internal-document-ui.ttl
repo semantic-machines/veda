@@ -91,7 +91,7 @@ v-s:InternalDocumentTemplate
   rdfs:label "Шаблон для класса v-s:InternalDocument"@ru ;
   rdfs:label "Template for v-s:InternalDocument class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if ( mode == "edit" && individual.isNew() ) {
     if ( !individual.hasValue("v-s:initiator") ) {
      individual["v-s:initiator"] = [ veda.appointment["v-s:parentUnit"][0] ] ;
@@ -159,7 +159,7 @@ v-s:InternalDocumentTemplate
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script><!--async-->
+<script>
   $("#make-copy", template).click(function () {
     var _class = new veda.IndividualModel("v-s:InternalDocument"),
         InternalDocument = new veda.IndividualModel(),

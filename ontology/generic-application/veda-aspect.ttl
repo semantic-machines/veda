@@ -171,7 +171,7 @@ v-s:FavoritesIndicatorTemplate
   rdfs:label "Шаблон индикатора избранных"@ru ;
   rdfs:label "Favorites indicator template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   indicateFavorite();
   riot.route(indicateFavorite);
 
@@ -299,7 +299,7 @@ v-s:PersonalImageTemplate
   rdfs:label "Personal information template"@en ;
   v-ui:forClass v-s:Person ;
   v-ui:template """
-<script><!--async-->
+<script>
   this.on("v-s:hasImage", this.save);
   template.one("remove", function () {
       this.off("v-s:hasImage", this.save);
@@ -366,7 +366,7 @@ v-s:PersonalInfoTemplate
           <a class="view -edit -search" about="@" property="v-s:mailbox"></a>
           <veda-control property="v-s:mailbox" data-type="string" class="-view edit search"></veda-control>
         </span>
-        <script><!--async-->
+        <script>
           template.find("a").attr("href", "mailto:" + individual["v-s:mailbox"][0]);
         </script>
       </span>

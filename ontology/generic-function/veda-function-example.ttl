@@ -60,7 +60,7 @@ v-fe:FunctionExampleTemplate
       <div property="v-fe:exampleProperty"></div>
       <button id="press-me" class="btn btn-success">Press me</button>
     </div>
-    <script><!--async-->
+    <script>
       $("#press-me", template).click(function () {
         individual.press();
       });

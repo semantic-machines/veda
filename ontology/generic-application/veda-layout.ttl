@@ -46,7 +46,7 @@ v-s:MainPageTemplate
         <ul class="nav navbar-nav navbar-right">
           <li about="v-s:Favorites" data-template="v-s:FavoritesIndicatorTemplate" style="border-right:1px solid #ddd;"></li>
           <li about="v-s:Contacts">
-            <script><!--async-->
+            <script>
               template.tooltip({
                 container: template,
                 placement: "bottom",
@@ -57,7 +57,7 @@ v-s:MainPageTemplate
             <a href="#/@"><span class="fa fa-lg fa-user-o"></span></a>
           </li>
           <li about="v-fs:FulltextSearch">
-            <script><!--async-->
+            <script>
               template.tooltip({
                 container: template,
                 placement: "bottom",
@@ -95,7 +95,7 @@ v-s:MainPageTemplate
     </div>
   </nav>
 </div>
-<script><!--async-->
+<script>
   document.title = new veda.IndividualModel("v-s:vedaInfo").toString();
 
   // Render user
@@ -142,7 +142,7 @@ v-s:MenuItemViewTemplate
   rdfs:label "Шаблон пункта Меню"@ru ;
   rdfs:label "Menu item template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var type = (
     individual.id === "v-s:Divider" ? "divider" :
     individual.hasValue("v-s:menuItem") ? "submenu" :

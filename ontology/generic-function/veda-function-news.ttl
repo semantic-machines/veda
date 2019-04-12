@@ -59,7 +59,7 @@ v-s:NewsTemplate
   rdfs:label "Шаблон для класса v-s:News"@ru ;
   rdfs:label "v-fc:CreateByBlank template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var actions = $(".actions", template);
   var scriptBlock = $(".script", template);
   var audience = $(".audience", template);
@@ -135,7 +135,7 @@ v-s:NewsIndicatorTemplate
   rdfs:label "Шаблон индикатора новостей"@ru ;
   rdfs:label "News indicator template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   template.tooltip({
     container: template,
     placement: "bottom",
@@ -221,7 +221,7 @@ v-s:NewsSearchBlankTemplate
 <div>
   <veda-control property="*" data-type="string"></veda-control>
 </div>
-<script><!--async-->
+<script>
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;

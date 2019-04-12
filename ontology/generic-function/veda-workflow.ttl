@@ -522,7 +522,7 @@ v-wf:SimpleNetTemplate
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   $('#taskTemplateProperties [rel="v-wf:inputVariable"] [typeof="v-wf:VarDefine"]').draggable({
     revert:true
   });
@@ -609,7 +609,7 @@ v-wf:NetTemplate
     <ul class="workflow-context-menu-list" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;margin-bottom:5px;"></ul>
   </div>
 </div>
-<script><!--async-->
+<script>
   var wrapper = $(".workflow-canvas-wrapper", template),
     height = ( $("#copyright").offset().top - wrapper.offset().top - 25 ) + "px",
     fullWidth = $("#full-width", template),
@@ -709,7 +709,7 @@ v-wf:ProcessTemplate
   </div>
 </div>
 
-<script><!--async-->
+<script>
   var wrapper = $(".workflow-canvas-wrapper", template),
     height = ( $("#copyright").offset().top - wrapper.offset().top - 15 ) + "px",
     fullWidth = $("#full-width", template),
@@ -1222,7 +1222,7 @@ v-wf:TaskTemplateAsProperties
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   function joinSplitHandler() {
     var $state = $('#' + veda.Util.escape4$(individual.id));
     $state.removeClass('split-and').removeClass('split-or').removeClass('split-xor');
@@ -1302,7 +1302,7 @@ v-wf:ConditionTemplateAsProperties
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   function handler (values) {
     var $state = $('#' + veda.Util.escape4$(individual.id));
     $('.state-name', $state).html(values);
@@ -1360,7 +1360,7 @@ v-wf:FlowTemplateAsProperties
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   function handler (values) {
     if (veda.net) {
       $.each(veda.net.getAllConnections(), function (idx, connection) {
@@ -1445,7 +1445,7 @@ v-wf:ProcessPropsTemplate
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   if (typeof individual !== "undefined") {
     $('#processTemplateProperties > tbody > tr > td > span[about]').each(function () {
       if (!individual.hasValue($(this).attr('about'))) {
@@ -1508,7 +1508,7 @@ v-wf:WorkItemTemplate
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   if (typeof individual !== "undefined") {
     $('#workItemTemplateProperties > tbody > tr > td > span[about]').each(function () {
       if (!individual.hasValue($(this).attr('about'))) {
@@ -1536,7 +1536,7 @@ v-wf:VariableTemplate
     <ul><li rel="v-wf:variableScope" data-template="v-ui:ClassNameLabelLinkTemplate"></li></ul>
   </div>
 </span>
-<script><!--async-->
+<script>
   if (!individual.hasValue("v-fw:variableScope")) $("#variableScope", template).remove();
   var valHolder = $("#values", template);
   individual["v-wf:variableValue"].map( function (value) {
@@ -1591,7 +1591,7 @@ v-wf:WorkOrderTemplate
   </div>
   <br/>
 </div>
-<script><!--async-->
+<script>
   if (
     veda.appointment.id === "cfg:AdministratorAppointment"
     && individual.hasValue("v-wf:forWorkItem")
@@ -1623,7 +1623,7 @@ v-wf:DecisionFormTemplate
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:template """
 <div class="hidden"></div>
-<script><!--async-->
+<script>
   var timeout = setTimeout(function () {
     individual.rights.then(function (rights) {
       if ( !individual.hasValue("v-wf:read") && rights.hasValue("v-s:canUpdate", true) ) {
@@ -2604,7 +2604,7 @@ v-wf:ProcessEventTemplate
   rdfs:label "Process event template"@en ;
   v-ui:forClass v-wf:ProcessStarted, v-wf:ProcessCompleted ;
   v-ui:template """
-<script><!--async-->
+<script>
   if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
   //# sourceURL=v-ui:ProcessEventTemplate
 </script>
@@ -2644,7 +2644,7 @@ v-wf:WorkItemStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:WorkItemStarted ;
   v-ui:template """
-<script><!--async-->
+<script>
   $("#exp", template).click(function (e) {
     e.preventDefault();
     $("div[rel='v-s:subJournal']", template).toggle();
@@ -2685,7 +2685,7 @@ v-wf:DecisionFormStartedEventTemplate
   rdfs:label "Шаблон обработки work item"@ru ;
   v-ui:forClass v-wf:DecisionFormStarted ;
   v-ui:template """
-<script><!--async-->
+<script>
   if (!individual.hasValue("v-wf:initiator")) { $("#initiator", template).remove(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
@@ -2739,7 +2739,7 @@ v-wf:TraceRecordTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var pre = $("pre", template),
       txt = pre.text(),
       re = new RegExp('"([\\w-]+:[\\w-]+)"','g'),
@@ -2910,7 +2910,7 @@ v-wf:TaskTemplateAsModal
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#cancel, #save", template).click(function () {
     var modal = template.closest(".modal");
     if (modal.length) {
@@ -2966,7 +2966,7 @@ v-wf:ExecutorTemplateEmbedded
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   $('.CodeMirror', template).each(function (idx) {
   $(this).height(40);
   });
@@ -3023,7 +3023,7 @@ v-wf:MappingTemplateEmbedded
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   $('.CodeMirror', template).each(function (idx) {
     $(this).height(40);
   });
@@ -3182,7 +3182,7 @@ v-wf:RuleTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   if ($(template).parent().attr('data-embedded')){
     $(".actions", template).remove();
   };
@@ -3274,7 +3274,7 @@ v-wf:FlowTemplateEmbedded
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   $('.CodeMirror', template).each(function (idx) {
     $(this).height(40);
   });
@@ -3324,7 +3324,7 @@ v-wf:FlowTemplateAsModal
     </tr>
   </table>
 </div>
-<script><!--async-->
+<script>
   function handler (values) {
     if (veda.net) {
       $.each(veda.net.getAllConnections(), function (idx, connection) {

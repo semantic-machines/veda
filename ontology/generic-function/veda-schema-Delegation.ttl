@@ -119,7 +119,7 @@ v-s:RequestDelegationTemplate
   rdfs:label "Шаблон для класса v-s:RequestDelegationUser"@ru ;
   rdfs:label "Template for v-s:RequestDelegationUser class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if ( individual.hasValue("rdf:type", "v-s:RequestDelegationAdmin") ) {
     $("#delegator-control", template).removeClass("-edit").addClass("edit");
     $("#delegator-value", template).removeClass("edit").addClass("-edit");
@@ -236,7 +236,7 @@ v-s:RequestDelegationTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   individual.on("v-s:delegatedPosition", delegatedPositionHandler);
   individual.on("v-s:delegator v-s:delegate", delegatorDelegateHandler);
   individual.on("v-s:delegator", delegatorHandler);
@@ -525,7 +525,7 @@ allDelegated["rdf:value"] = allDelegated["rdf:value"] || [];
 position_uris.map(function (position_uri) {
   var uri = "d:" + Sha256.hash( ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_") ).substring(40);
   var appointment = get_individual(ticket, uri);
-  
+
   /* label calculates on server automatically
   // Compute label
   var appointment_label;

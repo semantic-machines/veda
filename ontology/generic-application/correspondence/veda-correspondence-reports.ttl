@@ -129,7 +129,7 @@ v-s:CountOfUsersTasks_Report_ParametersTemplate
     <button type="button" class="action btn btn-success -view edit -search" id="createReport" about="v-s:CreateReport" property="rdfs:label"/>
   </div>
 </div>
-<script><!--async-->
+<script>
   $('#createReport', template).on('click', function () {
     veda.Util.createReport('v-s:CountOfUsersTasks_Report', individual);
   });
@@ -171,7 +171,7 @@ v-s:CompletedTasksCount_Report_ParametersTemplate
     <button type="button" class="action btn btn-success -view edit -search" id="createReport" about="v-s:CreateReport" property="rdfs:label"/>
   </div>
 </div>
-<script><!--async-->
+<script>
   $('#createReport', template).on('click', function () {
     veda.Util.createReport('v-s:CompletedTasksCount_Report', individual);
   });

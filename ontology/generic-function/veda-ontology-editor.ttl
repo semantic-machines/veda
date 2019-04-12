@@ -215,7 +215,7 @@ v-ui:CommonOntologyTemplate
   rdfs:label "Общий шаблон онтологии"@ru ;
   rdfs:label "Common ontology template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if ( this.isNew() ) {
     $("#uri", template)
       .prop("placeholder", this.id)
@@ -303,7 +303,7 @@ v-ui:ClassClassTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   var propsContainer = $("#props", template);
   var specsContainer = $("#specs", template);
   var tmplContainer = $("#tmpl", template);
@@ -1144,7 +1144,7 @@ v-ui:ModuleTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   $("#copy-log", template).click(e=>{
     let temp = $("<textarea>");
     $(".modal").append(temp);
@@ -1198,7 +1198,7 @@ v-ui:GroupTemplate
   rdfs:label "Template for v-s:Group class"@en ;
   v-ui:forClass v-s:Group ;
   v-ui:template """
-<script><!--async-->
+<script>
   var membershipRegistryBlank = new veda.IndividualModel("v-s:MembershipRegistryBlank");
   var membershipRegistryBlankPromise = membershipRegistryBlank.load().then(function (membershipRegistryBlank) {
     delete membershipRegistryBlank.object;
