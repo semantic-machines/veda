@@ -190,7 +190,7 @@ v-s:GroupGeneratorTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   individual.on("propertyModified", handler);
   template.one("remove", function () {
     individual.off("propertyModified", handler);
@@ -406,7 +406,7 @@ v-s:PermissionGeneratorRegistryResultTemplate
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td about="@" property="v-s:created"></td>
     </tr>
-    <script><!--async-->
+    <script>
       var rights = "";
       rights += (this.hasValue("v-s:canCreate", true) ? "C" : "");
       rights += (this.hasValue("v-s:canRead",   true) ? "R" : "");

@@ -373,7 +373,7 @@ v-fs:AttributiveSearchManagementTemplate
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var notify = new veda.Notify();
 
   if ( !individual.hasValue("v-s:creator", veda.appointment || veda.user) ) {
@@ -485,7 +485,7 @@ v-fs:AttributiveSearchTemplate
     <span class="text-muted padding-lg" about="v-fs:CtrlEnterBundle" property="rdfs:label"></span>
   </span>
 </div>
-<script><!--async-->
+<script>
   // Append additional actions
   setTimeout(function () {
     var additionalActions = $(".additional-actions", template);
@@ -626,7 +626,7 @@ v-fs:SelectedResultsActionsTemplate
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var self = this;
   function selectedHandler() {
     var selectedL = self.selected && Object.keys(self.selected).length || 0;
@@ -705,7 +705,7 @@ v-fs:SelectedResultsActionsTemplate
   <ul class="dropdown-menu operations"></ul>
   <div class="pull-left operation-container margin-md-h"></div>
 </div>
-<script><!--async-->
+<script>
   if (this.operation) {
     var operationContainer = $(".operation-container", template);
     this.operation.present(operationContainer, "v-s:OperationStatusTemplate");
@@ -721,7 +721,7 @@ v-fs:AttributiveSearchInlineTemplate
   rdfs:label "Шаблон для класса v-fs:AttributiveSearch"@ru ;
   rdfs:label "Template for v-fs:AttributiveSearch class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var self = individual,
       searchBlankTemplate = self.hasValue("v-fs:searchBlankTemplate") ? self["v-fs:searchBlankTemplate"][0] : undefined,
       searchResultTemplate = self.hasValue("v-fs:searchResultTemplate") ? self["v-fs:searchResultTemplate"][0] : undefined,
@@ -871,7 +871,7 @@ v-fs:AttributiveSearchInlineTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   // Make position fixed for buttons bar that doesn't fit the window
   function checkOffset(main, actions, actionsStaticHeight, placeholder) {
     var mainTop = main.offset().top;
@@ -1375,7 +1375,7 @@ v-fs:FulltextBlankTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var find = container.siblings(".search-actions").find("#search-button.search-button").addClass("hidden");
   var customFind = $("#custom-search-button.search-button", template);
   customFind.click(function () {
@@ -1463,7 +1463,7 @@ v-fs:MinimalSearchBlankTemplate
 <div>
   <veda-control property="*" data-type="string"></veda-control>
 </div>
-<script><!--async-->
+<script>
   $("input", template).keydown(function (e) {
     if (e.which === 13) {
       var value = this.value;

@@ -86,7 +86,7 @@ v-s:CommentsTemplate
   <div id="new-comment"></div>
   <button class="margin-sm btn btn-success" id="add-comment" about="v-s:AddComment" property="rdfs:label"></button>
 </div>
-<script><!--async-->
+<script>
   $("#add-comment", template).click(function () {
     var addComment = $(this).hide();
     var _class = new veda.IndividualModel("v-s:Comment"),
@@ -147,7 +147,7 @@ v-s:SingleCommentTemplate
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   rdfs:label "Template for v-s:Comment class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   $(".action", template).click(function (e) {
     e.preventDefault();
     template.trigger(this.id);
@@ -177,7 +177,7 @@ v-s:EmbeddedSingleCommentTemplate
   rdfs:label "Embedded шаблон для класса v-s:Comment"@ru ;
   rdfs:label "Embedded template for v-s:Comment class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   $(".action", template).click(function (e) {
     e.preventDefault();
     template.trigger(this.id);
@@ -223,7 +223,7 @@ v-s:RecursiveCommentTemplate
   rdfs:label "Шаблон для класса v-s:Comment"@ru ;
   rdfs:label "Template for v-s:Comment class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var actions = $("#edit-comment, #delete", template);
   individual.rights.then(function (rights) {
     if ( !rights.hasValue("v-s:canUpdate", true) ) {
@@ -262,7 +262,7 @@ v-s:RecursiveCommentTemplate
 <div class="media" style="overflow:initial;">
   <div class="media-left" rel="v-s:creator">
     <div about="@" rel="v-s:employee">
-      <script><!--async-->
+      <script>
         individual.hasValue("v-s:hasImage") ? $(".no-image", template).remove() : $(".has-image", template).remove() ;
       </script>
       <div style="width:50px;">

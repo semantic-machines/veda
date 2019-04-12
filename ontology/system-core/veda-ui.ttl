@@ -435,7 +435,7 @@ v-ui:LanguageSwitchTemplate
 <div about="@" class="btn-group" rel="rdf:value">
   <button about="@" property="rdfs:label" class="lang btn btn-xs btn-default navbar-btn"></button>
 </div>
-<script><!--async-->
+<script>
   var switchBehavior = container.attr("data-switch-behavior") || "checkbox";
   var switches = $(".btn", template);
   veda.user.preferences.on("v-ui:preferredLanguage", langHandler);
@@ -486,7 +486,7 @@ v-ui:FullWidthSwitchTemplate
   rdfs:label "Шаблон переключения режима на всю ширину"@ru ;
   rdfs:label "Full width switch template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   template.click(function () {
     try {
       var value = veda.user.preferences["v-ui:fullWidth"][0];
@@ -571,7 +571,7 @@ v-ui:StandardButtonsTemplate
   rdfs:comment "Действия"@ru ;
   rdfs:comment "Actions"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   // var allButtons = "send edit save cancel delete destroy journal journal-dms task rights";
   var defaultButtons = "send edit save cancel delete journal task";
   individual.rights.then(function (rights) {
@@ -672,7 +672,7 @@ v-ui:StandardButtonsTemplate
     <span class="glyphicon glyphicon-chevron-left"></span>
   </button>
 </span>
-<script><!--async-->
+<script>
   $(".toggle-actions", template).click(function () {
     template.closest(".actions").children(":not(.toggle-actions)").toggleClass("hidden");
     var button = $(this);
@@ -743,7 +743,7 @@ v-ui:IconButtonsTemplate
   rdfs:label "Шаблон с набором стандартных кнопок"@ru ;
   rdfs:label "Template with standard buttons"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   // var allButtons = "edit save cancel delete";
   var defaultButtons = "edit save cancel delete";
   individual.rights.then(function (rights) {
@@ -781,7 +781,7 @@ v-ui:IconButtonsTemplate
   <button title="v-s:Cancel" type="button" class="action btn btn-xs btn-default -view edit -search glyphicon glyphicon-repeat" id="cancel"></button>
   <button title="v-s:Delete" type="button" class="action btn btn-xs btn-default view edit -search glyphicon glyphicon-remove" id="delete"></button>
 </span>
-<script><!--async-->
+<script>
   // Respect validation state of parent template
   var closest = template.parent().closest("[resource]");
   closest.on("internal-validated", function (e, validation) {
@@ -812,7 +812,7 @@ v-ui:VersionTemplate
     </span>
   </p>
 </div>
-<script><!--async-->
+<script>
   setTimeout(function () {
     var renderedTemplates = $("[resource$='" + individual.id.substring(2) + "']");
     renderedTemplates.each(function () {
@@ -861,7 +861,7 @@ v-ui:VersionedTemplate
     </table>
   </div>
 </div>
-<script><!--async-->
+<script>
   var actual = individual["v-s:actualVersion"][0];
   if (!actual) { return; }
   var tmpl = ''
@@ -907,7 +907,7 @@ v-ui:IconPersonTemplate
   rdfs:label "Шаблон персоны с иконкой"@ru ;
   rdfs:label "Person template with icon"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if (individual.hasValue("v-s:hasAspect")) {
     template.attr("href", "#/" + individual["v-s:hasAspect"][0].id);
   }
@@ -1004,7 +1004,7 @@ v-ui:ResourceTemplate
   rdfs:label "Template for Resource class"@en ;
   v-ui:forClass rdfs:Resource ;
   v-ui:template """
-<script><!--async-->
+<script>
   var propСontainer = $(".properties-container", template);
   var tmpl = propСontainer.html();
   propСontainer.empty();
@@ -1061,7 +1061,7 @@ v-ui:LabelTemplate
   rdfs:label "Template with label"@en ;
   v-ui:template """
   <span class="label-template" about="@" property="rdfs:label"></span>
-  <script><!--async-->
+  <script>
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
@@ -1117,7 +1117,7 @@ v-ui:LabelTemplateWithEditLink
   <span class="label-template">
     # <a href="#/@///edit"><span id="label" property="rdfs:label"></span></a>
   </span>
-  <script><!--async-->
+  <script>
     if (!individual.hasValue("rdfs:label")) {
       $("#label", template).text(individual.id);
     }
@@ -1131,7 +1131,7 @@ v-ui:LabelLinkTemplate
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
   <a class="label-template" href="#/@"><span about="@" property="rdfs:label"></span></a>
-  <script><!--async-->
+  <script>
     if (!individual.hasValue("rdfs:label")) {
       template.children().first().text(individual.id);
     }
@@ -1146,7 +1146,7 @@ v-ui:IconModalTemplate
   rdfs:label "Template with label & link"@en ;
   v-ui:template """
 <a href="#" class="glyphicon glyphicon-zoom-in"></a>
-<script><!--async-->
+<script>
   template.on("click", function (e) {
     e.preventDefault();
     var newMode = container.data("mode");
@@ -1192,7 +1192,7 @@ v-ui:GenericModalTemplate
   rdfs:label "Шаблон отображения в модальном окне"@ru ;
   rdfs:label "Generic modal template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var lbl = $(".lbl", template);
   var labelUri = container.data("label");
   var modalTemplate = container.data("modal-template");
@@ -1217,7 +1217,7 @@ v-ui:LabelEmptyLinkTemplate
   rdfs:label "Template without class name, with label (modal)"@en ;
   v-ui:template """
 <a href="#" property="rdfs:label"></a>
-<script><!--async-->
+<script>
   if (!individual.hasValue("rdfs:label")) {
     template.text(individual.id);
   }
@@ -1231,7 +1231,7 @@ v-ui:LabelBlockLinkTemplate
   rdfs:label "Template without class name, with label, blocked"@en ;
   v-ui:template """
 <div><a id="label" href="#/@" property="rdfs:label"></a></div>
-<script><!--async-->
+<script>
   if (!individual.hasValue("rdfs:label")) {
     $("#label", template).text(individual.id);
   }
@@ -1245,7 +1245,7 @@ v-ui:ClassNameLabelLinkTemplate
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
 <a class="label-template" href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-<script><!--async-->
+<script>
   if (!individual.hasValue("rdfs:label")) {
     $("#label", template).text(individual.id);
   }
@@ -1259,7 +1259,7 @@ v-ui:ClassNameLabelLinkEditTemplate
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
 <a class="label-template" href="#/@///edit"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span id="label" about="@" property="rdfs:label"></span></a>
-<script><!--async-->
+<script>
   if (!individual.hasValue("rdfs:label")) {
     $("#label", template).text(individual.id);
   }
@@ -1273,7 +1273,7 @@ v-ui:RabbitHole
   rdfs:label "Кроличья нора"@ru ;
   rdfs:label "Rabbit hole"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var defaultProperties = "v-s:backwardTarget v-s:parent";
   var allowedProperties = (container.data("properties") || defaultProperties).split(" ");
   var name = mkName(individual);
@@ -1339,7 +1339,7 @@ v-ui:ClassNameLabelTemplate
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
 <span class="label-template"><span about="@" property="rdf:type"></span>: <span id="label" about="@" property="rdfs:label"></span></span>
-<script><!--async-->
+<script>
   if (!individual.hasValue("rdfs:label")) {
     $("#label", template).text(individual.id);
   }
@@ -1684,7 +1684,7 @@ v-ui:FileTemplate
     </a>
   </div>
 </div>
-<script><!--async-->
+<script>
   var fn = individual["v-s:fileName"][0],
     idx = fn.lastIndexOf("."),
     ext = fn.substr(idx + 1);
@@ -1730,7 +1730,7 @@ v-ui:FileTemplateWithComment
     </i>
   </div>
 </div>
-<script><!--async-->
+<script>
   var fn = individual["v-s:fileName"][0];
   if (typeof fn === "string" || fn instanceof String) {
     var idx = fn.lastIndexOf("."),
@@ -1777,7 +1777,7 @@ v-ui:FileTemplateWithComment2
   </div>
   <!--/Remove-->
 </div>
-<script><!--async-->
+<script>
   var fn = individual["v-s:fileName"][0];
   if (typeof fn === "string" || fn instanceof String) {
     var idx = fn.lastIndexOf("."),
@@ -1793,7 +1793,7 @@ v-ui:ImageTemplate
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if (individual.image) {
     template.children().attr("src", individual.image.src);
   } else {
@@ -1809,7 +1809,7 @@ v-ui:ModalImageTemplate
   rdfs:label "Шаблон для изображения"@ru ;
   rdfs:label "Image template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if ( !individual.hasValue("v-s:thumbnail") ) {
     template.removeAttr("rel");
   }
@@ -1834,7 +1834,7 @@ v-ui:SimplifiedJournalTemplate
   rdfs:label "Simplified"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
-<script><!--async-->
+<script>
   var renderedCount = 0;
   var tbody = $("#tbody", template);
   var task_template = tbody.html();
@@ -1917,7 +1917,7 @@ v-ui:SimplifiedJournalTemplate
           <td>
             <div about="@" rel="v-wf:from" data-template="v-ui:LabelTemplate"></div>
               <div about="@" rel="v-wf:redirect_from_task">
-                <script><!--async-->
+                <script>
                   if ( !individual.hasValue("v-wf:to") ) {
                     template.empty();
                   }
@@ -1960,7 +1960,7 @@ v-ui:SimplifiedJournalTemplate
             <button class="btn btn-info" id="revoke" about="v-wf:DecisionRevoke_Bundle" property="rdfs:label"></button>
           </td>
         </tr>
-        <script><!--async-->
+        <script>
           if ( this.hasValue("v-wf:isCompleted", true) ) {
             template.children().first().addClass("success");
             $(".docflow-buttons", template).remove();
@@ -2034,7 +2034,7 @@ v-ui:JournalTemplate
   rdfs:label "Detailed"@en ;
   v-ui:forClass v-s:Journal ;
   v-ui:template """
-<script><!--async-->
+<script>
   //individual.prefetch(50, "v-s:onDocument", "v-wf:onProcess", "v-s:childRecord", "v-s:processJournal", "v-s:subJournal", "v-wf:takenDecision", "v-s:actor", "v-s:creator", "v-wf:executor");
 
   var doc_uri = this.id.replace(/.$/, "");
@@ -2111,7 +2111,7 @@ v-ui:DocumentEventTemplate
   rdfs:label "Document event template"@en ;
   v-ui:forClass v-s:DocumentCreated, v-s:DocumentUpdated, v-s:DocumentDeleted, v-s:ProcessStarted, v-wf:ProcessStopped ;
   v-ui:template """
-<script><!--async-->
+<script>
   if (individual.hasValue("v-s:actor", "cfg:VedaSystem")) { template.empty(); }
   $("#exp", template).click(function (e) {
     e.preventDefault();
@@ -2153,7 +2153,7 @@ v-ui:DocumentEventTemplate
     <div class="col-md-7 col-sm-6 event-desc">
       <div about="@" rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div about="@" rel="v-wf:onProcess">
-        <script><!--async-->
+        <script>
           var href = null;
           var startForm = this.properties["v-wf:hasStartForm"];
           if (startForm) {
@@ -2192,7 +2192,7 @@ v-ui:DocumentEventTemplate
   </div>
   <div about="@" rel="v-s:processJournal" data-template="v-ui:SubJournalTemplate"></div>
 </div>
-<script><!--async-->
+<script>
   if ( individual.hasValue("rdf:type", "v-s:ProcessStarted") ) {
     var process = individual['v-wf:onProcess'][0];
     process.load().then(function (process) {
@@ -2229,7 +2229,7 @@ v-ui:PermissionsTemplate
   rdfs:label "Individual rights template"@en ;
   v-ui:forClass v-s:PermissionStatement ;
   v-ui:template """
-<script><!--async-->
+<script>
   var rightsContainer = $(".rights", template);
   var rightsTemplate = rightsContainer.html();
   rightsContainer.empty();
@@ -2315,7 +2315,7 @@ v-ui:TreeTemplate
   rdfs:label "Шаблон для древовоидных структур"@ru ;
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var tbody = $(".tbody", template);
   var thead = $(".thead", template);
 
@@ -2647,7 +2647,7 @@ v-ui:ttl
     <a id="ttl" class="disabled btn btn-default" href="#/@//v-ui:ttl">ttl</a>
   </div>
 </div>
-<script><!--async-->
+<script>
   var list = [individual];
   veda.Util.toTTL(list, function (error, ttl) {
     var pre = $("pre", template),
@@ -2678,7 +2678,7 @@ v-ui:json
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete destroy"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   var pre = $("pre", template),
       textarea = $("textarea", template),
       json = individual.properties;
@@ -2748,7 +2748,7 @@ v-ui:generic
   rdfs:label "Шаблон общий"@ru ;
   rdfs:label "Template generic"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   // Construct generic template
   var props = $("#properties", template);
   var propTmpl = props.html();
@@ -2929,7 +2929,7 @@ v-ui:Graph
   <button type="button" id="export-ttl" class="btn btn-primary"><i class="glyphicon glyphicon-export"></i> <span about="v-ui:ExportToTTL" property="rdfs:label"></span></button>
 
   <div id="graph"></div>
-  
+
   <div id="individual-context-menu">
     <ul class="dropdown-menu" role="menu">
       <li role="presentation" class="dropdown-header">Индивид</li>
@@ -3007,9 +3007,9 @@ v-ui:Graph
       <li><a tabindex="-1" id="delete-with-out">Удалить с исходящими</a></li>
       <li><a tabindex="-1" id="delete-with-in">Удалить с входящими</a></li>
     </ul>
-  </div>  
+  </div>
 </div>
-<script><!--async-->
+<script>
   function addNode (individual) {
     return individual.load().then(function (individual) {
       if ( nodes.get(individual.id) === null ) {
@@ -3183,7 +3183,7 @@ v-ui:Graph
   }
 
   var graph = $("#graph", template);
-  
+
   // Context menu for selected node
   graph.contextmenu({
     target: $("#individual-context-menu", template),
@@ -3256,7 +3256,7 @@ v-ui:Graph
     addOutLinks(root.id);
     addInLinks(root.id);
   });
-  
+
   var height = ( $("#copyright").offset().top - graph.offset().top - 50 ) + "px";
   var options = {
     width: "100%",

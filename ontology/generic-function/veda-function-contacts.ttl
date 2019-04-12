@@ -72,7 +72,7 @@ v-s:ContactsTemplate
   rdfs:label "Шаблон функции контакты"@ru ;
   rdfs:label "Contacts function template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   return veda.appointment.getOrganization().then(function (managedOrganization) {
     individual["v-s:managedOrganization"] = [ managedOrganization ];
   });
@@ -123,7 +123,7 @@ v-s:ContactsTemplate
   <br>
   <div class="orgTree"></div>
 </div>
-<script><!--async-->
+<script>
   var orgTree = $(".orgTree", template);
   var controlBlock = '<div class="controlButtons" style="float:right"><div class="btn create btn-xs btn-primary"><i class="glyphicon glyphicon-plus"></i></div><div class="btn edit btn-xs btn-default"><i class="glyphicon glyphicon-pencil"></i></div><div class="btn remove btn-xs btn-danger"><i class="glyphicon glyphicon-remove"></i></div></div>';
   var zoomIn = '<a href="#" class="zoomIn glyphicon glyphicon-zoom-in margin-sm-h"></a>';
@@ -518,7 +518,7 @@ v-s:ContactsSearchBlankTemplate
     <br>
   </div>
 </div>
-<script><!--async-->
+<script>
   container.siblings("br").remove();
   var find = container.siblings(".search-actions").find(".search-button").addClass("hidden");
   var customFind = $(".custom-find", template);
@@ -615,7 +615,7 @@ v-s:OrganizationUnitContentTemplate
   rdfs:label "Organization unit template"@en ;
   v-ui:forClass v-s:OrganizationUnit ;
   v-ui:template """
-<script><!--async-->
+<script>
   var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
   return blank.load().then(function (blank) {
     blank.initBlank();
@@ -665,7 +665,7 @@ v-s:ContactsInUnitSearchResultTemplate
   v-ui:template """
 <div>
   <div class="result-container">
-    <script><!--async-->
+    <script>
       if ( individual.hasValue("rdf:type", "v-s:Appointment") ) {
         template.children().not(".app").remove();
       } else if ( individual.hasValue("rdf:type", "v-s:Department") || individual.hasValue("rdf:type", "v-s:OrgGroup") ) {
@@ -692,7 +692,7 @@ v-s:ContactsInUnitSearchResultTemplate
       <span class="app" about="@" rel="v-s:employee">
         <span rel="v-s:hasAccount">
           <a class="view -edit -search" about="@" property="v-s:mailbox"></a>
-          <script><!--async-->
+          <script>
             template.attr("href", "mailto:" + individual["v-s:mailbox"][0]);
           </script>
         </span>

@@ -128,7 +128,7 @@ v-cal:FunctionCalendarTemplate
   <br>
   <div id="fullcalendar"></div>
 </div>
-<script><!--async-->
+<script>
   /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
   var counter = new veda.IndividualModel(counter_uri);*/
   var fullCalendarOptions = {
@@ -196,7 +196,7 @@ v-cal:FunctionCalendarIndicatorTemplate
   rdfs:label "Шаблон индикатора для v-cal:FunctionCalendar"@ru ;
   rdfs:label "v-cal:FunctionCalendar indicator template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   /*var counter_uri = "d:taskCounter_" + veda.user.id.split(":").join("_");
   $(".label", template).attr("about", counter_uri);*/
   template.tooltip({

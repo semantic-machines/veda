@@ -26,7 +26,7 @@ v-s:IncomingLetter_ComplexRouteStartForm_Template
   rdfs:label "Шаблон стартовых данных комплексного маршрута Входящее письмо"@ru ;
   rdfs:label "IncomingLetter complex route start form template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var stages = ['review'];
   var complex = "s-wf:ComplexRouteStartForm_";
   var simple = "s-wf:SimpleRouteStartForm_";
@@ -55,7 +55,7 @@ v-s:OutgoingLetter_ComplexRouteStartForm_Template
   rdfs:label "Шаблон стартовых данных комплексного маршрута Исходящее письмо"@ru ;
   rdfs:label "OutgoingLetter complex route start form template"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var stages = ['coordination1', 'coordination2', 'sign'];
   var complex = "s-wf:ComplexRouteStartForm_";
   var simple = "s-wf:SimpleRouteStartForm_";

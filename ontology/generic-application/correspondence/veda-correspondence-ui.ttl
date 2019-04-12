@@ -114,7 +114,7 @@ v-s:LetterTemplate
   rdfs:label "Шаблон для класса v-s:Letter"@ru ;
   rdfs:label "Template for v-s:Letter class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   if ( mode === "edit" || template.data("mode") === "edit" ) {
     var userOrganization = veda.appointment.getOrganization();
     var enumerated = new veda.IndividualModel("v-s:LetterRegistrationRecordEnumerated");
@@ -261,7 +261,7 @@ v-s:LetterTemplate
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script><!--async-->
+<script>
 
   // Печатные бланки
   if( this.hasValue("rdf:type", "v-s:IncomingLetter") ) {
@@ -411,7 +411,7 @@ v-s:CorrespondentTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var self = this;
   correspondentOrganizationHandler.call(this);
   this.on("v-s:correspondentOrganization", correspondentOrganizationHandler);
@@ -583,7 +583,7 @@ v-s:LetterRegistrationRecordTemplate
     </div>
   </div>
 </div>
-<script><!--async-->
+<script>
   var self = this;
   function setRegistrationDate() {
     if ( this.hasValue("rdf:type", "v-s:LetterRegistrationRecordEnumerated") && !this.hasValue("v-s:registrationNumber") ) {

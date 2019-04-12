@@ -294,7 +294,7 @@ v-s:OrganizationTemplate
   rdfs:label "Шаблон для класса v-s:Organization"@ru ;
   rdfs:label "Template for v-s:Organization class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var _class = new veda.IndividualModel("v-s:Subsidiary");
 
   Promise.all([_class.rights, individual.rights]).then(function (rights) {
@@ -502,7 +502,7 @@ v-s:OrganizationTemplate
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
-<script><!--async-->
+<script>
   //Генерация Uri
   veda.Util.registerHandler(individual, template, "beforeSave", function () {
     var shortLabel = individual["v-s:hasClassifierCountry"][0]["v-s:shortLabel"];
@@ -616,7 +616,7 @@ v-s:DepartmentTemplate
   rdfs:label "Шаблон для класса v-s:Department"@ru ;
   rdfs:label "Template for v-s:Department class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   var parentOrganization = individual['v-s:parentOrganization'][0];
   var departmentQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='" + parentOrganization.id + "') || ('rdf:type'=='v-s:Organization' && '@'=='" + parentOrganization.id + "')";
   $('veda-control[rel="v-s:parentUnit"]', template).attr('data-query-prefix', departmentQueryPrefix);
@@ -711,7 +711,7 @@ v-s:AppointmentTemplate
   rdfs:label "Template for v-s:Appointment class"@en ;
   v-ui:template """
 <script>
-  
+
 </script>
 <div class="container sheet">
   <h2>
@@ -758,7 +758,7 @@ v-s:NewAppointmentTemplate
   rdfs:label "Шаблон для класса v-s:Appointment"@ru ;
   rdfs:label "Template for v-s:Appointment class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   template.on('validate', function() {
     var result = {};
     result["v-s:employee"] = {
@@ -783,7 +783,7 @@ v-s:NewAppointmentTemplate
   });
 
   var parentOrganization = "unknown";
-  if (individual.hasValue("v-s:parentOrganization")) { 
+  if (individual.hasValue("v-s:parentOrganization")) {
     parentOrganization = individual['v-s:parentOrganization'][0].id;
   }
   var personQueryPrefixString;
@@ -794,7 +794,7 @@ v-s:NewAppointmentTemplate
     personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
   }
   $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
-  
+
   function parentUnitHandler() {
     if (individual.hasValue('v-s:parentUnit')) {
       var parentUnit = individual['v-s:parentUnit'][0].id;
@@ -807,7 +807,7 @@ v-s:NewAppointmentTemplate
       template.trigger("validate");
     } else {
       var parentUnitQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='"+parentOrganization+"') || '@'==='"+parentOrganization+"'";
-      $("#select-ParentUnit", template).attr('data-query-prefix', parentUnitQueryPrefix);  
+      $("#select-ParentUnit", template).attr('data-query-prefix', parentUnitQueryPrefix);
     }
   }
   parentUnitHandler();
@@ -815,7 +815,7 @@ v-s:NewAppointmentTemplate
   template.one("remove", function(){
     individual.off("v-s:parentUnit", parentUnitHandler);
   })
-  
+
 //# sourceURL=v-s:NewAppointmentTemplate_pre
 </script>
 <div class="container sheet">
@@ -865,7 +865,7 @@ v-s:NewAppointmentTemplate
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save cancel"></span>
   </div>
 </div>
-<script><!--async-->
+<script>
   var NewPerson;
   var NewOccupation;
 
@@ -1024,7 +1024,7 @@ v-s:EmployeeEmbeddedTemplate
   rdfs:label "Шаблон для класса v-s:Person при создании v-s:Appoinment"@ru ;
   rdfs:label "Template for v-s:Person to create v-s:Appointment class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   template.on("validate", function () {
     var result = {};
     if ( individual.hasValue('v-s:lastName') && individual.hasValue('v-s:firstName') ) {
@@ -1105,7 +1105,7 @@ v-s:OccupationEmbeddedTemplate
   rdfs:label "Шаблон для класса v-s:Position при создании v-s:Appoinment"@ru ;
   rdfs:label "Template for v-s:Position to create v-s:Appointment class"@en ;
   v-ui:template """
-<script><!--async-->
+<script>
   template.on("validate", function () {
     var result = {};
     if (!individual.hasValue('v-s:subjectCode')) {
