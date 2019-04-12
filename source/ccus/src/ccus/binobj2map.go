@@ -31,6 +31,8 @@ const (
 	Decimal DataType = 32
 	//Boolean is simple boolean data
 	Boolean DataType = 64
+
+	Binary DataType = 128
 	//Unknown used for errors
 	Unknown DataType = 0
 )
@@ -62,6 +64,8 @@ func dataTypeToString(dataType DataType) string {
 		return "Decimal"
 	case Boolean:
 		return "Boolean"
+	case Binary:
+		return "Binary"
 	}
 
 	log.Println("ERR! UNKNOWN DATA TYPE")
@@ -467,6 +471,11 @@ func prepareElement(v interface{}) (interface{}, error) {
 			return map[string]interface{}{
 				"data": wrappedVal,
 				"type": dataTypeToString(Uri),
+			}, nil		
+		} else if tag == TAG_CBOR_ENCODED {
+			return map[string]interface{}{
+				"data": wrappedVal,
+				"type": dataTypeToString(Binary),
 			}, nil
 		} else if tag == TAG_DECIMAL_FRACTION {
 
