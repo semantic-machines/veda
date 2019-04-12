@@ -64,6 +64,16 @@ private void write_resources(string uri, ref Resources vv, ref Packer packer)
                 packer.beginArray(2).pack(DataType.Uri, svalue);
 
             //stderr.writef("\tDATATYPE URI [%s]\n", value.get!string);
+        } else if (value.type == DataType.Binary)
+        {
+            string svalue = value.get!string;
+
+            if (svalue == "")
+                packer.beginArray(2).pack(DataType.Binary, null);
+            else
+                packer.beginArray(2).pack(DataType.Binary, svalue);
+
+            //stderr.writef("\tDATATYPE BINARY [%s]\n", value.get!string);
         }
         else if (value.type == DataType.Integer)
         {
@@ -201,6 +211,14 @@ public int msgpack2individual(ref Individual individual, string in_str)
                                             else if (arr[ 1 ].type == Value.type.nil)
                                                 resources ~= Resource(DataType.String, "",
                                                                       LANG.NONE);
+                                        }
+                                        else if (type == DataType.Binary)
+                                        {
+                                            if (arr[ 1 ].type == Value.type.raw)
+                                                resources ~= Resource(DataType.Binary,
+                                                                      (cast(string)arr[ 1 ].via.raw).dup);
+                                            else if (arr[ 1 ].type == Value.type.nil)
+                                                resources ~= Resource(DataType.Binary, "");
                                         }
                                         else if (type == DataType.Uri)
                                         {

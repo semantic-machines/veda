@@ -133,10 +133,13 @@ public enum DataType : ubyte
     Decimal  = 32,
 
     /// Boolean
-    Boolean  = 64
+    Boolean  = 64,
+
+    /// Binary
+    Binary   = 128
 }
 
-string nullz         = "00000000000000000000000000000000";
+string nullz = "00000000000000000000000000000000";
 
 /// Десятичное число
 struct decimal
