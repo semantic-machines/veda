@@ -219,6 +219,8 @@ veda.Module(function (veda) { "use strict";
     .then(function (authRequiredParam) {
       if ( authRequiredParam && authRequiredParam.hasValue("rdf:value", false) ) {
         throw new Error("Auth not required");
+      } else {
+        throw new Error("Auth expired");
       }
     })
     .catch(function (error) {
