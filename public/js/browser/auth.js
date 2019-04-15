@@ -210,31 +210,18 @@ veda.Module(function (veda) { "use strict";
           end_time: storage.end_time
         });
       } else {
-        throw new Error("Auth expired");
-      }
-    })
-    .catch(function (error) {
-      return new veda.IndividualModel("cfg:AuthRequired").load();
-    })
-    .then(function (authRequiredParam) {
-      if ( authRequiredParam && authRequiredParam.hasValue("rdf:value", false) ) {
-        throw new Error("Auth not required");
-      } else {
-        throw new Error("Auth expired");
-      }
-    })
-    .catch(function (error) {
-      if (error.message === "Auth not required") {
-        console.log( error.message );
-        veda.trigger("login:success", {
-          ticket: "",
-          user_uri: "cfg:Guest",
-          end_time: 0
+        var authRequired = new veda.IndividualModel("cfg:AuthRequired");
+        authRequired.load().then(function (authRequiredParam) {
+          if ( authRequiredParam && authRequiredParam.hasValue("rdf:value", false) ) {
+            veda.trigger("login:success", {
+              ticket: "",
+              user_uri: "cfg:Guest",
+              end_time: 0
+            });
+          } else {
+            veda.trigger("login:failed");
+          }
         });
-      } else {
-        console.log( error );
-        veda.trigger("login:failed");
       }
     });
-
 });
