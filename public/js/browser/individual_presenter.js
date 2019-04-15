@@ -681,16 +681,15 @@ veda.Module(function (veda) { "use strict";
       }
     }
 
-    // Property control
-    template.find("veda-control[property]:not([rel] *):not([about] *)").addBack("veda-control[property]:not([rel] *):not([about] *)").map( function () {
-
+    // Controls
+    template.find("veda-control[property], veda-control[rel]").not("[rel] *").not("[about] *").map( function () {
       var control = $(this),
-          property_uri = control.attr("property"),
+          property_uri = control.attr("property") || control.attr("rel"),
           type = control.attr("data-type") || "generic",
           spec = specs[property_uri] ? new veda.IndividualModel( specs[property_uri] ) : undefined,
           controlType = $.fn["veda_" + type];
 
-      //control.removeAttr("property");
+      //control.removeAttr("property").removeAttr("rel");
 
       // Initial validation state
       validation[property_uri] = {state: true, cause: []};
@@ -740,67 +739,6 @@ veda.Module(function (veda) { "use strict";
         mode: mode
       };
 
-      controlType.call(control, opts);
-    });
-
-    // Relation control
-    template.find("veda-control[rel]:not([rel] *):not([about] *)").addBack("veda-control[rel]:not([rel] *):not([about] *)").map( function () {
-
-      var control = $(this),
-          rel_uri = control.attr("rel"),
-          spec = specs[rel_uri] ? new veda.IndividualModel( specs[rel_uri] ) : undefined,
-          type = control.attr("data-type") || "link",
-          controlType = $.fn["veda_" + type];
-
-      //control.removeAttr("rel");
-
-      // Initial validation state
-      validation[rel_uri] = {state: true, cause: []};
-
-      function validatedHandler(e, validation) {
-        if ( validation.state || !validation[rel_uri] || validation[rel_uri].state === true) {
-          control.removeClass("has-error");
-          control.popover("destroy");
-        } else {
-          control.addClass("has-error");
-          control.popover({
-            content: function () {
-              return validation[rel_uri].cause.map(function (cause_uri) {
-                return (new veda.IndividualModel(cause_uri))["rdfs:comment"].join(", ");
-              }).join("\n");
-            },
-            container: control,
-            trigger: "hover focus",
-            placement: "top",
-            animation: false
-          });
-          if ( $("input", control).is(":focus") ) {
-            control.popover("show");
-          }
-        }
-        e.stopPropagation();
-      }
-      template.on("internal-validated", validatedHandler);
-
-      template.on("view edit search", function (e) {
-        e.stopPropagation();
-        control.trigger(e.type);
-      });
-
-      function assignDefaultValue (e) {
-        if ( spec && spec.hasValue("v-ui:defaultValue") && !individual.hasValue(rel_uri) ) {
-          individual.set(rel_uri, spec["v-ui:defaultValue"]);
-        }
-        e.stopPropagation();
-      }
-      template.on("edit", assignDefaultValue);
-
-      var opts = {
-        individual: individual,
-        rel_uri: rel_uri,
-        spec: spec,
-        mode: mode
-      };
       controlType.call(control, opts);
     });
 
