@@ -798,7 +798,7 @@ fieldset[disabled] .form-control {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
+  z-index: 1020;
   min-width: 160px;
   margin: 3px 0;
   background-color: #fff;
