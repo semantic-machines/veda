@@ -94,13 +94,17 @@ v-s:MainPageTemplate
   </nav>
 </div>
 <script>
-  document.title = new veda.IndividualModel("v-s:vedaInfo").toString();
+  var vedaInfo = new veda.IndividualModel("v-s:vedaInfo");
+  vedaInfo.load().then(function (vedaInfo) {
+    document.title = vedaInfo.toString();
+  });
 
   // Render user
   var userInfo = $("#user-info", template);
-  var userInfoTmpl = new veda.IndividualModel("v-ui:IconPersonTemplate");
+  var userInfoTmpl = "v-ui:IconPersonTemplate";
   userInfo.empty();
   veda.user.present(userInfo, userInfoTmpl);
+
   //# sourceURL=v-s:MainPageTemplate
 </script>
   """ ;
