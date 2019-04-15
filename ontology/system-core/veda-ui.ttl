@@ -1865,7 +1865,7 @@ v-ui:SimplifiedJournalTemplate
   };
 
   function renderTasks(tasksJSONs) {
-    if (!tasksJSONs.length) { return; }
+    if (!tasksJSONs || !tasksJSONs.length) { return; }
     var taskJSON = tasksJSONs.pop();
     var task = new veda.IndividualModel(taskJSON);
     task.present(tbody, task_template).then(function (renderedTemplate) {
