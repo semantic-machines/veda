@@ -427,10 +427,10 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                                 imm.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
 
                                             if (ti.new_binobj !is null && ti.new_binobj.length > 0)
-                                                imm.addResource("new_state", Resource(DataType.String, ti.new_binobj));
+                                                imm.addResource("new_state", Resource(DataType.Binary, ti.new_binobj));
 
                                             if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
-                                                imm.addResource("prev_state", Resource(DataType.String, ti.prev_binobj));
+                                                imm.addResource("prev_state", Resource(DataType.Binary, ti.prev_binobj));
                                             //else
                                             //    uris_queue.push(ti.uri);
 
@@ -447,8 +447,8 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
                                             imm.addResource("src", Resource(src));
                                             imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-                                            imm.addResource("op_id", Resource(op_id));
-                                            imm.addResource("u_count", Resource(ti.update_counter));
+                                            imm.addResource("op_id", Resource(DataType.Integer, op_id));
+                                            imm.addResource("u_count", Resource(DataType.Integer, ti.update_counter));
                                             imm.addResource("assigned_subsystems", Resource(DataType.Integer, ti.assigned_subsystems));
 
                                             //log.trace ("imm=[%s]", imm);

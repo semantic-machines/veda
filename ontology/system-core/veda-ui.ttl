@@ -320,6 +320,19 @@ v-ui:treeDisplayedProperty
   rdfs:range owl:ObjectProperty ;
   rdfs:range owl:DatatypeProperty ;
 .
+v-ui:TemplateSpecification
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-ui:PropertySpecification ;
+  rdfs:label "Спецификация шаблона класса"@ru ;
+  rdfs:label "Template specification"@en ;
+.
+v-ui:defaultTemplate
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-ui:TemplateSpecification ;
+  rdfs:label "Шаблон по умолчанию"@ru ;
+  rdfs:label "Default template"@en ;
+  rdfs:range v-ui:ClassTemplate ;
+.
 v-ui:Language
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
@@ -370,6 +383,7 @@ v-ui:rejectMessageType
   rdfs:label "Reject these messages"@en ;
   rdfs:range v-s:MessageType ;
 .
+
 #----------------for dropdown----------------------------------
 d:2078749d2bcf42e0ae80c5d8287d19d1
   rdf:type v-s:TransportKind ;
