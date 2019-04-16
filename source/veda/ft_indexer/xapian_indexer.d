@@ -5,7 +5,7 @@
 
 module veda.ft_indexer.xapian_indexer;
 
-private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm;
+private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm, std.datetime.stopwatch;
 private import veda.common.type;
 private import veda.bind.xapian_d_header;
 private import veda.core.util.utils, veda.common.logger;
@@ -43,6 +43,7 @@ public class IndexerContext
 
     long   counter                         = 0;
     long   last_counter_after_timed_commit = 0;
+    auto   sw                              = std.datetime.stopwatch.StopWatch(AutoStart.no);
 
     ulong  last_size_key2slot = 0;
 
@@ -260,6 +261,8 @@ public class IndexerContext
                     if (dbname != use_db && use_db != "deleted")
                         return;
                 }
+
+                sw.start();
 
                 OutBuffer      all_text = new OutBuffer();
                 XapianDocument doc      = new_Document(&err);
@@ -766,22 +769,16 @@ public class IndexerContext
                     {
                         index_dbs[ "deleted" ].replace_document(uuid.ptr, uuid.length, doc, &err);
                         doc = new_Document(&err);
-                        log.trace("index to [deleted], uri=[%s]", indv.uri);
+                        //log.trace("index to [deleted], uri=[%s]", indv.uri);
                         indexer.set_document(doc, &err);
                     }
                 }
 
                 if ((dbname in index_dbs) !is null)
                 {
-                    log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
+                    //log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
                     index_dbs[ dbname ].replace_document(uuid.ptr, uuid.length, doc, &err);
                 }
-
-//            if (counter % 100 == 0)
-//            {
-//                if (trace_msg[ 211 ] == 1)
-//                    log.trace("prepare msg counter:%d,slot size=%d", counter, key2slot.length);
-//            }
 
                 if (counter % 5000 == 0)
                 {
@@ -795,6 +792,8 @@ public class IndexerContext
             }
         } finally
         {
+            sw.stop();
+
             if (trace_msg[ 221 ] == 1)
                 log.trace("FT: end");
             //log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
@@ -802,14 +801,28 @@ public class IndexerContext
         }
     }
 
+    long prev_commited_counter = 0;
     void commit_all_db()
     {
-        log.trace("INFO: COMMIT");
+        auto delta = counter - prev_commited_counter;
+
+        prev_commited_counter = counter;
         foreach (name, db; index_dbs)
         {
             db.commit(&err);
             if (err != 0)
                 log.trace("EX! FT:commit:%s fail=%d", name, counter);
+        }
+
+        if (prev_commited_counter != 0)
+        {
+            long msecs = sw.peek.total !"msecs";
+
+            if (msecs > 0)
+            {
+                log.trace("INFO: COMMIT, INDEXED %d, cps=%s", counter, delta / (msecs / 1000.0));
+                sw.reset();
+            }
         }
     }
 

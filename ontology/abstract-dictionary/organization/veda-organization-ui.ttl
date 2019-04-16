@@ -794,28 +794,32 @@ v-s:NewAppointmentTemplate
     personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
   }
   $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
-
-  function parentUnitHandler() {
-    if (individual.hasValue('v-s:parentUnit')) {
-      var parentUnit = individual['v-s:parentUnit'][0].id;
-      var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+parentUnit+"'";
-      var tmpl = $('<div><veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown margin-sm"></veda-control></div>');
-      var container = $("#select-Occupation", template);
-      container.empty();
-      tmpl.children().first().attr('data-query-prefix', occupQueryPrefixString);
-      individual.present(container, tmpl.get(0), 'edit');
-      template.trigger("validate");
-    } else {
-      var parentUnitQueryPrefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='"+parentOrganization+"') || '@'==='"+parentOrganization+"'";
-      $("#select-ParentUnit", template).attr('data-query-prefix', parentUnitQueryPrefix);
-    }
+  
+  var occupationQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
+  if (individual.hasValue("v-s:parentUnit")) {
+    var parentUnit = individual['v-s:parentUnit'][0].id;
+    occupationQueryPrefixString+=" && 'v-s:parentUnit'=='"+parentUnit+"'";
   }
-  parentUnitHandler();
-  individual.on("v-s:parentUnit", parentUnitHandler);
-  template.one("remove", function(){
-    individual.off("v-s:parentUnit", parentUnitHandler);
-  })
+  $('#select-Occupation veda-control', template).attr('data-query-prefix', occupationQueryPrefixString);
 
+  // function parentUnitHandler() {
+  //   if (individual.hasValue('v-s:parentUnit')) {
+  //     var parentUnit = individual['v-s:parentUnit'][0].id;
+  //     var occupQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentUnit'=='"+parentUnit+"'";
+  //     var tmpl = $('<div><veda-control data-type="link" rel="v-s:occupation" class="fulltext dropdown"></veda-control></div>');
+  //     var container = $("#select-Occupation", template);
+  //     container = container.empty();
+  //     tmpl.children().first().attr('data-query-prefix', occupQueryPrefixString);
+  //     individual.present(container, tmpl.get(0), 'edit');
+  //     // template.trigger("validate");
+  //   }
+  // }
+  // parentUnitHandler();
+  // individual.on("v-s:parentUnit", parentUnitHandler);
+  // template.one("remove", function(){
+  //   individual.off("v-s:parentUnit", parentUnitHandler);
+  // })
+  
 //# sourceURL=v-s:NewAppointmentTemplate_pre
 </script>
 <div class="container sheet">
@@ -827,7 +831,7 @@ v-s:NewAppointmentTemplate
   <div id="mainProperties">
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
-    <veda-control id="select-ParentUnit" rel="v-s:parentUnit" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+    <veda-control id="select-ParentUnit" rel="v-s:parentUnit" data-query-prefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}') || '@'==='{individual['v-s:parentOrganization'][0].id}'" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
     <hr class="view -edit -search">
     <div class="row">
       <div class="col-md-6">

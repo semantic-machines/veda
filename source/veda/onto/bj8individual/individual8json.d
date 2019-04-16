@@ -22,6 +22,7 @@ static this() {
         "Datetime":DataType.Datetime,
         "Decimal":DataType.Decimal,
         "Boolean":DataType.Boolean,
+        "Binary":DataType.Binary,
     ];
 }
 
@@ -159,6 +160,10 @@ JSONValue resource_to_json(Resource resource)
     {
         resource_json[ "data" ] = data;
     }
+    else if (resource.type == DataType.Binary)
+    {
+        resource_json[ "data" ] = data;
+    }
     else if (resource.type == DataType.String)
     {
         resource_json[ "data" ] = data;
@@ -239,6 +244,10 @@ Resource json_to_resource(JSONValue resource_json)
             }
         }
         else if (type == DataType.Uri)
+        {
+            resource.data = resource_json.getString("data");
+        }
+        else if (type == DataType.Binary)
         {
             resource.data = resource_json.getString("data");
         }
