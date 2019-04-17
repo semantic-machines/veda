@@ -2727,6 +2727,11 @@ v-ui:json
     individual.isSync(false);
   });
 
+  // Mark not sync to force update on save
+  template.on("edit", function () {
+    individual.isSync(false);
+  });
+
   individual.on("afterReset", resetView);
   template.one("remove", function () {
     individual.off("afterReset", resetView);
