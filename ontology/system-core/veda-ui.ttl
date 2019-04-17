@@ -1864,7 +1864,7 @@ v-ui:SimplifiedJournalTemplate
     var tasks = veda.Backend.query({
       ticket: veda.ticket,
       query: "'rdf:type'=='v-wf:DecisionForm' && 'v-wf:onDocument'=='" + doc_uri + "'",
-      sort: "'v-s:created' asc"
+      sort: "'v-s:created' desc"
     })
     .then(function (query_res) {
       var tasks_uris = query_res.result;
@@ -1921,7 +1921,7 @@ v-ui:SimplifiedJournalTemplate
           <th width="15%" about="v-wf:from" property="rdfs:label"></th>
           <th width="15%" about="v-wf:to" property="rdfs:label"></th>
           <th width="25%" about="v-s:description" property="rdfs:label"></th>
-          <th width="15%"><span about="v-s:created" property="rdfs:label"></span> <span>&uarr;</span></th>
+          <th width="15%" about="v-s:created" property="rdfs:label"></th>
           <th about="v-wf:takenDecision" property="rdfs:label"></th>
         </tr>
       </thead>
