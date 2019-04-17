@@ -5,7 +5,7 @@ TIMESTAMP=`date +%Y-%m-%d_%H_%M`
 #mkdir ./logs/$TIMESTAMP
 #cp ./logs/*-stderr.log ./logs/$TIMESTAMP
 
-start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
+start-stop-daemon -Kp $PWD/.pids/veda-pid
 
 target=".pids/"
 
