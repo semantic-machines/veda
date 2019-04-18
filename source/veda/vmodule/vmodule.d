@@ -125,7 +125,7 @@ class VedaModule : VedaModuleBasic
         prepare_batch_queue = new Queue(uris_db_path, "uris-db", Mode.R, log);
         prepare_batch_queue.open();
 
-        if (prepare_batch_queue.isReady)
+        if (prepare_batch_queue.is_ready)
         {
             prepare_batch_cs = new Consumer(prepare_batch_queue, tmp_path, process_name, Mode.RW, log);
             if (!prepare_batch_cs.open(is_open_exists_batch))
@@ -191,7 +191,7 @@ class VedaModule : VedaModuleBasic
         main_queue = new Queue(main_queue_path, main_queue_name, Mode.R, log);
         main_queue.open();
 
-        while (!main_queue.isReady)
+        while (!main_queue.is_ready)
         {
             log.trace("queue [%s] not ready, sleep and repeate...", main_queue_name);
             Thread.sleep(dur!("seconds")(10));
@@ -284,7 +284,7 @@ class VedaModule : VedaModuleBasic
             main_queue.open();
             main_queue.get_info_queue();
 
-            if (main_queue.isReady == false)
+            if (main_queue.is_ready == false)
             {
                 log.trace("ERR! vmodule: queue %s not ready, sleep %d s and repeate...", main_queue.get_name(), timeout);
                 Thread.sleep(dur!("seconds")(timeout));
@@ -304,7 +304,7 @@ class VedaModule : VedaModuleBasic
 
             string data = main_cs[ i ].pop();
 
-            if (main_cs[ i ].isReady == false && main_cs[ i ].status == QueueCode.ConsumerIdNotEqual)
+            if (main_cs[ i ].is_ready == false && main_cs[ i ].status == QueueCode.ConsumerIdNotEqual)
             {
                 // need recreate consumer
                 break;
