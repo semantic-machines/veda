@@ -98,7 +98,7 @@ veda.Module(function (veda) { "use strict";
   // Triggered in veda.start()
   veda.one("started", function () {
     var welcome;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
+    if (veda.user.hasValue("v-s:origin", "ExternalUser")) {
       welcome = (new veda.IndividualModel("cfg:WelcomeExternal"))["rdf:value"][0];
     } else {
       welcome = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
@@ -154,7 +154,7 @@ veda.Module(function (veda) { "use strict";
 
   veda.on("started", function () {
     var layout;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
+    if (veda.user.hasValue("v-s:origin", "ExternalUser")) {
       layout = (new veda.IndividualModel("cfg:LayoutExternal"))["rdf:value"][0];
     } else {
       layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
