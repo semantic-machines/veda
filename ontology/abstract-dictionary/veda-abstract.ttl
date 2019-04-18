@@ -70,6 +70,15 @@ v-s:creator
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Thing ;
 .
+v-s:Pscreator
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Thing ;
+  v-ui:forProperty v-s:creator;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:official'=='true')"^^xsd:string ;
+  rdfs:label "Спецификация к свойству v-s:creator для класса v-s:Thing"@ru ;
+  rdfs:label "Spec for property v-s:creator for class v-s:Thing"@en ;
+.
+
 v-s:lastEditor
   rdf:type owl:ObjectProperty ;
   rdfs:label "Последний редактор"@ru ;
