@@ -317,10 +317,13 @@ class Consumer
             return null;
         }
 
-        if (queue.get_info_push(id) == false)
+        if (count_popped >= queue.count_pushed &&)
         {
-            log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
-            return null;
+            if (queue.get_info_push(id) == false)
+            {
+                log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
+                return null;
+            }
         }
 
         if (count_popped >= queue.count_pushed)
