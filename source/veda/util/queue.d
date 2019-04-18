@@ -317,7 +317,7 @@ class Consumer
             return null;
         }
 
-        if (count_popped >= queue.count_pushed &&)
+        if (count_popped >= queue.count_pushed)
         {
             if (queue.get_info_push(id) == false)
             {
