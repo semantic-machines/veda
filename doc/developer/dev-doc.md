@@ -981,20 +981,18 @@ vm_id = id машины исполнения скриптов (V8.LowPriority/V8
 indv_run_at = обрабатываемая_сущность.getFirstLiteral("v-s:runAt");
 
 цикл по скриптам
+
 {
-		script_run_at = скрипт.getFirstLiteral("v-s:runAt");
+  script_run_at = скрипт.getFirstLiteral("v-s:runAt");
+  if (обрабатываемая_сущность создан пользователем (а не скриптом) == true)
+  {
+    if (indv_run_at !is null && indv_run_at != vm_id)
+      continue;
+    else if (indv_run_at is null && script_run_at != vm_id)
+      continue;
+  }
 
-​```
-            if (обрабатываемая_сущность создан пользователем (а не скриптом) == true)
-            {
-                if (indv_run_at !is null && indv_run_at != vm_id)
-                    continue;
-                else if (indv_run_at is null && script_run_at != vm_id)
-                    continue;
-            }
-
-исполнение скрипта
-​```
+  исполнение скрипта
 
 }
 ```
