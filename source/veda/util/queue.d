@@ -98,7 +98,7 @@ enum QueueCode : int
 
 class Consumer
 {
-    public bool      isReady;
+    public bool      is_ready;
     public QueueCode status;
     public string    name;
     public uint      count_popped;
@@ -155,9 +155,9 @@ class Consumer
         if (_mode != Mode.DEFAULT)
             mode = _mode;
 
-        if (!queue.isReady)
+        if (!queue.is_ready)
         {
-            isReady = false;
+            is_ready = false;
             return false;
         }
 
@@ -178,9 +178,9 @@ class Consumer
 
         ff_info_pop_r = new File(file_name_info_pop, "r");
 
-        isReady = get_info();
+        is_ready = get_info();
 
-        return isReady;
+        return is_ready;
     }
 
     public void close()
@@ -197,7 +197,7 @@ class Consumer
             ff_info_pop_r.close();
             ff_info_pop_r = null;
         }
-        isReady = false;
+        is_ready = false;
     }
 
     public void reopen()
@@ -215,7 +215,7 @@ class Consumer
 
     private bool put_info(bool is_sync_data)
     {
-        if (!queue.isReady || !isReady || mode == Mode.R)
+        if (!queue.is_ready || !is_ready || mode == Mode.R)
             return false;
 
         id = queue.get_id();
@@ -238,7 +238,7 @@ class Consumer
 
     public bool get_info()
     {
-        if (!queue.isReady)
+        if (!queue.is_ready)
             return false;
 
         if (ff_info_pop_r is null)
@@ -255,7 +255,7 @@ class Consumer
             string[] ch = str.split(';');
             if (ch.length != 5 && ch.length != 6)
             {
-                isReady = false;
+                is_ready = false;
                 return false;
             }
 
@@ -263,7 +263,7 @@ class Consumer
             if (_name != queue.name)
             {
                 log.trace("consumer:get_info:queue name from info [%s] != consumer.queue.name[%s]", _name, queue.name);
-                isReady = false;
+                is_ready = false;
                 return false;
             }
 
@@ -271,7 +271,7 @@ class Consumer
             if (_name != name)
             {
                 log.trace("consumer:get_info:consumer name from info[%s] != consumer.name[%s]", _name, name);
-                isReady = false;
+                is_ready = false;
                 return false;
             }
 
@@ -285,7 +285,7 @@ class Consumer
                 //if (id != queue.id)
                 //{
                 //    log.trace("consumer:get_info:consumer.id [%d] != queue.id [%d]", id, queue.id);
-                //    isReady = false;
+                //    is_ready = false;
                 //    status  = QueueCode.ConsumerIdNotEqual;
                 //    return false;
                 //}
@@ -299,13 +299,13 @@ class Consumer
 
     public string pop()
     {
-        if (!queue.isReady)
+        if (!queue.is_ready)
         {
             log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
             return null;
         }
 
-        if (!isReady)
+        if (!is_ready)
         {
             log.trace("ERR! queue:consumer:pop, consumer %s not ready", name);
             return null;
@@ -398,9 +398,9 @@ class Consumer
 
     public bool commit_and_next(bool is_sync_data)
     {
-        if (!queue.isReady || !isReady || mode == Mode.R)
+        if (!queue.is_ready || !is_ready || mode == Mode.R)
         {
-            log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
+            log.trace("ERR! queue:commit_and_next:!queue.is_ready || !is_ready");
             return false;
         }
 
@@ -450,7 +450,7 @@ class Consumer
 
 class Queue
 {
-    bool            isReady;
+    bool            is_ready;
     uint            count_pushed;
 
     private ubyte[] buff;
@@ -494,7 +494,7 @@ class Queue
         mode                 = _mode;
         path                 = _path;
         name                 = _name;
-        isReady              = false;
+        is_ready              = false;
         buff                 = new ubyte[ 4096 * 100 ];
         header_buff          = new ubyte[ header.length() ];
         file_name_info_queue = path ~ "/" ~ name ~ "_info_queue";
@@ -540,7 +540,7 @@ class Queue
     {
         try
         {
-            if (isReady == false)
+            if (is_ready == false)
             {
                 if (_mode != Mode.DEFAULT)
                     mode = _mode;
@@ -563,9 +563,9 @@ class Queue
 
                     if (ff_lock_w.tryLock(LockType.readWrite) == false)
                     {
-                        isReady = false;
+                        is_ready = false;
                         log.trace("ERR! queue %s already open", name);
-                        return isReady;
+                        return is_ready;
                     }
                     ff_lock_w.flush();
 
@@ -621,13 +621,13 @@ class Queue
                 }
 
                 if (mode == Mode.RW && ff_info_push_w !is null && ff_info_queue_w !is null && ff_queue_w !is null)
-                    isReady = true;
+                    is_ready = true;
 
                 if (mode == Mode.R)
                 {
 //                        get_info_queue();
 
-                    isReady = true;
+                    is_ready = true;
                 }
             }
         }
@@ -636,10 +636,10 @@ class Queue
             log.trace("ERR! queue, not open: ex: %s", ex.msg);
         }
 
-        if (isReady == false)
+        if (is_ready == false)
             log.trace("ERR! queue %s, not open", name);
 
-        return isReady;
+        return is_ready;
     }
 
     private File *get_r_queue_file(int part_id)
@@ -658,7 +658,7 @@ class Queue
 
     public void close()
     {
-        if (isReady == true)
+        if (is_ready == true)
         {
             //writeln("queue_close:", file_name_queue);
 
@@ -693,13 +693,13 @@ class Queue
                 ff_queue_w.close();
                 ff_queue_w = null;
             }
-            isReady = false;
+            is_ready = false;
         }
     }
 
     private void put_info_queue(bool is_check_ready = true)
     {
-        if ((is_check_ready && !isReady) || mode == Mode.R)
+        if ((is_check_ready && !is_ready) || mode == Mode.R)
             return;
 
         ff_info_queue_w.seek(0);
@@ -718,7 +718,7 @@ class Queue
 
     public bool get_info_queue(bool is_check_ready = true)
     {
-        if (is_check_ready && !isReady)
+        if (is_check_ready && !is_ready)
             return false;
 
         if (ff_info_queue_r is null)
@@ -729,7 +729,7 @@ class Queue
             }
             catch (Throwable tr)
             {
-                isReady = false;
+                is_ready = false;
                 log.trace("ERR! queue:get_info: fail open file %s", path ~ "/" ~ name ~ "_info_queue");
                 return false;
             }
@@ -744,14 +744,14 @@ class Queue
             string[] ch = str[ 0..$ - 1 ].split(';');
             if (ch.length != 3)
             {
-                isReady = false;
+                is_ready = false;
                 log.trace("ERR! queue:get_info_queue: invalid info record %s", str);
                 return false;
             }
 
             if (ch[ 0 ] != name)
             {
-                isReady = false;
+                is_ready = false;
                 log.trace("ERR! queue:get_info_queue: request queue name %s not equal exist name %s", name, ch[ 0 ]);
                 return false;
             }
@@ -765,7 +765,7 @@ class Queue
 
     private void put_info_push(bool is_check_ready = true)
     {
-        if ((is_check_ready && !isReady) || mode == Mode.R)
+        if ((is_check_ready && !is_ready) || mode == Mode.R)
             return;
 
         ff_info_push_w.seek(0);
@@ -783,7 +783,7 @@ class Queue
 
     public bool get_info_push(int part_id, bool is_check_ready = true)
     {
-        if (is_check_ready && !isReady)
+        if (is_check_ready && !is_ready)
             return false;
 
         if (id != part_id || ff_info_push_r is null)
@@ -796,7 +796,7 @@ class Queue
             }
             catch (Throwable tr)
             {
-                isReady = false;
+                is_ready = false;
                 log.trace("ERR! queue:get_info: fail open file %s", file_name_info_push);
                 return false;
             }
@@ -811,7 +811,7 @@ class Queue
             string[] ch = str[ 0..$ - 1 ].split(';');
             if (ch.length != 4)
             {
-                isReady = false;
+                is_ready = false;
                 log.trace("ERR! queue:get_info: invalid info record %s", str);
                 return false;
             }
@@ -820,7 +820,7 @@ class Queue
 
             if (ch[ 0 ] != name)
             {
-                isReady = false;
+                is_ready = false;
                 log.trace("ERR! queue:get_info: %s not equal %s", ch[ 0 ], name);
                 return false;
             }
@@ -887,9 +887,9 @@ class Queue
 
     public void push(string msg, bool is_flush = true, QMessageType type = QMessageType.STRING)
     {
-        if (!isReady || mode == Mode.R)
+        if (!is_ready || mode == Mode.R)
         {
-            log.trace("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text(isReady), text(mode));
+            log.trace("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text(is_ready), text(mode));
             return;
         }
 
@@ -912,12 +912,12 @@ unittest
 
     Queue  queue = new Queue("queue1" ~ randomUUID().toString(), Mode.RW, log);
     queue.open(Mode.RW);
-    assert(queue.isReady);
+    assert(queue.is_ready);
 
     Consumer cs = new Consumer(queue, "consumer1", log);
     cs.open();
 
-    assert(cs.isReady);
+    assert(cs.is_ready);
 
     Individual new_indv_A1 = generate_new_test_individual();
     string     binobj      = new_indv_A1.serialize();
