@@ -1275,7 +1275,7 @@ veda.Workflow.create_new_journal = function(ticket, new_journal_uri, parent_jour
   veda.Workflow.getSystemUrl = function (var_to) {
       var userTo = get_individual(ticket, var_to[0].data);
       var isExternal = false;
-      if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="External User") {
+      if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="ExternalUser") {
           isExternal = true;
       };
       var systemIndivid = isExternal ? veda.Util.newUri ('cfg:SystemInfoExternal') : veda.Util.newUri ('v-s:vedaInfo');
@@ -1285,7 +1285,7 @@ veda.Workflow.create_new_journal = function(ticket, new_journal_uri, parent_jour
   veda.Workflow.getInboxUrl = function (var_to) {
       var userTo = get_individual(ticket, var_to[0].data);
       var isExternal = false;
-      if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="External User") {
+      if (userTo["v-s:origin"] && userTo["v-s:origin"][0].data ==="ExternalUser") {
           isExternal = true;
       };
       var systemIndivid = isExternal ? veda.Util.newUri ('cfg:SystemInfoExternal') : veda.Util.newUri ('v-s:vedaInfo');
