@@ -121,9 +121,9 @@ veda.Module(function (veda) { "use strict";
 
   // Triggered in veda.start()
   veda.on("started", function () {
-    var layout_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:LayoutExternal" : "cfg:Layout" ;
+    var layout_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:LayoutExternal" : "cfg:Layout" ;
     var layout_param = new veda.IndividualModel( layout_param_uri );
-    var welcome_param_uri = veda.user.hasValue("v-s:origin", "External User") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
+    var welcome_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:WelcomeExternal" : "cfg:Welcome" ;
     var welcome_param = new veda.IndividualModel( welcome_param_uri );
 
     layout_param.load()
