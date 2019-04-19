@@ -83,12 +83,12 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			//Check its field v-s:origin
 
 			origin, ok := getFirstString(user, "v-s:origin")
-			if !ok || (ok && origin != "External User") {
+			if !ok || (ok && origin != "ExternalUser") {
 				//If this field not found or it contains false then return error code
 				log.Printf("ERR! user (%s) is not external, user_indv=%v\n", ticket.UserURI, user)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
-			} else if ok && origin == "External User" {
+			} else if ok && origin == "ExternalUser" {
 				//Else store ticket to cache
 				log.Printf("user is external (%s)\n", ticket.UserURI)
 			}

@@ -562,7 +562,7 @@ position_uris.map(function (position_uri) {
       "v-s:parentOrganization": veda.Util.newUri(parent_uri),
       "v-s:dateFrom": dateFrom,
       "v-s:dateTo": dateTo,
-      "v-s:official": veda.Util.newBool(true),
+      //"v-s:official": veda.Util.newBool(true),
       "v-s:origin": veda.Util.newStr(request_type === "v-s:RequestDelegationUser" ? "user" : "admin"),
       "v-s:deleted": veda.Util.newBool(!isActual),
       "rdfs:comment": veda.Util.newStr("создано cfg:Event_Delegation")

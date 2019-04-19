@@ -93,7 +93,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		user := rr.GetIndv(0)
 		origin, ok := getFirstString(user, "v-s:origin")
 
-		if !ok || (ok && origin != "External User") {
+		if !ok || (ok && origin != "ExternalUser") {
 			//if v-s:origin not found or value is false than return NotAuthorized
 			log.Printf("ERR! login (%v) is not external, user_indv=%v\n", request["login"], user)
 			authResponse["end_time"] = 0
@@ -101,7 +101,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 			authResponse["user_uri"] = ""
 			authResponse["result"] = NotAuthorized
 			ctx.SetStatusCode(int(NotAuthorized))
-		} else if ok && origin == "External User" {
+		} else if ok && origin == "ExternalUser" {
 			//else set externals users ticket id to true valuse
 			//			externalUsersTicketId[authResponse["user_uri"].(string)] = true
 			ctx.SetStatusCode(int(Ok))

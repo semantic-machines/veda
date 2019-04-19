@@ -451,7 +451,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         string origin     = iuser.getFirstLiteral("v-s:origin");
         string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
 
-        //if (origin !is null && origin == "External User")
+        //if (origin !is null && origin == "ExternalUser")
         if (secret !is null && secret.length > 5)
         {
             if (old_secret is null)
