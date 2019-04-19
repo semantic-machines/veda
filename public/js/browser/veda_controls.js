@@ -1558,7 +1558,7 @@
         control = $(opts.template),
         spec = opts.spec,
         individual = opts.individual,
-        rel_uri = opts.rel_uri,
+        rel_uri = opts.property_uri,
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
         range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
