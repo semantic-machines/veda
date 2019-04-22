@@ -679,6 +679,47 @@ veda.Module(function (veda) { "use strict";
             };
           })();
 
+          var putValueFrom = (function()
+          {
+            return function(name, path, transform)
+            {
+              var out_data0_el_arr = out_data0_el[name];
+              if (!out_data0_el_arr)
+                out_data0_el_arr = [];
+
+              var element_uri;
+
+              if (Array.isArray(element) === true)
+                element_uri = veda.Util.getUri (element);
+              else
+                element_uri = element.data ? element.data : element;
+
+              var curelem;
+
+              curelem = veda.Backend.get_individual({
+                ticket: veda.ticket,
+                uri: element_uri,
+                async: false
+              });
+
+              for (var i = 0; i < path.length - 1; i++)
+              {
+                if (!curelem || !curelem[path[i]]) return;
+                var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
+                curelem = veda.Backend.get_individual({
+                  ticket: veda.ticket,
+                  uri: uri,
+                  async: false
+                });
+              }
+              if (!curelem || !curelem[path[path.length - 1]]) return;
+
+              out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
+
+              out_data0_el[name] = out_data0_el_arr;
+            };
+          })();
+
           var putFrontValue = (function()
           {
             return function(name)
