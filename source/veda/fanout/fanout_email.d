@@ -372,10 +372,10 @@ class FanoutProcess : VedaModule
                     }
                     else
                     {
-                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                        email_from = extract_email(sticket, null, from, from_label).getFirstString();
 
                         if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)
-                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+                            email_from = extract_email(sticket, null, default_mail_sender, from_label).getFirstString();
 
                         if ((email_from is null || email_from.length < 5) && senderMailbox !is null)
                             email_from = senderMailbox;
