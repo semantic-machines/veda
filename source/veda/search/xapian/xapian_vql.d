@@ -769,7 +769,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     if (err == -1)
-                        sr.result_code = ResultCode.DatabaseModifiedError;
+                        break;
                     else
                         sr.result_code = ResultCode.InternalServerError;
 
@@ -790,7 +790,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     if (err == -1)
-                        sr.result_code = ResultCode.DatabaseModifiedError;
+						break;
                     else
                         sr.result_code = ResultCode.InternalServerError;
 
