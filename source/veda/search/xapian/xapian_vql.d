@@ -838,6 +838,14 @@ class XapianVQL
 
                 acl_db_reopen = false;
 
+                auto authorize_time = sw_az.peek.total !"msecs";
+
+                if (authorize_time > 5000)
+                {
+					log.trace("WARN! authorization time > 5 s, break iterator loop, user_uri=[%s]", user_uri);					
+					break;
+				}
+
                 it.next(&err);
             }
 
