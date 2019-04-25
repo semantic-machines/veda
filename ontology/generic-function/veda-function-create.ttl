@@ -167,37 +167,61 @@ var stopList = [
 ];
 
 this.initBlank = function () {
-  if (self.object) { return; }
-  self.object = new veda.IndividualModel();
-  self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
-  Object.keys(self.properties).map( function (property_uri) {
-    if ( stopList.indexOf(property_uri) >= 0 ) { return; }
-    if ( self.hasValue(property_uri) && self.get(property_uri)[0] instanceof veda.IndividualModel && self.get(property_uri)[0].hasValue("rdf:type", "v-fc:Blank") ) {
-      self.object.set(property_uri, self.get(property_uri).map(function (item) {
-        // Embedded blanks are for v-s:Embedded objects only
-        // Prevent mutual v-s:parent links
-        item.initBlank();
-        if ( item.object.is("v-s:Embedded") && property_uri !== "v-s:parent" ) {
-          item.object["v-s:parent"] = [ self.object ];
-        }
-        return item.object;
-      }));
-    } else {
-      self.object.set(property_uri, self.get(property_uri).slice(0));
+  return new Promise(function (resolve, reject) {
+    if (self.object) {
+      resolve(self.object);
     }
-  });
-  self.object.one("afterSave afterReset", function () {
-    delete self.object;
+    self.object = new veda.IndividualModel();
+    self.object["rdf:type"] = self["v-fc:targetType"].slice(0);
+    self.object.one("afterSave afterReset", function () {
+      delete self.object;
+    });
+    var relations = Object.keys(self.properties).filter( function (property_uri) {
+      if ( stopList.indexOf(property_uri) >= 0 ) { return false; }
+      if ( self.get(property_uri)[0] instanceof veda.IndividualModel) {
+        return true;
+      } else {
+        self.object.set(property_uri, self.get(property_uri).slice(0));
+        return false;
+      }
+    });
+    var relations_done_promises = relations.map(function (property_uri) {
+      var values_promises = self.get(property_uri).map(function (value) {
+        return value.load();
+      });
+      return Promise.all(values_promises).then(function (values) {
+        var result_values_promises = values.map(function (value) {
+          if (value.hasValue("rdf:type", "v-fc:Blank")) {
+            return value.initBlank().then(function (blankObject) {
+              blankObject.is("v-s:Embedded").then(function (isEmbedded) {
+                if ( isEmbedded && property_uri !== "v-s:parent" ) {
+                  blankObject["v-s:parent"] = [ self.object ];
+                }
+              });
+              return blankObject;
+            });
+          } else {
+            return value;
+          }
+        });
+        return Promise.all(result_values_promises).then(function (result_values) {
+          self.object.set(property_uri, result_values);
+        });
+      });
+    });
+    Promise.all(relations_done_promises).then(function () {
+      resolve(self.object);
+    });
   });
 }
 
 this.updateBlank = function () {
   var blank = this;
-  Object.getOwnPropertyNames(blank.object.properties).map( function (property_uri) {
+  Object.keys(blank.object.properties).map( function (property_uri) {
     if ( stopList.indexOf(property_uri) >= 0 ) { return; }
     if ( blank.object.hasValue(property_uri) && blank.object.get(property_uri)[0] instanceof veda.IndividualModel && blank.object.get(property_uri)[0].is("v-s:Embedded")) {
       var valuesPromises = blank.object.get(property_uri).map(function (value) {
-        return item.clone().then(function (embeddedBlank) {
+        return value.clone().then(function (embeddedBlank) {
           var types = embeddedBlank["rdf:type"];
           embeddedBlank["v-fc:targetType"] = types;
           embeddedBlank["rdf:type"] = [ new veda.IndividualModel("v-fc:Blank") ];
