@@ -37,7 +37,7 @@ veda.Module(function (veda) { "use strict";
           };
           return $.ajax(params);
         } else {
-          throw new Error("No ntlm");
+          throw error;
         }
       })
       .then(handleLoginSuccess)
@@ -61,7 +61,7 @@ veda.Module(function (veda) { "use strict";
     var login = $("#login", loginForm).val(),
       secret = "?";
 
-    veda.login(login, hash, secret)
+    veda.login(login, undefined, secret)
       .then(handleLoginSuccess)
       .catch(handleLoginError);
   });
