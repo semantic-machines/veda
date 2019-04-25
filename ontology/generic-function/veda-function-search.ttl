@@ -259,11 +259,13 @@ v-fs:AttributiveSearchModel
     if ( self.hasValue("v-fs:searchBlank") ) {
       return self["v-fs:searchBlank"][0].load()
         .then(function (searchBlank) {
-          searchBlank.initBlank();
+          return searchBlank.initBlank();
+        })
+        .then(function (blankObject) {
           if ( queryString.length ) {
             queryString += " && "
           }
-          return queryString += veda.Util.queryFromIndividual(self["v-fs:searchBlank"][0].object);
+          return queryString += veda.Util.queryFromIndividual(blankObject);
         })
         .then(performQuery.bind(self));
     } else {
@@ -1020,23 +1022,24 @@ v-fs:AttributiveSearchInlineTemplate
   }
 
   function setupBlank () {
-    searchBlank.initBlank();
-    searchBlank.object.on("search", formHandler);
-    searchBlank.object.on("propertyModified", hideResults);
-    template.one("remove", function () {
-      searchBlank.object.off("search", formHandler);
-      searchBlank.object.off("propertyModified", hideResults);
-    });
-    if ( searchBlankTemplate && searchBlankContainer.length ) {
-      searchBlankContainer.empty();
-      searchBlank.object.present(searchBlankContainer, searchBlankTemplate, "search");
-    }
-    // Populate blank with extra parameters from URL
-    if (extra) {
-      for (var property_uri in extra) {
-        searchBlank.object[property_uri] = extra[property_uri];
+    searchBlank.initBlank().then(function (blankObject) {
+      blankObject.on("search", formHandler);
+      blankObject.on("propertyModified", hideResults);
+      template.one("remove", function () {
+        blankObject.off("search", formHandler);
+        blankObject.off("propertyModified", hideResults);
+      });
+      if ( searchBlankTemplate && searchBlankContainer.length ) {
+        searchBlankContainer.empty();
+        blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
       }
-    }
+      // Populate blank with extra parameters from URL
+      if (extra) {
+        for (var property_uri in extra) {
+          blankObject[property_uri] = extra[property_uri];
+        }
+      }
+    });
   }
 
   function hideResults () {
