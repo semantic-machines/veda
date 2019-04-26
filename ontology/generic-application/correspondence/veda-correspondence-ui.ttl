@@ -606,17 +606,19 @@ v-s:LetterRegistrationRecordTemplate
   }
 
   function typeHandler () {
-    if ( this.is("v-s:LetterRegistrationRecordEnumerated") ) {
-      var autoBundle = new veda.IndividualModel("v-s:AutomaticallyBundle");
-      autoBundle.load().then(function (autoBundle) {
-        $("input", template).attr("placeholder", autoBundle["rdfs:label"].join(" "));
-      });
-    } else {
-      var manualBundle = new veda.IndividualModel("v-s:ManuallyBundle");
-      manualBundle.load().then(function (manualBundle) {
-        $("input", template).attr("placeholder", manualBundle["rdfs:label"].join(" "));
-      });
-    }
+    this.is("v-s:LetterRegistrationRecordEnumerated").then(function (isEnumerated) {
+      if (isEnumerated ) {
+        var autoBundle = new veda.IndividualModel("v-s:AutomaticallyBundle");
+        autoBundle.load().then(function (autoBundle) {
+          $("input", template).attr("placeholder", autoBundle["rdfs:label"].join(" "));
+        });
+      } else {
+        var manualBundle = new veda.IndividualModel("v-s:ManuallyBundle");
+        manualBundle.load().then(function (manualBundle) {
+          $("input", template).attr("placeholder", manualBundle["rdfs:label"].join(" "));
+        });
+      }
+    });
   }
 
   if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
