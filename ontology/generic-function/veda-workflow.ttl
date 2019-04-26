@@ -1624,24 +1624,19 @@ v-wf:DecisionFormTemplate
   v-ui:template """
 <div class="hidden"></div>
 <script>
-  var timeout = setTimeout(function () {
-    individual.rights.then(function (rights) {
-      if ( !individual.hasValue("v-wf:read") && rights.hasValue("v-s:canUpdate", true) ) {
-        veda.Backend.set_in_individual({
-          ticket: veda.ticket,
-          individual: {
-            "@": individual.id,
-            "v-wf:read": [{
-              data: true,
-              type: "Boolean"
-            }]
-          }
-        });
-      }
-    });
-  }, 250);
-  template.one("remove", function () {
-    clearTimeout(timeout);
+  individual.canUpdate().then(function (canUpdate) {
+    if ( canUpdate && !individual.hasValue("v-wf:read", true) ) {
+      return veda.Backend.set_in_individual({
+        ticket: veda.ticket,
+        individual: {
+          "@": individual.id,
+          "v-wf:read": [{
+            data: true,
+            type: "Boolean"
+          }]
+        }
+      });
+    }
   });
   //# sourceURL=v-wf:DecisionFormTemplate
 </script>
