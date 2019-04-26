@@ -381,10 +381,12 @@ veda.Module(function (veda) { "use strict";
     template.find("[title]:not([rel] *):not([about] *)").addBack("[style*='@']:not([rel] *):not([about] *)").map( function () {
       var self = $(this);
       var title = self.attr("title");
-      var titleIndividual = new veda.IndividualModel(title);
-      titleIndividual.load().then(function (titleIndividual) {
-        self.attr("title", titleIndividual);
-      });
+      if ( (/^(\w|-)+:.*?$/).test(title) ) {
+        var titleIndividual = new veda.IndividualModel(title);
+        titleIndividual.load().then(function (titleIndividual) {
+          self.attr("title", titleIndividual);
+        });
+      }
     });
 
     // Property values
@@ -700,11 +702,18 @@ veda.Module(function (veda) { "use strict";
           control.popover("destroy");
         } else {
           control.addClass("has-error");
+          var explanation;
+          var causesPromises = validation[property_uri].cause.map(function (cause_uri) {
+            return new veda.IndividualModel(cause_uri).load();
+          });
+          Promise.all(causesPromises).then(function (causes) {
+            explanation = causes.map(function (cause) {
+              return cause["rdfs:comment"].join(", ");
+            }).join("\n");
+          });
           control.popover({
             content: function () {
-              return validation[property_uri].cause.map(function (cause_uri) {
-                return (new veda.IndividualModel(cause_uri))["rdfs:comment"].join(", ");
-              }).join("\n");
+              return explanation;
             },
             container: control,
             trigger: "hover focus",
