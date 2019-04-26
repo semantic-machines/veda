@@ -2558,10 +2558,11 @@ v-ui:TreeTemplate
 
   // Render tree
   individual.treeConfig.root.forEach( function (root, index, roots) {
-    renderRow(root.id);
-    if (roots.length === 1) {
-      tbody.find(".expand").click();
-    }
+    renderRow(root.id).then(function () {
+      if (roots.length === 1) {
+        tbody.find(".expand").click();
+      }
+    });
   });
 
   function getChildren(acc, root, goDeeper) {
