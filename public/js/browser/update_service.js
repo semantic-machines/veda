@@ -72,6 +72,7 @@ veda.Module(function (veda) { "use strict";
       uris = uris.split(",");
       for (var i = 0; i < uris.length; i++) {
         try {
+          var tmp = uris[i].split("=");
           var uri = tmp[0];
           if ( !uri ) {
             continue;
