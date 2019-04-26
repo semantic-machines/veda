@@ -739,14 +739,21 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:SelectValueBundle"),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
       isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
       withDeleted = false || this.data("deleted");
 
-    populate();
+    if (placeholder instanceof veda.IndividualModel) {
+      placeholder.load().then(function (placeholderLoaded) {
+        placeholder = placeholderLoaded.toString();
+        populate();
+      });
+    } else {
+      populate();
+    }
 
     select.on("focusin", function () {
       populate();
@@ -1669,7 +1676,7 @@
       template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
       individual = opts.individual,
       spec = opts.spec,
-      placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" ") ),
+      placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle")),
       queryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined ),
       sort = this.data("sort") || spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
@@ -1867,10 +1874,19 @@
     var fulltextMenu = $(".fulltext-menu", control);
     if ( this.hasClass("fulltext") || this.hasClass("full") ) {
 
-      fulltext.attr({
-        "placeholder": placeholder,
-        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
-      });
+      if (placeholder instanceof veda.IndividualModel) {
+        placeholder.load().then(function (placeholder) {
+          fulltext.attr({
+            "placeholder": placeholder.toString(),
+            "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+          });
+        });
+      } else {
+        fulltext.attr({
+          "placeholder": placeholder,
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+        });
+      }
 
       autosize(fulltext);
       this.on("edit", function () {
