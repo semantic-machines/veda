@@ -133,7 +133,7 @@ v-s:hasFireTechnicalMinimumCertificate
 v-s:hasElectricalSafetyCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверение/протокол по электробезопасности 2,3,4,5 до 1000 в. и более"@ru ;
+  rdfs:label "Удостоверение/протокол по электробезопасности 2,3,4,5 гр."@ru ;
   rdfs:label "Electrical safety certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
@@ -203,7 +203,7 @@ v-s:hasHoistmanCertificate
 v-s:hasSpidermanCertificate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:EmployeeProfile ;
-  rdfs:label "Удостоверение/протокол промышленный альпенизм"@ru ;
+  rdfs:label "Удостоверение/протокол промышленный альпинизм"@ru ;
   rdfs:label "Spiderman certificate"@en ;
   rdfs:range v-s:CertificationDocument ;
 .
