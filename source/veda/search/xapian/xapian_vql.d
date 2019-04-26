@@ -769,7 +769,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     if (err == -1)
-                        sr.result_code = ResultCode.DatabaseModifiedError;
+                        break;
                     else
                         sr.result_code = ResultCode.InternalServerError;
 
@@ -790,7 +790,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     if (err == -1)
-                        sr.result_code = ResultCode.DatabaseModifiedError;
+						break;
                     else
                         sr.result_code = ResultCode.InternalServerError;
 
@@ -837,6 +837,14 @@ class XapianVQL
                 }
 
                 acl_db_reopen = false;
+
+                auto authorize_time = sw_az.peek.total !"msecs";
+
+                if (authorize_time > 5000)
+                {
+					log.trace("WARN! authorization time > 5 s, break iterator loop, user_uri=[%s]", user_uri);					
+					break;
+				}
 
                 it.next(&err);
             }
