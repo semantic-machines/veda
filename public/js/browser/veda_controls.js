@@ -2183,9 +2183,9 @@
     .then(function (individuals) {
       for (var i = 0, j = 0, length = individuals.length; i < length; i++) {
         while(result[j++]); // Fast forward to empty element
-        result[j-1] = new veda.IndividualModel(individuals[i]);
+        result[j-1] = new veda.IndividualModel(individuals[i]).init();
       }
-      return result;
+      return Promise.all(result);
     });
 
     function incrementalSearch(cursor, limit, results) {
