@@ -785,7 +785,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{.+?}/g, function (match) { return eval(match); })
+            return template.replace(/{\s*.*?\s*}/g, function (match) { return eval(match); })
           } else {
             return individual.toString();
           }
@@ -811,7 +811,7 @@
           });
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{.+?}/g, function (match) {
+        queryPrefix = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
           try {
             return eval(match);
           } catch (error) {
@@ -920,7 +920,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{.+?}/g, function (match) { return eval(match); })
+            return template.replace(/{\s*.*?\s*}/g, function (match) { return eval(match); })
           } else {
             return individual.toString();
           }
@@ -945,7 +945,7 @@
           }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{.+?}/g, function (match) {
+        queryPrefix = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
           try {
             return eval(match);
           } catch (error) {
@@ -1065,7 +1065,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{.+?}/g, function (match) { return eval(match); })
+            return template.replace(/{\s*.*?\s*}/g, function (match) { return eval(match); })
           } else {
             return individual.toString();
           }
@@ -1090,7 +1090,7 @@
           }
         });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{.+?}/g, function (match) {
+        queryPrefix = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
           try {
             return eval(match);
           } catch (error) {
@@ -1687,7 +1687,7 @@
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
-      return template.replace(/{.+?}/g, function (match) {
+      return template.replace(/{\s*.*?\s*}/g, function (match) {
         try {
           return eval(match);
         } catch (error) {
@@ -1698,7 +1698,7 @@
     }
 
     if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{.+?}/g, function (match) {
+      queryPrefix = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
         try {
           return eval(match);
         } catch (error) {
