@@ -42,6 +42,7 @@ import { Selector, t } from 'testcafe';
 
       .click('veda-control#testString')
       .pressKey('ctrl+a delete')
+      .hover('veda-control[rel="v-ui:testLink"]')
       .click('veda-control#date')
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
@@ -49,6 +50,7 @@ import { Selector, t } from 'testcafe';
       .click('button#search-button')
       .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).contains('2')
 
+      .hover('veda-control[rel="v-ui:testLink"]')
       .click('veda-control#date')
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
@@ -59,6 +61,7 @@ import { Selector, t } from 'testcafe';
       .click('button#search-button')
       .expect(Selector('.stats-top span[property="v-fs:authorized"]').innerText).contains('2')
 
+      .hover('veda-control[rel="v-ui:testLink"]')
       .click('veda-control#date')
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="v-ui:testDatetime"]#date', birth)
