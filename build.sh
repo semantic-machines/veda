@@ -21,14 +21,6 @@ fi
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
     echo start make VEDA-CCUS
-#    if [ -z $GOROOT ]; then
-#	export GOROOT=/usr/local/go
-#    else 
-#	echo "var GOROOT is set to '$GOROOT'"; 
-#    fi
-
-#    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-#    export GOPATH=$HOME/go
     rm ./veda-ccus
 
     cd source/veda-ccus
@@ -36,7 +28,6 @@ if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
     cd $BUILD_PATH
     cp ./source/veda-ccus/target/release/veda-ccus $PWD
     
-#    go build -o veda-ccus  source/ccus/src/ccus/cbor_tags.go source/ccus/src/ccus/binobj2map.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
     echo end make VEDA-CCUS
 fi
 
@@ -51,8 +42,9 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
     ./tools/build-component.sh veda-mstorage mstorage
 fi
 
-if [ -z $1 ] || [ $1 == "lmdb-srv" ] || [ $1 == "veda-lmdb-srv" ] ; then
-    ./tools/build-component.sh veda-lmdb-srv lmdb-srv
+if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] ; then
+    rm ./veda-lmdb-srv
+    ./tools/build-component.sh veda-ro-storage ro-storage
 fi
 
 if [ -z $1 ] || [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
@@ -69,10 +61,10 @@ if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] ; th
 fi
 
 if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] ; then
+    rm ./veda-scripts-main
+    rm ./veda-scripts-lp
+    rm ./veda-ltr-scripts
     ./tools/build-component.sh veda-scripts scripts
-    rm veda-scripts-main
-    rm veda-scripts-lp
-    rm veda-ltr-scripts
 fi
 
 if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] ; then
@@ -92,6 +84,16 @@ if [ -z $1 ] || [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
 fi
 
 if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
+    if [ -z $GOROOT ]; then
+	export GOROOT=/usr/local/go
+    else 
+	echo "var GOROOT is set to '$GOROOT'"; 
+    fi
+
+    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    export GOPATH=$HOME/go
+
+    echo build gowebserver
     cd source/veda-gowebserver
     go build
     cd $BUILD_PATH
