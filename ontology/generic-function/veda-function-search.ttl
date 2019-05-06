@@ -1353,28 +1353,26 @@ v-fs:FulltextBlankTemplate
   rdfs:label "Шаблон бланка полнотекстового поиска"@ru ;
   rdfs:label "Fulltext search blank template"@en ;
   v-ui:template """
-<div class="row">
+<div>
   <style>
     .input-group input {
       border-top-left-radius: 4px!important;
       border-bottom-left-radius: 4px!important;
     }
   </style>
-  <div class="col-md-12">
-    <h2 about="v-fs:EnterQuery" property="rdfs:label"></h2>
-    <div class="input-group">
-      <veda-control property="*" data-type="string"></veda-control>
-      <span class="input-group-btn">
-        <button class="btn btn-primary search-button" id="custom-search-button" type="button" about="v-fs:Find" property="rdfs:label"></button>
-      </span>
-    </div>
-    <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
-    <div class="advanced-search hidden panel panel-default margin-md">
-      <div class="panel-body bg-default">
-        <em about="rdf:type" property="rdfs:label"></em>
-        <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
-        <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'" class="fulltext dropdown"></veda-control>
-      </div>
+  <h2 about="v-fs:EnterQuery" property="rdfs:label"></h2>
+  <div class="input-group">
+    <veda-control property="*" data-type="string"></veda-control>
+    <span class="input-group-btn">
+      <button class="btn btn-primary search-button" id="custom-search-button" type="button" about="v-fs:Find" property="rdfs:label"></button>
+    </span>
+  </div>
+  <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
+  <div class="advanced-search hidden panel panel-default margin-md">
+    <div class="panel-body bg-default">
+      <em about="rdf:type" property="rdfs:label"></em>
+      <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
+      <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'" class="fulltext dropdown"></veda-control>
     </div>
   </div>
 </div>
