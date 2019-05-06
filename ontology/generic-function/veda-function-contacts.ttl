@@ -502,22 +502,20 @@ v-s:ContactsSearchBlankTemplate
   rdfs:label "Шаблон бланка поиска контактов"@ru ;
   rdfs:label "Contacts search blank template"@en ;
   v-ui:template """
-<div class="row">
+<div>
   <style>
     .input-group input {
       border-top-left-radius: 4px!important;
       border-bottom-left-radius: 4px!important;
     }
   </style>
-  <div class="col-md-12">
-    <div class="input-group">
-      <veda-control property="*" data-type="string"></veda-control>
-      <span class="input-group-btn">
-        <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
-      </span>
-    </div>
-    <br>
+  <div class="input-group">
+    <veda-control property="*" data-type="string"></veda-control>
+    <span class="input-group-btn">
+      <button class="btn btn-primary custom-find" type="button" about="v-fs:Find" property="rdfs:label"></button>
+    </span>
   </div>
+  <br>
 </div>
 <script>
   container.siblings("br").remove();

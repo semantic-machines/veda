@@ -259,13 +259,9 @@ v-s:SingleScheduledActionTemplate
 </script>
 <div class="panel panel-default" style="margin-top: 20px">
   <div class="panel-body">
-    <div class="row">
-      <div class="col-md-12">
-        <em about="v-s:description" property="rdfs:label"></em>
-        <div property="v-s:description" class="view -edit -search"></div>
-        <veda-control data-type="text" rows="1" property="v-s:description" class="-view edit -search"></veda-control>
-      </div>
-    </div>
+    <em about="v-s:description" property="rdfs:label"></em>
+    <div property="v-s:description" class="view -edit -search"></div>
+    <veda-control data-type="text" rows="1" property="v-s:description" class="-view edit -search"></veda-control>
     <div class="row">
       <div class="col-md-5">
         <em about="v-s:responsible" property="rdfs:label"></em>
@@ -436,13 +432,9 @@ v-s:RecursiveScheduledActionTemplate
   <div class="media-body" style="overflow:initial;">
     <div rel="v-s:backwardTarget" data-template="v-ui:ClassNameLabelLinkTemplate" class="view -edit -search"></div>
     <div id="ScheduledAction-content">
-      <div class="row">
-        <div class="col-md-12">
-          <em about="v-s:description" property="rdfs:label"></em>
-          <div property="v-s:description" class="view -edit -search"></div>
-          <veda-control data-type="text" rows="1" property="v-s:description" class="-view edit -search"></veda-control>
-        </div>
-      </div>
+      <em about="v-s:description" property="rdfs:label"></em>
+      <div property="v-s:description" class="view -edit -search"></div>
+      <veda-control data-type="text" rows="1" property="v-s:description" class="-view edit -search"></veda-control>
       <div class="row">
         <div class="col-md-6">
           <em about="v-s:responsible" property="rdfs:label"></em>
