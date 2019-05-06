@@ -619,14 +619,15 @@ v-s:OrganizationUnitContentTemplate
 <script>
   var blank = new veda.IndividualModel("v-s:ContactsInUnitSearchRegistryBlank");
   return blank.load().then(function (blank) {
-    blank.initBlank();
-    if ( !blank.object.hasValue("v-s:parentUnit", individual) ) {
-      blank.object["v-s:parentUnit"] = [ individual ];
-      var search = new veda.IndividualModel("v-s:ContactsInUnitSearch");
-      return search.load().then(function (search) {
-        search["v-fs:searchResult"] = [];
-      });
-    }
+    blank.initBlank().then(function (blankObject) {
+      if ( !blankObject.hasValue("v-s:parentUnit", individual) ) {
+        blankObject["v-s:parentUnit"] = [ individual ];
+        var search = new veda.IndividualModel("v-s:ContactsInUnitSearch");
+        return search.load().then(function (search) {
+          search["v-fs:searchResult"] = [];
+        });
+      }
+    });
   });
 //# sourceURL=v-s:OrganizationUnitContentTemplate_pre
 </script>
