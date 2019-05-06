@@ -18,8 +18,8 @@ extern crate scan_fmt;
 extern crate v_onto;
 extern crate v_queue;
 
-const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(2);
-const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
+const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(1);
+const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 
 #[macro_use]
 extern crate log;
