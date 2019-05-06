@@ -20,18 +20,24 @@ fi
 
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
-    echo make start VEDA-CCUS
-    if [ -z $GOROOT ]; then
-	export GOROOT=/usr/local/go
-    else 
-	echo "var GOROOT is set to '$GOROOT'"; 
-    fi
+    echo start make VEDA-CCUS
+#    if [ -z $GOROOT ]; then
+#	export GOROOT=/usr/local/go
+#    else 
+#	echo "var GOROOT is set to '$GOROOT'"; 
+#    fi
 
-    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
-    export GOPATH=$HOME/go
+#    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+#    export GOPATH=$HOME/go
     rm ./veda-ccus
-    go build -o veda-ccus  source/ccus/src/ccus/cbor_tags.go source/ccus/src/ccus/binobj2map.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
-    echo make end VEDA-CCUS
+
+    cd source/veda-ccus
+    cargo build --release
+    cd $BUILD_PATH
+    cp ./source/veda-ccus/target/release/veda-ccus $PWD
+    
+#    go build -o veda-ccus  source/ccus/src/ccus/cbor_tags.go source/ccus/src/ccus/binobj2map.go source/ccus/src/ccus/tools.go source/ccus/src/ccus/queue.go source/ccus/src/ccus/ccus.go source/ccus/src/ccus/preparer.go
+    echo end make VEDA-CCUS
 fi
 
 if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] ; then
@@ -91,9 +97,3 @@ if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
     cd $BUILD_PATH
     cp source/veda-gowebserver/veda-gowebserver ./veda-gowebserver
 fi
-
-#if [ -z $1 ] || [ $1 == "db_handler" ] ; then
-#  cd source/rust_db_handler/db_handler
-#  cargo build --release
-#  cd ../../..
-#fi
