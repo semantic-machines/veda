@@ -142,32 +142,33 @@ v-s:ContactsTemplate
       }
       var parentOrg = veda.appointment['v-s:parentOrganization'][0];
       var allowedOrganizations = [parentOrg];
-      if (parentOrg.hasValue("v-s:hasContractorProfileSafety")) {
-        allowedOrganizations = allowedOrganizations.concat(parentOrg["mnd-s:subContractor"]);
-      }
-      var isAllowedOrg = allowedOrganizations.some(function(org) {
-        return org.id === individual['v-s:managedOrganization'][0].id;
-      });
-      if ( isAllowedOrg ) {
-        var department =  new veda.IndividualModel("v-s:Department");
-        var appointment =  new veda.IndividualModel("v-s:Appointment");
-        var position =  new veda.IndividualModel("v-s:Position");
-        var person =  new veda.IndividualModel("v-s:Person");
-
-        return Promise.all([department.canCreate(), appointment.canCreate(), position.canCreate(), person.canCreate()]).then(function (rights) {
-          var canCreateDepartment = rights[0];
-          var canCreateAppointment = rights[1];
-          var canCreatePosition = rights[2];
-          var canCreatePerson = rights[3];
-          if (canCreateDepartment) {
-            controls.append(addDepartmentControl);
-          }
-          if (canCreateAppointment && canCreatePosition && canCreatePerson) {
-            controls.append(addAppointmentControl);
-          }
-          return controls;
+      return parentOrg.getPropertyChain("v-s:hasContractorProfileSafety", "mnd-s:subContractor").then(function (subContractors) {
+        return allowedOrganizations.concat(subContractors);
+      }).then(function (allowedOrganizations) {
+        var isAllowedOrg = allowedOrganizations.some(function(org) {
+          return org.id === individual['v-s:managedOrganization'][0].id;
         });
-      }
+        if ( isAllowedOrg ) {
+          var department =  new veda.IndividualModel("v-s:Department");
+          var appointment =  new veda.IndividualModel("v-s:Appointment");
+          var position =  new veda.IndividualModel("v-s:Position");
+          var person =  new veda.IndividualModel("v-s:Person");
+
+          return Promise.all([department.canCreate(), appointment.canCreate(), position.canCreate(), person.canCreate()]).then(function (rights) {
+            var canCreateDepartment = rights[0];
+            var canCreateAppointment = rights[1];
+            var canCreatePosition = rights[2];
+            var canCreatePerson = rights[3];
+            if (canCreateDepartment) {
+              controls.append(addDepartmentControl);
+            }
+            if (canCreateAppointment && canCreatePosition && canCreatePerson) {
+              controls.append(addAppointmentControl);
+            }
+            return controls;
+          });
+        }
+      });
     } else {
       controls.append(addDepartmentControl);
       controls.append(addAppointmentControl);
