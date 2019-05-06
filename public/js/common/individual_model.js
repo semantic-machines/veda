@@ -757,6 +757,7 @@ veda.Module(function (veda) { "use strict";
     var clone = new veda.IndividualModel(cloneProperties);
     clone.isNew(true);
     clone.isSync(false);
+    clone.clearValue("v-s:updateCounter");
     return clone.init();
   };
 
