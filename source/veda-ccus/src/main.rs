@@ -21,12 +21,12 @@ extern crate v_queue;
 extern crate ini;
 use ini::Ini;
 
-const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1100);
-const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
-
 #[macro_use]
 extern crate log;
 use actix_web::middleware::Logger;
+
+const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1100);
+const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// do websocket handshake and start `MyWebSocket` actor
 fn ws_index(r: HttpRequest, stream: web::Payload, data: web::Data<AppData>) -> Result<HttpResponse, Error> {
@@ -62,7 +62,6 @@ struct MyWebSocket {
 impl Actor for MyWebSocket {
     type Context = ws::WebsocketContext<Self>;
 
-    /// Method is called on actor start. We start the heartbeat process here.
     fn started(&mut self, ctx: &mut Self::Context) {
         self.hb(ctx);
     }
@@ -77,19 +76,12 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
     }
 
     fn handle(&mut self, msg: ws::Message, ctx: &mut Self::Context) {
-        // process websocket messages
-        //info!("------------");
-        //info!("@ ctx.state=(){:?}", ctx.state());
-        //info!("@ counter={}", self.counter);
-        //info!("WS: {:?}", msg);
         match msg {
             ws::Message::Ping(msg) => {
                 self.hb = Instant::now();
                 ctx.pong(&msg);
-                //info!("@Ping");
             }
             ws::Message::Pong(_) => {
-                //info!("@Pong");
                 self.hb = Instant::now();
                 self.counter = self.counter + 1;
 
@@ -161,9 +153,6 @@ impl MyWebSocket {
         PQMsg::new("", 0)
     }
 
-    /// helper method that sends ping to client every second.
-    ///
-    /// also this method checks heartbeats from client
     fn hb(&self, ctx: &mut <Self as Actor>::Context) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
             // check client heartbeats
