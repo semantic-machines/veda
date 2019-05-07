@@ -614,6 +614,11 @@ v-ui:StandardButtonsTemplate
       template.parent().closest("[resource]").trigger(action);
     }
   });
+
+  $("#cancel", template).on("click", function () {
+    template.closest(".modal").modal("hide").remove();
+  });
+
   $("#journal", template).on("click", function (e) {
     e.preventDefault();
     var journal_uri = individual.id + "j",
@@ -682,7 +687,7 @@ v-ui:StandardButtonsTemplate
       <li><a href="#" about="v-wf:distributionRouteStartForm" property="rdfs:label"></a></li>
     </ul>
   </div>
-  <button type="button" class="btn btn-link view edit -search toggle-actions hidden">
+  <button type="button" class="btn btn-link view edit -search action toggle-actions hidden">
     <span class="glyphicon glyphicon-chevron-left"></span>
   </button>
 </span>
