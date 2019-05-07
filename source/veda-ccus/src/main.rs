@@ -21,7 +21,7 @@ extern crate v_queue;
 extern crate ini;
 use ini::Ini;
 
-const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1200);
+const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1100);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 
 #[macro_use]
@@ -169,7 +169,7 @@ impl MyWebSocket {
             // check client heartbeats
             if Instant::now().duration_since(act.hb) > CLIENT_TIMEOUT {
                 // heartbeat timed out
-                info!("Websocket Client heartbeat failed, disconnecting!");
+                error!("Websocket Client heartbeat failed, disconnecting!");
 
                 // stop actor
                 ctx.stop();
