@@ -207,13 +207,9 @@ v-s:LetterTemplate
           <tr class="active">
             <th width="1%"><span class="glyphicon glyphicon-search"></th>
             <th about="v-s:correspondentOrganization" property="rdfs:label"></th>
-            <!--th about="v-s:correspondentDepartmentDescription" property="rdfs:label"></th>
-            <th about="v-s:correspondentPersonDescription" property="rdfs:label"></th-->
             <th about="v-s:registrationNumber" property="rdfs:label"></th>
             <th about="v-s:registrationDate" property="rdfs:label"></th>
             <th about="v-s:correspondentOrganization" property="rdfs:label"></th>
-            <!--th about="v-s:correspondentDepartmentDescription" property="rdfs:label"></th>
-            <th about="v-s:correspondentPersonDescription" property="rdfs:label"></th-->
             <th about="v-s:registrationNumber" property="rdfs:label"></th>
             <th about="v-s:registrationDate" property="rdfs:label"></th>
           </tr>
@@ -221,16 +217,12 @@ v-s:LetterTemplate
         <tbody rel="v-s:hasRelatedLetter">
           <tr>
             <td about="@" data-template="v-ui:IconModalTemplate"></td>
-            <td rel="v-s:sender" ><span property="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"> </span> </td>
-            <!--th rel="v-s:sender" ><span property="v-s:correspondentDepartmentDescription" data-template="v-ui:LabelTemplate"> </span> </td>
-            <td rel="v-s:sender" ><span property="v-s:correspondentPersonDescription" data-template="v-ui:LabelTemplate"> </span></th-->
-            <td rel="v-s:hasLetterRegistrationRecordSender" ><span property="v-s:registrationNumber" data-template="v-ui:LabelTemplate"> </span></td>
-            <td rel="v-s:hasLetterRegistrationRecordSender" ><span property="v-s:registrationDate" data-template="v-ui:LabelTemplate"> </span></td>
-            <td rel="v-s:recipient" ><span property="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"> </span></td>
-            <!--th rel="v-s:recipient" ><span property="v-s:correspondentDepartmentDescription" data-template="v-ui:LabelTemplate"> </span></td>
-            <td rel="v-s:recipient" ><span property="v-s:correspondentPersonDescription" data-template="v-ui:LabelTemplate"> </span></th-->
-            <td rel="v-s:hasLetterRegistrationRecordRecipient" ><span property="v-s:registrationNumber" data-template="v-ui:LabelTemplate"> </span></td>
-            <td rel="v-s:hasLetterRegistrationRecordRecipient" ><span property="v-s:registrationDate" data-template="v-ui:LabelTemplate"> </span></td>
+            <td rel="v-s:sender"><span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"> </span> </td>
+            <td rel="v-s:hasLetterRegistrationRecordSender" ><span property="v-s:registrationNumber"></span></td>
+            <td rel="v-s:hasLetterRegistrationRecordSender" ><span property="v-s:registrationDate"></span></td>
+            <td rel="v-s:recipient"><span rel="v-s:correspondentOrganization" data-template="v-ui:LabelTemplate"></span></td>
+            <td rel="v-s:hasLetterRegistrationRecordRecipient" ><span property="v-s:registrationNumber"></span></td>
+            <td rel="v-s:hasLetterRegistrationRecordRecipient" ><span property="v-s:registrationDate"></span></td>
           </tr>
         </tbody>
         <tfoot class="-view edit search"><tr><td colspan="7">

@@ -282,7 +282,7 @@ v-s:RecursiveCommentTemplate
         </span>
         <small>
           <span>&bullet;&nbsp;&nbsp;</span>
-          <span property="v-s:created" data-template="v-ui:LabelTemplate"></span>
+          <span property="v-s:created"></span>
         </small>
         <br>
         <span property="rdfs:label"></span>

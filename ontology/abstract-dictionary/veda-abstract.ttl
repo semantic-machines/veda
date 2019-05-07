@@ -1404,7 +1404,7 @@ v-s:hasMaintainedObjectTemplate
       <tr>
         <td property="rdfs:label" class="view edit search"></td>
         <td property="v-s:shortLabel" class="view edit search"></td>
-        <td property="v-s:hasParentLink" class="view edit search"></td>
+        <td rel="v-s:hasParentLink" data-template="v-ui:LabelTemplate" class="view edit search"></td>
         <td>
           <div about="@" rel="v-s:hasParentLink" class="view edit search">
             <div property="v-s:shortLabel" class="view edit search"></div>

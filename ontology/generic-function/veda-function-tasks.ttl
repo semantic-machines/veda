@@ -786,7 +786,7 @@ v-ft:CompletedResultTemplate
         </td>
         <td about="@" rel="v-wf:onDocument" data-template="v-ui:ClassNameLabelTemplate"></td>
         <td about="@" rel="v-wf:takenDecision">
-          <div property="rdfs:label" data-template="v-ui:LabelTemplate"></div>
+          <div property="rdfs:label"></div>
           <i property="rdfs:comment"></i>
         </td>
         <td property="v-s:created"></td>
