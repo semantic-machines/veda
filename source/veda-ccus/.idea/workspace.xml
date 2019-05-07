@@ -13,7 +13,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="410dd19b-aca2-486a-9448-a4da308be070" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../build.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../build.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../control-install.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../control-install.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dub/lmdb-srv/.project" beforeDir="false" afterPath="$PROJECT_DIR$/../dub/ro-storage/.project" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dub/lmdb-srv/dub.json" beforeDir="false" afterPath="$PROJECT_DIR$/../dub/ro-storage/dub.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dub/lmdb-srv/source/veda" beforeDir="false" afterPath="$PROJECT_DIR$/../dub/ro-storage/source/veda" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../veda/lmdb_srv/lmdb_srv.d" beforeDir="false" afterPath="$PROJECT_DIR$/../veda/ro_storage/storage_service.d" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +44,7 @@
         <entry file="file://$PROJECT_DIR$/../v-onto/src/onto/individual.rs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="390">
-              <caret line="26" column="32" lean-forward="true" selection-start-line="26" selection-start-column="32" selection-end-line="26" selection-end-column="32" />
+              <caret line="26" column="32" selection-start-line="26" selection-start-column="32" selection-end-line="26" selection-end-column="32" />
             </state>
           </provider>
         </entry>
@@ -48,7 +53,7 @@
         <entry file="file://$PROJECT_DIR$/../v-onto/src/onto/msgpack8individual.rs">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="408">
-              <caret line="115" column="41" lean-forward="true" selection-start-line="115" selection-start-column="41" selection-end-line="115" selection-end-column="41" />
+              <caret line="115" column="41" selection-start-line="115" selection-start-column="41" selection-end-line="115" selection-end-column="41" />
               <folding>
                 <element signature="e#0#23#0" />
                 <element signature="e#97#135#0" />
@@ -114,7 +119,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="100" />
     <option name="y" value="45" />
     <option name="width" value="1400" />
@@ -198,16 +203,15 @@
       <updated>1556204749716</updated>
       <workItem from="1556204750815" duration="1550000" />
       <workItem from="1556260024100" duration="14754000" />
-      <workItem from="1556541021248" duration="14506000" />
+      <workItem from="1556541021248" duration="15122000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30932000" />
+    <option name="totallyTimeSpent" value="31548000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="25" width="1602" height="876" extended-state="6" />
-    <editor active="true" />
+    <frame x="-1" y="25" width="1602" height="876" extended-state="7" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13899614" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -284,14 +288,14 @@
     <entry file="file://$PROJECT_DIR$/../v-onto/src/onto/individual.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
-          <caret line="26" column="32" lean-forward="true" selection-start-line="26" selection-start-column="32" selection-end-line="26" selection-end-column="32" />
+          <caret line="26" column="32" selection-start-line="26" selection-start-column="32" selection-end-line="26" selection-end-column="32" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../v-onto/src/onto/msgpack8individual.rs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="408">
-          <caret line="115" column="41" lean-forward="true" selection-start-line="115" selection-start-column="41" selection-end-line="115" selection-end-column="41" />
+          <caret line="115" column="41" selection-start-line="115" selection-start-column="41" selection-end-line="115" selection-end-column="41" />
           <folding>
             <element signature="e#0#23#0" />
             <element signature="e#97#135#0" />

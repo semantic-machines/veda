@@ -211,7 +211,7 @@ void main(string[] args)
 
     Module *[ string ] modules;
 
-    modules[ "veda-lmdb-srv" ]      = new Module("veda-lmdb-srv", "veda-lmdb-srv", [], [], false, false, 0);
+    modules[ "veda-lmdb-srv" ]      = new Module("veda-ro-storage", "veda-ro-storage", [], [], false, false, 0);
     modules[ "veda-mstorage" ]      = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
     modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", "veda-ft-indexer", [], [ "fulltext_indexer" ], false, false, 2);
     modules[ "veda-ft-query" ]      = new Module("veda-ft-query", "veda-ft-query", [], [], false, false, 3);
