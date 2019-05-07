@@ -2,6 +2,7 @@ use std::fs::*;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
+
 extern crate crc32fast;
 use crc32fast::Hasher;
 
@@ -13,7 +14,6 @@ extern crate log;
 
 pub const QUEUE_PATH: &str = "./data/queue";
 pub const HEADER_SIZE: usize = 25;
-//const BUFF_INIT_MSG_SIZE: usize = 4 * 1024;
 
 #[derive(Debug)]
 pub struct Header {
@@ -83,17 +83,17 @@ impl Consumer {
 
     pub fn open(&mut self, is_new: bool) -> bool {
         if self.queue.is_ready == false {
-            info!("@CE1 BLOCK");
+            error!("Consumer open: queue not ready, set consumer.ready = false");
             self.is_ready = false;
             return false;
         }
 
-        if let Ok(ff) =
-            OpenOptions::new().read(true).write(true).truncate(true).create(is_new).open(QUEUE_PATH.to_owned() + "/" + &self.queue.name + "_info_pop_" + &self.name)
-        {
+        let info_pop_file_name = QUEUE_PATH.to_owned() + "/" + &self.queue.name + "_info_pop_" + &self.name;
+
+        if let Ok(ff) = OpenOptions::new().read(true).write(true).truncate(true).create(is_new).open(&info_pop_file_name) {
             self.ff_info_pop_w = ff;
         } else {
-            info!("@CE1 BLOCK");
+            error!("Consumer open: fail open file [{}], set consumer.ready = false", info_pop_file_name);
             self.is_ready = false;
             return false;
         }
@@ -127,22 +127,22 @@ impl Consumer {
 
                 match position {
                     Some(pos) => {
-                        //                        if pos > self.queue.right_edge {
-                        //                            res = false;
-                        //                        } else {
+                        // if pos > self.queue.right_edge {
+                        //   res = false;
+                        //  } else {
                         self.pos_record = pos;
-                        //                        }
+                        //  }
                     }
                     None => res = false,
                 }
 
                 match count_popped {
                     Some(cc) => {
-                        //                        if cc > self.queue.count_pushed {
-                        //                            res = false;
-                        //                        } else {
+                        //  if cc > self.queue.count_pushed {
+                        //      res = false;
+                        //  } else {
                         self.count_popped = cc;
-                        //                        }
+                        //  }
                     }
                     None => res = false,
                 }
@@ -199,8 +199,6 @@ impl Consumer {
         }
         //self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record));
 
-        //println!("@self.pos_record={}", self.pos_record);
-
         let mut buff = vec![0; HEADER_SIZE];
         match self.queue.ff_queue_r.read(&mut buff[..]) {
             Ok(len) => {
@@ -252,7 +250,7 @@ impl Consumer {
                     if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
                         if let Ok(readed_size) = self.queue.ff_queue_r.read(msg) {
                             if readed_size == msg.len() {
-                                info!(
+                                warn!(
                                     "success attempt read, [name:{}, id:{}, pos:{}, pop:{}, push:{}]",
                                     self.name, self.id, self.pos_record, self.count_popped, self.queue.count_pushed
                                 );
@@ -277,14 +275,14 @@ impl Consumer {
                     return false;
                 }
             }
-            //info!("msg={:?}", msg);
+            debug!("msg={:?}", msg);
             self.pos_record = self.pos_record + HEADER_SIZE as u64 + readed_size as u64;
             self.hash.update(msg);
 
             let crc32: u32 = self.hash.clone().finalize();
 
             if crc32 != self.header.crc {
-                error!("CRC fail");
+                error!("CRC fail, set consumer.ready = false");
                 self.is_ready = false;
                 return false;
             }
@@ -298,10 +296,12 @@ impl Consumer {
     pub fn put_info(&mut self) {
         if let Ok(_) = self.ff_info_pop_w.seek(SeekFrom::Start(0)) {
         } else {
+            error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
         }
         if let Ok(_) = self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()) {
         } else {
+            error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
         }
     }
