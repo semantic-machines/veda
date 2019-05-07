@@ -650,10 +650,10 @@ v-s:ContractorCategoryRequestTemplate
             <tbody rel="v-s:subContractorOf" >
               <tr>
                 <td>
-                  <div about="@" property="rdfs:label" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+                  <div about="@" property="rdfs:label" class="view -edit -search"></div>
                 </td>
                 <td>
-                  <div about="@" property="v-s:taxId" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+                  <div about="@" property="v-s:taxId" class="view -edit -search"></div>
                 </td>
                 <td>
                   <div>

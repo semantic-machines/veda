@@ -722,7 +722,7 @@ v-s:AppointmentTemplate
   <div class="form-inline">
     <div class="form-group">
       <label about="v-s:parentUnit" property="rdfs:label"></label>:
-      <span about="@" property="v-s:parentUnit" data-template="v-ui:LabelTemplate"></span>
+      <span about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></span>
     </div>
   </div>
   <div class="form-inline">
@@ -739,7 +739,7 @@ v-s:AppointmentTemplate
       <label about="v-s:occupation" property="rdfs:label"></label>:
       <span class="view -edit -search">
         <span about="@" property="rdfs:label"></span>
-        <span about="@" property="v-s:parentOrganization" data-template="v-ui:LabelTemplate"></span>
+        <span about="@" rel="v-s:parentOrganization" data-template="v-ui:LabelTemplate"></span>
       </span>
     </div>
   </div>
@@ -794,7 +794,7 @@ v-s:NewAppointmentTemplate
     personQueryPrefixString = "'rdf:type'=='v-s:Person' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
   }
   $('#select-Person veda-control', template).attr('data-query-prefix', personQueryPrefixString);
-  
+
   var occupationQueryPrefixString = "'rdf:type'=='v-s:Position' && 'v-s:parentOrganization'=='"+parentOrganization+"'";
   if (individual.hasValue("v-s:parentUnit")) {
     var parentUnit = individual['v-s:parentUnit'][0].id;
@@ -819,7 +819,7 @@ v-s:NewAppointmentTemplate
   // template.one("remove", function(){
   //   individual.off("v-s:parentUnit", parentUnitHandler);
   // })
-  
+
 //# sourceURL=v-s:NewAppointmentTemplate_pre
 </script>
 <div class="container sheet">
@@ -830,7 +830,7 @@ v-s:NewAppointmentTemplate
   <hr>
   <div id="mainProperties">
     <em about="v-s:parentUnit" property="rdfs:label"></em>
-    <div about="@" property="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
+    <div about="@" rel="v-s:parentUnit" class="view edit -search" data-template="v-ui:LabelLinkTemplate"></div>
     <veda-control id="select-ParentUnit" rel="v-s:parentUnit" data-query-prefix = "('rdf:type'=='v-s:Department' && 'v-s:parentOrganization'=='{individual['v-s:parentOrganization'][0].id}') || '@'==='{individual['v-s:parentOrganization'][0].id}'" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
     <hr class="view -edit -search">
     <div class="row">

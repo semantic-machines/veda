@@ -510,11 +510,11 @@ v-wf:SimpleNetTemplate
             #<a href="#/@">
               <span about="@" rel="v-wf:mapToVariable">
                 <span>
-                  <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                  <span about="@" property="v-wf:varDefineName"></span>
                 </span>
               </span> =
-              <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
-              [<span about="@" property="@" data-template="v-ui:LabelTemplateWithEditLink"></span>]
+              <span about="@" property="v-wf:mappingExpression"></span>
+              [<span about="@" property="@"></span>]
             </a>
           <div>
         </div>
@@ -1013,10 +1013,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1035,10 +1035,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1057,10 +1057,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1079,10 +1079,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1101,10 +1101,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1123,10 +1123,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1145,10 +1145,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1167,10 +1167,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
@@ -1189,10 +1189,10 @@ v-wf:TaskTemplateAsProperties
               #<a href="#/@">
                 <span about="@" rel="v-wf:mapToVariable">
                   <span>
-                    <span about="@" property="v-wf:varDefineName" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                    <span about="@" property="v-wf:varDefineName"></span>
                   </span>
                 </span> =
-                <span about="@" property="v-wf:mappingExpression" data-template="v-ui:LabelTemplateWithEditLink"></span>
+                <span about="@" property="v-wf:mappingExpression"></span>
               </a>
             </p>
           <div>
