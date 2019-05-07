@@ -1,5 +1,5 @@
 /**
- * lmdb srv module
+ * storage service
  *      protocol - nanomsg
  *		request: "T,url" - get ticket of url, response: JSON format
  *		request: "I,url" - get individual of url, response: JSON format
@@ -119,7 +119,7 @@ void main(string[] args)
         {
             string[ string ] properties;
             properties = readProperties("./veda.properties");
-            bind_url   = properties.as!(string)("lmdb_service_url") ~ "\0";
+            bind_url   = properties.as!(string)("ro_storage_url") ~ "\0";
         }
         catch (Throwable ex)
         {
