@@ -1778,8 +1778,18 @@
               });
               newVal.present(cntr, undefined, "edit").then(function (tmpl) {
                 $(".action", tmpl).remove();
+                var validation = tmpl.data("validation");
+                if ( validation && validation.state ) {
+                  ok.removeAttr("disabled");
+                } else {
+                  ok.attr("disabled", "disabled");
+                }
                 tmpl.on("internal-validated", function (e, validation) {
-                  validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
+                  if (validation.state) {
+                    ok.removeAttr("disabled")
+                  } else {
+                    ok.attr("disabled", "disabled");
+                  }
                 });
               });
             } else {
