@@ -18,6 +18,9 @@ extern crate scan_fmt;
 extern crate v_onto;
 extern crate v_queue;
 
+extern crate ini;
+use ini::Ini;
+
 const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1200);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 
@@ -352,6 +355,13 @@ fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "info,actix_server=info,actix_web=info");
     env_logger::init();
 
+    let conf = Ini::load_from_file("veda.properties").expect("File load veda.properties file");
+
+    let section = conf.section(None::<String>).expect("fail parse veda.properties");
+    let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties");
+
+    info!("CCUS PORT {:?}", ccus_port);
+
     // создадим канал приема и передачи с нитью subscriber_manager
     let (sbscr_tx, sbscr_rx): (Sender<(PQMsg, Sender<PQMsg>)>, Receiver<(PQMsg, Sender<PQMsg>)>) = mpsc::channel();
 
@@ -368,6 +378,6 @@ fn main() -> std::io::Result<()> {
             // websocket route
             .service(web::resource("/ccus").route(web::get().to(ws_index)))
     })
-    .bind("[::]:8088")?
+    .bind("[::]:".to_owned() + ccus_port)?
     .run()
 }
