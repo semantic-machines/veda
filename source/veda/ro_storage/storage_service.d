@@ -12,7 +12,8 @@ import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.common.logger, veda.util.properd;
-import veda.storage.lmdb.lmdb_driver, veda.storage.common, veda.common.type, veda.onto.individual, veda.onto.bj8individual.individual8json;
+import veda.storage.lmdb.lmdb_driver, veda.storage.tarantool.tarantool_storage, veda.storage.common, veda.common.type, veda.onto.individual,
+       veda.onto.bj8individual.individual8json;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
@@ -31,7 +32,7 @@ extern (C) void handleTermination3(int _signal)
     f_listen_exit = true;
 }
 
-private nothrow string req_prepare(string request, LmdbDriver tickets_storage_r, LmdbDriver inividuals_storage_r, Logger log)
+private nothrow string req_prepare(string request, KeyValueDB tickets_storage_r, KeyValueDB inividuals_storage_r, Logger log)
 {
     try
     {
@@ -96,7 +97,8 @@ private Logger log;
 
 void main(string[] args)
 {
-    string bind_url = null;
+    string bind_url      = null;
+    string tarantool_url = null;
 
     try
     {
@@ -118,8 +120,9 @@ void main(string[] args)
         try
         {
             string[ string ] properties;
-            properties = readProperties("./veda.properties");
-            bind_url   = properties.as!(string)("ro_storage_url") ~ "\0";
+            properties    = readProperties("./veda.properties");
+            bind_url      = properties.as!(string)("ro_storage_url") ~ "\0";
+            tarantool_url = properties.as!(string)("tarantool_url");
         }
         catch (Throwable ex)
         {
@@ -129,10 +132,27 @@ void main(string[] args)
     }
 
     int sock;
-    log = new Logger("veda-core-lmdb-srv", "log", "");
+    log = new Logger("veda-ro-storage", "log", "");
 
-    auto tickets_storage_r    = new LmdbDriver(tickets_db_path, DBMode.R, "tickets", log);
-    auto inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, "inividuals", log);
+    KeyValueDB tickets_storage_r;
+    KeyValueDB inividuals_storage_r;
+
+    if (tarantool_url is null)
+    {
+        log.trace("INFO! use LMDB");
+
+        tickets_storage_r    = new LmdbDriver(tickets_db_path, DBMode.R, "tickets", log);
+        inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, "inividuals", log);
+    }
+    else
+    {
+        log.trace("INFO! use tarantool");
+
+        TarantoolStorage tts = new TarantoolStorage("ro-storage", log);
+
+        tickets_storage_r    = tts.get_tickets_storage_r();
+        inividuals_storage_r = tts.get_inividuals_storage_r();
+    }
 
     sock = nn_socket(AF_SP, NN_REP);
     if (sock < 0)
@@ -164,8 +184,8 @@ void main(string[] args)
 
                 nn_freemsg(buf);
 
-				if (rep is null || rep.length == 0)
-					rep = "\0";
+                if (rep is null || rep.length == 0)
+                    rep = "\0";
 
                 bytes = nn_send(sock, cast(char *)rep.dup(), rep.length, 0);
                 //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
