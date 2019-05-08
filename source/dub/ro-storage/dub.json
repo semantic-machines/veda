@@ -20,6 +20,7 @@
     	    "../../veda/onto/lang.d",
     	    "../../veda/util/commando.d",
     	    "../../veda/bind/nano.d",
+            "../../veda/bind/msgpuck.d",
     	    "../../veda/util/properd.d",
     	    "../../veda/core/common/define.d",
     	    "../../veda/common/logger.d",
