@@ -18,20 +18,19 @@
   v-s:loadPriority 9 ;
 .
 
-### MAIN PAGE ###
+### LAYOUT ###
 
-v-s:MainPage
-  rdf:type owl:Class ;
+v-s:Layout
+  rdf:type rdfs:Resource ;
   rdfs:subClassOf v-s:SystemThing ;
-  rdfs:label "Страница"@ru ;
-  rdfs:label "Page"@en ;
-  v-ui:hasTemplate v-s:MainPageTemplate ;
+  rdfs:label "Макет"@ru ;
+  rdfs:label "Layout"@en ;
+  v-ui:hasTemplate v-s:LayoutTemplate ;
 .
-v-s:MainPageTemplate
+v-s:LayoutTemplate
   rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон для класса Страница"@ru ;
-  rdfs:label "Template for Page class"@en ;
-  v-ui:forClass v-s:MainPage ;
+  rdfs:label "Шаблон макета"@ru ;
+  rdfs:label "Layout template"@en ;
   v-ui:template """
 <div class="page">
   <nav role="navigation" class="navbar navbar-veda">
@@ -40,7 +39,7 @@ v-s:MainPageTemplate
         <button type="button" class="btn btn-info navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
           <span class="glyphicon glyphicon-menu-hamburger"></span>
         </button>
-        <a class="navbar-brand" href="#/v-s:Welcome"><img src="/img/veda-logo.png"></a>
+        <a class="navbar-brand" href="#/v-s:Main"><img src="/img/veda-logo.png"></a>
       </div>
       <div class="collapse navbar-collapse" id="navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
@@ -202,20 +201,18 @@ v-s:PsMenuItem
   v-ui:queryPrefix "('rdf:type' == 'v-s:Menu')"^^xsd:string ;
 .
 
-### WELCOME ###
+### MAIN PAGE ###
 
-v-s:WelcomeAspect
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:Aspect ;
-  rdfs:label "Приветственный аспект"@ru ;
-  rdfs:label "Welcome aspect"@en ;
-  v-ui:hasTemplate v-s:WelcomeAspectTemplate ;
+v-s:Main
+  rdf:type rdfs:Resource ;
+  rdfs:label "Главная страница"@ru ;
+  rdfs:label "Main page"@en ;
+  v-ui:hasTemplate v-s:MainTemplate ;
 .
-v-s:WelcomeAspectTemplate
+v-s:MainTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Приветственный аспект"@ru ;
   rdfs:label "Template for Welcome aspect class"@en ;
-  v-ui:forClass v-s:WelcomeAspect ;
   v-ui:template """
 <div class="container sheet">
   <div class="jumbotron">
@@ -262,16 +259,6 @@ v-s:VedaPlatform
 
 ### INDIVIDUALS ###
 
-v-s:Main
-  rdf:type v-s:MainPage ;
-  rdfs:label "Главная страница"@ru ;
-  rdfs:label "Main page"@en ;
-.
-v-s:Welcome
-  rdf:type v-s:WelcomeAspect ;
-  rdfs:label "Добро пожаловать"@ru ;
-  rdfs:label "Welcome"@en ;
-.
 v-s:MainMenu
   rdf:type v-s:Menu ;
   rdfs:label "Главное меню"@ru ;
