@@ -27,7 +27,7 @@ use nng::{Message, Protocol, Socket};
 extern crate log;
 use actix_web::middleware::Logger;
 
-const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1100);
+const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1000);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// do websocket handshake and start `MyWebSocket` actor
