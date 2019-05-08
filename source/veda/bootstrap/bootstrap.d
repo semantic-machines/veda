@@ -431,6 +431,9 @@ void main(string[] args)
                 }
             }
         }
+
+        std.file.write(".pids/veda-bootstrap-pid", text(thisProcessID()));
+
         stderr.writefln("all component started, need_watchdog=%s", need_watchdog);
 
         if (need_remove_ontology == true || need_reload_ontology == true || need_watchdog == false)
