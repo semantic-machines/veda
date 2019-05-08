@@ -21,6 +21,8 @@ extern crate v_queue;
 extern crate ini;
 use ini::Ini;
 
+use nng::{Message, Protocol, Socket};
+
 #[macro_use]
 extern crate log;
 use actix_web::middleware::Logger;
@@ -176,8 +178,36 @@ struct AppData {
     subscribe_manager_sender: Sender<(PQMsg, Sender<PQMsg>)>,
 }
 
-fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>) {
-    info!("START CCUS");
+fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: String) {
+    info!("Start CCUS");
+
+    let mut is_ro_storage_ready = false;
+    let mut ro_storage_client: Socket;
+
+    if let Ok(c) = Socket::new(Protocol::Req0) {
+        ro_storage_client = c;
+        if let Err(e) = ro_storage_client.dial(ro_client_addr.as_str()) {
+            error!("fail dial to ro-storage, [{}], err={}", ro_client_addr, e);
+        }
+
+        let req = Message::from("I,cfg:standart_node".as_bytes());
+
+        ro_storage_client.send(req).unwrap();
+
+        // Wait for the response from the server.
+        let msg = ro_storage_client.recv().unwrap();
+
+        if msg.len() > 0 {
+            is_ro_storage_ready = true;
+        }
+    } else {
+        error!("fail connect to ro-storage, [{}]", ro_client_addr);
+    }
+
+    if is_ro_storage_ready == true {
+        info!("success connect to ro-storage, {}", ro_client_addr);
+    }
+
     let mut ws_id_gen = 0;
 
     // key:id_ws [key:uri[counter]]
@@ -347,7 +377,8 @@ fn main() -> std::io::Result<()> {
     let conf = Ini::load_from_file("veda.properties").expect("File load veda.properties file");
 
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
-    let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties");
+    let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties").clone();
+    let ro_client_addr = section.get("ro_storage_url").expect("param [ro_storage_url] not found in veda.properties").clone();
 
     info!("CCUS PORT {:?}", ccus_port);
 
@@ -355,7 +386,7 @@ fn main() -> std::io::Result<()> {
     let (sbscr_tx, sbscr_rx): (Sender<(PQMsg, Sender<PQMsg>)>, Receiver<(PQMsg, Sender<PQMsg>)>) = mpsc::channel();
 
     // start queue preparer thread
-    thread::spawn(move || subscribe_manager(sbscr_rx));
+    thread::spawn(move || subscribe_manager(sbscr_rx, ro_client_addr));
 
     HttpServer::new(move || {
         App::new()
@@ -367,6 +398,6 @@ fn main() -> std::io::Result<()> {
             // websocket route
             .service(web::resource("/ccus").route(web::get().to(ws_index)))
     })
-    .bind("[::]:".to_owned() + ccus_port)?
+    .bind("[::]:".to_owned() + &ccus_port)?
     .run()
 }
