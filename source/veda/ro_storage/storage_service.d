@@ -41,8 +41,14 @@ private nothrow string req_prepare(string request, KeyValueDB tickets_storage_r,
         string[]  rel      = request.split(",");
         string    response = "[]";
 
-        if (rel.length == 2)
+        if (rel.length > 2)
         {
+            string[] filters;
+            if (rel.length > 3)
+            {
+                filters = rel[ 2..$ ];
+            }
+
             Individual indv;
             if (rel[ 0 ] == "T")
             {
@@ -71,7 +77,7 @@ private nothrow string req_prepare(string request, KeyValueDB tickets_storage_r,
             }
             else if (indv.getStatus() == ResultCode.Ok)
             {
-                response = individual_to_json(indv).toString();
+                response = individual_to_json(indv, filters).toString();
             }
             else
             {
@@ -103,11 +109,11 @@ void main(string[] args)
     try
     {
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
-                             {
-                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('b', "bind", &bind_url, Required.no,
-                                               "Set binding url, example: --bind=tcp://127.0.0.1:24000");
-                             });
+        {
+            syntax.config.caseSensitive = commando.CaseSensitive.yes;
+            syntax.option('b', "bind", &bind_url, Required.no,
+                          "Set binding url, example: --bind=tcp://127.0.0.1:24000");
+        });
     }
     catch (ArgumentParserException ex)
     {
