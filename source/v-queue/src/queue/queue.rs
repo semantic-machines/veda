@@ -15,6 +15,27 @@ extern crate log;
 pub const QUEUE_PATH: &str = "./data/queue";
 pub const HEADER_SIZE: usize = 25;
 
+#[derive(PartialEq)]
+pub enum ErrorQueue {
+    NotReady = -911,
+    FailOpen = -4,
+    FailRead = -3,
+    NotFound = -1,
+    Other = -2,
+}
+
+impl ErrorQueue {
+    pub(crate) fn as_str(&self) -> &'static str {
+        match *self {
+            ErrorQueue::NotFound => "not found",
+            ErrorQueue::Other => "other error",
+            ErrorQueue::FailOpen => "fail open",
+            ErrorQueue::FailRead => "fail read",
+            ErrorQueue::NotReady => "not ready",
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Header {
     start_pos: u64,
@@ -64,10 +85,16 @@ impl Consumer {
                     };
 
                     if consumer.get_info() == true {
-                        if consumer.queue.open_part(consumer.id) == true {
+                        if let Ok(_) = consumer.queue.open_part(consumer.id) {
                             &consumer.queue.ff_queue_r.seek(SeekFrom::Start(consumer.pos_record));
                         } else {
-                            return Err(-1);
+                            consumer.queue.is_ready = true;
+                            consumer.id = consumer.queue.id;
+                            if let Ok(_) = consumer.queue.open_part(consumer.id) {
+                                &consumer.queue.ff_queue_r.seek(SeekFrom::Start(consumer.pos_record));
+                            } else {
+                                return Err(-1);
+                            }
                         }
                     } else {
                         return Err(-1);
@@ -165,8 +192,8 @@ impl Consumer {
 
     pub fn pop_header(&mut self) -> bool {
         if self.count_popped >= self.queue.count_pushed {
-            if self.queue.get_info_of_part(self.id) == false {
-                error!("queue:consumer({}):pop, queue {} not ready", self.name, self.queue.name);
+            if let Err(e) = self.queue.get_info_of_part(self.id, false) {
+                error!("{}, queue:consumer({}):pop, queue {}{} not ready", e.as_str(), self.name, self.queue.name, self.id);
                 return false;
             }
         }
@@ -179,13 +206,19 @@ impl Consumer {
             }
 
             if self.queue.id > self.id {
-                self.id = self.id + 1;
+                while self.id < self.queue.id {
+                    self.id = self.id + 1;
 
-                debug!("next part {}", self.id);
+                    debug!("prepare next part {}", self.id);
 
-                if self.queue.get_info_of_part(self.id) == false {
-                    error!("queue:consumer({}):pop, queue {} not ready", self.name, self.queue.name);
-                    return false;
+                    if let Err(e) = self.queue.get_info_of_part(self.id, false) {
+                        if e == ErrorQueue::NotFound {
+                            warn!("queue:consumer({}):pop, queue {}:{} {}", self.name, self.queue.name, self.id, e.as_str());
+                        } else {
+                            error!("queue:consumer({}):pop, queue {}:{} {}", self.name, self.queue.name, self.id, e.as_str());
+                            return false;
+                        }
+                    }
                 }
 
                 self.count_popped = 0;
@@ -194,7 +227,9 @@ impl Consumer {
                 self.open(true);
                 self.put_info();
 
-                self.queue.open_part(self.id);
+                if let Err(e) = self.queue.open_part(self.id) {
+                    error!("queue:consumer({}):pop, queue {}:{}, open part: {}", self.name, self.queue.name, self.id, e.as_str());
+                }
             }
         }
         //self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record));
@@ -355,7 +390,9 @@ impl Queue {
             };
 
             if queue.get_info_queue() == true {
-                queue.get_info_of_part(queue.id);
+                if let Err(e) = queue.get_info_of_part(queue.id, true) {
+                    error!("queue:{}:{} open, get info of part: {}", queue.name, queue.id, e.as_str());
+                }
             }
 
             return Ok(queue);
@@ -364,9 +401,9 @@ impl Queue {
         return Err(-1);
     }
 
-    pub fn open_part(&mut self, part_id: u32) -> bool {
+    pub fn open_part(&mut self, part_id: u32) -> Result<u32, ErrorQueue> {
         if self.is_ready == false {
-            return false;
+            return Err(ErrorQueue::NotReady);
         }
 
         if let Ok(ff) = OpenOptions::new()
@@ -377,20 +414,24 @@ impl Queue {
         {
             self.ff_info_push_w = ff;
         } else {
+            error!("[{}] fail open info push, part {}", self.name, part_id);
             self.is_ready = false;
-            return false;
+            return Err(ErrorQueue::FailOpen);
         }
-
-        info!("[{}] open part {}", self.name, part_id);
 
         if let Ok(f) = File::open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
             self.ff_queue_r = f;
         } else {
+            error!("[{}] fail open part {}", self.name, part_id);
             self.is_ready = false;
-            return false;
+            return Err(ErrorQueue::FailOpen);
         }
 
-        return self.get_info_of_part(self.id);
+        self.id = part_id;
+
+        info!("[{}] open part {}", self.name, part_id);
+
+        return self.get_info_of_part(self.id, false);
     }
 
     pub fn get_info_queue(&mut self) -> bool {
@@ -432,8 +473,8 @@ impl Queue {
         return res;
     }
 
-    pub fn get_info_of_part(&mut self, part_id: u32) -> bool {
-        if self.id != part_id {
+    pub fn get_info_of_part(&mut self, part_id: u32, reopen: bool) -> Result<u32, ErrorQueue> {
+        if self.id != part_id || reopen {
             if let Ok(ff) = OpenOptions::new()
                 .read(true)
                 .write(true)
@@ -442,7 +483,7 @@ impl Queue {
             {
                 self.ff_info_push_w = ff;
             } else {
-                return false;
+                return Err(ErrorQueue::NotFound);
             }
         }
 
@@ -474,7 +515,7 @@ impl Queue {
                     None => res = false,
                 }
             } else {
-                return false;
+                return Err(ErrorQueue::Other);
             }
 
             break;
@@ -483,10 +524,11 @@ impl Queue {
         if res == true {
             self.right_edge = right_edge;
             self.count_pushed = count_pushed;
+            return Ok(part_id);
         }
 
         //info!("queue ({}): count_pushed:{}, right_edge:{}, id:{}, ready:{}", self.name, self.count_pushed, self.right_edge, self.id, self.is_ready);
 
-        return res;
+        return Err(ErrorQueue::Other);
     }
 }
