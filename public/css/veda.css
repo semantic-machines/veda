@@ -522,10 +522,13 @@ textarea {
   border: none;
   box-shadow: none;
 }
-.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover),
-.invalid, .invalid *:not(#invalid-alert-msg):not(#invalid-alert-recover) {
+.deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover) {
   text-decoration: none!important;
   color: #aaa;
+}
+A.invalid, TR.invalid, SPAN.invalid, DIV.suggestion.invalid {
+  text-decoration: none!important;
+  color: #a94442;
 }
 dl {
   margin-top: 0;
