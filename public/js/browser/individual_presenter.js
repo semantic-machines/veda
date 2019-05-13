@@ -315,14 +315,13 @@ veda.Module(function (veda) { "use strict";
     }
     template.on("recover", recoverHandler);
 
-    // Valid alert
     function validHandler () {
       if ( this.hasValue("v-s:valid", false) && mode === "view" ) {
         if ( container.prop("id") === "main" && !template.hasClass("invalid") ) {
           var alert = new veda.IndividualModel("v-s:InvalidAlert")["rdfs:label"].join(" ");
           var invalidAlert = $(
             '<div id="invalid-alert" class="container sheet margin-lg">\
-              <div class="alert alert-danger no-margin clearfix" role="alert">\
+              <div class="alert alert-warning no-margin clearfix" role="alert">\
                 <p id="invalid-alert-msg">' + alert + '</p>\
               </div>\
             </div>'
@@ -342,7 +341,7 @@ veda.Module(function (veda) { "use strict";
       individual.off("v-s:valid", validHandler);
     });
     validHandler.call(individual);
-//# sourceURL=Individual_presenter
+    
     // Draft label
     var draftable, showLabel;
 
