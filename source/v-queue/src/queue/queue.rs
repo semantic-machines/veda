@@ -281,10 +281,13 @@ impl Consumer {
         }
 
         if let Ok(readed_size) = self.queue.ff_queue_r.read(msg) {
-            if readed_size != msg.len() {
-                // attempt read again
-                if self.count_popped == self.queue.count_pushed {
+            if readed_size != msg.len() && self.count_popped == self.queue.count_pushed {
+                warn!("Detected 'Read Tail Message'");
+
+                if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
                     return Err(ErrorQueue::FailReadTailMessage);
+                } else {
+                    return Err(ErrorQueue::FailRead);
                 }
             }
 
