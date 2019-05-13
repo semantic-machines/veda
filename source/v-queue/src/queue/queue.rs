@@ -18,20 +18,24 @@ pub const HEADER_SIZE: usize = 25;
 #[derive(PartialEq)]
 pub enum ErrorQueue {
     NotReady = -911,
+    InvalidChecksum = -6,
+    FailReadTailMessage = -5,
     FailOpen = -4,
     FailRead = -3,
-    NotFound = -1,
-    Other = -2,
+    NotFound = -2,
+    Other = -1,
 }
 
 impl ErrorQueue {
-    pub(crate) fn as_str(&self) -> &'static str {
+    pub fn as_str(&self) -> &'static str {
         match *self {
             ErrorQueue::NotFound => "not found",
             ErrorQueue::Other => "other error",
             ErrorQueue::FailOpen => "fail open",
             ErrorQueue::FailRead => "fail read",
             ErrorQueue::NotReady => "not ready",
+            ErrorQueue::FailReadTailMessage => "fail read tail message",
+            ErrorQueue::InvalidChecksum => "invalid checksum",
         }
     }
 }
@@ -271,46 +275,21 @@ impl Consumer {
         return true;
     }
 
-    pub fn pop_body(&mut self, msg: &mut [u8]) -> bool {
+    pub fn pop_body(&mut self, msg: &mut [u8]) -> Result<usize, ErrorQueue> {
         if self.is_ready == false {
-            return false;
+            return Err(ErrorQueue::NotReady);
         }
 
         if let Ok(readed_size) = self.queue.ff_queue_r.read(msg) {
             if readed_size != msg.len() {
-                let mut f_err = true;
-
                 // attempt read again
                 if self.count_popped == self.queue.count_pushed {
-                    if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
-                        if let Ok(readed_size) = self.queue.ff_queue_r.read(msg) {
-                            if readed_size == msg.len() {
-                                warn!(
-                                    "success attempt read, [name:{}, id:{}, pos:{}, pop:{}, push:{}]",
-                                    self.name, self.id, self.pos_record, self.count_popped, self.queue.count_pushed
-                                );
-                                f_err = false;
-                            }
-                        }
-                    }
-                }
-
-                if f_err == true {
-                    error!(
-                        "invalid message body length: expected:{}, readed:{}, [name:{}, id:{}, pos:{}, pop:{}, push:{}]",
-                        msg.len(),
-                        readed_size,
-                        self.name,
-                        self.id,
-                        self.pos_record,
-                        self.count_popped,
-                        self.queue.count_pushed
-                    );
-                    self.is_ready = false;
-                    return false;
+                    return Err(ErrorQueue::FailReadTailMessage);
                 }
             }
+
             debug!("msg={:?}", msg);
+
             self.pos_record = self.pos_record + HEADER_SIZE as u64 + readed_size as u64;
             self.hash.update(msg);
 
@@ -319,13 +298,12 @@ impl Consumer {
             if crc32 != self.header.crc {
                 error!("CRC fail, set consumer.ready = false");
                 self.is_ready = false;
-                return false;
+                return Err(ErrorQueue::InvalidChecksum);
             }
+            return Ok(readed_size);
         } else {
-            return false;
+            return Err(ErrorQueue::FailRead);
         }
-
-        return true;
     }
 
     pub fn put_info(&mut self) {

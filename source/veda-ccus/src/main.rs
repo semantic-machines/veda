@@ -183,7 +183,7 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
 
     let mut is_ro_storage_ready = false;
     let mut ro_storage_client: Socket;
-    let mut total_prepared_count : u64 = 0;
+    let mut total_prepared_count: u64 = 0;
 
     if let Ok(c) = Socket::new(Protocol::Req0) {
         ro_storage_client = c;
@@ -340,13 +340,18 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
             let mut msg = Individual::new(vec![0; (consumer.header.msg_length) as usize]);
 
             // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-            if consumer.pop_body(&mut msg.binobj) == false {
-                continue;
+            if let Err(e) = consumer.pop_body(&mut msg.binobj) {
+                if e == ErrorQueue::FailReadTailMessage {
+                    continue;
+                } else {
+                    error!("STOP: fail read from queue: {}", e.as_str());
+                    return;
+                }
             }
 
             // запустим ленивый парсинг сообщения в Indidual
             if msgpack2individual(&mut msg) == false {
-                error!("fail parse, stop");
+                error!("fail parse, retry");
                 continue;
             }
 
@@ -371,8 +376,6 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
             if total_prepared_count % 1000 == 0 {
                 info!("get from queue, count: {}", total_prepared_count);
             }
-
-
         }
     } else {
         error!("STOP: fail open queue");
