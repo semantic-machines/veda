@@ -331,6 +331,8 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
                 }
             }
 
+            // !!! TODO заменить sleep на проверку прошедшего времени с последней ошибки чтения очереди
+
             // пробуем взять из очереди заголовок сообщения
             if consumer.pop_header() == false {
                 thread::sleep(time::Duration::from_millis(10));
@@ -342,6 +344,7 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
             // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
             if let Err(e) = consumer.pop_body(&mut msg.binobj) {
                 if e == ErrorQueue::FailReadTailMessage {
+                    thread::sleep(time::Duration::from_millis(10));
                     continue;
                 } else {
                     error!("STOP: fail read from queue: {}", e.as_str());
