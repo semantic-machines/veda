@@ -183,22 +183,23 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
 
     let mut is_ro_storage_ready = false;
     let mut ro_storage_client: Socket;
+    let mut total_prepared_count : u64 = 0;
 
     if let Ok(c) = Socket::new(Protocol::Req0) {
         ro_storage_client = c;
         if let Err(e) = ro_storage_client.dial(ro_client_addr.as_str()) {
             error!("fail dial to ro-storage, [{}], err={}", ro_client_addr, e);
-        }
+        } else {
+            let req = Message::from("I,cfg:standart_node".as_bytes());
 
-        let req = Message::from("I,cfg:standart_node".as_bytes());
+            ro_storage_client.send(req).unwrap();
 
-        ro_storage_client.send(req).unwrap();
+            // Wait for the response from the server.
+            let msg = ro_storage_client.recv().unwrap();
 
-        // Wait for the response from the server.
-        let msg = ro_storage_client.recv().unwrap();
-
-        if msg.len() > 0 {
-            is_ro_storage_ready = true;
+            if msg.len() > 0 {
+                is_ro_storage_ready = true;
+            }
         }
     } else {
         error!("fail connect to ro-storage, [{}]", ro_client_addr);
@@ -216,7 +217,7 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
     // key:uri [counter, count_subscribe]
     let mut uri2counter: HashMap<String, (u64, u64)> = HashMap::new();
 
-    if let Ok(mut consumer) = Consumer::new("ccus", "individuals-flow") {
+    if let Ok(mut consumer) = Consumer::new("CCUS1", "individuals-flow") {
         loop {
             if let Ok(msg) = rx.try_recv() {
                 //info!("@QUEUE PREPARER: RECV: {:?}", msg);
@@ -364,6 +365,14 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
             }
 
             consumer.commit_and_next();
+
+            total_prepared_count += 1;
+
+            if total_prepared_count % 1000 == 0 {
+                info!("get from queue, count: {}", total_prepared_count);
+            }
+
+
         }
     } else {
         error!("STOP: fail open queue");
