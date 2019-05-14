@@ -341,14 +341,14 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
                 if e == ErrorQueue::FailReadTailMessage {
                     continue;
                 } else {
-                    error!("STOP: fail read from queue: {}", e.as_str());
-                    return;
+                    error!("{} get msg from queue: {}", total_prepared_count, e.as_str());
+                    continue;
                 }
             }
 
             // запустим ленивый парсинг сообщения в Indidual
             if msgpack2individual(&mut msg) == false {
-                error!("fail parse, retry");
+                error!("{}: fail parse, retry", total_prepared_count);
                 continue;
             }
 
@@ -383,13 +383,13 @@ fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "info,actix_server=info,actix_web=info");
     env_logger::init();
 
-    let conf = Ini::load_from_file("veda.properties").expect("File load veda.properties file");
+    let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
     let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties").clone();
     let ro_client_addr = section.get("ro_storage_url").expect("param [ro_storage_url] not found in veda.properties").clone();
 
-    info!("CCUS PORT {:?}", ccus_port);
+    info!("CCUS PORT={:?}, RO-CLIENT={:?}", ccus_port, ro_client_addr);
 
     // создадим канал приема и передачи с нитью subscriber_manager
     let (sbscr_tx, sbscr_rx): (Sender<(PQMsg, Sender<PQMsg>)>, Receiver<(PQMsg, Sender<PQMsg>)>) = mpsc::channel();
