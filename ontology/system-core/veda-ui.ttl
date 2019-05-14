@@ -2602,32 +2602,36 @@ v-ui:TreeTemplate
   }
 
   function getIn(root) {
-    return new Promise(function (resolve, reject) {
-      if (!individual.treeConfig || !individual.treeConfig.inProperty) {
-        resolve([]);
-      }
-      var q = individual.treeConfig.inProperty.map(function (property) {
-          return "'" + property.id + "'=='" + root.id + "'";
-        }).join(" || ");
-      if ( individual.treeConfig.allowedClass ) {
-        var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
-          return "'rdf:type'=='" + allowedClass.id + "'";
-        }).join(" || ");
-        q = "(" + q + ") && (" + allowed + ")";
-      }
-      var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
-      if (withDeleted) {
-        q = "(" + q + ") || (" + q + " && 'v-s:deleted'== true )";
-      }
-      query({
-        ticket: veda.ticket,
-        query: q,
-        sort: sort,
-        async: true
-      }).then(function (queryResult) {
-        var unique = veda.Util.unique( queryResult.result );
-        resolve(unique);
-      });
+    if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+      return [];
+    }
+    var q = individual.treeConfig.inProperty.map(function (property) {
+        return "'" + property.id + "'=='" + root.id + "'";
+      }).join(" || ");
+    if ( individual.treeConfig.allowedClass ) {
+      var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
+        return "'rdf:type'=='" + allowedClass.id + "'";
+      }).join(" || ");
+      q = "(" + q + ") && (" + allowed + ")";
+    }
+    var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+    var promises = [];
+    var params = {
+      ticket: veda.ticket,
+      query: q,
+      sort: sort,
+      async: true
+    };
+    promises.push(query(params));
+    if (withDeleted) {
+      params.query = q + " && 'v-s:deleted'== true )";
+      promises.push(query(params));
+    }
+    return Promise.all(promises).then(function(queryResults) {
+      var allResults = queryResults.reduceRight(function(acc, current) {
+        return acc.concat(current.result);
+      }, []);
+      return veda.Util.unique( allResults );
     });
   }
   //# sourceURL=v-ui:TreeTemplate
