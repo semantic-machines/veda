@@ -53,7 +53,7 @@ pub struct Header {
 pub struct Consumer {
     is_ready: bool,
     name: String,
-    queue: Queue,
+    pub queue: Queue,
     ff_info_pop_w: File,
     pub count_popped: u64,
     pos_record: u64,
@@ -357,9 +357,9 @@ pub struct Queue {
     ff_queue_r: File,
     ff_info_push_w: File,
     ff_info_queue_w: File,
-    pub count_pushed: u64,
     right_edge: u64,
-    id: u32,
+    pub count_pushed: u64,
+    pub id: u32,
 }
 
 impl Queue {
