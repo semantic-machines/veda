@@ -2,34 +2,29 @@ use std::collections::HashMap;
 use std::str;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
+use std::thread;
 use std::time::{Duration, Instant};
-use std::{thread, time};
+
+#[macro_use]
+extern crate log;
+use actix_web::middleware::Logger;
 
 use actix::prelude::*;
 use actix::Running::Continue;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 
-use crate::v_onto::individual::*;
-use crate::v_onto::msgpack8individual::msgpack2individual;
-use v_queue::*;
-
-extern crate scan_fmt;
-extern crate v_onto;
-extern crate v_queue;
-
-extern crate ini;
 use ini::Ini;
-
 use nng::{Message, Protocol, Socket};
 
-#[macro_use]
-extern crate log;
-use actix_web::middleware::Logger;
+use v_onto::individual::*;
+use v_onto::msgpack8individual::msgpack2individual;
+use v_queue::*;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(5000);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 const BL_INTERVAL: Duration = Duration::from_millis(1000);
+const SUBSC_MGR_CH_TIMEOUT: Duration = Duration::from_millis(10);
 
 /// do websocket handshake and start `MyWebSocket` actor
 fn ws_index(r: HttpRequest, stream: web::Payload, data: web::Data<AppData>) -> Result<HttpResponse, Error> {
@@ -55,7 +50,6 @@ impl PQMsg {
 #[derive(Debug)]
 struct MyWebSocket {
     hb: Instant,
-    counter: u64,
     subscribe_manager_sender: Sender<(PQMsg, Sender<PQMsg>)>,
     my_sender: Sender<PQMsg>,
     my_receiver: Receiver<PQMsg>,
@@ -88,7 +82,6 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
             }
             ws::Message::Pong(_) => {
                 self.hb = Instant::now();
-                //info!("@WS RECV: {:?}", msg);
             }
             ws::Message::Text(text) => {
                 info!("[{}] Receive: {:?}", self.id, text);
@@ -129,7 +122,6 @@ impl MyWebSocket {
 
         Self {
             hb: Instant::now(),
-            counter: 0,
             subscribe_manager_sender: tx,
             my_sender: ch.0,
             my_receiver: ch.1,
@@ -224,7 +216,8 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
 
     if let Ok(mut consumer) = Consumer::new("CCUS1", "individuals-flow") {
         loop {
-            if let Ok(msg) = rx.try_recv() {
+            //if let Ok(msg) = rx.try_recv() {
+            if let Ok(msg) = rx.recv_timeout(SUBSC_MGR_CH_TIMEOUT) {
                 //info!("@QUEUE PREPARER: RECV: {:?}", msg);
 
                 let from = msg.0.from;
@@ -336,11 +329,8 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
                 }
             }
 
-            // !!! TODO заменить sleep на проверку прошедшего времени с последней ошибки чтения очереди
-
             // пробуем взять из очереди заголовок сообщения
             if consumer.pop_header() == false {
-                thread::sleep(time::Duration::from_millis(10));
                 continue;
             }
 
@@ -349,7 +339,6 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
             // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
             if let Err(e) = consumer.pop_body(&mut msg.binobj) {
                 if e == ErrorQueue::FailReadTailMessage {
-                    thread::sleep(time::Duration::from_millis(10));
                     continue;
                 } else {
                     error!("STOP: fail read from queue: {}", e.as_str());
@@ -370,7 +359,7 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
                     debug!("FOUND IN SUBSCRIBE: uri={}, counters={:?}", uri_from_queue, counters);
                     // берем u_counter
                     let counter_from_queue = msg.get_first_integer("u_count");
-                    //info!("uri={}, {}", uri_from_queue, counter_from_queue);
+                    debug!("uri={}, {}", uri_from_queue, counter_from_queue);
 
                     counters.0 = counter_from_queue as u64;
                 } else {
