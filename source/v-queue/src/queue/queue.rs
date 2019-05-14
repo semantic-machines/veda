@@ -281,14 +281,15 @@ impl Consumer {
         }
 
         if let Ok(readed_size) = self.queue.ff_queue_r.read(msg) {
-            if readed_size != msg.len() && self.count_popped == self.queue.count_pushed {
-                warn!("Detected 'Read Tail Message'");
+            if readed_size != msg.len() {
+                if self.count_popped == self.queue.count_pushed {
+                    warn!("Detected problem with 'Read Tail Message': size fail");
 
-                if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
-                    return Err(ErrorQueue::FailReadTailMessage);
-                } else {
-                    return Err(ErrorQueue::FailRead);
+                    if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
+                        return Err(ErrorQueue::FailReadTailMessage);
+                    }
                 }
+                return Err(ErrorQueue::FailRead);
             }
 
             debug!("msg={:?}", msg);
@@ -299,6 +300,14 @@ impl Consumer {
             let crc32: u32 = self.hash.clone().finalize();
 
             if crc32 != self.header.crc {
+                if self.count_popped == self.queue.count_pushed {
+                    warn!("Detected problem with 'Read Tail Message': CRC fail");
+
+                    if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
+                        return Err(ErrorQueue::FailReadTailMessage);
+                    }
+                }
+
                 error!("CRC fail, set consumer.ready = false");
                 self.is_ready = false;
                 return Err(ErrorQueue::InvalidChecksum);
