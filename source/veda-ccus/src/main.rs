@@ -27,8 +27,9 @@ use nng::{Message, Protocol, Socket};
 extern crate log;
 use actix_web::middleware::Logger;
 
-const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(1000);
+const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(5000);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
+const BL_INTERVAL: Duration = Duration::from_millis(1000);
 
 /// do websocket handshake and start `MyWebSocket` actor
 fn ws_index(r: HttpRequest, stream: web::Payload, data: web::Data<AppData>) -> Result<HttpResponse, Error> {
@@ -65,6 +66,7 @@ impl Actor for MyWebSocket {
     type Context = ws::WebsocketContext<Self>;
 
     fn started(&mut self, ctx: &mut Self::Context) {
+        self.bl(ctx);
         self.hb(ctx);
     }
 
@@ -81,21 +83,11 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for MyWebSocket {
         match msg {
             ws::Message::Ping(msg) => {
                 self.hb = Instant::now();
+
                 ctx.pong(&msg);
             }
             ws::Message::Pong(_) => {
                 self.hb = Instant::now();
-                self.counter = self.counter + 1;
-
-                if let Ok(_) = self.subscribe_manager_sender.send((PQMsg::new("?", self.id), self.my_sender.clone())) {
-                    if let Ok(msg) = self.my_receiver.recv() {
-                        if msg.data.len() > 0 {
-                            info!("[{}] Send: {}", self.id, msg.data);
-                            ctx.text(msg.data);
-                        }
-                    }
-                }
-
                 //info!("@WS RECV: {:?}", msg);
             }
             ws::Message::Text(text) => {
@@ -170,6 +162,19 @@ impl MyWebSocket {
             }
 
             ctx.ping("");
+        });
+    }
+
+    fn bl(&self, ctx: &mut <Self as Actor>::Context) {
+        ctx.run_interval(BL_INTERVAL, |act, ctx| {
+            if let Ok(_) = act.subscribe_manager_sender.send((PQMsg::new("?", act.id), act.my_sender.clone())) {
+                if let Ok(msg) = act.my_receiver.recv() {
+                    if msg.data.len() > 0 {
+                        info!("[{}] Send: {}", act.id, msg.data);
+                        ctx.text(msg.data);
+                    }
+                }
+            }
         });
     }
 }
