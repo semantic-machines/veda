@@ -224,7 +224,7 @@ void main(string[] args)
 
     Module *[ string ] modules;
 
-    modules[ "veda-lmdb-srv" ]      = new Module("veda-ro-storage", "veda-ro-storage", [], [], false, false, 0);
+    modules[ "veda-ro-storage" ]      = new Module("veda-ro-storage", "veda-ro-storage", [], [], false, false, 0);
     modules[ "veda-mstorage" ]      = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
     modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", "veda-ft-indexer", [], [ "fulltext_indexer" ], false, false, 2);
     modules[ "veda-ft-query" ]      = new Module("veda-ft-query", "veda-ft-query", [], [], false, false, 3);
@@ -439,7 +439,7 @@ void main(string[] args)
                 else
                 {
                     stderr.writeln("Ok, pid=", pid, ", module ", eml);
-                    auto filename = eml.replace(" ", "_");
+                    auto filename = eml.replace(" ", "_").replace("-", "_").replace("=", "_").replace("/", "_");
                     std.file.write(".pids/" ~ filename ~ "-pid", text(pid));
                 }
             }
