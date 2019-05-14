@@ -410,7 +410,15 @@ fn main() -> std::io::Result<()> {
 
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
     let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties").clone();
-    let ro_client_addr = section.get("ro_storage_url").expect("param [ro_storage_url] not found in veda.properties").clone();
+
+    let ro_client_addr: String;
+
+    if let Some(p) = section.get("ro_storage_url") {
+        ro_client_addr = p.to_string();
+    } else {
+        ro_client_addr = "".to_string();
+        warn!("param [ro_storage_url] not found in veda.properties")
+    }
 
     info!("CCUS PORT={:?}, RO-CLIENT={:?}", ccus_port, ro_client_addr);
 
