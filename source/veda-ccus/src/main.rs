@@ -24,7 +24,7 @@ use v_queue::*;
 const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(5000);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(60);
 const BL_INTERVAL: Duration = Duration::from_millis(1000);
-const SUBSC_MGR_CH_TIMEOUT: Duration = Duration::from_millis(10);
+const SUBSC_MGR_CH_TIMEOUT: Duration = Duration::from_millis(3);
 
 /// do websocket handshake and start `MyWebSocket` actor
 fn ws_index(r: HttpRequest, stream: web::Payload, data: web::Data<AppData>) -> Result<HttpResponse, Error> {
@@ -329,49 +329,72 @@ fn subscribe_manager(rx: Receiver<(PQMsg, Sender<PQMsg>)>, ro_client_addr: Strin
                 }
             }
 
-            // пробуем взять из очереди заголовок сообщения
-            if consumer.pop_header() == false {
+            // READ QUEUE
+
+            let mut size_batch = 0;
+
+            // read queue current part info
+            if let Err(e) = consumer.queue.get_info_of_part(consumer.id, true) {
+                error!("{} get_info_of_part {}: {}", total_prepared_count, consumer.id, e.as_str());
                 continue;
             }
 
-            let mut msg = Individual::new(vec![0; (consumer.header.msg_length) as usize]);
+            if consumer.queue.count_pushed - consumer.count_popped == 0 {
+                // if not new messages, read queue info
+                consumer.queue.get_info_queue();
 
-            // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-            if let Err(e) = consumer.pop_body(&mut msg.binobj) {
-                if e == ErrorQueue::FailReadTailMessage {
-                    continue;
-                } else {
-                    error!("{} get msg from queue: {}", total_prepared_count, e.as_str());
-                    continue;
+                if consumer.queue.id > consumer.id {
+                    size_batch = 1;
                 }
+            } else if consumer.queue.count_pushed - consumer.count_popped > 0 {
+                debug!("count unread msg={}", consumer.queue.count_pushed - consumer.count_popped);
+                size_batch = consumer.queue.count_pushed - consumer.count_popped;
             }
 
-            // запустим ленивый парсинг сообщения в Indidual
-            if msgpack2individual(&mut msg) == false {
-                error!("{}: fail parse, retry", total_prepared_count);
-                continue;
-            }
-
-            // берем поле [uri]
-            if let Ok(uri_from_queue) = msg.get_first_literal("uri") {
-                // найдем есть ли среди подписанных индивидов, индивид из очереди
-                if let Some(counters) = uri2counter.get_mut(&uri_from_queue) {
-                    debug!("FOUND IN SUBSCRIBE: uri={}, counters={:?}", uri_from_queue, counters);
-                    // берем u_counter
-                    let counter_from_queue = msg.get_first_integer("u_count");
-                    debug!("uri={}, {}", uri_from_queue, counter_from_queue);
-
-                    counters.0 = counter_from_queue as u64;
-                } else {
+            for _it in 0..size_batch {
+                // пробуем взять из очереди заголовок сообщения
+                if consumer.pop_header() == false {
+                    break;
                 }
-            }
 
-            consumer.commit_and_next();
+                let mut msg = Individual::new(vec![0; (consumer.header.msg_length) as usize]);
 
-            total_prepared_count += 1;
+                // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
+                if let Err(e) = consumer.pop_body(&mut msg.binobj) {
+                    if e == ErrorQueue::FailReadTailMessage {
+                        break;
+                    } else {
+                        error!("{} get msg from queue: {}", total_prepared_count, e.as_str());
+                        break;
+                    }
+                }
 
-            if total_prepared_count % 1000 == 0 {
-                info!("get from queue, count: {}", total_prepared_count);
+                // запустим ленивый парсинг сообщения в Indidual
+                if msgpack2individual(&mut msg) == false {
+                    error!("{}: fail parse, retry", total_prepared_count);
+                    break;
+                }
+
+                // берем поле [uri]
+                if let Ok(uri_from_queue) = msg.get_first_literal("uri") {
+                    // найдем есть ли среди подписанных индивидов, индивид из очереди
+                    if let Some(counters) = uri2counter.get_mut(&uri_from_queue) {
+                        debug!("FOUND IN SUBSCRIBE: uri={}, counters={:?}", uri_from_queue, counters);
+                        // берем u_counter
+                        let counter_from_queue = msg.get_first_integer("u_count");
+                        debug!("uri={}, {}", uri_from_queue, counter_from_queue);
+
+                        counters.0 = counter_from_queue as u64;
+                    }
+                }
+
+                consumer.commit_and_next();
+
+                total_prepared_count += 1;
+
+                if total_prepared_count % 1000 == 0 {
+                    info!("get from queue, count: {}", total_prepared_count);
+                }
             }
         }
     } else {
