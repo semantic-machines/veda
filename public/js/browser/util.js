@@ -143,14 +143,77 @@ veda.Module(function (veda) { "use strict";
 
     veda.Backend.query(veda.ticket, "'rdf:type'=='owl:Ontology'")
       .then(function (queryResult) {
-        queryResult.result.map(function (ontology_uri) {
+        var ontologies_uris = queryResult.result;
+        var ontologiesPromises = ontologies_uris.map(function (ontology_uri) {
           var ontology = new veda.IndividualModel(ontology_uri);
-          var prefix = ontology_uri.slice(0, -1);
+          return ontology.load();
+        });
+        return Promise.all(ontologiesPromises);
+      })
+      .then(function (ontologies) {
+        ontologies.forEach(function (ontology) {
+          var prefix = ontology.id.slice(0, -1);
           if (ontology.hasValue("v-s:fullUrl")) {
             all_prefixes[prefix] = ontology["v-s:fullUrl"][0].toString();
           }
         });
+      })
+      .then(function () {
+        individualList.forEach(function (individual) {
+          var subject = prefixer(individual.id);
+          // Type first
+          individual.properties["rdf:type"].map(function (value) {
+            var type_triple = {};
+            type_triple.subject = subject;
+            type_triple.predicate = prefixer("rdf:type");
+            type_triple.object = prefixer(value.data);
+            triples.push(type_triple);
+          });
+          // Other properties
+          Object.getOwnPropertyNames(individual.properties).sort().map(function (property_uri) {
+            if (property_uri === "@" || property_uri === "rdf:type") { return; }
+            individual.properties[property_uri].map(function (item) {
+              var triple = {};
+              triple.subject = subject;
+              triple.predicate = prefixer(property_uri);
+              var value = item.data,
+                  type = item.type,
+                  lang = item.lang;
+              switch (type) {
+                case 4:
+                case "Integer":
+                  triple.object = '"' + value + '"^^' + prefixer("xsd:integer");
+                  break;
+                case 32:
+                case "Decimal":
+                  triple.object = '"' + value + '"^^' + prefixer("xsd:decimal");
+                  break;
+                case 64:
+                case "Boolean":
+                  triple.object = '"' + value + '"^^' + prefixer("xsd:boolean");
+                  break;
+                case 2:
+                case "String":
+                  triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
+                  break;
+                case 8:
+                case "Datetime":
+                  triple.object = '"' + ( value instanceof Date ? value.toISOString() : value ) + '"^^' + prefixer("xsd:dateTime");
+                  break;
+                case 1:
+                case "Uri":
+                  triple.object = prefixer(value);
+                  break;
+              }
+              triples.push(triple);
+            });
+          });
+        });
+        writer.addPrefixes(prefixes);
+        writer.addTriples(triples);
+        writer.end(callback);
       });
+
     function prefixer(uri) {
       try {
         var colonIndex = uri.indexOf(":"),
@@ -169,60 +232,6 @@ veda.Module(function (veda) { "use strict";
         return uri;
       }
     }
-
-    individualList.forEach(function (individual) {
-      var subject = prefixer(individual.id);
-      // Type first
-      individual.properties["rdf:type"].map(function (value) {
-        var type_triple = {};
-        type_triple.subject = subject;
-        type_triple.predicate = prefixer("rdf:type");
-        type_triple.object = prefixer(value.data);
-        triples.push(type_triple);
-      });
-      // Other properties
-      Object.getOwnPropertyNames(individual.properties).sort().map(function (property_uri) {
-        if (property_uri === "@" || property_uri === "rdf:type") { return; }
-        individual.properties[property_uri].map(function (item) {
-          var triple = {};
-          triple.subject = subject;
-          triple.predicate = prefixer(property_uri);
-          var value = item.data,
-              type = item.type,
-              lang = item.lang;
-          switch (type) {
-            case 4:
-            case "Integer":
-              triple.object = '"' + value + '"^^' + prefixer("xsd:integer");
-              break;
-            case 32:
-            case "Decimal":
-              triple.object = '"' + value + '"^^' + prefixer("xsd:decimal");
-              break;
-            case 64:
-            case "Boolean":
-              triple.object = '"' + value + '"^^' + prefixer("xsd:boolean");
-              break;
-            case 2:
-            case "String":
-              triple.object = lang && lang !== "NONE" ? '"' + value + '"@' + lang.toLowerCase() : '"' + value + '"^^' + prefixer("xsd:string");
-              break;
-            case 8:
-            case "Datetime":
-              triple.object = '"' + ( value instanceof Date ? value.toISOString() : value ) + '"^^' + prefixer("xsd:dateTime");
-              break;
-            case 1:
-            case "Uri":
-              triple.object = prefixer(value);
-              break;
-          }
-          triples.push(triple);
-        });
-      });
-    });
-    writer.addPrefixes(prefixes);
-    writer.addTriples(triples);
-    writer.end(callback);
   };
 
   veda.Util.exportTTL = function (individualList) {
