@@ -383,7 +383,10 @@ veda.Module(function (veda) { "use strict";
    * @returns veda.IndividualModel - start form
    */
   veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    return veda.Util.transformation(individual.properties, transform.properties).then(function (transformResult) {
+    var promises = [individual.load(), transform.load()];
+    return Promise.all(promises).then(function(loadedItems) {
+      return veda.Util.transformation(loadedItems[0].properties, loadedItems[1].properties);
+    }).then(function (transformResult) {
       var startForm = new veda.IndividualModel(transformResult[0]);
       startForm.isNew(true);
       startForm.isSync(false);
