@@ -1969,6 +1969,7 @@
         selected = individual.get(rel_uri);
         if (results.length) {
           var rendered = results.map(function (result) {
+            if (result == undefined) return "";
             var tmpl = $("<div class='suggestion'></div>")
               .text( renderTemplate(result) )
               .attr("resource", result.id);
@@ -2059,11 +2060,13 @@
 
       var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
-          var rendered = renderTemplate( individual.get(rel_uri)[0]);
-          var value = fulltext.val();
-          if (value != rendered) {
-            fulltext.val(rendered);
-          }
+          individual.get(rel_uri)[0].load().then(function(loaded) {
+            var rendered = renderTemplate( loaded );
+            var value = fulltext.val();
+            if (value != rendered) {
+              fulltext.val(rendered);
+            }
+          });
         } else if ( isSingle ) {
           fulltext.val("");
         }
@@ -2163,7 +2166,7 @@
       var getList = results.filter( function (uri, i) {
         var cached = veda.cache.get(uri);
         if ( cached ) {
-          result[i] = cached;
+          result[i] = cached.load();
           return false;
         } else {
           return true;
