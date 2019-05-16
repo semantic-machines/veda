@@ -86,7 +86,7 @@ v-s:PsDelegatorForRequestDelegation
   v-ui:forProperty v-s:delegator ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person' || ( 'rdf:type' === 'v-s:Person' && 'v-s:deleted' == true ) ) && 'v-s:hasAccount.isExists'=='true'" ;
+  v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
 .
 v-s:PsDelegatedPositionForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -94,7 +94,7 @@ v-s:PsDelegatedPositionForRequestDelegation
   v-ui:forProperty v-s:delegatedPosition ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 10 ;
-  v-ui:queryPrefix "'rdf:type' === 'v-s:Position' || ( 'rdf:type' === 'v-s:Position' && 'v-s:deleted' == true )" ;
+  v-ui:queryPrefix "'rdf:type' === 'v-s:Position'" ;
 .
 v-s:PsDatesRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -132,14 +132,14 @@ v-s:RequestDelegationTemplate
       <em about="v-s:delegator" property="rdfs:label"></em>
       <div about="@" id="delegator-value" rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
       <div rel="v-s:delegator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
-      <veda-control id="delegator-control" data-type="link" rel="v-s:delegator" class="-view -edit search fulltext"></veda-control>
+      <veda-control id="delegator-control" data-type="link" rel="v-s:delegator" class="-view -edit search fulltext" data-deleted="true"></veda-control>
     </div>
   </div>
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegatedPosition" property="rdfs:label"></em>
       <div rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view edit search"></div>
-      <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext"></veda-control>
+      <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext" data-deleted="true"></veda-control>
       <div id="positions" class="-view edit -search">
         <div class="checkbox">
           <label>
