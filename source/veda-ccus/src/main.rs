@@ -163,7 +163,12 @@ impl WsCCUSSession {
 }
 
 fn main() -> std::io::Result<()> {
-    std::env::set_var("RUST_LOG", "info,actix_server=info,actix_web=info");
+    let env_var = "RUST_LOG";
+    match std::env::var_os(env_var) {
+        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
+        None => std::env::set_var(env_var, "info,actix_server=info,actix_web=info"),
+    }
+
     env_logger::init();
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
