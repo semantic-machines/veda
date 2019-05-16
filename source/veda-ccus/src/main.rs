@@ -1,10 +1,10 @@
 #[macro_use]
 extern crate log;
 
-use std::time::{Duration, Instant};
 use actix::prelude::*;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
+use std::time::{Duration, Instant};
 
 use ini::Ini;
 
@@ -37,6 +37,15 @@ struct WsCCUSSession {
     addr: Addr<server::CCUSServer>,
 }
 
+impl Drop for WsCCUSSession {
+    fn drop(&mut self) {
+        debug!("Drop WsCCUSSession");
+        self.addr.do_send(server::Disconnect {
+            id: self.id,
+        });
+    }
+}
+
 impl Actor for WsCCUSSession {
     type Context = ws::WebsocketContext<Self>;
 
@@ -66,6 +75,12 @@ impl Actor for WsCCUSSession {
                 fut::ok(())
             })
             .wait(ctx);
+    }
+
+    fn stopped(&mut self, _: &mut Self::Context) {
+        self.addr.do_send(server::Disconnect {
+            id: self.id,
+        });
     }
 
     fn stopping(&mut self, _: &mut Self::Context) -> Running {
@@ -112,6 +127,10 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsCCUSSession {
             }
             ws::Message::Nop => (),
         }
+    }
+
+    fn finished(&mut self, ctx: &mut Self::Context) {
+        ctx.stop()
     }
 }
 
@@ -163,7 +182,7 @@ fn main() -> std::io::Result<()> {
 
     info!("CCUS PORT={:?}, RO-CLIENT={:?}", ccus_port, ro_client_addr);
 
-    let sys = System::new("ws-example");
+    let sys = System::new("ws-ccus");
 
     // Start ccus server actor
     let server = server::CCUSServer::default().start();
