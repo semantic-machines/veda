@@ -39,6 +39,8 @@ pub struct CCUSServer {
     queue_consumer: Consumer,
     total_prepared_count: u64,
     rng: ThreadRng,
+    stat_sessions: usize,
+    stat_uris: usize,
 }
 
 const BL_INTERVAL: Duration = Duration::from_millis(1000);
@@ -53,6 +55,8 @@ impl Default for CCUSServer {
             rng: rand::thread_rng(),
             queue_consumer: _consumer,
             total_prepared_count: 0,
+            stat_sessions: 0,
+            stat_uris: 0,
         }
     }
 }
@@ -64,7 +68,7 @@ impl CCUSServer {
         for (uri, uss) in &mut self.uri2sessions {
             if uss.contains(&session_id) {
                 uss.remove(&session_id);
-                info!("[{}]: REMOVE FROM URI={}, {}", session_id, uri, uss.len());
+                debug!("[{}]: REMOVE FROM URI={}, {}", session_id, uri, uss.len());
             }
 
             if uss.len() == 0 {
@@ -74,44 +78,69 @@ impl CCUSServer {
 
         for uri in empty_uris {
             self.uri2sessions.remove(&uri);
-            info!("[{}]: REMOVE URI={}", session_id, uri);
+            debug!("[{}]: REMOVE URI={}", session_id, uri);
         }
     }
 
-    fn send_message(&mut self, message: &str, from: usize) {
+    fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) {
+        let sessions = self.uri2sessions.entry(uri.to_owned()).or_default();
+
+        if sessions.contains(&session_id) == false {
+            sessions.insert(session_id);
+            debug!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", session_id, uri, counter, sessions.len());
+        } else {
+            debug!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", session_id, uri, sessions.len());
+        }
+    }
+
+    fn unsubscribe(&mut self, uri: &str, session_id: usize) {
+        let mut empty_uris: Vec<String> = Vec::new();
+
+        let uss = self.uri2sessions.entry(uri.to_owned()).or_default();
+
+        if uss.contains(&session_id) {
+            uss.remove(&session_id);
+            debug!("[{}]: REMOVE FROM URI={}, {}", session_id, &uri, uss.len());
+        }
+
+        if uss.len() == 0 {
+            empty_uris.push(uri.to_owned());
+        }
+
+        for uri in empty_uris {
+            self.uri2sessions.remove(&uri);
+            debug!("[{}]: REMOVE URI={}", session_id, uri);
+        }
+    }
+
+    fn prepare_command(&mut self, message: &str, session_id: usize) {
         for item in message.split(',') {
             let els: Vec<&str> = item.split('=').collect();
 
             if els.len() == 2 {
                 if els[0] == "ccus" {
                     // Рукопожатие: ccus=Ticket
-                    debug!("[{}]: HANDSHAKE", from);
+                    debug!("[{}]: HANDSHAKE", session_id);
                     break;
                 } else {
-                    // Добавить подписку: +uriN=M[,...]
                     if let Some(uri) = els[0].get(1..) {
                         let mut counter = 0;
                         if let Ok(c) = els[1].parse() {
                             counter = c;
                         };
 
-                        let sessions = self.uri2sessions.entry(uri.to_owned()).or_default();
-
-                        if sessions.contains(&from) == false {
-                            sessions.insert(from);
-                            info!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", from, uri, counter, sessions.len());
-                        } else {
-                            info!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", from, uri, sessions.len());
-                        }
+                        // Добавить подписку: +uriN=M[,...]
+                        self.subscribe(uri, counter, session_id);
                     }
                 }
             } else if els.len() == 1 {
                 if let Some(uri) = els[0].get(1..) {
                     if uri == "*" {
                         // Отменить все подписки: -*
-                        self.unsubscribe_all(from);
+                        self.unsubscribe_all(session_id);
                     } else {
                         // Отменить подписку: -uriN[,...]
+                        self.unsubscribe(uri, session_id);
                     }
                 }
             }
@@ -127,8 +156,18 @@ impl Actor for CCUSServer {
     fn started(&mut self, ctx: &mut Self::Context) {
         info!("Start CCUS");
 
+        ctx.run_interval(BL_INTERVAL * 10, |act, _ctx| {
+            if act.sessions.len() != act.stat_sessions || act.uri2sessions.len() != act.stat_uris {
+                info!("STAT: count subscribers: {}, look uris: {}", act.sessions.len(), act.uri2sessions.len());
+
+                act.stat_sessions = act.sessions.len();
+                act.stat_uris = act.uri2sessions.len();
+            }
+        });
+
         ctx.run_interval(BL_INTERVAL, |act, _ctx| {
             // READ QUEUE
+
             let mut size_batch = 0;
 
             // read queue current part info
@@ -233,8 +272,11 @@ impl Handler<Connect> for CCUSServer {
 
     fn handle(&mut self, msg: Connect, _: &mut Context<Self>) -> Self::Result {
         // register session with random id
+
         let id = self.rng.gen::<usize>();
         self.sessions.insert(id, msg.addr);
+
+        info!("[{}] Registred", id);
 
         // send id back
         id
@@ -246,10 +288,9 @@ impl Handler<Disconnect> for CCUSServer {
     type Result = ();
 
     fn handle(&mut self, msg: Disconnect, _: &mut Context<Self>) {
-        info!("Handler for Disconnect message");
-
         // remove address
         if self.sessions.remove(&msg.id).is_some() {
+            info!("[{}] Unregistred", &msg.id);
             self.unsubscribe_all(msg.id);
         }
     }
@@ -260,6 +301,6 @@ impl Handler<ClientMessage> for CCUSServer {
     type Result = ();
 
     fn handle(&mut self, msg: ClientMessage, _: &mut Context<Self>) {
-        self.send_message(msg.msg.as_str(), msg.id);
+        self.prepare_command(msg.msg.as_str(), msg.id);
     }
 }
