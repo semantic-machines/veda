@@ -43,7 +43,7 @@ pub struct CCUSServer {
     stat_uris: usize,
 }
 
-const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(1000);
+const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(500);
 
 impl Default for CCUSServer {
     fn default() -> CCUSServer {
