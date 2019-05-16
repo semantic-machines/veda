@@ -37,7 +37,7 @@ import { Selector, t } from 'testcafe';
       .click('button#journal')
       .wait(1000)
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
-      .wait(5000)
+      .wait(8000)
       .expect(documentUpdated).eql(1)
       .expect(journal).eql(2)
       //не изменяем shortlabel -> Проверяем количество записей в журнале

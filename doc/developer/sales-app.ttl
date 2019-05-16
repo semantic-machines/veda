@@ -51,5 +51,8 @@ cs:SalesIcon
 .
 
 
-# В config.ttl в параметре внести cfg:Welcome в поле rdf:value внести значение cs:SalesApplication
+# В config.ttl в параметре внести в cfg:Welcome в поле rdf:value внести значение cs:SalesApplication
+# rdf:value cs:SalesApplication;
 # Не забыть объявить префикс cs:
+# @prefix cs: <http://company-sales.com/sample/sales/> .
+
