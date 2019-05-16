@@ -2095,7 +2095,7 @@ v-wf:isDirectTask
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Прямая задача"@ru ;
-  rdfs:label "Is вшксуе ефыд"@en ;
+  rdfs:label "Is direct task"@en ;
   rdfs:domain v-wf:WorkItem ;
   rdfs:domain v-wf:Process ;
   rdfs:domain v-wf:DecisionForm ;
