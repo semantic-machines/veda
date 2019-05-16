@@ -43,7 +43,7 @@ pub struct CCUSServer {
     stat_uris: usize,
 }
 
-const BL_INTERVAL: Duration = Duration::from_millis(1000);
+const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(1000);
 
 impl Default for CCUSServer {
     fn default() -> CCUSServer {
@@ -156,7 +156,7 @@ impl Actor for CCUSServer {
     fn started(&mut self, ctx: &mut Self::Context) {
         info!("Start CCUS");
 
-        ctx.run_interval(BL_INTERVAL * 10, |act, _ctx| {
+        ctx.run_interval(QUEUE_CHECK_INTERVAL * 10, |act, _ctx| {
             if act.sessions.len() != act.stat_sessions || act.uri2sessions.len() != act.stat_uris {
                 info!("STAT: count subscribers: {}, look uris: {}", act.sessions.len(), act.uri2sessions.len());
 
@@ -165,7 +165,7 @@ impl Actor for CCUSServer {
             }
         });
 
-        ctx.run_interval(BL_INTERVAL, |act, _ctx| {
+        ctx.run_interval(QUEUE_CHECK_INTERVAL, |act, _ctx| {
             // READ QUEUE
 
             let mut size_batch = 0;
@@ -184,12 +184,15 @@ impl Actor for CCUSServer {
                     size_batch = 1;
                 }
             } else if act.queue_consumer.queue.count_pushed - act.queue_consumer.count_popped > 0 {
-                debug!("count unread msg={}", act.queue_consumer.queue.count_pushed - act.queue_consumer.count_popped);
-                size_batch = act.queue_consumer.queue.count_pushed - act.queue_consumer.count_popped;
+                if act.queue_consumer.queue.id != act.queue_consumer.id {
+                    size_batch = 1;
+                } else {
+                    size_batch = act.queue_consumer.queue.count_pushed - act.queue_consumer.count_popped;
+                }
             }
 
             if size_batch > 0 {
-                info!("batch size={}", act.total_prepared_count);
+                info!("queue: batch size={}", size_batch);
             }
 
             let mut session2uris: HashMap<usize, HashMap<String, u64>> = HashMap::new();
