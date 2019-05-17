@@ -1192,6 +1192,8 @@ v-ui:IconModalTemplate
     individual.present(cntr, undefined, newMode).then(function (tmpl) {
       if (newMode === "edit") {
         $(".actions", tmpl).remove();
+      } else {
+        ok.remove();
       }
     });
     individual.one("beforeReset", function () {
