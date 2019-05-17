@@ -292,7 +292,7 @@ impl Consumer {
                 return Err(ErrorQueue::FailRead);
             }
 
-            debug!("msg={:?}", msg);
+            //debug!("msg={:?}", msg);
 
             self.pos_record = self.pos_record + HEADER_SIZE as u64 + readed_size as u64;
             self.hash.update(msg);
