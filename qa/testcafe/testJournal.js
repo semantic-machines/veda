@@ -35,9 +35,9 @@ import { Selector, t } from 'testcafe';
       .typeText('veda-control[property="v-s:shortLabel"] textarea.form-control[lang="RU"]', '123')
       .click('button#save')
       .click('button#journal')
-      .wait(1000)
+      .wait(2000)
       .click('li[role="presentation"] span[about="v-ui:JournalTemplate"]')
-      .wait(8000)
+      .wait(5000)
       .expect(documentUpdated).eql(1)
       .expect(journal).eql(2)
       //не изменяем shortlabel -> Проверяем количество записей в журнале
