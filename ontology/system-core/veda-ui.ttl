@@ -1102,7 +1102,16 @@ v-ui:LabelTemplate
           } else if (individual.is("v-s:Person")) {
             content = individual.present(cntr, "v-ui:PersonPopoverTemplate");
           } else {
-            content = individual.present(cntr, "v-ui:PositionPopoverTemplate");
+            var tmp = query(veda.ticket, "'rdf:type' === 'v-s:Appointment' && 'v-s:occupation' == '" +individual.id+ "'").result;
+            if ( tmp.length ) {
+              tmp.forEach(function (uri) {
+                var duplicate = new veda.IndividualModel(uri) ;
+                duplicate.present(cntr, "v-ui:AppointmentPopoverTemplate");
+              });
+              return $(cntr, template).html();
+            } else {
+              return ;
+            }
           }
           return content.on("click", ".close", function (e) {
             e.stopPropagation();
