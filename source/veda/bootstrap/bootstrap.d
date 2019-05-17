@@ -439,7 +439,7 @@ void main(string[] args)
                 else
                 {
                     stderr.writeln("Ok, pid=", pid, ", module ", eml);
-                    auto filename = eml.replace(" ", "_").replace("-", "_").replace("=", "_").replace("/", "_");
+                    auto filename = eml.replace(" ", "_").replace("-", "_").replace("=", "_").replace("/", "_").replace(".", "_");
                     std.file.write(".pids/" ~ filename ~ "-pid", text(pid));
                 }
             }
