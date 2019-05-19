@@ -6,13 +6,12 @@ use v_onto::individual::*;
 use v_onto::msgpack8individual::msgpack2individual;
 use v_queue::*;
 
+const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
+
 /// CCUS server sends this messages to session
 #[derive(Message)]
 pub struct Message(pub String);
 
-/// Message for CCUS server communications
-
-/// New ccus session is created
 #[derive(Message)]
 #[rtype(usize)]
 pub struct Connect {
@@ -33,17 +32,29 @@ pub struct ClientMessage {
     pub msg: String,
 }
 
+pub struct SubscribeElement {
+    counter: u64,
+    sessions: HashSet<usize>,
+}
+
+impl Default for SubscribeElement {
+    fn default() -> SubscribeElement {
+        SubscribeElement {
+            counter: 0,
+            sessions: HashSet::new(),
+        }
+    }
+}
+
 pub struct CCUSServer {
     sessions: HashMap<usize, Recipient<Message>>,
-    uri2sessions: HashMap<String, HashSet<usize>>,
+    uri2sessions: HashMap<String, SubscribeElement>,
     queue_consumer: Consumer,
     total_prepared_count: u64,
     rng: ThreadRng,
     stat_sessions: usize,
     stat_uris: usize,
 }
-
-const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
 
 impl Default for CCUSServer {
     fn default() -> CCUSServer {
@@ -62,58 +73,62 @@ impl Default for CCUSServer {
 }
 
 impl CCUSServer {
-    fn unsubscribe_all(&mut self, session_id: usize) {
-        let mut empty_uris: Vec<String> = Vec::new();
+    fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
+        let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
-        for (uri, uss) in &mut self.uri2sessions {
-            if uss.contains(&session_id) {
-                uss.remove(&session_id);
-                debug!("[{}]: REMOVE FROM URI={}, {}", session_id, uri, uss.len());
-            }
-
-            if uss.len() == 0 {
-                empty_uris.push(uri.to_owned());
-            }
-        }
-
-        for uri in empty_uris {
-            self.uri2sessions.remove(&uri);
-            debug!("[{}]: REMOVE URI={}", session_id, uri);
-        }
-    }
-
-    fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) {
-        let sessions = self.uri2sessions.entry(uri.to_owned()).or_default();
-
-        if sessions.contains(&session_id) == false {
-            sessions.insert(session_id);
-            debug!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", session_id, uri, counter, sessions.len());
+        if el.sessions.contains(&session_id) == false {
+            el.sessions.insert(session_id);
+            debug!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", session_id, uri, counter, el.sessions.len());
         } else {
-            debug!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", session_id, uri, sessions.len());
+            debug!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", session_id, uri, el.sessions.len());
         }
+
+        return el.counter;
     }
 
     fn unsubscribe(&mut self, uri: &str, session_id: usize) {
-        let mut empty_uris: Vec<String> = Vec::new();
+        //let mut empty_uris: Vec<String> = Vec::new();
 
-        let uss = self.uri2sessions.entry(uri.to_owned()).or_default();
+        let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
-        if uss.contains(&session_id) {
-            uss.remove(&session_id);
-            debug!("[{}]: REMOVE FROM URI={}, {}", session_id, &uri, uss.len());
+        if el.sessions.contains(&session_id) {
+            el.sessions.remove(&session_id);
+            debug!("[{}]: REMOVE FROM URI={}, {}", session_id, &uri, el.sessions.len());
         }
 
-        if uss.len() == 0 {
-            empty_uris.push(uri.to_owned());
+        //if el.sessions.len() == 0 {
+        //    empty_uris.push(uri.to_owned());
+        //}
+
+        //for uri in empty_uris {
+        //    self.uri2sessions.remove(&uri);
+        //    debug!("[{}]: REMOVE URI={}", session_id, uri);
+        //}
+    }
+
+    fn unsubscribe_all(&mut self, session_id: usize) {
+        //let mut empty_uris: Vec<String> = Vec::new();
+
+        for (uri, uss) in &mut self.uri2sessions {
+            if uss.sessions.contains(&session_id) {
+                uss.sessions.remove(&session_id);
+                debug!("[{}]: REMOVE FROM URI={}, {}", session_id, uri, uss.sessions.len());
+            }
+
+            //if uss.sessions.len() == 0 {
+            //    empty_uris.push(uri.to_owned());
+            //}
         }
 
-        for uri in empty_uris {
-            self.uri2sessions.remove(&uri);
-            debug!("[{}]: REMOVE URI={}", session_id, uri);
-        }
+        //for uri in empty_uris {
+        //    self.uri2sessions.remove(&uri);
+        //    debug!("[{}]: REMOVE URI={}", session_id, uri);
+        //}
     }
 
     fn prepare_command(&mut self, message: &str, session_id: usize) {
+        let mut changes = String::new();
+
         for item in message.split(',') {
             let els: Vec<&str> = item.split('=').collect();
 
@@ -128,9 +143,19 @@ impl CCUSServer {
                         if let Ok(c) = els[1].parse() {
                             counter = c;
                         };
-
                         // Добавить подписку: +uriN=M[,...]
-                        self.subscribe(uri, counter, session_id);
+
+                        let registred_counter = self.subscribe(uri, counter, session_id);
+
+                        if registred_counter > counter {
+                            if changes.len() > 0 {
+                                changes.push_str(",");
+                            }
+
+                            changes.push_str(&uri.to_owned());
+                            changes.push_str("=");
+                            changes.push_str(&registred_counter.to_string());
+                        }
                     }
                 }
             } else if els.len() == 1 {
@@ -143,6 +168,13 @@ impl CCUSServer {
                         self.unsubscribe(uri, session_id);
                     }
                 }
+            }
+        }
+
+        if changes.len() > 0 {
+            if let Some(addr) = self.sessions.get(&session_id) {
+                let _ = addr.do_send(Message(changes.to_owned()));
+                debug!("send {}", changes);
             }
         }
     }
@@ -224,14 +256,16 @@ impl Actor for CCUSServer {
                 // берем поле [uri]
                 if let Ok(uri_from_queue) = msg.get_first_literal("uri") {
                     // найдем есть ли среди uri на которые есть подписки, uri из очереди
-                    if let Some(sessions) = act.uri2sessions.get_mut(&uri_from_queue) {
-                        debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, sessions);
+                    if let Some(el) = act.uri2sessions.get_mut(&uri_from_queue) {
+                        debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, el.sessions);
 
                         // берем u_counter
                         let counter_from_queue = msg.get_first_integer("u_count") as u64;
                         debug!("uri={}, {}", uri_from_queue, counter_from_queue);
 
-                        for session in sessions.iter() {
+                        el.counter = counter_from_queue;
+
+                        for session in el.sessions.iter() {
                             let urics = session2uris.entry(*session).or_default();
                             urics.insert(uri_from_queue.clone(), counter_from_queue);
                         }
