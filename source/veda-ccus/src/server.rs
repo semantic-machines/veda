@@ -76,11 +76,13 @@ impl CCUSServer {
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
-        if el.sessions.contains(&session_id) == false {
-            el.sessions.insert(session_id);
-            debug!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", session_id, uri, counter, el.sessions.len());
-        } else {
-            debug!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", session_id, uri, el.sessions.len());
+        if el.sessions.len() > 0 {
+            if el.sessions.contains(&session_id) == false {
+                el.sessions.insert(session_id);
+                debug!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", session_id, uri, counter, el.sessions.len());
+            } else {
+                debug!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", session_id, uri, el.sessions.len());
+            }
         }
 
         return el.counter;
@@ -91,11 +93,12 @@ impl CCUSServer {
 
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
-        if el.sessions.contains(&session_id) {
-            el.sessions.remove(&session_id);
-            debug!("[{}]: REMOVE FROM URI={}, {}", session_id, &uri, el.sessions.len());
+        if el.sessions.len() > 0 {
+            if el.sessions.contains(&session_id) {
+                el.sessions.remove(&session_id);
+                debug!("[{}]: REMOVE FROM URI={}, {}", session_id, &uri, el.sessions.len());
+            }
         }
-
         //if el.sessions.len() == 0 {
         //    empty_uris.push(uri.to_owned());
         //}
