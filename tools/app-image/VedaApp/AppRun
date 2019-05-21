@@ -20,7 +20,11 @@ else
 
     cp $APPDIR/control-stop.sh $PWD
     cp $APPDIR/control-start.sh $PWD
-    cp $APPDIR/install-tarantool.sh $PWD
+
+    if ! ldconfig -p | grep libtarantool ; then
+	./$APPDIR/install-tarantool.sh
+    fi
+
     cp $APPDIR/veda.properties $PWD
     cp -r $APPDIR/ontology $PWD
     cp -r $APPDIR/public $PWD
