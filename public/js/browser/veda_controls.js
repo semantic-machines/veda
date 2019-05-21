@@ -1979,6 +1979,9 @@
             if (result.hasValue("v-s:deleted", true)) {
               tmpl.addClass("deleted");
             }
+            if (result.hasValue("v-s:valid", false) && !result.hasValue("v-s:deleted", true) ) {
+              tmpl.addClass("invalid");
+            }
             return tmpl;
           });
           suggestions.empty().append(rendered);
