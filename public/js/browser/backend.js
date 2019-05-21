@@ -357,13 +357,26 @@ veda.Module(function Backend(veda) { "use strict";
         "from"  : isObj ? arg.from : from
       }
     };
-    return call_server(params).catch(function (backendError) {
-      if (backendError.code === 999) {
-        return veda.Backend.query(ticket, query, sort, databases, reopen, top, limit, from);
-      } else {
-        throw backendError;
+    if (typeof params.async !== "undefined" ? params.async : true) {
+      return call_server(params).catch(function (backendError) {
+        if (backendError.code === 999) {
+          return veda.Backend.query(ticket, query, sort, databases, reopen, top, limit, from);
+        } else {
+          throw backendError;
+        }
+      });
+    } else {
+      try {
+        var result = call_server(params);
+        return result;
+      } catch (backendError) {
+        if (backendError.code === 999) {
+          return veda.Backend.query(ticket, query, sort, databases, reopen, top, limit, from);
+        } else {
+          throw backendError;
+        }
       }
-    });
+    }
   }
 
   veda.Backend.get_individual = function get_individual(ticket, uri, reopen) {
