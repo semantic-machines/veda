@@ -103,7 +103,13 @@ VEDA - это платформа для создания и исполнения
 
 #### 1.1.1. Установка заранее собранной системы
 Готовую, собранную заранее платформу можно взять с сайта github.
-Для установки последней собранной версии платформы следует выполнить команду git clone https://github.com/semantic-machines/veda-dist.git, далее запустить скрипт ./tools/install-dependencies.sh
+Для установки последней собранной версии платформы следует перейти по ссылке https://github.com/semantic-machines/veda/releases, и скачать файл Veda-x86_64.AppImage в отдельную заранее созданную папку. Этот файл содержит упакованные бинарные файлы платформы а так же необходимые зависимости. Далее установите атрибут запуска на файле Veda-x86_64.AppImage
+
+```
+chmod +x Veda-x86_64.AppImage
+```
+
+и запустите его. При первичном запуске, в папке где находится файл Veda-x86_64.AppImage должны появится дополнительные файлы для последующих старта и остановки, создастся папка для базы данных и распакуется онтология.  Так-же должен появится файл install-tarantool.sh. Если у вас не была установлена база данных tarantool ранее, то следует перед первым запуском выполнить ее установку с помощью install-tarantool.sh
 
 #### 1.1.2. Самостоятельная сборка из исходных текстов
 Исходные файлы проекта, можно взять на сайте github, для этого следует выполнить команду git clone https://github.com/semantic-machines/veda.git
@@ -321,34 +327,35 @@ cs:amount
 
 ### 2.4. Создание форм пользовательского интерфейса
 
+*Отображение, ввод данных и поиск можно задать с помощью таких объектов как шаблон.*
+
 Создадим формы приложения, позволяющие управлять информацией о покупателях и заказах.
 
 Для этого нам понадобится спроектировать объекты-шаблоны содержащие HTML разметку. Такие шаблоны определят внешний вид классов и поведение пользовательского интерфейса для пользователя. 
 
-
-
-
-
 #### 2.4.1. Экраны управления Покупателями
 
-Создадим обьект класса v-ui:ClassTemplate, в поле v-ui:template впишем HTML код ответственный за отображение данных о покупателе. Не смотря на то, что шаблон из этого примера описывает отображение класса cs:Customer,  один шаблон может быть применим и для нескольких классов.
+Приступим к созданию нашего первого шаблона.
 
-В готовом приложении этот шаблон будет применяться как для ввода, так и для поиска покупателей.
+Для этого создадим обьект класса v-ui:ClassTemplate, в поле v-ui:template впишем HTML код. Таким образом мы сможем задать поведение пользовательского интерфейса для класса cs:Customer. Не смотря на то, что шаблон из этого примера описывает поведение класса cs:Customer,  один шаблон может быть применим и для нескольких классов.
 
 В нашем шаблоне будет всего два поля, это имя заказчика и его e-mail.
 
+**Так шаблон будет отображаться при вводе данных о покупателе:**
 
-
-Так шаблон будет отображаться при вводе данных о покупателе. 
-
-![](/home/itiu/work/veda/doc/developer/customer-template.png)
+![](./customer-template-edit.png)
 
 
 
-Это шаблон в виде объекта:
+**Так при поиске покупателей:**
 
-```
+![](./customer-template-search.png)
 
+
+
+Шаблон в виде объекта:
+
+```html
 cs:CustomerTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Template for cs:Customer class"@en ;
@@ -359,13 +366,15 @@ cs:CustomerTemplate
 
   <em about="cs:name" property="rdfs:label"></em>
   <div class="view -edit search" property="cs:name"></div>
-  <veda-control property="cs:name" data-type="string" class="-view edit search"></veda-control>
+  <veda-control property="cs:name" data-type="string" class="-view edit search">
+  </veda-control>
 
   <em about="cs:email" property="rdfs:label"></em>
   <div class="view -edit search" property="cs:email"></div>
-  <veda-control property="cs:email" data-type="string" class="-view edit search"></veda-control>
+  <veda-control property="cs:email" data-type="string" class="-view edit search">
+  </veda-control>
   
-  <div about="@" class="container sheet view -edit -search" data-template="cs:OrdersByCustomerTemplate"></div>
+  <div about="@" class="container sheet view -edit -search" data-template = "cs:OrdersByCustomerTemplate"></div>
   <br>
   <div class="actions view edit -search">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete journal task"></span>
@@ -373,12 +382,11 @@ cs:CustomerTemplate
 </div>
   """ ;
 .
-
 ```
 
-Разберем подробнее устройство данной HTML разметки:
+**Разберем подробнее устройство вышеприведенной HTML разметки.**
 
-```
+```html
  <h2 about="@" rel="rdf:type" data-template="v-ui:LabelTemplate">
 ```
 
@@ -388,7 +396,7 @@ rel="rdf:type" - у обрабатываемого объекта берется
 
 
 
-```
+```html
 <em about="cs:name" property="rdfs:label"></em>
 ```
 
@@ -396,8 +404,28 @@ rel="rdf:type" - у обрабатываемого объекта берется
 
 
 
-```
+```html
 <div class="view -edit search" property="cs:name"></div>
+```
+
+Это вывод на экран значений свойства cs:name у текущего индивида. 
+
+Обратите внимание что данный тег будет срабатывать для режима view и search, а при вводе не будет, задается такое поведение таким выражением: class="view -edit search"
+
+
+
+```html
+<veda-control property="cs:name" data-type="string" class="-view edit search"></veda-control>
+```
+
+Такой строкой задается собственно само поле ввода данных,  за это отвечает тег veda-control, data-type задает тип вводимых данных.
+
+Подобным образом в описании шаблона задается поле cs:email
+
+```html
+<em about="cs:email" property="rdfs:label"></em>
+<div class="view -edit search" property="cs:email"></div>
+<veda-control property="cs:email" data-type="string" class="-view edit search"></veda-control>
 ```
 
 
