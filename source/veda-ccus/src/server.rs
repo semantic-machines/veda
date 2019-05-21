@@ -106,8 +106,8 @@ impl CCUSServer {
         //}
     }
 
-    fn unsubscribe_all(&mut self, session_id: usize) {
-        //let mut empty_uris: Vec<String> = Vec::new();
+    fn unsubscribe_all(&mut self, session_id: usize, is_clear_unused: bool) {
+        let mut empty_uris: Vec<String> = Vec::new();
 
         for (uri, uss) in &mut self.uri2sessions {
             if uss.sessions.contains(&session_id) {
@@ -115,15 +115,19 @@ impl CCUSServer {
                 debug!("[{}]: REMOVE FROM URI={}, {}", session_id, uri, uss.sessions.len());
             }
 
-            //if uss.sessions.len() == 0 {
-            //    empty_uris.push(uri.to_owned());
-            //}
+            if is_clear_unused {
+                if uss.sessions.len() == 0 {
+                    empty_uris.push(uri.to_owned());
+                }
+            }
         }
 
-        //for uri in empty_uris {
-        //    self.uri2sessions.remove(&uri);
-        //    debug!("[{}]: REMOVE URI={}", session_id, uri);
-        //}
+        if is_clear_unused {
+            for uri in empty_uris {
+                self.uri2sessions.remove(&uri);
+                debug!("[{}]: REMOVE URI={}", session_id, uri);
+            }
+        }
     }
 
     fn prepare_command(&mut self, message: &str, session_id: usize) {
@@ -162,7 +166,7 @@ impl CCUSServer {
                 if let Some(uri) = els[0].get(1..) {
                     if uri == "*" {
                         // Отменить все подписки: -*
-                        self.unsubscribe_all(session_id);
+                        self.unsubscribe_all(session_id, false);
                     } else {
                         // Отменить подписку: -uriN[,...]
                         self.unsubscribe(uri, session_id);
@@ -328,7 +332,7 @@ impl Handler<Disconnect> for CCUSServer {
         // remove address
         if self.sessions.remove(&msg.id).is_some() {
             info!("[{}] Unregistred", &msg.id);
-            self.unsubscribe_all(msg.id);
+            self.unsubscribe_all(msg.id, true);
         }
     }
 }
