@@ -7,6 +7,7 @@ use v_onto::msgpack8individual::msgpack2individual;
 use v_queue::*;
 
 const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
+const STAT_INTERVAL: Duration = Duration::from_millis(10000);
 
 /// CCUS server sends this messages to session
 #[derive(Message)]
@@ -191,7 +192,7 @@ impl Actor for CCUSServer {
     fn started(&mut self, ctx: &mut Self::Context) {
         info!("Start CCUS");
 
-        ctx.run_interval(QUEUE_CHECK_INTERVAL * 10, |act, _ctx| {
+        ctx.run_interval(STAT_INTERVAL, |act, _ctx| {
             if act.sessions.len() != act.stat_sessions || act.uri2sessions.len() != act.stat_uris {
                 info!("STAT: count subscribers: {}, look uris: {}", act.sessions.len(), act.uri2sessions.len());
 
@@ -250,7 +251,7 @@ impl Actor for CCUSServer {
                     }
                 }
 
-                // запустим ленивый парсинг сообщения в Indidual
+                // запустим ленивый парсинг сообщения в Individual
                 if msgpack2individual(&mut msg) == false {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
