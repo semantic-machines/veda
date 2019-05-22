@@ -200,6 +200,7 @@ fn main() -> std::io::Result<()> {
             .service(web::resource("/ccus").to(ccus_route))
     })
     .bind("[::]:".to_owned() + &ccus_port)?
+    .keep_alive(75)
     .start();
 
     sys.run()
