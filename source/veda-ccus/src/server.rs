@@ -1,4 +1,5 @@
 use actix::prelude::*;
+use nng::{Message, Protocol, Socket};
 use rand::{self, rngs::ThreadRng, Rng};
 use std::collections::{HashMap, HashSet};
 use std::time::Duration;
@@ -11,12 +12,12 @@ const STAT_INTERVAL: Duration = Duration::from_millis(10000);
 
 /// CCUS server sends this messages to session
 #[derive(Message)]
-pub struct Message(pub String);
+pub struct Msg(pub String);
 
 #[derive(Message)]
 #[rtype(usize)]
 pub struct Connect {
-    pub addr: Recipient<Message>,
+    pub addr: Recipient<Msg>,
 }
 
 /// Session is disconnected
@@ -48,17 +49,20 @@ impl Default for SubscribeElement {
 }
 
 pub struct CCUSServer {
-    sessions: HashMap<usize, Recipient<Message>>,
+    sessions: HashMap<usize, Recipient<Msg>>,
     uri2sessions: HashMap<String, SubscribeElement>,
     queue_consumer: Consumer,
     total_prepared_count: u64,
     rng: ThreadRng,
     stat_sessions: usize,
     stat_uris: usize,
+    ro_storage_client: Socket,
+    ro_client_addr: String,
+    is_ro_storage_ready: bool,
 }
 
-impl Default for CCUSServer {
-    fn default() -> CCUSServer {
+impl CCUSServer {
+    pub fn new(_ro_client_addr: String) -> CCUSServer {
         let _consumer = Consumer::new("CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
         CCUSServer {
@@ -69,11 +73,12 @@ impl Default for CCUSServer {
             total_prepared_count: 0,
             stat_sessions: 0,
             stat_uris: 0,
+            ro_storage_client: Socket::new(Protocol::Req0).unwrap(),
+            ro_client_addr: _ro_client_addr,
+            is_ro_storage_ready: false,
         }
     }
-}
 
-impl CCUSServer {
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
@@ -177,7 +182,7 @@ impl CCUSServer {
 
         if changes.len() > 0 {
             if let Some(addr) = self.sessions.get(&session_id) {
-                let _ = addr.do_send(Message(changes.to_owned()));
+                let _ = addr.do_send(Msg(changes.to_owned()));
                 debug!("send {}", changes);
             }
         }
@@ -299,11 +304,27 @@ impl Actor for CCUSServer {
                 }
 
                 if let Some(addr) = act.sessions.get(el.0) {
-                    let _ = addr.do_send(Message(changes.to_owned()));
+                    let _ = addr.do_send(Msg(changes.to_owned()));
                     debug!("send {}", changes);
                 }
             }
         });
+
+        if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
+            error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
+        } else {
+            let req = Message::from("I,cfg:standart_node".as_bytes());
+
+            self.ro_storage_client.send(req).unwrap();
+
+            // Wait for the response from the server.
+            let msg = self.ro_storage_client.recv().unwrap();
+
+            if msg.len() > 0 {
+                self.is_ro_storage_ready = true;
+                info!("success connect to ro-storage, [{}]", self.ro_client_addr);
+            }
+        }
     }
 }
 
