@@ -48,6 +48,54 @@ impl Default for SubscribeElement {
     }
 }
 
+struct Storage {
+    ro_storage_client: Socket,
+    ro_client_addr: String,
+    is_ro_storage_ready: bool,
+}
+
+impl Storage {
+    fn new(_ro_client_addr: String) -> Storage {
+        Storage {
+            ro_storage_client: Socket::new(Protocol::Req0).unwrap(),
+            ro_client_addr: _ro_client_addr,
+            is_ro_storage_ready: false,
+        }
+    }
+
+    fn connect(&mut self) {
+        if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
+            error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
+        } else {
+            info!("sucess connect to ro-storage, [{}]", self.ro_client_addr);
+            self.is_ro_storage_ready = true;
+        }
+    }
+
+    fn get(&mut self, uri: &str) -> u64 {
+        if self.is_ro_storage_ready == false {
+            self.connect();
+        }
+
+        if self.is_ro_storage_ready == false {
+            return 0;
+        }
+
+        let req = Message::from(("I,".to_owned() + uri + ",v-s:updateCounter").as_bytes());
+
+        self.ro_storage_client.send(req).unwrap();
+
+        // Wait for the response from the server.
+        let msg = self.ro_storage_client.recv().unwrap();
+
+        let reply = String::from_utf8_lossy(&msg);
+
+        info!("msg={}", reply);
+
+        return 1;
+    }
+}
+
 pub struct CCUSServer {
     sessions: HashMap<usize, Recipient<Msg>>,
     uri2sessions: HashMap<String, SubscribeElement>,
@@ -56,13 +104,11 @@ pub struct CCUSServer {
     rng: ThreadRng,
     stat_sessions: usize,
     stat_uris: usize,
-    ro_storage_client: Socket,
-    ro_client_addr: String,
-    is_ro_storage_ready: bool,
+    storage: Storage,
 }
 
 impl CCUSServer {
-    pub fn new(_ro_client_addr: String) -> CCUSServer {
+    pub fn new(ro_client_addr: String) -> CCUSServer {
         let _consumer = Consumer::new("CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
         CCUSServer {
@@ -73,9 +119,7 @@ impl CCUSServer {
             total_prepared_count: 0,
             stat_sessions: 0,
             stat_uris: 0,
-            ro_storage_client: Socket::new(Protocol::Req0).unwrap(),
-            ro_client_addr: _ro_client_addr,
-            is_ro_storage_ready: false,
+            storage: Storage::new(ro_client_addr),
         }
     }
 
@@ -310,21 +354,7 @@ impl Actor for CCUSServer {
             }
         });
 
-        if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
-            error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
-        } else {
-            let req = Message::from("I,cfg:standart_node".as_bytes());
-
-            self.ro_storage_client.send(req).unwrap();
-
-            // Wait for the response from the server.
-            let msg = self.ro_storage_client.recv().unwrap();
-
-            if msg.len() > 0 {
-                self.is_ro_storage_ready = true;
-                info!("success connect to ro-storage, [{}]", self.ro_client_addr);
-            }
-        }
+        self.storage.get("cfg:standart_node");
     }
 }
 
