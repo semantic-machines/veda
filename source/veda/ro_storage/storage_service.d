@@ -13,7 +13,7 @@ import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.common.logger, veda.util.properd;
 import veda.storage.lmdb.lmdb_driver, veda.storage.tarantool.tarantool_storage, veda.storage.common, veda.common.type, veda.onto.individual,
-       veda.onto.bj8individual.individual8json;
+       veda.onto.bj8individual.individual8json, veda.onto.resource;
 
 const string individuals_db_path = "./data/lmdb-individuals";
 const string tickets_db_path     = "./data/lmdb-tickets";
@@ -41,10 +41,10 @@ private nothrow string req_prepare(string request, KeyValueDB tickets_storage_r,
         string[]  rel      = request.split(",");
         string    response = "[]";
 
-        if (rel.length > 2)
+        if (rel.length > 1)
         {
             string[] filters;
-            if (rel.length > 3)
+            if (rel.length > 2)
             {
                 filters = rel[ 2..$ ];
             }
