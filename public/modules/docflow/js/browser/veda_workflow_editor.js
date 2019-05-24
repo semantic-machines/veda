@@ -303,15 +303,17 @@ jsWorkflow.ready = jsPlumb.ready;
         if (!state.hasValue('v-wf:executor')) {
           return;
         }
-        if (state['v-wf:executor'][0]['rdf:type'][0].id == 'v-s:Appointment') {
-          $("<span/>", {
-            "class" : "glyphicon glyphicon-user"
-          }).appendTo($state);
-        } else {
-          $("<span/>", {
-            "class" : "glyphicon glyphicon-cog"
-          }).appendTo($state);
-        }
+        state['v-wf:executor'][0].load().then(function(executor) {
+          if (executor['rdf:type'][0].id == 'v-s:Appointment') {
+            $("<span/>", {
+              "class" : "glyphicon glyphicon-user"
+            }).appendTo($state);
+          } else {
+            $("<span/>", {
+              "class" : "glyphicon glyphicon-cog"
+            }).appendTo($state);
+          }
+        })
       };
 
       instance.updateSVGBackground = function(item) {
