@@ -1,4 +1,6 @@
-# Платформа VEDA. Руководство по разработке приложений
+# Платформа VEDA. Руководство по разработке приложений.   
+
+*Данная документация актуальна для Veda версии 5.4.X*
 
 **Содержание**
 
@@ -386,13 +388,24 @@ cs:CustomerTemplate
 
 **Разберем подробнее устройство вышеприведенной HTML разметки.**
 
+Разметка шаблона базируется на  существующем формате описания ресурсов в атрибутах: [RDFa](https://en.wikipedia.org/wiki/RDFa).
+
+Один шаблон может быть задан как для отображения так для ввода данных и для поиска, что следует скрывать или показывать задается в атрибуте class значениями view, edit, search.  Если не указать эти значения, то по умолчанию будут действовать все сразу. Если необходимо скрыть то необходимо указать знак - перед значением класса. Пример class="view -edit search": элемент разметки будет доступен в режиме view и search, а в режиме edit будет скрываться.
+
+
+
+И так, первая строка шаблона:
+
 ```html
  <h2 about="@" rel="rdf:type" data-template="v-ui:LabelTemplate">
 ```
 
-Тег about="@" говорит о том что в данном шаблоне будет происходить обработка текущего (переданного извне) объекта. При необходимости, вместо "@" можно подставить ID любого другого объекта.
+Аттрибут *about="@"* говорит о том, что в данном шаблоне будет происходить обработка текущего (переданного извне) объекта. При необходимости, вместо "@" можно подставить ID любого другого объекта.
 
-rel="rdf:type" - у обрабатываемого объекта берется поле "rdf:type" и его значение далее передается другому шаблону, который указывается тегом data-template="v-ui:LabelTemplate".
+*rel="rdf:type"* - у обрабатываемого объекта берется поле "rdf:type" и его значение далее передается другому шаблону, который указывается аттрибутом data-template="v-ui:LabelTemplate".
+
+*data-template="v-ui:LabelTemplate"*, указывает на то что при отображении будет использован шаблон v-ui:LabelTemplate. 
+Как это работает: из текущего индивида, будет взято поле rdf:type, далее по полученному значению (cs:Customer) будет взят этот обьект и уже из него шаблоном v-ui:LabelTemplate извлекается значение поля rdfs:label  и отображается.
 
 
 
@@ -410,7 +423,7 @@ rel="rdf:type" - у обрабатываемого объекта берется
 
 Это вывод на экран значений свойства cs:name у текущего индивида. 
 
-Обратите внимание что данный тег будет срабатывать для режима view и search, а при вводе не будет, задается такое поведение таким выражением: class="view -edit search"
+Обратите внимание что данный элемент будет срабатывать для режима view и search, а при вводе не будет, задается такое поведение таким выражением: class="view -edit search"
 
 
 
@@ -418,7 +431,7 @@ rel="rdf:type" - у обрабатываемого объекта берется
 <veda-control property="cs:name" data-type="string" class="-view edit search"></veda-control>
 ```
 
-Такой строкой задается собственно само поле ввода данных,  за это отвечает тег veda-control, data-type задает тип вводимых данных.
+Такой строкой задается собственно само поле ввода данных,  за это отвечает тег veda-control, а атрибут data-type задает тип вводимых данных.
 
 Подобным образом в описании шаблона задается поле cs:email
 
@@ -430,9 +443,68 @@ rel="rdf:type" - у обрабатываемого объекта берется
 
 
 
+Следующая часть шаблона ссылается на другой шаблон (cs:OrdersByCustomerTemplate) отображающий заказы по данному покупателю. Как видно из атртрибута class, данный элемент будет доступен только в режиме view.
+
+```html
+<div about="@" class="container sheet view -edit -search" data-template = "cs:OrdersByCustomerTemplate"></div>
+```
+
+
+
+Осталось рассмотреть кнопки отвечающие за финальное действие пользователя в данном шаблоне.
+
+```
+ <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete journal task"></span>
+  </div>
+```
+
+Кнопки рисуются шаблоном v-ui:StandardButtonsTemplate и дополнительно во вложенный шаблон передаются два параметра data-embedded и data-buttons. Первый параметр это означает, что режим отображения вложенных шаблонов будет совпадать с режимом родительского шаблона. Второй параметр задает список кнопок доступных для нашего шаблона. 
+
+
+
 #### 2.4.2. Экраны управления Заказами
 
--
+Шаблон управляющий заказами практически идентичен шаблону покупателей, по этому раcмотрим только отличия.
+
+```
+cs:OrderTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Template for cs:Order class"@en ;
+  rdfs:label "Шаблон для класса cs:Order"@ru ;
+  v-ui:template """
+<div class="sheet container">
+  <h2 about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
+
+  <em about="cs:hasCustomer" property="rdfs:label"></em>
+  <div class="view -edit search" rel="cs:hasCustomer" data-template="v-ui:LabelLinkTemplate"></div>
+  <veda-control rel="cs:hasCustomer" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+
+  <em about="cs:date" property="rdfs:label"></em>
+  <div class="view -edit search" property="cs:date"></div>
+  <veda-control property="cs:date" data-type="date" class="-view edit search"></veda-control>
+
+  <em about="cs:amount" property="rdfs:label"></em>
+  <div class="view -edit search" property="cs:amount"></div>
+  <veda-control property="cs:amount" data-type="integer" class="-view edit search"></veda-control>
+  <br>
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="save edit cancel delete journal task"></span>
+  </div>
+</div>
+  """ ;
+.
+```
+
+
+
+```
+<veda-control rel="cs:hasCustomer" data-type="link" class="-view edit search fulltext dropdown"></veda-control>
+```
+
+Здесь у нас появляется новый тип в атрибуте data-type="link", соответственно в этому в атрибуте class появляется значения fulltext и dropdown. fulltext задает возможность полнотекстового поиска в данном элементе интерфейса. dropdown говорит о том что здесь будет выпадающий список.
+
+
 
 #### 2.4.3. Меню приложения
 

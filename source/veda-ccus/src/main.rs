@@ -93,10 +93,10 @@ impl Actor for WsCCUSSession {
 }
 
 /// Handle messages from ccus server, we simply send it to peer websocket
-impl Handler<server::Message> for WsCCUSSession {
+impl Handler<server::Msg> for WsCCUSSession {
     type Result = ();
 
-    fn handle(&mut self, msg: server::Message, ctx: &mut Self::Context) {
+    fn handle(&mut self, msg: server::Msg, ctx: &mut Self::Context) {
         ctx.text(msg.0);
     }
 }
@@ -190,7 +190,7 @@ fn main() -> std::io::Result<()> {
     let sys = System::new("ws-ccus");
 
     // Start ccus server actor
-    let server = server::CCUSServer::default().start();
+    let server = server::CCUSServer::new(ro_client_addr).start();
 
     // Create Http server with websocket support
     HttpServer::new(move || {
@@ -200,6 +200,7 @@ fn main() -> std::io::Result<()> {
             .service(web::resource("/ccus").to(ccus_route))
     })
     .bind("[::]:".to_owned() + &ccus_port)?
+    //.keep_alive(75)
     .start();
 
     sys.run()
