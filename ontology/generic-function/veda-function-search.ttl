@@ -1254,37 +1254,40 @@ v-fs:AttributiveSearchInlineTemplate
     if ( total === delta ) {
       resultContainer.empty();
     }
-    resultDelta.forEach(function (result, i) {
-      result.present(resultContainer, individual.resultTemplate).then(function (tmpl) {
-        $(".serial-number", tmpl).text(total - delta + i + 1);
-        if (result.id === self.marked) {
-          tmpl.addClass("warning");
-        }
-        tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
 
-        setTimeout(function () {
-          $("td", tmpl).each( function () {
-            var text = this.innerText || this.textContent;
-            if (text && text.length > 100) {
-              var $this = $(this);
-              var contents = $this.contents();
-              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
-              $this.empty().append(wrapper);
-              wrapper.popover({
-                content: wrapper.html(),
-                html: true,
-                placement: "top"
-              }).tooltip({
-                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
-                placement: "bottom",
-                delay: { show: 750, hide: 0 }
-              });
-            }
-          });
-        }, 300);
-        return tmpl;
+    return resultDelta.reduce(function(p, result, i) {
+      return p.then(function() {
+        return result.present(resultContainer, individual.resultTemplate).then(function (tmpl) {
+          $(".serial-number", tmpl).text(total - delta + i + 1);
+          if (result.id === self.marked) {
+            tmpl.addClass("warning");
+          }
+          tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
+
+          setTimeout(function () {
+            $("td", tmpl).each( function () {
+              var text = this.innerText || this.textContent;
+              if (text && text.length > 100) {
+                var $this = $(this);
+                var contents = $this.contents();
+                var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+                $this.empty().append(wrapper);
+                wrapper.popover({
+                  content: wrapper.html(),
+                  html: true,
+                  placement: "top"
+                }).tooltip({
+                  title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                  placement: "bottom",
+                  delay: { show: 750, hide: 0 }
+                });
+              }
+            });
+          }, 300);
+          return tmpl;
+        });
       });
-    });
+    }, Promise.resolve());
   }
 
   // Spinner
