@@ -1,4 +1,5 @@
 use actix::prelude::*;
+use nng::{Message, Protocol, Socket};
 use rand::{self, rngs::ThreadRng, Rng};
 use std::collections::{HashMap, HashSet};
 use std::time::Duration;
@@ -7,15 +8,16 @@ use v_onto::msgpack8individual::msgpack2individual;
 use v_queue::*;
 
 const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
+const STAT_INTERVAL: Duration = Duration::from_millis(10000);
 
 /// CCUS server sends this messages to session
 #[derive(Message)]
-pub struct Message(pub String);
+pub struct Msg(pub String);
 
 #[derive(Message)]
 #[rtype(usize)]
 pub struct Connect {
-    pub addr: Recipient<Message>,
+    pub addr: Recipient<Msg>,
 }
 
 /// Session is disconnected
@@ -46,18 +48,67 @@ impl Default for SubscribeElement {
     }
 }
 
+struct Storage {
+    ro_storage_client: Socket,
+    ro_client_addr: String,
+    is_ro_storage_ready: bool,
+}
+
+impl Storage {
+    fn new(_ro_client_addr: String) -> Storage {
+        Storage {
+            ro_storage_client: Socket::new(Protocol::Req0).unwrap(),
+            ro_client_addr: _ro_client_addr,
+            is_ro_storage_ready: false,
+        }
+    }
+
+    fn connect(&mut self) {
+        if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
+            error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
+        } else {
+            info!("sucess connect to ro-storage, [{}]", self.ro_client_addr);
+            self.is_ro_storage_ready = true;
+        }
+    }
+
+    fn get(&mut self, uri: &str) -> u64 {
+        if self.is_ro_storage_ready == false {
+            self.connect();
+        }
+
+        if self.is_ro_storage_ready == false {
+            return 0;
+        }
+
+        let req = Message::from(("I,".to_owned() + uri + ",v-s:updateCounter").as_bytes());
+
+        self.ro_storage_client.send(req).unwrap();
+
+        // Wait for the response from the server.
+        let msg = self.ro_storage_client.recv().unwrap();
+
+        let reply = String::from_utf8_lossy(&msg);
+
+        info!("msg={}", reply);
+
+        return 1;
+    }
+}
+
 pub struct CCUSServer {
-    sessions: HashMap<usize, Recipient<Message>>,
+    sessions: HashMap<usize, Recipient<Msg>>,
     uri2sessions: HashMap<String, SubscribeElement>,
     queue_consumer: Consumer,
     total_prepared_count: u64,
     rng: ThreadRng,
     stat_sessions: usize,
     stat_uris: usize,
+    storage: Storage,
 }
 
-impl Default for CCUSServer {
-    fn default() -> CCUSServer {
+impl CCUSServer {
+    pub fn new(ro_client_addr: String) -> CCUSServer {
         let _consumer = Consumer::new("CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
         CCUSServer {
@@ -68,11 +119,10 @@ impl Default for CCUSServer {
             total_prepared_count: 0,
             stat_sessions: 0,
             stat_uris: 0,
+            storage: Storage::new(ro_client_addr),
         }
     }
-}
 
-impl CCUSServer {
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
@@ -176,7 +226,7 @@ impl CCUSServer {
 
         if changes.len() > 0 {
             if let Some(addr) = self.sessions.get(&session_id) {
-                let _ = addr.do_send(Message(changes.to_owned()));
+                let _ = addr.do_send(Msg(changes.to_owned()));
                 debug!("send {}", changes);
             }
         }
@@ -191,7 +241,7 @@ impl Actor for CCUSServer {
     fn started(&mut self, ctx: &mut Self::Context) {
         info!("Start CCUS");
 
-        ctx.run_interval(QUEUE_CHECK_INTERVAL * 10, |act, _ctx| {
+        ctx.run_interval(STAT_INTERVAL, |act, _ctx| {
             if act.sessions.len() != act.stat_sessions || act.uri2sessions.len() != act.stat_uris {
                 info!("STAT: count subscribers: {}, look uris: {}", act.sessions.len(), act.uri2sessions.len());
 
@@ -250,7 +300,7 @@ impl Actor for CCUSServer {
                     }
                 }
 
-                // запустим ленивый парсинг сообщения в Indidual
+                // запустим ленивый парсинг сообщения в Individual
                 if msgpack2individual(&mut msg) == false {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
@@ -298,11 +348,13 @@ impl Actor for CCUSServer {
                 }
 
                 if let Some(addr) = act.sessions.get(el.0) {
-                    let _ = addr.do_send(Message(changes.to_owned()));
+                    let _ = addr.do_send(Msg(changes.to_owned()));
                     debug!("send {}", changes);
                 }
             }
         });
+
+        self.storage.get("cfg:standart_node");
     }
 }
 
