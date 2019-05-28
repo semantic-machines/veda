@@ -11,6 +11,6 @@ path = "src/storage/tarantool.rs"
 futures = "0.1"
 human-panic = "1.0.1"
 log = "0.4"
-rusty_tarantool = { path = "../RustyTarantool" }
+rusty_tarantool = { git = "https://github.com/itiu/RustyTarantool.git" }
 tokio = "0.1"
 v_onto = { path = "../v-onto" }
