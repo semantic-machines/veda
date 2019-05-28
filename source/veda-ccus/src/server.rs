@@ -1,11 +1,14 @@
 use actix::prelude::*;
-use nng::{Message, Protocol, Socket};
 use rand::{self, rngs::ThreadRng, Rng};
 use std::collections::{HashMap, HashSet};
+use std::str;
 use std::time::Duration;
 use v_onto::individual::*;
 use v_onto::msgpack8individual::msgpack2individual;
 use v_queue::*;
+
+use std::sync::mpsc;
+use std::sync::mpsc::{Receiver, Sender};
 
 const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
 const STAT_INTERVAL: Duration = Duration::from_millis(10000);
@@ -48,54 +51,6 @@ impl Default for SubscribeElement {
     }
 }
 
-struct Storage {
-    ro_storage_client: Socket,
-    ro_client_addr: String,
-    is_ro_storage_ready: bool,
-}
-
-impl Storage {
-    fn new(_ro_client_addr: String) -> Storage {
-        Storage {
-            ro_storage_client: Socket::new(Protocol::Req0).unwrap(),
-            ro_client_addr: _ro_client_addr,
-            is_ro_storage_ready: false,
-        }
-    }
-
-    fn connect(&mut self) {
-        if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
-            error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
-        } else {
-            info!("sucess connect to ro-storage, [{}]", self.ro_client_addr);
-            self.is_ro_storage_ready = true;
-        }
-    }
-
-    fn get(&mut self, uri: &str) -> u64 {
-        if self.is_ro_storage_ready == false {
-            self.connect();
-        }
-
-        if self.is_ro_storage_ready == false {
-            return 0;
-        }
-
-        let req = Message::from(("I,".to_owned() + uri + ",v-s:updateCounter").as_bytes());
-
-        self.ro_storage_client.send(req).unwrap();
-
-        // Wait for the response from the server.
-        let msg = self.ro_storage_client.recv().unwrap();
-
-        let reply = String::from_utf8_lossy(&msg);
-
-        info!("msg={}", reply);
-
-        return 1;
-    }
-}
-
 pub struct CCUSServer {
     sessions: HashMap<usize, Recipient<Msg>>,
     uri2sessions: HashMap<String, SubscribeElement>,
@@ -104,12 +59,15 @@ pub struct CCUSServer {
     rng: ThreadRng,
     stat_sessions: usize,
     stat_uris: usize,
-    storage: Storage,
+    subscribe_manager_sender: Sender<(String, Sender<i64>)>,
+    my_sender: Sender<i64>,
+    my_receiver: Receiver<i64>,
 }
 
 impl CCUSServer {
-    pub fn new(ro_client_addr: String) -> CCUSServer {
+    pub fn new(tx: Sender<(String, Sender<i64>)>) -> CCUSServer {
         let _consumer = Consumer::new("CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+        let ch = mpsc::channel();
 
         CCUSServer {
             sessions: HashMap::new(),
@@ -119,11 +77,28 @@ impl CCUSServer {
             total_prepared_count: 0,
             stat_sessions: 0,
             stat_uris: 0,
-            storage: Storage::new(ro_client_addr),
+            subscribe_manager_sender: tx,
+            my_sender: ch.0,
+            my_receiver: ch.1,
         }
     }
 
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
+        let mut storage_counter = 0;
+
+        if self.uri2sessions.contains_key(&uri.to_owned()) == false {
+            if let Ok(_) = self.subscribe_manager_sender.send((uri.to_string(), self.my_sender.clone())) {
+                if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
+                    if msg > 0 {
+                        info!("from storage: {}, {}", uri, msg);
+                        storage_counter = msg as u64;
+                    }
+                } else {
+                    error!("not connect with storage thread");
+                }
+            }
+        }
+
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
         if el.sessions.contains(&session_id) == false {
@@ -133,7 +108,12 @@ impl CCUSServer {
             debug!("[{}]: SUBSCRIBE (ALREADY EXISTS): uri={}, count subscribers={}", session_id, uri, el.sessions.len());
         }
 
-        return el.counter;
+        if storage_counter > 0 {
+            el.counter = storage_counter;
+            return storage_counter;
+        } else {
+            return el.counter;
+        }
     }
 
     fn unsubscribe(&mut self, uri: &str, session_id: usize) {
@@ -353,8 +333,6 @@ impl Actor for CCUSServer {
                 }
             }
         });
-
-        self.storage.get("cfg:standart_node");
     }
 }
 
