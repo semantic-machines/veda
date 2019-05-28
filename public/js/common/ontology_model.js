@@ -43,7 +43,7 @@ veda.Module(function (veda) { "use strict";
         return getProps("rdfs:Resource");
       }
     };
-  }
+  };
 
   proto.getClassSpecifications = function (_class_uri) {
     var classTree = this.classTree;
@@ -67,6 +67,28 @@ veda.Module(function (veda) { "use strict";
       }
       return specs;
     }
+  };
+
+  proto.getOntology2 = function () {
+    var self = this;
+    return new Promise( function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        if (this.status == 200) {
+          var ontology = JSON.parse(this.response, veda.Util.decimalDatetimeReviver);
+          self.ontology = ontology;
+          resolve( self );
+        } else {
+          reject( new Error(this) );
+        }
+      };
+      xhr.onerror = function () {
+        reject( new BackendError(this) );
+      };
+      xhr.open("GET", "/ontology.json", true);
+      xhr.timeout = 120000;
+      xhr.send();
+    });
   };
 
   // Get ontology from server
@@ -136,7 +158,7 @@ veda.Module(function (veda) { "use strict";
       storage.ontology = JSON.stringify(self.ontology);
       return self;
     });
-  }
+  };
 
   proto.processOntology = function () {
     var ontology = this.ontology;
@@ -252,7 +274,7 @@ veda.Module(function (veda) { "use strict";
       });
 
     });
-  }
+  };
 
 });
 
