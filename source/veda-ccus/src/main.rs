@@ -4,7 +4,11 @@ extern crate log;
 use actix::prelude::*;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
+use std::sync::mpsc;
+use std::sync::mpsc::{Receiver, Sender};
+use std::thread;
 use std::time::{Duration, Instant};
+use v_storage::*;
 
 use ini::Ini;
 
@@ -136,7 +140,6 @@ impl StreamHandler<ws::Message, ws::ProtocolError> for WsCCUSSession {
 
 impl WsCCUSSession {
     /// helper method that sends ping to client every second.
-    ///
     /// also this method checks heartbeats from client
     fn hb(&self, ctx: &mut ws::WebsocketContext<Self>) {
         ctx.run_interval(HEARTBEAT_INTERVAL, |act, ctx| {
@@ -156,9 +159,28 @@ impl WsCCUSSession {
                 // don't try to send a ping
                 return;
             }
-
             ctx.ping("");
         });
+    }
+}
+
+fn storage_manager(tarantool_addr: String, rx: Receiver<(String, Sender<i64>)>) {
+    //info!("Start STORAGE MANAGER");
+
+    let mut storage = Storage::new(tarantool_addr, "veda6", "123456");
+
+    loop {
+        if let Ok((msg, sender)) = rx.recv() {
+            //info!("main:recv={:?}", msg);
+
+            let out_counter = storage.get_first_integer(&msg, "v-s:updateCounter");
+
+            //println!("main: {:?}->{}", key, out_counter);
+
+            if let Err(e) = sender.send(out_counter) {
+                error!("NOT SEND RESPONSE, err={}", e);
+            }
+        }
     }
 }
 
@@ -176,21 +198,25 @@ fn main() -> std::io::Result<()> {
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
     let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties").clone();
 
-    let ro_client_addr: String;
+    let tarantool_addr: String;
 
-    if let Some(p) = section.get("ro_storage_url") {
-        ro_client_addr = p.to_string();
+    if let Some(p) = section.get("tarantool_url") {
+        tarantool_addr = p.to_owned();
     } else {
-        ro_client_addr = "".to_string();
-        warn!("param [ro_storage_url] not found in veda.properties")
+        tarantool_addr = "".to_owned();
+        warn!("param [tarantool_url] not found in veda.properties")
     }
 
-    info!("CCUS PORT={:?}, RO-CLIENT={:?}", ccus_port, ro_client_addr);
+    info!("CCUS PORT={:?}, tarantool addr={:?}", ccus_port, tarantool_addr);
+
+    // создадим канал приема и передачи с нитью storage_manager
+    let (sbscr_tx, sbscr_rx): (Sender<(String, Sender<i64>)>, Receiver<(String, Sender<i64>)>) = mpsc::channel();
+    thread::spawn(move || storage_manager(tarantool_addr.clone(), sbscr_rx));
 
     let sys = System::new("ws-ccus");
 
     // Start ccus server actor
-    let server = server::CCUSServer::new(ro_client_addr).start();
+    let server = server::CCUSServer::new(sbscr_tx.clone()).start();
 
     // Create Http server with websocket support
     HttpServer::new(move || {
