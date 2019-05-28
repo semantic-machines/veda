@@ -1264,26 +1264,24 @@ v-fs:AttributiveSearchInlineTemplate
           }
           tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
 
-          setTimeout(function () {
-            $("td", tmpl).each( function () {
-              var text = this.innerText || this.textContent;
-              if (text && text.length > 100) {
-                var $this = $(this);
-                var contents = $this.contents();
-                var wrapper = $("<div class='td-wrapper'></div>").append(contents);
-                $this.empty().append(wrapper);
-                wrapper.popover({
-                  content: wrapper.html(),
-                  html: true,
-                  placement: "top"
-                }).tooltip({
-                  title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
-                  placement: "bottom",
-                  delay: { show: 750, hide: 0 }
-                });
-              }
-            });
-          }, 300);
+          $("td", tmpl).each( function () {
+            var text = this.innerText || this.textContent;
+            if (text && text.length > 100) {
+              var $this = $(this);
+              var contents = $this.contents();
+              var wrapper = $("<div class='td-wrapper'></div>").append(contents);
+              $this.empty().append(wrapper);
+              wrapper.popover({
+                content: wrapper.html(),
+                html: true,
+                placement: "top"
+              }).tooltip({
+                title: new veda.IndividualModel("v-fs:ClickToViewContent")["rdfs:label"].join(" "),
+                placement: "bottom",
+                delay: { show: 750, hide: 0 }
+              });
+            }
+          });
           return tmpl;
         });
       });
