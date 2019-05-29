@@ -8,23 +8,28 @@ use tokio::runtime::current_thread::Runtime;
 use v_onto::individual::*;
 use v_onto::msgpack8individual::msgpack2individual;
 
-pub struct Storage {
+pub trait Storage {
+    fn new(tt_uri: String, login: &str, pass: &str) -> Self;
+    fn get_first_integer(&mut self, uri: &str, predicate: &str) -> i64;
+}
+
+pub struct TTStorage {
     rt: Runtime,
     client: Client,
     space_id: i32,
 }
 
-impl Storage {
-    pub fn new(tt_uri: String, login: &str, pass: &str) -> Storage {
+impl Storage for TTStorage {
+    fn new(tt_uri: String, login: &str, pass: &str) -> TTStorage {
         let addr: SocketAddr = tt_uri.parse().unwrap();
-        Storage {
+        TTStorage {
             rt: Runtime::new().unwrap(),
             space_id: 512,
             client: ClientConfig::new(addr, login, pass).set_timeout_time_ms(1000).set_reconnect_time_ms(10000).build(),
         }
     }
 
-    pub fn get_first_integer(&mut self, uri: &str, predicate: &str) -> i64 {
+    fn get_first_integer(&mut self, uri: &str, predicate: &str) -> i64 {
         let key = (uri,);
 
         let resp = self.client.select(self.space_id, 0, &key, 0, 100, 0).and_then(move |response| {
