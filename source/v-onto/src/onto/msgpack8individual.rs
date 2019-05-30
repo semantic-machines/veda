@@ -24,8 +24,8 @@ pub fn parse_to_predicate(expect_predicate: &str, indv: &mut Individual) -> bool
 
         match read_string_from_msgpack(&mut cur) {
             Ok(p) => predicate = p,
-            Err(_) => {
-                error!("@1");
+            Err(e) => {
+                error!("read_string_from_msgpack, err={}", e);
                 return false;
             }
         }
