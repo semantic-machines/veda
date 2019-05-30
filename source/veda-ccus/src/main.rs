@@ -8,9 +8,10 @@ use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
-use v_storage::*;
+use v_storage::storage::VStorage;
 
 use ini::Ini;
+use v_onto::individual::Individual;
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(5000);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -165,15 +166,23 @@ impl WsCCUSSession {
 }
 
 fn storage_manager(tarantool_addr: String, rx: Receiver<(String, Sender<i64>)>) {
-    //info!("Start STORAGE MANAGER");
+    info!("Start STORAGE MANAGER");
 
-    let mut storage = TTStorage::new(tarantool_addr, "veda6", "123456");
+    let mut storage: VStorage;
+
+    if tarantool_addr.len() > 0 {
+        storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
+    } else {
+        storage = VStorage::new_lmdb("./data/lmdb-individuals/");
+    }
 
     loop {
         if let Ok((msg, sender)) = rx.recv() {
             //info!("main:recv={:?}", msg);
 
-            let out_counter = storage.get_first_integer(&msg, "v-s:updateCounter");
+            let mut indv = Individual::new_empty();
+            storage.set_binobj(&msg, &mut indv);
+            let out_counter = indv.get_first_integer("v-s:updateCounter");
 
             //println!("main: {:?}->{}", key, out_counter);
 
