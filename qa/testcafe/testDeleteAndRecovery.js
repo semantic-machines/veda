@@ -32,7 +32,7 @@ import { Selector, t } from 'testcafe';
       .click('div.results a.glyphicon.glyphicon-search.deleted[typeof="v-wf:StartForm"]')
       .click('p#deleted-alert-msg button#deleted-alert-recover')
       .click('li[about="v-fs:FulltextSearch"]')
-      .click('div.col-md-12 small.advanced-toggle.text-muted')
+      .click('.advanced-toggle')
       .click('div[rel="rdf:type"] .rel-actions button.btn.btn-default.button-delete')
       .click('veda-control[property="*"] input.form-control')
       .pressKey('ctrl+a delete')
