@@ -30,6 +30,7 @@ import { Selector, t } from 'testcafe';
       .pressKey('ctrl+a delete')
       .typeText('veda-control[property="*"] input.form-control', query)
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
+      .wait(5000)
       .click('div.results a.glyphicon.glyphicon-search.deleted[typeof="v-wf:StartForm"]')
       .click('p#deleted-alert-msg button#deleted-alert-recover')
       .click('li[about="v-fs:FulltextSearch"]')
