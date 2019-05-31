@@ -23,6 +23,7 @@ import { Selector, t } from 'testcafe';
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       .setNativeDialogHandler(() => true)
+      .wait(2000)
       .click('#delete')
       .click('li[about="v-fs:FulltextSearch"]')
       .click('veda-control[property="*"] input.form-control')
