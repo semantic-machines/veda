@@ -1,8 +1,9 @@
 mkdir chunk-io
 
-zip -v -r ./chunk-io/logs.zip screens
 zip -v -r ./chunk-io/logs.zip logs
 zip -v -r ./chunk-io/logs.zip data
+zip -v -r ./chunk-io/logs.zip screens
+zip -v -r ./chunk-io/logs.zip qa
 zip -v ./chunk-io/logs.zip core
 zip -v ./chunk-io/logs.zip install.log
 
