@@ -46,7 +46,7 @@ script:
   - testcafe chromium qa/testcafe/testAttributiveSearch.js
   - testcafe chromium qa/testcafe/testComment.js
   - testcafe chromium qa/testcafe/testCreatingNetInterface.js
-  - testcafe chromium qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens
+  - testcafe chromium qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.25
   - testcafe chromium qa/testcafe/testJournal.js
   - testcafe chromium qa/testcafe/testPerson.js
   - testcafe chromium qa/testcafe/testRights.js
