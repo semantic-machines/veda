@@ -4,58 +4,53 @@ import { Selector, t } from 'testcafe';
   fixture `test Delete And Recovery`
     .page `${config.baseUrl}`;
   const basic = new Basic();
-  const timeStamp = ''+Math.round(+new Date()/1000);
-  const searchStartForm = "'rdfs:label' == '"+ timeStamp +"'" ;
-  const query = "'rdfs:label' == '"+ timeStamp +"' && 'v-s:deleted' == 'true'" ;
+  const timeStamp = '' + Math.round(+new Date()/1000);
+  const queryStartForm = "'rdfs:label' == '" + timeStamp + "'" ;
+  const queryDeletedStartForm = "'rdfs:label' == '" + timeStamp + "' && 'v-s:deleted' == 'true'" ;
+  const menu = Selector('#menu');
+  const create = Selector('li[id="menu"] li[resource="v-s:Create"]');
+  const searchTargetTypeInput = Selector('veda-control[rel="v-fc:targetType"] .form-control');
+  const startFormSuggestion = Selector('.suggestion[resource="v-wf:StartForm"]');
+  const labelInput = Selector('veda-control[property="rdfs:label"] .form-control');
+  const saveBtn = Selector('#save');
+  const fulltextSearch = Selector('li[about="v-fs:FulltextSearch"]');
+  const fulltextQueryInput = Selector('veda-control[property="*"] .form-control');
+  const searchBtn = Selector('.search-button');
+  const searchResult = Selector('.results a.glyphicon.glyphicon-search');
+  const deleteBtn = Selector('#delete');
+  const recoverBtn = Selector('.recover');
+  const advancedSearch = Selector('.advanced-toggle');
+  const deleteTypeValue = Selector('div[rel="rdf:type"] .rel-actions .button-delete');
+  const estimatedResults = Selector('.stats-top span[property="v-fs:estimated"]');
+
   test('testDeleteAndRecovery', async t => {
     basic.login('karpovrt', '123');
     await t
-      .click('#menu')
-      .wait(1000)
-      .click('li[id="menu"] li[resource="v-s:Create"]')
-      .wait(1000)
-      .typeText('veda-control.fulltext.dropdown', 'Стартовая форма')
-      .wait(1000)
-      .click('div.suggestion[resource="v-wf:StartForm"]')
-      .wait(1000)
-      .typeText('veda-control[data-type="multilingualString"] input[type="text"]', timeStamp)
-      .wait(1000)
-      .click('#save')
-      .wait(5000)
-      .click('li[about="v-fs:FulltextSearch"]')
-      .wait(1000)
-      .typeText('veda-control[property="*"] input.form-control', searchStartForm)
-      .wait(1000)
-      .click('div.input-group span.input-group-btn #custom-search-button.search-button')
-      .wait(1000)
-      .click('div.results a.glyphicon.glyphicon-search')
-      .wait(1000)
       .setNativeDialogHandler(() => true)
-      .click('#delete')
-      .wait(1000)
-      .click('li[about="v-fs:FulltextSearch"]')
-      .wait(1000)
-      .click('veda-control[property="*"] input.form-control')
+      .click(menu)
+      .click(create)
+      .typeText(searchTargetTypeInput, 'Стартовая форма')
+      .click(startFormSuggestion)
+      .typeText(labelInput, timeStamp)
+      .click(saveBtn)
+      .click(fulltextSearch)
+      .typeText(fulltextQueryInput, queryStartForm)
+      .click(searchBtn)
+      .click(searchResult)
+      .click(deleteBtn)
+      .click(fulltextSearch)
+      .click(fulltextQueryInput)
       .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="*"] input.form-control', query)
-      .wait(1000)
-      .click('div.input-group span.input-group-btn #custom-search-button.search-button')
-      .wait(1000)
-      .click('div.results a.glyphicon.glyphicon-search')
-      .wait(1000)
-      .click('p#deleted-alert-msg button#deleted-alert-recover')
-      .wait(1000)
-      .click('li[about="v-fs:FulltextSearch"]')
-      .wait(1000)
-      .click('.advanced-toggle')
-      .wait(1000)
-      .click('div[rel="rdf:type"] .rel-actions button.btn.btn-default.button-delete')
-      .wait(1000)
-      .click('veda-control[property="*"] input.form-control')
+      .typeText(fulltextQueryInput, queryDeletedStartForm)
+      .click(searchBtn)
+      .click(searchResult)
+      .click(recoverBtn)
+      .click(fulltextSearch)
+      .click(advancedSearch)
+      .click(deleteTypeValue)
+      .click(fulltextQueryInput)
       .pressKey('ctrl+a delete')
-      .typeText('veda-control[property="*"] input.form-control', timeStamp)
-      .wait(1000)
-      .click('div.input-group span.input-group-btn #custom-search-button.search-button')
-      .wait(1000)
-      .expect(Selector('small.stats-top.pull-right span[property="v-fs:estimated"]').innerText).eql('1');
+      .typeText(fulltextQueryInput, timeStamp)
+      .click(searchBtn)
+      .expect(estimatedResults.innerText).eql('1');
   });
