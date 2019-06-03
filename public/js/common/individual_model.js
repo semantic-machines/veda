@@ -430,7 +430,7 @@ veda.Module(function (veda) { "use strict";
     var self = this;
     this.trigger("beforeReset");
     self.filtered = {};
-    return veda.Backend.get_individual(veda.ticket, self.id).then(function (original) {
+    return veda.Backend.reset_individual(veda.ticket, self.id).then(function (original) {
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
       var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
