@@ -12,24 +12,16 @@ pub struct TTStorage {
     space_id: i32,
 }
 
-impl Default for TTStorage {
-    fn default() -> TTStorage {
-        let addr: SocketAddr = "127.0.0.1:8080".parse().unwrap();
-        TTStorage {
-            rt: Runtime::new().unwrap(),
-            client: ClientConfig::new(addr, "", "").set_timeout_time_ms(1000).set_reconnect_time_ms(10000).build(),
-            space_id: 0,
-        }
-    }
-}
-
 impl TTStorage {
     pub fn new(tt_uri: String, login: &str, pass: &str) -> TTStorage {
         let addr: SocketAddr = tt_uri.parse().unwrap();
         TTStorage {
             rt: Runtime::new().unwrap(),
             space_id: 512,
-            client: ClientConfig::new(addr, login, pass).set_timeout_time_ms(1000).set_reconnect_time_ms(10000).build(),
+            client: ClientConfig::new(addr, login, pass)
+                .set_timeout_time_ms(1000)
+                .set_reconnect_time_ms(10000)
+                .build(),
         }
     }
 }
@@ -38,7 +30,10 @@ impl Storage for TTStorage {
     fn set_binobj(&mut self, uri: &str, indv: &mut Individual) -> bool {
         let key = (uri,);
 
-        let resp = self.client.select(self.space_id, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
+        let resp = self
+            .client
+            .select(self.space_id, 0, &key, 0, 100, 0)
+            .and_then(move |response| Ok(response.data));
 
         if let Ok(v) = self.rt.block_on(resp) {
             indv.binobj = v[5..].to_vec();
