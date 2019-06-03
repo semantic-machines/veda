@@ -182,7 +182,11 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<(String, Sender<i64>)>) 
 
             let mut indv = Individual::new_empty();
             storage.set_binobj(&msg, &mut indv);
-            let out_counter = indv.get_first_integer("v-s:updateCounter");
+            let out_counter = if let Ok(c) = indv.get_first_integer("v-s:updateCounter") {
+                c
+            } else {
+                0
+            };
 
             //println!("main: {:?}->{}", key, out_counter);
 
@@ -203,18 +207,15 @@ fn main() -> std::io::Result<()> {
     env_logger::init();
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
     let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties").clone();
 
-    let tarantool_addr: String;
-
-    if let Some(p) = section.get("tarantool_url") {
-        tarantool_addr = p.to_owned();
+    let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
+        p.to_owned()
     } else {
-        tarantool_addr = "".to_owned();
-        warn!("param [tarantool_url] not found in veda.properties")
-    }
+        warn!("param [tarantool_url] not found in veda.properties");
+        "".to_owned()
+    };
 
     info!("CCUS PORT={:?}, tarantool addr={:?}", ccus_port, tarantool_addr);
 

@@ -293,7 +293,11 @@ impl Actor for CCUSServer {
                         debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, el.sessions);
 
                         // берем u_counter
-                        let counter_from_queue = msg.get_first_integer("u_count") as u64;
+                        let counter_from_queue = if let Ok(c) = msg.get_first_integer("u_count") {
+                            c as u64
+                        } else {
+                            0
+                        };
                         debug!("uri={}, {}", uri_from_queue, counter_from_queue);
 
                         el.counter = counter_from_queue;

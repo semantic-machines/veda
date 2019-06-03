@@ -1,5 +1,7 @@
 use crate::storage::Storage;
-use lmdb_rs_m::core::{/*Database,*/ EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
+use lmdb_rs_m::core::{
+    /*Database,*/ EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly,
+};
 use lmdb_rs_m::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
 use v_onto::individual::*;
 use v_onto::msgpack8individual::msgpack2individual;
@@ -9,20 +11,12 @@ pub struct LMDBStorage {
     db_env: Result<Environment, MdbError>,
 }
 
-impl Default for LMDBStorage {
-    fn default() -> LMDBStorage {
-        LMDBStorage {
-            db_handle: Err(MdbError::Corrupted),
-            db_env: Err(MdbError::Corrupted),
-        }
-    }
-}
-
 impl LMDBStorage {
     pub fn new(db_path: &str) -> LMDBStorage {
         let db_handle;
 
-        let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
+        let env_builder = EnvBuilder::new()
+            .flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
         let db_env = env_builder.open(db_path, 0o644);
 
