@@ -24,6 +24,7 @@ import { Selector, t } from 'testcafe';
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       .wait(2000)
+      .takeScreenshot()
       .click('button#edit')
       .click('veda-control[rel="v-wf:forNet"] .form-control')
       .pressKey('ctrl+a delete')

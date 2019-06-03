@@ -23,6 +23,7 @@ import { Selector, t } from 'testcafe';
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
       .click('div.search-result.noSwipe tbody.result-container a.glyphicon.glyphicon-search')
       .wait(10000)
+      .takeScreenshot()
       .setNativeDialogHandler(() => true)
       .click('#delete')
       .click('li[about="v-fs:FulltextSearch"]')
