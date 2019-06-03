@@ -1102,6 +1102,13 @@ v-s:hasClassifierMarkOfWorkingDrawingsSet
   rdfs:range v-s:ClassifierMarkOfWorkingDrawingsSet ;
   rdfs:domain v-s:ClassifiedRus ;
 .
+v-s:itemNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Номер пункта"@ru ;
+  rdfs:label "Item number"@en ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
 ### ------------------------------------------------------------
 v-s:Maintained
   rdf:type owl:Class ;
