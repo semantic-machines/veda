@@ -1,6 +1,10 @@
 #[macro_use]
 extern crate log;
 
+use chrono::Local;
+use env_logger::Builder;
+use log::LevelFilter;
+use std::io::Write;
 use actix::prelude::*;
 use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
@@ -204,7 +208,10 @@ fn main() -> std::io::Result<()> {
         None => std::env::set_var(env_var, "info,actix_server=info,actix_web=info"),
     }
 
-    env_logger::init();
+    Builder::new()
+        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
+        .filter(None, LevelFilter::Info)
+        .init();
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
