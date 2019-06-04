@@ -128,14 +128,14 @@ impl Individual {
         return Err(IndividualError::None());
     }
 
-    pub fn any_exists(&mut self, predicate: &str, values: Vec<&str>) -> bool {
+    pub fn any_exists(&mut self, predicate: &str, values: &Vec<&str>) -> bool {
         for _ in 0..2 {
             match self.resources.get(predicate) {
                 Some(v) => {
                     for el in v {
                         match &el.value {
                             Value::Str(s, _l) => {
-                                for ve in &values {
+                                for ve in values {
                                     if *ve == *s {
                                         return true;
                                     }
