@@ -79,6 +79,10 @@ veda.Module(function (veda) { "use strict";
         var result = request.result;
         if (typeof result !== "undefined") {
           resolve(result);
+          var updateService = new veda.UpdateService();
+          updateService.then(function (updateService) {
+            updateService.subscribe(result["@"]);
+          });
         } else {
           reject(undefined);
         }
@@ -95,6 +99,10 @@ veda.Module(function (veda) { "use strict";
       };
       request.onsuccess = function(event) {
         resolve(individual_json);
+        var updateService = new veda.UpdateService();
+        updateService.then(function (updateService) {
+          updateService.subscribe(individual_json["@"]);
+        });
       };
     });
   };

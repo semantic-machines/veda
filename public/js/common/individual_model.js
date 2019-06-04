@@ -426,11 +426,18 @@ veda.Module(function (veda) { "use strict";
    * @method
    * Reset current individual to  database
    */
-  proto.reset = function () {
+  proto.reset = function (original) {
     var self = this;
     this.trigger("beforeReset");
     self.filtered = {};
-    return veda.Backend.reset_individual(veda.ticket, self.id).then(function (original) {
+    return (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
+      .then(processOriginal)
+      .catch(function (error) {
+        console.log("reset individual error", error);
+        self.trigger("afterReset");
+      });;
+
+    function processOriginal(original) {
       var self_property_uris = Object.keys(self.properties);
       var original_property_uris = Object.keys(original);
       var union = veda.Util.unique( self_property_uris.concat(original_property_uris) );
@@ -461,10 +468,7 @@ veda.Module(function (veda) { "use strict";
       self.isLoaded(true);
       self.trigger("afterReset");
       return self;
-    }).catch(function (error) {
-      console.log("reset individual error", error);
-      self.trigger("afterReset");
-    });
+    }
   };
 
   /**
@@ -737,7 +741,7 @@ veda.Module(function (veda) { "use strict";
         .then( function (models) {
           models.map(function (model) {
             if ( !model.modelFn ) {
-              model.modelFn = new Function(model["v-s:script"][0]);
+              model.modelFn = new Function(model.get("v-s:script")[0]);
             }
             model.modelFn.call(self);
           });
