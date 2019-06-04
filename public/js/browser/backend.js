@@ -455,16 +455,20 @@ veda.Module(function Backend(veda) { "use strict";
         });
       }, Promise.resolve(results));
       return results.then(function (results) {
-        params.data.uris = get_from_server;
-        return call_server(params).then(function (results_from_server) {
-          for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
-            while(results[j++]); // Fast forward to empty element
-            results[j-1] = results_from_server[i];
-            db.put(results_from_server[i]);
-          }
-          return results;
-        }).catch(console.log);
-      });
+        if (get_from_server.length) {
+          params.data.uris = get_from_server;
+          return call_server(params);
+        } else {
+          return [];
+        }
+      }).then(function (results_from_server) {
+        for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
+          while(results[j++]); // Fast forward to empty element
+          results[j-1] = results_from_server[i];
+          db.put(results_from_server[i]);
+        }
+        return results;
+      }).catch(console.log);
     });
   };
 

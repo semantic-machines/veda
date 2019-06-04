@@ -83,7 +83,11 @@ veda.Module(function (veda) { "use strict";
           if (self.list[uri]) {
             self.list[uri].updateCounter = updateCounter;
           }
-          individual.reset(); // Reset to DB
+          if (self.list[uri].action) {
+            self.list[uri].action(); // Call action
+          } else {
+            individual.reset(); // Default action
+          }
         } catch (error) {
           console.log("error: individual update service failed", error);
         }
@@ -112,7 +116,7 @@ veda.Module(function (veda) { "use strict";
 
   var proto = veda.UpdateService.prototype;
 
-  proto.subscribe = function (uri) {
+  proto.subscribe = function (uri, action) {
     if ( this.list[uri] ) {
       ++this.list[uri].subscribeCounter;
     } else {
@@ -122,6 +126,9 @@ veda.Module(function (veda) { "use strict";
         subscribeCounter: 1,
         updateCounter: updateCounter
       };
+      if (action) {
+        this.list[uri].action = action;
+      }
       this.socket.sendMessage("+" + uri + "=" + updateCounter);
     }
   };
