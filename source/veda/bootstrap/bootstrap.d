@@ -238,6 +238,7 @@ void main(string[] args)
     modules[ "veda-input-queue" ]   = new Module("veda-input-queue", "veda-input-queue", [], [], false, false, 11);
     modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", "veda-ttlreader", [], [], false, false, 12);
     modules[ "veda-ccus" ]          = new Module("veda-ccus", "veda-ccus", [], [], false, false, 13);
+    modules[ "veda-ontologist" ]    = new Module("veda-ontologist", "veda-ontologist", [], [], false, false, 14);
     modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", "veda-gowebserver", [], [], false, false, 99);
 
     string[ string ] properties;
