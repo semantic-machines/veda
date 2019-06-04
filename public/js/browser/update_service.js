@@ -24,7 +24,7 @@ veda.Module(function (veda) { "use strict";
     function initSocket() {
       var ccusPortCfg = new veda.IndividualModel("cfg:ClientUpdateServicePort");
       return ccusPortCfg.load().then(function (ccusPortCfg) {
-        var ccusPort = ccusPortCfg.hasValue("rdf:value") && ccusPortCfg["rdf:value"][0],
+        var ccusPort = ccusPortCfg.hasValue("rdf:value") && ccusPortCfg.get("rdf:value")[0],
             protocol = location.protocol === "http:" ? "ws:" : "wss:",
             port = ccusPort || ( protocol === "ws:" ? 8088 : 443 ),
             address = protocol + "//" + location.hostname + ":" + port + "/ccus",

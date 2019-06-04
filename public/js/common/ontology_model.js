@@ -69,7 +69,7 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
-  proto.getOntology2 = function () {
+  proto.getOntology = function () {
     var self = this;
     return new Promise( function (resolve, reject) {
       var xhr = new XMLHttpRequest();
@@ -92,7 +92,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   // Get ontology from server
-  proto.getOntology = function () {
+  proto.getOntology2 = function () {
     var storage = typeof localStorage !== "undefined" ? localStorage : {
       clear: function () {
         var self = this;
