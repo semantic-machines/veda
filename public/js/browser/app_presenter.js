@@ -110,7 +110,6 @@ veda.Module(function (veda) { "use strict";
     }
   });
 
-
   // App loading indicator
   var loadIndicator = $("#load-indicator");
   veda.on("starting", function () {

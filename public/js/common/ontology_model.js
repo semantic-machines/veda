@@ -278,14 +278,12 @@ veda.Module(function (veda) { "use strict";
 
 });
 
-
-// Auto update ontology on change
-/*var OntoVsn = new veda.IndividualModel("cfg:OntoVsn");
-var updateService = new veda.UpdateService();
-updateService.subscribe(OntoVsn.id);
-OntoVsn.on("afterReset", function () {
-  ontology = getOntology();
-  storage.ontology = JSON.stringify(ontology);
-  processOntology();
-  console.log("Ontology reloaded!", JSON.stringify(OntoVsn));
-});*/
+//~ // Auto update ontology on change
+//~ var ccus = new veda.UpdateService();
+//~ ccus.then(function (ccus) {
+  //~ ccus.subscribe("cfg:OntoVsn", function () {
+    //~ var ontology = new veda.OntologyModel();
+    //~ ontology.init();
+    //~ console.log("Ontology reloaded!");
+  //~ });
+//~ });
