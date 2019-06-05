@@ -78,7 +78,7 @@ fn main() -> std::io::Result<()> {
 
     let mut ft_client = FTClient::new("tcp://127.0.0.1:23000".to_owned());
 
-    while  ft_client.connect() != true {
+    while ft_client.connect() != true {
         thread::sleep(time::Duration::from_millis(3000));
     }
 
@@ -90,11 +90,9 @@ fn main() -> std::io::Result<()> {
     let mut is_found_onto_changes = false;
 
     loop {
-
-        if  Path::new(ontology_file_path).exists() == false {
+        if Path::new(ontology_file_path).exists() == false {
             is_found_onto_changes = true;
         }
-
 
         let mut size_batch = 0;
 
