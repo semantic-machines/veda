@@ -91,13 +91,14 @@ impl FTClient {
         }
     }
 
-    pub fn connect(&mut self) {
+    pub fn connect(&mut self) -> bool {
         if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
             error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
         } else {
             info!("sucess connect to ro-storage, [{}]", self.ro_client_addr);
             self.is_ro_storage_ready = true;
         }
+        self.is_ro_storage_ready
     }
 
     pub fn query(&mut self, query: FTQuery) -> FTResult {

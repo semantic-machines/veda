@@ -77,14 +77,25 @@ fn main() -> std::io::Result<()> {
     }
 
     let mut ft_client = FTClient::new("tcp://127.0.0.1:23000".to_owned());
-    ft_client.connect();
+
+    while  ft_client.connect() != true {
+        thread::sleep(time::Duration::from_millis(3000));
+    }
 
     let mut queue_consumer = Consumer::new("ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
 
     let ontology_file_path = "public/ontology.json";
     ///////
+    let mut is_found_onto_changes = false;
+
     loop {
+
+        if  Path::new(ontology_file_path).exists() == false {
+            is_found_onto_changes = true;
+        }
+
+
         let mut size_batch = 0;
 
         // read queue current part info
@@ -111,8 +122,6 @@ fn main() -> std::io::Result<()> {
         if size_batch > 0 {
             info!("queue: batch size={}", size_batch);
         }
-
-        let mut is_found_onto_changes = !Path::new(ontology_file_path).exists();
 
         for _it in 0..size_batch {
             // пробуем взять из очереди заголовок сообщения
@@ -141,7 +150,7 @@ fn main() -> std::io::Result<()> {
                             is_found_onto_changes = indv.any_exists("rdf:type", &onto_types);
 
                             if is_found_onto_changes {
-                                info!("FOUND CHANGES IN ONTO, RELOAD...");
+                                info!("found changes in onto");
                             }
                         }
                     }
@@ -163,20 +172,23 @@ fn main() -> std::io::Result<()> {
             let mut file = File::create(ontology_file_path)?;
             let res = ft_client.query(FTQuery::new("cfg:VedaSystem", &query));
 
-            file.write(b"[")?;
-            let mut is_first: bool = true;
-            for el in &res.result {
-                let mut indv: Individual = Individual::new_empty();
-                storage.set_binobj(&el, &mut indv);
-                if !is_first {
-                    file.write(b",")?;
-                } else {
-                    is_first = false;
+            if res.result_code == 200 && res.count > 0 {
+                file.write(b"[")?;
+                let mut is_first: bool = true;
+                for el in &res.result {
+                    let mut indv: Individual = Individual::new_empty();
+                    storage.set_binobj(&el, &mut indv);
+                    if !is_first {
+                        file.write(b",")?;
+                    } else {
+                        is_first = false;
+                    }
+                    file.write(&indv.to_json_str().as_bytes())?;
                 }
-                file.write(&indv.to_json_str().as_bytes())?;
+                file.write(b"]")?;
+                info!("count stored {}", res.count);
+                is_found_onto_changes = false;
             }
-            file.write(b"]")?;
-            info!("count stored {}", res.count);
         }
 
         thread::sleep(time::Duration::from_millis(5000));
