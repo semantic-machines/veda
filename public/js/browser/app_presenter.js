@@ -204,10 +204,11 @@ veda.Module(function (veda) { "use strict";
   veda.on("started", function () {
     var updateService = new veda.UpdateService().then(function (updateService) {
       var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
-      clientNotification.load().then(function () {
-        updateService.subscribe(clientNotification.id, checkNotification);
+      clientNotification.load().then(function (clientNotification) {
+        clientNotification.on("afterReset", checkNotification);
+        checkNotification.call(clientNotification);
+        updateService.subscribe(clientNotification.id);
       });
-      checkNotification.call(clientNotification);
       function checkNotification() {
         var clientNotification = this;
         var browserNotificationList;
@@ -216,47 +217,45 @@ veda.Module(function (veda) { "use strict";
         } catch (error) {
           browserNotificationList = [];
         }
-        clientNotification.reset().then(function (clientNotification) {
-          var serverNotificationList = clientNotification.get("rdf:value").map(function (item) { return item.id; });
-          if ( !veda.Util.areEqual(browserNotificationList, serverNotificationList) && serverNotificationList.length ) {
-            serverNotificationList.reduce(function (p, notification_uri, i) {
-              return p.then(function () {
-                if (browserNotificationList.indexOf(notification_uri) >= 0) { return; }
-                var notification = new veda.IndividualModel(notification_uri);
-                return notification.load().then(function (notification) {
-                  return notification.get("v-s:newsAudience").map(function (audience) {
-                    return audience.id;
-                  });
-                }).then(function (audience) {
-                  audience = audience.sort();
-                  return veda.user.memberOf().then(function (memberOf) {
-                    memberOf = memberOf.sort();
-                    var i = 0, j = 0, audience_uri, memberOf_uri;
-                    while( (audience_uri = audience[i]) && (memberOf_uri = memberOf[j]) ) {
-                      if (memberOf_uri < audience_uri) {
-                        j++;
-                      } else if (memberOf_uri > audience_uri) {
-                        i++;
-                      } else {
-                        return veda.Util.confirm(notification).then(function (confirmed) {
-                          if ( confirmed ) {
-                            localStorage.clientNotification = JSON.stringify(serverNotificationList);
-                            if (notification.hasValue("v-s:script")) {
-                              var script = notification.get("v-s:script")[0].toString();
-                              eval(script);
-                            }
+        var serverNotificationList = clientNotification.get("rdf:value").map(function (item) { return item.id; });
+        if ( !veda.Util.areEqual(browserNotificationList, serverNotificationList) && serverNotificationList.length ) {
+          serverNotificationList.reduce(function (p, notification_uri, i) {
+            return p.then(function () {
+              if (browserNotificationList.indexOf(notification_uri) >= 0) { return; }
+              var notification = new veda.IndividualModel(notification_uri);
+              return notification.load().then(function (notification) {
+                return notification.get("v-s:newsAudience").map(function (audience) {
+                  return audience.id;
+                });
+              }).then(function (audience) {
+                audience = audience.sort();
+                return veda.user.memberOf().then(function (memberOf) {
+                  memberOf = memberOf.sort();
+                  var i = 0, j = 0, audience_uri, memberOf_uri;
+                  while( (audience_uri = audience[i]) && (memberOf_uri = memberOf[j]) ) {
+                    if (memberOf_uri < audience_uri) {
+                      j++;
+                    } else if (memberOf_uri > audience_uri) {
+                      i++;
+                    } else {
+                      return veda.Util.confirm(notification).then(function (confirmed) {
+                        if ( confirmed ) {
+                          localStorage.clientNotification = JSON.stringify(serverNotificationList);
+                          if (notification.hasValue("v-s:script")) {
+                            var script = notification.get("v-s:script")[0].toString();
+                            eval(script);
                           }
-                        });
-                      }
+                        }
+                      });
                     }
-                  });
+                  }
                 });
               });
-            }, Promise.resolve());
-          } else {
-            localStorage.clientNotification = JSON.stringify(serverNotificationList);
-          }
-        });
+            });
+          }, Promise.resolve());
+        } else {
+          localStorage.clientNotification = JSON.stringify(serverNotificationList);
+        }
       }
     });
   });
