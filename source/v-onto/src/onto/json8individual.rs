@@ -80,7 +80,10 @@ impl Serialize for Value {
                 let mut tup = serializer.serialize_struct("E", 0)?;
                 //tup.serialize_element(&*s)?;
                 tup.serialize_field("data", &*s)?;
-                tup.serialize_field("lang", &*l)?;
+
+                if *l != Lang::NONE {
+                    tup.serialize_field("lang", &*l)?;
+                }
                 tup.end()
             }
             _ => serializer.serialize_none(),
@@ -95,8 +98,8 @@ impl Serialize for Lang {
     {
         match &self {
             Lang::NONE => serializer.serialize_str("None"),
-            Lang::RU => serializer.serialize_str("Ru"),
-            Lang::EN => serializer.serialize_str("En"),
+            Lang::RU => serializer.serialize_str("RU"),
+            Lang::EN => serializer.serialize_str("EN"),
         }
     }
 }
