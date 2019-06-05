@@ -9,9 +9,9 @@ name = "veda-ccus"
 path = "src/main.rs"
 
 [dependencies]
-actix = "0.8.2"
-actix-web = "1.0.0-rc"
-actix-web-actors = "1.0.0-beta.4"
+actix = "0.8.3"
+actix-web = "1.0.0"
+actix-web-actors = "1.0.0"
 chrono = "0.4"
 env_logger = "0.6"
 scan_fmt = "0.1.3"
