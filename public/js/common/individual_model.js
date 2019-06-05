@@ -228,7 +228,7 @@ veda.Module(function (veda) { "use strict";
 
   proto.memberOf = function () {
     return this.membership.then(function (membership) {
-      return membership.hasValue("v-s:memberOf") ? this.membership.properties["v-s:memberOf"].map(function (group_item) {
+      return membership.hasValue("v-s:memberOf") ? membership.properties["v-s:memberOf"].map(function (group_item) {
         return group_item.data;
       }) : [];
     })
