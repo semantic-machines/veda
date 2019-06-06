@@ -341,7 +341,7 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   };
 
-  veda.Backend.query = function query(ticket, query, sort, databases, reopen, top, limit, from) {
+  veda.Backend.query = function query(ticket, queryStr, sort, databases, reopen, top, limit, from) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
@@ -350,7 +350,7 @@ veda.Module(function Backend(veda) { "use strict";
       async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
-        "query": isObj ? arg.query : query,
+        "query": isObj ? arg.query : queryStr,
         "sort": isObj ? arg.sort : sort,
         "databases" : isObj ? arg.databases : databases,
         "reopen" : isObj ? arg.reopen : reopen,
@@ -362,7 +362,7 @@ veda.Module(function Backend(veda) { "use strict";
     if (typeof params.async !== "undefined" ? params.async : true) {
       return call_server(params).catch(function (backendError) {
         if (backendError.code === 999) {
-          return veda.Backend.query(ticket, query, sort, databases, reopen, top, limit, from);
+          return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
         } else {
           throw backendError;
         }
@@ -373,7 +373,7 @@ veda.Module(function Backend(veda) { "use strict";
         return result;
       } catch (backendError) {
         if (backendError.code === 999) {
-          return veda.Backend.query(ticket, query, sort, databases, reopen, top, limit, from);
+          return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
         } else {
           throw backendError;
         }
