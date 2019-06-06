@@ -383,7 +383,6 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
     }
     fsHandler := fs.NewRequestHandler()
     fsHandler(ctx)
-    //fasthttp.FSHandler("public/", 0)(ctx)
   }
 }
 
@@ -442,7 +441,6 @@ func main() {
   ticketCache = make(map[string]ticket)
   ontologyCache = make(map[string]Individual)
   mifCache = make(map[int]*ModuleInfoFile)
-  //  externalUsersTicketId = make(map[string]bool)
 
   go func() {
     h := fasthttp.Server{
