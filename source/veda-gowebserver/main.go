@@ -144,21 +144,6 @@ var g_mstorage_ch *nanomsg.Socket
 
 var mstorage_ch_Mutex = sync.RWMutex{}
 
-//endpoint is nanomsg endpoint connected to server
-//var endpoint *nanomsg.Endpoint
-
-//aclSocket is nanomsg socket connected to acl service
-//var aclSocket *nanomsg.Socket
-
-//aclEndpoint is nanomsg endpoint connected to acl service
-//var aclEndpoint *nanomsg.Endpoint
-
-//querySocket is nanomsg socket connected to query service
-//var querySocket *nanomsg.Socket
-
-//aclEndpoint is nanomsg endpoint connected to acl service
-//var queryEndpoint *nanomsg.Endpoint
-
 //mainModuleURL is tcp address of veda server
 var mainModuleURL = ""
 var notifyChannelURL = ""
@@ -177,17 +162,10 @@ var attachmentsPath = "./data/files/"
 //areExternalUsers is variable to activate ExternalUsers features
 var areExternalUsers = false
 
-//externalUsersTicketId is map to stoer external users tickets
-//var externalUsersTicketId map[string]bool
-
-//cons is connection to traildb
-//var cons *tdb.TrailDBConstructor
 var isTrail = true
 
 //countTrails is variable to count trail requests, after limit they are flushed
 var countTrails = 0
-
-// string BASE64_START_POS = "base64";
 
 //codeToJsonException converts ResultCode value to its string representation
 func codeToJsonException(code ResultCode) []byte {
@@ -459,30 +437,6 @@ func main() {
     time.Sleep(3000 * time.Millisecond)
   }
 
-  //  aclSocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-  //  if err != nil {
-  //    log.Fatal("ERR! ON CREATING ACL SOCKET")
-  //  }
-
-  //  aclEndpoint, err = aclSocket.Connect(aclServiceURL)
-  //  for err != nil {
-  //    endpoint, err = aclSocket.Connect(aclServiceURL)
-  //    time.Sleep(3000 * time.Millisecond)
-  //  }
-  /*
-    querySocket, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-    if err != nil {
-      log.Fatal("ERR! ON CREATING QUERY SOCKET")
-    }
-
-    log.Println("use query service url: ", queryServiceURL)
-    queryEndpoint, err = querySocket.Connect(queryServiceURL)
-    for err != nil {
-      //    endpoint, err = aclSocket.Connect(aclServiceURL)
-      //    time.Sleep(3000 * time.Millisecond)
-    }
-  */
-
   conn.Connect(tarantoolURL)
 
   ticketCache = make(map[string]ticket)
@@ -520,11 +474,4 @@ func main() {
 
   fmt.Println("web server ready, listen " + webserverPort)
   select {}
-  /*
-    err = fasthttp.ListenAndServeTLS("0.0.0.0:8020", "ssl-certs/server.crt",
-      "ssl-certs/server.key", requestHandler)
-    if err != nil {
-      log.Fatal("ERR! ON STARTUP WEBSERVER ON HTTPS", err)
-    }
-  */
 }
