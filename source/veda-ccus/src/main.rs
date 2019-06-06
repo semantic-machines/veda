@@ -1,13 +1,13 @@
 #[macro_use]
 extern crate log;
 
+use actix::prelude::*;
+use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
+use actix_web_actors::ws;
 use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
 use std::io::Write;
-use actix::prelude::*;
-use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
-use actix_web_actors::ws;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
