@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::str;
 use std::time::Duration;
 use v_onto::individual::*;
-use v_onto::msgpack8individual::msgpack2individual;
+use v_onto::parser::*;
 use v_queue::*;
 
 use std::sync::mpsc;
@@ -281,7 +281,7 @@ impl Actor for CCUSServer {
                 }
 
                 // запустим ленивый парсинг сообщения в Individual
-                if msgpack2individual(&mut msg) == false {
+                if raw2individual(&mut msg) == false {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
                 }
