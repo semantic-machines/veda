@@ -9,13 +9,6 @@
 
 using namespace std;
 
-//typedef enum
-//{
-//    TYPE  = 1,
-//    LINKS = 2,
-//    ALL   = 4
-//};
-
 /** The CBOR-encoded boolean <code>false</code> value (encoded as "simple value": {@link #MT_SIMPLE}). */
 const unsigned char _FALSE = 0x14;
 

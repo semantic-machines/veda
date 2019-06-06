@@ -10,13 +10,6 @@
 
 using namespace std;
 
-//string toString(ElementHeader *el)
-//{
-//    return "type=" ~ text(el.type) ~ ", len=" ~ text(el.len) ~ ", tag=" ~ text(el.tag);
-//}
-
-///////////////////////////////////////////////////////////////////////////
-
 void write_type_value(MajorType type, int64_t value, std::vector<char> &ou)
 {
     uint8_t element_header = 0;
@@ -123,17 +116,10 @@ uint32_t read_type_value(const char *src, int b_pos, int e_pos, ElementHeader *h
 {
     uint8_t hh = (uint8_t)src[ b_pos + 0 ];
 
-    //std::cout << "@c #read_header1 hh=" << (uint16_t)hh << std::endl;
-
-//    writeln ("hh=", hh);
-//    writeln ("hh & 0xe0=", hh & 0xe0);
-
     MajorType type = (MajorType)(hh & 0xe0);
 
     int64_t   ld    = hh & 0x1f;
     int       d_pos = 1;
-
-    //std::cout << "@c #read_header2 len=" << ld << std::endl;
 
     if (ld > 23)
     {
@@ -148,8 +134,6 @@ uint32_t read_type_value(const char *src, int b_pos, int e_pos, ElementHeader *h
             ld = ulong_from_buff(src, b_pos, 1);
     }
 
-    //std::cout << "@c #read_header3 len=" << ld << std::endl;
-
     if (type == TAG)
     {
         ElementHeader main_type_header;
@@ -157,7 +141,6 @@ uint32_t read_type_value(const char *src, int b_pos, int e_pos, ElementHeader *h
         header->tag    = (uint8_t)ld;
         header->v_long = main_type_header.v_long;
         header->type   = main_type_header.type;
-//      writeln ("HEADER:", header.toString());
     }
     else
     {
@@ -173,7 +156,6 @@ uint32_t read_type_value(const char *src, int b_pos, int e_pos, ElementHeader *h
         header->v_long = ld;
         header->type   = type;
     }
-    //std::cout << "@c #read_header4 type=" << type << ", length=" << ld << ", d_pos=" << d_pos << ", b_pos=" << b_pos << ", e_pos=" << e_pos << std::endl;
 
     return d_pos;
 }
@@ -237,6 +219,3 @@ void hexdump(void *pAddressIn, long lSize)
         buf.lSize -= lOutLen;
     }
 }
-
-
-////////////////////////////////////////////////////
