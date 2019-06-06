@@ -1,15 +1,15 @@
-use crate::msgpack8individual::*;
+use crate::parser::*;
 use crate::resource::{Resource, Value};
 use std::collections::HashMap;
 use std::fmt;
 
 pub enum IndividualError {
-    None(),
-    ParseError(),
+    None,
+    ParseError,
 }
 
 pub struct Individual {
-    pub binobj: Vec<u8>,
+    pub raw: Vec<u8>,
     pub uri: String,
     pub resources: HashMap<String, Vec<Resource>>,
 
@@ -17,6 +17,7 @@ pub struct Individual {
     pub cur: u64,
     pub len_predicates: u32,
     pub cur_predicates: u32,
+    pub raw_type: RawType,
 }
 
 impl fmt::Display for Individual {
@@ -30,7 +31,8 @@ impl Individual {
         Individual {
             uri: "".to_string(),
             resources: HashMap::new(),
-            binobj: buff,
+            raw: buff,
+            raw_type: RawType::UNKNOWN,
             cur: 0,
             len_predicates: 0,
             cur_predicates: 0,
@@ -41,7 +43,8 @@ impl Individual {
         Individual {
             uri: "".to_string(),
             resources: HashMap::new(),
-            binobj: Vec::new(),
+            raw: Vec::new(),
+            raw_type: RawType::UNKNOWN,
             cur: 0,
             len_predicates: 0,
             cur_predicates: 0,
@@ -49,7 +52,7 @@ impl Individual {
     }
 
     pub fn parse_all(&mut self) {
-        while self.cur < self.binobj.len() as u64 {
+        while self.cur < self.raw.len() as u64 {
             // next parse
             if parse_to_predicate("?", self) == false {
                 break;
@@ -69,11 +72,11 @@ impl Individual {
                         return Ok(s.to_string());
                     }
                     _ => {
-                        return Err(IndividualError::ParseError());
+                        return Err(IndividualError::ParseError);
                     }
                 },
                 None => {
-                    if self.cur < self.binobj.len() as u64 {
+                    if self.cur < self.raw.len() as u64 {
                         // next parse
                         if parse_to_predicate(predicate, self) == false {
                             break;
@@ -84,7 +87,7 @@ impl Individual {
                 }
             }
         }
-        return Err(IndividualError::None());
+        return Err(IndividualError::None);
     }
 
     pub fn get_first_binobj(&mut self, predicate: &str) -> Result<Vec<u8>, IndividualError> {
@@ -95,11 +98,11 @@ impl Individual {
                         return Ok(s.clone());
                     }
                     _ => {
-                        return Err(IndividualError::ParseError());
+                        return Err(IndividualError::ParseError);
                     }
                 },
                 None => {
-                    if self.cur < self.binobj.len() as u64 {
+                    if self.cur < self.raw.len() as u64 {
                         // next parse
                         if parse_to_predicate(predicate, self) == false {
                             break;
@@ -110,7 +113,7 @@ impl Individual {
                 }
             }
         }
-        return Err(IndividualError::None());
+        return Err(IndividualError::None);
     }
 
     pub fn get_first_integer(&mut self, predicate: &str) -> Result<i64, IndividualError> {
@@ -123,7 +126,7 @@ impl Individual {
                     _ => {}
                 },
                 None => {
-                    if self.cur < self.binobj.len() as u64 {
+                    if self.cur < self.raw.len() as u64 {
                         // next parse
                         if parse_to_predicate(predicate, self) == false {
                             break;
@@ -134,7 +137,7 @@ impl Individual {
                 }
             }
         }
-        return Err(IndividualError::None());
+        return Err(IndividualError::None);
     }
 
     pub fn any_exists(&mut self, predicate: &str, values: &Vec<&str>) -> bool {
@@ -155,7 +158,7 @@ impl Individual {
                     }
                 }
                 None => {
-                    if self.cur < self.binobj.len() as u64 {
+                    if self.cur < self.raw.len() as u64 {
                         // next parse
                         if parse_to_predicate(predicate, self) == false {
                             break;
@@ -168,12 +171,4 @@ impl Individual {
         }
         return false;
     }
-}
-
-pub fn parse_to_predicate(expect_predicate: &str, indv: &mut Individual) -> bool {
-    parse_msgpack_to_predicate(expect_predicate, indv)
-}
-
-pub fn raw2individual(indv: &mut Individual) -> bool {
-    msgpack2individual(indv)
 }

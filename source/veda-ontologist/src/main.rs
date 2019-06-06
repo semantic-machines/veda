@@ -11,7 +11,7 @@ use std::io::Write;
 use std::path::Path;
 use std::{thread, time};
 use v_onto::individual::Individual;
-use v_onto::individual::raw2individual;
+use v_onto::parser::*;
 use v_queue::*;
 use v_search::{FTClient, FTQuery};
 use v_storage::storage::VStorage;
@@ -130,7 +130,7 @@ fn main() -> std::io::Result<()> {
             let mut msg = Individual::new(vec![0; (queue_consumer.header.msg_length) as usize]);
 
             // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-            if let Err(e) = queue_consumer.pop_body(&mut msg.binobj) {
+            if let Err(e) = queue_consumer.pop_body(&mut msg.raw) {
                 if e == ErrorQueue::FailReadTailMessage {
                     break;
                 } else {

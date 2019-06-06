@@ -271,7 +271,7 @@ impl Actor for CCUSServer {
                 let mut msg = Individual::new(vec![0; (act.queue_consumer.header.msg_length) as usize]);
 
                 // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-                if let Err(e) = act.queue_consumer.pop_body(&mut msg.binobj) {
+                if let Err(e) = act.queue_consumer.pop_body(&mut msg.raw) {
                     if e == ErrorQueue::FailReadTailMessage {
                         break;
                     } else {
