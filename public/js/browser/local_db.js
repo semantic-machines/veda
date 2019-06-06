@@ -76,25 +76,25 @@ veda.Module(function (veda) { "use strict";
         reject(error);
       };
       request.onsuccess = function(event) {
-        var result = request.result;
-        if (typeof result !== "undefined") {
-          resolve(result);
+        var json = request.result;
+        if (typeof json !== "undefined") {
+          resolve(json);
         } else {
-          reject(undefined);
+          reject();
         }
       };
     });
   };
 
-  proto.put = function (individual_json) {
+  proto.put = function (json) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction(["individuals"], "readwrite").objectStore("individuals").put(individual_json, individual_json["@"]);
+      var request = self.db.transaction(["individuals"], "readwrite").objectStore("individuals").put(json, json["@"]);
       request.onerror = function(error) {
         reject(error);
       };
       request.onsuccess = function(event) {
-        resolve(individual_json);
+        resolve(json);
       };
     });
   };
