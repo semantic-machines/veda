@@ -138,5 +138,4 @@ uint64_t long_from_buff(const char *src, int b_pos, int pos);
 
 uint32_t read_type_value(const char *src, int b_pos, int e_pos, ElementHeader *header);
 
-void hexdump(void *pAddressIn, long lSize);
 #endif
