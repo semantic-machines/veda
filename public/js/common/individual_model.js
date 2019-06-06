@@ -368,12 +368,6 @@ veda.Module(function (veda) { "use strict";
         }
         self.trigger("afterLoad", self);
         return self;
-      }).then(function (self) {
-        var updateService = new veda.UpdateService();
-        updateService.then(function (updateService) {
-          updateService.subscribe(self.id);
-        });
-        return self;
       });
       return this.isLoading(loadingPromise);
 
@@ -387,10 +381,6 @@ veda.Module(function (veda) { "use strict";
       this.isSync(false);
       this.isLoaded(false);
     }
-    var updateService = new veda.UpdateService();
-    updateService.then(function (updateService) {
-      updateService.subscribe(self.id);
-    });
     this.trigger("afterLoad", this);
     if (this._.init) {
       return this.init();
