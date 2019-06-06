@@ -1,4 +1,4 @@
-use crate::msgpack8individual::parse_to_predicate;
+use crate::msgpack8individual::*;
 use crate::resource::{Resource, Value};
 use std::collections::HashMap;
 use std::fmt;
@@ -13,7 +13,7 @@ pub struct Individual {
     pub uri: String,
     pub resources: HashMap<String, Vec<Resource>>,
 
-    //
+    // for lazy parsing
     pub cur: u64,
     pub len_predicates: u32,
     pub cur_predicates: u32,
@@ -45,6 +45,15 @@ impl Individual {
             cur: 0,
             len_predicates: 0,
             cur_predicates: 0,
+        }
+    }
+
+    pub fn parse_all(&mut self) {
+        while self.cur < self.binobj.len() as u64 {
+            // next parse
+            if parse_to_predicate("?", self) == false {
+                break;
+            }
         }
     }
 
@@ -159,4 +168,12 @@ impl Individual {
         }
         return false;
     }
+}
+
+pub fn parse_to_predicate(expect_predicate: &str, indv: &mut Individual) -> bool {
+    parse_msgpack_to_predicate(expect_predicate, indv)
+}
+
+pub fn raw2individual(indv: &mut Individual) -> bool {
+    msgpack2individual(indv)
 }

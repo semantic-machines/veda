@@ -1,17 +1,11 @@
 use crate::datatype::{DataType, Lang};
 use crate::individual::Individual;
-use crate::msgpack8individual::parse_to_predicate;
 use crate::resource::{Resource, Value};
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 
 impl Individual {
     pub fn to_json_str(&mut self) -> String {
-        while self.cur < self.binobj.len() as u64 {
-            // next parse
-            if parse_to_predicate("?", self) == false {
-                break;
-            }
-        }
+        self.parse_all();
 
         if let Ok(b) = serde_json::to_value(&self) {
             return b.to_string();
