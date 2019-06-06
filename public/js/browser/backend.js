@@ -439,12 +439,11 @@ veda.Module(function Backend(veda) { "use strict";
         "uris": isObj ? arg.uris : uris
       }
     };
-//    return call_server(params);
     return localDB.then(function (db) {
       var results = [];
       var get_from_server = [];
-      results = params.data.uris.reduce(function (p, uri, i) {
-        return p.then(function(results) {
+      return params.data.uris.reduce(function (p, uri, i) {
+        return p.then(function() {
           return db.get(uri).then(function (result) {
             results[i] = result;
             return results;
@@ -453,22 +452,24 @@ veda.Module(function Backend(veda) { "use strict";
             return results;
           });
         });
-      }, Promise.resolve(results));
-      return results.then(function (results) {
+      }, Promise.resolve(results))
+      .then(function (results) {
         if (get_from_server.length) {
           params.data.uris = get_from_server;
           return call_server(params);
         } else {
           return [];
         }
-      }).then(function (results_from_server) {
+      })
+      .then(function (results_from_server) {
         for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
           while(results[j++]); // Fast forward to empty element
           results[j-1] = results_from_server[i];
           db.put(results_from_server[i]);
         }
         return results;
-      }).catch(console.log);
+      })
+      .catch(console.log);
     });
   };
 
