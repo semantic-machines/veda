@@ -1,10 +1,8 @@
 use crate::storage::Storage;
-use lmdb_rs_m::core::{
-    /*Database,*/ EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly,
-};
+use lmdb_rs_m::core::{/*Database,*/ EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
 use lmdb_rs_m::{DbFlags, DbHandle, EnvBuilder, Environment, MdbError};
 use v_onto::individual::*;
-use v_onto::msgpack8individual::msgpack2individual;
+use v_onto::parser::*;
 
 pub struct LMDBStorage {
     db_handle: Result<DbHandle, MdbError>,
@@ -15,8 +13,7 @@ impl LMDBStorage {
     pub fn new(db_path: &str) -> LMDBStorage {
         let db_handle;
 
-        let env_builder = EnvBuilder::new()
-            .flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
+        let env_builder = EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync);
 
         let db_env = env_builder.open(db_path, 0o644);
 
@@ -47,9 +44,9 @@ impl Storage for LMDBStorage {
 
                         match db.get::<Vec<u8>>(&uri) {
                             Ok(val) => {
-                                indv.binobj = val;
+                                indv.raw = val;
 
-                                if msgpack2individual(indv) {
+                                if raw2individual(indv) {
                                     return true;
                                 } else {
                                     error!("fail parse binobj");
