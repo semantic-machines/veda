@@ -10,7 +10,7 @@ use crate::resource::{Resource, Value};
 
 const MSGPACK_MAGIC_HEADER: u8 = 146;
 
-pub fn parse_to_predicate(expect_predicate: &str, indv: &mut Individual) -> bool {
+pub fn parse_msgpack_to_predicate(expect_predicate: &str, indv: &mut Individual) -> bool {
     if indv.cur >= indv.binobj.len() as u64 {
         return false;
     }

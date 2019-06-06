@@ -11,7 +11,7 @@ use std::io::Write;
 use std::path::Path;
 use std::{thread, time};
 use v_onto::individual::Individual;
-use v_onto::msgpack8individual::msgpack2individual;
+use v_onto::individual::raw2individual;
 use v_queue::*;
 use v_search::{FTClient, FTQuery};
 use v_storage::storage::VStorage;
@@ -140,11 +140,11 @@ fn main() -> std::io::Result<()> {
             }
 
             if is_found_onto_changes == false {
-                if msgpack2individual(&mut msg) {
+                if raw2individual(&mut msg) {
                     if let Ok(new_state) = msg.get_first_binobj("new_state") {
                         let mut indv = Individual::new(new_state);
 
-                        if msgpack2individual(&mut indv) {
+                        if raw2individual(&mut indv) {
                             is_found_onto_changes = indv.any_exists("rdf:type", &onto_types);
 
                             if is_found_onto_changes {
