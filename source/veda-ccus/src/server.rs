@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 use std::str;
 use std::time::Duration;
 use v_onto::individual::*;
-use v_onto::msgpack8individual::msgpack2individual;
+use v_onto::parser::*;
 use v_queue::*;
 
 use std::sync::mpsc;
@@ -271,7 +271,7 @@ impl Actor for CCUSServer {
                 let mut msg = Individual::new(vec![0; (act.queue_consumer.header.msg_length) as usize]);
 
                 // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-                if let Err(e) = act.queue_consumer.pop_body(&mut msg.binobj) {
+                if let Err(e) = act.queue_consumer.pop_body(&mut msg.raw) {
                     if e == ErrorQueue::FailReadTailMessage {
                         break;
                     } else {
@@ -281,7 +281,7 @@ impl Actor for CCUSServer {
                 }
 
                 // запустим ленивый парсинг сообщения в Individual
-                if msgpack2individual(&mut msg) == false {
+                if raw2individual(&mut msg) == false {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
                 }
