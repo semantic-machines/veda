@@ -375,7 +375,6 @@ veda.Module(function (veda) { "use strict";
         });
         return self;
       });
-
       return this.isLoading(loadingPromise);
 
     } else if (typeof uri === "object") {
@@ -387,11 +386,11 @@ veda.Module(function (veda) { "use strict";
       this.isNew(true);
       this.isSync(false);
       this.isLoaded(false);
-      var updateService = new veda.UpdateService();
-      updateService.then(function (updateService) {
-        updateService.subscribe(self.id);
-      });
     }
+    var updateService = new veda.UpdateService();
+    updateService.then(function (updateService) {
+      updateService.subscribe(self.id);
+    });
     this.trigger("afterLoad", this);
     if (this._.init) {
       return this.init();
