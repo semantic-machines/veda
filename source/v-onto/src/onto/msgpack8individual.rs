@@ -5,18 +5,17 @@ use std::io::Cursor;
 extern crate rmp as msgpack;
 
 use crate::datatype::{DataType, Lang};
-use crate::individual::Individual;
 use crate::resource::{Resource, Value};
-
-const MSGPACK_MAGIC_HEADER: u8 = 146;
+use crate::individual::Individual;
+use crate::parser::*;
 
 pub fn parse_msgpack_to_predicate(expect_predicate: &str, indv: &mut Individual) -> bool {
-    if indv.cur >= indv.binobj.len() as u64 {
+    if indv.cur >= indv.raw.len() as u64 {
         return false;
     }
 
     let mut is_found = false;
-    let mut cur = Cursor::new(indv.binobj.as_slice());
+    let mut cur = Cursor::new(indv.raw.as_slice());
     cur.set_position(indv.cur);
 
     for _ in indv.cur_predicates..indv.len_predicates {
@@ -29,8 +28,6 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, indv: &mut Individual)
                 return false;
             }
         };
-
-        //println!("@D predicate = {}", predicate);
 
         if predicate == expect_predicate {
             is_found = true;
@@ -115,8 +112,8 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, indv: &mut Individual)
                                             }
                                         }
                                     } else if v_type == DataType::Binary as u8 {
-                                        if read_binobj_into_resources(&mut cur, values) == false {
-                                            error!("value: faile read binobj");
+                                        if read_raw_into_resources(&mut cur, values) == false {
+                                            error!("value: faile read raw");
                                             return false;
                                         }
                                     } else if v_type == DataType::String as u8 {
@@ -211,19 +208,11 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, indv: &mut Individual)
             }
         }
 
-        //if indv.cur >= indv.binobj.len() as u64 {
-        //    return true;
-        //}
-
-        //println!("@D values {:?}", values);
-
         if is_found == true {
             //            indv.cur = cur.position();
             indv.cur = cur.position();
             return true;
-        } // else {
-          //println!("@D predicate not found");
-          //}
+        }
     }
 
     indv.cur = cur.position();
@@ -231,18 +220,15 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, indv: &mut Individual)
 }
 
 pub fn msgpack2individual(indv: &mut Individual) -> bool {
-    if indv.binobj.len() == 0 {
+    if indv.raw.len() == 0 {
         return false;
     }
 
-    let binobj: &[u8] = indv.binobj.as_slice();
-    let msg_type = binobj[0];
-
-    if msg_type != MSGPACK_MAGIC_HEADER {
+    if indv.raw_type != RawType::MSGPACK {
         return false;
     }
 
-    let mut cur = Cursor::new(binobj);
+    let mut cur = Cursor::new(indv.raw.as_slice());
 
     if let Ok(v) = read_marker(&mut cur) {
         if let Marker::FixArray(size) = v {
@@ -271,7 +257,7 @@ pub fn msgpack2individual(indv: &mut Individual) -> bool {
     }
 }
 
-fn read_binobj_into_resources<'a>(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resource>) -> bool {
+fn read_raw_into_resources<'a>(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resource>) -> bool {
     let m_pos = cur.position();
     let size: u32;
 
