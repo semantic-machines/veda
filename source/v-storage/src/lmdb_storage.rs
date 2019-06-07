@@ -49,10 +49,9 @@ impl Storage for LMDBStorage {
                                 if raw2individual(indv) {
                                     return true;
                                 } else {
-                                    error!("fail parse binobj");
+                                    error!("fail parse raw to individual");
+                                    return false;
                                 }
-
-                                return true;
                             }
                             Err(e) => match e {
                                 MdbError::NotFound => {
