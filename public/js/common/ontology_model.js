@@ -103,10 +103,12 @@ veda.Module(function (veda) { "use strict";
 
     // Allocate ontology objects
     var ontologyPromises = ontology.map( function (json) {
+      if (JSON.stringify(json) === '{"@":""}') { return; }
       return new veda.IndividualModel( json, 1, false ).load();
     });
     return Promise.all(ontologyPromises).then(function (ontology) {
-      ontology.map( function (individual) {
+      ontology.forEach( function (individual) {
+        if ( !individual ) { return; }
         var type = individual.properties["rdf:type"][0].data;
         var uri = individual.id;
 
@@ -144,7 +146,7 @@ veda.Module(function (veda) { "use strict";
       });
 
       // Process classes
-      Object.keys(classes).map( function (uri) {
+      Object.keys(classes).forEach( function (uri) {
         var _class = classes[uri];
         // populate classTree
         if ( !classTree[_class.id] ) {
@@ -166,7 +168,7 @@ veda.Module(function (veda) { "use strict";
       });
 
       // Process properties
-      Object.keys(properties).map( function (uri) {
+      Object.keys(properties).forEach( function (uri) {
         try {
           var property = properties[uri];
           if (!property["rdfs:domain"]) { return; }
@@ -179,7 +181,7 @@ veda.Module(function (veda) { "use strict";
       });
 
       // Process specifications
-      Object.keys(specifications).map( function (uri) {
+      Object.keys(specifications).forEach( function (uri) {
         try {
           var spec = specifications[uri];
           if (!spec["v-ui:forClass"]) { return; }
@@ -194,7 +196,8 @@ veda.Module(function (veda) { "use strict";
       });
 
       // Init ontology individuals
-      ontology.map( function (individual) {
+      ontology.forEach( function (individual) {
+        if ( !individual ) { return; }
         try {
           individual.init();
         } catch (error) {
