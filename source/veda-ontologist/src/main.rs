@@ -167,25 +167,29 @@ fn main() -> std::io::Result<()> {
         if is_found_onto_changes && size_batch == 0 {
             info!("found onto changes from storage");
 
-            let mut file = File::create(ontology_file_path)?;
-            let res = ft_client.query(FTQuery::new("cfg:VedaSystem", &query));
+            if let Ok(mut file) = File::create(ontology_file_path) {
+                let res = ft_client.query(FTQuery::new("cfg:VedaSystem", &query));
 
-            if res.result_code == 200 && res.count > 0 {
-                file.write(b"[")?;
-                let mut is_first: bool = true;
-                for el in &res.result {
-                    let mut indv: Individual = Individual::new_empty();
-                    storage.set_binobj(&el, &mut indv);
-                    if !is_first {
-                        file.write(b",")?;
-                    } else {
-                        is_first = false;
+                if res.result_code == 200 && res.count > 0 {
+                    file.write(b"[")?;
+                    let mut is_first: bool = true;
+                    for el in &res.result {
+                        let mut indv: Individual = Individual::new_empty();
+                        if storage.set_binobj(&el, &mut indv) == true {
+                            if !is_first {
+                                file.write(b",")?;
+                            } else {
+                                is_first = false;
+                            }
+                            file.write(&indv.to_json_str().as_bytes())?;
+                        }
                     }
-                    file.write(&indv.to_json_str().as_bytes())?;
+                    file.write(b"]")?;
+                    info!("count stored {}", res.count);
+                    is_found_onto_changes = false;
                 }
-                file.write(b"]")?;
-                info!("count stored {}", res.count);
-                is_found_onto_changes = false;
+            } else {
+                error!("fail create file {}", ontology_file_path);
             }
         }
 
