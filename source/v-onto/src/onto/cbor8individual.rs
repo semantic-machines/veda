@@ -4,17 +4,9 @@ use cbor::types::Type;
 use cbor::{Config, Decoder};
 use std::io::Cursor;
 
-pub fn parse_cbor_to_predicate(_expect_predicate: &str, raw: &mut RawObj, _indv: &mut Individual) -> bool {
-    return false;
-}
-
-pub fn cbor2individual(raw: &mut RawObj, indv: &mut Individual) -> bool {
-    if raw.data.len() == 0 {
-        return false;
-    }
-
-    if raw.raw_type != RawType::CBOR {
-        return false;
+pub fn parse_cbor(raw: &mut RawObj) -> Result<String, i8> {
+    if raw.data.len() == 0 || raw.raw_type != RawType::CBOR {
+        return Err(-1);
     }
 
     let input = Cursor::new(raw.data.as_slice());
@@ -27,7 +19,7 @@ pub fn cbor2individual(raw: &mut RawObj, indv: &mut Individual) -> bool {
                     info!("@K {:?}", &predicate);
 
                     if predicate == "@" {
-                        indv.uri = predicate;
+                        //indv.uri = predicate;
                     } else {
                         if let Ok(type_info) = d.typeinfo() {
                             match type_info.0 {
@@ -57,7 +49,17 @@ pub fn cbor2individual(raw: &mut RawObj, indv: &mut Individual) -> bool {
         }
     }
 
-    info!("@4");
+    return Err(-1);
+}
+
+pub fn parse_cbor_to_predicate(_expect_predicate: &str, raw: &mut RawObj, _indv: &mut Individual) -> bool {
+    if raw.cur >= raw.data.len() as u64 {
+        return false;
+    }
+
+    let mut is_found = false;
+    let mut cur = Cursor::new(raw.data.as_slice());
+    cur.set_position(raw.cur);
 
     return false;
 }

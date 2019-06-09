@@ -32,7 +32,8 @@ impl Storage for TTStorage {
         if let Ok(v) = self.rt.block_on(resp) {
             raw.data = v[5..].to_vec();
 
-            if raw2individual(raw, indv) {
+            if let Ok(uri) = parse_raw(raw) {
+                indv.uri = uri;
                 return true;
             } else {
                 error!("fail parse binobj");
