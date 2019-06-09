@@ -268,10 +268,10 @@ impl Actor for CCUSServer {
                     break;
                 }
 
-                let mut msg = Individual::new(vec![0; (act.queue_consumer.header.msg_length) as usize]);
+                let mut raw = RawObj::new(vec![0; (act.queue_consumer.header.msg_length) as usize]);
 
                 // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-                if let Err(e) = act.queue_consumer.pop_body(&mut msg.raw) {
+                if let Err(e) = act.queue_consumer.pop_body(&mut raw.data) {
                     if e == ErrorQueue::FailReadTailMessage {
                         break;
                     } else {
@@ -280,20 +280,21 @@ impl Actor for CCUSServer {
                     }
                 }
 
+                let mut msg = Individual::new();
                 // запустим ленивый парсинг сообщения в Individual
-                if raw2individual(&mut msg) == false {
+                if raw2individual(&mut raw, &mut msg) == false {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
                 }
 
                 // берем поле [uri]
-                if let Ok(uri_from_queue) = msg.get_first_literal("uri") {
+                if let Ok(uri_from_queue) = msg.get_first_literal(&mut raw, "uri") {
                     // найдем есть ли среди uri на которые есть подписки, uri из очереди
                     if let Some(el) = act.uri2sessions.get_mut(&uri_from_queue) {
                         debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, el.sessions);
 
                         // берем u_counter
-                        let counter_from_queue = if let Ok(c) = msg.get_first_integer("u_count") {
+                        let counter_from_queue = if let Ok(c) = msg.get_first_integer(&mut raw, "u_count") {
                             c as u64
                         } else {
                             0

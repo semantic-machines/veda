@@ -35,7 +35,7 @@ impl LMDBStorage {
 }
 
 impl Storage for LMDBStorage {
-    fn set_binobj(&mut self, uri: &str, indv: &mut Individual) -> bool {
+    fn set_binobj(&mut self, uri: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
         match &self.db_env {
             Ok(env) => match &self.db_handle {
                 Ok(handle) => match env.get_reader() {
@@ -44,9 +44,9 @@ impl Storage for LMDBStorage {
 
                         match db.get::<Vec<u8>>(&uri) {
                             Ok(val) => {
-                                indv.raw = val;
+                                raw.data = val;
 
-                                if raw2individual(indv) {
+                                if raw2individual(raw, indv) {
                                     return true;
                                 } else {
                                     error!("fail parse raw to individual");
