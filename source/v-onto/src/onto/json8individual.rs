@@ -1,12 +1,10 @@
 use crate::datatype::{DataType, Lang};
-use crate::individual::Individual;
+use crate::individual::*;
 use crate::resource::{Resource, Value};
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 
 impl Individual {
     pub fn to_json_str(&mut self) -> String {
-        self.parse_all();
-
         if let Ok(b) = serde_json::to_value(&self) {
             return b.to_string();
         }

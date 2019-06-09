@@ -10,7 +10,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::{thread, time};
-use v_onto::individual::Individual;
+use v_onto::individual::{Individual, RawObj};
 use v_onto::parser::*;
 use v_queue::*;
 use v_search::{FTClient, FTQuery};
@@ -127,10 +127,11 @@ fn main() -> std::io::Result<()> {
                 break;
             }
 
-            let mut msg = Individual::new(vec![0; (queue_consumer.header.msg_length) as usize]);
+            let mut raw = RawObj::new(vec![0; (queue_consumer.header.msg_length) as usize]);
+            //let mut msg = Individual::new(vec![0; (queue_consumer.header.msg_length) as usize]);
 
             // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
-            if let Err(e) = queue_consumer.pop_body(&mut msg.raw) {
+            if let Err(e) = queue_consumer.pop_body(&mut raw.data) {
                 if e == ErrorQueue::FailReadTailMessage {
                     break;
                 } else {
@@ -140,12 +141,14 @@ fn main() -> std::io::Result<()> {
             }
 
             if is_found_onto_changes == false {
-                if raw2individual(&mut msg) {
-                    if let Ok(new_state) = msg.get_first_binobj("new_state") {
-                        let mut indv = Individual::new(new_state);
+                let mut msg: Individual = Individual::new();
+                if raw2individual(&mut raw, &mut msg) {
+                    if let Ok(new_state) = msg.get_first_binobj(&mut raw, "new_state") {
+                        let mut raw = RawObj::new(new_state);
+                        let mut indv: Individual = Individual::new();
 
-                        if raw2individual(&mut indv) {
-                            is_found_onto_changes = indv.any_exists("rdf:type", &onto_types);
+                        if raw2individual(&mut raw, &mut indv) {
+                            is_found_onto_changes = indv.any_exists(&mut raw, "rdf:type", &onto_types);
 
                             if is_found_onto_changes {
                                 info!("found changes in onto");
@@ -174,13 +177,17 @@ fn main() -> std::io::Result<()> {
                     file.write(b"[")?;
                     let mut is_first: bool = true;
                     for el in &res.result {
-                        let mut indv: Individual = Individual::new_empty();
-                        if storage.set_binobj(&el, &mut indv) == true {
+                        let mut raw: RawObj = RawObj::new_empty();
+                        let mut indv: Individual = Individual::new();
+                        if storage.set_binobj(&el, &mut raw, &mut indv) == true {
                             if !is_first {
                                 file.write(b",")?;
                             } else {
                                 is_first = false;
                             }
+
+                            indv.parse_all(&mut raw);
+
                             file.write(&indv.to_json_str().as_bytes())?;
                         }
                     }

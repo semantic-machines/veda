@@ -24,15 +24,15 @@ impl TTStorage {
 }
 
 impl Storage for TTStorage {
-    fn set_binobj(&mut self, uri: &str, indv: &mut Individual) -> bool {
+    fn set_binobj(&mut self, uri: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
         let key = (uri,);
 
         let resp = self.client.select(self.space_id, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 
         if let Ok(v) = self.rt.block_on(resp) {
-            indv.raw = v[5..].to_vec();
+            raw.data = v[5..].to_vec();
 
-            if raw2individual(indv) {
+            if raw2individual(raw, indv) {
                 return true;
             } else {
                 error!("fail parse binobj");
