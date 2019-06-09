@@ -22,7 +22,7 @@ pub fn parse_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &mut I
 
 const MSGPACK_MAGIC_HEADER: u8 = 146;
 
-pub fn raw2individual(raw: &mut RawObj, indv: &mut Individual) -> bool {
+pub fn parse_raw(raw: &mut RawObj) -> Result<String, i8> {
     let traw: &[u8] = raw.data.as_slice();
 
     if traw[0] == MSGPACK_MAGIC_HEADER {
@@ -32,10 +32,10 @@ pub fn raw2individual(raw: &mut RawObj, indv: &mut Individual) -> bool {
     }
 
     if raw.raw_type == RawType::MSGPACK {
-        return msgpack2individual(raw, indv);
+        return parse_msgpack(raw);
     } else if raw.raw_type == RawType::CBOR {
-        return cbor2individual(raw, indv);
+        return parse_cbor(raw);
     }
 
-    return false;
+    Err(-1)
 }

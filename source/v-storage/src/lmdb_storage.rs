@@ -46,7 +46,8 @@ impl Storage for LMDBStorage {
                             Ok(val) => {
                                 raw.data = val;
 
-                                if raw2individual(raw, indv) {
+                                if let Ok(uri) = parse_raw(raw) {
+                                    indv.uri = uri;
                                     return true;
                                 } else {
                                     error!("fail parse raw to individual");

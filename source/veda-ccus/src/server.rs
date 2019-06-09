@@ -282,7 +282,9 @@ impl Actor for CCUSServer {
 
                 let mut msg = Individual::new();
                 // запустим ленивый парсинг сообщения в Individual
-                if raw2individual(&mut raw, &mut msg) == false {
+                if let Ok(uri) = parse_raw(&mut raw) {
+                    msg.uri = uri;
+                } else {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
                 }

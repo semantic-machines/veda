@@ -142,12 +142,13 @@ fn main() -> std::io::Result<()> {
 
             if is_found_onto_changes == false {
                 let mut msg: Individual = Individual::new();
-                if raw2individual(&mut raw, &mut msg) {
+                if let Ok(uri) = parse_raw(&mut raw) {
+                    msg.uri = uri;
                     if let Ok(new_state) = msg.get_first_binobj(&mut raw, "new_state") {
                         let mut raw = RawObj::new(new_state);
                         let mut indv: Individual = Individual::new();
-
-                        if raw2individual(&mut raw, &mut indv) {
+                        if let Ok(uri) = parse_raw(&mut raw) {
+                            indv.uri = uri;
                             is_found_onto_changes = indv.any_exists(&mut raw, "rdf:type", &onto_types);
 
                             if is_found_onto_changes {

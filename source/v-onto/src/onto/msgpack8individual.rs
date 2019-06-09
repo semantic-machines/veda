@@ -9,6 +9,40 @@ use crate::individual::*;
 use crate::parser::*;
 use crate::resource::*;
 
+pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
+    if raw.data.len() == 0 || raw.raw_type != RawType::MSGPACK {
+        return Err(-1);
+    }
+
+    let mut cur = Cursor::new(raw.data.as_slice());
+
+    if let Ok(v) = read_marker(&mut cur) {
+        if let Marker::FixArray(size) = v {
+            if size != 2 {
+                return Err(-1);
+            }
+        } else {
+            return Err(-1);
+        }
+    } else {
+        return Err(-1);
+    }
+
+    // read individual URI
+    let uri = match read_string_from_msgpack(&mut cur) {
+        Ok(p) => p,
+        Err(_) => return Err(-1),
+    };
+
+    if let Ok(size) = read_map_len(&mut cur) {
+        raw.len_predicates = size as u32;
+        raw.cur = cur.position();
+        return Ok(uri);
+    } else {
+        return Err(-1);
+    }
+}
+
 pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
     if raw.cur >= raw.data.len() as u64 {
         return false;
@@ -174,44 +208,6 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
 
     raw.cur = cur.position();
     return true;
-}
-
-pub fn msgpack2individual(raw: &mut RawObj, indv: &mut Individual) -> bool {
-    if raw.data.len() == 0 {
-        return false;
-    }
-
-    if raw.raw_type != RawType::MSGPACK {
-        return false;
-    }
-
-    let mut cur = Cursor::new(raw.data.as_slice());
-
-    if let Ok(v) = read_marker(&mut cur) {
-        if let Marker::FixArray(size) = v {
-            if size != 2 {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-
-    // read individual URI
-    match read_string_from_msgpack(&mut cur) {
-        Ok(p) => indv.uri = p,
-        Err(_) => return false,
-    }
-
-    if let Ok(size) = read_map_len(&mut cur) {
-        raw.len_predicates = size as u32;
-        raw.cur = cur.position();
-        return true;
-    } else {
-        return false;
-    }
 }
 
 fn read_raw_into_resources<'a>(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resource>) -> bool {
