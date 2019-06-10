@@ -16,8 +16,6 @@ pub fn parse_cbor(raw: &mut RawObj) -> Result<String, i8> {
         raw.len_predicates = len as u32;
         if let Ok(type_info) = d.typeinfo() {
             if let Ok(predicate) = d._text(&type_info) {
-                info!("@K {:?}", &predicate);
-
                 if predicate == "@" {
                     raw.cur = d.into_reader().position();
                     return Ok(predicate);
@@ -42,11 +40,9 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, raw: &mut RawObj, _indv: 
     let mut d = Decoder::new(Config::default(), cur);
 
     for _ in raw.cur_predicates..raw.len_predicates {
-        let predicate;
-
         if let Ok(type_info) = d.typeinfo() {
-            if let Ok(p) = d._text(&type_info) {
-                predicate = &p;
+            if let Ok(predicate) = d._text(&type_info) {
+                info!("predicate {:?}", &predicate);
 
                 if predicate == expect_predicate {
                     is_found = true;
