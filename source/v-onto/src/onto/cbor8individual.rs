@@ -69,25 +69,32 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &
     for _ in raw.cur_predicates..raw.len_predicates {
         if let Ok(type_info) = d.typeinfo() {
             if let Ok(predicate) = d._text(&type_info) {
-                info!("predicate {:?}", &predicate);
+                debug!("predicate {:?}", &predicate);
 
                 if predicate == expect_predicate {
                     is_found = true;
                 }
-                read_values(&predicate, &mut d, indv);
+                if add_value(&predicate, &mut d, indv, 0) == false {
+                    return false;
+                }
             }
         }
     }
     return false;
 }
 
-fn read_values(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individual) {
+fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individual, order: u32) -> bool {
     if let Ok((type_info, tag)) = d.typeinfo_and_tag() {
         match type_info.0 {
+            Type::Bool => {
+                if let Ok(b) = d._bool(&type_info) {
+                    indv.add_bool(&predicate, b, order);
+                }
+            }
             Type::Text => {
                 if let Ok(t) = d._text(&type_info) {
                     if tag == TagId::URI as u64 {
-                        indv.add_uri(&predicate, &t, 0);
+                        indv.add_uri(&predicate, &t, order);
                     } else {
                         if tag == TagId::TEXT_RU as u64 || tag == TagId::TEXT_EN as u64 {
                             let lang;
@@ -100,28 +107,44 @@ fn read_values(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Indiv
                                 lang = Lang::NONE;
                             }
 
-                            indv.add_string(predicate, &t, lang, 0);
+                            indv.add_string(predicate, &t, lang, order);
                         }
                     }
-                    info!("@V {:?}", t);
                 }
             }
             Type::UInt8 => {
                 if let Ok(i) = d._u8(&type_info) {
-                    info!("@V {:?}", d._u8(&type_info));
-                    //indv.add_integer(&predicate, i as i64, 0);
+                    indv.add_integer(&predicate, i as i64, order);
                 }
             }
-            Type::UInt16 => info!("@V {:?}", d._u16(&type_info)),
-            Type::UInt32 => info!("@V {:?}", d._u32(&type_info)),
+            Type::UInt16 => {
+                if let Ok(i) = d._u16(&type_info) {
+                    if tag == TagId::EPOCH_DATE_TIME as u64 {
+                        indv.add_datetime(&predicate, i as i64, order);
+                    } else {
+                        indv.add_integer(&predicate, i as i64, order);
+                    }
+                }
+            }
+            Type::UInt32 => {
+                if let Ok(i) = d._u32(&type_info) {
+                    indv.add_integer(&predicate, i as i64, order);
+                }
+            }
             Type::Array => {
-                let len = d._array(&type_info);
-                info!("@V ARRAY {:?}", len);
+                if let Ok(len) = d._array(&type_info) {
+                    for x in 0..len {
+                        add_value(predicate, d, indv, x as u32);
+                    }
+                } else {
+                    return false;
+                }
             }
-            Type::Tagged => {
-                info!("@V TAG");
+            _ => {
+                error!("unknown type {:?}", type_info.0);
+                return false;
             }
-            _ => error!("unknown type {:?}", type_info.0),
         }
     }
+    return true;
 }
