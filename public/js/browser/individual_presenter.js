@@ -30,7 +30,7 @@ veda.Module(function (veda) { "use strict";
           template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
             "@": uri,
             "v-ui:template": [{data: templateString, type: "String"}]
-          });
+          }, 1);
         }
         return template.load().then(function (template) {
           template = template["v-ui:template"][0].toString();
