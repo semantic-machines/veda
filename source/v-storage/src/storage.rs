@@ -2,6 +2,11 @@ use crate::lmdb_storage::LMDBStorage;
 use crate::tt_storage::TTStorage;
 use v_onto::individual::*;
 
+pub enum StorageError {
+    None,
+    NotReady,
+}
+
 pub enum EStorage {
     LMDB(LMDBStorage),
     TT(TTStorage),
