@@ -87,7 +87,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                 if size == 2 {
                                     if v_type == DataType::Boolean as u8 {
                                         match read_bool(&mut cur) {
-                                            Ok(res) => indv.add_bool(&predicate, res, 0),
+                                            Ok(res) => indv.add_bool(&predicate, res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -95,7 +95,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Datetime as u8 {
                                         match read_int(&mut cur) {
-                                            Ok(res) => indv.add_datetime(&predicate, res, 0),
+                                            Ok(res) => indv.add_datetime(&predicate, res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -103,7 +103,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Integer as u8 {
                                         match read_int(&mut cur) {
-                                            Ok(res) => indv.add_integer(&predicate, res, 0),
+                                            Ok(res) => indv.add_integer(&predicate, res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -111,7 +111,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Uri as u8 {
                                         match read_string_from_msgpack(&mut cur) {
-                                            Ok(res) => indv.add_uri(&predicate, &res, 0),
+                                            Ok(res) => indv.add_uri(&predicate, &res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -125,7 +125,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::String as u8 {
                                         match read_string_from_msgpack(&mut cur) {
-                                            Ok(res) => indv.add_string(&predicate, &res, Lang::NONE, 0),
+                                            Ok(res) => indv.add_string(&predicate, &res, Lang::NONE, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -139,7 +139,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                     if v_type == DataType::Decimal as u8 {
                                         match read_int(&mut cur) {
                                             Ok(mantissa) => match read_int(&mut cur) {
-                                                Ok(exponent) => indv.add_decimal_d(&predicate, mantissa, exponent, 0),
+                                                Ok(exponent) => indv.add_decimal_d(&predicate, mantissa, exponent, i_values),
                                                 Err(e) => {
                                                     error!("value: fail read exponent, err={:?}", e);
                                                     return false;
@@ -171,7 +171,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                                     }
                                                 }
 
-                                                indv.add_string(&predicate, &res, lang, 0);
+                                                indv.add_string(&predicate, &res, lang, i_values);
                                             }
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);

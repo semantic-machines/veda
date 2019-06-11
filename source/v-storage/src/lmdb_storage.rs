@@ -50,7 +50,7 @@ impl Storage for LMDBStorage {
                                     indv.uri = uri;
                                     return true;
                                 } else {
-                                    error!("fail parse raw to individual");
+                                    error!("LMDBStorage: fail parse binobj, len={}, uri={}", raw.data.len(), uri);
                                     return false;
                                 }
                             }

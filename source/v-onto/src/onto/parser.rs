@@ -23,6 +23,10 @@ pub fn parse_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &mut I
 const MSGPACK_MAGIC_HEADER: u8 = 146;
 
 pub fn parse_raw(raw: &mut RawObj) -> Result<String, i8> {
+    if raw.data.is_empty() {
+        return Err(-1);
+    }
+
     let traw: &[u8] = raw.data.as_slice();
 
     if traw[0] == MSGPACK_MAGIC_HEADER {

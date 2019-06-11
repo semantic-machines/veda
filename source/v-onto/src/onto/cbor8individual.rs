@@ -7,24 +7,16 @@ use std::io::Cursor;
 
 #[derive(PartialEq, Debug)]
 pub enum TagId {
-    NONE = 255,
-    TEXT_RU = 42,
-    TEXT_EN = 43,
-    STANDARD_DATE_TIME = 0,
-    EPOCH_DATE_TIME = 1,
-    POSITIVE_BIGINT = 2,
-    NEGATIVE_BIGINT = 3,
-    DECIMAL_FRACTION = 4,
-    BIGDECIMAL = 5,
-    EXPECTED_BASE64_URL_ENCODED = 21,
-    EXPECTED_BASE64_ENCODED = 22,
-    EXPECTED_BASE16_ENCODED = 23,
-    CBOR_ENCODED = 24,
+    None = 255,
+    TextRu = 42,
+    TextEn = 43,
+    StandardDateTime = 0,
+    EpochDateTime = 1,
+    PositiveBigint = 2,
+    NegativeBigint = 3,
+    DecimalFraction = 4,
+    CborEncoded = 24,
     URI = 32,
-    BASE64_URL_ENCODED = 33,
-    BASE64_ENCODED = 34,
-    REGEXP = 35,
-    MIME_MESSAGE = 36,
 }
 
 pub fn parse_cbor(raw: &mut RawObj) -> Result<String, i8> {
@@ -79,7 +71,13 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &
                 }
             }
         }
+
+        if is_found == true {
+            raw.cur = d.into_reader().position();
+            return true;
+        }
     }
+
     return false;
 }
 
@@ -96,19 +94,17 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                     if tag == TagId::URI as u64 {
                         indv.add_uri(&predicate, &t, order);
                     } else {
-                        if tag == TagId::TEXT_RU as u64 || tag == TagId::TEXT_EN as u64 {
-                            let lang;
+                        let mut lang = Lang::NONE;
 
-                            if tag == TagId::TEXT_RU as u64 {
+                        if tag == TagId::TextRu as u64 || tag == TagId::TextEn as u64 {
+                            if tag == TagId::TextRu as u64 {
                                 lang = Lang::RU;
-                            } else if tag == TagId::TEXT_EN as u64 {
+                            } else if tag == TagId::TextEn as u64 {
                                 lang = Lang::EN;
-                            } else {
-                                lang = Lang::NONE;
                             }
-
-                            indv.add_string(predicate, &t, lang, order);
                         }
+
+                        indv.add_string(predicate, &t, lang, order);
                     }
                 }
             }
@@ -119,7 +115,7 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
             }
             Type::UInt16 => {
                 if let Ok(i) = d._u16(&type_info) {
-                    if tag == TagId::EPOCH_DATE_TIME as u64 {
+                    if tag == TagId::EpochDateTime as u64 {
                         indv.add_datetime(&predicate, i as i64, order);
                     } else {
                         indv.add_integer(&predicate, i as i64, order);
