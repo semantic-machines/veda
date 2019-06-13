@@ -389,7 +389,7 @@ pub struct Queue {
 
 impl Queue {
     pub fn new(queue_name: &str, mode: Mode) -> Result<Queue, i64> {
-        if let Ok(fqi) = OpenOptions::new().read(true).write(mode == Mode::ReadWrite).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue") {
+        if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue") {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
