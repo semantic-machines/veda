@@ -26,6 +26,30 @@ pub enum ErrorQueue {
     Other = -1,
 }
 
+#[derive(PartialEq)]
+pub enum Mode {
+    Read = 0,
+    ReadWrite = 1,
+    Default = 2,
+}
+
+#[derive(PartialEq, Debug)]
+#[repr(u8)]
+pub enum MsgType {
+    String = b'S',
+    Object = b'O',
+}
+
+impl From<u8> for MsgType {
+    fn from(t: u8) -> Self {
+        if t == b'O' {
+            return MsgType::Object;
+        } else {
+            return MsgType::String;
+        }
+    }
+}
+
 impl ErrorQueue {
     pub fn as_str(&self) -> &'static str {
         match *self {
@@ -47,7 +71,7 @@ pub struct Header {
     magic_marker: u32,
     count_pushed: u32,
     crc: u32,
-    msg_type: u8,
+    msg_type: MsgType,
 }
 
 pub struct Consumer {
@@ -66,7 +90,7 @@ pub struct Consumer {
 
 impl Consumer {
     pub fn new(consumer_name: &str, queue_name: &str) -> Result<Consumer, i64> {
-        match Queue::new(queue_name) {
+        match Queue::new(queue_name, Mode::Read) {
             Ok(q) => match OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name) {
                 Ok(ff) => Ok({
                     let mut consumer = Consumer {
@@ -83,19 +107,19 @@ impl Consumer {
                             magic_marker: 0,
                             count_pushed: 0,
                             crc: 0,
-                            msg_type: 0,
+                            msg_type: MsgType::String,
                         },
                         id: 0,
                     };
 
                     if consumer.get_info() == true {
                         if let Ok(_) = consumer.queue.open_part(consumer.id) {
-                            &consumer.queue.ff_queue_r.seek(SeekFrom::Start(consumer.pos_record));
+                            &consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record));
                         } else {
                             consumer.queue.is_ready = true;
                             consumer.id = consumer.queue.id;
                             if let Ok(_) = consumer.queue.open_part(consumer.id) {
-                                &consumer.queue.ff_queue_r.seek(SeekFrom::Start(consumer.pos_record));
+                                &consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record));
                             } else {
                                 return Err(-1);
                             }
@@ -236,10 +260,10 @@ impl Consumer {
                 }
             }
         }
-        //self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record));
+        //self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record));
 
         let mut buff = vec![0; HEADER_SIZE];
-        match self.queue.ff_queue_r.read(&mut buff[..]) {
+        match self.queue.ff_queue.read(&mut buff[..]) {
             Ok(len) => {
                 //println!("@len={}, id={}", len, self.id);
                 if len < HEADER_SIZE {
@@ -260,7 +284,7 @@ impl Consumer {
             msg_length: u32::from_ne_bytes([buff[8], buff[9], buff[10], buff[11]]),
             magic_marker: u32::from_ne_bytes([buff[12], buff[13], buff[14], buff[15]]),
             count_pushed: u32::from_ne_bytes([buff[16], buff[17], buff[18], buff[19]]),
-            msg_type: buff[20],
+            msg_type: MsgType::from(buff[20]),
             crc: u32::from_ne_bytes([buff[21], buff[22], buff[23], buff[24]]),
         };
 
@@ -280,12 +304,12 @@ impl Consumer {
             return Err(ErrorQueue::NotReady);
         }
 
-        if let Ok(readed_size) = self.queue.ff_queue_r.read(msg) {
+        if let Ok(readed_size) = self.queue.ff_queue.read(msg) {
             if readed_size != msg.len() {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': size fail");
 
-                    if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
+                    if let Ok(_) = self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)) {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -303,7 +327,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': CRC fail");
 
-                    if let Ok(_) = self.queue.ff_queue_r.seek(SeekFrom::Start(self.pos_record)) {
+                    if let Ok(_) = self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)) {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -352,30 +376,32 @@ impl Consumer {
 }
 
 pub struct Queue {
+    mode: Mode,
     is_ready: bool,
     name: String,
-    ff_queue_r: File,
-    ff_info_push_w: File,
-    ff_info_queue_w: File,
+    ff_queue: File,
+    ff_info_push: File,
+    ff_info_queue: File,
     right_edge: u64,
     pub count_pushed: u64,
     pub id: u32,
 }
 
 impl Queue {
-    pub fn new(queue_name: &str) -> Result<Queue, i64> {
-        if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue") {
+    pub fn new(queue_name: &str, mode: Mode) -> Result<Queue, i64> {
+        if let Ok(fqi) = OpenOptions::new().read(true).write(mode == Mode::ReadWrite).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue") {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
             let mut queue = Queue {
+                mode: mode,
                 is_ready: true,
                 name: queue_name.to_owned(),
-                ff_queue_r: fqi,
+                ff_queue: fqi,
                 count_pushed: 0,
                 right_edge: 0,
-                ff_info_queue_w: tmp_f1,
-                ff_info_push_w: tmp_f2,
+                ff_info_queue: tmp_f1,
+                ff_info_push: tmp_f2,
                 id: 0,
             };
 
@@ -391,6 +417,25 @@ impl Queue {
         return Err(-1);
     }
 
+    pub fn push(&mut self, msg: &str, msg_type: MsgType) {
+        unimplemented!();
+
+        let buff = msg.as_bytes();
+
+        if self.is_ready == false || self.mode == Mode::Read || buff.len() > std::u32::MAX as usize / 2 {
+            return;
+        }
+
+        let header = Header {
+            start_pos: self.right_edge,
+            msg_length: buff.len() as u32,
+            magic_marker: 0xEEFEEFEE,
+            count_pushed: self.count_pushed as u32,
+            crc: 0,
+            msg_type: msg_type,
+        };
+    }
+
     pub fn open_part(&mut self, part_id: u32) -> Result<u32, ErrorQueue> {
         if self.is_ready == false {
             return Err(ErrorQueue::NotReady);
@@ -402,7 +447,7 @@ impl Queue {
             .create(true)
             .open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
         {
-            self.ff_info_push_w = ff;
+            self.ff_info_push = ff;
         } else {
             error!("[{}] fail open info push, part {}", self.name, part_id);
             self.is_ready = false;
@@ -410,7 +455,7 @@ impl Queue {
         }
 
         if let Ok(f) = File::open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
-            self.ff_queue_r = f;
+            self.ff_queue = f;
         } else {
             error!("[{}] fail open part {}", self.name, part_id);
             self.is_ready = false;
@@ -429,8 +474,8 @@ impl Queue {
 
         let mut id = 0;
 
-        &self.ff_info_queue_w.seek(SeekFrom::Start(0));
-        for line in BufReader::new(&self.ff_info_queue_w).lines() {
+        &self.ff_info_queue.seek(SeekFrom::Start(0));
+        for line in BufReader::new(&self.ff_info_queue).lines() {
             if let Ok(ll) = line {
                 let (queue_name, _id, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{}", String, u32, String);
 
@@ -471,7 +516,7 @@ impl Queue {
                 .create(true)
                 .open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
             {
-                self.ff_info_push_w = ff;
+                self.ff_info_push = ff;
             } else {
                 return Err(ErrorQueue::NotFound);
             }
@@ -481,8 +526,8 @@ impl Queue {
         let mut right_edge = 0;
         let mut count_pushed = 0;
 
-        &self.ff_info_push_w.seek(SeekFrom::Start(0));
-        for line in BufReader::new(&self.ff_info_push_w).lines() {
+        &self.ff_info_push.seek(SeekFrom::Start(0));
+        for line in BufReader::new(&self.ff_info_push).lines() {
             if let Ok(ll) = line {
                 let (queue_name, position, pushed, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{};{}", String, u64, u64, String);
 
