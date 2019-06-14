@@ -2,6 +2,7 @@ use std::fs::*;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
+use std::mem::size_of;
 
 extern crate crc32fast;
 use crc32fast::Hasher;
@@ -50,6 +51,16 @@ impl From<u8> for MsgType {
     }
 }
 
+impl MsgType {
+    fn as_u8(&self) -> u8 {
+        if *self == MsgType::Object {
+            return b'O';
+        } else {
+            return b'S';
+        }
+    }
+}
+
 impl ErrorQueue {
     pub fn as_str(&self) -> &'static str {
         match *self {
@@ -72,6 +83,39 @@ pub struct Header {
     count_pushed: u32,
     crc: u32,
     msg_type: MsgType,
+}
+
+impl Header {
+    pub fn create_from_buf(buf: &Vec<u8>) -> Self {
+        Header {
+            start_pos: u64::from_ne_bytes([buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]]),
+            msg_length: u32::from_ne_bytes([buf[8], buf[9], buf[10], buf[11]]),
+            magic_marker: u32::from_ne_bytes([buf[12], buf[13], buf[14], buf[15]]),
+            count_pushed: u32::from_ne_bytes([buf[16], buf[17], buf[18], buf[19]]),
+            msg_type: MsgType::from(buf[20]),
+            crc: u32::from_ne_bytes([buf[21], buf[22], buf[23], buf[24]]),
+        }
+    }
+
+    pub fn to_buf(&self, buf: &mut [u8; HEADER_SIZE]) {
+        let mut l = 0;
+        let mut r = size_of::<u64>();
+        buf[l..r].clone_from_slice(&u64::to_ne_bytes(self.start_pos));
+        l = r;
+        r = r + size_of::<u32>();
+        buf[l..r].clone_from_slice(&u32::to_ne_bytes(self.msg_length));
+        l = r;
+        r = r + size_of::<u32>();
+        buf[l..r].clone_from_slice(&[0xEE, 0xFE, 0xEF, 0xEE]);
+        l = r;
+        r = r + size_of::<u32>();
+        buf[l..r].clone_from_slice(&u32::to_ne_bytes(self.count_pushed));
+        buf[r] = self.msg_type.as_u8();
+        buf[r + 1] = 0;
+        buf[r + 2] = 0;
+        buf[r + 3] = 0;
+        buf[r + 4] = 0;
+    }
 }
 
 pub struct Consumer {
@@ -262,8 +306,8 @@ impl Consumer {
         }
         //self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record));
 
-        let mut buff = vec![0; HEADER_SIZE];
-        match self.queue.ff_queue.read(&mut buff[..]) {
+        let mut buf = vec![0; HEADER_SIZE];
+        match self.queue.ff_queue.read(&mut buf[..]) {
             Ok(len) => {
                 //println!("@len={}, id={}", len, self.id);
                 if len < HEADER_SIZE {
@@ -279,21 +323,15 @@ impl Consumer {
             }
         }
 
-        let header = Header {
-            start_pos: u64::from_ne_bytes([buff[0], buff[1], buff[2], buff[3], buff[4], buff[5], buff[6], buff[7]]),
-            msg_length: u32::from_ne_bytes([buff[8], buff[9], buff[10], buff[11]]),
-            magic_marker: u32::from_ne_bytes([buff[12], buff[13], buff[14], buff[15]]),
-            count_pushed: u32::from_ne_bytes([buff[16], buff[17], buff[18], buff[19]]),
-            msg_type: MsgType::from(buff[20]),
-            crc: u32::from_ne_bytes([buff[21], buff[22], buff[23], buff[24]]),
-        };
+        let header = Header::create_from_buf(&buf);
 
-        buff[21] = 0;
-        buff[22] = 0;
-        buff[23] = 0;
-        buff[24] = 0;
+        buf[21] = 0;
+        buf[22] = 0;
+        buf[23] = 0;
+        buf[24] = 0;
+
         self.hash = Hasher::new();
-        self.hash.update(&mut buff[..]);
+        self.hash.update(&buf[..]);
 
         self.header = header;
         return true;
@@ -417,23 +455,36 @@ impl Queue {
         return Err(-1);
     }
 
-    pub fn push(&mut self, msg: &str, msg_type: MsgType) {
-        unimplemented!();
+    pub fn push(&mut self, msg: &str, msg_type: MsgType) -> Result<u64, i32> {
+        let bmsg = msg.as_bytes();
 
-        let buff = msg.as_bytes();
-
-        if self.is_ready == false || self.mode == Mode::Read || buff.len() > std::u32::MAX as usize / 2 {
-            return;
+        if self.is_ready == false || self.mode == Mode::Read || bmsg.len() > std::u32::MAX as usize / 2 {
+            return Err(-1);
         }
 
         let header = Header {
             start_pos: self.right_edge,
-            msg_length: buff.len() as u32,
+            msg_length: bmsg.len() as u32,
             magic_marker: 0xEEFEEFEE,
             count_pushed: self.count_pushed as u32,
             crc: 0,
             msg_type: msg_type,
         };
+
+        let mut bheader = [0; HEADER_SIZE];
+        header.to_buf(&mut bheader);
+
+        let mut hash = Hasher::new();
+        hash.update(&bheader);
+        hash.update(bmsg);
+
+        bheader[21..24].clone_from_slice(&u32::to_ne_bytes(hash.finalize()));
+        self.ff_queue.write(&bheader);
+        self.ff_queue.write(&bmsg);
+
+        self.right_edge = self.right_edge + bheader.len() as u64 + bmsg.len() as u64;
+
+        Ok(self.right_edge)
     }
 
     pub fn open_part(&mut self, part_id: u32) -> Result<u32, ErrorQueue> {
