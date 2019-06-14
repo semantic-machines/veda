@@ -4,6 +4,9 @@ use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
 use std::mem::size_of;
 
+extern crate fs2;
+use crate::fs2::FileExt;
+
 extern crate crc32fast;
 use crc32fast::Hasher;
 
@@ -19,6 +22,8 @@ pub const HEADER_SIZE: usize = 25;
 #[derive(PartialEq)]
 pub enum ErrorQueue {
     NotReady = -911,
+    AlreadyOpen = -8,
+    FailWrite = -7,
     InvalidChecksum = -6,
     FailReadTailMessage = -5,
     FailOpen = -4,
@@ -27,7 +32,7 @@ pub enum ErrorQueue {
     Other = -1,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Copy, Clone)]
 pub enum Mode {
     Read = 0,
     ReadWrite = 1,
@@ -66,8 +71,10 @@ impl ErrorQueue {
         match *self {
             ErrorQueue::NotFound => "not found",
             ErrorQueue::Other => "other error",
+            ErrorQueue::AlreadyOpen => "already open",
             ErrorQueue::FailOpen => "fail open",
             ErrorQueue::FailRead => "fail read",
+            ErrorQueue::FailWrite => "fail write",
             ErrorQueue::NotReady => "not ready",
             ErrorQueue::FailReadTailMessage => "fail read tail message",
             ErrorQueue::InvalidChecksum => "invalid checksum",
@@ -123,7 +130,7 @@ pub struct Consumer {
     name: String,
     pub queue: Queue,
     ff_info_pop_w: File,
-    pub count_popped: u64,
+    pub count_popped: u32,
     pos_record: u64,
     pub id: u32,
 
@@ -205,7 +212,7 @@ impl Consumer {
         &self.ff_info_pop_w.seek(SeekFrom::Start(0));
         for line in BufReader::new(&self.ff_info_pop_w).lines() {
             if let Ok(ll) = line {
-                let (queue_name, consumer_name, position, count_popped, id) = scan_fmt!(&ll.to_owned(), "{};{};{};{};{}", String, String, u64, u64, u32);
+                let (queue_name, consumer_name, position, count_popped, id) = scan_fmt!(&ll.to_owned(), "{};{};{};{};{}", String, String, u64, u32, u32);
 
                 if let Some(q) = queue_name {
                     if q != self.queue.name {
@@ -421,18 +428,18 @@ pub struct Queue {
     ff_info_push: File,
     ff_info_queue: File,
     right_edge: u64,
-    pub count_pushed: u64,
+    pub count_pushed: u32,
     pub id: u32,
 }
 
 impl Queue {
-    pub fn new(queue_name: &str, mode: Mode) -> Result<Queue, i64> {
+    pub fn new(queue_name: &str, mode: Mode) -> Result<Queue, ErrorQueue> {
         if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue") {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
             let mut queue = Queue {
-                mode: mode,
+                mode: mode.clone(),
                 is_ready: true,
                 name: queue_name.to_owned(),
                 ff_queue: fqi,
@@ -443,6 +450,23 @@ impl Queue {
                 id: 0,
             };
 
+            if mode == Mode::ReadWrite {
+                let file_name_lock = QUEUE_PATH.to_owned() + "/" + queue_name + "_queue.lock";
+
+                match File::open(file_name_lock) {
+                    Ok(file) => {
+                        if let Err(e) = file.lock_exclusive() {
+                            error!("queue:{}:{} attempt lock, err={}", queue.name, queue.id, e);
+                            return Err(ErrorQueue::AlreadyOpen);
+                        }
+                    }
+                    Err(e) => {
+                        error!("queue:{}:{} prepare lock, err={}", queue.name, queue.id, e);
+                        return Err(ErrorQueue::FailOpen);
+                    }
+                }
+            }
+
             if queue.get_info_queue() == true {
                 if let Err(e) = queue.get_info_of_part(queue.id, true) {
                     error!("queue:{}:{} open, get info of part: {}", queue.name, queue.id, e.as_str());
@@ -452,21 +476,21 @@ impl Queue {
             return Ok(queue);
         }
 
-        return Err(-1);
+        return Err(ErrorQueue::NotReady);
     }
 
-    pub fn push(&mut self, msg: &str, msg_type: MsgType) -> Result<u64, i32> {
+    pub fn push(&mut self, msg: &str, msg_type: MsgType) -> Result<u64, ErrorQueue> {
         let bmsg = msg.as_bytes();
 
         if self.is_ready == false || self.mode == Mode::Read || bmsg.len() > std::u32::MAX as usize / 2 {
-            return Err(-1);
+            return Err(ErrorQueue::NotReady);
         }
 
         let header = Header {
             start_pos: self.right_edge,
             msg_length: bmsg.len() as u32,
             magic_marker: 0xEEFEEFEE,
-            count_pushed: self.count_pushed as u32,
+            count_pushed: self.count_pushed + 1,
             crc: 0,
             msg_type: msg_type,
         };
@@ -479,10 +503,17 @@ impl Queue {
         hash.update(bmsg);
 
         bheader[21..24].clone_from_slice(&u32::to_ne_bytes(hash.finalize()));
-        self.ff_queue.write(&bheader);
-        self.ff_queue.write(&bmsg);
+        if let Err(e) = self.ff_queue.write(&bheader) {
+            error!("queue:{}:{} push, write header, err={}", self.name, self.id, e);
+            return Err(ErrorQueue::FailWrite);
+        }
+        if let Err(e) = self.ff_queue.write(&bmsg) {
+            error!("queue:{}:{} push, write body, err={}", self.name, self.id, e);
+            return Err(ErrorQueue::FailWrite);
+        }
 
         self.right_edge = self.right_edge + bheader.len() as u64 + bmsg.len() as u64;
+        self.count_pushed = self.count_pushed + 1;
 
         Ok(self.right_edge)
     }
@@ -580,7 +611,7 @@ impl Queue {
         &self.ff_info_push.seek(SeekFrom::Start(0));
         for line in BufReader::new(&self.ff_info_push).lines() {
             if let Ok(ll) = line {
-                let (queue_name, position, pushed, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{};{}", String, u64, u64, String);
+                let (queue_name, position, pushed, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{};{}", String, u64, u32, String);
 
                 match queue_name {
                     Some(q) => {
