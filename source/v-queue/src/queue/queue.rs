@@ -19,7 +19,7 @@ extern crate log;
 pub const QUEUE_PATH: &str = "./data/queue";
 pub const HEADER_SIZE: usize = 25;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum ErrorQueue {
     NotReady = -911,
     AlreadyOpen = -8,
@@ -140,7 +140,7 @@ pub struct Consumer {
 }
 
 impl Consumer {
-    pub fn new(consumer_name: &str, queue_name: &str) -> Result<Consumer, i64> {
+    pub fn new(consumer_name: &str, queue_name: &str) -> Result<Consumer, ErrorQueue> {
         match Queue::new(queue_name, Mode::Read) {
             Ok(q) => match OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name) {
                 Ok(ff) => Ok({
@@ -172,18 +172,18 @@ impl Consumer {
                             if let Ok(_) = consumer.queue.open_part(consumer.id) {
                                 &consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record));
                             } else {
-                                return Err(-1);
+                                return Err(ErrorQueue::NotReady);
                             }
                         }
                     } else {
-                        return Err(-1);
+                        return Err(ErrorQueue::NotReady);
                     }
 
                     consumer
                 }),
-                Err(_e) => Err(-1),
+                Err(_e) => Err(ErrorQueue::NotReady),
             },
-            Err(_e) => Err(-1),
+            Err(_e) => Err(ErrorQueue::NotReady),
         }
     }
 
@@ -515,7 +515,33 @@ impl Queue {
         self.right_edge = self.right_edge + bheader.len() as u64 + bmsg.len() as u64;
         self.count_pushed = self.count_pushed + 1;
 
+        if let Err(_) = self.put_info_push() {
+            self.right_edge = self.right_edge - bheader.len() as u64 - bmsg.len() as u64;
+            self.count_pushed = self.count_pushed - 1;
+        }
+
         Ok(self.right_edge)
+    }
+
+    fn put_info_push(&mut self) -> Result<(), ErrorQueue> {
+        if let Ok(_) = self.ff_info_push.seek(SeekFrom::Start(0)) {
+        } else {
+            error!("fail put info push, set queue.ready = false");
+            self.is_ready = false;
+            return Err(ErrorQueue::FailWrite);
+        }
+
+        let p = format!("{};{};{};", self.name, self.right_edge, self.count_pushed);
+        let mut hash = Hasher::new();
+        hash.update(p.as_bytes());
+
+        if let Err(e) = self.ff_info_push.write(format!("{}{}\n", p, hash.finalize()).as_bytes()) {
+            error!("fail put info push, set queue.ready = false, err={}", e);
+            self.is_ready = false;
+            return Err(ErrorQueue::FailWrite);
+        }
+
+        Ok(())
     }
 
     pub fn open_part(&mut self, part_id: u32) -> Result<u32, ErrorQueue> {
