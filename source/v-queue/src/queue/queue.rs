@@ -3,6 +3,7 @@ use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
 use std::mem::size_of;
+use std::path::*;
 
 extern crate fs2;
 use crate::fs2::FileExt;
@@ -434,7 +435,9 @@ pub struct Queue {
 
 impl Queue {
     pub fn new(queue_name: &str, mode: Mode) -> Result<Queue, ErrorQueue> {
-        if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue") {
+        let file_name_info_queue = QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue";
+
+        if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(file_name_info_queue) {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
@@ -442,13 +445,15 @@ impl Queue {
                 mode: mode.clone(),
                 is_ready: true,
                 name: queue_name.to_owned(),
-                ff_queue: fqi,
                 count_pushed: 0,
                 right_edge: 0,
+                ff_queue: fqi,
                 ff_info_queue: tmp_f1,
                 ff_info_push: tmp_f2,
                 id: 0,
             };
+
+            let info_is_ok = queue.get_info_queue();
 
             if mode == Mode::ReadWrite {
                 let file_name_lock = QUEUE_PATH.to_owned() + "/" + queue_name + "_queue.lock";
@@ -465,9 +470,34 @@ impl Queue {
                         return Err(ErrorQueue::FailOpen);
                     }
                 }
+
+                if info_is_ok {
+                    queue.id = queue.id + 1;
+                    queue.count_pushed = 0;
+                    queue.right_edge = 0;
+                }
+
+                let part_name = queue.name.to_owned() + "-" + &queue.id.to_string();
+
+                if Path::new(&part_name).exists() == false {
+                    if let Err(e) = create_dir_all(QUEUE_PATH.to_owned() + "/" + &part_name) {
+                        error!("queue:{}:{} create path, err={}", queue.name, queue.id, e);
+                        return Err(ErrorQueue::FailWrite);
+                    }
+                }
+
+                if let Err(e) = queue.open_part(queue.id) {
+                    error!("queue:{}:{} open part, err={:?}", queue.name, queue.id, e);
+                    return Err(ErrorQueue::FailOpen);
+                }
+
+                if let Err(e) = queue.put_info_queue() {
+                    error!("queue:{}:{} open, write info, err={:?}", queue.name, queue.id, e);
+                    return Err(ErrorQueue::FailWrite);
+                }
             }
 
-            if queue.get_info_queue() == true {
+            if info_is_ok {
                 if let Err(e) = queue.get_info_of_part(queue.id, true) {
                     error!("queue:{}:{} open, get info of part: {}", queue.name, queue.id, e.as_str());
                 }
@@ -537,6 +567,27 @@ impl Queue {
 
         if let Err(e) = self.ff_info_push.write(format!("{}{}\n", p, hash.finalize()).as_bytes()) {
             error!("fail put info push, set queue.ready = false, err={}", e);
+            self.is_ready = false;
+            return Err(ErrorQueue::FailWrite);
+        }
+
+        Ok(())
+    }
+
+    fn put_info_queue(&mut self) -> Result<(), ErrorQueue> {
+        if let Ok(_) = self.ff_info_queue.seek(SeekFrom::Start(0)) {
+        } else {
+            error!("fail put info queue, set queue.ready = false");
+            self.is_ready = false;
+            return Err(ErrorQueue::FailWrite);
+        }
+
+        let p = format!("{};{};", self.name, self.id);
+        let mut hash = Hasher::new();
+        hash.update(p.as_bytes());
+
+        if let Err(e) = self.ff_info_queue.write(format!("{}{}\n", p, hash.finalize()).as_bytes()) {
+            error!("fail put info queue, set queue.ready = false, err={}", e);
             self.is_ready = false;
             return Err(ErrorQueue::FailWrite);
         }
