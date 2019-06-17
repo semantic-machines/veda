@@ -17,7 +17,6 @@ extern crate scan_fmt;
 #[macro_use]
 extern crate log;
 
-pub const QUEUE_PATH: &str = "./data/queue";
 pub const HEADER_SIZE: usize = 25;
 
 #[derive(PartialEq, Debug)]
@@ -141,9 +140,9 @@ pub struct Consumer {
 }
 
 impl Consumer {
-    pub fn new(consumer_name: &str, queue_name: &str) -> Result<Consumer, ErrorQueue> {
-        match Queue::new(queue_name, Mode::Read) {
-            Ok(q) => match OpenOptions::new().read(true).write(true).create(true).open(QUEUE_PATH.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name) {
+    pub fn new(base_path: &str, consumer_name: &str, queue_name: &str) -> Result<Consumer, ErrorQueue> {
+        match Queue::new(base_path, queue_name, Mode::Read) {
+            Ok(q) => match OpenOptions::new().read(true).write(true).create(true).open(base_path.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name) {
                 Ok(ff) => Ok({
                     let mut consumer = Consumer {
                         is_ready: true,
@@ -195,7 +194,7 @@ impl Consumer {
             return false;
         }
 
-        let info_pop_file_name = QUEUE_PATH.to_owned() + "/" + &self.queue.name + "_info_pop_" + &self.name;
+        let info_pop_file_name = self.queue.base_path.to_owned() + "/" + &self.queue.name + "_info_pop_" + &self.name;
 
         if let Ok(ff) = OpenOptions::new().read(true).write(true).truncate(true).create(is_new).open(&info_pop_file_name) {
             self.ff_info_pop_w = ff;
@@ -422,6 +421,7 @@ impl Consumer {
 }
 
 pub struct Queue {
+    base_path: String,
     mode: Mode,
     is_ready: bool,
     name: String,
@@ -434,14 +434,15 @@ pub struct Queue {
 }
 
 impl Queue {
-    pub fn new(queue_name: &str, mode: Mode) -> Result<Queue, ErrorQueue> {
-        let file_name_info_queue = QUEUE_PATH.to_owned() + "/" + queue_name + "_info_queue";
+    pub fn new(base_path: &str, queue_name: &str, mode: Mode) -> Result<Queue, ErrorQueue> {
+        let file_name_info_queue = base_path.to_owned() + "/" + queue_name + "_info_queue";
 
         if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(file_name_info_queue) {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
             let mut queue = Queue {
+                base_path:  base_path.to_string(),
                 mode: mode.clone(),
                 is_ready: true,
                 name: queue_name.to_owned(),
@@ -456,7 +457,7 @@ impl Queue {
             let info_is_ok = queue.get_info_queue();
 
             if mode == Mode::ReadWrite {
-                let file_name_lock = QUEUE_PATH.to_owned() + "/" + queue_name + "_queue.lock";
+                let file_name_lock = queue.base_path.to_owned() + "/" + queue_name + "_queue.lock";
 
                 match File::open(file_name_lock) {
                     Ok(file) => {
@@ -480,7 +481,7 @@ impl Queue {
                 let part_name = queue.name.to_owned() + "-" + &queue.id.to_string();
 
                 if Path::new(&part_name).exists() == false {
-                    if let Err(e) = create_dir_all(QUEUE_PATH.to_owned() + "/" + &part_name) {
+                    if let Err(e) = create_dir_all(queue.base_path.to_owned() + "/" + &part_name) {
                         error!("queue:{}:{} create path, err={}", queue.name, queue.id, e);
                         return Err(ErrorQueue::FailWrite);
                     }
@@ -604,7 +605,7 @@ impl Queue {
             .read(true)
             .write(true)
             .create(true)
-            .open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
+            .open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
         {
             self.ff_info_push = ff;
         } else {
@@ -613,7 +614,7 @@ impl Queue {
             return Err(ErrorQueue::FailOpen);
         }
 
-        if let Ok(f) = File::open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
+        if let Ok(f) = File::open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
             self.ff_queue = f;
         } else {
             error!("[{}] fail open part {}", self.name, part_id);
@@ -673,7 +674,7 @@ impl Queue {
                 .read(true)
                 .write(true)
                 .create(true)
-                .open(QUEUE_PATH.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
+                .open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
             {
                 self.ff_info_push = ff;
             } else {
