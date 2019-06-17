@@ -435,14 +435,20 @@ pub struct Queue {
 
 impl Queue {
     pub fn new(base_path: &str, queue_name: &str, mode: Mode) -> Result<Queue, ErrorQueue> {
-        let file_name_info_queue = base_path.to_owned() + "/" + queue_name + "_info_queue";
+        if Path::new(&base_path).exists() == false {
+            if let Err(e) = create_dir_all(base_path.to_owned()) {
+                error!("queue:{} create path, err={}", queue_name, e);
+                return Err(ErrorQueue::FailWrite);
+            }
+        }
 
+        let file_name_info_queue = base_path.to_owned() + "/" + queue_name + "_info_queue";
         if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(file_name_info_queue) {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
             let mut queue = Queue {
-                base_path:  base_path.to_string(),
+                base_path: base_path.to_string(),
                 mode: mode.clone(),
                 is_ready: true,
                 name: queue_name.to_owned(),
@@ -459,7 +465,7 @@ impl Queue {
             if mode == Mode::ReadWrite {
                 let file_name_lock = queue.base_path.to_owned() + "/" + queue_name + "_queue.lock";
 
-                match File::open(file_name_lock) {
+                match OpenOptions::new().read(true).write(true).create(true).open(file_name_lock) {
                     Ok(file) => {
                         if let Err(e) = file.lock_exclusive() {
                             error!("queue:{}:{} attempt lock, err={}", queue.name, queue.id, e);
@@ -510,16 +516,14 @@ impl Queue {
         return Err(ErrorQueue::NotReady);
     }
 
-    pub fn push(&mut self, msg: &str, msg_type: MsgType) -> Result<u64, ErrorQueue> {
-        let bmsg = msg.as_bytes();
-
-        if self.is_ready == false || self.mode == Mode::Read || bmsg.len() > std::u32::MAX as usize / 2 {
+    pub fn push(&mut self, data: &[u8], msg_type: MsgType) -> Result<u64, ErrorQueue> {
+        if self.is_ready == false || self.mode == Mode::Read || data.len() > std::u32::MAX as usize / 2 {
             return Err(ErrorQueue::NotReady);
         }
 
         let header = Header {
             start_pos: self.right_edge,
-            msg_length: bmsg.len() as u32,
+            msg_length: data.len() as u32,
             magic_marker: 0xEEFEEFEE,
             count_pushed: self.count_pushed + 1,
             crc: 0,
@@ -531,23 +535,23 @@ impl Queue {
 
         let mut hash = Hasher::new();
         hash.update(&bheader);
-        hash.update(bmsg);
+        hash.update(data);
 
         bheader[21..24].clone_from_slice(&u32::to_ne_bytes(hash.finalize()));
         if let Err(e) = self.ff_queue.write(&bheader) {
             error!("queue:{}:{} push, write header, err={}", self.name, self.id, e);
             return Err(ErrorQueue::FailWrite);
         }
-        if let Err(e) = self.ff_queue.write(&bmsg) {
+        if let Err(e) = self.ff_queue.write(&data) {
             error!("queue:{}:{} push, write body, err={}", self.name, self.id, e);
             return Err(ErrorQueue::FailWrite);
         }
 
-        self.right_edge = self.right_edge + bheader.len() as u64 + bmsg.len() as u64;
+        self.right_edge = self.right_edge + bheader.len() as u64 + data.len() as u64;
         self.count_pushed = self.count_pushed + 1;
 
         if let Err(_) = self.put_info_push() {
-            self.right_edge = self.right_edge - bheader.len() as u64 - bmsg.len() as u64;
+            self.right_edge = self.right_edge - bheader.len() as u64 - data.len() as u64;
             self.count_pushed = self.count_pushed - 1;
         }
 
@@ -601,12 +605,18 @@ impl Queue {
             return Err(ErrorQueue::NotReady);
         }
 
-        if let Ok(ff) = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
-        {
+        let mut option0 = OpenOptions::new();
+        let &mut option;
+
+        if self.mode == Mode::ReadWrite {
+            option = option0.read(true).write(true).create(true);
+        } else {
+            option = option0.read(true);
+        }
+
+        let ipp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push";
+
+        if let Ok(ff) = option.to_owned().open(ipp) {
             self.ff_info_push = ff;
         } else {
             error!("[{}] fail open info push, part {}", self.name, part_id);
@@ -614,7 +624,7 @@ impl Queue {
             return Err(ErrorQueue::FailOpen);
         }
 
-        if let Ok(f) = File::open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
+        if let Ok(f) = option.open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
             self.ff_queue = f;
         } else {
             error!("[{}] fail open part {}", self.name, part_id);
@@ -630,12 +640,13 @@ impl Queue {
     }
 
     pub fn get_info_queue(&mut self) -> bool {
-        let mut res = true;
+        let mut res = false;
 
         let mut id = 0;
 
         &self.ff_info_queue.seek(SeekFrom::Start(0));
         for line in BufReader::new(&self.ff_info_queue).lines() {
+            res = true;
             if let Ok(ll) = line {
                 let (queue_name, _id, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{}", String, u32, String);
 
