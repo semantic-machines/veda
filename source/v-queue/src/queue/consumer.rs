@@ -1,10 +1,10 @@
+use crate::queue::*;
+use crate::record::*;
+use crc32fast::Hasher;
 use std::fs::*;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
-use crc32fast::Hasher;
-use crate::record::*;
-use crate::queue::*;
 
 pub struct Consumer {
     is_ready: bool,
