@@ -5,7 +5,8 @@ use std::str;
 use std::time::Duration;
 use v_onto::individual::*;
 use v_onto::parser::*;
-use v_queue::*;
+use v_queue::consumer::*;
+use v_queue::record::*;
 
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};

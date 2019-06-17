@@ -12,9 +12,10 @@ use std::path::Path;
 use std::{thread, time};
 use v_onto::individual::{Individual, RawObj};
 use v_onto::parser::*;
-use v_queue::*;
 use v_search::{FTClient, FTQuery};
 use v_storage::storage::VStorage;
+use v_queue::consumer::*;
+use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
