@@ -537,7 +537,13 @@ impl Queue {
         hash.update(&bheader);
         hash.update(data);
 
-        bheader[21..24].clone_from_slice(&u32::to_ne_bytes(hash.finalize()));
+        let bhash = u32::to_ne_bytes(hash.finalize());
+
+        bheader[21] = bhash[0];
+        bheader[22] = bhash[1];
+        bheader[23] = bhash[2];
+        bheader[24] = bhash[3];
+
         if let Err(e) = self.ff_queue.write(&bheader) {
             error!("queue:{}:{} push, write header, err={}", self.name, self.id, e);
             return Err(ErrorQueue::FailWrite);
@@ -605,18 +611,16 @@ impl Queue {
             return Err(ErrorQueue::NotReady);
         }
 
-        let mut option0 = OpenOptions::new();
-        let &mut option;
-
-        if self.mode == Mode::ReadWrite {
-            option = option0.read(true).write(true).create(true);
-        } else {
-            option = option0.read(true);
-        }
-
         let ipp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push";
 
-        if let Ok(ff) = option.to_owned().open(ipp) {
+        let ffiq;
+        if self.mode == Mode::ReadWrite {
+            ffiq = OpenOptions::new().read(true).write(true).create(true).open(ipp.to_owned());
+        } else {
+            ffiq = OpenOptions::new().read(true).open(ipp.to_owned());
+        }
+
+        if let Ok(ff) = ffiq {
             self.ff_info_push = ff;
         } else {
             error!("[{}] fail open info push, part {}", self.name, part_id);
@@ -624,7 +628,15 @@ impl Queue {
             return Err(ErrorQueue::FailOpen);
         }
 
-        if let Ok(f) = option.open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue") {
+        let qpp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue";
+        let ffq;
+        if self.mode == Mode::ReadWrite {
+            ffq = OpenOptions::new().read(true).write(true).create(true).open(qpp.to_owned());
+        } else {
+            ffq = OpenOptions::new().read(true).open(qpp.to_owned());
+        }
+
+        if let Ok(f) = ffq {
             self.ff_queue = f;
         } else {
             error!("[{}] fail open part {}", self.name, part_id);
