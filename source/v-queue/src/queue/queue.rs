@@ -1,11 +1,11 @@
+use crate::fs2::FileExt;
+use crate::record::*;
+use crc32fast::Hasher;
 use std::fs::*;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
 use std::path::*;
-use crc32fast::Hasher;
-use crate::fs2::FileExt;
-use crate::record::*;
 
 pub struct Queue {
     pub base_path: String,
@@ -193,11 +193,7 @@ impl Queue {
         Ok(())
     }
 
-    pub fn open_part(&mut self, part_id: u32) -> Result<u32, ErrorQueue> {
-        if self.is_ready == false {
-            return Err(ErrorQueue::NotReady);
-        }
-
+    fn open_info_push(&mut self, part_id: u32) -> Result<(), ErrorQueue> {
         let ipp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push";
 
         let ffiq;
@@ -213,6 +209,18 @@ impl Queue {
             error!("[{}] fail open info push, part {}", self.name, part_id);
             self.is_ready = false;
             return Err(ErrorQueue::FailOpen);
+        }
+
+        return Ok(());
+    }
+
+    pub fn open_part(&mut self, part_id: u32) -> Result<(), ErrorQueue> {
+        if self.is_ready == false {
+            return Err(ErrorQueue::NotReady);
+        }
+
+        if let Err(e) = self.open_info_push(part_id) {
+            return Err(e);
         }
 
         let qpp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue";
@@ -278,17 +286,10 @@ impl Queue {
         return res;
     }
 
-    pub fn get_info_of_part(&mut self, part_id: u32, reopen: bool) -> Result<u32, ErrorQueue> {
+    pub fn get_info_of_part(&mut self, part_id: u32, reopen: bool) -> Result<(), ErrorQueue> {
         if self.id != part_id || reopen {
-            if let Ok(ff) = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create(true)
-                .open(self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push")
-            {
-                self.ff_info_push = ff;
-            } else {
-                return Err(ErrorQueue::NotFound);
+            if let Err(e) = self.open_info_push(part_id) {
+                return Err(e);
             }
         }
 
@@ -329,7 +330,7 @@ impl Queue {
         if res == true {
             self.right_edge = right_edge;
             self.count_pushed = count_pushed;
-            return Ok(part_id);
+            return Ok(());
         }
 
         //info!("queue ({}): count_pushed:{}, right_edge:{}, id:{}, ready:{}", self.name, self.count_pushed, self.right_edge, self.id, self.is_ready);
