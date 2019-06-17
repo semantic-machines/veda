@@ -66,7 +66,7 @@ pub struct CCUSServer {
 
 impl CCUSServer {
     pub fn new(tx: Sender<(String, Sender<i64>)>) -> CCUSServer {
-        let _consumer = Consumer::new("CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+        let _consumer = Consumer::new("./data/queue", "CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
         let ch = mpsc::channel();
 
         CCUSServer {

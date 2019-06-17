@@ -31,7 +31,6 @@ fn main() -> std::io::Result<()> {
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
-    let ccus_port = section.get("ccus_port").expect("param [ccus_port] not found in veda.properties").clone();
 
     let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
         p.to_owned()
@@ -40,7 +39,7 @@ fn main() -> std::io::Result<()> {
         "".to_owned()
     };
 
-    info!("CCUS PORT={:?}, tarantool addr={:?}", ccus_port, &tarantool_addr);
+    info!("tarantool addr={:?}", &tarantool_addr);
 
     let mut storage: VStorage;
     if tarantool_addr.len() > 0 {
@@ -82,7 +81,7 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(3000));
     }
 
-    let mut queue_consumer = Consumer::new("ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
 
     let ontology_file_path = "public/ontology.json";
