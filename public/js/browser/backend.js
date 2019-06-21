@@ -424,6 +424,11 @@ veda.Module(function Backend(veda) { "use strict";
         db.put(individual);
       }).catch(console.log);
       return individual;
+    }).catch(function (error) {
+      localDB.then(function (db) {
+        db.remove(params.data.uri);
+      });
+      throw error;
     });
   };
 
