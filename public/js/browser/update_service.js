@@ -83,7 +83,7 @@ veda.Module(function (veda) { "use strict";
             self.list[uri].updateCounter = updateCounter;
           }
           if (self.list[uri].action) {
-            self.list[uri].action.call(individual); // Call action
+            self.list[uri].action.call(individual, updateCounter); // Call action
           } else {
             individual.reset(); // Default action
           }
