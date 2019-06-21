@@ -24,9 +24,15 @@ veda.Module(function (veda) { "use strict";
   var proto = veda.OntologyModel.prototype;
 
   proto.init = function () {
-    return this.getOntology().then(function (self) {
-      return self.processOntology();
-    });
+    return this.getOntology()
+      .then(function (self) {
+        return self.processOntology();
+      })
+      .catch(function (error) {
+        var notify = veda.Notify();
+        notify("danger", {code: "Ontology load error.", name: error});
+        return error;
+      });
   };
 
   proto.getClassProperties = function (_class_uri) {

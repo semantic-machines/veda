@@ -30,7 +30,7 @@ veda.Module(function (veda) { "use strict";
           template = veda.cache.get(uri) ? veda.cache.get(uri) : new veda.IndividualModel({
             "@": uri,
             "v-ui:template": [{data: templateString, type: "String"}]
-          });
+          }, 1);
         }
         return template.load().then(function (template) {
           template = template["v-ui:template"][0].toString();
@@ -656,6 +656,10 @@ veda.Module(function (veda) { "use strict";
       e.stopPropagation();
       if (mode === "edit") {
         // Merge template validation results with internal validation results
+        validationResult.state = Object.keys(validationResult).reduce( function (acc, property_uri) {
+          if (property_uri === "state") { return acc; }
+          return acc && validationResult[property_uri].state;
+        }, true);
         Object.keys(validationResult).map(function (property_uri) {
           if (property_uri === "state") { return; }
           validation[property_uri] = validationResult[property_uri];
