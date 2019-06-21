@@ -36,7 +36,7 @@ impl Storage for TTStorage {
                 indv.uri = uri;
                 return true;
             } else {
-                error!("fail parse binobj");
+                error!("TTStorage: fail parse binobj, len={}, uri={}", raw.data.len(), uri);
             }
         }
 

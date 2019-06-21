@@ -5,7 +5,8 @@ use std::str;
 use std::time::Duration;
 use v_onto::individual::*;
 use v_onto::parser::*;
-use v_queue::*;
+use v_queue::consumer::*;
+use v_queue::record::*;
 
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
@@ -66,7 +67,7 @@ pub struct CCUSServer {
 
 impl CCUSServer {
     pub fn new(tx: Sender<(String, Sender<i64>)>) -> CCUSServer {
-        let _consumer = Consumer::new("CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+        let _consumer = Consumer::new("./data/queue", "CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
         let ch = mpsc::channel();
 
         CCUSServer {

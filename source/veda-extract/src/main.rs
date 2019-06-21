@@ -6,16 +6,16 @@ use chrono::Local;
 use env_logger::Builder;
 use ini::Ini;
 use log::LevelFilter;
-use std::fs::File;
 use std::io::Write;
-use std::path::Path;
 use std::{thread, time};
 use v_onto::individual::{Individual, RawObj};
+use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
+use v_queue::consumer::*;
+use v_queue::queue::*;
+use v_queue::record::*;
 use v_search::{FTClient, FTQuery};
 use v_storage::storage::VStorage;
-use v_queue::consumer::*;
-use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -49,51 +49,18 @@ fn main() -> std::io::Result<()> {
         storage = VStorage::new_lmdb("./data/lmdb-individuals/");
     }
 
-    let onto_types = vec![
-        "rdfs:Class",
-        "owl:Class",
-        "rdfs:Datatype",
-        "owl:Ontology",
-        "rdf:Property",
-        "owl:DatatypeProperty",
-        "owl:ObjectProperty",
-        "owl:OntologyProperty",
-        "owl:AnnotationProperty",
-        "v-ui:PropertySpecification",
-        "v-ui:DatatypePropertySpecification",
-        "v-ui:ObjectPropertySpecification",
-        "v-ui:ClassModel",
-    ];
-
-    let mut query = String::new();
-
-    for el in &onto_types {
-        if query.len() > 0 {
-            query.push_str(" || ");
-        }
-        query.push_str("'rdf:type' === '");
-        query.push_str(*&el);
-        query.push_str("'");
-    }
-
     let mut ft_client = FTClient::new("tcp://127.0.0.1:23000".to_owned());
 
     while ft_client.connect() != true {
         thread::sleep(time::Duration::from_millis(3000));
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_out = Queue::new("./data/out", "extract", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
+
+    let mut queue_consumer = Consumer::new("./data/queue", "extract", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
 
-    let ontology_file_path = "public/ontology.json";
-    ///////
-    let mut is_found_onto_changes = false;
-
     loop {
-        if Path::new(ontology_file_path).exists() == false {
-            is_found_onto_changes = true;
-        }
-
         let mut size_batch = 0;
 
         // read queue current part info
@@ -140,27 +107,9 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            if is_found_onto_changes == false {
-                let mut msg: Individual = Individual::new();
-                if let Ok(uri) = parse_raw(&mut raw) {
-                    msg.uri = uri;
-                    if let Ok(new_state) = msg.get_first_binobj(&mut raw, "new_state") {
-                        let mut raw = RawObj::new(new_state);
-                        let mut indv: Individual = Individual::new();
-                        if let Ok(uri) = parse_raw(&mut raw) {
-                            indv.uri = uri;
-                            is_found_onto_changes = indv.any_exists(&mut raw, "rdf:type", &onto_types);
-
-                            if is_found_onto_changes {
-                                info!("found changes in onto");
-                            }
-                        }
-                    }
-                }
-            }
+            prepare_queue_element(&mut raw, &mut queue_out);
 
             queue_consumer.commit_and_next();
-
             total_prepared_count += 1;
 
             if total_prepared_count % 1000 == 0 {
@@ -168,39 +117,39 @@ fn main() -> std::io::Result<()> {
             }
         }
 
-        if is_found_onto_changes && size_batch == 0 {
-            info!("found onto changes from storage");
+        thread::sleep(time::Duration::from_millis(5000));
+    }
 
-            if let Ok(mut file) = File::create(ontology_file_path) {
-                let res = ft_client.query(FTQuery::new("cfg:VedaSystem", &query));
+    fn prepare_queue_element(raw: &mut RawObj, queue_out: &mut Queue) {
+        let mut msg: Individual = Individual::new();
+        if let Ok(uri) = parse_raw(raw) {
+            msg.uri = uri;
+            if let Ok(new_state) = msg.get_first_binobj(raw, "new_state") {
+                let mut raw = RawObj::new(new_state);
+                let mut indv: Individual = Individual::new();
+                if let Ok(uri) = parse_raw(&mut raw) {
+                    indv.uri = uri.clone();
 
-                if res.result_code == 200 && res.count > 0 {
-                    file.write(b"[")?;
-                    let mut is_first: bool = true;
-                    for el in &res.result {
-                        let mut raw: RawObj = RawObj::new_empty();
-                        let mut indv: Individual = Individual::new();
-                        if storage.set_binobj(&el, &mut raw, &mut indv) == true {
-                            if !is_first {
-                                file.write(b",")?;
-                            } else {
-                                is_first = false;
-                            }
+                    let mut new_indv = Individual::new();
 
-                            indv.parse_all(&mut raw);
+                    let mut raw: Vec<u8> = Vec::new();
+                    to_msgpack(&indv, &mut raw);
 
-                            file.write(&indv.to_json_str().as_bytes())?;
-                        }
-                    }
-                    file.write(b"]")?;
-                    info!("count stored {}", res.count);
-                    is_found_onto_changes = false;
+                    new_indv.add_uri("uri", &uri, 0);
+                    new_indv.add_binary("new_state", raw, 0);
+
+                    // cmd
+                    // date
+                    // source_veda
+                    // target_veda
+                    // new_state
+                    let mut raw1: Vec<u8> = Vec::new();
+                    to_msgpack(&new_indv, &mut raw1);
+
+                    //                        info! ("{:?}", raw);
+                    queue_out.push(&raw1, MsgType::Object);
                 }
-            } else {
-                error!("fail create file {}", ontology_file_path);
             }
         }
-
-        thread::sleep(time::Duration::from_millis(5000));
     }
 }
