@@ -17,10 +17,11 @@ use v_storage::storage::VStorage;
 use ini::Ini;
 use v_onto::individual::{Individual, RawObj};
 
+mod server;
+use crate::server::CMessage;
+
 const HEARTBEAT_INTERVAL: Duration = Duration::from_millis(5000);
 const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
-
-mod server;
 
 /////////////////////////////////////////////
 
@@ -169,7 +170,7 @@ impl WsCCUSSession {
     }
 }
 
-fn storage_manager(tarantool_addr: String, rx: Receiver<(String, Sender<i64>)>) {
+fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
     info!("Start STORAGE MANAGER");
 
     let mut storage = if !tarantool_addr.is_empty() {
@@ -227,7 +228,7 @@ fn main() -> std::io::Result<()> {
     info!("CCUS PORT={:?}, tarantool addr={:?}", ccus_port, tarantool_addr);
 
     // создадим канал приема и передачи с нитью storage_manager
-    let (sbscr_tx, sbscr_rx): (Sender<(String, Sender<i64>)>, Receiver<(String, Sender<i64>)>) = mpsc::channel();
+    let (sbscr_tx, sbscr_rx): (Sender<CMessage>, Receiver<CMessage>) = mpsc::channel();
     thread::spawn(move || storage_manager(tarantool_addr.clone(), sbscr_rx));
 
     let sys = System::new("ws-ccus");

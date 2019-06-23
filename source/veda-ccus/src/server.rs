@@ -13,6 +13,7 @@ use std::sync::mpsc::{Receiver, Sender};
 
 const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
 const STAT_INTERVAL: Duration = Duration::from_millis(10000);
+pub type CMessage = (String, Sender<i64>);
 
 /// CCUS server sends this messages to session
 #[derive(Message)]
@@ -60,13 +61,13 @@ pub struct CCUSServer {
     rng: ThreadRng,
     stat_sessions: usize,
     stat_uris: usize,
-    subscribe_manager_sender: Sender<(String, Sender<i64>)>,
+    subscribe_manager_sender: Sender<CMessage>,
     my_sender: Sender<i64>,
     my_receiver: Receiver<i64>,
 }
 
 impl CCUSServer {
-    pub fn new(tx: Sender<(String, Sender<i64>)>) -> CCUSServer {
+    pub fn new(tx: Sender<CMessage>) -> CCUSServer {
         let _consumer = Consumer::new("./data/queue", "CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
         let ch = mpsc::channel();
 
@@ -87,16 +88,14 @@ impl CCUSServer {
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let mut storage_counter = 0;
 
-        if !self.uri2sessions.contains_key(&uri.to_owned()) {
-            if self.subscribe_manager_sender.send((uri.to_string(), self.my_sender.clone())).is_ok() {
-                if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
-                    if msg >= 0 {
-                        info!("from storage: {}, {}", uri, msg);
-                        storage_counter = msg as u64;
-                    }
-                } else {
-                    error!("not connect with storage thread");
+        if !self.uri2sessions.contains_key(&uri.to_owned()) && self.subscribe_manager_sender.send((uri.to_string(), self.my_sender.clone())).is_ok() {
+            if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
+                if msg >= 0 {
+                    info!("from storage: {}, {}", uri, msg);
+                    storage_counter = msg as u64;
                 }
+            } else {
+                error!("not connect with storage thread");
             }
         }
 
@@ -145,10 +144,8 @@ impl CCUSServer {
                 debug!("[{}]: REMOVE FROM URI={}, {}", session_id, uri, uss.sessions.len());
             }
 
-            if is_clear_unused {
-                if uss.sessions.is_empty() {
-                    empty_uris.push(uri.to_owned());
-                }
+            if is_clear_unused && uss.sessions.is_empty() {
+                empty_uris.push(uri.to_owned());
             }
         }
 
@@ -171,25 +168,23 @@ impl CCUSServer {
                     // Рукопожатие: ccus=Ticket
                     debug!("[{}]: HANDSHAKE", session_id);
                     break;
-                } else {
-                    if let Some(uri) = els[0].get(1..) {
-                        let mut counter = 0;
-                        if let Ok(c) = els[1].parse() {
-                            counter = c;
-                        };
-                        // Добавить подписку: +uriN=M[,...]
+                } else if let Some(uri) = els[0].get(1..) {
+                    let mut counter = 0;
+                    if let Ok(c) = els[1].parse() {
+                        counter = c;
+                    };
+                    // Добавить подписку: +uriN=M[,...]
 
-                        let registred_counter = self.subscribe(uri, counter, session_id);
+                    let registred_counter = self.subscribe(uri, counter, session_id);
 
-                        if registred_counter > counter || registred_counter == 0 {
-                            if !changes.is_empty() {
-                                changes.push_str(",");
-                            }
-
-                            changes.push_str(&uri.to_owned());
-                            changes.push_str("=");
-                            changes.push_str(&registred_counter.to_string());
+                    if registred_counter > counter || registred_counter == 0 {
+                        if !changes.is_empty() {
+                            changes.push_str(",");
                         }
+
+                        changes.push_str(&uri.to_owned());
+                        changes.push_str("=");
+                        changes.push_str(&registred_counter.to_string());
                     }
                 }
             } else if els.len() == 1 {
