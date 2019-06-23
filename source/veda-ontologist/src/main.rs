@@ -12,10 +12,10 @@ use std::path::Path;
 use std::{thread, time};
 use v_onto::individual::{Individual, RawObj};
 use v_onto::parser::*;
-use v_search::{FTClient, FTQuery};
-use v_storage::storage::VStorage;
 use v_queue::consumer::*;
 use v_queue::record::*;
+use v_search::{FTClient, FTQuery};
+use v_storage::storage::VStorage;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -42,12 +42,11 @@ fn main() -> std::io::Result<()> {
 
     info!("tarantool addr={:?}", &tarantool_addr);
 
-    let mut storage: VStorage;
-    if tarantool_addr.len() > 0 {
-        storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
+    let mut storage = if !tarantool_addr.is_empty() {
+        VStorage::new_tt(tarantool_addr, "veda6", "123456")
     } else {
-        storage = VStorage::new_lmdb("./data/lmdb-individuals/");
-    }
+        VStorage::new_lmdb("./data/lmdb-individuals/")
+    };
 
     let onto_types = vec![
         "rdfs:Class",
@@ -68,17 +67,17 @@ fn main() -> std::io::Result<()> {
     let mut query = String::new();
 
     for el in &onto_types {
-        if query.len() > 0 {
+        if !query.is_empty() {
             query.push_str(" || ");
         }
         query.push_str("'rdf:type' === '");
-        query.push_str(*&el);
+        query.push_str(el);
         query.push_str("'");
     }
 
     let mut ft_client = FTClient::new("tcp://127.0.0.1:23000".to_owned());
 
-    while ft_client.connect() != true {
+    while !ft_client.connect() {
         thread::sleep(time::Duration::from_millis(3000));
     }
 
@@ -90,7 +89,7 @@ fn main() -> std::io::Result<()> {
     let mut is_found_onto_changes = false;
 
     loop {
-        if Path::new(ontology_file_path).exists() == false {
+        if !Path::new(ontology_file_path).exists() {
             is_found_onto_changes = true;
         }
 
@@ -123,7 +122,7 @@ fn main() -> std::io::Result<()> {
 
         for _it in 0..size_batch {
             // пробуем взять из очереди заголовок сообщения
-            if queue_consumer.pop_header() == false {
+            if !queue_consumer.pop_header() {
                 break;
             }
 
@@ -140,23 +139,12 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            if is_found_onto_changes == false {
-                let mut msg: Individual = Individual::new();
-                if let Ok(uri) = parse_raw(&mut raw) {
-                    msg.uri = uri;
-                    if let Ok(new_state) = msg.get_first_binobj(&mut raw, "new_state") {
-                        let mut raw = RawObj::new(new_state);
-                        let mut indv: Individual = Individual::new();
-                        if let Ok(uri) = parse_raw(&mut raw) {
-                            indv.uri = uri;
-                            is_found_onto_changes = indv.any_exists(&mut raw, "rdf:type", &onto_types);
+            if !is_found_onto_changes {
+                is_found_onto_changes = is_changes(&mut raw, &onto_types);
+            }
 
-                            if is_found_onto_changes {
-                                info!("found changes in onto");
-                            }
-                        }
-                    }
-                }
+            if is_found_onto_changes {
+                info!("found changes in onto");
             }
 
             queue_consumer.commit_and_next();
@@ -180,7 +168,7 @@ fn main() -> std::io::Result<()> {
                     for el in &res.result {
                         let mut raw: RawObj = RawObj::new_empty();
                         let mut indv: Individual = Individual::new();
-                        if storage.set_binobj(&el, &mut raw, &mut indv) == true {
+                        if storage.set_binobj(&el, &mut raw, &mut indv) {
                             if !is_first {
                                 file.write(b",")?;
                             } else {
@@ -203,4 +191,20 @@ fn main() -> std::io::Result<()> {
 
         thread::sleep(time::Duration::from_millis(5000));
     }
+}
+
+fn is_changes(raw: &mut RawObj, onto_types: &[&str]) -> bool {
+    let mut msg: Individual = Individual::new();
+    if let Ok(uri) = parse_raw(raw) {
+        msg.uri = uri;
+        if let Ok(new_state) = msg.get_first_binobj(raw, "new_state") {
+            let mut raw = RawObj::new(new_state);
+            let mut indv: Individual = Individual::new();
+            if let Ok(uri) = parse_raw(&mut raw) {
+                indv.uri = uri;
+                return indv.any_exists(&mut raw, "rdf:type", &onto_types);
+            }
+        }
+    }
+    false
 }

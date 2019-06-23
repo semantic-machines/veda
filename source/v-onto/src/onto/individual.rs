@@ -192,7 +192,7 @@ impl Individual {
         return Err(IndividualError::None);
     }
 
-    pub fn any_exists(&mut self, raw: &mut RawObj, predicate: &str, values: &Vec<&str>) -> bool {
+    pub fn any_exists(&mut self, raw: &mut RawObj, predicate: &str, values: &[&str]) -> bool {
         for _ in 0..2 {
             match self.resources.get(predicate) {
                 Some(v) => {

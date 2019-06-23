@@ -99,7 +99,7 @@ impl Storage for LMDBStorage {
                 }
             }
 
-            if is_need_reopen == true {
+            if is_need_reopen {
                 warn!("db {} reopen", self.db_path);
                 let res = open(&self.db_path);
 
