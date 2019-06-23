@@ -147,6 +147,51 @@ impl Individual {
         return Err(IndividualError::None);
     }
 
+    pub fn get_first_number(&mut self, raw: &mut RawObj, predicate: &str) -> Result<(i64, i64), IndividualError> {
+        for _ in 0..2 {
+            match self.resources.get(predicate) {
+                Some(v) => match &v[0].value {
+                    Value::Num(m, e) => {
+                        return Ok((*m, *e));
+                    }
+                    _ => {}
+                },
+                None => {
+                    if raw.cur < raw.data.len() as u64 {
+                        // next parse
+                        if parse_to_predicate(predicate, raw, self) == false {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return Err(IndividualError::None);
+    }
+
+    pub fn get_first_float(&mut self, raw: &mut RawObj, predicate: &str) -> Result<f64, IndividualError> {
+        for _ in 0..2 {
+            match self.resources.get(predicate) {
+                Some(v) => {
+                    return Ok(v[0].get_float());
+                }
+                None => {
+                    if raw.cur < raw.data.len() as u64 {
+                        // next parse
+                        if parse_to_predicate(predicate, raw, self) == false {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return Err(IndividualError::None);
+    }
+
     pub fn any_exists(&mut self, raw: &mut RawObj, predicate: &str, values: &Vec<&str>) -> bool {
         for _ in 0..2 {
             match self.resources.get(predicate) {

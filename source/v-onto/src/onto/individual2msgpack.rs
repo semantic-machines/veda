@@ -16,7 +16,7 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
         DataType::Binary => {
             write_array_len(out, 2)?;
             write_u8(out, r.rtype.clone() as u8)?;
-            write_bin(out, r.get_binary())?;
+            write_str(out, &String::from_utf8_lossy(r.get_binary()))?;
         }
         DataType::Boolean => {
             write_array_len(out, 2)?;
@@ -62,9 +62,9 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
 }
 
 pub fn to_msgpack(indv: &Individual, out: &mut Vec<u8>) -> Result<(), Error> {
-    write_map_len(out, indv.resources.len() as u32 + 1)?;
-    write_str(out, "@")?;
+    write_array_len(out, 2)?;
     write_str(out, &indv.uri)?;
+    write_map_len(out, indv.resources.len() as u32)?;
     for (predicate, resources) in &indv.resources {
         write_str(out, &predicate)?;
         write_array_len(out, resources.len() as u32)?;

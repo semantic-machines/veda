@@ -64,6 +64,14 @@ impl Resource {
             (0, 0)
         }
     }
+
+    pub fn get_float(&self) -> f64 {
+        if let Value::Num(m, e) = self.value {
+            m as f64 * 10.0_f64.powf(e as f64)
+        } else {
+            0.0
+        }
+    }
 }
 
 impl From<Value> for i64 {
