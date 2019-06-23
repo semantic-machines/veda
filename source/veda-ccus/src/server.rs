@@ -87,8 +87,8 @@ impl CCUSServer {
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let mut storage_counter = 0;
 
-        if self.uri2sessions.contains_key(&uri.to_owned()) == false {
-            if let Ok(_) = self.subscribe_manager_sender.send((uri.to_string(), self.my_sender.clone())) {
+        if !self.uri2sessions.contains_key(&uri.to_owned()) {
+            if self.subscribe_manager_sender.send((uri.to_string(), self.my_sender.clone())).is_ok() {
                 if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
                     if msg >= 0 {
                         info!("from storage: {}, {}", uri, msg);
@@ -102,7 +102,7 @@ impl CCUSServer {
 
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
 
-        if el.sessions.contains(&session_id) == false {
+        if !el.sessions.contains(&session_id) {
             el.sessions.insert(session_id);
             debug!("[{}]: SUBSCRIBE: uri={}, counter={}, count subscribers={}", session_id, uri, counter, el.sessions.len());
         } else {
@@ -111,9 +111,9 @@ impl CCUSServer {
 
         if storage_counter > 0 {
             el.counter = storage_counter;
-            return storage_counter;
+            storage_counter
         } else {
-            return el.counter;
+            el.counter
         }
     }
 
@@ -146,7 +146,7 @@ impl CCUSServer {
             }
 
             if is_clear_unused {
-                if uss.sessions.len() == 0 {
+                if uss.sessions.is_empty() {
                     empty_uris.push(uri.to_owned());
                 }
             }
@@ -182,7 +182,7 @@ impl CCUSServer {
                         let registred_counter = self.subscribe(uri, counter, session_id);
 
                         if registred_counter > counter || registred_counter == 0 {
-                            if changes.len() > 0 {
+                            if !changes.is_empty() {
                                 changes.push_str(",");
                             }
 
@@ -205,7 +205,7 @@ impl CCUSServer {
             }
         }
 
-        if changes.len() > 0 {
+        if !changes.is_empty() {
             if let Some(addr) = self.sessions.get(&session_id) {
                 let _ = addr.do_send(Msg(changes.to_owned()));
                 debug!("send {}", changes);
@@ -265,7 +265,7 @@ impl Actor for CCUSServer {
 
             for _it in 0..size_batch {
                 // пробуем взять из очереди заголовок сообщения
-                if act.queue_consumer.pop_header() == false {
+                if !act.queue_consumer.pop_header() {
                     break;
                 }
 
@@ -326,7 +326,7 @@ impl Actor for CCUSServer {
                 let mut changes = String::new();
 
                 for (uri, counter) in el.1.iter() {
-                    if changes.len() > 0 {
+                    if !changes.is_empty() {
                         changes.push_str(",");
                     }
 
