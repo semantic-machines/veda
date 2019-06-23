@@ -214,7 +214,7 @@ impl Queue {
     }
 
     pub fn open_part(&mut self, part_id: u32) -> Result<(), ErrorQueue> {
-        if self.is_ready {
+        if !self.is_ready {
             return Err(ErrorQueue::NotReady);
         }
 
