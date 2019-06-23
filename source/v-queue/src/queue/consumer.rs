@@ -240,7 +240,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': size fail");
 
-                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_ok() {
+                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_err() {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -258,7 +258,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': CRC fail");
 
-                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_ok() {
+                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_err() {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -274,13 +274,11 @@ impl Consumer {
     }
 
     pub fn put_info(&mut self) {
-        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_ok() {
-        } else {
+        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_err() {
             error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
         }
-        if self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
-        } else {
+        if self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_err() {
             error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
         }
@@ -293,8 +291,7 @@ impl Consumer {
         }
 
         self.count_popped += 1;
-        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_ok() {
-        } else {
+        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_err() {
             return false;
         }
 
