@@ -44,14 +44,18 @@ impl Consumer {
                         id: 0,
                     };
 
-                    if consumer.get_info() == true {
-                        if let Ok(_) = consumer.queue.open_part(consumer.id) {
-                            &consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record));
+                    if consumer.get_info() {
+                        if consumer.queue.open_part(consumer.id).is_ok() {
+                            if consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record)).is_err() {
+                                return Err(ErrorQueue::NotReady);
+                            }
                         } else {
                             consumer.queue.is_ready = true;
                             consumer.id = consumer.queue.id;
-                            if let Ok(_) = consumer.queue.open_part(consumer.id) {
-                                &consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record));
+                            if consumer.queue.open_part(consumer.id).is_ok () {
+                                if consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record)).is_err() {
+                                    return Err(ErrorQueue::NotReady);
+                                }
                             } else {
                                 return Err(ErrorQueue::NotReady);
                             }
@@ -69,7 +73,7 @@ impl Consumer {
     }
 
     pub fn open(&mut self, is_new: bool) -> bool {
-        if self.queue.is_ready == false {
+        if !self.queue.is_ready {
             error!("Consumer open: queue not ready, set consumer.ready = false");
             self.is_ready = false;
             return false;
@@ -84,14 +88,17 @@ impl Consumer {
             self.is_ready = false;
             return false;
         }
-        return true;
+        true
     }
 
     pub fn get_info(&mut self) -> bool {
         let mut res = true;
 
-        &self.ff_info_pop_w.seek(SeekFrom::Start(0));
-        for line in BufReader::new(&self.ff_info_pop_w).lines() {
+        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_err() {
+            return false;
+        }
+
+        if let Some(line) = BufReader::new(&self.ff_info_pop_w).lines().next() {
             if let Ok(ll) = line {
                 let (queue_name, consumer_name, position, count_popped, id) = scan_fmt!(&ll.to_owned(), "{};{};{};{};{}", String, String, u64, u32, u32);
 
@@ -142,12 +149,10 @@ impl Consumer {
                 res = false;
                 return res;
             }
-
-            break;
         }
 
         info!("consumer ({}): count_pushed:{}, position:{}, id:{}, success:{}", self.name, self.count_popped, self.pos_record, self.id, res);
-        return res;
+        res
     }
 
     pub fn pop_header(&mut self) -> bool {
@@ -167,7 +172,7 @@ impl Consumer {
 
             if self.queue.id > self.id {
                 while self.id < self.queue.id {
-                    self.id = self.id + 1;
+                    self.id += 1;
 
                     debug!("prepare next part {}", self.id);
 
@@ -222,11 +227,11 @@ impl Consumer {
         self.hash.update(&buf[..]);
 
         self.header = header;
-        return true;
+        true
     }
 
     pub fn pop_body(&mut self, msg: &mut [u8]) -> Result<usize, ErrorQueue> {
-        if self.is_ready == false {
+        if !self.is_ready {
             return Err(ErrorQueue::NotReady);
         }
 
@@ -235,7 +240,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': size fail");
 
-                    if let Ok(_) = self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)) {
+                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_ok() {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -253,7 +258,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': CRC fail");
 
-                    if let Ok(_) = self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)) {
+                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_ok() {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -269,12 +274,12 @@ impl Consumer {
     }
 
     pub fn put_info(&mut self) {
-        if let Ok(_) = self.ff_info_pop_w.seek(SeekFrom::Start(0)) {
+        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_ok() {
         } else {
             error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
         }
-        if let Ok(_) = self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()) {
+        if self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
         } else {
             error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
@@ -282,21 +287,21 @@ impl Consumer {
     }
 
     pub fn commit_and_next(&mut self) -> bool {
-        if self.is_ready == false {
+        if !self.is_ready {
             error!("commit");
             return false;
         }
 
-        self.count_popped = self.count_popped + 1;
-        if let Ok(_) = self.ff_info_pop_w.seek(SeekFrom::Start(0)) {
+        self.count_popped += 1;
+        if self.ff_info_pop_w.seek(SeekFrom::Start(0)).is_ok() {
         } else {
             return false;
         }
 
-        if let Ok(_) = self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()) {
+        if self.ff_info_pop_w.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
             return true;
         };
 
-        return false;
+        false
     }
 }
