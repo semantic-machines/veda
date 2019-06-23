@@ -21,8 +21,8 @@ pub struct Queue {
 }
 
 impl Queue {
-    pub fn new(base_path: &str, queue_name: &str, mode: Mode) -> Result<Queue, ErrorQueue> {
-        if Path::new(&base_path).exists() == false {
+    pub fn new(base_path: &str, queue_name: &str, in_mode: Mode) -> Result<Queue, ErrorQueue> {
+        if !Path::new(&base_path).exists() {
             if let Err(e) = create_dir_all(base_path.to_owned()) {
                 error!("queue:{} create path, err={}", queue_name, e);
                 return Err(ErrorQueue::FailWrite);
@@ -36,7 +36,7 @@ impl Queue {
 
             let mut queue = Queue {
                 base_path: base_path.to_string(),
-                mode: mode.clone(),
+                mode: in_mode,
                 is_ready: true,
                 name: queue_name.to_owned(),
                 count_pushed: 0,
@@ -49,7 +49,7 @@ impl Queue {
 
             let info_is_ok = queue.get_info_queue();
 
-            if mode == Mode::ReadWrite {
+            if in_mode == Mode::ReadWrite {
                 let file_name_lock = queue.base_path.to_owned() + "/" + queue_name + "_queue.lock";
 
                 match OpenOptions::new().read(true).write(true).create(true).open(file_name_lock) {
@@ -66,14 +66,14 @@ impl Queue {
                 }
 
                 if info_is_ok {
-                    queue.id = queue.id + 1;
+                    queue.id += 1;
                     queue.count_pushed = 0;
                     queue.right_edge = 0;
                 }
 
                 let part_name = queue.name.to_owned() + "-" + &queue.id.to_string();
 
-                if Path::new(&part_name).exists() == false {
+                if !Path::new(&part_name).exists() {
                     if let Err(e) = create_dir_all(queue.base_path.to_owned() + "/" + &part_name) {
                         error!("queue:{}:{} create path, err={}", queue.name, queue.id, e);
                         return Err(ErrorQueue::FailWrite);
@@ -100,21 +100,21 @@ impl Queue {
             return Ok(queue);
         }
 
-        return Err(ErrorQueue::NotReady);
+        Err(ErrorQueue::NotReady)
     }
 
-    pub fn push(&mut self, data: &[u8], msg_type: MsgType) -> Result<u64, ErrorQueue> {
-        if self.is_ready == false || self.mode == Mode::Read || data.len() > std::u32::MAX as usize / 2 {
+    pub fn push(&mut self, data: &[u8], in_msg_type: MsgType) -> Result<u64, ErrorQueue> {
+        if !self.is_ready || self.mode == Mode::Read || data.len() > std::u32::MAX as usize / 2 {
             return Err(ErrorQueue::NotReady);
         }
 
         let header = Header {
             start_pos: self.right_edge,
             msg_length: data.len() as u32,
-            magic_marker: 0xEEFEEFEE,
+            magic_marker: 0xEEFE_EFEE,
             count_pushed: self.count_pushed + 1,
             crc: 0,
-            msg_type: msg_type,
+            msg_type: in_msg_type,
         };
 
         let mut bheader = [0; HEADER_SIZE];
@@ -141,18 +141,18 @@ impl Queue {
         }
 
         self.right_edge = self.right_edge + bheader.len() as u64 + data.len() as u64;
-        self.count_pushed = self.count_pushed + 1;
+        self.count_pushed += self.count_pushed;
 
-        if let Err(_) = self.put_info_push() {
+        if self.put_info_push().is_err() {
             self.right_edge = self.right_edge - bheader.len() as u64 - data.len() as u64;
-            self.count_pushed = self.count_pushed - 1;
+            self.count_pushed -= self.count_pushed;
         }
 
         Ok(self.right_edge)
     }
 
     fn put_info_push(&mut self) -> Result<(), ErrorQueue> {
-        if let Ok(_) = self.ff_info_push.seek(SeekFrom::Start(0)) {
+        if self.ff_info_push.seek(SeekFrom::Start(0)).is_ok() {
         } else {
             error!("fail put info push, set queue.ready = false");
             self.is_ready = false;
@@ -173,7 +173,7 @@ impl Queue {
     }
 
     fn put_info_queue(&mut self) -> Result<(), ErrorQueue> {
-        if let Ok(_) = self.ff_info_queue.seek(SeekFrom::Start(0)) {
+        if self.ff_info_queue.seek(SeekFrom::Start(0)).is_ok() {
         } else {
             error!("fail put info queue, set queue.ready = false");
             self.is_ready = false;
@@ -196,12 +196,11 @@ impl Queue {
     fn open_info_push(&mut self, part_id: u32) -> Result<(), ErrorQueue> {
         let ipp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_info_push";
 
-        let ffiq;
-        if self.mode == Mode::ReadWrite {
-            ffiq = OpenOptions::new().read(true).write(true).create(true).open(ipp.to_owned());
+        let ffiq = if self.mode == Mode::ReadWrite {
+            OpenOptions::new().read(true).write(true).create(true).open(ipp.to_owned())
         } else {
-            ffiq = OpenOptions::new().read(true).open(ipp.to_owned());
-        }
+            OpenOptions::new().read(true).open(ipp.to_owned())
+        };
 
         if let Ok(ff) = ffiq {
             self.ff_info_push = ff;
@@ -211,11 +210,11 @@ impl Queue {
             return Err(ErrorQueue::FailOpen);
         }
 
-        return Ok(());
+        Ok(())
     }
 
     pub fn open_part(&mut self, part_id: u32) -> Result<(), ErrorQueue> {
-        if self.is_ready == false {
+        if self.is_ready {
             return Err(ErrorQueue::NotReady);
         }
 
@@ -224,12 +223,11 @@ impl Queue {
         }
 
         let qpp = self.base_path.to_owned() + "/" + &self.name + "-" + &part_id.to_string() + "/" + &self.name + "_queue";
-        let ffq;
-        if self.mode == Mode::ReadWrite {
-            ffq = OpenOptions::new().read(true).write(true).create(true).open(qpp.to_owned());
+        let ffq = if self.mode == Mode::ReadWrite {
+            OpenOptions::new().read(true).write(true).create(true).open(qpp.to_owned())
         } else {
-            ffq = OpenOptions::new().read(true).open(qpp.to_owned());
-        }
+            OpenOptions::new().read(true).open(qpp.to_owned())
+        };
 
         if let Ok(f) = ffq {
             self.ff_queue = f;
@@ -243,7 +241,7 @@ impl Queue {
 
         info!("[{}] open part {}", self.name, part_id);
 
-        return self.get_info_of_part(self.id, false);
+        self.get_info_of_part(self.id, false)
     }
 
     pub fn get_info_queue(&mut self) -> bool {
@@ -251,8 +249,11 @@ impl Queue {
 
         let mut id = 0;
 
-        &self.ff_info_queue.seek(SeekFrom::Start(0));
-        for line in BufReader::new(&self.ff_info_queue).lines() {
+        if self.ff_info_queue.seek(SeekFrom::Start(0)).is_err() {
+            return false;
+        }
+
+        if let Some(line) = BufReader::new(&self.ff_info_queue).lines().next() {
             res = true;
             if let Ok(ll) = line {
                 let (queue_name, _id, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{}", String, u32, String);
@@ -273,17 +274,15 @@ impl Queue {
             } else {
                 return false;
             }
-
-            break;
         }
 
-        if res == true {
+        if res {
             self.id = id;
         }
 
         //info!("@ read info_queue: name={}, id={}", self.name, self.id);
 
-        return res;
+        res
     }
 
     pub fn get_info_of_part(&mut self, part_id: u32, reopen: bool) -> Result<(), ErrorQueue> {
@@ -297,8 +296,11 @@ impl Queue {
         let mut right_edge = 0;
         let mut count_pushed = 0;
 
-        &self.ff_info_push.seek(SeekFrom::Start(0));
-        for line in BufReader::new(&self.ff_info_push).lines() {
+        if self.ff_info_push.seek(SeekFrom::Start(0)).is_err() {
+            return Err(ErrorQueue::FailRead);
+        }
+
+        if let Some(line) = BufReader::new(&self.ff_info_push).lines().next() {
             if let Ok(ll) = line {
                 let (queue_name, position, pushed, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{};{}", String, u64, u32, String);
 
@@ -323,11 +325,9 @@ impl Queue {
             } else {
                 return Err(ErrorQueue::Other);
             }
-
-            break;
         }
 
-        if res == true {
+        if res {
             self.right_edge = right_edge;
             self.count_pushed = count_pushed;
             return Ok(());
@@ -335,6 +335,6 @@ impl Queue {
 
         //info!("queue ({}): count_pushed:{}, right_edge:{}, id:{}, ready:{}", self.name, self.count_pushed, self.right_edge, self.id, self.is_ready);
 
-        return Err(ErrorQueue::Other);
+        Err(ErrorQueue::Other)
     }
 }

@@ -32,9 +32,9 @@ pub enum MsgType {
 impl From<u8> for MsgType {
     fn from(t: u8) -> Self {
         if t == b'O' {
-            return MsgType::Object;
+            MsgType::Object
         } else {
-            return MsgType::String;
+            MsgType::String
         }
     }
 }
@@ -42,9 +42,9 @@ impl From<u8> for MsgType {
 impl MsgType {
     fn as_u8(&self) -> u8 {
         if *self == MsgType::Object {
-            return b'O';
+            b'O'
         } else {
-            return b'S';
+            b'S'
         }
     }
 }
@@ -76,7 +76,7 @@ pub struct Header {
 }
 
 impl Header {
-    pub fn create_from_buf(buf: &Vec<u8>) -> Self {
+    pub fn create_from_buf(buf: &[u8]) -> Self {
         Header {
             start_pos: u64::from_ne_bytes([buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]]),
             msg_length: u32::from_ne_bytes([buf[8], buf[9], buf[10], buf[11]]),
@@ -92,13 +92,13 @@ impl Header {
         let mut r = size_of::<u64>();
         buf[l..r].clone_from_slice(&u64::to_ne_bytes(self.start_pos));
         l = r;
-        r = r + size_of::<u32>();
+        r += size_of::<u32>();
         buf[l..r].clone_from_slice(&u32::to_ne_bytes(self.msg_length));
         l = r;
-        r = r + size_of::<u32>();
+        r += size_of::<u32>();
         buf[l..r].clone_from_slice(&[0xEE, 0xFE, 0xEF, 0xEE]);
         l = r;
-        r = r + size_of::<u32>();
+        r += size_of::<u32>();
         buf[l..r].clone_from_slice(&u32::to_ne_bytes(self.count_pushed));
         buf[r] = self.msg_type.as_u8();
         buf[r + 1] = 0;
