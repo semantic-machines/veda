@@ -240,7 +240,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': size fail");
 
-                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_err() {
+                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_ok() {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
@@ -258,7 +258,7 @@ impl Consumer {
                 if self.count_popped == self.queue.count_pushed {
                     warn!("Detected problem with 'Read Tail Message': CRC fail");
 
-                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_err() {
+                    if self.queue.ff_queue.seek(SeekFrom::Start(self.pos_record)).is_ok() {
                         return Err(ErrorQueue::FailReadTailMessage);
                     }
                 }
