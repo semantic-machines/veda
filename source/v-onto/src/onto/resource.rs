@@ -77,7 +77,7 @@ impl Resource {
 impl From<Value> for i64 {
     fn from(v: Value) -> Self {
         if let Value::Int(t) = v {
-            t.clone()
+            t
         } else {
             0
         }
@@ -87,7 +87,7 @@ impl From<Value> for i64 {
 impl From<Value> for bool {
     fn from(v: Value) -> Self {
         if let Value::Bool(t) = v {
-            t.clone()
+            t
         } else {
             false
         }

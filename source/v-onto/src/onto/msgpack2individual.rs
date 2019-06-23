@@ -10,7 +10,7 @@ use crate::parser::*;
 use crate::resource::*;
 
 pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
-    if raw.data.len() == 0 || raw.raw_type != RawType::MSGPACK {
+    if raw.data.is_empty() || raw.raw_type != RawType::MSGPACK {
         return Err(-1);
     }
 
@@ -119,7 +119,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Binary as u8 {
                                         let values = indv.resources.entry(predicate.to_owned()).or_default();
-                                        if read_raw_into_resources(&mut cur, values) == false {
+                                        if !read_raw_into_resources(&mut cur, values) {
                                             error!("value: fail read raw");
                                             return false;
                                         }
@@ -199,7 +199,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
             }
         }
 
-        if is_found == true {
+        if is_found {
             //            indv.cur = cur.position();
             raw.cur = cur.position();
             return true;
@@ -210,14 +210,14 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
     return true;
 }
 
-fn read_raw_into_resources<'a>(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resource>) -> bool {
+fn read_raw_into_resources(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resource>) -> bool {
     let m_pos = cur.position();
     let size: u32;
 
     if let Ok(v) = read_marker(cur) {
         match v {
             Marker::FixStr(s) => {
-                size = s as u32;
+                size = u32::from(s);
                 cur.set_position(m_pos);
             }
             Marker::Str8 | Marker::Str16 | Marker::Str32 => {
@@ -263,14 +263,14 @@ fn read_raw_into_resources<'a>(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resourc
     }
 }
 
-fn read_string_from_msgpack<'a>(cur: &mut Cursor<&[u8]>) -> Result<String, i64> {
+fn read_string_from_msgpack(cur: &mut Cursor<&[u8]>) -> Result<String, i64> {
     let m_pos = cur.position();
     let size: u32;
 
     if let Ok(v) = read_marker(cur) {
         match v {
             Marker::FixStr(s) => {
-                size = s as u32;
+                size = u32::from(s);
                 cur.set_position(m_pos);
             }
             Marker::Str8 | Marker::Str16 | Marker::Str32 => {
