@@ -532,6 +532,20 @@ v-s:hasBuildingKind
   rdfs:range v-s:BuildingKind ;
   rdfs:domain v-s:Spatial ;
 .
+v-s:longitude
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Долгота"@ru ;
+  rdfs:label "Longitude"@en ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:latitude
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Широта"@ru ;
+  rdfs:label "Latitude"@en ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Spatial ;
+.
 
 ### -------------------------------------------------------
 v-s:Contractual
