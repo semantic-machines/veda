@@ -42,7 +42,7 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
             if l == Lang::NONE {
                 write_array_len(out, 2)?;
             } else {
-                write_array_len(out, 2)?;
+                write_array_len(out, 3)?;
             }
             write_u8(out, r.rtype.clone() as u8)?;
             write_str(out, s)?;

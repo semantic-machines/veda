@@ -46,7 +46,7 @@ impl Serialize for Resource {
             Value::Str(s, l) => {
                 tup.serialize_field("data", &*s)?;
 
-                if &self.rtype == &DataType::String {
+                if self.rtype == DataType::String {
                     if *l != Lang::NONE {
                         tup.serialize_field("lang", &*l)?;
                     }
