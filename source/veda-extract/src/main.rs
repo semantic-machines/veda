@@ -4,11 +4,13 @@ extern crate env_logger;
 
 use chrono::Local;
 use env_logger::Builder;
+//use ini::ini::Error;
 use ini::Ini;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
-use v_onto::individual::{Individual, RawObj};
+use v_onto::datatype::*;
+use v_onto::individual::*;
 use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
@@ -120,36 +122,62 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
-    fn prepare_queue_element(raw: &mut RawObj, queue_out: &mut Queue) {
-        let mut msg: Individual = Individual::new();
+    fn prepare_queue_element(raw: &mut RawObj, queue_out: &mut Queue) -> Result<(), i32> {
         if let Ok(uri) = parse_raw(raw) {
+            let mut msg: Individual = Individual::new();
             msg.uri = uri;
-            if let Ok(new_state) = msg.get_first_binobj(raw, "new_state") {
-                let mut raw = RawObj::new(new_state);
+
+            let new_state = msg.get_first_binobj(raw, "new_state");
+            if let Err(e) = new_state {
+                return Err(-1);
+            }
+
+            let cmd = msg.get_first_integer(raw, "cmd");
+            if let Err(e) = cmd {
+                return Err(-1);
+            }
+
+            let date = msg.get_first_integer(raw, "date");
+            if let Err(e) = date {
+                return Err(-1);
+            }
+
+            let mut raw = RawObj::new(new_state.unwrap_or_default());
+            if let Ok(uri) = parse_raw(&mut raw) {
                 let mut indv: Individual = Individual::new();
-                if let Ok(uri) = parse_raw(&mut raw) {
-                    indv.uri = uri.clone();
+                indv.parse_all(&mut raw);
+                indv.uri = uri.clone();
 
-                    let mut new_indv = Individual::new();
+                let mut raw: Vec<u8> = Vec::new();
+                to_msgpack(&indv, &mut raw);
 
-                    let mut raw: Vec<u8> = Vec::new();
-                    to_msgpack(&indv, &mut raw);
+                let mut new_indv = Individual::new();
+                new_indv.uri = uri.clone();
+                new_indv.add_uri("uri", &uri, 0);
+                new_indv.add_binary("new_state", raw, 0);
+                new_indv.add_integer("cmd", cmd.unwrap_or_default(), 0);
+                new_indv.add_integer("date", date.unwrap_or_default(), 0);
+                new_indv.add_string("source_veda", "*", Lang::NONE, 0);
+                new_indv.add_string("target_veda", "*", Lang::NONE, 0);
 
-                    new_indv.add_uri("uri", &uri, 0);
-                    new_indv.add_binary("new_state", raw, 0);
+                let mut raw1: Vec<u8> = Vec::new();
+                to_msgpack(&new_indv, &mut raw1);
 
-                    // cmd
-                    // date
-                    // source_veda
-                    // target_veda
-                    // new_state
-                    let mut raw1: Vec<u8> = Vec::new();
-                    to_msgpack(&new_indv, &mut raw1);
+                // test
+                let mut raw_obj = RawObj::new(raw1);
+                if let Ok(uri) = parse_raw(&mut raw_obj) {
+                    let mut msg: Individual = Individual::new();
+                    msg.uri = uri;
 
-                    //                        info! ("{:?}", raw);
-                    queue_out.push(&raw1, MsgType::Object);
+                    msg.parse_all(&mut raw_obj);
+
+                    info!("! {}", msg);
                 }
+
+                // info! ("{:?}", raw);
+                // queue_out.push(&raw1, MsgType::Object);
             }
         }
+        Ok(())
     }
 }
