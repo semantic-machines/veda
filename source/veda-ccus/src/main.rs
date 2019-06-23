@@ -172,13 +172,11 @@ impl WsCCUSSession {
 fn storage_manager(tarantool_addr: String, rx: Receiver<(String, Sender<i64>)>) {
     info!("Start STORAGE MANAGER");
 
-    let mut storage: VStorage;
-
-    if tarantool_addr.len() > 0 {
-        storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
+    let mut storage = if !tarantool_addr.is_empty() {
+        VStorage::new_tt(tarantool_addr, "veda6", "123456")
     } else {
-        storage = VStorage::new_lmdb("./data/lmdb-individuals/");
-    }
+        VStorage::new_lmdb("./data/lmdb-individuals/")
+    };
 
     loop {
         if let Ok((msg, sender)) = rx.recv() {
