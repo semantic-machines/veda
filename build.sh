@@ -11,13 +11,17 @@ then
 fi
 ./tools/update-version-ttl.sh
 
+export CARGO_TARGET_DIR=$PWD/tmp
+
 if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
     cd source/authorization
     cargo build --release
     cd $BUILD_PATH
-    sudo cp ./source/lib64/libauthorization.so $PWD
-    sudo cp $PWD/libauthorization.so /usr/local/lib
+    cp ./tmp/release/libauthorization.so ./source/lib64/libauthorization.so
+    cp ./tmp/release/libauthorization.a ./source/lib64/libauthorization.a
+    sudo cp ./tmp/release/libauthorization.so $PWD
+    sudo cp ./tmp/release/libauthorization.so /usr/local/lib
     sudo ldconfig
 
 fi
@@ -30,7 +34,7 @@ if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
     cd source/veda-ccus
     cargo build --release
     cd $BUILD_PATH
-    cp ./source/veda-ccus/target/release/veda-ccus $PWD
+    cp ./tmp/release/veda-ccus $PWD
 
     echo end make VEDA-CCUS
 fi
@@ -43,7 +47,7 @@ if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] ; then
     cd source/veda-ontologist
     cargo build --release
     cd $BUILD_PATH
-    cp ./source/veda-ontologist/target/release/veda-ontologist $PWD
+    cp ./tmp/release/veda-ontologist $PWD
 
     echo end make VEDA-ONTOLOGIST
 fi
