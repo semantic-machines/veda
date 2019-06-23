@@ -120,7 +120,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                     } else if v_type == DataType::Binary as u8 {
                                         let values = indv.resources.entry(predicate.to_owned()).or_default();
                                         if read_raw_into_resources(&mut cur, values) == false {
-                                            error!("value: faile read raw");
+                                            error!("value: fail read raw");
                                             return false;
                                         }
                                     } else if v_type == DataType::String as u8 {
@@ -220,7 +220,7 @@ fn read_raw_into_resources<'a>(cur: &mut Cursor<&[u8]>, values: &mut Vec<Resourc
                 size = s as u32;
                 cur.set_position(m_pos);
             }
-            Marker::Str16 | Marker::Str32 => {
+            Marker::Str8 | Marker::Str16 | Marker::Str32 => {
                 cur.set_position(m_pos);
 
                 match read_str_len(cur) {
@@ -273,7 +273,7 @@ fn read_string_from_msgpack<'a>(cur: &mut Cursor<&[u8]>) -> Result<String, i64> 
                 size = s as u32;
                 cur.set_position(m_pos);
             }
-            Marker::Str16 | Marker::Str32 => {
+            Marker::Str8 | Marker::Str16 | Marker::Str32 => {
                 cur.set_position(m_pos);
                 match read_str_len(cur) {
                     Ok(s) => size = s,
