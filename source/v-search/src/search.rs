@@ -77,48 +77,48 @@ impl FTQuery {
 }
 
 pub struct FTClient {
-    ro_storage_client: Socket,
-    ro_client_addr: String,
-    is_ro_storage_ready: bool,
+    client: Socket,
+    addr: String,
+    is_ready: bool,
 }
 
 impl FTClient {
     pub fn new(_ro_client_addr: String) -> FTClient {
         FTClient {
-            ro_storage_client: Socket::new(Protocol::Req0).unwrap(),
-            ro_client_addr: _ro_client_addr,
-            is_ro_storage_ready: false,
+            client: Socket::new(Protocol::Req0).unwrap(),
+            addr: _ro_client_addr,
+            is_ready: false,
         }
     }
 
     pub fn connect(&mut self) -> bool {
-        if let Err(e) = self.ro_storage_client.dial(self.ro_client_addr.as_str()) {
-            error!("fail dial to ro-storage, [{}], err={}", self.ro_client_addr, e);
+        if let Err(e) = self.client.dial(self.addr.as_str()) {
+            error!("fail dial to ro-storage, [{}], err={}", self.addr, e);
         } else {
-            info!("sucess connect to ro-storage, [{}]", self.ro_client_addr);
-            self.is_ro_storage_ready = true;
+            info!("sucess connect to ro-storage, [{}]", self.addr);
+            self.is_ready = true;
         }
-        self.is_ro_storage_ready
+        self.is_ready
     }
 
-    pub fn query_rawobj(&mut self, query: FTQuery) -> FTResult {
+    pub fn query(&mut self, query: FTQuery) -> FTResult {
         let mut res = FTResult::default();
 
-        if self.is_ro_storage_ready == false {
+        if self.is_ready == false {
             self.connect();
         }
 
-        if self.is_ro_storage_ready == false {
+        if self.is_ready == false {
             res.result_code = 474;
             return res;
         }
 
         let req = Message::from(query.as_string().as_bytes());
 
-        self.ro_storage_client.send(req).unwrap();
+        self.client.send(req).unwrap();
 
         // Wait for the response from the server.
-        let msg = self.ro_storage_client.recv().unwrap();
+        let msg = self.client.recv().unwrap();
 
         let reply = String::from_utf8_lossy(&msg);
 
@@ -143,4 +143,6 @@ impl FTClient {
         //info!("msg={}", v);
         return res;
     }
+
+
 }
