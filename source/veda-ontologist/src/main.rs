@@ -143,10 +143,6 @@ fn main() -> std::io::Result<()> {
                 is_found_onto_changes = is_changes(&mut raw, &onto_types);
             }
 
-            if is_found_onto_changes {
-                info!("found changes in onto");
-            }
-
             queue_consumer.commit_and_next();
 
             total_prepared_count += 1;
