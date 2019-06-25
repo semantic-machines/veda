@@ -120,7 +120,7 @@ fn main() -> Result<(), i32> {
             }
         }
 
-        thread::sleep(time::Duration::from_millis(10));
+        thread::sleep(time::Duration::from_millis(100));
     }
 }
 
