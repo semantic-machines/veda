@@ -101,7 +101,7 @@ impl FTClient {
         self.is_ro_storage_ready
     }
 
-    pub fn query(&mut self, query: FTQuery) -> FTResult {
+    pub fn query_rawobj(&mut self, query: FTQuery) -> FTResult {
         let mut res = FTResult::default();
 
         if self.is_ro_storage_ready == false {
