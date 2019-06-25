@@ -34,6 +34,7 @@ pub struct GeoQuery {
     rad: f64,
     #[serde(default)]
     query: String,
+    ticket: String
 }
 
 fn geo_query(info: web::Json<GeoQuery>, db: web::Data<Addr<SyncActor>>) -> impl Future<Item = HttpResponse, Error = AWError> {
@@ -44,6 +45,7 @@ fn geo_query(info: web::Json<GeoQuery>, db: web::Data<Addr<SyncActor>>) -> impl 
         lat: info.lat,
         rad: info.rad,
         query: info.query,
+        ticket: info.ticket
     })
     .map_err(AWError::from)
     .and_then(|res| match &res {
@@ -143,7 +145,7 @@ impl Handler<GeoQuery> for SyncActor {
     fn handle(&mut self, msg: GeoQuery, _ctx: &mut Self::Context) -> Self::Result {
         let mut res = Vec::new();
 
-        let ft_res = self.ft_client.query(FTQuery::new("cfg:VedaSystem", &msg.query));
+        let ft_res = self.ft_client.query(FTQuery::new_with_ticket(&msg.ticket, &msg.query));
         if ft_res.count == 0 {
             return Ok(Vec::new());
         }

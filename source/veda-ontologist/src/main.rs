@@ -160,7 +160,7 @@ fn main() -> std::io::Result<()> {
             info!("found onto changes from storage");
 
             if let Ok(mut file) = File::create(ontology_file_path) {
-                let res = ft_client.query(FTQuery::new("cfg:VedaSystem", &query));
+                let res = ft_client.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
 
                 if res.result_code == 200 && res.count > 0 {
                     file.write(b"[")?;
