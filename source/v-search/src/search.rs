@@ -72,7 +72,7 @@ impl FTQuery {
         s.push_str(&self.from.to_string());
         s.push_str("]");
 
-        return s;
+        s
     }
 }
 
@@ -104,11 +104,11 @@ impl FTClient {
     pub fn query(&mut self, query: FTQuery) -> FTResult {
         let mut res = FTResult::default();
 
-        if self.is_ready == false {
+        if !self.is_ready {
             self.connect();
         }
 
-        if self.is_ready == false {
+        if !self.is_ready {
             res.result_code = 474;
             return res;
         }
@@ -128,20 +128,20 @@ impl FTClient {
             Value::Null
         };
 
-        res.result_code = *&v["result_code"].as_i64().unwrap_or_default() as i32;
+        res.result_code = v["result_code"].as_i64().unwrap_or_default() as i32;
 
         if res.result_code == 200 {
             let jarray: &Vec<_> = &v["result"].as_array().expect("array");
-            res.result = jarray.into_iter().map(|v| v.as_str().unwrap_or_default().to_owned()).collect();
+            res.result = jarray.iter().map(|v| v.as_str().unwrap_or_default().to_owned()).collect();
 
-            res.count = *&v["count"].as_i64().unwrap_or_default();
-            res.estimated = *&v["estimated"].as_u64().unwrap_or_default();
-            res.processed = *&v["processed"].as_u64().unwrap_or_default();
-            res.cursor = *&v["cursor"].as_u64().unwrap_or_default();
+            res.count = v["count"].as_i64().unwrap_or_default();
+            res.estimated = v["estimated"].as_u64().unwrap_or_default();
+            res.processed = v["processed"].as_u64().unwrap_or_default();
+            res.cursor = v["cursor"].as_u64().unwrap_or_default();
         }
 
         //info!("msg={}", v);
-        return res;
+        res
     }
 
 
