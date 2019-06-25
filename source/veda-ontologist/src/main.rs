@@ -177,7 +177,7 @@ fn main() -> std::io::Result<()> {
 
                             indv.parse_all(&mut raw);
 
-                            file.write(&indv.to_json_str().as_bytes())?;
+                            file.write(&indv.as_json_str().as_bytes())?;
                         }
                     }
                     file.write(b"]")?;
