@@ -173,7 +173,7 @@ fn main() -> std::io::Result<()> {
                             buf.push_str(&indv.as_json_str());
                         }
                     }
-                    buf.push('[');
+                    buf.push(']');
 
                     file.write_all(buf.as_bytes())?;
                     info!("count stored {}", res.count);
