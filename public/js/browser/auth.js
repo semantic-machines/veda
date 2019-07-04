@@ -132,7 +132,7 @@ veda.Module(function (veda) { "use strict";
   ntlmProvider.load().then(function (ntlmProvider) {
     ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
     if (ntlm) {
-      iframe.appendTo(credentials);
+      iframe.appendTo(loginForm);
     }
   });
 
