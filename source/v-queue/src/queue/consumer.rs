@@ -5,6 +5,8 @@ use std::fs::*;
 use std::io::prelude::*;
 use std::io::SeekFrom;
 use std::io::{BufRead, BufReader};
+use std::process;
+use sysinfo::SystemExt;
 
 pub struct Consumer {
     is_ready: bool,
@@ -22,52 +24,95 @@ pub struct Consumer {
 
 impl Consumer {
     pub fn new(base_path: &str, consumer_name: &str, queue_name: &str) -> Result<Consumer, ErrorQueue> {
-        match Queue::new(base_path, queue_name, Mode::Read) {
-            Ok(q) => match OpenOptions::new().read(true).write(true).create(true).open(base_path.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name) {
-                Ok(ff) => Ok({
-                    let mut consumer = Consumer {
-                        is_ready: true,
-                        name: consumer_name.to_owned(),
-                        ff_info_pop_w: ff,
-                        queue: q,
-                        count_popped: 0,
-                        pos_record: 0,
-                        hash: Hasher::new(),
-                        header: Header {
-                            start_pos: 0,
-                            msg_length: 0,
-                            magic_marker: 0,
-                            count_pushed: 0,
-                            crc: 0,
-                            msg_type: MsgType::String,
-                        },
-                        id: 0,
-                    };
+        let info_name = base_path.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name;
+        let info_name_lock = base_path.to_owned() + "/" + queue_name + "_info_pop_" + consumer_name + ".lock";
 
-                    if consumer.get_info() {
-                        if consumer.queue.open_part(consumer.id).is_ok() {
-                            if consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record)).is_err() {
-                                return Err(ErrorQueue::NotReady);
+        match Queue::new(base_path, queue_name, Mode::Read) {
+            Ok(q) => {
+                let wlock = OpenOptions::new().read(true).write(true).create(true).open(info_name_lock);
+
+                if wlock.is_err() {
+                    return Err(ErrorQueue::NotReady);
+                }
+
+                let mut lock = wlock.unwrap();
+
+                let my_pid = process::id();
+
+                if let Some(line) = BufReader::new(&lock).lines().next() {
+                    if let Ok(ll) = line {
+                        if let Some(pid_owner) = scan_fmt!(&ll.to_owned(), "{}", i32) {
+                            let mut system = sysinfo::System::new();
+                            system.refresh_all();
+                            let processes = system.get_process_list();
+
+                            if let Some(pid) = processes.get(&pid_owner) {
+                                error!("queue:{}:{}:{} block process, pid={:?}", q.name, q.id, consumer_name, pid);
+                                return Err(ErrorQueue::AlreadyOpen);
                             }
-                        } else {
-                            consumer.queue.is_ready = true;
-                            consumer.id = consumer.queue.id;
-                            if consumer.queue.open_part(consumer.id).is_ok () {
+                        }
+                    }
+                }
+
+                if lock.set_len(0).is_err() {
+                    return Err(ErrorQueue::NotReady);
+                }
+
+                if lock.seek(SeekFrom::Start(0)).is_err() {
+                    return Err(ErrorQueue::NotReady);
+                }
+
+                if lock.write_all(my_pid.to_string().as_bytes()).is_err() {
+                    error!("queue:{}:{}:{} write to lock, pid={}", q.name, q.id, consumer_name, my_pid);
+                    return Err(ErrorQueue::FailWrite);
+                }
+
+                match OpenOptions::new().read(true).write(true).create(true).open(info_name) {
+                    Ok(ff) => Ok({
+                        let mut consumer = Consumer {
+                            is_ready: true,
+                            name: consumer_name.to_owned(),
+                            ff_info_pop_w: ff,
+                            queue: q,
+                            count_popped: 0,
+                            pos_record: 0,
+                            hash: Hasher::new(),
+                            header: Header {
+                                start_pos: 0,
+                                msg_length: 0,
+                                magic_marker: 0,
+                                count_pushed: 0,
+                                crc: 0,
+                                msg_type: MsgType::String,
+                            },
+                            id: 0,
+                        };
+
+                        if consumer.get_info() {
+                            if consumer.queue.open_part(consumer.id).is_ok() {
                                 if consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record)).is_err() {
                                     return Err(ErrorQueue::NotReady);
                                 }
                             } else {
-                                return Err(ErrorQueue::NotReady);
+                                consumer.queue.is_ready = true;
+                                consumer.id = consumer.queue.id;
+                                if consumer.queue.open_part(consumer.id).is_ok() {
+                                    if consumer.queue.ff_queue.seek(SeekFrom::Start(consumer.pos_record)).is_err() {
+                                        return Err(ErrorQueue::NotReady);
+                                    }
+                                } else {
+                                    return Err(ErrorQueue::NotReady);
+                                }
                             }
+                        } else {
+                            return Err(ErrorQueue::NotReady);
                         }
-                    } else {
-                        return Err(ErrorQueue::NotReady);
-                    }
 
-                    consumer
-                }),
-                Err(_e) => Err(ErrorQueue::NotReady),
-            },
+                        consumer
+                    }),
+                    Err(_e) => Err(ErrorQueue::NotReady),
+                }
+            }
             Err(_e) => Err(ErrorQueue::NotReady),
         }
     }
