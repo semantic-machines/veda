@@ -537,8 +537,7 @@ position_uris.map(function (position_uri) {
     return item.data !== uri;
   });
 
-  if ( 
-   ) {
+  if ( request_deleted ) {
     appointment["v-s:deleted"] = veda.Util.newBool(true);
     delegate = get_individual(ticket, delegate_uri);
     delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
