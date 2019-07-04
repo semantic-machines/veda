@@ -194,7 +194,7 @@ void main(string[] args)
             if (bytes >= 0)
             {
                 string req = cast(string)buf[ 0..bytes ].dup();
-                stderr.writefln("RECEIVED [%d](%s) cont=%d", bytes, req, count);
+                //stderr.writefln("RECEIVED [%d](%s) cont=%d", bytes, req, count);
                 nn_freemsg(buf);
 
                 string rep = req_prepare(req, tickets_storage_r, inividuals_storage_r, log);
@@ -203,7 +203,7 @@ void main(string[] args)
                     rep = "\0";
 
                 bytes = nn_send(sock, cast(char *)rep.dup(), rep.length, 0);
-                stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
+                //stderr.writefln("SENDING (%s) %d bytes", rep, bytes);
             }
         }
         catch (Throwable tr)
