@@ -44,6 +44,20 @@ veda.Module(function (veda) { "use strict";
       .catch(handleLoginError);
   });
 
+  $("#new-password", loginForm).keyup(function () {
+    // A password must be at least 6 characters and contain at least 1 lowercase letter, 1 uppercase letter, 1 digit
+    var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
+    var submit = $("#submit-new-password", loginForm);
+    var newPasswordGroup = $("#new-password-group", loginForm);
+    if ( !re.test(this.value) ) {
+      submit.attr("disabled", "disabled");
+      newPasswordGroup.addClass("has-error");
+    } else {
+      submit.removeAttr("disabled")
+      newPasswordGroup.removeClass("has-error");
+    }
+  });
+
   $("#submit-new-password", loginForm).click( function (e) {
     e.preventDefault();
     var login = $("#login", loginForm).val(),
