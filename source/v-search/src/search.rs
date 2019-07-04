@@ -115,7 +115,7 @@ impl FTClient {
 
     pub fn connect(&mut self) -> bool {
         if let Err(e) = self.client.dial(self.addr.as_str()) {
-            error!("fail dial to ro-storage, [{}], err={}", self.addr, e);
+            error!("ft-client:fail dial to ro-storage, [{}], err={}", self.addr, e);
         } else {
             info!("sucess connect to ro-storage, [{}]", self.addr);
             self.is_ready = true;

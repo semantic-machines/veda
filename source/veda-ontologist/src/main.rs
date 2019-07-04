@@ -75,7 +75,7 @@ fn main() -> std::io::Result<()> {
         query.push_str("'");
     }
 
-    let mut ft_client = FTClient::new("tcp://127.0.0.1:23000".to_owned());
+    let mut ft_client = FTClient::new("tcp://127.0.0.1:23100".to_owned());
 
     while !ft_client.connect() {
         thread::sleep(time::Duration::from_millis(3000));
