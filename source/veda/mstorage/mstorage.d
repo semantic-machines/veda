@@ -329,14 +329,29 @@ auto         rnd               = Random(42);
 const string empty_Sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 public long  PASSWORD_LIFETIME;
 
+private struct LoginStatus
+{
+    long count_errors;
+    long time_of_last_err;
+}
+
+private void update_login_err(string login)
+{
+    long        now   = Clock.currTime().toUnixTime();
+    LoginStatus lstat = login_errors.get(login, LoginStatus.init);
+
+    lstat.count_errors++;
+    lstat.time_of_last_err = now;
+    login_errors[ login ]  = lstat;
+}
+
+private LoginStatus[ string ] login_errors;
+
 private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
-    //StopWatch sw; sw.start;
-
     Ticket ticket;
     Ticket sticket = ctx.sys_ticket(true);
 
-    //if (trace_msg[ T_API_70 ] == 1)
     log.trace("authenticate, login=[%s] password=[%s], secret=[%s]", login, password, secret);
 
     ticket.result = ResultCode.AuthenticationFailed;
@@ -362,10 +377,33 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         return ticket;
     }
 
+    long         now = Clock.currTime().toUnixTime();
+
     Individual[] candidate_users;
     string       query = "'v-s:login' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
 
     ctx.get_vql().query(sticket.user_uri, query, null, null, 10, 10000, OptAuthorize.NO, false, candidate_users);
+
+    LoginStatus lstat = login_errors.get(login, LoginStatus.init);
+    
+    log.trace ("LSTAT %s", lstat);
+
+    if (candidate_users.length == 0)
+    {
+        update_login_err(login);
+        ticket.result = ResultCode.AuthenticationFailed;
+        return ticket;
+    }
+    else
+    {
+        if (lstat.count_errors > 3 && (now - lstat.time_of_last_err) < 3 * 60)
+        {
+            update_login_err(login);
+            ticket.result = ResultCode.TooManyRequests;
+            return ticket;
+        }
+    }
+
     auto storage = ctx.get_storage();
     if (storage is null)
     {
@@ -459,6 +497,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
                 ticket.result = ResultCode.InvalidSecret;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
@@ -467,11 +506,11 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
                 ticket.result = ResultCode.InvalidSecret;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
 
-            long now              = Clock.currTime().toUnixTime();
             long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
             if (now - prev_secret_date > 12 * 60 * 60)
             {
@@ -487,6 +526,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.NewPasswordIsEqualToOld;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
@@ -495,6 +535,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.EmptyPassword;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
@@ -515,6 +556,8 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (op_res.result == ResultCode.Ok)
             {
                 ticket = create_new_ticket(login, user_id);
+                login_errors.remove(login);
+
                 log.trace("INFO! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
             }
             else
@@ -531,7 +574,6 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
             if (PASSWORD_LIFETIME > 0)
             {
-                long now = Clock.currTime().toUnixTime();
                 if (now - edited > PASSWORD_LIFETIME)
                 {
                     log.trace("ERR! authenticate:password is old, lifetime > %d days, user=%s", PASSWORD_LIFETIME / 60 / 60 / 24, user.uri);
@@ -554,7 +596,6 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 auto rnd      = Random(unpredictableSeed);
                 auto n_secret = to!string(uniform(100000, 999999, rnd));
 
-                long now = Clock.currTime().toUnixTime();
                 if (old_secret !is null)
                 {
                     long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
@@ -624,10 +665,13 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
             {
                 ticket = create_new_ticket(login, user_id);
+                login_errors.remove(login);
+
                 return ticket;
             }
             else
             {
+                update_login_err(login);
                 log.trace("WARN! request passw not equal with exist", user.uri);
             }
         }
@@ -636,6 +680,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     }
 
     log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s], candidate users =%s", login, password, candidate_users);
+    update_login_err(login);
     ticket.result = ResultCode.AuthenticationFailed;
     return ticket;
 }
