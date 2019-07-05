@@ -109,7 +109,7 @@
       self.ontology = new veda.OntologyModel();
       return self.ontology.init().then(function () {
         self.user = new veda.UserModel("cfg:Guest");
-        self.user._init();
+        return self.user._init();
       });
     };
 
