@@ -110,21 +110,14 @@
       return self.ontology.init().then(function () {
         self.user = new veda.UserModel("cfg:Guest");
         self.user._init();
-      }).catch(function (err) {
-        delete self.ontology;
       });
     };
 
     // Start application
     self.start = function () {
       self.trigger("starting");
-      if ( !self.ontology ) {
-        self.ontology = new veda.OntologyModel();
-      }
-      return self.ontology.init().then(function () {
-        self.user = new veda.UserModel(self.user_uri);
-        return self.user._init();
-      }).then(function () {
+      self.user = new veda.UserModel(self.user_uri);
+      return self.user._init().then(function () {
         self.trigger("started");
       });
     };
