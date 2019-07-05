@@ -97,10 +97,8 @@ class InputQueueProcess : VedaModule
         return null;
     }
 
-
     override bool open()
     {
-        //context.set_vql (new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
 
         return true;

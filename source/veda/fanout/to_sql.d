@@ -103,7 +103,6 @@ public class FanoutProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql (new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
         connect_to_mysql(context);
 
