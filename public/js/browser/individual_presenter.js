@@ -325,15 +325,17 @@ veda.Module(function (veda) { "use strict";
     function validHandler () {
       if ( this.hasValue("v-s:valid", false) && !this.hasValue("v-s:deleted", true) && mode === "view" ) {
         if ( (container.prop("id") === "main" || container.hasClass("modal-body") ) && !template.hasClass("invalid") ) {
-          var alert = new veda.IndividualModel("v-s:InvalidAlert")["rdfs:label"].join(" ");
-          var invalidAlert = $(
-            '<div id="invalid-alert" class="container sheet margin-lg">\
-              <div class="alert alert-danger no-margin clearfix" role="alert">\
-                <p id="invalid-alert-msg">' + alert + '</p>\
-              </div>\
-            </div>'
-          );
-          template.prepend(invalidAlert);
+          new veda.IndividualModel("v-s:InvalidAlert").load().then(function(loaded) {
+            var alert = loaded["rdfs:label"].join(" ");
+            var invalidAlert = $(
+              '<div id="invalid-alert" class="container sheet margin-lg">\
+                <div class="alert alert-danger no-margin clearfix" role="alert">\
+                  <p id="invalid-alert-msg">' + alert + '</p>\
+                </div>\
+              </div>'
+            );
+            template.prepend(invalidAlert);
+          })
         }
         template.addClass("invalid");
       } else {
