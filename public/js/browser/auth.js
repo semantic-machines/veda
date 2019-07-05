@@ -25,6 +25,7 @@ veda.Module(function (veda) { "use strict";
       // Try ntlm authentication
       .catch(function (error) {
         console.log(error);
+        if (error.code === 429) { throw error; }
         var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
         return ntlmProvider.load().then(function (ntlmProvider) {
           var ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
@@ -93,8 +94,13 @@ veda.Module(function (veda) { "use strict";
     var newPasswordError = $("#password-expired-error", loginForm).hide();
     var invalidSecretError = $("#invalid-secret-error", loginForm).hide();
     var invalidPasswordError = $("#invalid-password-error", loginForm).hide();
+    var tooManyFailsError = $("#too-many-fails-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     switch (error.code) {
+      case 429: // Too many requests
+        enterLoginPassword.show();
+        tooManyFailsError.show();
+        break;
       case 465: // Empty password
       case 466: // New password is equal to old
       case 467: // Invalid password
@@ -112,6 +118,7 @@ veda.Module(function (veda) { "use strict";
         break;
       case 472: // Not authorized
       case 473: // Authentication failed
+      default:
         enterLoginPassword.show();
         loginFailedError.show();
         break;
