@@ -138,16 +138,16 @@ void main(string[] args)
     stderr.writefln("args=%s", args);
     int[][ string ] command_2_pids;
 
-	app_dir = environment.get("APPDIR");
-	if (app_dir is null)
-	{
-		app_dir = "./";
-	} 
-	else
-	{
-		app_dir ~= "/";
-	} 
-	
+    app_dir = environment.get("APPDIR");
+    if (app_dir is null)
+    {
+        app_dir = "./";
+    }
+    else
+    {
+        app_dir ~= "/";
+    }
+
 
     bool need_remove_ontology = false;
     bool need_reload_ontology = false;
@@ -252,8 +252,13 @@ void main(string[] args)
     {
         foreach (el; modules_list_str.split(","))
         {
-            stderr.writeln("module on start:", el.strip());
-            need_modules[ el.strip() ] = true;
+            string mod = el.strip();
+            stderr.writeln("module on start:", mod);
+
+            if (mod.indexOf("veda-") < 0)
+                mod = "veda-" ~ mod;
+
+            need_modules[ mod ] = true;
         }
     }
 
