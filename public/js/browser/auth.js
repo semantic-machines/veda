@@ -36,6 +36,7 @@ veda.Module(function (veda) { "use strict";
                 "login": login,
                 "password": password
               },
+              dataType : "json",
               async: true
             };
             return $.ajax(params);
