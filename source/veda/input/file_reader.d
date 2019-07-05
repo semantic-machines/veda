@@ -108,7 +108,6 @@ void main(char[][] args)
 
     Context context = create_new_ctx("file_reader", log);
 
-    //context.set_vql (new XapianSearch(context));
     context.set_vql(new FTQueryClient(context));
 
     sticket = context.sys_ticket();
