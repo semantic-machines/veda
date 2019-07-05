@@ -66,6 +66,7 @@ veda.Module(function (veda) { "use strict";
       self.preferences["v-s:owner"] = [ self ];
       self.preferences["rdf:type"] = [ new veda.IndividualModel("v-ui:Preferences") ];
       self.preferences["rdfs:label"] = [ "Preferences_" + self.id ];
+      self["v-ui:hasPreferences"] = [ self.preferences ];
       return self.preferences;
     }
   };
@@ -73,33 +74,29 @@ veda.Module(function (veda) { "use strict";
   proto.initLanguage = function (preferences) {
     var self = this;
     if ( !preferences.hasValue("v-ui:preferredLanguage") || !preferences.hasValue("v-ui:displayedElements")) {
-      var defaultDisplayedElements = new veda.IndividualModel("v-ui:DefaultDisplayedElements");
-      var defaultLanguage = new veda.IndividualModel("v-ui:DefaultLanguage");
-      Promise.all([defaultLanguage.load(), defaultDisplayedElements.load()]).then(function (defaults) {
-        preferences["v-ui:preferredLanguage"] = [ defaults[0]["rdf:value"][0] ];
-        preferences["v-ui:displayedElements"] = [ defaults[1]["rdf:value"][0] ];
-        if (self.id !== "cfg:Guest") {
-          preferences.save();
-        }
-      });
+      var defaultDisplayedElements = 10;
+      var defaultLanguage = new veda.IndividualModel("v-ui:RU");
+      preferences["v-ui:preferredLanguage"] = [ defaultLanguage ];
+      preferences["v-ui:displayedElements"] = [ defaultDisplayedElements ];
+      preferences.save();
     }
     preferences.on("v-ui:preferredLanguage", setLanguage);
+    preferences.on("v-ui:displayedElements", setDisplayedElements);
+    preferences.on("v-ui:preferredLanguage v-ui:displayedElements", updatePreferences);
     setLanguage();
+    setDisplayedElements();
     function setLanguage() {
       preferences.language = preferences["v-ui:preferredLanguage"].reduce( function (acc, lang) {
         acc[lang.id.substr(lang.id.indexOf(":") + 1)] = lang;
         return acc;
       }, {});
-      if ( !preferences.isSync() && self.id !== "cfg:Guest" ) {
-        preferences.save();
-      }
       veda.trigger("language:changed");
     }
-    preferences.on("v-ui:displayedElements", setDisplayedElements);
-    setDisplayedElements();
     function setDisplayedElements() {
       preferences.displayedElements = preferences["v-ui:displayedElements"][0] || 10;
-      if ( !preferences.isSync() && self.id !== "cfg:Guest" ) {
+    }
+    function updatePreferences() {
+      if ( self.id !== "cfg:Guest" ) {
         preferences.save();
       }
     }
