@@ -57,15 +57,15 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
 
     let mut trace = Trace {
         acl: _trace_acl,
-        is_acl: is_acl,
+        is_acl,
         group: _trace_group,
-        is_group: is_group,
+        is_group,
         info: _trace_info,
-        is_info: is_info,
+        is_info,
         str_num: 0,
     };
 
-    if let Ok(_) = _authorize(&uri, &user_uri, _request_access, _is_check_for_reload, &mut trace) {}
+    if _authorize(&uri, &user_uri, _request_access, _is_check_for_reload, &mut trace).is_ok() {};
 
     let mut trace_res = &mut String::new();
 
@@ -89,7 +89,7 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
 
     std::mem::forget(cres);
 
-    return p;
+    p
 }
 
 #[no_mangle]
@@ -270,7 +270,7 @@ fn get_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
             let rr = Right {
                 id: key.to_string(),
                 access: access as u8,
-                marker: marker,
+                marker,
                 is_deleted: false,
                 level: 0,
             };
@@ -381,37 +381,35 @@ fn authorize_obj_group(
                                     }
                                 }
 
-                                if trace.is_info {
-                                    if prev_res != azc.calc_right_res {
-                                        let f_log_str = if !filter_value.is_empty() {
-                                            ", with filter ".to_owned() + filter_value
-                                        } else {
-                                            "".to_owned()
-                                        };
+                                if trace.is_info && prev_res != azc.calc_right_res {
+                                    let f_log_str = if !filter_value.is_empty() {
+                                        ", with filter ".to_owned() + filter_value
+                                    } else {
+                                        "".to_owned()
+                                    };
 
-                                        print_to_trace_info(
-                                            trace,
-                                            format!(
-                                                "found permission S:[{}], O:[{}], access={} {}\n",
-                                                &subj_id,
-                                                &object_group_id,
-                                                access_to_pretty_string(permission_access),
-                                                f_log_str
-                                            ),
-                                        );
+                                    print_to_trace_info(
+                                        trace,
+                                        format!(
+                                            "found permission S:[{}], O:[{}], access={} {}\n",
+                                            &subj_id,
+                                            &object_group_id,
+                                            access_to_pretty_string(permission_access),
+                                            f_log_str
+                                        ),
+                                    );
 
-                                        print_to_trace_info(
-                                            trace,
-                                            format!(
-                                                "access: request={}, calc={}, total={}\n",
-                                                access_to_pretty_string(request_access),
-                                                access_to_pretty_string(calc_bits),
-                                                access_to_pretty_string(azc.calc_right_res)
-                                            ),
-                                        );
-                                        print_to_trace_info(trace, "O-PATH".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
-                                        print_to_trace_info(trace, "S-PATH".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
-                                    }
+                                    print_to_trace_info(
+                                        trace,
+                                        format!(
+                                            "access: request={}, calc={}, total={}\n",
+                                            access_to_pretty_string(request_access),
+                                            access_to_pretty_string(calc_bits),
+                                            access_to_pretty_string(azc.calc_right_res)
+                                        ),
+                                    );
+                                    print_to_trace_info(trace, "O-PATH".to_owned() + &get_path(azc.tree_groups_o, object_group_id.to_string()) + "\n");
+                                    print_to_trace_info(trace, "S-PATH".to_owned() + &get_path(azc.tree_groups_s, subj_id.to_string()) + "\n");
                                 }
 
                                 if trace.is_acl {
@@ -511,12 +509,10 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                         }
                     }
 
-                    if !azc.is_found_exclusive_az && (level == 0 || uri.contains("_group")) {
-                        if azc.subject_groups.contains_key(&key) {
-                            if let Some(s_val) = azc.subject_groups.get(&key) {
-                                if s_val.marker == M_IS_EXCLUSIVE {
-                                    azc.is_found_exclusive_az = true;
-                                }
+                    if !azc.is_found_exclusive_az && (level == 0 || uri.contains("_group")) && azc.subject_groups.contains_key(&key) {
+                        if let Some(s_val) = azc.subject_groups.get(&key) {
+                            if s_val.marker == M_IS_EXCLUSIVE {
+                                azc.is_found_exclusive_az = true;
                             }
                         }
                     }
@@ -582,7 +578,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
         Err(e) => {
             if e < 0 {
                 eprintln!("ERR! Authorize: prepare_obj_group {:?}", uri);
-                return Err(e);
+                Err(e)
             } else {
                 if level == 0 {
                     azc.is_found_exclusive_az = true;
@@ -619,7 +615,6 @@ fn get_resource_groups(
             get_elements_from_index(&groups_str, groups_set);
 
             for (idx, group) in groups_set.iter_mut().enumerate() {
-
                 if group.id.is_empty() {
                     eprintln!("WARN! WARN! group is null, uri={}, idx={}", uri, idx);
                     continue;
@@ -731,7 +726,7 @@ fn get_resource_groups(
                         access: group.access,
                         marker: new_group_marker,
                         is_deleted: group.is_deleted,
-                        level: level,
+                        level,
                     },
                 );
             }
@@ -746,7 +741,7 @@ fn get_resource_groups(
         }
     }
 
-    return Ok(false);
+    Ok(false)
 }
 
 fn print_to_trace_acl(trace: &mut Trace, text: String) {
