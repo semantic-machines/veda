@@ -25,20 +25,24 @@ veda.Module(function (veda) { "use strict";
       // Try ntlm authentication
       .catch(function (error) {
         console.log(error);
-        if (ntlm) {
-          var params = {
-            type: "POST",
-            url: ntlm + "ad/",
-            data: {
-              "login": login,
-              "password": password
-            },
-            async: true
-          };
-          return $.ajax(params);
-        } else {
-          throw error;
-        }
+        var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
+        return ntlmProvider.load().then(function (ntlmProvider) {
+          var ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
+          if (ntlm) {
+            var params = {
+              type: "POST",
+              url: ntlm + "ad/",
+              data: {
+                "login": login,
+                "password": password
+              },
+              async: true
+            };
+            return $.ajax(params);
+          } else {
+            throw error;
+          }
+        });
       })
       .then(handleLoginSuccess)
       .catch(handleLoginError);
@@ -125,51 +129,48 @@ veda.Module(function (veda) { "use strict";
     veda.trigger("login:success", authResult);
   }
 
-  // NTLM auth using iframe
-  var ntlm;
-  var iframe = $("<iframe>", {"class": "hidden"});
-  var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
-  ntlmProvider.load().then(function (ntlmProvider) {
-    ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
-    if (ntlm) {
-      iframe.appendTo(loginForm);
-    }
-  });
-
   veda.on("login:failed", function () {
     $("#app").empty();
     delete storage.ticket;
     delete storage.user_uri;
     delete storage.end_time;
     veda.Util.delCookie("ticket");
-    if ( ntlm ) {
-      iframe.one("load", function () {
-        try {
-          loginForm.hide();
-          var body = iframe.contents().find("body"),
-            ticket = $("#ticket", body).text(),
-            user_uri = $("#user_uri", body).text(),
-            end_time = $("#end_time", body).text(),
-            authResult = {
-              ticket: ticket,
-              user_uri: user_uri,
-              end_time: end_time
-            };
-          if (ticket && user_uri && end_time) {
-            veda.trigger("login:success", authResult);
-          } else {
-            throw "auto ntlm auth failed";
+
+    // NTLM auth using iframe
+    var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
+    ntlmProvider.load().then(function (ntlmProvider) {
+      var ntlm = !ntlmProvider.hasValue("v-s:deleted", true) && ntlmProvider.hasValue("rdf:value") && ntlmProvider.get("rdf:value")[0];
+      if (ntlm) {
+        var iframe = $("<iframe>", {"class": "hidden"});
+        iframe.appendTo(loginForm);
+        iframe.one("load", function () {
+          try {
+            loginForm.hide();
+            var body = iframe.contents().find("body"),
+              ticket = $("#ticket", body).text(),
+              user_uri = $("#user_uri", body).text(),
+              end_time = $("#end_time", body).text(),
+              authResult = {
+                ticket: ticket,
+                user_uri: user_uri,
+                end_time: end_time
+              };
+            if (ticket && user_uri && end_time) {
+              veda.trigger("login:success", authResult);
+            } else {
+              throw "auto ntlm auth failed";
+            }
+          } catch (err) {
+            console.log(err);
+            loginForm.show();
           }
-        } catch (err) {
-          console.log(err);
-          loginForm.show();
-        }
-      });
-      document.domain = document.domain;
-      iframe.attr("src", ntlm);
-    } else {
-      loginForm.show();
-    }
+        });
+        document.domain = document.domain;
+        iframe.attr("src", ntlm);
+      } else {
+        loginForm.show();
+      }
+    });
   });
 
   // Initialize application if ticket is valid
