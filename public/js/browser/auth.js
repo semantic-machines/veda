@@ -55,12 +55,32 @@ veda.Module(function (veda) { "use strict";
     var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
     var submit = $("#submit-new-password", loginForm);
     var newPasswordGroup = $("#new-password-group", loginForm);
+    var passwordStrength = $(".password-strength", loginForm);
     if ( !re.test(this.value) ) {
       submit.attr("disabled", "disabled");
       newPasswordGroup.addClass("has-error");
+      passwordStrength.show();
     } else {
       submit.removeAttr("disabled")
       newPasswordGroup.removeClass("has-error");
+      passwordStrength.hide();
+    }
+  });
+
+  $("#confirm-new-password, #new-password", loginForm).keyup(function () {
+    var submit = $("#submit-new-password", loginForm);
+    var newPassword = $("#new-password", loginForm);
+    var confirmNewPassword = $("#confirm-new-password", loginForm);
+    var newPasswordGroup = $("#new-password-group", loginForm);
+    var passwordMustMatch = $(".password-must-match", loginForm);
+    if ( confirmNewPassword.val() !== newPassword.val() ) {
+      submit.attr("disabled", "disabled");
+      newPasswordGroup.addClass("has-error");
+      passwordMustMatch.show();
+    } else {
+      submit.removeAttr("disabled")
+      newPasswordGroup.removeClass("has-error");
+      passwordMustMatch.hide();
     }
   });
 
@@ -76,8 +96,10 @@ veda.Module(function (veda) { "use strict";
       .catch(handleLoginError);
   });
 
+  var forgotPasswordPressed;
   $("#forgot-password, #request-secret", loginForm).click( function (e) {
     e.preventDefault();
+    forgotPasswordPressed = true;
     var login = $("#login", loginForm).val(),
       secret = "?";
 
@@ -113,7 +135,9 @@ veda.Module(function (veda) { "use strict";
         break;
       case 469: // Password expired
         enterNewPassword.show();
-        passwordExpiredError.show();
+        if ( !forgotPasswordPressed ) {
+          passwordExpiredError.show();
+        }
         secretRequestInfo.show();
         break;
       case 472: // Not authorized
