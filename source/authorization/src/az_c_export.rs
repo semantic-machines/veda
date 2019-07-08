@@ -1,16 +1,16 @@
+use crate::authorization::*;
 use std::ffi::CStr;
 use std::ffi::CString;
 use std::os::raw::c_char;
 use std::ptr;
-use crate::authorization::*;
 
 const TRACE_ACL: u8 = 0;
 const TRACE_GROUP: u8 = 1;
 const TRACE_INFO: u8 = 2;
 
 #[no_mangle]
-pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _request_access: u8, trace_mode: u8, _is_check_for_reload: bool) -> *const c_char {
-    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
+pub unsafe extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _request_access: u8, trace_mode: u8, _is_check_for_reload: bool) -> *const c_char {
+    let c_uri: &CStr = CStr::from_ptr(_uri);
     let uri;
     match c_uri.to_str() {
         Ok(value) => uri = value,
@@ -20,7 +20,7 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
         }
     }
 
-    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
+    let c_user_uri: &CStr = CStr::from_ptr(_user_uri);
     let user_uri;
     match c_user_uri.to_str() {
         Ok(value) => user_uri = value,
@@ -77,8 +77,8 @@ pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _requ
 }
 
 #[no_mangle]
-pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, request_access: u8, is_check_for_reload: bool) -> u8 {
-    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
+pub unsafe extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, request_access: u8, is_check_for_reload: bool) -> u8 {
+    let c_uri: &CStr = CStr::from_ptr(_uri);
     let uri;
     match c_uri.to_str() {
         Ok(value) => uri = value,
@@ -88,7 +88,7 @@ pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, req
         }
     }
 
-    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
+    let c_user_uri: &CStr = CStr::from_ptr(_user_uri);
     let user_uri;
     match c_user_uri.to_str() {
         Ok(value) => user_uri = value,
