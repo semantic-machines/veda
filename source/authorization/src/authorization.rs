@@ -1,17 +1,8 @@
-extern crate core;
 /// This module gives function to check access of user to individual
-
-#[macro_use]
-extern crate lazy_static;
-extern crate lmdb_rs_m;
 
 use core::fmt;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::ffi::CStr;
-use std::ffi::CString;
-use std::os::raw::c_char;
-use std::ptr;
 use std::sync::Mutex;
 use std::thread;
 use std::time;
@@ -19,125 +10,6 @@ use std::time::SystemTime;
 
 use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
 use lmdb_rs_m::{DbFlags, /* DbHandle, */ EnvBuilder, Environment, MdbError};
-
-const TRACE_ACL: u8 = 0;
-const TRACE_GROUP: u8 = 1;
-const TRACE_INFO: u8 = 2;
-
-#[no_mangle]
-pub extern "C" fn get_trace(_uri: *const c_char, _user_uri: *const c_char, _request_access: u8, trace_mode: u8, _is_check_for_reload: bool) -> *const c_char {
-    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
-    let uri;
-    match c_uri.to_str() {
-        Ok(value) => uri = value,
-        Err(e) => {
-            eprintln!("ERR! invalid param uri {:?}", e);
-            return ptr::null();
-        }
-    }
-
-    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
-    let user_uri;
-    match c_user_uri.to_str() {
-        Ok(value) => user_uri = value,
-        Err(e) => {
-            eprintln!("ERR! invalid param user_uri {:?}", e);
-            return ptr::null();
-        }
-    }
-
-    let _trace_acl = &mut String::new();
-    let is_acl = trace_mode == TRACE_ACL;
-
-    let _trace_group = &mut String::new();
-    let is_group = trace_mode == TRACE_GROUP;
-
-    let _trace_info = &mut String::new();
-    let is_info = trace_mode == TRACE_INFO;
-
-    let mut trace = Trace {
-        acl: _trace_acl,
-        is_acl,
-        group: _trace_group,
-        is_group,
-        info: _trace_info,
-        is_info,
-        str_num: 0,
-    };
-
-    if _authorize(&uri, &user_uri, _request_access, _is_check_for_reload, &mut trace).is_ok() {};
-
-    let mut trace_res = &mut String::new();
-
-    if trace_mode == TRACE_ACL {
-        trace_res = trace.acl;
-    } else if trace_mode == TRACE_GROUP {
-        trace_res = trace.group;
-    } else if trace_mode == TRACE_INFO {
-        trace_res = trace.info;
-    }
-
-    //	eprintln! ("trace_res={}", trace_res);
-
-    //	let bytes = trace_res.into_bytes();
-    let cres = CString::new(trace_res.clone()).unwrap();
-
-    // http://jakegoulding.com/rust-ffi-omnibus/string_return/
-    //cres.into_raw()
-
-    let p = cres.as_ptr();
-
-    std::mem::forget(cres);
-
-    p
-}
-
-#[no_mangle]
-pub extern "C" fn authorize_r(_uri: *const c_char, _user_uri: *const c_char, request_access: u8, is_check_for_reload: bool) -> u8 {
-    let c_uri: &CStr = unsafe { CStr::from_ptr(_uri) };
-    let uri;
-    match c_uri.to_str() {
-        Ok(value) => uri = value,
-        Err(e) => {
-            eprintln!("ERR! invalid param uri {:?}", e);
-            return 0;
-        }
-    }
-
-    let c_user_uri: &CStr = unsafe { CStr::from_ptr(_user_uri) };
-    let user_uri;
-    match c_user_uri.to_str() {
-        Ok(value) => user_uri = value,
-        Err(e) => {
-            eprintln!("ERR! invalid param user_uri {:?}", e);
-            return 0;
-        }
-    }
-
-    let mut trace = Trace {
-        acl: &mut String::new(),
-        is_acl: false,
-        group: &mut String::new(),
-        is_group: false,
-        info: &mut String::new(),
-        is_info: false,
-        str_num: 0,
-    };
-
-    for attempt in 1..10 {
-        if attempt > 1 {
-            eprintln!("ERR! AZ: attempt {:?}", attempt)
-        }
-
-        match _authorize(uri, user_uri, request_access, is_check_for_reload, &mut trace) {
-            Ok(res) => return res,
-            Err(_e) => {}
-        }
-    }
-    0
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const MODULE_INFO_PATH: &str = "./data/module-info/acl_preparer_info";
 const DB_PATH: &str = "./data/acl-indexes/";
@@ -167,16 +39,16 @@ impl fmt::Debug for Right {
 }
 
 pub struct Trace<'a> {
-    acl: &'a mut String,
-    is_acl: bool,
+    pub acl: &'a mut String,
+    pub is_acl: bool,
 
-    group: &'a mut String,
-    is_group: bool,
+    pub group: &'a mut String,
+    pub is_group: bool,
 
-    info: &'a mut String,
-    is_info: bool,
+    pub info: &'a mut String,
+    pub is_info: bool,
 
-    str_num: u32,
+    pub str_num: u32,
 }
 
 pub struct AzContext<'a> {
@@ -807,7 +679,7 @@ fn access_to_pretty_string(src: u8) -> String {
     res
 }
 
-fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
+pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
     let s_groups = &mut HashMap::new();
 
     let mut azc = AzContext {

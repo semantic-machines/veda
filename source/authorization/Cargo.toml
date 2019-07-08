@@ -6,7 +6,7 @@ authors = ["itiu <ValeriyBushenev@gmail.com>", "muller95 <muller95@yandex.ru>"]
 
 [lib]
 name = "authorization"
-path = "src/authorization.rs"
+path = "src/lib.rs"
 crate-type = ["staticlib", "cdylib"]
     
 [dependencies]
