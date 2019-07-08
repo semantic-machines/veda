@@ -50,51 +50,46 @@ veda.Module(function (veda) { "use strict";
       .catch(handleLoginError);
   });
 
-  $("#new-password", loginForm).keyup(function () {
-    // A password must be at least 6 characters and contain at least 1 lowercase letter, 1 uppercase letter, 1 digit
+  $("#new-password, #confirm-new-password", loginForm).change(validateNewPassword);
+  $("#secret", loginForm).keyup(validateNewPassword);
+  function validateNewPassword() {
     var re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})");
     var submit = $("#submit-new-password", loginForm);
     var newPasswordGroup = $("#new-password-group", loginForm);
-    var passwordStrength = $(".password-strength", loginForm);
-    if ( !re.test(this.value) ) {
-      submit.attr("disabled", "disabled");
-      newPasswordGroup.addClass("has-error");
-      passwordStrength.show();
-    } else {
-      submit.removeAttr("disabled")
-      newPasswordGroup.removeClass("has-error");
-      passwordStrength.hide();
-    }
-  });
-
-  $("#confirm-new-password, #new-password", loginForm).keyup(function () {
-    var submit = $("#submit-new-password", loginForm);
     var newPassword = $("#new-password", loginForm);
     var confirmNewPassword = $("#confirm-new-password", loginForm);
-    var newPasswordGroup = $("#new-password-group", loginForm);
+    var passwordStrength = $(".password-strength", loginForm);
     var passwordMustMatch = $(".password-must-match", loginForm);
-    if ( confirmNewPassword.val() !== newPassword.val() ) {
-      submit.attr("disabled", "disabled");
-      newPasswordGroup.addClass("has-error");
+    var secretGroup = $("#secret-group", loginForm);
+    var secret = $("#secret", loginForm);
+    var enterSecret = $(".enter-secret", loginForm);
+
+    var reMatch = re.test( newPassword.val() );
+    var passwordsMatch = confirmNewPassword.val() === newPassword.val();
+    var isSecret = !!secret.val();
+    var isValid = reMatch && passwordsMatch && isSecret;
+
+    if ( !reMatch ) {
+      passwordStrength.show();
+    } else {
+      passwordStrength.hide();
+    }
+    if ( !passwordsMatch ) {
       passwordMustMatch.show();
     } else {
-      submit.removeAttr("disabled")
-      newPasswordGroup.removeClass("has-error");
       passwordMustMatch.hide();
     }
-  });
-
-  $("#submit-new-password", loginForm).click( function (e) {
-    e.preventDefault();
-    var login = $("#login", loginForm).val(),
-      password = $("#new-password", loginForm).val(),
-      secret = $("#secret", loginForm).val(),
-      hash = Sha256.hash(password);
-
-    veda.login(login, hash, secret)
-      .then(handleLoginSuccess)
-      .catch(handleLoginError);
-  });
+    if ( !isSecret ) {
+      enterSecret.show();
+    } else {
+      enterSecret.hide();
+    }
+    if ( !isValid ) {
+      submit.attr("disabled", "disabled");
+    } else {
+      submit.removeAttr("disabled", "disabled");
+    }
+  }
 
   var forgotPasswordPressed;
   $("#forgot-password, #request-secret", loginForm).click( function (e) {
