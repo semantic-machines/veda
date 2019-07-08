@@ -657,16 +657,14 @@ veda.Module(function (veda) { "use strict";
     function mergeValidationResult (e, validationResult) {
       e.stopPropagation();
       if (mode === "edit") {
-        // Merge template validation results with internal validation results
-        validationResult.state = Object.keys(validationResult).reduce( function (acc, property_uri) {
-          if (property_uri === "state") { return acc; }
-          return acc && validationResult[property_uri].state;
-        }, true);
         Object.keys(validationResult).map(function (property_uri) {
           if (property_uri === "state") { return; }
           validation[property_uri] = validationResult[property_uri];
         });
-        validation.state = validation.state && validationResult.state;
+        validation.state = Object.keys(validation).reduce( function (acc, property_uri) {
+          if (property_uri === "state") { return acc; }
+          return acc && validation[property_uri].state;
+        }, true);
         template.trigger("internal-validated", [validation]);
       }
     }
