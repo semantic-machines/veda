@@ -43,16 +43,16 @@ pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
     }
 }
 
-pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
-    if raw.cur >= raw.data.len() as u64 {
+pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual) -> bool {
+    if iraw.raw.cur >= iraw.raw.data.len() as u64 {
         return false;
     }
 
     let mut is_found = false;
-    let mut cur = Cursor::new(raw.data.as_slice());
-    cur.set_position(raw.cur);
+    let mut cur = Cursor::new(iraw.raw.data.as_slice());
+    cur.set_position(iraw.raw.cur);
 
-    for _ in raw.cur_predicates..raw.len_predicates {
+    for _ in iraw.raw.cur_predicates..iraw.raw.len_predicates {
         let predicate = match read_string_from_msgpack(&mut cur) {
             Ok(p) => p,
             Err(e) => {
@@ -87,7 +87,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                 if size == 2 {
                                     if v_type == DataType::Boolean as u8 {
                                         match read_bool(&mut cur) {
-                                            Ok(res) => indv.add_bool(&predicate, res, i_values),
+                                            Ok(res) => iraw.obj.add_bool(&predicate, res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -95,7 +95,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Datetime as u8 {
                                         match read_int(&mut cur) {
-                                            Ok(res) => indv.add_datetime(&predicate, res, i_values),
+                                            Ok(res) => iraw.obj.add_datetime(&predicate, res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -103,7 +103,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Integer as u8 {
                                         match read_int(&mut cur) {
-                                            Ok(res) => indv.add_integer(&predicate, res, i_values),
+                                            Ok(res) => iraw.obj.add_integer(&predicate, res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -111,21 +111,21 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                         }
                                     } else if v_type == DataType::Uri as u8 {
                                         match read_string_from_msgpack(&mut cur) {
-                                            Ok(res) => indv.add_uri(&predicate, &res, i_values),
+                                            Ok(res) => iraw.obj.add_uri(&predicate, &res, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
                                             }
                                         }
                                     } else if v_type == DataType::Binary as u8 {
-                                        let values = indv.resources.entry(predicate.to_owned()).or_default();
+                                        let values = iraw.obj.resources.entry(predicate.to_owned()).or_default();
                                         if !read_raw_into_resources(&mut cur, values) {
                                             error!("value: fail read raw");
                                             return false;
                                         }
                                     } else if v_type == DataType::String as u8 {
                                         match read_string_from_msgpack(&mut cur) {
-                                            Ok(res) => indv.add_string(&predicate, &res, Lang::NONE, i_values),
+                                            Ok(res) => iraw.obj.add_string(&predicate, &res, Lang::NONE, i_values),
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
                                                 return false;
@@ -139,7 +139,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                     if v_type == DataType::Decimal as u8 {
                                         match read_int(&mut cur) {
                                             Ok(mantissa) => match read_int(&mut cur) {
-                                                Ok(exponent) => indv.add_decimal_d(&predicate, mantissa, exponent, i_values),
+                                                Ok(exponent) => iraw.obj.add_decimal_d(&predicate, mantissa, exponent, i_values),
                                                 Err(e) => {
                                                     error!("value: fail read exponent, err={:?}", e);
                                                     return false;
@@ -171,7 +171,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
                                                     }
                                                 }
 
-                                                indv.add_string(&predicate, &res, lang, i_values);
+                                                iraw.obj.add_string(&predicate, &res, lang, i_values);
                                             }
                                             Err(e) => {
                                                 error!("value: expected {}, err={:?}", v_type, e);
@@ -201,12 +201,12 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv
 
         if is_found {
             //            indv.cur = cur.position();
-            raw.cur = cur.position();
+            iraw.raw.cur = cur.position();
             return true;
         }
     }
 
-    raw.cur = cur.position();
+    iraw.raw.cur = cur.position();
     true
 }
 

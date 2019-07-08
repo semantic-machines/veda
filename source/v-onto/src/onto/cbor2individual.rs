@@ -1,5 +1,5 @@
 use crate::datatype::*;
-use crate::individual::{Individual, RawObj};
+use crate::individual::*;
 use crate::parser::*;
 use cbor::types::Type;
 use cbor::{Config, Decoder};
@@ -48,17 +48,17 @@ pub fn parse_cbor(raw: &mut RawObj) -> Result<String, i8> {
     Err(-1)
 }
 
-pub fn parse_cbor_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
-    if raw.cur >= raw.data.len() as u64 {
+pub fn parse_cbor_to_predicate(expect_predicate: &str, iraw: &mut Individual) -> bool {
+    if iraw.raw.cur >= iraw.raw.data.len() as u64 {
         return false;
     }
 
     let mut is_found = false;
-    let mut cur = Cursor::new(raw.data.as_slice());
-    cur.set_position(raw.cur);
+    let mut cur = Cursor::new(iraw.raw.data.as_slice());
+    cur.set_position(iraw.raw.cur);
     let mut d = Decoder::new(Config::default(), cur);
 
-    for _ in raw.cur_predicates..raw.len_predicates {
+    for _ in iraw.raw.cur_predicates..iraw.raw.len_predicates {
         if let Ok(type_info) = d.typeinfo() {
             if let Ok(predicate) = d._text(&type_info) {
                 debug!("predicate {:?}", &predicate);
@@ -66,14 +66,14 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &
                 if predicate == expect_predicate {
                     is_found = true;
                 }
-                if !add_value(&predicate, &mut d, indv, 0) {
+                if !add_value(&predicate, &mut d, &mut iraw.obj, 0) {
                     return false;
                 }
             }
         }
 
         if is_found {
-            raw.cur = d.into_reader().position();
+            iraw.raw.cur = d.into_reader().position();
             return true;
         }
     }
@@ -81,7 +81,7 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, raw: &mut RawObj, indv: &
     false
 }
 
-fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individual, order: u32) -> bool {
+fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut IndividualObj, order: u32) -> bool {
     if let Ok((type_info, tag)) = d.typeinfo_and_tag() {
         match type_info.0 {
             Type::Bool => {

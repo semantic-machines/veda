@@ -276,7 +276,9 @@ impl Actor for CCUSServer {
                     }
                 }
 
-                if prepare_queue_el(&mut raw, &mut act.uri2sessions, &mut session2uris).is_err() {
+                let mut indv = Individual::new_raw(raw);
+
+                if prepare_queue_el(&mut indv, &mut act.uri2sessions, &mut session2uris).is_err() {
                     error!("{}: fail parse, retry", act.total_prepared_count);
                     break;
                 }
@@ -312,23 +314,26 @@ impl Actor for CCUSServer {
     }
 }
 
-fn prepare_queue_el(raw: &mut RawObj, uri2sessions: &mut HashMap<String, SubscribeElement>, session2uris: &mut HashMap<usize, HashMap<String, u64>>) -> Result<(), i32> {
-    let mut msg = Individual::new();
+fn prepare_queue_el(
+    msg: &mut Individual,
+    uri2sessions: &mut HashMap<String, SubscribeElement>,
+    session2uris: &mut HashMap<usize, HashMap<String, u64>>,
+) -> Result<(), i32> {
     // запустим ленивый парсинг сообщения в Individual
-    if let Ok(uri) = parse_raw(raw) {
-        msg.uri = uri;
+    if let Ok(uri) = parse_raw(msg) {
+        msg.obj.uri = uri;
     } else {
         return Err(-1);
     }
 
     // берем поле [uri]
-    if let Ok(uri_from_queue) = msg.get_first_literal(raw, "uri") {
+    if let Ok(uri_from_queue) = msg.get_first_literal("uri") {
         // найдем есть ли среди uri на которые есть подписки, uri из очереди
         if let Some(el) = uri2sessions.get_mut(&uri_from_queue) {
             debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, el.sessions);
 
             // берем u_counter
-            let counter_from_queue = if let Ok(c) = msg.get_first_integer(raw, "u_count") {
+            let counter_from_queue = if let Ok(c) = msg.get_first_integer("u_count") {
                 c as u64
             } else {
                 0

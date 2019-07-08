@@ -13,7 +13,7 @@ pub enum EStorage {
 }
 
 pub trait Storage {
-    fn set_binobj(&mut self, uri: &str, raw: &mut RawObj, indv: &mut Individual) -> bool;
+    fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool;
 }
 
 pub struct VStorage {
@@ -33,10 +33,10 @@ impl VStorage {
         }
     }
 
-    pub fn set_binobj(&mut self, uri: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
+    pub fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool {
         match &mut self.storage {
-            EStorage::TT(s) => s.set_binobj(uri, raw, indv),
-            EStorage::LMDB(s) => s.set_binobj(uri, raw, indv),
+            EStorage::TT(s) => s.set_binobj(uri, iraw),
+            EStorage::LMDB(s) => s.set_binobj(uri, iraw),
         }
     }
 }

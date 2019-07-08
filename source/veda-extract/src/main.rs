@@ -109,7 +109,7 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            prepare_queue_element(&mut raw, &mut queue_out);
+            prepare_queue_element(&mut Individual::new_raw(raw), &mut queue_out);
 
             queue_consumer.commit_and_next();
             total_prepared_count += 1;
@@ -122,54 +122,51 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
-    fn prepare_queue_element(raw: &mut RawObj, queue_out: &mut Queue) -> Result<(), i32> {
-        if let Ok(uri) = parse_raw(raw) {
-            let mut msg: Individual = Individual::new();
-            msg.uri = uri;
+    fn prepare_queue_element(msg: &mut Individual, queue_out: &mut Queue) -> Result<(), i32> {
+        if let Ok(uri) = parse_raw(msg) {
+            msg.obj.uri = uri;
 
-            let new_state = msg.get_first_binobj(raw, "new_state");
+            let new_state = msg.get_first_binobj("new_state");
             if let Err(e) = new_state {
                 return Err(-1);
             }
 
-            let cmd = msg.get_first_integer(raw, "cmd");
+            let cmd = msg.get_first_integer("cmd");
             if let Err(e) = cmd {
                 return Err(-1);
             }
 
-            let date = msg.get_first_integer(raw, "date");
+            let date = msg.get_first_integer("date");
             if let Err(e) = date {
                 return Err(-1);
             }
 
-            let mut raw = RawObj::new(new_state.unwrap_or_default());
-            if let Ok(uri) = parse_raw(&mut raw) {
-                let mut indv: Individual = Individual::new();
-                indv.parse_all(&mut raw);
-                indv.uri = uri.clone();
+            let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
+            if let Ok(uri) = parse_raw(&mut indv) {
+                indv.parse_all();
+                indv.obj.uri = uri.clone();
 
                 let mut raw: Vec<u8> = Vec::new();
                 to_msgpack(&indv, &mut raw);
 
                 let mut new_indv = Individual::new();
-                new_indv.uri = uri.clone();
-                new_indv.add_uri("uri", &uri, 0);
-                new_indv.add_binary("new_state", raw, 0);
-                new_indv.add_integer("cmd", cmd.unwrap_or_default(), 0);
-                new_indv.add_integer("date", date.unwrap_or_default(), 0);
-                new_indv.add_string("source_veda", "*", Lang::NONE, 0);
-                new_indv.add_string("target_veda", "*", Lang::NONE, 0);
+                new_indv.obj.uri = uri.clone();
+                new_indv.obj.add_uri("uri", &uri, 0);
+                new_indv.obj.add_binary("new_state", raw, 0);
+                new_indv.obj.add_integer("cmd", cmd.unwrap_or_default(), 0);
+                new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
+                new_indv.obj.add_string("source_veda", "*", Lang::NONE, 0);
+                new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
 
                 let mut raw1: Vec<u8> = Vec::new();
                 to_msgpack(&new_indv, &mut raw1);
 
                 // test
-                let mut raw_obj = RawObj::new(raw1);
-                if let Ok(uri) = parse_raw(&mut raw_obj) {
-                    let mut msg: Individual = Individual::new();
-                    msg.uri = uri;
+                let mut msg = Individual::new_raw(RawObj::new(raw1));
+                if let Ok(uri) = parse_raw(&mut msg) {
+                    msg.obj.uri = uri;
 
-                    msg.parse_all(&mut raw_obj);
+                    msg.parse_all();
 
                     info!("! {}", msg);
                 }

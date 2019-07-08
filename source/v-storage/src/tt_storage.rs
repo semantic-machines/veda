@@ -24,19 +24,19 @@ impl TTStorage {
 }
 
 impl Storage for TTStorage {
-    fn set_binobj(&mut self, uri: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
+    fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool {
         let key = (uri,);
 
         let resp = self.client.select(self.space_id, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 
         if let Ok(v) = self.rt.block_on(resp) {
-            raw.data = v[5..].to_vec();
+            iraw.raw.data = v[5..].to_vec();
 
-            if let Ok(uri) = parse_raw(raw) {
-                indv.uri = uri;
+            if let Ok(uri) = parse_raw(iraw) {
+                iraw.obj.uri = uri;
                 return true;
             } else {
-                error!("TTStorage: fail parse binobj, len={}, uri={}", raw.data.len(), uri);
+                error!("TTStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
             }
         }
 

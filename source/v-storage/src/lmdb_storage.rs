@@ -42,7 +42,7 @@ impl LMDBStorage {
 }
 
 impl Storage for LMDBStorage {
-    fn set_binobj(&mut self, uri: &str, raw: &mut RawObj, indv: &mut Individual) -> bool {
+    fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool {
         for _it in 0..2 {
             let mut is_need_reopen = false;
             match &self.db_env {
@@ -53,13 +53,13 @@ impl Storage for LMDBStorage {
 
                             match db.get::<Vec<u8>>(&uri) {
                                 Ok(val) => {
-                                    raw.data = val;
+                                    iraw.raw.data = val;
 
-                                    if let Ok(uri) = parse_raw(raw) {
-                                        indv.uri = uri;
+                                    if let Ok(uri) = parse_raw(iraw) {
+                                        iraw.obj.uri = uri;
                                         return true;
                                     } else {
-                                        error!("LMDBStorage: fail parse binobj, len={}, uri={}", raw.data.len(), uri);
+                                        error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
                                         return false;
                                     }
                                 }

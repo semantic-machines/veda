@@ -6,16 +6,15 @@ use actix_web::{web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
 use chrono::Local;
 use env_logger::Builder;
+use ini::Ini;
 use log::LevelFilter;
 use std::io::Write;
 use std::sync::mpsc;
 use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
+use v_onto::individual::*;
 use v_storage::storage::VStorage;
-
-use ini::Ini;
-use v_onto::individual::{Individual, RawObj};
 
 mod server;
 use crate::server::CMessage;
@@ -184,10 +183,9 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
             //info!("main:recv={:?}", msg);
 
             let mut indv = Individual::new();
-            let mut raw = RawObj::new_empty();
 
-            storage.set_binobj(&msg, &mut raw, &mut indv);
-            let out_counter = if let Ok(c) = indv.get_first_integer(&mut raw, "v-s:updateCounter") {
+            storage.set_binobj(&msg, &mut indv);
+            let out_counter = if let Ok(c) = indv.get_first_integer("v-s:updateCounter") {
                 c
             } else {
                 0

@@ -9,6 +9,11 @@ pub enum IndividualError {
     ParseError,
 }
 
+pub struct IndividualObj {
+    pub uri: String,
+    pub resources: HashMap<String, Vec<Resource>>,
+}
+
 pub struct RawObj {
     pub data: Vec<u8>,
     pub cur: u64,
@@ -40,159 +45,28 @@ impl RawObj {
 }
 
 pub struct Individual {
-    pub uri: String,
-    pub resources: HashMap<String, Vec<Resource>>,
-}
-
-impl fmt::Display for Individual {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "uri={}, \n {:#?}", self.uri, self.resources)
-    }
+    pub obj: IndividualObj,
+    pub raw: RawObj,
 }
 
 impl Individual {
-    pub fn new() -> Individual {
+    pub fn new_raw(raw: RawObj) -> Self {
         Individual {
-            uri: "".to_string(),
-            resources: HashMap::new(),
+            obj: IndividualObj::new(),
+            raw: raw,
         }
     }
 
-    pub fn parse_all(&mut self, raw: &mut RawObj) {
-        while raw.cur < raw.data.len() as u64 {
-            // next parse
-            if !parse_to_predicate("?", raw, self) {
-                break;
-            }
+    pub fn new() -> Self {
+        Individual {
+            obj: IndividualObj::new(),
+            raw: RawObj::new_empty(),
         }
     }
 
-    pub fn get_predicates(&self) -> Vec<String> {
-        self.resources.iter().map(|(key, _)| key.clone()).collect()
-    }
-
-    pub fn get_first_literal(&mut self, raw: &mut RawObj, predicate: &str) -> Result<String, IndividualError> {
+    pub fn any_exists(&mut self, predicate: &str, values: &[&str]) -> bool {
         for _ in 0..2 {
-            match self.resources.get(predicate) {
-                Some(v) => match &v[0].value {
-                    Value::Str(s, _l) => {
-                        return Ok(s.to_string());
-                    }
-                    _ => {
-                        return Err(IndividualError::ParseError);
-                    }
-                },
-                None => {
-                    if raw.cur < raw.data.len() as u64 {
-                        // next parse
-                        if !parse_to_predicate(predicate, raw, self) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        Err(IndividualError::None)
-    }
-
-    pub fn get_first_binobj(&mut self, raw: &mut RawObj, predicate: &str) -> Result<Vec<u8>, IndividualError> {
-        for _ in 0..2 {
-            match self.resources.get(predicate) {
-                Some(v) => match &v[0].value {
-                    Value::Binary(s) => {
-                        return Ok(s.clone());
-                    }
-                    _ => {
-                        return Err(IndividualError::ParseError);
-                    }
-                },
-                None => {
-                    if raw.cur < raw.data.len() as u64 {
-                        // next parse
-                        if !parse_to_predicate(predicate, raw, self) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        Err(IndividualError::None)
-    }
-
-    pub fn get_first_integer(&mut self, raw: &mut RawObj, predicate: &str) -> Result<i64, IndividualError> {
-        for _ in 0..2 {
-            match self.resources.get(predicate) {
-                Some(v) => {
-                    if let Value::Int(i) = &v[0].value {
-                        return Ok(*i);
-                    }
-                }
-                None => {
-                    if raw.cur < raw.data.len() as u64 {
-                        // next parse
-                        if !parse_to_predicate(predicate, raw, self) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        Err(IndividualError::None)
-    }
-
-    pub fn get_first_number(&mut self, raw: &mut RawObj, predicate: &str) -> Result<(i64, i64), IndividualError> {
-        for _ in 0..2 {
-            match self.resources.get(predicate) {
-                Some(v) => {
-                    if let Value::Num(m, e) = &v[0].value {
-                        return Ok((*m, *e));
-                    }
-                }
-                None => {
-                    if raw.cur < raw.data.len() as u64 {
-                        // next parse
-                        if !parse_to_predicate(predicate, raw, self) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        Err(IndividualError::None)
-    }
-
-    pub fn get_first_float(&mut self, raw: &mut RawObj, predicate: &str) -> Result<f64, IndividualError> {
-        for _ in 0..2 {
-            match self.resources.get(predicate) {
-                Some(v) => {
-                    return Ok(v[0].get_float());
-                }
-                None => {
-                    if raw.cur < raw.data.len() as u64 {
-                        // next parse
-                        if !parse_to_predicate(predicate, raw, self) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-            }
-        }
-        Err(IndividualError::None)
-    }
-
-    pub fn any_exists(&mut self, raw: &mut RawObj, predicate: &str, values: &[&str]) -> bool {
-        for _ in 0..2 {
-            match self.resources.get(predicate) {
+            match self.obj.resources.get(predicate) {
                 Some(v) => {
                     for el in v {
                         if let Value::Str(s, _l) = &el.value {
@@ -205,9 +79,9 @@ impl Individual {
                     }
                 }
                 None => {
-                    if raw.cur < raw.data.len() as u64 {
+                    if self.raw.cur < self.raw.data.len() as u64 {
                         // next parse
-                        if !parse_to_predicate(predicate, raw, self) {
+                        if !parse_to_predicate(predicate, self) {
                             break;
                         }
                     } else {
@@ -217,6 +91,153 @@ impl Individual {
             }
         }
         false
+    }
+
+    pub fn get_first_literal(&mut self, predicate: &str) -> Result<String, IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => match &v[0].value {
+                    Value::Str(s, _l) => {
+                        return Ok(s.to_string());
+                    }
+                    _ => {
+                        return Err(IndividualError::ParseError);
+                    }
+                },
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
+    pub fn get_first_binobj(&mut self, predicate: &str) -> Result<Vec<u8>, IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => match &v[0].value {
+                    Value::Binary(s) => {
+                        return Ok(s.clone());
+                    }
+                    _ => {
+                        return Err(IndividualError::ParseError);
+                    }
+                },
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
+    pub fn get_first_integer(&mut self, predicate: &str) -> Result<i64, IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    if let Value::Int(i) = &v[0].value {
+                        return Ok(*i);
+                    }
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
+    pub fn get_first_number(&mut self, predicate: &str) -> Result<(i64, i64), IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    if let Value::Num(m, e) = &v[0].value {
+                        return Ok((*m, *e));
+                    }
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
+    pub fn get_first_float(&mut self, predicate: &str) -> Result<f64, IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    return Ok(v[0].get_float());
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
+    pub fn parse_all(&mut self) {
+        while self.raw.cur < self.raw.data.len() as u64 {
+            // next parse
+            if !parse_to_predicate("?", self) {
+                break;
+            }
+        }
+    }
+}
+
+impl fmt::Display for Individual {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "uri={}, \n {:#?}", self.obj.uri, self.obj.resources)
+    }
+}
+
+impl IndividualObj {
+    pub fn new() -> Self {
+        IndividualObj {
+            uri: "".to_string(),
+            resources: HashMap::new(),
+        }
+    }
+
+    pub fn get_predicates(&self) -> Vec<String> {
+        self.resources.iter().map(|(key, _)| key.clone()).collect()
     }
 
     pub fn add_bool(&mut self, predicate: &str, b: bool, order: u32) {

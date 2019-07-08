@@ -110,7 +110,7 @@ fn main() -> Result<(), i32> {
                 }
             }
 
-            prepare_queue_element(&mut raw, &mut geo_index)?;
+            prepare_queue_element(&mut Individual::new_raw(raw), &mut geo_index)?;
 
             queue_consumer.commit_and_next();
             total_prepared_count += 1;
@@ -124,25 +124,23 @@ fn main() -> Result<(), i32> {
     }
 }
 
-fn prepare_queue_element(raw: &mut RawObj, geo_index: &mut Connection) -> Result<(), i32> {
-    if let Ok(uri) = parse_raw(raw) {
-        let mut msg: Individual = Individual::new();
-        msg.uri = uri;
+fn prepare_queue_element(msg: &mut Individual, geo_index: &mut Connection) -> Result<(), i32> {
+    if let Ok(uri) = parse_raw(msg) {
+        msg.obj.uri = uri;
 
-        let new_state = msg.get_first_binobj(raw, "new_state");
+        let new_state = msg.get_first_binobj("new_state");
         if new_state.is_err() {
             return Err(-1);
         }
 
-        let mut raw = RawObj::new(new_state.unwrap_or_default());
-        let mut indv: Individual = Individual::new();
-        if let Ok(uri) = parse_raw(&mut raw) {
-            indv.uri = uri;
+        let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
+        if let Ok(uri) = parse_raw(&mut indv) {
+            indv.obj.uri = uri;
             let mut is_found_spatial = false;
             //let is_found_spatial = indv.any_exists(&mut raw, "rdf:type", &spatial_types);
 
-            let lnt = indv.get_first_float(&mut raw, LONGITUDE_PREDICATE).unwrap_or_default();
-            let ltt = indv.get_first_float(&mut raw, LATITUDE_PREDICATE).unwrap_or_default();
+            let lnt = indv.get_first_float(LONGITUDE_PREDICATE).unwrap_or_default();
+            let ltt = indv.get_first_float(LATITUDE_PREDICATE).unwrap_or_default();
 
             if lnt > 0.0 && ltt > 0.0 {
                 is_found_spatial = true;
@@ -151,17 +149,17 @@ fn prepare_queue_element(raw: &mut RawObj, geo_index: &mut Connection) -> Result
             if is_found_spatial {
                 info!("found spatial");
 
-                let label = indv.get_first_literal(&mut raw, "rdfs:label");
+                let label = indv.get_first_literal("rdfs:label");
                 if label.is_err() {
-                    error! ("rdfs:label not found, skip");
+                    error!("rdfs:label not found, skip");
                 } else {
-                    match geo_index.geo_add("my_gis", (Coord::lon_lat(lnt, ltt), &indv.uri)) {
+                    match geo_index.geo_add("my_gis", (Coord::lon_lat(lnt, ltt), &indv.obj.uri)) {
                         Ok(n) => {
                             let nn: i32 = n;
-                            info!("index {} {} {}", indv.uri, label.unwrap_or_default(), nn);
+                            info!("index {} {} {}", indv.obj.uri, label.unwrap_or_default(), nn);
                         }
                         Err(e) => {
-                            error!("fail index {} {} {:?}", indv.uri, label.unwrap_or_default(), e);
+                            error!("fail index {} {} {:?}", indv.obj.uri, label.unwrap_or_default(), e);
                         }
                     }
                 }
