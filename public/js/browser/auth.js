@@ -91,6 +91,18 @@ veda.Module(function (veda) { "use strict";
     }
   }
 
+  $("#submit-new-password", loginForm).click( function (e) {
+    e.preventDefault();
+    var login = $("#login", loginForm).val(),
+      password = $("#new-password", loginForm).val(),
+      secret = $("#secret", loginForm).val(),
+      hash = Sha256.hash(password);
+
+    veda.login(login, hash, secret)
+      .then(handleLoginSuccess)
+      .catch(handleLoginError);
+  });
+
   var forgotPasswordPressed;
   $("#forgot-password, #request-secret", loginForm).click( function (e) {
     e.preventDefault();
