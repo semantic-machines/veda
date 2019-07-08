@@ -2604,33 +2604,68 @@ v-ui:TreeTemplate
   }
 
   function getIn(root) {
-    return new Promise(function (resolve, reject) {
-      if (!individual.treeConfig || !individual.treeConfig.inProperty) {
-        resolve([]);
-      }
-      var q = individual.treeConfig.inProperty.map(function (property) {
-          return "'" + property.id + "'=='" + root.id + "'";
-        }).join(" || ");
-      if ( individual.treeConfig.allowedClass ) {
-        var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
-          return "'rdf:type'=='" + allowedClass.id + "'";
-        }).join(" || ");
-        q = "(" + q + ") && (" + allowed + ")";
-      }
-      var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+    if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+      return Promise.resolve([]);
+    }
+    var q = individual.treeConfig.inProperty.map(function (property) {
+        return "'" + property.id + "'=='" + root.id + "'";
+      }).join(" || ");
+    if ( individual.treeConfig.allowedClass ) {
+      var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
+        return "'rdf:type'=='" + allowedClass.id + "'";
+      }).join(" || ");
+      q = "(" + q + ") && (" + allowed + ")";
+    }
+    var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+    var unique;
+    return veda.Backend.query({
+      ticket: veda.ticket,
+      query: q,
+      sort: sort,
+      async: true
+    }).then(function(queryResult) {
+      unique = veda.Util.unique( queryResult.result );
       if (withDeleted) {
-        q = "(" + q + ") || (" + q + " && 'v-s:deleted'== true )";
+        q = q + " && 'v-s:deleted'== true )";
+        return veda.Backend.query({
+          ticket: veda.ticket,
+          query: q,
+          sort: sort,
+          async: true
+        }).then(function(qResult) {
+          return unique.concat(qResult.result);
+        });
+      } else {
+        return unique;
       }
-      veda.Backend.query({
-        ticket: veda.ticket,
-        query: q,
-        sort: sort,
-        async: true
-      }).then(function (queryResult) {
-        var unique = veda.Util.unique( queryResult.result );
-        resolve(unique);
-      });
     });
+    // return new Promise(function (resolve, reject) {
+    //   if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+    //     resolve([]);
+    //   }
+    //   var q = individual.treeConfig.inProperty.map(function (property) {
+    //       return "'" + property.id + "'=='" + root.id + "'";
+    //     }).join(" || ");
+    //   if ( individual.treeConfig.allowedClass ) {
+    //     var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
+    //       return "'rdf:type'=='" + allowedClass.id + "'";
+    //     }).join(" || ");
+    //     q = "(" + q + ") && (" + allowed + ")";
+    //   }
+    //   var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+    //   if (withDeleted) {
+    //     q = "(" + q + ") || (" + q + " && 'v-s:deleted'== true )";
+    //   }
+    //   veda.Backend.query({
+    //     ticket: veda.ticket,
+    //     query: q,
+    //     sort: sort,
+    //     async: true
+    //   }).then(function (queryResult) {
+    //     var unique = veda.Util.unique( queryResult.result );
+    //     resolve(unique);
+    //   });
+    // });
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
