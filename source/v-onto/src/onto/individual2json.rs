@@ -3,7 +3,7 @@ use crate::individual::*;
 use crate::resource::{Resource, Value};
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 
-impl Individual {
+impl IndividualObj {
     pub fn as_json_str(&mut self) -> String {
         if let Ok(b) = serde_json::to_value(&self) {
             return b.to_string();
@@ -13,7 +13,7 @@ impl Individual {
     }
 }
 
-impl Serialize for Individual {
+impl Serialize for IndividualObj {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,

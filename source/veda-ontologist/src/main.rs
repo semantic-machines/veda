@@ -10,7 +10,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::{thread, time};
-use v_onto::individual::{Individual, RawObj};
+use v_onto::individual::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
 use v_queue::record::*;
@@ -127,7 +127,6 @@ fn main() -> std::io::Result<()> {
             }
 
             let mut raw = RawObj::new(vec![0; (queue_consumer.header.msg_length) as usize]);
-            //let mut msg = Individual::new(vec![0; (queue_consumer.header.msg_length) as usize]);
 
             // заголовок взят успешно, занесем содержимое сообщения в структуру Individual
             if let Err(e) = queue_consumer.pop_body(&mut raw.data) {
@@ -140,7 +139,9 @@ fn main() -> std::io::Result<()> {
             }
 
             if !is_found_onto_changes {
-                is_found_onto_changes = is_changes(&mut raw, &onto_types);
+                let mut indv = Individual::new();
+                indv.raw = raw;
+                is_found_onto_changes = is_changes(&mut indv, &onto_types);
             }
 
             queue_consumer.commit_and_next();
@@ -162,15 +163,14 @@ fn main() -> std::io::Result<()> {
                 if res.result_code == 200 && res.count > 0 {
                     buf.push('[');
                     for el in &res.result {
-                        let mut raw: RawObj = RawObj::new_empty();
-                        let mut indv: Individual = Individual::new();
-                        if storage.set_binobj(&el, &mut raw, &mut indv) {
+                        let mut rindv: Individual = Individual::new();
+                        if storage.set_binobj(&el, &mut rindv) {
                             if buf.len() > 1 {
                                 buf.push(',');
                             }
-                            indv.parse_all(&mut raw);
+                            rindv.parse_all();
 
-                            buf.push_str(&indv.as_json_str());
+                            buf.push_str(&rindv.obj.as_json_str());
                         }
                     }
                     buf.push(']');
@@ -188,16 +188,17 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn is_changes(raw: &mut RawObj, onto_types: &[&str]) -> bool {
+fn is_changes(iraw: &mut Individual, onto_types: &[&str]) -> bool {
     let mut msg: Individual = Individual::new();
-    if let Ok(uri) = parse_raw(raw) {
-        msg.uri = uri;
-        if let Ok(new_state) = msg.get_first_binobj(raw, "new_state") {
-            let mut raw = RawObj::new(new_state);
-            let mut indv: Individual = Individual::new();
-            if let Ok(uri) = parse_raw(&mut raw) {
-                indv.uri = uri;
-                return indv.any_exists(&mut raw, "rdf:type", &onto_types);
+    if let Ok(uri) = parse_raw(iraw) {
+        msg.obj.uri = uri;
+        if let Ok(new_state) = msg.get_first_binobj("new_state") {
+            let mut l2: Individual = Individual::new();
+            l2.raw = RawObj::new(new_state);
+
+            if let Ok(uri) = parse_raw(&mut l2) {
+                l2.obj.uri = uri;
+                return iraw.any_exists("rdf:type", &onto_types);
             }
         }
     }
