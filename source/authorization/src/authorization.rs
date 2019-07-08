@@ -1,5 +1,4 @@
 /// This module gives function to check access of user to individual
-
 use core::fmt;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -679,6 +678,48 @@ fn access_to_pretty_string(src: u8) -> String {
     res
 }
 
+fn check_for_reload() -> std::io::Result<bool> {
+    use std::fs::File;
+    let f = File::open(MODULE_INFO_PATH)?;
+
+    let metadata = f.metadata()?;
+
+    if let Ok(new_time) = metadata.modified() {
+        let prev_time = *LAST_MODIFIED_INFO.lock().unwrap().get_mut();
+
+        if new_time != prev_time {
+            LAST_MODIFIED_INFO.lock().unwrap().replace(new_time);
+            //eprintln!("LAST_MODIFIED_INFO={:?}", new_time);
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
+}
+
+fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
+    let res = if azc.is_need_exclusive_az && azc.is_found_exclusive_az {
+        true
+    } else {
+        !azc.is_need_exclusive_az
+    };
+
+    if trace.is_info && res {
+        print_to_trace_info(
+            trace,
+            format!(
+                "result: uri={}, user={}, request={}, answer={}\n\n",
+                azc.uri,
+                azc.user_uri,
+                access_to_pretty_string(azc.request_access),
+                access_to_pretty_string(azc.calc_right_res)
+            ),
+        );
+    }
+
+    res
+}
+
 pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
     let s_groups = &mut HashMap::new();
 
@@ -696,48 +737,6 @@ pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_r
         subject_groups: &mut HashMap::new(),
         checked_groups: &mut HashMap::new(),
     };
-
-    fn check_for_reload() -> std::io::Result<bool> {
-        use std::fs::File;
-        let f = File::open(MODULE_INFO_PATH)?;
-
-        let metadata = f.metadata()?;
-
-        if let Ok(new_time) = metadata.modified() {
-            let prev_time = *LAST_MODIFIED_INFO.lock().unwrap().get_mut();
-
-            if new_time != prev_time {
-                LAST_MODIFIED_INFO.lock().unwrap().replace(new_time);
-                //eprintln!("LAST_MODIFIED_INFO={:?}", new_time);
-                return Ok(true);
-            }
-        }
-
-        Ok(false)
-    }
-
-    fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
-        let res = if azc.is_need_exclusive_az && azc.is_found_exclusive_az {
-            true
-        } else {
-            !azc.is_need_exclusive_az
-        };
-
-        if trace.is_info && res {
-            print_to_trace_info(
-                trace,
-                format!(
-                    "result: uri={}, user={}, request={}, answer={}\n\n",
-                    azc.uri,
-                    azc.user_uri,
-                    access_to_pretty_string(azc.request_access),
-                    access_to_pretty_string(azc.calc_right_res)
-                ),
-            );
-        }
-
-        res
-    }
 
     if _is_check_for_reload {
         if let Ok(true) = check_for_reload() {
