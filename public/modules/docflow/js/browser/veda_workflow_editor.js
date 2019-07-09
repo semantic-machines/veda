@@ -948,7 +948,7 @@ jsWorkflow.ready = jsPlumb.ready;
           });
         });
       };
-
+      var $contextMenu;
       instance.createNetView(net).then(function (net) {
         if (net['currentScale']==1.0) {
           instance.optimizeView();
@@ -963,7 +963,7 @@ jsWorkflow.ready = jsPlumb.ready;
         $('#'+veda.Util.escape4$(veda["workflow"+elementId+"-selectedElement"]), template).trigger("click");
 
         /* CONTEXT MENU [BEGIN] */
-        var $contextMenu = $("#workflow-context-menu", template);
+        $contextMenu = $("#workflow-context-menu", template);
         /* CONTEXT MENU [END]*/
 
         /* NET MENU [BEGIN] */
