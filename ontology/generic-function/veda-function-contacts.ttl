@@ -350,7 +350,8 @@ v-s:ContactsTemplate
     } else if (obj.hasValue('rdf:type', 'v-s:Organization')) {
       tmpl = 'v-s:OrganizationTemplate';
     }
-    veda.Util.showModal(obj, tmpl);
+    riot.route( ["#", obj.id, "#main", tmpl].join("/") );
+    //veda.Util.showModal(obj, tmpl);
     return false;
   });
 
