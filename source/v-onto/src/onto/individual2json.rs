@@ -4,7 +4,7 @@ use crate::resource::{Resource, Value};
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 
 impl IndividualObj {
-    pub fn as_json_str(&mut self) -> String {
+    pub fn as_json_str(&self) -> String {
         if let Ok(b) = serde_json::to_value(&self) {
             return b.to_string();
         }

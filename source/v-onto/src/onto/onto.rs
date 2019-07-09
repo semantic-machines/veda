@@ -18,7 +18,11 @@ impl Onto {
         };
 
         for el in src.iter_mut() {
-            let vtype = el.get_first_literal("rdf:type");
+            if let Ok(vtype) = el.get_first_literal("rdf:type") {
+                if vtype == "owl:Class" || vtype == "rdfs:Class" {
+                    let _subclasses = el.get_literals("rdfs:subClassOf");
+                }
+            }
         }
 
         onto
