@@ -158,26 +158,34 @@ fn main() -> std::io::Result<()> {
 
             if let Ok(mut file) = File::create(ontology_file_path) {
                 let res = ft_client.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
-                let mut buf = String::new();
-
                 if res.result_code == 200 && res.count > 0 {
-                    buf.push('[');
+                    let mut indvs = Vec::new();
+
                     for el in &res.result {
                         let mut rindv: Individual = Individual::new();
                         if storage.set_binobj(&el, &mut rindv) {
-                            if buf.len() > 1 {
-                                buf.push(',');
-                            }
                             rindv.parse_all();
-
-                            buf.push_str(&rindv.obj.as_json_str());
+                            indvs.push(rindv);
                         }
+                    }
+
+                    let mut buf = String::new();
+
+                    buf.push('[');
+                    for el in indvs.iter() {
+                        if buf.len() > 1 {
+                            buf.push(',');
+                        }
+
+                        buf.push_str(&mut el.obj.as_json_str());
                     }
                     buf.push(']');
 
                     file.write_all(buf.as_bytes())?;
                     info!("count stored {}", res.count);
                     is_found_onto_changes = false;
+                } else {
+                    error!("search return empty set, query: {}", &query);
                 }
             } else {
                 error!("fail create file {}", ontology_file_path);
