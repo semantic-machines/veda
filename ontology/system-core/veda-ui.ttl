@@ -2130,26 +2130,6 @@ v-ui:DocumentEventTemplate
     $("div[rel='v-s:processJournal']", template).toggle();
     $(this).children(":first").toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
   });
-  if (individual.hasValue("rdf:type", "v-s:ProcessStarted")) {
-    $(".start-process", template).show();
-    $(".non-start-process", template).hide();
-    var process = individual['v-wf:onProcess'][0];
-
-    if ( (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false))
-        && (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false)) ) {
-      var actor = individual['v-s:actor'][0];
-      if (actor) {
-        if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
-          $(".stop-process", template).show();
-        }
-      }
-
-    }
-    if (process.hasValue("v-wf:isStopped", true)) {
-      $(".process-id", template).addClass('text-danger');
-      $(".process-stopped", template).show();
-    }
-  }
   //# sourceURL=v-ui:DocumentEventTemplate_pre
 </script>
 <div class="journal-record">
@@ -2206,26 +2186,37 @@ v-ui:DocumentEventTemplate
 </div>
 <script>
   if ( individual.hasValue("rdf:type", "v-s:ProcessStarted") ) {
+    $(".start-process", template).show();
+    $(".non-start-process", template).hide();
     var process = individual['v-wf:onProcess'][0];
     process.load().then(function (process) {
       if (
         (!process.hasValue("v-wf:isStopped") || process.hasValue("v-wf:isStopped", false)) &&
         (!process.hasValue("v-wf:isCompleted") || process.hasValue("v-wf:isCompleted", false))
       ) {
+        var actor = individual['v-s:actor'][0];
+        if (actor) {
+          if (veda.appointment.id === actor.id || veda.appointment.id === 'cfg:AdministratorAppointment') {
+            $(".stop-process", template).show();
+          }
+        }
         $(".stop-process", template).on("click", function (e) {
+          var self = this;
           e.preventDefault();
           var warn = new veda.IndividualModel("v-s:AreYouSure");
           warn.load().then(function (warn) {
             warn = warn["rdfs:label"].join(" ");
             if ( confirm(warn) ) {
               process['v-wf:isStopped'] = [ true ];
-              process.save();
-              $(this).remove();
+              $(self).remove();
+              process.save();              
             }
           });
         });
       }
       if (process.hasValue("v-wf:isStopped", true)) {
+        $(".process-id", template).addClass('text-danger');
+        $(".process-stopped", template).show();
         $(".start-process > #exp", template).trigger("click");
       }
     });
@@ -2639,33 +2630,6 @@ v-ui:TreeTemplate
         return unique;
       }
     });
-    // return new Promise(function (resolve, reject) {
-    //   if (!individual.treeConfig || !individual.treeConfig.inProperty) {
-    //     resolve([]);
-    //   }
-    //   var q = individual.treeConfig.inProperty.map(function (property) {
-    //       return "'" + property.id + "'=='" + root.id + "'";
-    //     }).join(" || ");
-    //   if ( individual.treeConfig.allowedClass ) {
-    //     var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
-    //       return "'rdf:type'=='" + allowedClass.id + "'";
-    //     }).join(" || ");
-    //     q = "(" + q + ") && (" + allowed + ")";
-    //   }
-    //   var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
-    //   if (withDeleted) {
-    //     q = "(" + q + ") || (" + q + " && 'v-s:deleted'== true )";
-    //   }
-    //   veda.Backend.query({
-    //     ticket: veda.ticket,
-    //     query: q,
-    //     sort: sort,
-    //     async: true
-    //   }).then(function (queryResult) {
-    //     var unique = veda.Util.unique( queryResult.result );
-    //     resolve(unique);
-    //   });
-    // });
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
