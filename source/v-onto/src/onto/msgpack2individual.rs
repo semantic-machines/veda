@@ -52,14 +52,18 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
     let mut cur = Cursor::new(iraw.raw.data.as_slice());
     cur.set_position(iraw.raw.cur);
 
-    for _ in iraw.raw.cur_predicates..iraw.raw.len_predicates {
+    for i in iraw.raw.cur_predicates..iraw.raw.len_predicates {
         let predicate = match read_string_from_msgpack(&mut cur) {
             Ok(p) => p,
             Err(e) => {
-                error!("read_string_from_msgpack, err={}", e);
+                if e == -1 {
+                    error!("read_string_from_msgpack, err={}", e);
+                }
                 return false;
             }
         };
+
+        iraw.raw.cur_predicates = i;
 
         if predicate == expect_predicate {
             is_found = true;
@@ -294,7 +298,7 @@ fn read_string_from_msgpack(cur: &mut Cursor<&[u8]>) -> Result<String, i64> {
             }
         }
     } else {
-        return Err(-1);
+        return Err(-2);
     }
 
     let mut out = vec![0u8; size as usize];
