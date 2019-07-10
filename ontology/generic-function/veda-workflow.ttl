@@ -1529,6 +1529,7 @@ v-wf:VariableTemplate
   v-ui:forClass v-wf:Variable ;
   v-ui:template """
 <span>
+  <a href="#" class="zoomIn glyphicon glyphicon-zoom-in margin-sm-h"></a>
   <strong><span property="v-wf:variableName"></span> =</strong>
   <ul id="values"></ul>
   <div id="variableScope">
@@ -1548,6 +1549,10 @@ v-wf:VariableTemplate
     }
     valHolder.append(el);
   });
+  $(".zoomIn.glyphicon-zoom-in", template).click(function(e){
+    e.preventDefault();
+    riot.route( ["#", individual.id, "/v-ui:ttl"].join("/") );
+  })
   //# sourceURL=v-wf:VariableTemplate
 </script>
   """ ;
