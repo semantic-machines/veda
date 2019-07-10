@@ -13,7 +13,7 @@ actix = "0.8.3"
 actix-rt = "0.2.2"
 actix-web = "1.0.2"
 actix-web-actors = "1.0.0"
-actix-redis = "0.5.1"
+actix-redis = { git = "https://github.com/actix/actix-redis.git", rev = "38d4bdb" }
 futures = "0.1.23"
 chrono = "0.4"
 redis-async = "0.4.0"
