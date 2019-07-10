@@ -40,6 +40,8 @@ fn main() -> std::io::Result<()> {
         "".to_owned()
     };
 
+    let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+
     info!("tarantool addr={:?}", &tarantool_addr);
 
     let mut storage = if !tarantool_addr.is_empty() {
@@ -75,7 +77,7 @@ fn main() -> std::io::Result<()> {
         query.push_str("'");
     }
 
-    let mut ft_client = FTClient::new("tcp://127.0.0.1:23100".to_owned());
+    let mut ft_client = FTClient::new(ft_query_service_url.to_owned());
 
     while !ft_client.connect() {
         thread::sleep(time::Duration::from_millis(3000));
