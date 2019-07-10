@@ -1,6 +1,6 @@
 use crate::datatype::{DataType, Lang};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Value {
     Int(i64),
     Str(String, Lang),
@@ -9,7 +9,7 @@ pub enum Value {
     Binary(Vec<u8>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Resource {
     pub rtype: DataType,
     pub order: u16,

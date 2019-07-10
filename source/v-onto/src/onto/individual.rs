@@ -92,28 +92,28 @@ impl Individual {
         }
         false
     }
-
-    pub fn get_resources(&mut self, predicate: &str) -> Result<Vec<Resource>, IndividualError> {
-        for _ in 0..2 {
-            match self.obj.resources.get(predicate) {
-                Some(v) => {
-                    return Ok(v.to_vec());
-                }
-                None => {
-                    if self.raw.cur < self.raw.data.len() as u64 {
-                        // next parse
-                        if !parse_to_predicate(predicate, self) {
+    /*
+        pub fn get_resources(&mut self, predicate: &str) -> Result<Vec<Resource>, IndividualError> {
+            for _ in 0..2 {
+                match self.obj.resources.get(predicate) {
+                    Some(v) => {
+                        return Ok(v.to_vec());
+                    }
+                    None => {
+                        if self.raw.cur < self.raw.data.len() as u64 {
+                            // next parse
+                            if !parse_to_predicate(predicate, self) {
+                                break;
+                            }
+                        } else {
                             break;
                         }
-                    } else {
-                        break;
                     }
                 }
             }
+            Err(IndividualError::None)
         }
-        Err(IndividualError::None)
-    }
-
+    */
     pub fn get_literals(&mut self, predicate: &str) -> Result<Vec<String>, IndividualError> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
