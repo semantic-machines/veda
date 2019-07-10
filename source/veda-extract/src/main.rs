@@ -9,9 +9,11 @@ use ini::Ini;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
+use v_module::onto::*;
 use v_onto::datatype::*;
 use v_onto::individual::*;
 use v_onto::individual2msgpack::*;
+use v_onto::onto::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
 use v_queue::queue::*;
@@ -34,6 +36,7 @@ fn main() -> std::io::Result<()> {
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
+    let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
 
     let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
         p.to_owned()
@@ -51,11 +54,19 @@ fn main() -> std::io::Result<()> {
         storage = VStorage::new_lmdb("./data/lmdb-individuals/");
     }
 
-    let mut ft_client = FTClient::new("tcp://127.0.0.1:23000".to_owned());
+    let mut ft_client = FTClient::new(ft_query_service_url);
 
     while ft_client.connect() != true {
         thread::sleep(time::Duration::from_millis(3000));
     }
+
+    let mut onto = Onto::new();
+
+    info!("load onto start");
+    load_onto(&mut ft_client, &mut storage, &mut onto);
+    info!("load onto stop");
+
+    //info!("onto: {}", onto);
 
     let mut queue_out = Queue::new("./data/out", "extract", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
 
