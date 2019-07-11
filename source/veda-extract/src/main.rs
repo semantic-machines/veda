@@ -18,7 +18,7 @@ use v_onto::parser::*;
 use v_queue::consumer::*;
 use v_queue::queue::*;
 use v_queue::record::*;
-use v_search::{FTClient, FTQuery};
+use v_search::*;
 use v_storage::storage::VStorage;
 
 fn main() -> std::io::Result<()> {
@@ -65,6 +65,8 @@ fn main() -> std::io::Result<()> {
     info!("load onto start");
     load_onto(&mut ft_client, &mut storage, &mut onto);
     info!("load onto stop");
+
+    //info! ("{}", onto.is_some_entered("v-s:Email", &["v-s:Thing".to_owned()]));
 
     //info!("onto: {}", onto);
 
@@ -120,7 +122,9 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            prepare_queue_element(&mut Individual::new_raw(raw), &mut queue_out);
+            if let Err(e) = prepare_queue_element(&mut Individual::new_raw(raw), &mut queue_out) {
+                error!("fail prepare queue element, err={}", e);
+            }
 
             queue_consumer.commit_and_next();
             total_prepared_count += 1;
@@ -138,17 +142,17 @@ fn main() -> std::io::Result<()> {
             msg.obj.uri = uri;
 
             let new_state = msg.get_first_binobj("new_state");
-            if let Err(e) = new_state {
+            if new_state.is_err() {
                 return Err(-1);
             }
 
             let cmd = msg.get_first_integer("cmd");
-            if let Err(e) = cmd {
+            if cmd.is_err() {
                 return Err(-1);
             }
 
             let date = msg.get_first_integer("date");
-            if let Err(e) = date {
+            if date.is_err() {
                 return Err(-1);
             }
 
@@ -158,32 +162,37 @@ fn main() -> std::io::Result<()> {
                 indv.obj.uri = uri.clone();
 
                 let mut raw: Vec<u8> = Vec::new();
-                to_msgpack(&indv, &mut raw);
+                if to_msgpack(&indv, &mut raw).is_ok() {
+                    let mut new_indv = Individual::new();
+                    new_indv.obj.uri = uri.clone();
+                    new_indv.obj.add_uri("uri", &uri, 0);
+                    new_indv.obj.add_binary("new_state", raw, 0);
+                    new_indv.obj.add_integer("cmd", cmd.unwrap_or_default(), 0);
+                    new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
+                    new_indv.obj.add_string("source_veda", "*", Lang::NONE, 0);
+                    new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
 
-                let mut new_indv = Individual::new();
-                new_indv.obj.uri = uri.clone();
-                new_indv.obj.add_uri("uri", &uri, 0);
-                new_indv.obj.add_binary("new_state", raw, 0);
-                new_indv.obj.add_integer("cmd", cmd.unwrap_or_default(), 0);
-                new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
-                new_indv.obj.add_string("source_veda", "*", Lang::NONE, 0);
-                new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
+                    let mut raw1: Vec<u8> = Vec::new();
+                    if to_msgpack(&new_indv, &mut raw1).is_ok() {
 
-                let mut raw1: Vec<u8> = Vec::new();
-                to_msgpack(&new_indv, &mut raw1);
+                        /*
+                        // test
+                        let mut msg = Individual::new_raw(RawObj::new(raw1));
+                        if let Ok(uri) = parse_raw(&mut msg) {
+                            msg.obj.uri = uri;
 
-                // test
-                let mut msg = Individual::new_raw(RawObj::new(raw1));
-                if let Ok(uri) = parse_raw(&mut msg) {
-                    msg.obj.uri = uri;
+                            msg.parse_all();
 
-                    msg.parse_all();
-
-                    info!("! {}", msg);
+                            info!("! {}", msg);
+                        }
+                        */
+                    }
+                    if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
+                        error!("fail push into queue, err={:?}", e);
+                        return Err(-1);
+                    }
                 }
-
                 // info! ("{:?}", raw);
-                // queue_out.push(&raw1, MsgType::Object);
             }
         }
         Ok(())
