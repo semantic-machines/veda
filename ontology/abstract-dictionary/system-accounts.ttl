@@ -286,6 +286,13 @@ cfg:Permission_ntlmu_r_tau
   v-s:permissionSubject cfg:TrustedAuthenticationUserGroup ;
 .
 
+cfg:Permission_admin_r_tau
+  rdf:type v-s:PermissionStatement ;
+  v-s:canRead "true"^^xsd:boolean ;
+  v-s:permissionObject cfg:Administrator ;
+  v-s:permissionSubject cfg:TrustedAuthenticationUserGroup ;
+.
+
 cfg:Permission_VedaSystem_allRead
   rdf:type v-s:PermissionStatement ;
   v-s:canRead "true"^^xsd:boolean ;
@@ -352,6 +359,7 @@ cfg:Membership_tau
   rdf:type v-s:Membership ;
   v-s:author cfg:VedaSystem ;
   v-s:resource cfg:VedaNTLMFilter ;
+  v-s:resource cfg:Administrator ;
   v-s:memberOf cfg:TrustedAuthenticationUserGroup ;
 .
 
