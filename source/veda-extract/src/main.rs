@@ -4,12 +4,11 @@ extern crate env_logger;
 
 use chrono::Local;
 use env_logger::Builder;
-//use ini::ini::Error;
-use ini::Ini;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
 use v_module::onto::*;
+use v_module::module::*;
 use v_onto::datatype::*;
 use v_onto::individual::*;
 use v_onto::individual2msgpack::*;
@@ -18,8 +17,6 @@ use v_onto::parser::*;
 use v_queue::consumer::*;
 use v_queue::queue::*;
 use v_queue::record::*;
-use v_search::*;
-use v_storage::storage::VStorage;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -33,37 +30,12 @@ fn main() -> std::io::Result<()> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-
-    let section = conf.section(None::<String>).expect("fail parse veda.properties");
-    let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
-
-    let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
-        p.to_owned()
-    } else {
-        warn!("param [tarantool_url] not found in veda.properties");
-        "".to_owned()
-    };
-
-    info!("tarantool addr={:?}", &tarantool_addr);
-
-    let mut storage: VStorage;
-    if tarantool_addr.len() > 0 {
-        storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
-    } else {
-        storage = VStorage::new_lmdb("./data/lmdb-individuals/");
-    }
-
-    let mut ft_client = FTClient::new(ft_query_service_url);
-
-    while ft_client.connect() != true {
-        thread::sleep(time::Duration::from_millis(3000));
-    }
+    let mut module = Module::new ();
 
     let mut onto = Onto::new();
 
     info!("load onto start");
-    load_onto(&mut ft_client, &mut storage, &mut onto);
+    load_onto(&mut module.fts, &mut module.storage, &mut onto);
     info!("load onto stop");
 
     //info! ("{}", onto.is_some_entered("v-s:Email", &["v-s:Thing".to_owned()]));
