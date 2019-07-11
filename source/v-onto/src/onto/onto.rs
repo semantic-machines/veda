@@ -1,5 +1,5 @@
 use crate::individual::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 #[derive(PartialEq, Debug)]
@@ -26,19 +26,23 @@ impl Onto {
         }
     }
 
-    pub fn update(&mut self, el: &mut Individual) -> bool {
-        if let Ok(vtype) = el.get_first_literal("rdf:type") {
-            if vtype == "owl:Class" || vtype == "rdfs:Class" || vtype == "rdf:Property" || vtype == "owl:ObjectProperty" || vtype == "owl:DatatypeProperty" {
-                let onto_el = self.relations.entry(el.obj.uri.clone()).or_default();
-
+    pub fn update(&mut self, indv: &mut Individual) -> bool {
+        if let Ok(vtype) = indv.get_first_literal("rdf:type") {
+            if vtype == "owl:Class"
+                || vtype == "rdfs:Class"
+                || vtype == "rdf:Property"
+                || vtype == "rdfs:Datatype"
+                || vtype == "owl:ObjectProperty"
+                || vtype == "owl:DatatypeProperty"
+            {
                 let subs = if vtype == "owl:Class" || vtype == "rdfs:Class" {
-                    if let Ok(_subclasses) = el.get_literals("rdfs:subClassOf") {
+                    if let Ok(_subclasses) = indv.get_literals("rdfs:subClassOf") {
                         _subclasses
                     } else {
                         Vec::new()
                     }
                 } else if vtype == "rdf:Property" || vtype == "owl:ObjectProperty" || vtype == "owl:DatatypeProperty" {
-                    if let Ok(_subproperties) = el.get_literals("rdfs:subPropertyOf") {
+                    if let Ok(_subproperties) = indv.get_literals("rdfs:subPropertyOf") {
                         _subproperties
                     } else {
                         Vec::new()
@@ -47,18 +51,68 @@ impl Onto {
                     Vec::new()
                 };
 
-                for sub in subs.clone() {
-                    let mut rel_type = onto_el.entry(sub).or_insert(RelType::Super);
-                    rel_type = &mut RelType::Super;
-                }
+                // if subs.len() > 0 {
+                let _onto_el = self.relations.entry(indv.obj.uri.clone()).or_default();
+
+                //                    for sub in subs.clone() {
+                //                        let rel_type = onto_el.entry(sub).or_insert(RelType::Super);
+                //                        *rel_type = RelType::Super;
+                //                    }
 
                 for sub in subs {
                     let onto_el = self.relations.entry(sub).or_default();
-                    let mut rel_type = onto_el.entry(el.obj.uri.clone()).or_insert(RelType::Sub);
-                    rel_type = &mut RelType::Sub;
+                    let rel_type = onto_el.entry(indv.obj.uri.clone()).or_insert(RelType::Sub);
+                    *rel_type = RelType::Sub;
                 }
+            //}
+            } else {
+                warn!("is not onto element: {}", indv.obj.uri)
             }
         }
         true
+    }
+
+    pub fn is_some_entered(&mut self, el: &str, subs: &[String]) -> bool {
+        for sub in subs {
+            if self.relations.contains_key(sub) {
+                let onto_el = self.relations.entry(sub.to_string()).or_default();
+                if let Some(rtype) = onto_el.get(el) {
+                    if *rtype == RelType::Sub {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    pub fn get_subs(&mut self, el: &String, collector: &mut HashSet<String>) {
+        if self.relations.contains_key(el) {
+            let mut buf = Vec::new();
+            if let Some(qqq) = self.relations.get(el) {
+                for x in qqq.keys() {
+                    if !collector.contains(x) {
+                        collector.insert(x.to_string());
+                        buf.push(x.to_string());
+                    }
+                }
+            }
+
+            for x in buf {
+                self.get_subs(&x, collector);
+            }
+        }
+    }
+
+    pub fn update_subs(&mut self, el: &String, subs: &mut HashSet<String>) {
+        if self.relations.contains_key(el) {
+            let onto_el = self.relations.entry(el.to_string()).or_default();
+
+            for sub in subs.iter() {
+                let rel_type = onto_el.entry(sub.to_string()).or_insert(RelType::Sub);
+                *rel_type = RelType::Sub;
+            }
+        }
     }
 }
