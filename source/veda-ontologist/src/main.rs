@@ -121,7 +121,7 @@ fn main() -> std::io::Result<()> {
         }
 
         if size_batch > 0 {
-            info!("queue: batch size={}", size_batch);
+            debug!("queue: batch size={}", size_batch);
         }
 
         for _it in 0..size_batch {
@@ -146,8 +146,10 @@ fn main() -> std::io::Result<()> {
                 let mut indv = Individual::new();
                 indv.raw = raw;
                 is_found_onto_changes = is_changes(&mut indv, &onto_types);
-                last_found_changes = Instant::now();
-                info!("found onto changes from storage");
+                if is_found_onto_changes {
+                    last_found_changes = Instant::now();
+                    info!("found onto changes from storage: uri={}", indv.obj.uri);
+                }
             }
 
             queue_consumer.commit_and_next();
