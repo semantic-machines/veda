@@ -340,9 +340,12 @@ private void update_login_err(string login)
     long        now   = Clock.currTime().toUnixTime();
     LoginStatus lstat = login_errors.get(login, LoginStatus.init);
 
-    lstat.count_errors++;
-    lstat.time_of_last_err = now;
-    login_errors[ login ]  = lstat;
+    if (lstat != LoginStatus.init) 
+    {
+	lstat.count_errors++;
+        lstat.time_of_last_err = now;
+	login_errors[ login ]  = lstat;
+    }
 }
 
 private LoginStatus[ string ] login_errors;
@@ -386,7 +389,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
     LoginStatus lstat = login_errors.get(login, LoginStatus.init);
     
-    log.trace ("LSTAT %s", lstat);
+    log.trace ("LOGIN INFO  %s %s", login, lstat);
 
     if (candidate_users.length == 0)
     {
