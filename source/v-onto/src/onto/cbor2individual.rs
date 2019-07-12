@@ -113,6 +113,11 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                     indv.add_integer(&predicate, i64::from(i), order);
                 }
             }
+            Type::Int8 => {
+                if let Ok(i) = d._i8(&type_info) {
+                    indv.add_integer(&predicate, i64::from(i), order);
+                }
+            }
             Type::UInt16 => {
                 if let Ok(i) = d._u16(&type_info) {
                     if tag == TagId::EpochDateTime as u64 {
@@ -137,7 +142,7 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                 }
             }
             _ => {
-                error!("unknown type {:?}", type_info.0);
+                error!("cbor:unknown type {:?}", type_info.0);
                 return false;
             }
         }
