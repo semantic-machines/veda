@@ -9,6 +9,7 @@ use log::LevelFilter;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+use std::time::Instant;
 use std::{thread, time};
 use v_onto::individual::*;
 use v_onto::parser::*;
@@ -89,6 +90,7 @@ fn main() -> std::io::Result<()> {
     let ontology_file_path = "public/ontology.json";
     ///////
     let mut is_found_onto_changes = false;
+    let mut last_found_changes = Instant::now();
 
     loop {
         if !Path::new(ontology_file_path).exists() {
@@ -144,6 +146,8 @@ fn main() -> std::io::Result<()> {
                 let mut indv = Individual::new();
                 indv.raw = raw;
                 is_found_onto_changes = is_changes(&mut indv, &onto_types);
+                last_found_changes = Instant::now();
+                info!("found onto changes from storage");
             }
 
             queue_consumer.commit_and_next();
@@ -155,8 +159,8 @@ fn main() -> std::io::Result<()> {
             }
         }
 
-        if is_found_onto_changes && size_batch == 0 {
-            info!("found onto changes from storage");
+        if is_found_onto_changes && size_batch == 0 && Instant::now().duration_since(last_found_changes).as_secs() > 5 {
+            info!("prepare changes");
 
             if let Ok(mut file) = File::create(ontology_file_path) {
                 let res = ft_client.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
@@ -194,7 +198,7 @@ fn main() -> std::io::Result<()> {
             }
         }
 
-        thread::sleep(time::Duration::from_millis(5000));
+        thread::sleep(time::Duration::from_millis(3000));
     }
 }
 
