@@ -11,10 +11,8 @@ use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 use std::{thread, time};
-use v_onto::individual::*;
-use v_onto::parser::*;
-use v_queue::consumer::*;
-use v_queue::record::*;
+use v_onto::{individual::*, parser::*};
+use v_queue::{consumer::*, record::*};
 use v_search::{FTClient, FTQuery};
 use v_storage::storage::VStorage;
 
