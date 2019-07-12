@@ -136,7 +136,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
                                             }
                                         };
                                     } else {
-                                        error!("unknown type {}", v_type);
+                                        error!("msgpack:unknown type {}", v_type);
                                         return false;
                                     }
                                 } else if size == 3 {
