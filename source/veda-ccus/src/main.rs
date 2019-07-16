@@ -179,7 +179,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
     };
 
     loop {
-        if let Ok((msg, sender)) = rx.recv() {
+        if let Ok((msg, msg_id, sender)) = rx.recv() {
             //info!("main:recv={:?}", msg);
 
             let mut indv = Individual::new();
@@ -191,9 +191,9 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
                 0
             };
 
-            //println!("main: {:?}->{}", key, out_counter);
+            info!("main: {:?}->{}", indv.obj.uri, out_counter);
 
-            if let Err(e) = sender.send(out_counter) {
+            if let Err(e) = sender.send((out_counter, msg_id)) {
                 error!("NOT SEND RESPONSE, err={}", e);
             }
         }

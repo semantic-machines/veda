@@ -13,7 +13,9 @@ use std::sync::mpsc::{Receiver, Sender};
 
 const QUEUE_CHECK_INTERVAL: Duration = Duration::from_millis(300);
 const STAT_INTERVAL: Duration = Duration::from_millis(10000);
-pub type CMessage = (String, Sender<i64>);
+
+pub type RData = (i64, u64);
+pub type CMessage = (String, u64, Sender<RData>);
 
 /// CCUS server sends this messages to session
 #[derive(Message)]
@@ -62,14 +64,17 @@ pub struct CCUSServer {
     stat_sessions: usize,
     stat_uris: usize,
     subscribe_manager_sender: Sender<CMessage>,
-    my_sender: Sender<i64>,
-    my_receiver: Receiver<i64>,
+    my_sender: Sender<RData>,
+    my_receiver: Receiver<RData>,
+    msg_counter: u64,
 }
 
 impl CCUSServer {
     pub fn new(tx: Sender<CMessage>) -> CCUSServer {
         let _consumer = Consumer::new("./data/queue", "CCUS1", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
         let ch = mpsc::channel();
+
+        info!("create CCUSServer");
 
         CCUSServer {
             sessions: HashMap::new(),
@@ -82,20 +87,23 @@ impl CCUSServer {
             subscribe_manager_sender: tx,
             my_sender: ch.0,
             my_receiver: ch.1,
+            msg_counter: 0,
         }
     }
 
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let mut storage_counter = 0;
-
-        if !self.uri2sessions.contains_key(&uri.to_owned()) && self.subscribe_manager_sender.send((uri.to_string(), self.my_sender.clone())).is_ok() {
+        self.msg_counter += 1;
+        if !self.uri2sessions.contains_key(&uri.to_owned()) && self.subscribe_manager_sender.send((uri.to_string(), self.msg_counter, self.my_sender.clone())).is_ok() {
             if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
-                if msg >= 0 {
-                    info!("from storage: {}, {}", uri, msg);
-                    storage_counter = msg as u64;
+                if self.msg_counter != msg.1 {
+                    error!("{}, received someone else's message, ignore it", self.msg_counter);
+                } else if msg.0 >= 0 {
+                    info!("{}, from storage: {}, {}", self.msg_counter, uri, msg.0);
+                    storage_counter = msg.0 as u64;
                 }
             } else {
-                error!("not connect with storage thread");
+                error!("{}, timeout of read {} from storage", self.msg_counter, uri);
             }
         }
 
