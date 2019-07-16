@@ -71,7 +71,7 @@ impl Individual {
                     for el in v {
                         if let Value::Str(s, _l) = &el.value {
                             for ve in values {
-                                if *ve == *s {
+                                if str::eq (ve, s) {
                                     return true;
                                 }
                             }
