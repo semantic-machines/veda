@@ -202,18 +202,19 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn is_changes(iraw: &mut Individual, onto_types: &[&str]) -> bool {
-    let mut msg: Individual = Individual::new();
-    if let Ok(uri) = parse_raw(iraw) {
-        msg.obj.uri = uri;
-        if let Ok(new_state) = msg.get_first_binobj("new_state") {
-            let mut l2: Individual = Individual::new();
-            l2.raw = RawObj::new(new_state);
+fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
+    if let Ok(uri) = parse_raw(qel) {
+        qel.obj.uri = uri;
+        if let Ok(new_state) = qel.get_first_binobj("new_state") {
+            let mut indv: Individual = Individual::new();
+            indv.raw = RawObj::new(new_state);
 
-            if let Ok(uri) = parse_raw(&mut l2) {
-                l2.obj.uri = uri;
-                return iraw.any_exists("rdf:type", &onto_types);
+            if let Ok(uri) = parse_raw(&mut indv) {
+                indv.obj.uri = uri;
+                return indv.any_exists("rdf:type", &onto_types);
             }
+        } else {
+            warn!("field new_state no found, id={}", qel.obj.uri);
         }
     }
     false
