@@ -3,8 +3,6 @@
  */
 module veda.common.logger;
 
-// TODO: ++ module core.sys.posix.syslog;
-
 private
 {
     import core.stdc.time, core.stdc.stdio, core.stdc.string, std.outbuffer;

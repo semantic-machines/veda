@@ -1,6 +1,7 @@
 module veda.bootstrap;
 
 import std.string, std.process, std.stdio, std.conv, core.sys.posix.signal, std.file, core.thread;
+import std.format, std.datetime, std.array: appender;
 import commando, veda.util.properd, veda.core.common.define;
 
 struct ProcessInfo
@@ -167,11 +168,11 @@ void main(string[] args)
     try
     {
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
-                             {
-                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('i', "id", &veda_id, Required.no,
-                                               "Set veda id, example: --id=one");
-                             });
+        {
+            syntax.config.caseSensitive = commando.CaseSensitive.yes;
+            syntax.option('i', "id", &veda_id, Required.no,
+                          "Set veda id, example: --id=one");
+        });
     }
     catch (ArgumentParserException ex)
     {
@@ -183,11 +184,11 @@ void main(string[] args)
     try
     {
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
-                             {
-                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('p', "http_ports", &webserver_ports_str, Required.no,
-                                               "Set frontend http ports, example: --http_ports=8081,8082");
-                             });
+        {
+            syntax.config.caseSensitive = commando.CaseSensitive.yes;
+            syntax.option('p', "http_ports", &webserver_ports_str, Required.no,
+                          "Set frontend http ports, example: --http_ports=8081,8082");
+        });
     }
     catch (ArgumentParserException ex)
     {
@@ -200,11 +201,11 @@ void main(string[] args)
     try
     {
         ArgumentParser.parse(args, (ArgumentSyntax syntax)
-                             {
-                                 syntax.config.caseSensitive = commando.CaseSensitive.yes;
-                                 syntax.option('e', "ext_usr_http_port", &ext_user_port_str, Required.no,
-                                               "Set external user http port, example: --ext_usr_http_port=8082");
-                             });
+        {
+            syntax.config.caseSensitive = commando.CaseSensitive.yes;
+            syntax.option('e', "ext_usr_http_port", &ext_user_port_str, Required.no,
+                          "Set external user http port, example: --ext_usr_http_port=8082");
+        });
     }
     catch (ArgumentParserException ex)
     {
@@ -224,8 +225,9 @@ void main(string[] args)
 
     Module *[ string ] modules;
 
-    modules[ "veda-ro-storage" ]    = new Module("veda-ro-storage", "veda-ro-storage", [], [], false, false, 0);
-    modules[ "veda-mstorage" ]      = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
+    modules[ "veda-ro-storage" ] = new Module("veda-ro-storage", "veda-ro-storage", [], [], false, false, 0);
+    modules[ "veda-mstorage" ]   = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true,
+                                              true, 1);
     modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", "veda-ft-indexer", [], [ "fulltext_indexer" ], false, false, 2);
     modules[ "veda-ft-query" ]      = new Module("veda-ft-query", "veda-ft-query", [], [], false, false, 3);
     modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", "veda-scripts", [ "main" ], [ "scripts-main" ], false, false, 4);
@@ -330,7 +332,7 @@ void main(string[] args)
                 if (ml.priority != priority)
                     continue;
 
-                auto     _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
+                auto     _logFile = File(get_log_name(ml.name), "w");
 
                 string[] sargs;
 
@@ -380,7 +382,7 @@ void main(string[] args)
 
                         sargs ~= "--id=" ~ veda_id;
 
-                        auto _logFile = File("logs/" ~ ml.exec_file_name ~ port ~ "-stderr.log", "w");
+                        auto _logFile = File(get_log_name(ml.exec_file_name ~ port), "w");
 
                         stderr.writeln("starting websrv ", sargs);
 
@@ -400,7 +402,7 @@ void main(string[] args)
                     sargs = [ app_dir ~ ml.exec_file_name ];
                     sargs ~= "--id=" ~ veda_id;
 
-                    auto _logFile = File("logs/" ~ ml.name ~ "-stderr.log", "w");
+                    auto _logFile = File(get_log_name(ml.name), "w");
 
                     stderr.writeln("starting websrv ", sargs);
 
@@ -491,7 +493,7 @@ void main(string[] args)
                         }
                         else
                         {
-                            auto _logFile = File("logs/" ~ ml.mdl.name ~ "-stderr.log", "w");
+                            auto _logFile = File(get_log_name(ml.mdl.name), "w");
                             stderr.writeln("restart " ~ ml.mdl.name);
                             auto _pid = spawnProcess(ml.args.split(" "),
                                                      std.stdio.stdin,
@@ -514,7 +516,7 @@ void main(string[] args)
                             }
                             else
                             {
-                                auto _logFile = File("logs/" ~ ml.mdl.name ~ "-stderr.log", "w");
+                                auto _logFile = File(get_log_name(ml.mdl.name), "w");
                                 stderr.writeln("restart " ~ ml.mdl.name);
                                 auto _pid = spawnProcess(ml.args.split(" "),
                                                          std.stdio.stdin,
@@ -541,6 +543,22 @@ void main(string[] args)
     }
 
     stderr.writefln("EXIT!");
+}
+
+private string get_log_name(string module_name)
+{
+    SysTime    time = Clock.currTime();
+    const auto dt   = cast(DateTime)time;
+    const auto fsec = time.fracSecs.total !"usecs";
+
+    auto       writer = appender!string();
+
+    formattedWrite(writer, "logs/%s_%04d-%02d-%02d_%02d:%02d:%02d-%06d.%s", module_name, dt.year, dt.month, dt.day, dt.hour, dt.minute,
+                   dt.second,
+                   fsec,
+                   "log");
+
+    return writer.data;
 }
 
 private string array_to_str(string[] data)
