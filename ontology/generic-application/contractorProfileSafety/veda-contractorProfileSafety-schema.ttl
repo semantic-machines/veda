@@ -10,14 +10,14 @@
 
 <http://semantic-machines.com/veda/veda-schema-ContractorProfileSafety>
   rdf:type owl:Ontology ;
-  rdfs:label "Онтология Веда. Досье контрагента по безопасности. Схема."@ru ;
+  rdfs:label "Онтология Веда. Досье организации по безопасности. Схема."@ru ;
   rdfs:label "Veda ontology. ContractorProfileSafety. Schema."@en ;
   v-s:loadPriority 20 ;
 .
 
 # ------------------------------------------------------------ КЛАССЫ --
 
-# -----------------------------------------------ДОСЬЕ_КОНТРАГЕНТА_ПО_БЕЗОПАСНОСТИ
+# -----------------------------------------------Досье организации по безопасности
 v-s:ContractorProfileSafety
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
@@ -27,7 +27,7 @@ v-s:ContractorProfileSafety
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:Labeled;
-  rdfs:label "Досье организациип по безопасности"@ru ;
+  rdfs:label "Досье организации по безопасности"@ru ;
   rdfs:label "Contractor profile safety"@en ;
   v-ui:hasTemplate v-s:ContractorProfileSafetyTemplate ;
   #v-s:labelPattern "{@.v-s:parent.rdfs:label}" ;
@@ -99,7 +99,7 @@ v-s:isResponsibleForFireSafety
 .
 v-s:attachDocumentsForFireSafety
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Распорядительный документ о назначении лиц, ответственных за организацию и осуществление производственного контроля за соблюдением требований промышленной безопасности при эксплуатации на территории АО «Монди СЛПК» опасных производственных объектов или технических устройств, на которые распространяются федеральные нормы и правила в области промышленной безопасности. "@ru ;
+  rdfs:label "Распорядительный документ о назначении лиц, ответственных за соблюдение требований пожарной безопасности на территории АО «Монди СЛПК». "@ru ;
   rdfs:label "Disposal documents for the right to organize "@en ;
   rdfs:range v-s:ContractorProfileFile;
   rdfs:domain v-s:ContractorProfileSafety;
@@ -113,7 +113,7 @@ v-s:isResponsibleForIndustrialSafety
 .
 v-s:attachDocumentsForIndustrialSafety
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Распорядительный документ о назначении лиц, ответственных за соблюдение требований пожарной безопасности на территории АО «Монди СЛПК». "@ru ;
+  rdfs:label "Распорядительный документ о назначении лиц, ответственных за организацию и осуществление производственного контроля за соблюдением требований промышленной безопасности при эксплуатации на территории АО «Монди СЛПК» опасных производственных объектов или технических устройств, на которые распространяются федеральные нормы и правила в области промышленной безопасности. "@ru ;
   rdfs:label "Disposal documents for the right to organize "@en ;
   rdfs:range v-s:ContractorProfileFile;
   rdfs:domain v-s:ContractorProfileSafety;
