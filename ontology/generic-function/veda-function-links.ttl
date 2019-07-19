@@ -430,10 +430,12 @@ v-s:LinksTreeRecursiveTemplate
           $this.addClass("fa fa-spinner fa-pulse fa-lg fa-fw");
           if ( !typeLinksContainer.children().length ) {
             var allowedTypeUri = $this.parent().attr("resource");
-            var outLinks = getOutTypeLinks(allowedTypeUri, outPropertiesUris);
-            Promise.all(outLinks.map(function (link) {
-              return presentTypeLink(link, typeLinksContainer);
-            }))
+            getOutTypeLinks(allowedTypeUri, outPropertiesUris)
+            .then(function (outLinks) {
+              return Promise.all(outLinks.map(function (link) {
+                return presentTypeLink(link, typeLinksContainer);
+              }));
+            })
             .then(function () {
               return getInTypeLinks(allowedTypeUri, inPropertiesUris);
             })
@@ -483,11 +485,15 @@ v-s:LinksTreeRecursiveTemplate
     outPropertiesUris.forEach(function (outPropertyUri) {
       links = links.concat( individual[outPropertyUri] );
     });
-    links = links.filter(function (link) {
-      var linkTypeUri = link["rdf:type"][0].id;
-      return linkTypeUri === allowedTypeUri ;
+    var linksPromises = links.map(function (link) {
+      return link.load();
     });
-    return links;
+    return Promise.all(linksPromises).then(function (loadedLinks) {
+      return loadedLinks.filter(function (link) {
+        var linkTypeUri = link["rdf:type"][0].id;
+        return linkTypeUri === allowedTypeUri ;
+      });
+    });
   }
 
   function getInTypeLinks(allowedTypeUri, inPropertiesUris) {
