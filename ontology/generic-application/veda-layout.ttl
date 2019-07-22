@@ -275,7 +275,6 @@ v-s:MainMenu
   v-s:menuItem v-s:Tests ;
   v-s:menuItem v-s:Divider ;
   v-s:menuItem v-s:Administration ;
-  v-s:menuItem v-s:Clear ;
   v-s:menuItem v-s:Divider ;
   v-s:menuItem v-s:Exit ;
 .
@@ -331,12 +330,6 @@ v-s:Tests
   rdfs:label "Тесты"@ru ;
   rdfs:label "Tests"@en ;
   v-s:staticLink "/tests"^^xsd:string ;
-.
-v-s:Clear
-  rdf:type v-s:Menu ;
-  rdfs:label "Очистить данные"@ru ;
-  rdfs:label "Clear data"@en ;
-  v-s:staticLink "javascript:location.reload( localStorage.clear() )"^^xsd:string ;
 .
 v-s:Exit
   rdf:type v-s:Menu ;
