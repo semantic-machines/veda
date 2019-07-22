@@ -1061,9 +1061,11 @@ v-fs:AttributiveSearchInlineTemplate
 
   // Scroll to position
   function scrollTo(position) {
-    $("html, body").animate({
-      scrollTop: position
-    });
+    if (position > 0) {
+      $("html, body").animate({
+        scrollTop: position
+      });
+    }
   }
 
   // Search handler
