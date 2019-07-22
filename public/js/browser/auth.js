@@ -235,6 +235,7 @@ veda.Module(function (veda) { "use strict";
 
   // Logout handler
   veda.on("logout", function () {
+    $("#app").empty();
     delete storage.ticket;
     delete storage.user_uri;
     delete storage.end_time;
