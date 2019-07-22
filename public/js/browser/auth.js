@@ -175,6 +175,12 @@ veda.Module(function (veda) { "use strict";
     delete storage.end_time;
     veda.Util.delCookie("ticket");
 
+    if (storage.logout) {
+      loginForm.show();
+      delete storage.logout;
+      return;
+    }
+
     // NTLM auth using iframe
     var ntlmProvider = new veda.IndividualModel("cfg:NTLMAuthProvider", true, false);
     ntlmProvider.load().then(function (ntlmProvider) {
@@ -235,11 +241,11 @@ veda.Module(function (veda) { "use strict";
 
   // Logout handler
   veda.on("logout", function () {
-    $("#app").empty();
     delete storage.ticket;
     delete storage.user_uri;
     delete storage.end_time;
     veda.Util.delCookie("ticket");
+    storage.logout = true;
     location.reload();
   });
 
