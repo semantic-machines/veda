@@ -2006,7 +2006,7 @@ v-ui:SimplifiedJournalTemplate
               <div>
               <hr class="no-margin">
               <strong><small about="v-s:TaskIsRedirectedFrom" property="rdfs:label"></small></strong>
-              <small about="@" property="v-wf:to"></small>
+              <small about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></small>
             </div>
           </td>
           <td about="@" rel="v-wf:to" data-template="v-ui:LabelTemplate"></td>
@@ -2209,7 +2209,7 @@ v-ui:DocumentEventTemplate
             if ( confirm(warn) ) {
               process['v-wf:isStopped'] = [ true ];
               $(self).remove();
-              process.save();              
+              process.save();
             }
           });
         });
