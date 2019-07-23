@@ -69,7 +69,7 @@ impl Individual {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
                     for el in v {
-                        if let Value::Str(s, _l) = &el.value {
+                        if let Value::Str(_s, _l) = &el.value {
                             return true;
                         }
                     }
