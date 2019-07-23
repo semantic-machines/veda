@@ -64,6 +64,31 @@ impl Individual {
         }
     }
 
+    pub fn is_exists(&mut self, predicate: &str) -> bool {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    for el in v {
+                        if let Value::Str(s, _l) = &el.value {
+                            return true;
+                        }
+                    }
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        false
+    }
+
     pub fn any_exists(&mut self, predicate: &str, values: &[&str]) -> bool {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
@@ -71,7 +96,7 @@ impl Individual {
                     for el in v {
                         if let Value::Str(s, _l) = &el.value {
                             for ve in values {
-                                if str::eq (ve, s) {
+                                if str::eq(ve, s) {
                                     return true;
                                 }
                             }
