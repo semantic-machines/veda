@@ -4,7 +4,6 @@ extern crate env_logger;
 
 use chrono::Local;
 use env_logger::Builder;
-use ini::Ini;
 use log::LevelFilter;
 use std::fs::File;
 use std::io::Write;
@@ -13,8 +12,8 @@ use std::time::Instant;
 use std::{thread, time};
 use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
-use v_search::{FTClient, FTQuery};
-use v_storage::storage::VStorage;
+use v_search::{FTQuery};
+use v_module::module::*;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -28,26 +27,7 @@ fn main() -> std::io::Result<()> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-
-    let section = conf.section(None::<String>).expect("fail parse veda.properties");
-
-    let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
-        p.to_owned()
-    } else {
-        warn!("param [tarantool_url] not found in veda.properties");
-        "".to_owned()
-    };
-
-    let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
-
-    info!("tarantool addr={:?}", &tarantool_addr);
-
-    let mut storage = if !tarantool_addr.is_empty() {
-        VStorage::new_tt(tarantool_addr, "veda6", "123456")
-    } else {
-        VStorage::new_lmdb("./data/lmdb-individuals/")
-    };
+    let mut module = Module::new();
 
     let onto_types = vec![
         "rdfs:Class",
@@ -76,11 +56,9 @@ fn main() -> std::io::Result<()> {
         query.push_str("'");
     }
 
-    let mut ft_client = FTClient::new(ft_query_service_url.to_owned());
-
-    while !ft_client.connect() {
-        thread::sleep(time::Duration::from_millis(3000));
-    }
+//    while !ft_client.connect() {
+//        thread::sleep(time::Duration::from_millis(3000));
+//    }
 
     let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
@@ -163,13 +141,13 @@ fn main() -> std::io::Result<()> {
             info!("prepare changes");
 
             if let Ok(mut file) = File::create(ontology_file_path) {
-                let res = ft_client.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
+                let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
                 if res.result_code == 200 && res.count > 0 {
                     let mut indvs = Vec::new();
 
                     for el in &res.result {
                         let mut rindv: Individual = Individual::new();
-                        if storage.set_binobj(&el, &mut rindv) {
+                        if module.storage.set_binobj(&el, &mut rindv) {
                             rindv.parse_all();
                             indvs.push(rindv);
                         }
