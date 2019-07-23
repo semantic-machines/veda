@@ -1,11 +1,11 @@
 [package]
-name = "veda-extract"
+name = "veda-extractor"
 version = "0.1.0"
 authors = ["Valeriy Bushenev <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "veda-extract"
+name = "veda-extractor"
 path = "src/main.rs"
 
 [dependencies]
