@@ -141,11 +141,11 @@ impl Queue {
         }
 
         self.right_edge = self.right_edge + bheader.len() as u64 + data.len() as u64;
-        self.count_pushed += self.count_pushed;
+        self.count_pushed += 1;
 
         if self.put_info_push().is_err() {
             self.right_edge = self.right_edge - bheader.len() as u64 - data.len() as u64;
-            self.count_pushed -= self.count_pushed;
+            self.count_pushed -= 1;
         }
 
         Ok(self.right_edge)
