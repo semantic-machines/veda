@@ -5,6 +5,7 @@ use msgpack::encode::*;
 use crate::datatype::*;
 use crate::individual::*;
 use crate::resource::*;
+use std::io::Write;
 
 fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
     match r.rtype {
@@ -16,7 +17,9 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
         DataType::Binary => {
             write_array_len(out, 2)?;
             write_u8(out, r.rtype.clone() as u8)?;
-            write_str(out, &String::from_utf8_lossy(r.get_binary()))?;
+            let data = r.get_binary();
+            write_str_len(out, data.len() as u32)?;
+            out.write_all(data).map_err(ValueWriteError::InvalidDataWrite)?;
         }
         DataType::Boolean => {
             write_array_len(out, 2)?;
