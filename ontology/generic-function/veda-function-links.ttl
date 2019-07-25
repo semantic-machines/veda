@@ -295,7 +295,7 @@ v-s:LinksListTemplate
           </div>
         </td>
         <td>
-          <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
+          <i><small about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></small> <small about="@" property="v-s:created"></small></i>
         </td>
         <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
       </tr>
