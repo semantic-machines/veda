@@ -137,10 +137,22 @@ impl FTClient {
 
         let req = Message::from(query.as_string().as_bytes());
 
-        self.client.send(req).unwrap();
+        if let Err(e) = self.client.send(req) {
+            error!("fail send to search module, err={:?}", e);
+            res.result_code = 474;
+            return res;
+        }
 
         // Wait for the response from the server.
-        let msg = self.client.recv().unwrap();
+        let wmsg = self.client.recv();
+
+        if let Err(e) = wmsg {
+            error!("fail recv from search module, err={:?}", e);
+            res.result_code = 474;
+            return res;
+        }
+
+        let msg = wmsg.unwrap();
 
         let reply = String::from_utf8_lossy(&msg);
 
