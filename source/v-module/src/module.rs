@@ -56,11 +56,16 @@ pub struct Module {
 }
 
 impl Module {
-    pub fn get_property(&self, param: &str) -> String {
+    pub fn get_property(&self, param: &str) -> Option<String> {
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
-        section.get(param).expect(&("param [".to_string() + &param.to_string() + &"] not found in veda.properties".to_string())).clone()
+        if let Some (v) = section.get(param) {
+            Some(v.to_string())
+        } else {
+            None
+        }
+
     }
 
     pub fn new() -> Self {
