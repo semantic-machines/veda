@@ -5,6 +5,7 @@ extern crate env_logger;
 use chrono::Local;
 use env_logger::Builder;
 use log::LevelFilter;
+use nng::{Message, Protocol, Socket};
 use std::collections::HashMap;
 use std::io::Write;
 use std::{thread, time};
@@ -14,7 +15,7 @@ use v_onto::individual::*;
 use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
-use v_queue::queue::*;
+//use v_queue::queue::*;
 use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
@@ -37,19 +38,25 @@ fn main() -> std::io::Result<()> {
 
     get_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
 
-    let mut queue_consumer = Consumer::new("./data/out", "exim", "extract").expect("!!!!!!!!! FAIL QUEUE");
-    let mut total_prepared_count: u64 = 0;
+    //    let mut total_prepared_count: u64 = 0;
 
     loop {
-        for node_id in link_node_addresses.keys() {
-            prepare_consumer(node_id);
+        for (node_id, node_addr) in &link_node_addresses {
+            prepare_consumer(node_id, node_addr);
         }
         thread::sleep(time::Duration::from_millis(5000));
     }
 }
 
-fn prepare_consumer(linked_node_id: &str) {
-    let mut queue_consumer = Consumer::new("./data/out", "exim", "extract").expect("!!!!!!!!! FAIL QUEUE");
+fn prepare_consumer(node_id: &str, node_addr: &str) {
+    let mut soc = Socket::new(Protocol::Req0).unwrap();
+
+    if let Err(e) = soc.dial(node_addr) {
+        error!("fail connect to, {}{}, err={}", node_id, node_addr, e);
+        return;
+    }
+
+    let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
 
     let mut size_batch = 0;
@@ -97,8 +104,17 @@ fn prepare_consumer(linked_node_id: &str) {
             }
         }
 
-        if let Err(e) = prepare_queue_element(&mut Individual::new_raw(raw)) {
-            error!("fail prepare queue element, err={}", e);
+        let mut indv = &mut Individual::new_raw(raw);
+        loop {
+            if let Err(e) = prepare_queue_element(&mut indv, &mut soc) {
+                error!("fail prepare queue element, err={}", e);
+                if e != -10 {
+                    break;
+                }
+            } else {
+                break;
+            }
+            thread::sleep(time::Duration::from_millis(10000));
         }
 
         queue_consumer.commit_and_next();
@@ -110,34 +126,7 @@ fn prepare_consumer(linked_node_id: &str) {
     }
 }
 
-fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
-    let mut node = Individual::new();
-
-    if module.storage.set_binobj("cfg:standart_node", &mut node) {
-        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
-            if c > *node_upd_counter {
-                link_node_addresses.clear();
-                if let Ok(v) = node.get_literals("cfg:linked_node") {
-                    for el in v {
-                        let mut link_node = Individual::new();
-
-                        if module.storage.set_binobj(&el, &mut link_node) {
-                            if !link_node.is_exists("v-s:delete") {
-                                if let Ok(addr) = link_node.get_first_literal("rdf:value") {
-                                    link_node_addresses.insert(el, addr);
-                                }
-                            }
-                        }
-                    }
-                    info!("linked nodes: {:?}", link_node_addresses);
-                }
-                *node_upd_counter = c;
-            }
-        }
-    }
-}
-
-fn prepare_queue_element(msg: &mut Individual) -> Result<(), i32> {
+fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i32> {
     if let Ok(uri) = parse_raw(msg) {
         msg.obj.uri = uri;
 
@@ -180,10 +169,52 @@ fn prepare_queue_element(msg: &mut Individual) -> Result<(), i32> {
                 new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
 
                 let mut raw1: Vec<u8> = Vec::new();
-                if to_msgpack(&new_indv, &mut raw1).is_ok() {}
+                if to_msgpack(&new_indv, &mut raw1).is_ok() {
+                    let req = Message::from(raw1.as_ref());
+
+                    if let Err(e) = soc.send(req) {
+                        error!("fail send to slave node, err={:?}", e);
+                        return Err(-10);
+                    }
+
+                    // Wait for the response from the server.
+                    let wmsg = soc.recv();
+
+                    if let Err(e) = wmsg {
+                        error!("fail recv from slave node, err={:?}", e);
+                        return Err(-10);
+                    }
+                }
             }
             // info! ("{:?}", raw);
         }
     }
     Ok(())
+}
+
+fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
+    let mut node = Individual::new();
+
+    if module.storage.set_binobj("cfg:standart_node", &mut node) {
+        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
+            if c > *node_upd_counter {
+                link_node_addresses.clear();
+                if let Ok(v) = node.get_literals("cfg:linked_node") {
+                    for el in v {
+                        let mut link_node = Individual::new();
+
+                        if module.storage.set_binobj(&el, &mut link_node) {
+                            if !link_node.is_exists("v-s:delete") {
+                                if let Ok(addr) = link_node.get_first_literal("rdf:value") {
+                                    link_node_addresses.insert(el, addr);
+                                }
+                            }
+                        }
+                    }
+                    info!("linked nodes: {:?}", link_node_addresses);
+                }
+                *node_upd_counter = c;
+            }
+        }
+    }
 }
