@@ -134,7 +134,6 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
         if wcmd.is_err() {
             return Err(-1);
         }
-
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default().clone());
 
         let new_state = msg.get_first_binobj("new_state");
