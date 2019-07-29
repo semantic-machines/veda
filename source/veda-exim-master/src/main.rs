@@ -17,6 +17,7 @@ use v_onto::parser::*;
 use v_queue::consumer::*;
 //use v_queue::queue::*;
 use v_queue::record::*;
+use v_api::IndvOp;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
