@@ -2,6 +2,8 @@ use crate::datatype::{DataType, Lang};
 use crate::individual::*;
 use crate::resource::{Resource, Value};
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
+use serde_json::value::Value as JSONValue;
+use serde_json::json;
 
 impl IndividualObj {
     pub fn as_json_str(&self) -> String {
@@ -10,6 +12,14 @@ impl IndividualObj {
         }
 
         "".to_owned()
+    }
+
+    pub fn as_json(&self) -> JSONValue {
+        if let Ok(b) = serde_json::to_value(&self) {
+            return b;
+        }
+
+        json!(null)
     }
 }
 
