@@ -42,6 +42,7 @@ fn main() -> std::io::Result<()> {
         "v-ui:PropertySpecification",
         "v-ui:DatatypePropertySpecification",
         "v-ui:ObjectPropertySpecification",
+        "v-ui:TemplateSpecification",
         "v-ui:ClassModel",
     ];
 

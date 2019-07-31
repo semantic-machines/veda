@@ -38,33 +38,44 @@ veda.Module(function (veda) { "use strict";
         });
       } else {
         var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
-        if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
-          template = individual["v-ui:hasTemplate"][0];
-          return template.load().then(function (template) {
+        var templatePromise;
+        var ontology = new veda.OntologyModel();
+        var defaultTemplateUri = ontology.getClassTemplate(individual["rdf:type"][0].id);
+        if (defaultTemplateUri) {
+          templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
             template = template["v-ui:template"][0].toString();
             return renderTemplate(individual, container, template, mode, extra, toEmpty);
           });
         } else {
-          var typePromises = individual["rdf:type"].map(function (type) {
-            return type.load();
-          });
-          return Promise.all(typePromises).then(function (types) {
-            var templatesPromises = types.map( function (type) {
-              return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
-            });
-            return Promise.all(templatesPromises);
-          }).then(function (templates) {
-            var renderedTemplatesPromises = templates.map( function (template) {
+          if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
+            template = individual["v-ui:hasTemplate"][0];
+            templatePromise = template.load().then(function (template) {
               template = template["v-ui:template"][0].toString();
               return renderTemplate(individual, container, template, mode, extra, toEmpty);
             });
-            return Promise.all(renderedTemplatesPromises);
-          }).then(function (renderedTemplates) {
-            return renderedTemplates.reduce(function (acc, renderedTemplate) {
-              return acc.add(renderedTemplate);
-            }, $());
-          });
+          } else {
+            var typePromises = individual["rdf:type"].map(function (type) {
+              return type.load();
+            });
+            templatePromise = Promise.all(typePromises).then(function (types) {
+              var templatesPromises = types.map( function (type) {
+                return type.hasValue("v-ui:hasTemplate") ? type["v-ui:hasTemplate"][0].load() : new veda.IndividualModel("v-ui:generic").load();
+              });
+              return Promise.all(templatesPromises);
+            }).then(function (templates) {
+              var renderedTemplatesPromises = templates.map( function (template) {
+                template = template["v-ui:template"][0].toString();
+                return renderTemplate(individual, container, template, mode, extra, toEmpty);
+              });
+              return Promise.all(renderedTemplatesPromises);
+            }).then(function (renderedTemplates) {
+              return renderedTemplates.reduce(function (acc, renderedTemplate) {
+                return acc.add(renderedTemplate);
+              }, $());
+            });
+          }
         }
+        return templatePromise;
       }
     })
     .catch(function (error) {
@@ -252,13 +263,15 @@ veda.Module(function (veda) { "use strict";
         if ( container && typeof container.prop === "function" && container.prop("id") === "main" && !template.hasClass("deleted") ) {
           var alertModel = new veda.IndividualModel("v-s:DeletedAlert");
           var recoverModel = new veda.IndividualModel("v-s:Recover");
-          Promise.all([ alertModel.load(), recoverModel.load() ]).then(function (arr) {
+          Promise.all([ alertModel.load(), recoverModel.load(), this.canUpdate() ]).then(function (arr) {
             var alert = arr[0]["rdfs:label"].join(" ");
             var recover = arr[1]["rdfs:label"].join(" ");
+            var canUpdate = arr[2];
+            if (canUpdate) alert = alert + '<button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button>';
             var deletedAlert = $(
               '<div id="deleted-alert" class="container sheet margin-lg">\
                 <div class="alert alert-warning no-margin clearfix" role="alert">\
-                  <p id="deleted-alert-msg">' + alert + '  <button id="deleted-alert-recover" class="btn btn-primary btn-xs recover pull-right">' + recover + '</button></p>\
+                  <p id="deleted-alert-msg">' + alert + '</p>\
                 </div>\
               </div>'
             );
