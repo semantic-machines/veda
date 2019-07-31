@@ -230,10 +230,10 @@ pub struct APIClient {
 }
 
 impl APIClient {
-    pub fn new(_ro_client_addr: String) -> APIClient {
+    pub fn new(_addr: String) -> APIClient {
         APIClient {
             client: Socket::new(Protocol::Req0).unwrap(),
-            addr: _ro_client_addr,
+            addr: _addr,
             is_ready: false,
         }
     }
