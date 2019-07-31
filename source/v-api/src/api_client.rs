@@ -2,8 +2,9 @@
 extern crate log;
 
 use nng::{Message, Protocol, Socket};
+use serde_json::json;
 use serde_json::Value;
-use v_onto::individual::{Individual, RawObj};
+use v_onto::individual::Individual;
 
 #[derive(PartialEq, Debug, Clone)]
 #[repr(u16)]
@@ -50,13 +51,29 @@ impl IndvOp {
             _ => IndvOp::None,
         }
     }
+
+    pub fn as_string(value: IndvOp) -> String {
+        match value {
+            IndvOp::Get => "get",
+            IndvOp::Put => "put",
+            IndvOp::Remove => "remove",
+            IndvOp::AddIn => "add_in",
+            IndvOp::SetIn => "set_in",
+            IndvOp::RemoveFrom => "remove_from",
+            IndvOp::Authorize => "authorize",
+            IndvOp::GetTicket => "get_ticket",
+            // ...
+            IndvOp::None => "none",
+        }
+        .to_string()
+    }
 }
 
 #[derive(PartialEq, Debug, Clone)]
 #[repr(u16)]
-enum ResultCode {
+pub enum ResultCode {
     /// 0
-    zero = 0,
+    Zero = 0,
 
     /// 200
     Ok = 200,
@@ -151,6 +168,61 @@ enum ResultCode {
     ConnectError = 4000,
 }
 
+impl ResultCode {
+    pub fn from_i64(value: i64) -> ResultCode {
+        match value {
+            0 => ResultCode::Zero,
+            200 => ResultCode::Ok,
+            201 => ResultCode::Created,
+            204 => ResultCode::NoContent,
+            400 => ResultCode::BadRequest,
+            403 => ResultCode::Forbidden,
+            404 => ResultCode::NotFound,
+            422 => ResultCode::UnprocessableEntity,
+            429 => ResultCode::TooManyRequests,
+            464 => ResultCode::SecretExpired,
+            465 => ResultCode::EmptyPassword,
+            466 => ResultCode::NewPasswordIsEqualToOld,
+            467 => ResultCode::InvalidPassword,
+            468 => ResultCode::InvalidSecret,
+            469 => ResultCode::PasswordExpired,
+            470 => ResultCode::TicketNotFound,
+            471 => ResultCode::TicketExpired,
+            472 => ResultCode::NotAuthorized,
+            473 => ResultCode::AuthenticationFailed,
+            474 => ResultCode::NotReady,
+            475 => ResultCode::FailOpenTransaction,
+            476 => ResultCode::FailCommit,
+            477 => ResultCode::FailStore,
+            500 => ResultCode::InternalServerError,
+            501 => ResultCode::NotImplemented,
+            503 => ResultCode::ServiceUnavailable,
+            904 => ResultCode::InvalidIdentifier,
+            999 => ResultCode::DatabaseModifiedError,
+            1021 => ResultCode::DiskFull,
+            1022 => ResultCode::DuplicateKey,
+            1118 => ResultCode::SizeTooLarge,
+            4000 => ResultCode::ConnectError,
+            // ...
+            _ => ResultCode::Zero,
+        }
+    }
+}
+
+pub struct OpResult {
+    pub result: ResultCode,
+    pub op_id: i64,
+}
+
+impl OpResult {
+    pub fn res(r: ResultCode) -> Self {
+        OpResult {
+            result: r,
+            op_id: -1,
+        }
+    }
+}
+
 pub struct APIClient {
     client: Socket,
     addr: String,
@@ -176,22 +248,28 @@ impl APIClient {
         self.is_ready
     }
 
-    pub fn put(&mut self, indv: &mut Individual) {
+    pub fn put(&mut self, ticket: &str, indv: &mut Individual) -> OpResult {
         if !self.is_ready {
             self.connect();
         }
 
         if !self.is_ready {
-            //res.result_code = 474;
-            return;
+            return OpResult::res(ResultCode::NotReady);
         }
 
-        let req = Message::from("query".as_bytes());
+        let query = json!({
+            "function": "put",
+            "ticket": ticket,
+            "individuals": [ indv.obj.as_json() ],
+            "assigned_subsystems": 0,
+            "event_id" : ""
+        });
+
+        let req = Message::from(query.to_string().as_bytes());
 
         if let Err(e) = self.client.send(req) {
             error!("fail send to main module, err={:?}", e);
-            //res.result_code = 474;
-            return;
+            return OpResult::res(ResultCode::NotReady);
         }
 
         // Wait for the response from the server.
@@ -199,23 +277,52 @@ impl APIClient {
 
         if let Err(e) = wmsg {
             error!("fail recv from main module, err={:?}", e);
-            //res.result_code = 474;
-            return;
+            return OpResult::res(ResultCode::NotReady);
         }
 
         let msg = wmsg.unwrap();
 
-        let reply = String::from_utf8_lossy(&msg);
+        let reply = serde_json::from_str(&String::from_utf8_lossy(&msg));
 
-        let v: Value = if let Ok(v) = serde_json::from_str(&reply) {
-            v
+        if let Err(e) = reply {
+            error!("fail parse result operation [put], err={:?}", e);
+            return OpResult::res(ResultCode::BadRequest);
+        }
+
+        let json: Value = reply.unwrap();
+
+        if let Some(t) = json["type"].as_str() {
+            if t != "OpResult" {
+                error!("expecten \"type\" = \"OpResult\", found {}", t);
+                return OpResult::res(ResultCode::BadRequest);
+            }
         } else {
-            Value::Null
-        };
+            error!("not found \"type\"");
+            return OpResult::res(ResultCode::BadRequest);
+        }
 
-        //res.result_code = v["result_code"].as_i64().unwrap_or_default() as i32;
+        if let Some(arr) = json["data"].as_array() {
+            if arr.len() != 1 {
+                error!("invalid \"data\" section");
+                return OpResult::res(ResultCode::BadRequest);
+            }
 
-        //if res.result_code == 200 {
-        //}
+            if let Some(res) = arr[0]["result"].as_i64() {
+                if let Some(op_id) = arr[0]["op_id"].as_i64() {
+                    return OpResult {
+                        result: ResultCode::from_i64(res),
+                        op_id,
+                    };
+                }
+            } else {
+                error!("invalid \"data\" section");
+                return OpResult::res(ResultCode::BadRequest);
+            }
+        } else {
+            error!("not found \"data\"");
+            return OpResult::res(ResultCode::BadRequest);
+        }
+
+        return OpResult::res(ResultCode::BadRequest);
     }
 }
