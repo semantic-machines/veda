@@ -17,6 +17,7 @@ veda.Module(function (veda) { "use strict";
     this.specifications = {};
     this.models = {};
     this.classTree = {};
+    this.templates = {};
 
     return veda.OntologyModel.prototype._singletonInstance = this;
   };
@@ -75,6 +76,22 @@ veda.Module(function (veda) { "use strict";
     }
   };
 
+  proto.getClassTemplate = function (_class_uri) {
+    var classTemplates = this.templates[_class_uri];
+    if (!classTemplates) return null;
+    var resultSpec = classTemplates.reduce(function(result, currentTemplate) {
+      if (currentTemplate.properties["v-s:loadPriority"]) {
+        if (result.properties["v-s:loadPriority"]) {
+          return currentTemplate.properties["v-s:loadPriority"][0].data > result.properties["v-s:loadPriority"][0].data? result : currentTemplate;
+        } else {
+          return currentTemplate;
+        }
+      }
+      return result;
+    });
+    return resultSpec.properties["v-ui:defaultTemplate"][0].data;
+  };
+
   proto.getOntology = function () {
     var self = this;
     return new Promise( function (resolve, reject) {
@@ -106,6 +123,7 @@ veda.Module(function (veda) { "use strict";
     var specifications = this.specifications;
     var classTree = this.classTree;
     var models = this.models;
+    var templates = this.templates;
 
     // Allocate ontology objects
     var ontologyPromises = ontology.map( function (json) {
@@ -147,6 +165,14 @@ veda.Module(function (veda) { "use strict";
             break;
           case "v-ui:ClassModel" :
             models[uri] = individual;
+            break;
+          case "v-ui:TemplateSpecification" :
+            var forClass = individual.properties["v-ui:forClass"][0].data;
+            if (templates[forClass]) {
+              templates[forClass].push(individual);
+            } else {
+              templates[forClass] = [individual];
+            }
             break;
         }
       });
