@@ -175,7 +175,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
     let mut storage = if !tarantool_addr.is_empty() {
         VStorage::new_tt(tarantool_addr, "veda6", "123456")
     } else {
-        VStorage::new_lmdb("./data/lmdb-individuals/")
+        VStorage::new_lmdb("./data")
     };
 
     loop {

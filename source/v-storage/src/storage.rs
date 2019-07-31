@@ -14,6 +14,7 @@ pub enum EStorage {
 
 pub trait Storage {
     fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool;
+    fn get_sys_ticket_id(&mut self) -> Result<String, i32>;
 }
 
 pub struct VStorage {
@@ -37,6 +38,13 @@ impl VStorage {
         match &mut self.storage {
             EStorage::TT(s) => s.set_binobj(uri, iraw),
             EStorage::LMDB(s) => s.set_binobj(uri, iraw),
+        }
+    }
+
+    pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
+        match &mut self.storage {
+            EStorage::TT(s) => s.get_sys_ticket_id(),
+            EStorage::LMDB(s) => s.get_sys_ticket_id(),
         }
     }
 }
