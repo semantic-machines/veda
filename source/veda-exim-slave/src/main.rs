@@ -8,6 +8,7 @@ use log::LevelFilter;
 use nng::{Message, Protocol, Socket};
 use std::io::Write;
 use v_api::*;
+use v_exim::*;
 use v_module::module::*;
 use v_onto::individual::{Individual, RawObj};
 use v_onto::parser::parse_raw;
@@ -79,13 +80,13 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> 
 
         let wcmd = recv_indv.get_first_integer("cmd");
         if wcmd.is_err() {
-            return (recv_indv.obj.uri.clone() + ",err,invalid_cmd").to_owned();
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidCmd);
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let target_veda = recv_indv.get_first_literal("target_veda");
         if target_veda.is_err() {
-            return (recv_indv.obj.uri.clone() + ",err,invalid_target").to_owned();
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
         }
 
         let mut indv = Individual::default();
@@ -93,9 +94,9 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> 
 
         if res.result != ResultCode::Ok {
             error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
-            return (recv_indv.obj.uri.clone() + ",err,fail_update").to_owned();
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate);
         }
     }
 
-    (recv_indv.obj.uri.clone() + ",ok")
+    enc_slave_resp(&recv_indv.obj.uri, ExImCode::Ok)
 }

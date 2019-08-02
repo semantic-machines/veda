@@ -17,6 +17,7 @@ use v_onto::parser::*;
 use v_queue::consumer::*;
 //use v_queue::queue::*;
 use v_api::IndvOp;
+use v_exim::*;
 use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
@@ -171,11 +172,23 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
                         return Err(-10);
                     }
 
-                    // Wait for the response from the server.
+                    // Wait for the response from the server (slave).
                     let wmsg = soc.recv();
 
                     if let Err(e) = wmsg {
                         error!("fail recv from slave node, err={:?}", e);
+                        return Err(-10);
+                    }
+
+                    let msg = wmsg.unwrap();
+                    let res = dec_slave_resp(msg.as_ref());
+                    if res.0 != uri {
+                        error!("recv message invalid, expected uri={}, recv uri={}", uri, res.0);
+                        return Err(-10);
+                    }
+
+                    if res.1 != ExImCode::Ok {
+                        error!("recv error, uri={}, error={}", res.0, res.1.as_string());
                         return Err(-10);
                     }
                 }

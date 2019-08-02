@@ -1,0 +1,12 @@
+[package]
+name = "v_exim"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[lib]
+path = "src/exim.rs"
+
+[dependencies]
+env_logger = "0.6"
+log = "0.4"
