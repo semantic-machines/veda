@@ -27,7 +27,7 @@ fn main() -> std::io::Result<()> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let mut module = Module::new();
+    let mut module = Module::default();
 
     let onto_types = vec![
         "rdfs:Class",

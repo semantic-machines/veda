@@ -24,7 +24,7 @@ fn main() -> std::io::Result<()> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let mut module = Module::new();
+    let mut module = Module::default();
 
     let param_name = "exim_slave_port";
     let exim_slave_port = module.get_property(param_name);
@@ -81,18 +81,21 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> 
         if wcmd.is_err() {
             return (recv_indv.obj.uri.clone() + ",err,invalid_cmd").to_owned();
         }
-        let cmd = IndvOp::from_i64(wcmd.unwrap_or_default().clone());
+        let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let target_veda = recv_indv.get_first_literal("target_veda");
         if target_veda.is_err() {
             return (recv_indv.obj.uri.clone() + ",err,invalid_target").to_owned();
         }
 
-        if cmd == IndvOp::Put {
-            let mut indv = Individual::new();
-            api.put(systicket, &mut indv);
+        let mut indv = Individual::new();
+        let res = api.update(systicket, cmd, &mut indv);
+
+        if res.result != ResultCode::Ok {
+            error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
+            return (recv_indv.obj.uri.clone() + ",err,fail_update").to_owned();
         }
     }
 
-    return (recv_indv.obj.uri.clone() + ",ok").to_owned();
+    (recv_indv.obj.uri.clone() + ",ok")
 }

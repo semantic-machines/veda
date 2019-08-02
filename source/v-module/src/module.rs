@@ -8,20 +8,8 @@ pub struct Module {
     pub fts: FTClient,
 }
 
-impl Module {
-    pub fn get_property(&self, param: &str) -> Option<String> {
-        let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-
-        let section = conf.section(None::<String>).expect("fail parse veda.properties");
-        if let Some (v) = section.get(param) {
-            Some(v.to_string())
-        } else {
-            None
-        }
-
-    }
-
-    pub fn new() -> Self {
+impl Default for Module {
+    fn default() -> Self {
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
@@ -37,7 +25,7 @@ impl Module {
         info!("tarantool addr={:?}", &tarantool_addr);
 
         let mut storage: VStorage;
-        if tarantool_addr.len() > 0 {
+        if !tarantool_addr.is_empty() {
             storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
         } else {
             storage = VStorage::new_lmdb("./data");
@@ -45,13 +33,26 @@ impl Module {
 
         let mut ft_client = FTClient::new(ft_query_service_url);
 
-        while ft_client.connect() != true {
+        while !ft_client.connect() {
             thread::sleep(time::Duration::from_millis(3000));
         }
 
         Module {
-            storage: storage,
+            storage,
             fts: ft_client,
+        }
+    }
+}
+
+impl Module {
+    pub fn get_property(&self, param: &str) -> Option<String> {
+        let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
+
+        let section = conf.section(None::<String>).expect("fail parse veda.properties");
+        if let Some(v) = section.get(param) {
+            Some(v.to_string())
+        } else {
+            None
         }
     }
 }

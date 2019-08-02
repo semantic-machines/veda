@@ -34,7 +34,7 @@ pub fn load_onto(ft_client: &mut FTClient, storage: &mut VStorage, onto: &mut On
         for el in keys.iter() {
             let mut buf: HashSet<String> = HashSet::new();
             onto.get_subs(el, &mut buf);
-            if buf.len() > 0 {
+            if !buf.is_empty() {
                 onto.update_subs(el, &mut buf);
                 //info!("{}, subs={:?}", el, buf);
             }

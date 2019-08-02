@@ -84,10 +84,10 @@ impl Onto {
             }
         }
 
-        return false;
+        false
     }
 
-    pub fn get_subs(&mut self, el: &String, collector: &mut HashSet<String>) {
+    pub fn get_subs(&mut self, el: &str, collector: &mut HashSet<String>) {
         if self.relations.contains_key(el) {
             let mut buf = Vec::new();
             if let Some(qqq) = self.relations.get(el) {
@@ -105,7 +105,7 @@ impl Onto {
         }
     }
 
-    pub fn update_subs(&mut self, el: &String, subs: &mut HashSet<String>) {
+    pub fn update_subs(&mut self, el: &str, subs: &mut HashSet<String>) {
         if self.relations.contains_key(el) {
             let onto_el = self.relations.entry(el.to_string()).or_default();
 
