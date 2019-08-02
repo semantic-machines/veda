@@ -39,17 +39,17 @@ veda.Module(function (veda) { "use strict";
       } else {
         var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
         var templatePromise;
-        var ontology = new veda.OntologyModel();
-        var defaultTemplateUri = ontology.getClassTemplate(individual["rdf:type"][0].id);
-        if (defaultTemplateUri) {
-          templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
+        if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
+          template = individual["v-ui:hasTemplate"][0];
+          templatePromise = template.load().then(function (template) {
             template = template["v-ui:template"][0].toString();
             return renderTemplate(individual, container, template, mode, extra, toEmpty);
           });
         } else {
-          if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
-            template = individual["v-ui:hasTemplate"][0];
-            templatePromise = template.load().then(function (template) {
+          var ontology = new veda.OntologyModel();
+          var defaultTemplateUri = ontology.getClassTemplate(individual["rdf:type"][0].id);
+          if (defaultTemplateUri) {
+            templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
               template = template["v-ui:template"][0].toString();
               return renderTemplate(individual, container, template, mode, extra, toEmpty);
             });

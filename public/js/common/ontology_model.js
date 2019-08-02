@@ -79,17 +79,7 @@ veda.Module(function (veda) { "use strict";
   proto.getClassTemplate = function (_class_uri) {
     var classTemplates = this.templates[_class_uri];
     if (!classTemplates) return null;
-    var resultSpec = classTemplates.reduce(function(result, currentTemplate) {
-      if (currentTemplate.properties["v-s:loadPriority"]) {
-        if (result.properties["v-s:loadPriority"]) {
-          return currentTemplate.properties["v-s:loadPriority"][0].data > result.properties["v-s:loadPriority"][0].data? result : currentTemplate;
-        } else {
-          return currentTemplate;
-        }
-      }
-      return result;
-    });
-    return resultSpec.properties["v-ui:defaultTemplate"][0].data;
+    return classTemplates[0];
   };
 
   proto.getOntology = function () {
@@ -222,6 +212,27 @@ veda.Module(function (veda) { "use strict";
               classTree[_class.id].specifications[prop.id] = spec.id;
             });
           });
+        } catch (err) {
+          console.error("Ontology init error, uri = %s", uri, err.name);
+        }
+      });
+
+      // Process template specifications
+      Object.keys(templates).forEach(function (uri) {
+        try {
+          templates[uri] = templates[uri].sort(function(cur, prev) {
+            if (cur.properties["v-s:loadPriority"]) {
+              if (prev.properties["v-s:loadPriority"]) {
+                return cur.properties["v-s:loadPriority"][0].data - prev.properties["v-s:loadPriority"][0].data;
+              } else {
+                return -1;
+              }
+            } else {
+              return 1
+            }
+          }).map(function(templateSpec) {
+            return templateSpec.properties["v-ui:defaultTemplate"][0].data;
+          })
         } catch (err) {
           console.error("Ontology init error, uri = %s", uri, err.name);
         }
