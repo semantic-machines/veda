@@ -30,7 +30,7 @@ fn main() -> std::io::Result<()> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let mut module = Module::new();
+    let mut module = Module::default();
     let mut onto = Onto::new();
 
     info!("load onto start");

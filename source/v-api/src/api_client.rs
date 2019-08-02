@@ -52,8 +52,8 @@ impl IndvOp {
         }
     }
 
-    pub fn as_string(value: IndvOp) -> String {
-        match value {
+    pub fn as_string(&self) -> String {
+        match self {
             IndvOp::Get => "get",
             IndvOp::Put => "put",
             IndvOp::Remove => "remove",
@@ -248,7 +248,7 @@ impl APIClient {
         self.is_ready
     }
 
-    pub fn put(&mut self, ticket: &str, indv: &mut Individual) -> OpResult {
+    pub fn update(&mut self, ticket: &str, cmd: IndvOp, indv: &mut Individual) -> OpResult {
         if !self.is_ready {
             self.connect();
         }
@@ -258,7 +258,7 @@ impl APIClient {
         }
 
         let query = json!({
-            "function": "put",
+            "function": cmd.as_string(),
             "ticket": ticket,
             "individuals": [ indv.obj.as_json() ],
             "assigned_subsystems": 0,
@@ -323,6 +323,6 @@ impl APIClient {
             return OpResult::res(ResultCode::BadRequest);
         }
 
-        return OpResult::res(ResultCode::BadRequest);
+        OpResult::res(ResultCode::BadRequest)
     }
 }

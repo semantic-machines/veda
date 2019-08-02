@@ -53,7 +53,7 @@ impl Individual {
     pub fn new_raw(raw: RawObj) -> Self {
         Individual {
             obj: IndividualObj::new(),
-            raw: raw,
+            raw,
         }
     }
 

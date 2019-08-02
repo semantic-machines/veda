@@ -31,7 +31,7 @@ fn main() -> std::io::Result<()> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let mut module = Module::new();
+    let mut module = Module::default();
 
     // загрузка адресов связанных нод
     let mut node_upd_counter = 0;
