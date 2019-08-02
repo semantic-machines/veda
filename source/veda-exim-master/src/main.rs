@@ -16,8 +16,8 @@ use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
 //use v_queue::queue::*;
-use v_queue::record::*;
 use v_api::IndvOp;
+use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -58,13 +58,12 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     }
 
     let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
-    let mut total_prepared_count: u64 = 0;
 
     let mut size_batch = 0;
 
     // read queue current part info
     if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
-        error!("{} get_info_of_part {}: {}", total_prepared_count, queue_consumer.id, e.as_str());
+        error!("get_info_of_part {}: {}", queue_consumer.id, e.as_str());
         return;
     }
 
@@ -87,9 +86,9 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
         info!("queue: batch size={}", size_batch);
     }
 
-    for _it in 0..size_batch {
+    for (total_prepared_count, _it) in (0..size_batch).enumerate() {
         // пробуем взять из очереди заголовок сообщения
-        if queue_consumer.pop_header() == false {
+        if !queue_consumer.pop_header() {
             break;
         }
 
@@ -106,20 +105,15 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
         }
 
         let mut indv = &mut Individual::new_raw(raw);
-        loop {
-            if let Err(e) = prepare_queue_element(&mut indv, &mut soc) {
-                error!("fail prepare queue element, err={}", e);
-                if e != -10 {
-                    break;
-                }
-            } else {
+        while let Err(e) = prepare_queue_element(&mut indv, &mut soc) {
+            error!("fail prepare queue element, err={}", e);
+            if e != -10 {
                 break;
             }
             thread::sleep(time::Duration::from_millis(10000));
         }
 
         queue_consumer.commit_and_next();
-        total_prepared_count += 1;
 
         if total_prepared_count % 1000 == 0 {
             info!("get from queue, count: {}", total_prepared_count);
@@ -135,7 +129,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
         if wcmd.is_err() {
             return Err(-1);
         }
-        let cmd = IndvOp::from_i64(wcmd.unwrap_or_default().clone());
+        let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let new_state = msg.get_first_binobj("new_state");
         if cmd != IndvOp::Remove && new_state.is_err() {
@@ -159,7 +153,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
 
             let mut raw: Vec<u8> = Vec::new();
             if to_msgpack(&indv, &mut raw).is_ok() {
-                let mut new_indv = Individual::new();
+                let mut new_indv = Individual::default();
                 new_indv.obj.uri = uri.clone();
                 new_indv.obj.add_uri("uri", &uri, 0);
                 new_indv.obj.add_binary("new_state", raw, 0);
@@ -193,7 +187,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
 }
 
 fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
-    let mut node = Individual::new();
+    let mut node = Individual::default();
 
     if module.storage.set_binobj("cfg:standart_node", &mut node) {
         if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
@@ -201,13 +195,11 @@ fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_a
                 link_node_addresses.clear();
                 if let Ok(v) = node.get_literals("cfg:linked_node") {
                     for el in v {
-                        let mut link_node = Individual::new();
+                        let mut link_node = Individual::default();
 
-                        if module.storage.set_binobj(&el, &mut link_node) {
-                            if !link_node.is_exists("v-s:delete") {
-                                if let Ok(addr) = link_node.get_first_literal("rdf:value") {
-                                    link_node_addresses.insert(el, addr);
-                                }
+                        if module.storage.set_binobj(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
+                            if let Ok(addr) = link_node.get_first_literal("rdf:value") {
+                                link_node_addresses.insert(el, addr);
                             }
                         }
                     }

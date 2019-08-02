@@ -182,7 +182,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
         if let Ok((msg, msg_id, sender)) = rx.recv() {
             //info!("main:recv={:?}", msg);
 
-            let mut indv = Individual::new();
+            let mut indv = Individual::default();
 
             storage.set_binobj(&msg, &mut indv);
             let out_counter = if let Ok(c) = indv.get_first_integer("v-s:updateCounter") {

@@ -2,8 +2,8 @@ use crate::datatype::{DataType, Lang};
 use crate::individual::*;
 use crate::resource::{Resource, Value};
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
-use serde_json::value::Value as JSONValue;
 use serde_json::json;
+use serde_json::value::Value as JSONValue;
 
 impl IndividualObj {
     pub fn as_json_str(&self) -> String {
