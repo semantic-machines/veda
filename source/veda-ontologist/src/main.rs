@@ -120,7 +120,7 @@ fn main() -> std::io::Result<()> {
             }
 
             if !is_found_onto_changes {
-                let mut indv = Individual::new();
+                let mut indv = Individual::default();
                 indv.raw = raw;
                 is_found_onto_changes = is_changes(&mut indv, &onto_types);
                 if is_found_onto_changes {
@@ -147,7 +147,7 @@ fn main() -> std::io::Result<()> {
                     let mut indvs = Vec::new();
 
                     for el in &res.result {
-                        let mut rindv: Individual = Individual::new();
+                        let mut rindv: Individual = Individual::default();
                         if module.storage.set_binobj(&el, &mut rindv) {
                             rindv.parse_all();
                             indvs.push(rindv);
@@ -185,7 +185,7 @@ fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
     if let Ok(uri) = parse_raw(qel) {
         qel.obj.uri = uri;
         if let Ok(new_state) = qel.get_first_binobj("new_state") {
-            let mut indv: Individual = Individual::new();
+            let mut indv: Individual = Individual::default();
             indv.raw = RawObj::new(new_state);
 
             if let Ok(uri) = parse_raw(&mut indv) {

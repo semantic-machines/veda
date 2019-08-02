@@ -49,18 +49,20 @@ pub struct Individual {
     pub raw: RawObj,
 }
 
+impl Default for Individual {
+    fn default() -> Self {
+        Individual {
+            obj: IndividualObj::new(),
+            raw: RawObj::new_empty(),
+        }
+    }
+}
+
 impl Individual {
     pub fn new_raw(raw: RawObj) -> Self {
         Individual {
             obj: IndividualObj::new(),
             raw,
-        }
-    }
-
-    pub fn new() -> Self {
-        Individual {
-            obj: IndividualObj::new(),
-            raw: RawObj::new_empty(),
         }
     }
 

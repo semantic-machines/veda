@@ -135,7 +135,7 @@ fn main() -> std::io::Result<()> {
 
                 let mut raw: Vec<u8> = Vec::new();
                 if to_msgpack(&indv, &mut raw).is_ok() {
-                    let mut new_indv = Individual::new();
+                    let mut new_indv = Individual::default();
                     new_indv.obj.uri = msg.obj.uri.clone();
                     new_indv.obj.add_binary("new_state", raw, 0);
                     new_indv.obj.add_integer("cmd", cmd as i64, 0);

@@ -88,7 +88,7 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> 
             return (recv_indv.obj.uri.clone() + ",err,invalid_target").to_owned();
         }
 
-        let mut indv = Individual::new();
+        let mut indv = Individual::default();
         let res = api.update(systicket, cmd, &mut indv);
 
         if res.result != ResultCode::Ok {
