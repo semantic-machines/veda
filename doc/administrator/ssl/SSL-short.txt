@@ -1,0 +1,94 @@
+Origin:
+https://serversforhackers.com/c/letsencrypt-with-haproxy
+
+1. Install LetsEncrypt
+```
+$ sudo apt-get install certbot
+```
+
+2. Haproxy setup
+```
+frontend proxy
+  bind *:80
+  acl acl_letsencrypt path_beg /.well-known/acme-challenge/
+  use_backend letsencrypt if acl_letsencrypt
+
+backend letsencrypt
+  server letsencrypt 127.0.0.1:8888
+```
+
+3. New Certificates
+```
+sudo certbot certonly --standalone -d name.semantic-machines.com --non-interactive --agree-tos --email roman.karpov@gmail.com --http-01-port=8888
+```
+
+4. SSL Certificates and HAProxy
+```
+$ sudo mkdir -p /etc/ssl/name.semantic-machines.com
+$ sudo cat /etc/letsencrypt/live/name.semantic-machines.com/fullchain.pem /etc/letsencrypt/live/name.semantic-machines.com/privkey.pem | sudo tee /etc/ssl/name.semantic-machines.com/name.semantic-machines.com.pem
+```
+
+5. Renewing Certificates
+```
+frontend proxy
+  bind *:80
+  bind *:443 ssl crt /etc/ssl/name.semantic-machines.com/name.semantic-machines.com.pem
+  redirect scheme https code 301 if !{ ssl_fc }
+  acl acl_letsencrypt path_beg /.well-known/acme-challenge/
+  use_backend letsencrypt if acl_letsencrypt
+  default_backend web
+
+backend letsencrypt
+  server letsencrypt 127.0.0.1:8888
+```
+
+```
+$ sudo certbot renew --tls-sni-01-port=8888
+```
+
+6. Automating renewal
+
+root crontab:
+```
+0 0 1 * * root bash /opt/update-certs.sh
+```
+
+OR systemd timer if present:
+check timers:
+```
+$ systemctl list-timers
+```
+
+/lib/systemd/system/certbot.timer:
+```
+[Unit]
+Description=Run certbot daily
+
+[Timer]
+OnCalendar=*-*-* 1:00
+RandomizedDelaySec=2400
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+/lib/systemd/system/certbot.service:
+```
+[Unit]
+Description=Certbot
+Documentation=file:///usr/share/doc/python-certbot-doc/html/index.html
+Documentation=https://letsencrypt.readthedocs.io/en/latest/
+[Service]
+Type=oneshot
+ExecStart=/opt/update-certs.sh
+PrivateTmp=true
+```
+
+/opt/update-certs.sh:
+```
+certbot -q renew --tls-sni-01-port=8888
+cd /etc/letsencrypt/live/name.semantic-machines.com/
+cat ./fullchain.pem ./privkey.pem | tee ./name.semantic-machines.com.pem
+service haproxy reload
+```
