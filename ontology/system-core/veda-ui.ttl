@@ -1562,7 +1562,7 @@ v-ui:TestUIResultTemplate
     <tr>
       <td class="serial-number"></td>
       <td><a href="#/@" class="glyphicon glyphicon-search"></a></td>
-      <td property="v-s:creator"></td>
+      <td rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
       <td property="v-s:created"></td>
       <td property="rdfs:label"></td>
       <td property="rdfs:comment"></td>
@@ -1933,7 +1933,7 @@ v-ui:SimplifiedJournalTemplate
       </thead>
       <tbody id="tbody">
         <script>
-          if ( this.hasValue("v-wf:isCompleted", true) ) {
+          if ( individual.hasValue("v-wf:isCompleted", true) ) {
             template.children().first().addClass("success");
             $(".docflow-buttons", template).remove();
           } else {
@@ -1942,39 +1942,29 @@ v-ui:SimplifiedJournalTemplate
             var targetEmployee = individual["v-wf:from"][0];
             var targetOccupation = individual["v-wf:from"][1]
 
-            var isDirectTask = this.hasValue("v-wf:isDirectTask", true);
-            var canRevoke = currentEmployee === targetEmployee && currentOcuppation === targetOccupation;
-
-            if (!canRevoke) {
-              var queryString = "'rdf:type'==='v-s:Appointment' && 'v-s:occupation'=='" + targetOccupation.id + "' && 'v-s:employee' == '" + currentEmployee.id + "'";
-              veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
-                canRevoke = queryResult.result.length > 0 ;
-                setupButtons(canRevoke, isDirectTask);
-              });
-            }
-            setupButtons(canRevoke, isDirectTask);
-          }
-
-          function setupButtons(canRevoke, isDirectTask) {
-            if (!canRevoke || !isDirectTask) {
-              $(".docflow-buttons", template).hide();
-            } else {
-              $(".docflow-buttons", template).show();
-              $(".redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect", "Перенаправлено"));
-              $(".revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask", "Задача отозвана"));
-            }
+            Promise.resolve().then(function() {
+              var canRevoke = currentEmployee === targetEmployee && currentOcuppation === targetOccupation;
+              if (!canRevoke && targetOccupation) {
+                var queryString = "'rdf:type'==='v-s:Appointment' && 'v-s:occupation'=='" + targetOccupation.id + "' && 'v-s:employee' == '" + currentEmployee.id + "'";
+                return veda.Backend.query(veda.ticket, queryString).then(function (queryResult) {
+                  return queryResult.result.length > 0 ;
+                });
+              } else {
+                return canRevoke;
+              }
+            }).then(function(canRevoke) {
+              var isDirectTask = individual.hasValue("v-wf:isDirectTask", true);
+              if (!canRevoke || !isDirectTask) {
+                $(".docflow-buttons", template).hide();
+              } else {
+                $(".docflow-buttons", template).show();
+                $(".redirect", template).click(takeDecision.bind(null, "v-wf:DecisionRedirect", "Перенаправлено"));
+                $(".revoke", template).click(takeDecision.bind(null, "v-wf:DecisionRevokeTask", "Задача отозвана"));
+              };
+            })
           }
 
           function takeDecision(takenDecision, label) {
-            var modal = $("#notification-modal-template").html();
-            modal = $(modal);
-            modal.modal({"show": false});
-            $("body").append(modal);
-            modal.modal("show");
-            template.one("remove", function () {
-              modal.modal("hide").remove();
-            });
-            var cntr = $(".modal-body", modal);
             var decisionClass = new veda.IndividualModel( takenDecision );
             var decision = new veda.IndividualModel();
             decision["rdf:type"] = [ decisionClass ];
@@ -1982,7 +1972,7 @@ v-ui:SimplifiedJournalTemplate
             decision["rdfs:label"] = [ label ];
             decision["v-s:backwardProperty"] = [ new veda.IndividualModel("v-wf:takenDecision") ];
             decision["v-s:canRead"] = [ true ];
-            decision.present(cntr, undefined, "edit");
+            var modal = veda.Util.showModal(decision, undefined, "edit");
 
             decision.one("afterReset", function () {
               modal.modal("hide").remove();
@@ -1992,6 +1982,7 @@ v-ui:SimplifiedJournalTemplate
               $(".docflow-buttons", template).hide();
             });
           }
+          //# sourceURL=v-ui:SimplifiedJournalTemplate_inTbody_pre
         </script>
         <tr>
           <td class="sequence-number"></td>
