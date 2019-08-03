@@ -1,50 +1,46 @@
+#[macro_use]
+extern crate enum_primitive_derive;
+extern crate num_traits;
+use num_traits::{FromPrimitive, ToPrimitive};
 use std::str::*;
 
-#[derive(PartialEq, Debug, Clone)]
-#[repr(i16)]
+const TRANSMIT_FAILED: i64 = 32;
+
+#[derive(Primitive, PartialEq, Debug, Clone)]
+#[repr(i64)]
 pub enum ExImCode {
-    Ok = 200,
-    InvalidMessage = -1000,
-    InvalidCmd = -1001,
-    InvalidTarget = -1002,
-    FailUpdate = -3,
-    FailTransmit = -2000,
-    FailSend = -2001,
-    FailReceive = -2002,
-    Unknown = -999,
+    Unknown = 0,
+    Ok = 1,
+    InvalidMessage = 2,
+    InvalidCmd = 4,
+    InvalidTarget = 8,
+    FailUpdate = 16,
+    TransmitFailed = TRANSMIT_FAILED,
+    SendFailed = 64 | TRANSMIT_FAILED,
+    ReceiveFailed = 128 | TRANSMIT_FAILED,
+}
+
+impl From<i64> for ExImCode {
+    fn from(value: i64) -> Self {
+        if let Some(v) = ExImCode::from_i64(value) {
+            v
+        } else {
+            ExImCode::Unknown
+        }
+    }
+}
+
+impl From<ExImCode> for i64 {
+    fn from(value: ExImCode) -> Self {
+        if let Some(v) = value.to_i64() {
+            v
+        } else {
+            0
+        }
+    }
 }
 
 impl ExImCode {
-    pub fn from_i64(value: i64) -> ExImCode {
-        match value {
-            200 => ExImCode::Ok,
-            -1000 => ExImCode::InvalidMessage,
-            -1001 => ExImCode::InvalidCmd,
-            -1002 => ExImCode::InvalidTarget,
-            -3 => ExImCode::FailUpdate,
-            -2000 => ExImCode::FailTransmit,
-            -2001 => ExImCode::FailSend,
-            -2002 => ExImCode::FailReceive,
-            // ...
-            _ => ExImCode::Unknown,
-        }
-    }
-
-    pub fn to_i64(&self) -> i64 {
-        match self {
-            ExImCode::Ok => 200,
-            ExImCode::InvalidMessage => -1000,
-            ExImCode::InvalidCmd => -1001,
-            ExImCode::InvalidTarget => -1002,
-            ExImCode::FailUpdate => -3,
-            ExImCode::FailTransmit => -2000,
-            ExImCode::FailSend => -2001,
-            ExImCode::FailReceive => -2002,
-            // ...
-            ExImCode::Unknown => -999,
-        }
-    }
-
     pub fn as_string(&self) -> String {
         match self {
             ExImCode::Ok => "ok",
@@ -52,9 +48,9 @@ impl ExImCode {
             ExImCode::InvalidCmd => "invalid cmd",
             ExImCode::InvalidTarget => "invalid target",
             ExImCode::FailUpdate => "fail update",
-            ExImCode::FailTransmit => "fail transmit",
-            ExImCode::FailSend => "fail send",
-            ExImCode::FailReceive => "fail receive",
+            ExImCode::TransmitFailed => "fail transmit",
+            ExImCode::SendFailed => "fail send",
+            ExImCode::ReceiveFailed => "fail receive",
             // ...
             ExImCode::Unknown => "unknown",
         }
@@ -63,24 +59,21 @@ impl ExImCode {
 }
 
 pub fn enc_slave_resp(uri: &str, code: ExImCode) -> String {
-    uri.to_owned() + "," + &code.to_i64().to_string()
+    let q : i64 = code.into();
+    uri.to_owned() + "," + &q.to_string()
 }
 
 pub fn dec_slave_resp(msg: &[u8]) -> (&str, ExImCode) {
-
     let mut iter = msg.split(|ch| *ch == b',');
 
-    if let Some (wuri) = iter.next() {
-        let uri = from_utf8 (wuri);
-
-        if uri.is_ok() {
-            if let Some (wcode) = iter.next() {
-                if let Ok (s) = from_utf8(wcode) {
-                    if let Ok (code) = s.parse::<i64>() {
-                        return (uri.unwrap(), ExImCode::from_i64(code));
+    if let Some(wuri) = iter.next() {
+        if let Ok(uri) = from_utf8(wuri) {
+            if let Some(wcode) = iter.next() {
+                if let Ok(s) = from_utf8(wcode) {
+                    if let Ok(code) = s.parse::<i64>() {
+                        return (uri, code.into());
                     }
                 }
-
             }
         }
     }
