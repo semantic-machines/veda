@@ -1,3 +1,5 @@
+use std::str::*;
+
 #[derive(PartialEq, Debug, Clone)]
 #[repr(i16)]
 pub enum ExImCode {
@@ -28,16 +30,31 @@ impl ExImCode {
         }
     }
 
+    pub fn to_i64(&self) -> i64 {
+        match self {
+            ExImCode::Ok => 200,
+            ExImCode::InvalidMessage => -1000,
+            ExImCode::InvalidCmd => -1001,
+            ExImCode::InvalidTarget => -1002,
+            ExImCode::FailUpdate => -3,
+            ExImCode::FailTransmit => -2000,
+            ExImCode::FailSend => -2001,
+            ExImCode::FailReceive => -2002,
+            // ...
+            ExImCode::Unknown => -999,
+        }
+    }
+
     pub fn as_string(&self) -> String {
         match self {
             ExImCode::Ok => "ok",
-            ExImCode::InvalidMessage => "invalid_message",
-            ExImCode::InvalidCmd => "invalid_cmd",
-            ExImCode::InvalidTarget => "invalid_target",
-            ExImCode::FailUpdate => "fail_update",
-            ExImCode::FailTransmit => "fail_transmit",
-            ExImCode::FailSend => "fail_send",
-            ExImCode::FailReceive => "fail_receive",
+            ExImCode::InvalidMessage => "invalid message",
+            ExImCode::InvalidCmd => "invalid cmd",
+            ExImCode::InvalidTarget => "invalid target",
+            ExImCode::FailUpdate => "fail update",
+            ExImCode::FailTransmit => "fail transmit",
+            ExImCode::FailSend => "fail send",
+            ExImCode::FailReceive => "fail receive",
             // ...
             ExImCode::Unknown => "unknown",
         }
@@ -46,9 +63,26 @@ impl ExImCode {
 }
 
 pub fn enc_slave_resp(uri: &str, code: ExImCode) -> String {
-    uri.clone().to_owned() + "," + &code.as_string()
+    uri.to_owned() + "," + &code.to_i64().to_string()
 }
 
 pub fn dec_slave_resp(msg: &[u8]) -> (&str, ExImCode) {
+
+    let mut iter = msg.split(|ch| *ch == b',');
+
+    if let Some (wuri) = iter.next() {
+        let uri = from_utf8 (wuri);
+
+        if uri.is_ok() {
+            if let Some (wcode) = iter.next() {
+                if let Ok (s) = from_utf8(wcode) {
+                    if let Ok (code) = s.parse::<i64>() {
+                        return (uri.unwrap(), ExImCode::from_i64(code));
+                    }
+                }
+
+            }
+        }
+    }
     ("?", ExImCode::Unknown)
 }
