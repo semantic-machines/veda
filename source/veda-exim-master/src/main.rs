@@ -107,8 +107,8 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
 
         let mut indv = &mut Individual::new_raw(raw);
         while let Err(e) = prepare_queue_element(&mut indv, &mut soc) {
-            error!("fail prepare queue element, err={}", e);
-            if e != -10 {
+            error!("fail prepare queue element, err={}", e.as_string());
+            if e != ExImCode::FailTransmit {
                 break;
             }
             thread::sleep(time::Duration::from_millis(10000));
@@ -122,29 +122,29 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     }
 }
 
-fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i32> {
+fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), ExImCode> {
     if let Ok(uri) = parse_raw(msg) {
         msg.obj.uri = uri;
 
         let wcmd = msg.get_first_integer("cmd");
         if wcmd.is_err() {
-            return Err(-1);
+            return Err(ExImCode::InvalidMessage);
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let new_state = msg.get_first_binobj("new_state");
         if cmd != IndvOp::Remove && new_state.is_err() {
-            return Err(-1);
+            return Err(ExImCode::InvalidMessage);
         }
 
         let target_veda = msg.get_first_literal("target_veda");
         if target_veda.is_err() {
-            return Err(-1);
+            return Err(ExImCode::InvalidMessage);
         }
 
         let date = msg.get_first_integer("date");
         if date.is_err() {
-            return Err(-1);
+            return Err(ExImCode::InvalidMessage);
         }
 
         let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
@@ -169,7 +169,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
 
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
-                        return Err(-10);
+                        return Err(ExImCode::FailTransmit);
                     }
 
                     // Wait for the response from the server (slave).
@@ -177,19 +177,19 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), i
 
                     if let Err(e) = wmsg {
                         error!("fail recv from slave node, err={:?}", e);
-                        return Err(-10);
+                        return Err(ExImCode::FailTransmit);
                     }
 
                     let msg = wmsg.unwrap();
                     let res = dec_slave_resp(msg.as_ref());
                     if res.0 != uri {
                         error!("recv message invalid, expected uri={}, recv uri={}", uri, res.0);
-                        return Err(-10);
+                        return Err(ExImCode::FailTransmit);
                     }
 
                     if res.1 != ExImCode::Ok {
                         error!("recv error, uri={}, error={}", res.0, res.1.as_string());
-                        return Err(-10);
+                        return Err(ExImCode::FailTransmit);
                     }
                 }
             }
