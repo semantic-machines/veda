@@ -2400,10 +2400,7 @@ v-ui:TreeTemplate
         thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
       } else {
         getChildren([], value, false).then(function (children) {
-          var renderedProms = children.map(function (childUri) {
-            return renderRow(childUri, thatRow);
-          });
-          Promise.all(renderedProms).then(function () {
+          return renderRows(children, thatRow).then(function () {
             var newNextLvl = parseInt(thatRow.next().attr("data-level"));
             if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
               that.prev().css("width", 16 * (thatLvl + 1) - 2);
@@ -2424,45 +2421,47 @@ v-ui:TreeTemplate
     return false;
   });
 
-  function renderRow(valueUri, parentRow) {
-    var value = new veda.IndividualModel(valueUri);
-    return value.load().then(function (value) {
-      if ( !allowedFilter.call(value) ) {
-        return;
-      }
-      var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1;
-      var cont = $("<div>"),
-          tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
-      $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
-      return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
-        // Pre-check children
-        getChildren([], value, false).then(function (children) {
-          if (!children.length) {
-            tmpl.find(".expand").remove();
-            tmpl.find(".select-deep").remove();
+  function renderRows(values_uris, parentRow) {
+    var cont = $("<div>");
+    return Promise.all(values_uris.map(function (valueUri, index) {
+      var value = new veda.IndividualModel(valueUri);
+      return value.load().then(function (value) {
+        if ( !allowedFilter.call(value) ) {
+          return;
+        }
+        var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
+            tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
+        $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+        return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
+          // Pre-check children
+          getChildren([], value, false).then(function (children) {
+            if (!children.length) {
+              tmpl.find(".expand").remove();
+              tmpl.find(".select-deep").remove();
+            }
+          });
+          var selectRow = $(".select-row", tmpl);
+          var selectDeep = $(".select-deep", tmpl);
+          selectRow.prop("checked", individual.hasValue(rel_uri, value));
+
+          if (value.deepSelected) {
+            selectDeep.removeClass("text-muted").addClass("text-danger");
+          } else {
+            selectDeep.addClass("text-muted").removeClass("text-danger");
+          }
+
+          if ( !selectableFilter.call(value) ) {
+            selectRow.remove();
           }
         });
-        var selectRow = $(".select-row", tmpl);
-        var selectDeep = $(".select-deep", tmpl);
-        selectRow.prop("checked", individual.hasValue(rel_uri, value));
-
-        if (value.deepSelected) {
-          selectDeep.removeClass("text-muted").addClass("text-danger");
-        } else {
-          selectDeep.addClass("text-muted").removeClass("text-danger");
-        }
-
-        if ( !selectableFilter.call(value) ) {
-          selectRow.remove();
-        }
-
-        if ( parentRow ) {
-          parentRow.after( tmpl );
-        } else {
-          tbody.append(tmpl);
-        }
-        cont.remove();
       });
+    })).then(function () {
+      if ( parentRow ) {
+        parentRow.after( cont.children() );
+      } else {
+        tbody.append( cont.children() );
+      }
+      cont.remove();
     });
   }
 
@@ -2538,7 +2537,7 @@ v-ui:TreeTemplate
 
   // Render tree
   individual.treeConfig.root.forEach( function (root, index, roots) {
-    renderRow(root.id).then(function () {
+    renderRows([root.id]).then(function () {
       if (roots.length === 1) {
         tbody.find(".expand").click();
       }
