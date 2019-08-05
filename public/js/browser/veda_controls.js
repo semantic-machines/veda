@@ -1830,46 +1830,28 @@
     // Tree feature
     var tree = $(".tree", control);
     if ( this.hasClass("tree") || this.hasClass("full") ) {
-      var root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
-          inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
-          outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
-          allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
-          allowedFilter = spec && spec.hasValue("v-ui:treeAllowedFilter") ? spec["v-ui:treeAllowedFilter"] : undefined,
-          selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
-          selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
-          displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
 
-      if (root && (inProperty || outProperty)) {
-        var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
-        var modal = $("#individual-modal-template").html();
-        tree.click(function () {
-          individual.treeConfig = {
-            root: root,
-            inProperty: inProperty,
-            outProperty: outProperty,
-            sort: sort,
-            allowedClass: allowedClass,
-            allowedFilter: allowedFilter,
-            selectableClass: selectableClass,
-            selectableFilter: selectableFilter,
-            displayedProperty: displayedProperty,
-            targetRel_uri: rel_uri,
-            isSingle: isSingle,
-            withDeleted: withDeleted
-          };
-          var $modal = $(modal);
-          var cntr = $(".modal-body", $modal);
-          $modal.on('hidden.bs.modal', function (e) {
-            $modal.remove();
-            delete individual.treeConfig;
-          });
-          $modal.modal();
-          $("body").append($modal);
-          individual.present(cntr, treeTmpl);
+      var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
+      var modal = $("#individual-modal-template").html();
+      tree.click(function () {
+        var $modal = $(modal);
+        var cntr = $(".modal-body", $modal);
+        $modal.on('hidden.bs.modal', function (e) {
+          $modal.remove();
+          delete individual.treeConfig;
         });
-      } else {
-        tree.remove();
-      }
+        $modal.modal();
+        $("body").append($modal);
+
+        var extra = {
+          target: individual,
+          target_rel_uri: rel_uri,
+          isSingle: isSingle,
+          withDeleted: withDeleted,
+          sort: sort
+        };
+        spec.present(cntr, treeTmpl, undefined, extra);
+      });
     } else {
       tree.remove();
     }
