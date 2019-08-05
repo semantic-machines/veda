@@ -2421,28 +2421,18 @@ v-ui:TreeTemplate
     that.toggleClass("expanded glyphicon-chevron-right glyphicon-chevron-down");
 
     if ( that.hasClass("expanded") ) {
-      var nextLvl = parseInt( thatRow.next().attr("data-level") );
-      if ( nextLvl > thatLvl ) {
-        thatRow.nextUntil("[data-level=" + thatLvl + "]").show();
-      } else {
-        getChildren([], value, false).then(function (children) {
-          return renderRows(children, thatRow).then(function () {
-            var newNextLvl = parseInt(thatRow.next().attr("data-level"));
-            if ( isNaN(newNextLvl) || newNextLvl <= thatLvl ) {
-              that.prev().css("width", 16 * (thatLvl + 1) - 2);
-              that.remove();
-              thatRow.find(".select-deep").remove();
-            }
-          });
+      getChildren([], value, false).then(function (children) {
+        return renderRows(children, thatRow).then(function () {
+          var nextLvl = parseInt(thatRow.next().attr("data-level"));
+          if ( isNaN(nextLvl) || nextLvl <= thatLvl ) {
+            that.prev().css("width", 16 * (thatLvl + 1) - 2);
+            that.remove();
+            thatRow.find(".select-deep").remove();
+          }
         });
-      }
-    } else {
-      thatRow.nextAll().each( function () {
-        var that = $(this),
-          lvl = parseInt( that.attr("data-level") );
-        if ( isNaN(lvl) || lvl <= thatLvl) return false;
-        that.hide();
       });
+    } else {
+      thatRow.nextUntil("[data-level=" + thatLvl + "]").remove();
     }
     return false;
   });
