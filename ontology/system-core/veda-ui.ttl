@@ -261,9 +261,18 @@ v-ui:sort
   rdfs:label "Sorting"@en ;
   rdfs:range xsd:string ;
 .
+
+v-ui:Tree
+  rdf:type owl:Class ;
+  rdfs:label "Дерево"@ru ;
+  rdfs:label "Tree"@en ;
+  v-ui:hasTemplate v-ui:TreeTemplate ;
+.
+
 v-ui:treeRoot
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Корень"@ru ;
   rdfs:label "Root"@en ;
   rdfs:range rdfs:Resource ;
@@ -271,6 +280,7 @@ v-ui:treeRoot
 v-ui:treeInProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Входящая ветвь"@ru ;
   rdfs:label "In edge"@en ;
   rdfs:range owl:ObjectProperty ;
@@ -278,6 +288,7 @@ v-ui:treeInProperty
 v-ui:treeOutProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Исходящая ветвь"@ru ;
   rdfs:label "Out edge"@en ;
   rdfs:range owl:ObjectProperty ;
@@ -285,6 +296,7 @@ v-ui:treeOutProperty
 v-ui:treeAllowedClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Разрешенный класс"@ru ;
   rdfs:label "Allowed class"@en ;
   rdfs:range owl:Class ;
@@ -293,6 +305,7 @@ v-ui:treeAllowedClass
 v-ui:treeAllowedFilter
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Фильтр отображаемых субъектов"@ru ;
   rdfs:label "Allowed filter"@en ;
   rdfs:range xsd:string ;
@@ -300,6 +313,7 @@ v-ui:treeAllowedFilter
 v-ui:treeSelectableClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Выбираемый класс"@ru ;
   rdfs:label "Selectable class"@en ;
   rdfs:range owl:Class ;
@@ -308,6 +322,7 @@ v-ui:treeSelectableClass
 v-ui:treeSelectableFilter
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Фильтр выбираемых субъектов"@ru ;
   rdfs:label "Selectable filter"@en ;
   rdfs:range xsd:string ;
@@ -315,6 +330,7 @@ v-ui:treeSelectableFilter
 v-ui:treeDisplayedProperty
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ui:ObjectPropertySpecification ;
+  rdfs:domain v-ui:Tree ;
   rdfs:label "Отображаемое свойство"@ru ;
   rdfs:label "Displayed property"@en ;
   rdfs:range owl:ObjectProperty ;
@@ -2310,16 +2326,27 @@ v-ui:TreeTemplate
   rdfs:label "Template for tree-like structures"@en ;
   v-ui:template """
 <script>
-  var tbody = $(".tbody", template);
-  var thead = $(".thead", template);
+  var root = this.hasValue("v-ui:treeRoot") ? this["v-ui:treeRoot"] : undefined,
+      inProperty = this.hasValue("v-ui:treeInProperty") ? this["v-ui:treeInProperty"] : undefined,
+      outProperty = this.hasValue("v-ui:treeOutProperty") ? this["v-ui:treeOutProperty"] : undefined,
+      allowedClass = this.hasValue("v-ui:treeAllowedClass") ? this["v-ui:treeAllowedClass"] : undefined,
+      allowedFilter = this.hasValue("v-ui:treeAllowedFilter") ? this["v-ui:treeAllowedFilter"] : undefined,
+      selectableClass = this.hasValue("v-ui:treeSelectableClass") ? this["v-ui:treeSelectableClass"] : undefined,
+      selectableFilter = this.hasValue("v-ui:treeSelectableFilter") ? this["v-ui:treeSelectableFilter"] : undefined,
+      displayedProperty = this.hasValue("v-ui:treeDisplayedProperty") ? this["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ],
 
-  var rel_uri = individual.treeConfig.targetRel_uri;
-  var isSingle = individual.treeConfig.isSingle;
-  var withDeleted = individual.treeConfig.withDeleted;
-  var headTmpl = "";
-  var rowTmpl = "";
+      target = extra && extra.target,
+      rel_uri = extra && extra.target_rel_uri,
+      isSingle = extra && extra.isSingle,
+      withDeleted = extra && extra.withDeleted,
+      sort = extra && extra.sort,
 
-  if (rel_uri) {
+      tbody = $(".tbody", template),
+      thead = $(".thead", template),
+      headTmpl = "",
+      rowTmpl = "";
+
+  if (target && rel_uri) {
     if (isSingle) {
       headTmpl += "<th width='1px'></th>";
       rowTmpl += "<td><input type='radio' class='select-row' name='select-row' /></td>";
@@ -2329,13 +2356,13 @@ v-ui:TreeTemplate
     }
   }
 
-  var allowedFilter = (function () {
-    if (individual.treeConfig.allowedFilter) {
-      return new Function( individual.treeConfig.allowedFilter[0].toString() );
-    } else if (individual.treeConfig.allowedClass) {
+  var allowedFilterFn = (function () {
+    if (allowedFilter) {
+      return new Function( allowedFilter[0].toString() );
+    } else if (allowedClass) {
       return function () {
         var that = this;
-        return individual.treeConfig.allowedClass.reduce(function (acc, allowed) {
+        return allowedClass.reduce(function (acc, allowed) {
           return acc || that.hasValue("rdf:type", allowed);
         }, false);
       }
@@ -2344,13 +2371,13 @@ v-ui:TreeTemplate
     }
   })();
 
-  var selectableFilter = (function () {
-    if (individual.treeConfig.selectableFilter) {
-      return new Function( individual.treeConfig.selectableFilter[0].toString() );
-    } else if (individual.treeConfig.selectableClass) {
+  var selectableFilterFn = (function () {
+    if (selectableFilter) {
+      return new Function( selectableFilter[0].toString() );
+    } else if (selectableClass) {
       return function () {
         var that = this;
-        return individual.treeConfig.selectableClass.reduce(function (acc, selectable) {
+        return selectableClass.reduce(function (acc, selectable) {
           return acc || that.hasValue("rdf:type", selectable);
         }, false);
       }
@@ -2361,7 +2388,7 @@ v-ui:TreeTemplate
 
   var literals = ["rdfs:Literal", "xsd:string", "xsd:boolean", "xsd:integer", "xsd:nonNegativeInteger", "xsd:decimal", "xsd:dateTime"];
 
-  individual.treeConfig.displayedProperty.forEach( function (property, index) {
+  displayedProperty.forEach( function (property, index) {
     headTmpl += "<th>" + property["rdfs:label"].join(", ") + "</th>";
     var isLiteral = (literals.indexOf(property["rdfs:range"][0].id) >= 0);
     if ( index === 0 ) {
@@ -2381,7 +2408,6 @@ v-ui:TreeTemplate
   });
   headTmpl = "<tr>" + headTmpl + "</tr>";
   thead.html(headTmpl);
-  individual.treeConfig.rowTmpl = rowTmpl;
 
   template.on("click", "a.expand", function (e) {
     e.stopPropagation();
@@ -2426,7 +2452,7 @@ v-ui:TreeTemplate
     return Promise.all(values_uris.map(function (valueUri, index) {
       var value = new veda.IndividualModel(valueUri);
       return value.load().then(function (value) {
-        if ( !allowedFilter.call(value) ) {
+        if ( !allowedFilterFn.call(value) ) {
           return;
         }
         var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
@@ -2440,18 +2466,21 @@ v-ui:TreeTemplate
               tmpl.find(".select-deep").remove();
             }
           });
-          var selectRow = $(".select-row", tmpl);
-          var selectDeep = $(".select-deep", tmpl);
-          selectRow.prop("checked", individual.hasValue(rel_uri, value));
 
-          if (value.deepSelected) {
-            selectDeep.removeClass("text-muted").addClass("text-danger");
-          } else {
-            selectDeep.addClass("text-muted").removeClass("text-danger");
-          }
+          if (target && rel_uri) {
+            var selectRow = $(".select-row", tmpl);
+            var selectDeep = $(".select-deep", tmpl);
+            selectRow.prop("checked", target.hasValue(rel_uri, value));
 
-          if ( !selectableFilter.call(value) ) {
-            selectRow.remove();
+            if (value.deepSelected) {
+              selectDeep.removeClass("text-muted").addClass("text-danger");
+            } else {
+              selectDeep.addClass("text-muted").removeClass("text-danger");
+            }
+
+            if ( !selectableFilterFn.call(value) ) {
+              selectRow.remove();
+            }
           }
         });
       });
@@ -2465,7 +2494,7 @@ v-ui:TreeTemplate
     });
   }
 
-  if (rel_uri) {
+  if (target && rel_uri) {
 
     template.on("click", "td", function (e) {
       e.stopPropagation();
@@ -2480,9 +2509,9 @@ v-ui:TreeTemplate
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
       if (isSingle) {
-        individual.set(rel_uri, [value]);
+        target.set(rel_uri, [value]);
       } else {
-        individual.toggleValue(rel_uri, value);
+        target.toggleValue(rel_uri, value);
       }
     });
 
@@ -2499,21 +2528,21 @@ v-ui:TreeTemplate
         var branch = branchUris.map(function (branchUri) {
           var item = new veda.IndividualModel(branchUri);
           item.deepSelected = value.deepSelected;
-          return allowedFilter.call(item) && selectableFilter.call(item) ? item : undefined;
+          return allowedFilterFn.call(item) && selectableFilterFn.call(item) ? item : undefined;
         });
         if (value.deepSelected) {
-          individual.addValue(rel_uri, branch);
+          target.addValue(rel_uri, branch);
           $this.removeClass("text-muted").addClass("text-danger");
         } else {
-          individual.removeValue(rel_uri, branch);
+          target.removeValue(rel_uri, branch);
           $this.addClass("text-muted").removeClass("text-danger");
         }
       });
     });
 
-    individual.on(rel_uri, propertyModifiedHandler);
+    target.on(rel_uri, propertyModifiedHandler);
     template.one("remove", function () {
-      individual.off(rel_uri, propertyModifiedHandler);
+      target.off(rel_uri, propertyModifiedHandler);
     });
   }
 
@@ -2536,7 +2565,7 @@ v-ui:TreeTemplate
   }
 
   // Render tree
-  individual.treeConfig.root.forEach( function (root, index, roots) {
+  root.forEach( function (root, index, roots) {
     renderRows([root.id]).then(function () {
       if (roots.length === 1) {
         tbody.find(".expand").click();
@@ -2572,8 +2601,8 @@ v-ui:TreeTemplate
 
   function getOut(root) {
     var res = [];
-    if (individual.treeConfig && individual.treeConfig.outProperty) {
-      individual.treeConfig.outProperty.map(function (property) {
+    if (outProperty) {
+      outProperty.map(function (property) {
         if (root.hasValue(property.id)) {
           root.properties[property.id].map(function (value) {
             res.push(value.data);
@@ -2585,19 +2614,19 @@ v-ui:TreeTemplate
   }
 
   function getIn(root) {
-    if (!individual.treeConfig || !individual.treeConfig.inProperty) {
+    if (!inProperty) {
       return Promise.resolve([]);
     }
-    var q = individual.treeConfig.inProperty.map(function (property) {
+    var q = inProperty.map(function (property) {
         return "'" + property.id + "'=='" + root.id + "'";
       }).join(" || ");
-    if ( individual.treeConfig.allowedClass ) {
-      var allowed = individual.treeConfig.allowedClass.map(function (allowedClass) {
+    if ( allowedClass ) {
+      var allowed = allowedClass.map(function (allowedClass) {
         return "'rdf:type'=='" + allowedClass.id + "'";
       }).join(" || ");
       q = "(" + q + ") && (" + allowed + ")";
     }
-    var sort = individual.treeConfig.sort ? individual.treeConfig.sort : "'rdfs:label' desc";
+    var sort = sort || "'rdfs:label_ru' asc, 'rdfs:label_en' asc, 'rdfs:label' asc";
     var unique;
     return veda.Backend.query({
       ticket: veda.ticket,
@@ -2621,9 +2650,18 @@ v-ui:TreeTemplate
       }
     });
   }
+
+  if (!this.hasValue("rdf:type", "v-ui:Tree")) {
+    $(".heading", template).remove();
+  }
   //# sourceURL=v-ui:TreeTemplate
 </script>
-<div class="table-responsive">
+
+<div class="container sheet table-responsive">
+  <div class="heading">
+    <h2 about="@" property="rdfs:label"></h2>
+    <hr class="margin-sm">
+  </div>
   <table class="table table-condensed table-striped">
     <thead class="thead"></thead>
     <tbody class="tbody"></tbody>
