@@ -1705,7 +1705,7 @@
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
       queryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
-      sort = this.data("sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc" ),
+      sort = this.data("sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
       withDeleted = false || this.data("deleted");
 
@@ -1961,10 +1961,10 @@
       var evalQueryPrefix = function () {
         return new Promise(function (resolve, reject) {
           try {
-						var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
-							return eval(match);
-						});
-						resolve(result);
+            var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
+              return eval(match);
+            });
+            resolve(result);
           } catch (error) {
             console.log("Query prefix evaluation error", error);
             reject(error);
