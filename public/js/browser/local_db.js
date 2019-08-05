@@ -7,6 +7,25 @@ veda.Module(function (veda) { "use strict";
   var db_name = "veda";
   var store_name = "individuals";
 
+  var fallback = {
+    get: function (uri) {
+      if (typeof this[uri] !== "undefined") {
+        return Promise.resolve(this[uri]);
+      } else {
+        return Promise.reject();
+      }
+    },
+    put: function (json) {
+      var id = json["@"];
+      this[id] = json;
+      return Promise.resolve(json);
+    },
+    remove: function (uri) {
+      var result = delete this[uri];
+      return Promise.resolve(result);
+    }
+  };
+
   veda.LocalDB = function () {
 
     var self = this;
@@ -20,26 +39,8 @@ veda.Module(function (veda) { "use strict";
 
     function initDB() {
 
-      var fallback = {
-        get: function (uri) {
-          if (typeof this[uri] !== undefined) {
-            return Promise.resolve(this[uri]);
-          } else {
-            return Promise.reject();
-          }
-        },
-        put: function (json) {
-          var id = json["@"];
-          this[id] = json;
-          return Promise.resolve(json);
-        },
-        remove: function (uri) {
-          var result = delete this[uri];
-          return Promise.resolve(result);
-        }
-      };
-
       return new Promise(function (resolve, reject) {
+
         var openReq = window.indexedDB.open(db_name, 1);
 
         openReq.onsuccess = function (event) {
