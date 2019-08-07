@@ -1022,12 +1022,27 @@ v-ui:PositionPopoverTemplate
   rdfs:label "Шаблон должности"@ru ;
   rdfs:label "Position template"@en ;
   v-ui:template """
+<script>
+  return veda.Backend.query(veda.ticket, "'rdf:type'==='v-s:Appointment' && 'v-s:occupation'=='" + individual.id + "'").then(function(queryResult) {
+    var promises = queryResult.result.map(function(uri) {
+      return new veda.IndividualModel(uri).load();
+    });
+    return Promise.all(promises);
+  }).then(function(appointments) {
+    var mBody = $("div.media-body", template);
+    mBody.append('<hr class="no-margin">');
+    appointments.forEach(function(appointment) {
+      mBody.append("<small>"+appointment["rdfs:label"][0]+"</small><br>");
+    })
+  })
+</script>
 <div class="media" style="margin-top:0px;">
   <span class="close">&nbsp;&times;</span>
   <div class="media-body" style="width:auto">
     <strong class="media-heading" about="@" property="rdfs:label"></strong>
     <hr class="no-margin">
     <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
+
   </div>
 </div>
   """ ;
