@@ -5,29 +5,6 @@ veda.Module(function Backend(veda) { "use strict";
 
   veda.Backend = {};
 
-  // Check server health
-  var notify = veda.Notify ? new veda.Notify() : function () {};
-  var interval;
-  function serverWatch() {
-    if (interval) { return; }
-    var duration = 10000;
-    notify("danger", {name: "Connection error"});
-    interval = setInterval(function () {
-      try {
-        var ontoVsn = get_individual(veda.ticket, "cfg:OntoVsn");
-        if (ontoVsn) {
-          clearInterval(interval);
-          interval = undefined;
-          notify("success", {name: "Connection restored"});
-        } else {
-          notify("danger", {name: "Connection error"});
-        }
-      } catch (ex) {
-        notify("danger", {name: "Connection error"});
-      }
-    }, duration);
-  }
-
   // Server errors
   function BackendError (result) {
     var errorCodes = {
@@ -68,9 +45,6 @@ veda.Module(function Backend(veda) { "use strict";
     this.status = result.status;
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
-    if (result.status === 0) {
-      serverWatch();
-    }
     if (result.status === 470 || result.status === 471) {
       veda.trigger("login:failed");
     }
@@ -86,7 +60,7 @@ veda.Module(function Backend(veda) { "use strict";
         url = params.url,
         data = params.data,
         async = typeof params.async !== "undefined" ? params.async : true,
-        salt = Date.now();
+        salt = "";//Date.now();
     if (async) {
       return new Promise( function (resolve, reject) {
         var xhr = new XMLHttpRequest();

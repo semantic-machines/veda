@@ -394,6 +394,17 @@
 
     <!-- Javascript -->
 
+    <script type="text/javascript">
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(function(worker) {
+          console.log('Service workers registered:', worker.scope);
+        }).catch(function(error) {
+          // регистрация прошла неудачно
+          console.log('Registration failed with ' + error);
+        });
+      };
+    </script>
+
     <!-- Utils & UI -->
     <script type="text/javascript" src="./js/browser/lib/promise.js"></script>
     <script type="text/javascript" src="./js/browser/lib/jquery.js"></script>
@@ -485,24 +496,6 @@
           }
         }
       }, '.modal');
-    </script>
-    <script>
-      var $buoop = {
-        vs:{i:10,f:39.0,o:11.5,s:8.0},
-        c:2,
-          //vs: {i:11,f:40.0,o:11.60,s:8.1,c:43.0},
-          reminder: 0
-      };
-      function $buo_f()
-      {
-        var e = document.createElement("script");
-        e.src = "/js/browser/lib/update.min.js";
-        document.body.appendChild(e);
-      };
-      try
-      {
-        document.addEventListener("DOMContentLoaded", $buo_f,false)
-      } catch(e) { window.attachEvent("onload", $buo_f) }
     </script>
   </body>
 </html>
