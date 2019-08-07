@@ -95,14 +95,14 @@ this.addEventListener('install', function(event) {
 
 var api_fns = {
   // GET
-  'authenticate':'{"end_time":' + (Date.now() + 12 * 3600 * 1000) + ',"id":"' + localStorage.ticket + '","result":200,"user_uri":"' + localStorage.user_uri + '"}',
+  'authenticate':'{"end_time":' + (Date.now() + 12 * 3600 * 1000) + ',"id":"","result":200,"user_uri":""}',
   'get_ticket_trusted':'',
   'is_ticket_valid':'true',
   'get_rights':'{"@":"_","rdf:type":[{"data":"v-s:PermissionStatement","type":"Uri"}],"v-s:canCreate":[{"data":true,"type":"Boolean"}],"v-s:canDelete":[{"data":false,"type":"Boolean"}],"v-s:canRead":[{"data":true,"type":"Boolean"}],"v-s:canUpdate":[{"data":true,"type":"Boolean"}]}',
   'get_rights_origin':'',
   'get_membership':'{"@":"_","rdf:type":[{"data":"v-s:Membership","type":"Uri"}],"v-s:memberOf":[{"data":"v-s:AllResourcesGroup","type":"Uri"}]}',
-  'get_individual':'{"@": "$$$","rdf:type": [{type: "Uri", data: "rdfs:Resource"}],"rdfs:label": [{type: "String", data: "Вы работаете офлайн. Этот объект сейчас недоступен.", lang: "RU"},{type: "String", data: "You are offline. This object is not available now.", lang: "EN"}',
-  'reset_individual':'{"@": "$$$","rdf:type": [{type: "Uri", data: "rdfs:Resource"}],"rdfs:label": [{type: "String", data: "Вы работаете офлайн. Этот объект сейчас недоступен.", lang: "RU"},{type: "String", data: "You are offline. This object is not available now.", lang: "EN"}',
+  'get_individual':'{"@": "$$$","rdf:type":[{"type":"Uri","data": "rdfs:Resource"}],"rdfs:label": [{"type": "String", "data": "Вы работаете офлайн. Этот объект сейчас недоступен.", "lang": "RU"},{"type": "String", "data": "You are offline. This object is not available now.", "lang": "EN"}]}',
+  'reset_individual':'{"@": "$$$","rdf:type":[{"type":"Uri","data": "rdfs:Resource"}],"rdfs:label": [{"type": "String", "data": "Вы работаете офлайн. Этот объект сейчас недоступен.", "lang": "RU"},{"type": "String", "data": "You are offline. This object is not available now.", "lang": "EN"}]}',
 
   // POST
   'query': '{"result":[],"count":0,"estimated":0,"processed":0,"cursor":0,"result_code":200}',
@@ -137,22 +137,21 @@ function getStaticResource(event) {
 }
 
 function getApiResponse(event, fn) {
-  if (event.request.method === "GET") {
-    return fetch(event.request).then(function(response) {
+  return fetch(event.request).then(function(response) {
+    if (event.request.method === "GET") {
       return caches.open('api-1').then(function(cache) {
         cache.put(event.request, response.clone());
         return response;
       });
-    }).catch(function (err) {
-      return caches.match(event.request).then(function (match) {
-        if (match) {
-          return match;
-        } else {
-          return api_fns[fn];
-        }
-      });
+    }
+    return response;
+  }).catch(function (err) {
+    return caches.match(event.request).then(function (match) {
+      if (match) {
+        return match;
+      } else {
+        return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+      }
     });
-  } else {
-    return fetch(event.request);
-  }
+  });
 }
