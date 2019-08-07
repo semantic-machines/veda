@@ -32,14 +32,14 @@ v-s:delegator
   rdfs:domain v-s:RequestDelegation ;
   rdfs:label "Доверитель"@ru ;
   rdfs:label "Delegator"@en ;
-  rdfs:range v-s:Person ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:delegate
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:RequestDelegation ;
   rdfs:label "Заместитель"@ru ;
   rdfs:label "Delegate"@en ;
-  rdfs:range v-s:Person ;
+  rdfs:range v-s:Appointment ;
 .
 v-s:delegatedPosition
   rdf:type owl:ObjectProperty ;
@@ -78,7 +78,8 @@ v-s:PsDelegateForRequestDelegation
   v-ui:forProperty v-s:delegate ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
+  v-ui:queryPrefix "'rdf:type'=='v-s:Appointment' && 'v-s:official'=='true' && 'v-s:employee.v-s:hasAccount.isExists'=='true'" ;
+  #v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
 .
 v-s:PsDelegatorForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
@@ -86,7 +87,8 @@ v-s:PsDelegatorForRequestDelegation
   v-ui:forProperty v-s:delegator ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
+  v-ui:queryPrefix "'rdf:type'=='v-s:Appointment' && 'v-s:official'=='true' && 'v-s:employee.v-s:hasAccount.isExists'=='true'" ;
+  #v-ui:queryPrefix "('rdf:type' === 'v-s:Appointment' || 'rdf:type' === 'v-s:Person') && 'v-s:hasAccount.isExists'=='true'" ;
 .
 v-s:PsDelegatedPositionForRequestDelegation
   rdf:type v-ui:PropertySpecification ;
