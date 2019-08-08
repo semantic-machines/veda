@@ -105,8 +105,8 @@ var api_fns = {
   'reset_individual':'{"@": "$$$","rdf:type":[{"type":"Uri","data": "rdfs:Resource"}],"rdfs:label": [{"type": "String", "data": "Вы работаете офлайн. Этот объект сейчас недоступен.", "lang": "RU"},{"type": "String", "data": "You are offline. This object is not available now.", "lang": "EN"}]}',
 
   // POST
-  'query': '{"result":[],"count":0,"estimated":0,"processed":0,"cursor":0,"result_code":200}',
-  'get_individuals': '[]',
+  'query':'{"result":[],"count":0,"estimated":0,"processed":0,"cursor":0,"result_code":200}',
+  'get_individuals':'[]',
 
   // PUT
   'remove_individual':'{"op_id":0,"result":200}',
