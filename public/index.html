@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content=""/>
     <meta name="author" content=""/>
+    <link rel="manifest" href="/app.webmanifest">
 
     <!-- Bootstrap -->
     <link href="./css/bootstrap.min.css" rel="stylesheet"/>
@@ -97,6 +98,7 @@
     <!-- Autocomplete feature -->
     <iframe name="autocomplete-frame" style="display:none" src="about:blank"></iframe>
     <form target="autocomplete-frame" method="post" action="about:blank" autocomplete="on" onkeypress="return (event.keyCode !== 13 || event.target.tagName === 'TEXTAREA')">
+      <button id="install-app" class="btn btn-success" style="display:none;">Установить приложение</button>
       <!-- Application container -->
       <div id="app"></div>
     </form>
