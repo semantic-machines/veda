@@ -11,7 +11,7 @@ path = "src/main.rs"
 [dependencies]
 actix = "0.8.3"
 actix-web = "1.0.3"
-actix-web-actors = "1.0.1"
+actix-web-actors = "1.0.2"
 chrono = "0.4"
 env_logger = "0.6"
 scan_fmt = "0.1.3"
