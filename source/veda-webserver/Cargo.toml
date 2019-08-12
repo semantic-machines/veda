@@ -11,7 +11,7 @@ path = "src/main.rs"
 [dependencies]
 actix = "0.8.3"
 actix-rt = "0.2.2"
-actix-web = "1.0.2"
+actix-web = "1.0.5"
 actix-web-actors = "1.0.2"
 actix-redis = { git = "https://github.com/actix/actix-redis.git", rev = "38d4bdb" }
 futures = "0.1.23"
