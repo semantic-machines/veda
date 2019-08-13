@@ -468,6 +468,14 @@ v-s:BugReportBlank
   v-fc:targetType v-s:BugReport ;
 .
 
+v-s:TrustedTicket
+  rdf:type rdfs:Resource ;
+  rdfs:label "Вход"@ru ;
+  rdfs:label "Sign in"@en ;
+  v-ui:hasTemplate v-ui:TrustedTicketTemplate ;
+.
+
+
 # -- НАПОЛНЕНИЕ АСПЕКТА АДМИНИСТРИРОВАНИЯ END --
 
 # -- ШАБЛОНЫ --
@@ -611,6 +619,33 @@ v-ui:ModulesResultTemplate
   """ ;
 .
 
+v-ui:TrustedTicketTemplate
+   rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон карты"@ru ;
+  rdfs:label "Map template"@en ;
+  v-ui:template """
+<div>
+  <h4>Логин для входа</h4>
+  <input class="form-control input-lg" id="login" placeholder="login" type="text" name="login" autofocus="autofocus"/>
+  <br>
+  <button id="submit-login" class="btn btn-lg btn-primary btn-block">Войти</button>
+</div>
+<script>
+  $("#submit-login", template).click(function(e){
+    e.preventDefault();
+    var useLogin = $("#login", template).val();
+    veda.Backend.get_ticket_trusted(veda.ticket, useLogin).then(function(result) {      
+      veda.end_time = localStorage["end_time"] = Math.floor((result["end_time"] - 621355968000000000) / 10000 );
+      veda.ticket = localStorage["ticket"] = result["id"];
+      veda.user_uri = localStorage["user_uri"] = result["user_uri"];
+      location.assign(location.origin);
+    });
+  })
+  //# sourceURL=v-ui:TrustedTicketTemplate_post
+</script>
+""" ;
+  .
+
 # -- ШАБЛОН АСПЕКТА АДМИНИСТРИРОВАНИЯ --
 
 v-s:ClassesBundle
@@ -702,6 +737,12 @@ v-s:NewsBundle
   rdfs:label "News"@en ;
 .
 
+v-s:TrustedTicketBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Доверенный вход"@ru ;
+  rdfs:label "Trusted ticket"@en ;
+.
+
 v-ui:AdministrationAspectTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для класса Аспекта администирования"@ru ;
@@ -721,6 +762,7 @@ v-ui:AdministrationAspectTemplate
     <li role="presentation"><a href="#Modules" aria-controls="Modules" role="tab" data-toggle="tab" about="v-s:ModulesBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#BugReports" aria-controls="BugReports" role="tab" data-toggle="tab" about="v-s:BugReportsBundle" property="rdfs:label"></a></li>
     <li role="presentation"><a href="#News" aria-controls="News" role="tab" data-toggle="tab" about="v-s:NewsBundle" property="rdfs:label"></a></li>
+    <li role="presentation" class="trusted-ticket"><a href="#TrustedTicket" aria-controls="TrustedTicket" role="tab" data-toggle="tab" about="v-s:TrustedTicketBundle" property="rdfs:label"></a></li>
   </ul>
   <br>
   <!-- Tab panes -->
@@ -894,9 +936,21 @@ v-ui:AdministrationAspectTemplate
       </div>
     </div>
 
+    <div role="tabpanel" class="tab-pane trusted-ticket" id="TrustedTicket">
+      <!-- <h3 about="v-s:TrustedTicketBundle" property="rdfs:label"></h3> -->
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span about="v-s:TrustedTicketBundle" property="rdfs:label"></span>
+        </div>
+        <div class="panel-body" about="v-s:TrustedTicket" data-template="v-ui:TrustedTicketTemplate"></div>
+      </div>
+    </div>
   </div>
 </div>
 <script>
+  if (veda.user.id !== "cfg:Administrator") {
+    $(".trusted-ticket", template).remove();
+  }
   $("#install-Module").click(function(){
     let url=$("#moduleUrl",template).val();
     if (url) {
