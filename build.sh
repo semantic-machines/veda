@@ -26,6 +26,19 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
 fi
 
+if [ -z $1 ] || [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
+
+    echo start make VEDA-EXTRACTOR
+    rm ./veda-extractor
+
+    cd source/veda-extractor
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-extractor $PWD
+
+    echo end make VEDA-EXTRACTOR
+fi
+
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
     echo start make VEDA-CCUS
