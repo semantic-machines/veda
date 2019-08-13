@@ -9,15 +9,14 @@ use nng::{Message, Protocol, Socket};
 use std::collections::HashMap;
 use std::io::Write;
 use std::{thread, time};
+use v_api::IndvOp;
+use v_exim::*;
 use v_module::module::*;
 use v_onto::datatype::*;
 use v_onto::individual::*;
 use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
-//use v_queue::queue::*;
-use v_api::IndvOp;
-use v_exim::*;
 use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
@@ -197,29 +196,4 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), E
         }
     }
     Ok(())
-}
-
-fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
-    let mut node = Individual::default();
-
-    if module.storage.set_binobj("cfg:standart_node", &mut node) {
-        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
-            if c > *node_upd_counter {
-                link_node_addresses.clear();
-                if let Ok(v) = node.get_literals("cfg:linked_node") {
-                    for el in v {
-                        let mut link_node = Individual::default();
-
-                        if module.storage.set_binobj(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
-                            if let Ok(addr) = link_node.get_first_literal("rdf:value") {
-                                link_node_addresses.insert(el, addr);
-                            }
-                        }
-                    }
-                    info!("linked nodes: {:?}", link_node_addresses);
-                }
-                *node_upd_counter = c;
-            }
-        }
-    }
 }

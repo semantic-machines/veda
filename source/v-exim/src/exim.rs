@@ -1,8 +1,14 @@
 #[macro_use]
 extern crate enum_primitive_derive;
 extern crate num_traits;
+#[macro_use]
+extern crate log;
+extern crate env_logger;
 use num_traits::{FromPrimitive, ToPrimitive};
 use std::str::*;
+use std::collections::HashMap;
+use v_onto::individual::Individual;
+use v_module::module::Module;
 
 const TRANSMIT_FAILED: i64 = 32;
 
@@ -78,4 +84,46 @@ pub fn dec_slave_resp(msg: &[u8]) -> (&str, ExImCode) {
         }
     }
     ("?", ExImCode::Unknown)
+}
+
+pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
+    let mut node = Individual::default();
+
+    if module.storage.set_binobj("cfg:standart_node", &mut node) {
+        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
+            if c > *node_upd_counter {
+                link_node_addresses.clear();
+                if let Ok(v) = node.get_literals("cfg:linked_node") {
+                    for el in v {
+                        let mut link_node = Individual::default();
+
+                        if module.storage.set_binobj(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
+                            if let Ok(addr) = link_node.get_first_literal("rdf:value") {
+                                link_node_addresses.insert(el, addr);
+                            }
+                        }
+                    }
+                    info!("linked nodes: {:?}", link_node_addresses);
+                }
+                *node_upd_counter = c;
+            }
+        }
+    }
+}
+
+pub fn get_db_id (module: &mut Module) -> Option <String> {
+    let mut indv = Individual::default();
+    if module.storage.set_binobj("cfg:system", &mut indv) {
+        if let Ok(c) = indv.get_first_literal("cfg:id") {
+            return Some (c);
+        }
+    }
+    None
+}
+
+pub fn create_db_id (module: &mut Module) -> Option <String> {
+
+    //module.api.update();
+
+    None
 }

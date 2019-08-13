@@ -239,10 +239,16 @@ impl APIClient {
     }
 
     pub fn connect(&mut self) -> bool {
+
+        if self.addr.len() == 0 {
+            error!("api-client:invalid addr: [{}]", self.addr);
+            return self.is_ready;
+        }
+
         if let Err(e) = self.client.dial(self.addr.as_str()) {
-            error!("ft-client:fail dial to ro-storage, [{}], err={}", self.addr, e);
+            error!("api-client:fail dial to ro-storage, [{}], err={}", self.addr, e);
         } else {
-            info!("sucess connect to ro-storage, [{}]", self.addr);
+            info!("sucess connect to main module, [{}]", self.addr);
             self.is_ready = true;
         }
         self.is_ready
