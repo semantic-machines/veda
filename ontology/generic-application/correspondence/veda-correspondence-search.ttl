@@ -165,7 +165,7 @@ v-s:LetterSearchResultTemplate
       <td rel="v-s:hasDelivery">
         <div>
           <span property="v-s:date"></span>
-          <span property="v-s:deliverBy"></span>
+          <span rel="v-s:deliverBy" data-template="v-ui:LabelTemplate"></span>
           <span property="rdfs:comment"></span> ;
         </div>
       </td>
