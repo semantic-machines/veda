@@ -7,6 +7,8 @@ use env_logger::Builder;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
+use v_api::IndvOp;
+use v_exim::*;
 use v_module::module::*;
 use v_module::onto::*;
 use v_onto::datatype::*;
@@ -31,6 +33,18 @@ fn main() -> std::io::Result<()> {
         .init();
 
     let mut module = Module::default();
+
+    let mut db_id = get_db_id(&mut module);
+
+    if db_id.is_none() {
+        db_id = create_db_id(&mut module);
+
+        if db_id.is_none() {
+            error!("fail create Database Identification");
+            return Ok(());
+        }
+    }
+
     let mut onto = Onto::new();
 
     info!("load onto start");

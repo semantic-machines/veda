@@ -28,15 +28,8 @@ fn main() -> std::io::Result<()> {
     let mut module = Module::default();
 
     let param_name = "exim_slave_port";
-    let exim_slave_port = module.get_property(param_name);
+    let exim_slave_port = Module::get_property(param_name);
     if exim_slave_port.is_none() {
-        error!("not found param {} in properties file", param_name);
-        return Ok(());
-    }
-
-    let param_name = "main_module_url";
-    let main_module_url = module.get_property(param_name);
-    if main_module_url.is_none() {
         error!("not found param {} in properties file", param_name);
         return Ok(());
     }
@@ -49,8 +42,6 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    let mut api = APIClient::new(main_module_url.unwrap());
-
     let mut server = Socket::new(Protocol::Rep0)?;
     if let Err(e) = server.listen(&exim_slave_port.unwrap()) {
         error!("fail listen, {:?}", e);
@@ -59,7 +50,7 @@ fn main() -> std::io::Result<()> {
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let resp_msg = prepare_recv_msg(recv_msg.to_vec(), &mut api, &systicket);
+            let resp_msg = prepare_recv_msg(recv_msg.to_vec(), &systicket, &mut module);
 
             if let Err(e) = server.send(Message::from(resp_msg.as_ref())) {
                 error!("fail send {:?}", e);
@@ -72,7 +63,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> String {
+fn prepare_recv_msg(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> String {
     let mut recv_indv = Individual::new_raw(RawObj::new(recv_msg));
 
     if let Ok(uri) = parse_raw(&mut recv_indv) {
@@ -90,7 +81,7 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> 
         }
 
         let mut indv = Individual::default();
-        let res = api.update(systicket, cmd, &mut indv);
+        let res = module.api.update(systicket, cmd, &mut indv);
 
         if res.result != ResultCode::Ok {
             error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
