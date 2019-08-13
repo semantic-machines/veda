@@ -308,6 +308,9 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.showModal = function (individual, template, mode) {
+    if ( $("body").hasClass("modal-open")) {
+      $(".modal").modal("hide").remove();
+    };
     var modal = $( $("#notification-modal-template").html() );
     modal.modal();
     $("body").append(modal);
