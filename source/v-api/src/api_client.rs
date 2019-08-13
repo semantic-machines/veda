@@ -240,7 +240,7 @@ impl APIClient {
 
     pub fn connect(&mut self) -> bool {
 
-        if self.addr.len() == 0 {
+        if self.addr.is_empty() {
             error!("api-client:invalid addr: [{}]", self.addr);
             return self.is_ready;
         }

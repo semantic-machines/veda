@@ -12,5 +12,8 @@ env_logger = "0.6"
 log = "0.4"
 enum-primitive-derive = "0.1"
 num-traits = "0.1"
+uuid = { version = "0.7", features = ["serde", "v4"] }
 v_onto = { path = "../v-onto" }
 v_module = { path = "../v-module" }
+v_api = { path = "../v-api" }
+

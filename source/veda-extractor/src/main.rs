@@ -90,7 +90,7 @@ fn main() -> std::io::Result<()> {
 
         for _it in 0..size_batch {
             // пробуем взять из очереди заголовок сообщения
-            if queue_consumer.pop_header() == false {
+            if !queue_consumer.pop_header() {
                 break;
             }
 
@@ -130,7 +130,7 @@ fn main() -> std::io::Result<()> {
                 return Err(-1);
             }
 
-            let cmd = IndvOp::from_i64(wcmd.unwrap_or_default().clone());
+            let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
             let new_state = msg.get_first_binobj("new_state");
             if cmd != IndvOp::Remove && new_state.is_err() {
