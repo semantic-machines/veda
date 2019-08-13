@@ -158,9 +158,11 @@ veda.Module(function (veda) { "use strict";
           extra = extra.split("&").reduce(function (acc, pair) {
             var split = pair.split("="),
                 name  = split[0] || "",
-                value = split[1] || "";
+                values = split[1].split("|") || "";
             acc[name] = acc[name] || [];
-            acc[name].push( parse(value) );
+            values.forEach(function (value) {
+              acc[name].push( parse(value) );
+            });
             return acc;
           }, {});
         }
@@ -270,14 +272,15 @@ veda.Module(function (veda) { "use strict";
     });
 
     function showAddToHomeScreen() {
-      var installBtn = document.selectElementById("install-app");
-      installBtn.style.display = "block";
-      installBtn.addEventListener("click", addToHomeScreen);
+      var installApp = document.getElementById("install-app");
+      var installAppBtn = document.getElementById("install-app-btn");
+      installApp.style.display = "block";
+      installAppBtn.addEventListener("click", addToHomeScreen);
     }
 
     function addToHomeScreen() {
-      var installBtn = document.selectElementById("install-app");
-      installBtn.style.display = 'none';  // Show the prompt
+      var installApp = document.getElementById("install-app");
+      installApp.style.display = 'none';  // Hide the prompt
       deferredPrompt.prompt();  // Wait for the user to respond to the prompt
       deferredPrompt.userChoice
         .then(function(choiceResult) {
