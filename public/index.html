@@ -45,6 +45,9 @@
   </head>
   <body>
 
+    <div class="well well-sm text-center" id="install-app" style="display:none;">
+      Установите приложение и Вы сможете получать уведомления и работать офлайн!  <button id="install-app-btn" class="btn btn-sm btn-default">Установить</button>
+    </div>
     <!-- Login form -->
     <div style="display:none;" class="login-form">
       <form role="form">
@@ -98,7 +101,6 @@
     <!-- Autocomplete feature -->
     <iframe name="autocomplete-frame" style="display:none" src="about:blank"></iframe>
     <form target="autocomplete-frame" method="post" action="about:blank" autocomplete="on" onkeypress="return (event.keyCode !== 13 || event.target.tagName === 'TEXTAREA')">
-      <button id="install-app" class="btn btn-success" style="display:none;">Установить приложение</button>
       <!-- Application container -->
       <div id="app"></div>
     </form>

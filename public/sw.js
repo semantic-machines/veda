@@ -1,6 +1,23 @@
+var STATIC = 'static-2';
+var API = 'api-1';
+
+this.addEventListener('activate', function(event) {
+  var cacheWhitelist = [ STATIC, API ];
+
+  event.waitUntil(
+    caches.keys().then(function(keyList) {
+      return Promise.all(keyList.map(function(key) {
+        if (cacheWhitelist.indexOf(key) === -1) {
+          return caches.delete(key);
+        }
+      }));
+    })
+  );
+});
+
 this.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open('static-1').then(function(cache) {
+    caches.open( STATIC ).then(function(cache) {
       //Cache static resources
       return cache.addAll([
         // Index
@@ -128,7 +145,7 @@ this.addEventListener('fetch', function(event) {
 function getStaticResource(event) {
   return caches.match(event.request).then(function(resp) {
     return resp || fetch(event.request).then(function(response) {
-      return caches.open('static-1').then(function(cache) {
+      return caches.open( STATIC ).then(function(cache) {
         cache.put(event.request, response.clone());
         return response;
       });
@@ -139,7 +156,7 @@ function getStaticResource(event) {
 function getApiResponse(event, fn) {
   return fetch(event.request).then(function(response) {
     if (event.request.method === "GET") {
-      return caches.open('api-1').then(function(cache) {
+      return caches.open( API ).then(function(cache) {
         cache.put(event.request, response.clone());
         return response;
       });
