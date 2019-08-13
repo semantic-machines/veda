@@ -69,7 +69,7 @@ v-s:InternalDocumentSearchResultTemplate
       <td rel="v-s:hasDocumentKind" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-s:responsibleDepartment" data-template="v-ui:LabelTemplate"></td>
       <td rel="v-s:initiator" data-template="v-ui:LabelTemplate"></td>
-      <td property="v-s:copyTo"></td>
+      <td rel="v-s:copyTo" data-template="v-ui:LabelTemplate"></td>
       <td property="v-s:theme"></td>
       <td property="v-s:content"></td>
       <td property="rdfs:comment"></td>
