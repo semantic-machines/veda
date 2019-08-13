@@ -60,6 +60,8 @@ fn main() -> std::io::Result<()> {
     let mut queue_consumer = Consumer::new("./data/queue", "extract", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
 
+    let db_id = db_id.unwrap();
+
     loop {
         let mut size_batch = 0;
 
@@ -106,7 +108,7 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            if let Err(e) = prepare_queue_element(&mut Individual::new_raw(raw), &mut queue_out) {
+            if let Err(e) = prepare_queue_element(&mut Individual::new_raw(raw), &mut queue_out, &db_id) {
                 error!("fail prepare queue element, err={}", e);
             }
 
@@ -121,7 +123,7 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
-    fn prepare_queue_element(msg: &mut Individual, queue_out: &mut Queue) -> Result<(), i32> {
+    fn prepare_queue_element(msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
         if let Ok(uri) = parse_raw(msg) {
             msg.obj.uri = uri;
 
@@ -154,7 +156,7 @@ fn main() -> std::io::Result<()> {
                     new_indv.obj.add_binary("new_state", raw, 0);
                     new_indv.obj.add_integer("cmd", cmd as i64, 0);
                     new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
-                    new_indv.obj.add_string("source_veda", "*", Lang::NONE, 0);
+                    new_indv.obj.add_string("source_veda", db_id, Lang::NONE, 0);
                     new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
 
                     let mut raw1: Vec<u8> = Vec::new();
