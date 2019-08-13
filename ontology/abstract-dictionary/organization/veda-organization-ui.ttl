@@ -221,7 +221,7 @@ v-s:PsParentUnitForSubsidiary
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Subsidiary ;
   v-ui:forProperty v-s:parentUnit ;
-  v-ui:minCardinality 0 ;
+  v-ui:minCardinality 1 ;
   v-ui:maxCardinality 100 ;
   v-ui:rangeRestriction v-s:Organization ;
 .
