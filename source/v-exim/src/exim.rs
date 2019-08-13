@@ -4,11 +4,15 @@ extern crate num_traits;
 #[macro_use]
 extern crate log;
 extern crate env_logger;
+extern crate uuid;
 use num_traits::{FromPrimitive, ToPrimitive};
-use std::str::*;
 use std::collections::HashMap;
-use v_onto::individual::Individual;
+use std::str::*;
+use uuid::*;
+use v_api::*;
 use v_module::module::Module;
+use v_onto::datatype::Lang;
+use v_onto::individual::Individual;
 
 const TRANSMIT_FAILED: i64 = 32;
 
@@ -65,7 +69,7 @@ impl ExImCode {
 }
 
 pub fn enc_slave_resp(uri: &str, code: ExImCode) -> String {
-    let q : i64 = code.into();
+    let q: i64 = code.into();
     uri.to_owned() + "," + &q.to_string()
 }
 
@@ -111,19 +115,39 @@ pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_no
     }
 }
 
-pub fn get_db_id (module: &mut Module) -> Option <String> {
+pub fn get_db_id(module: &mut Module) -> Option<String> {
     let mut indv = Individual::default();
     if module.storage.set_binobj("cfg:system", &mut indv) {
         if let Ok(c) = indv.get_first_literal("cfg:id") {
-            return Some (c);
+            return Some(c);
         }
     }
     None
 }
 
-pub fn create_db_id (module: &mut Module) -> Option <String> {
+pub fn create_db_id(module: &mut Module) -> Option<String> {
+    let systicket;
+    if let Ok(t) = module.storage.get_sys_ticket_id() {
+        systicket = t;
+    } else {
+        error!("fail get systicket");
+        return None;
+    }
 
-    //module.api.update();
+    let uuid1 = Uuid::new_v4().to_hyphenated().to_string();
+    info!("create new db id = {}", uuid1);
+
+    let mut new_indv = Individual::default();
+    new_indv.obj.uri = "cfg:system".to_owned();
+    new_indv.obj.add_string("cfg:id", &uuid1, Lang::NONE, 0);
+
+    let res = module.api.update(&systicket, IndvOp::Put, &mut new_indv);
+
+    if res.result != ResultCode::Ok {
+        error!("fail update, uri={}, result_code={:?}", new_indv.obj.uri, res.result);
+    } else {
+        return Some(uuid1);
+    }
 
     None
 }
