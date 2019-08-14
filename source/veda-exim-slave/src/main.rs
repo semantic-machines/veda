@@ -27,7 +27,7 @@ fn main() -> std::io::Result<()> {
 
     let mut module = Module::default();
 
-    let param_name = "exim_slave_port";
+    let param_name = "exim_url";
     let exim_slave_port = Module::get_property(param_name);
     if exim_slave_port.is_none() {
         error!("not found param {} in properties file", param_name);

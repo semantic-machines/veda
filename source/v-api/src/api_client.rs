@@ -39,8 +39,8 @@ pub enum IndvOp {
 impl IndvOp {
     pub fn from_i64(value: i64) -> IndvOp {
         match value {
-            1 => IndvOp::Get,
-            2 => IndvOp::Put,
+            1 => IndvOp::Put,
+            2 => IndvOp::Get,
             51 => IndvOp::Remove,
             47 => IndvOp::AddIn,
             45 => IndvOp::SetIn,
