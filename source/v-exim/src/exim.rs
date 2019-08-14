@@ -127,7 +127,7 @@ pub fn get_db_id(module: &mut Module) -> Option<String> {
 
 pub fn create_db_id(module: &mut Module) -> Option<String> {
     let systicket;
-    if let Ok(t) = module.storage.get_sys_ticket_id() {
+    if let Ok(t) = module.get_sys_ticket_id() {
         systicket = t;
     } else {
         error!("fail get systicket");

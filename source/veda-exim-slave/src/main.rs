@@ -35,7 +35,7 @@ fn main() -> std::io::Result<()> {
     }
 
     let systicket;
-    if let Ok(t) = module.storage.get_sys_ticket_id() {
+    if let Ok(t) = module.get_sys_ticket_id() {
         systicket = t;
     } else {
         error!("fail get systicket");
@@ -80,14 +80,24 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> 
             return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
         }
 
-        let mut indv = Individual::default();
-        let res = module.api.update(systicket, cmd, &mut indv);
+        let new_state = recv_indv.get_first_binobj("new_state");
+        if cmd != IndvOp::Remove && !new_state.is_err() {
+            let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
+            if let Ok(uri) = parse_raw(&mut indv) {
+                indv.parse_all();
+                indv.obj.uri = uri.clone();
 
-        if res.result != ResultCode::Ok {
-            error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
-            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate);
+                let res = module.api.update(systicket, cmd, &mut indv);
+
+                if res.result != ResultCode::Ok {
+                    error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
+                    return enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate);
+                } else {
+                    return enc_slave_resp(&recv_indv.obj.uri, ExImCode::Ok);
+                }
+            }
         }
     }
 
-    enc_slave_resp(&recv_indv.obj.uri, ExImCode::Ok)
+    enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate)
 }

@@ -1,8 +1,9 @@
 use ini::Ini;
 use std::{thread, time};
 use v_api::APIClient;
+use v_onto::individual::Individual;
 use v_search::*;
-use v_storage::storage::VStorage;
+use v_storage::storage::*;
 
 pub struct Module {
     pub storage: VStorage,
@@ -65,5 +66,15 @@ impl Module {
         } else {
             None
         }
+    }
+
+    pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
+        let mut indv = Individual::default();
+        if self.storage.set_binobj_db(StorageId::Tickets, "systicket", &mut indv) {
+            if let Ok(c) = indv.get_first_literal("rdf:resource") {
+                return Ok(c);
+            }
+        }
+        return Err(-1);
     }
 }
