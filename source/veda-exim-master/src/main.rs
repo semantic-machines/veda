@@ -53,9 +53,10 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     let mut soc = Socket::new(Protocol::Req0).unwrap();
 
     if let Err(e) = soc.dial(node_addr) {
-        error!("fail connect to, {}{}, err={}", node_id, node_addr, e);
+        error!("fail connect to, {} {}, err={}", node_id, node_addr, e);
         return;
     }
+    info!("success connect to, {} {}", node_id, node_addr);
 
     let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
 
