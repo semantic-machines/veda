@@ -1,4 +1,4 @@
-use crate::storage::Storage;
+use crate::storage::*;
 use futures::future::Future;
 use rusty_tarantool::tarantool::{Client, ClientConfig};
 use std::net::SocketAddr;
@@ -26,10 +26,18 @@ impl TTStorage {
 }
 
 impl Storage for TTStorage {
-    fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool {
+    fn set_binobj(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
         let key = (uri,);
 
-        let resp = self.client.select(INDIVIDUALS_SPACE_ID, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
+        let space;
+
+        if storage == StorageId::Individuals {
+            space = INDIVIDUALS_SPACE_ID;
+        } else {
+            space = TICKETS_SPACE_ID;
+        }
+
+        let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 
         if let Ok(v) = self.rt.block_on(resp) {
             iraw.raw.data = v[5..].to_vec();
@@ -43,15 +51,5 @@ impl Storage for TTStorage {
         }
 
         false
-    }
-
-    fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
-        let key = ("systicket",);
-        let resp = self.client.select(TICKETS_SPACE_ID, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
-
-        if let Ok(v) = self.rt.block_on(resp) {
-            return Ok(String::from_utf8_lossy(&v[5..]).to_string());
-        }
-        Err(-1)
     }
 }
