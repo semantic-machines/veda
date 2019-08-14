@@ -26,6 +26,32 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
 fi
 
+if [ -z $1 ] || [ $1 == "exim-master" ] || [ $1 == "veda-exim-master" ] ; then
+
+    echo start make VEDA-EXIM-MASTER
+    rm ./veda-veda-exim-master
+
+    cd source/veda-exim-master
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-exim-master $PWD
+
+    echo end make VEDA-EXIM-MASTER
+fi
+
+if [ -z $1 ] || [ $1 == "exim-slave" ] || [ $1 == "veda-exim-slave" ] ; then
+
+    echo start make VEDA-EXIM-SLAVE
+    rm ./veda-veda-exim-slave
+
+    cd source/veda-exim-slave
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-exim-slave $PWD
+
+    echo end make VEDA-EXIM-SLAVE
+fi
+
 if [ -z $1 ] || [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
 
     echo start make VEDA-EXTRACTOR
