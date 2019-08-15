@@ -22,6 +22,7 @@ v-s:Decree
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Распорядительный документ"@ru ;
   rdfs:label "Decree"@en ;
 .

@@ -110,6 +110,7 @@ v-s:Idea
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Initiative ;
   rdfs:subClassOf v-s:Maintained ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Идея"@ru ;
   rdfs:label "Idea"@en ;
 .

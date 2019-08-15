@@ -213,6 +213,7 @@ v-s:AccountingDoc
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Financial ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Первичный документ"@ru ;
   rdfs:label "Accounting document"@en ;
 .

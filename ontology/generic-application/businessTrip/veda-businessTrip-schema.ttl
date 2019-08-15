@@ -21,6 +21,7 @@ v-s:BusinessTrip
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Командировка"@ru ;
   rdfs:label "Business trip"@en ;
 .
