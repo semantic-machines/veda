@@ -380,3 +380,13 @@ v-s:CreateBundle
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
 .
+v-s:SuccessBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Успешно"@ru ;
+  rdfs:label "Success"@en ;
+.
+v-s:ErrorBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ошибка"@ru ;
+  rdfs:label "Error"@en ;
+.
