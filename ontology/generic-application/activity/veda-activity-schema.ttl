@@ -26,6 +26,7 @@ v-s:Activity
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:WorkGroup ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Активность"@ru ;
   rdfs:label "Activity"@en ;
 .
