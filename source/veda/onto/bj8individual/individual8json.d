@@ -295,16 +295,22 @@ Resource json_to_resource(JSONValue resource_json)
         }
         else if (type == DataType.Datetime)
         {
-            string val = resource_json.getString("data");
+            if (data_type == JSON_TYPE.INTEGER)
+            {
+                resource = resource_json.getLong("data");
+            }
+            else if (data_type == JSON_TYPE.STRING)
+            {
+                string val = resource_json.getString("data");
 
-            long   tm;
+                long   tm;
 
-            if (val.indexOf('-') >= 1)
-                tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
-            else
-                tm = to!long (val);
-
-            resource = tm;
+                if (val.indexOf('-') >= 1)
+                    tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+                else
+                    tm = to!long (val);
+                resource = tm;
+            }
         }
 
         resource.type = type;
