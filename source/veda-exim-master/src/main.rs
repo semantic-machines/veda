@@ -106,7 +106,7 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
         }
 
         let mut indv = &mut Individual::new_raw(raw);
-        while let Err(e) = prepare_queue_element(&mut indv, &mut soc) {
+        while let Err(e) = prepare_queue_element(&mut indv, &mut soc, node_addr) {
             error!("fail prepare queue element, err={}", e.as_string());
             if e != ExImCode::TransmitFailed {
                 break;
@@ -122,7 +122,7 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     }
 }
 
-fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), ExImCode> {
+fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_addr: &str) -> Result<(), ExImCode> {
     if let Ok(uri) = parse_raw(msg) {
         msg.obj.uri = uri;
 
@@ -167,6 +167,8 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), E
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
                     let req = Message::from(raw1.as_ref());
 
+                    info! ("attempt send {} to {}", uri, node_addr);
+
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
                         return Err(ExImCode::TransmitFailed);
@@ -191,6 +193,8 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), E
                         error!("recv error, uri={}, error={}", res.0, res.1.as_string());
                         return Err(ExImCode::TransmitFailed);
                     }
+
+                    info! ("success send {} to {}", uri, node_addr);
                 }
             }
             // info! ("{:?}", raw);
