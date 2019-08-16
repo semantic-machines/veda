@@ -212,12 +212,16 @@ veda.Module(function (veda) { "use strict";
         return individual[method]();
       }).then(function () {
         template.trigger("view");
+        if (method === "reset") { return; }
         if (!parent) {
           var successMsg = new veda.IndividualModel("v-s:SuccessBundle").load();
           successMsg.then(function (successMsg) {
             var notify = veda.Notify ? new veda.Notify() : function () {};
             notify("success", {name: successMsg});
           });
+        } else {
+          var parentIndividual = new veda.IndividualModel(parent);
+          parentIndividual.isSync(false);
         }
       }).catch(function (error) {
         console.log(error);

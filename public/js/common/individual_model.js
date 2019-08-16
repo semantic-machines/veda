@@ -426,15 +426,21 @@ veda.Module(function (veda) { "use strict";
    * Reset current individual to  database
    */
   proto.reset = function (original) {
-    var self = this;
     this.trigger("beforeReset");
+    if (this.isNew()) {
+      return Promise.resolve(this).then(function (self) {
+        self.trigger("afterReset");
+        return self;
+      });
+    }
+    var self = this;
     self.filtered = {};
     return (original ? Promise.resove(original) : veda.Backend.reset_individual(veda.ticket, self.id))
       .then(processOriginal)
       .catch(function (error) {
         console.log("reset individual error", error);
         self.trigger("afterReset");
-      });;
+      });
 
     function processOriginal(original) {
       var self_property_uris = Object.keys(self.properties);
