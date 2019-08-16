@@ -49,9 +49,7 @@ fn main() -> std::io::Result<()> {
 
     info!("load onto start");
     load_onto(&mut module.fts, &mut module.storage, &mut onto);
-    info!("load onto stop");
-
-    //info! ("{}", onto.is_some_entered("v-s:Email", &["v-s:Thing".to_owned()]));
+    info!("load onto end");
 
     //info!("onto: {}", onto);
 
@@ -108,7 +106,7 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            if let Err(e) = prepare_queue_element(&mut Individual::new_raw(raw), &mut queue_out, &db_id) {
+            if let Err(e) = prepare_queue_element(&mut onto, &mut Individual::new_raw(raw), &mut queue_out, &db_id) {
                 error!("fail prepare queue element, err={}", e);
             }
 
@@ -123,7 +121,7 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
-    fn prepare_queue_element(msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
+    fn prepare_queue_element(onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
         if let Ok(uri) = parse_raw(msg) {
             msg.obj.uri = uri;
 
@@ -146,6 +144,20 @@ fn main() -> std::io::Result<()> {
 
             let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
             if let Ok(uri) = parse_raw(&mut indv) {
+                let is_prepare = if let Ok(t) = indv.get_first_literal("rdf:type") {
+                    if onto.is_some_entered(&t, &["v-s:OrganizationUnit".to_owned()]) {
+                        true
+                    }
+                    if t == "v-wf:DecisionForm" || t == "v-wf:takenDecision" {
+                        true
+                    }
+                    false
+                };
+
+                if !is_prepare {
+                    Ok(())
+                }
+
                 indv.parse_all();
                 indv.obj.uri = uri.clone();
 

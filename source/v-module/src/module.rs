@@ -27,7 +27,7 @@ impl Default for Module {
 
         info!("tarantool addr={:?}", &tarantool_addr);
 
-        let mut storage: VStorage;
+        let storage: VStorage;
         if !tarantool_addr.is_empty() {
             storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
         } else {
