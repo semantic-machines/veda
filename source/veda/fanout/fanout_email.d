@@ -357,6 +357,9 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
+                log.trace("always_use_mail_sender: [%s]", always_use_mail_sender);
+                log.trace("default mail sender: [%s]", default_mail_sender);
+
                 if (from is null && senderMailbox is null && default_mail_sender !is null)
                     from = default_mail_sender;
 
@@ -367,10 +370,12 @@ class FanoutProcess : VedaModule
 
                     if (always_use_mail_sender == true && default_mail_sender !is null && default_mail_sender.length > 5)
                     {
+                        log.trace("use default mail sender: [%s]", default_mail_sender);
                         email_from = default_mail_sender;
                     }
                     else
                     {
+                        log.trace("extract [from], [%s]", from);
                         email_from = extract_email(sticket, null, from, from_label).getFirstString();
 
                         if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)
