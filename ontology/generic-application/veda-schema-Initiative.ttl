@@ -121,6 +121,7 @@ v-s:Project
   rdfs:subClassOf v-s:WorkGroup ;
   rdfs:subClassOf v-s:Maintained ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Проект"@ru ;
   rdfs:label "Project"@en ;
 .
