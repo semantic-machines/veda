@@ -237,6 +237,26 @@ class FanoutProcess : VedaModule
                 }
             }
         }
+        else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Person")))
+        {
+            foreach (Resource elt; indv.getResources("rdf:type"))
+            {
+                string ac_uri = elt.uri;
+                if (ac_uri is null)
+                    return null;
+
+                Individual ac = context.get_individual(ac_uri);
+                if (ac.getStatus() != ResultCode.Ok || ac.isExists("v-s:deleted", true) == true)
+                    return null;
+
+                Resources tmp_res = ac.getResources("v-s:mailbox");
+
+                foreach (rr; tmp_res)
+                {
+                    res ~= rr;
+                }
+            }
+        }
         else
         {
             log.trace("ERR! extract_email: fail extract email from [%s], this not appointment or position", ap_uri);
