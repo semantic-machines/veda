@@ -226,8 +226,7 @@ void main(string[] args)
     Module *[ string ] modules;
 
     modules[ "veda-ro-storage" ] = new Module("veda-ro-storage", "veda-ro-storage", [], [], false, false, 0);
-    modules[ "veda-mstorage" ]   = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true,
-                                              true, 1);
+    modules[ "veda-mstorage" ]   = new Module("veda-mstorage", "veda-mstorage", [], [ "acl_preparer", "subject_manager", "ticket_manager" ], true, true, 1);
     modules[ "veda-ft-indexer" ]    = new Module("veda-ft-indexer", "veda-ft-indexer", [], [ "fulltext_indexer" ], false, false, 2);
     modules[ "veda-ft-query" ]      = new Module("veda-ft-query", "veda-ft-query", [], [], false, false, 3);
     modules[ "veda-scripts-main" ]  = new Module("veda-scripts-main", "veda-scripts", [ "main" ], [ "scripts-main" ], false, false, 4);
@@ -243,6 +242,9 @@ void main(string[] args)
     modules[ "veda-ontologist" ]    = new Module("veda-ontologist", "veda-ontologist", [], [], false, false, 14);
     modules[ "veda-webserver" ]     = new Module("veda-webserver", "veda-webserver", [], [], false, false, 15);
     modules[ "veda-geo-indexer" ]   = new Module("veda-geo-indexer", "veda-geo-indexer", [], [], false, false, 16);
+    modules[ "veda-extractor" ]     = new Module("veda-extractor", "veda-extractor", [], [], false, false, 17);
+    modules[ "veda-exim-master" ]   = new Module("veda-exim-master", "veda-exim-master", [], [], false, false, 18);
+    modules[ "veda-exim-slave" ]    = new Module("veda-exim-slave", "veda-exim-slave", [], [], false, false, 19);
     modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", "veda-gowebserver", [], [], false, false, 99);
 
     string[ string ] properties;

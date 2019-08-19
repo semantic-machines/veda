@@ -31,6 +31,7 @@ v-s:LocalRegulatoryDocument
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Document;
   rdfs:label "Локальный нормативный документ"@ru ;
   rdfs:label "Local Regulatory document"@en ;
 .

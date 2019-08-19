@@ -983,9 +983,11 @@ v-fs:AttributiveSearchInlineTemplate
       extra = extra.split("&").reduce(function (acc, pair) {
         var split = pair.split("="),
             property_uri = split[0] || "",
-            value = split[1] || "";
-        acc[property_uri] = acc[name] || [];
-        acc[property_uri].push( parse(property_uri, value) );
+            values = split[1].split("|") || "";
+        acc[property_uri] = acc[property_uri] || [];
+        values.forEach(function (value) {
+          acc[property_uri].push( parse(property_uri, value) );
+        });
         return acc;
       }, {});
     }

@@ -217,6 +217,15 @@ v-s:PsTextLabelForDepartment
   rdfs:label "Spec for property rdfs:label and v-s:shortLabel and v-s:subjectCode for class v-s:Department"@en ;
 .
 
+v-s:PsParentUnitForSubsidiary
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Subsidiary ;
+  v-ui:forProperty v-s:parentUnit ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 100 ;
+  v-ui:rangeRestriction v-s:Organization ;
+.
+
 # ------------------------------------------------------------ СТРОКИ --
 
 v-s:NonUniqueTaxId
@@ -560,7 +569,6 @@ v-s:SubsidiaryTemplate
   <div id="mainProperties">
     <em about="v-s:parentOrganization" property="rdfs:label"></em>
     <span about="@" rel="v-s:backwardTarget" data-template="v-ui:LabelLinkTemplate"></span>
-
 
     <em about="v-s:parentUnit" property="rdfs:label"></em>
     <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>

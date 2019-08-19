@@ -237,6 +237,26 @@ class FanoutProcess : VedaModule
                 }
             }
         }
+        else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Person")))
+        {
+            foreach (Resource elt; indv.getResources("rdf:type"))
+            {
+                string ac_uri = elt.uri;
+                if (ac_uri is null)
+                    return null;
+
+                Individual ac = context.get_individual(ac_uri);
+                if (ac.getStatus() != ResultCode.Ok || ac.isExists("v-s:deleted", true) == true)
+                    return null;
+
+                Resources tmp_res = ac.getResources("v-s:mailbox");
+
+                foreach (rr; tmp_res)
+                {
+                    res ~= rr;
+                }
+            }
+        }
         else
         {
             log.trace("ERR! extract_email: fail extract email from [%s], this not appointment or position", ap_uri);
@@ -357,6 +377,9 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
+                log.trace("always_use_mail_sender: [%s]", always_use_mail_sender);
+                log.trace("default mail sender: [%s]", default_mail_sender);
+
                 if (from is null && senderMailbox is null && default_mail_sender !is null)
                     from = default_mail_sender;
 
@@ -367,10 +390,12 @@ class FanoutProcess : VedaModule
 
                     if (always_use_mail_sender == true && default_mail_sender !is null && default_mail_sender.length > 5)
                     {
+                        log.trace("use default mail sender: [%s]", default_mail_sender);
                         email_from = default_mail_sender;
                     }
                     else
                     {
+                        log.trace("extract [from], [%s]", from);
                         email_from = extract_email(sticket, null, from, from_label).getFirstString();
 
                         if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)

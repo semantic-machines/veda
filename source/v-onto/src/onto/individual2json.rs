@@ -1,6 +1,7 @@
 use crate::datatype::{DataType, Lang};
 use crate::individual::*;
 use crate::resource::{Resource, Value};
+use rust_decimal::Decimal;
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 use serde_json::json;
 use serde_json::value::Value as JSONValue;
@@ -43,10 +44,12 @@ impl Serialize for Resource {
         S: Serializer,
     {
         //serializer.serialize_some (&self.value)
-
         let mut tup = serializer.serialize_struct("E", 0)?;
 
         match &self.value {
+            Value::Num(_m, _e) => {
+                tup.serialize_field("data", &self.value)?;
+            }
             Value::Int(i) => {
                 tup.serialize_field("data", &*i)?;
             }
@@ -74,6 +77,10 @@ impl Serialize for Value {
         S: Serializer,
     {
         match &self {
+            Value::Num(m, e) => {
+                let d = Decimal::new(*m, *e as u32);
+                serializer.serialize_str(&d.to_string())
+            }
             Value::Int(i) => serializer.serialize_i64(*i),
             Value::Bool(b) => serializer.serialize_bool(*b),
             Value::Str(s, l) => {

@@ -1,8 +1,18 @@
 #[macro_use]
 extern crate enum_primitive_derive;
 extern crate num_traits;
+#[macro_use]
+extern crate log;
+extern crate env_logger;
+extern crate uuid;
 use num_traits::{FromPrimitive, ToPrimitive};
+use std::collections::HashMap;
 use std::str::*;
+use uuid::*;
+use v_api::*;
+use v_module::module::Module;
+use v_onto::datatype::Lang;
+use v_onto::individual::Individual;
 
 const TRANSMIT_FAILED: i64 = 32;
 
@@ -59,7 +69,7 @@ impl ExImCode {
 }
 
 pub fn enc_slave_resp(uri: &str, code: ExImCode) -> String {
-    let q : i64 = code.into();
+    let q: i64 = code.into();
     uri.to_owned() + "," + &q.to_string()
 }
 
@@ -78,4 +88,66 @@ pub fn dec_slave_resp(msg: &[u8]) -> (&str, ExImCode) {
         }
     }
     ("?", ExImCode::Unknown)
+}
+
+pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
+    let mut node = Individual::default();
+
+    if module.storage.set_binobj("cfg:standart_node", &mut node) {
+        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
+            if c > *node_upd_counter {
+                link_node_addresses.clear();
+                if let Ok(v) = node.get_literals("cfg:linked_node") {
+                    for el in v {
+                        let mut link_node = Individual::default();
+
+                        if module.storage.set_binobj(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
+                            if let Ok(addr) = link_node.get_first_literal("rdf:value") {
+                                link_node_addresses.insert(el, addr);
+                            }
+                        }
+                    }
+                    info!("linked nodes: {:?}", link_node_addresses);
+                }
+                *node_upd_counter = c;
+            }
+        }
+    }
+}
+
+pub fn get_db_id(module: &mut Module) -> Option<String> {
+    let mut indv = Individual::default();
+    if module.storage.set_binobj("cfg:system", &mut indv) {
+        if let Ok(c) = indv.get_first_literal("sys:id") {
+            return Some(c);
+        }
+    }
+    None
+}
+
+pub fn create_db_id(module: &mut Module) -> Option<String> {
+    let systicket;
+    if let Ok(t) = module.get_sys_ticket_id() {
+        systicket = t;
+    } else {
+        error!("fail get systicket");
+        return None;
+    }
+
+    let uuid1 = "sys:".to_owned() + &Uuid::new_v4().to_hyphenated().to_string();
+    info!("create new db id = {}", uuid1);
+
+    let mut new_indv = Individual::default();
+    new_indv.obj.uri = "cfg:system".to_owned();
+    new_indv.obj.add_string("sys:id", &uuid1, Lang::NONE, 0);
+
+    let res = module.api.update(&systicket, IndvOp::Put, &mut new_indv);
+
+    if res.result != ResultCode::Ok {
+        error!("fail update, uri={}, result_code={:?}", new_indv.obj.uri, res.result);
+    } else {
+        return Some(uuid1);
+    }
+
+    None
 }
