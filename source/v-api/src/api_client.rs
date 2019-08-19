@@ -39,8 +39,8 @@ pub enum IndvOp {
 impl IndvOp {
     pub fn from_i64(value: i64) -> IndvOp {
         match value {
-            1 => IndvOp::Get,
-            2 => IndvOp::Put,
+            1 => IndvOp::Put,
+            2 => IndvOp::Get,
             51 => IndvOp::Remove,
             47 => IndvOp::AddIn,
             45 => IndvOp::SetIn,
@@ -239,10 +239,16 @@ impl APIClient {
     }
 
     pub fn connect(&mut self) -> bool {
+
+        if self.addr.is_empty() {
+            error!("api-client:invalid addr: [{}]", self.addr);
+            return self.is_ready;
+        }
+
         if let Err(e) = self.client.dial(self.addr.as_str()) {
-            error!("ft-client:fail dial to ro-storage, [{}], err={}", self.addr, e);
+            error!("api-client:fail dial to ro-storage, [{}], err={}", self.addr, e);
         } else {
-            info!("sucess connect to ro-storage, [{}]", self.addr);
+            info!("sucess connect to main module, [{}]", self.addr);
             self.is_ready = true;
         }
         self.is_ready

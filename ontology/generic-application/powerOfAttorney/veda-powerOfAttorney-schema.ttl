@@ -21,6 +21,7 @@ v-s:PowerOfAttorney
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:AutomaticallyVersioned ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Доверенность"@ru ;
   rdfs:label "Power of attorney"@en ;
 .

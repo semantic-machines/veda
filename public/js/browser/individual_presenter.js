@@ -178,6 +178,7 @@ veda.Module(function (veda) { "use strict";
 
     // Apply mode to template to show/hide elements in different modes
     function modeHandler (e) {
+      e.stopPropagation();
       mode = e.type;
       template.data("mode", mode);
       switch (mode) {
@@ -185,7 +186,6 @@ veda.Module(function (veda) { "use strict";
         case "edit": edit.show(); _edit.hide(); break;
         case "search": search.show(); _search.hide(); break;
       }
-      e.stopPropagation();
     }
     template.on("view edit search", modeHandler);
 
@@ -199,63 +199,52 @@ veda.Module(function (veda) { "use strict";
       });
       e.stopPropagation();
     }
-    template.on("view edit search save cancel delete recover destroy", syncEmbedded);
+    template.on("view edit search", syncEmbedded);
 
     // Define handlers
-
-    var notify = veda.Notify ? new veda.Notify() : function () {};
-
-    function saveHandler (e, parent) {
-      if (parent !== individual.id && !individual.isSync()) {
-        individual.save().then(function () {
-          if (parent) {
-            container.trigger("embeddedSaved", individual.id);
-          } else {
-            var saveSuccess = new veda.IndividualModel("v-s:SaveSuccess");
-            saveSuccess.load().then(function (saveSuccess) {
-              notify("success", {name: saveSuccess});
-            });
-          }
-        }).catch(function (error) {
-          var saveError = new veda.IndividualModel("v-s:SaveError");
-          saveError.load().then(function (saveError) {
-            notify("danger", {name: saveError});
+    template.callModelMethod = function (method, parent) {
+      if (parent === individual.id) {
+        return Promise.resolve();
+      }
+      return Promise.all(embedded.map(function (item) {
+        return item.callModelMethod(method, individual.id);
+      })).then(function () {
+        return individual[method]();
+      }).then(function () {
+        template.trigger("view");
+        if (method === "reset") { return; }
+        if (!parent) {
+          var successMsg = new veda.IndividualModel("v-s:SuccessBundle").load();
+          successMsg.then(function (successMsg) {
+            var notify = veda.Notify ? new veda.Notify() : function () {};
+            notify("success", {name: successMsg});
           });
+        } else {
+          var parentIndividual = new veda.IndividualModel(parent);
+          parentIndividual.isSync(false);
+        }
+      }).catch(function (error) {
+        console.log(error);
+        var errorMsg = new veda.IndividualModel("v-s:ErrorBundle").load();
+        errorMsg.then(function (errorMsg) {
+          var notify = veda.Notify ? new veda.Notify() : function () {};
+          notify("danger", {name: errorMsg});
         });
-      }
-      template.trigger("view");
+      });
+    };
+    template.on("save cancel delete destroy recover", function (e) {
       e.stopPropagation();
-    }
-    template.on("save", saveHandler);
-
-    var saveTimeout;
-    function embeddedSavedHandler (e, childId) {
-      if ( individual.isSync() && individual.hasValue(undefined, childId) && !saveTimeout) {
-        saveTimeout = setTimeout(function () {
-          individual.isSync(false);
-          individual.save().then(function (individual) {
-            container.trigger("embeddedSaved", individual.id);
-          });
-          saveTimeout = undefined;
-        });
+      if (e.type === "cancel") {
+        template.callModelMethod("reset");
+      } else if (e.type === "destroy") {
+        template.callModelMethod("remove");
+      } else {
+        template.callModelMethod(e.type);
       }
-      e.stopPropagation();
-    }
-    template.on("embeddedSaved", embeddedSavedHandler);
-
-    function cancelHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.reset()
-          .then(function () {
-            template.trigger("view");
-          })
-          .catch(function () {
-            template.trigger("view");
-          });
-      }
-      e.stopPropagation();
-    }
-    template.on("cancel", cancelHandler);
+    });
+    template.one("remove", function () {
+      template.callModelMethod = null;
+    });
 
     // Deleted alert
     function deletedHandler () {
@@ -294,45 +283,6 @@ veda.Module(function (veda) { "use strict";
       individual.off("v-s:deleted", deletedHandler);
     });
     deletedHandler.call(individual);
-
-    function deleteHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.delete().then(function () {
-          notify("success", {name: "Объект удален"});
-        }).catch(function (error) {
-          notify("danger", {name: "Объект не удален"});
-        });
-      }
-      template.trigger("view");
-      e.stopPropagation();
-    }
-    template.on("delete", deleteHandler);
-
-    function destroyHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.remove().then(function () {
-          notify("success", {name: "Объект уничтожен"});
-        }).catch(function (error) {
-          notify("danger", {name: "Объект не уничтожен"});
-        });
-      }
-      template.trigger("view");
-      e.stopPropagation();
-    }
-    template.on("destroy", destroyHandler);
-
-    function recoverHandler (e, parent) {
-      if (parent !== individual.id) {
-        individual.recover().then(function () {
-          notify("success", {name: "Объект восстановлен"});
-        }).catch(function (error) {
-          notify("danger", {name: "Объект не восстановлен"});
-        });
-      }
-      template.trigger("view");
-      e.stopPropagation();
-    }
-    template.on("recover", recoverHandler);
 
     // Valid alert
     function validHandler () {

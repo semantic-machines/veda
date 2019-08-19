@@ -1204,6 +1204,11 @@ v-ui:IconModalTemplate
     if (!newMode && parentTmpl.attr("resource") === individual.id) {
       newMode = parentTmpl.data("mode");
     }
+
+    if ( $("body").hasClass("modal-open")) {
+      $(".modal").modal("hide").remove();
+    };
+
     var modal = $("#notification-modal-template").html();
     modal = $(modal).modal({"show": false});
     $("body").append(modal);
@@ -1217,7 +1222,7 @@ v-ui:IconModalTemplate
       ok.removeAttr("disabled");
     });
     cntr.on("invalid", function () {
-    ok.attr("disabled", "disabled");
+      ok.attr("disabled", "disabled");
     });
 
     individual.present(cntr, undefined, newMode).then(function (tmpl) {

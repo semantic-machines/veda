@@ -9,15 +9,14 @@ use nng::{Message, Protocol, Socket};
 use std::collections::HashMap;
 use std::io::Write;
 use std::{thread, time};
+use v_api::IndvOp;
+use v_exim::*;
 use v_module::module::*;
 use v_onto::datatype::*;
 use v_onto::individual::*;
 use v_onto::individual2msgpack::*;
 use v_onto::parser::*;
 use v_queue::consumer::*;
-//use v_queue::queue::*;
-use v_api::IndvOp;
-use v_exim::*;
 use v_queue::record::*;
 
 fn main() -> std::io::Result<()> {
@@ -54,9 +53,10 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     let mut soc = Socket::new(Protocol::Req0).unwrap();
 
     if let Err(e) = soc.dial(node_addr) {
-        error!("fail connect to, {}{}, err={}", node_id, node_addr, e);
+        error!("fail connect to, {} {}, err={}", node_id, node_addr, e);
         return;
     }
+    info!("success connect to, {} {}", node_id, node_addr);
 
     let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
 
@@ -106,7 +106,7 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
         }
 
         let mut indv = &mut Individual::new_raw(raw);
-        while let Err(e) = prepare_queue_element(&mut indv, &mut soc) {
+        while let Err(e) = prepare_queue_element(&mut indv, &mut soc, node_addr) {
             error!("fail prepare queue element, err={}", e.as_string());
             if e != ExImCode::TransmitFailed {
                 break;
@@ -122,7 +122,7 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     }
 }
 
-fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), ExImCode> {
+fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_addr: &str) -> Result<(), ExImCode> {
     if let Ok(uri) = parse_raw(msg) {
         msg.obj.uri = uri;
 
@@ -167,6 +167,8 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), E
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
                     let req = Message::from(raw1.as_ref());
 
+                    info!("attempt send {} to {}", uri, node_addr);
+
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
                         return Err(ExImCode::TransmitFailed);
@@ -191,35 +193,12 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket) -> Result<(), E
                         error!("recv error, uri={}, error={}", res.0, res.1.as_string());
                         return Err(ExImCode::TransmitFailed);
                     }
+
+                    info!("success send {} to {}", uri, node_addr);
                 }
             }
             // info! ("{:?}", raw);
         }
     }
     Ok(())
-}
-
-fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
-    let mut node = Individual::default();
-
-    if module.storage.set_binobj("cfg:standart_node", &mut node) {
-        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
-            if c > *node_upd_counter {
-                link_node_addresses.clear();
-                if let Ok(v) = node.get_literals("cfg:linked_node") {
-                    for el in v {
-                        let mut link_node = Individual::default();
-
-                        if module.storage.set_binobj(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
-                            if let Ok(addr) = link_node.get_first_literal("rdf:value") {
-                                link_node_addresses.insert(el, addr);
-                            }
-                        }
-                    }
-                    info!("linked nodes: {:?}", link_node_addresses);
-                }
-                *node_upd_counter = c;
-            }
-        }
-    }
 }

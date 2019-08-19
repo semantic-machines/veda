@@ -166,8 +166,8 @@ v-s:LetterRegistryResultTemplate
       <td rel="v-s:hasDelivery">
         <div>
           <span property="v-s:date"></span>
-          <span property="v-s:deliverBy"></span>
-          <span property="rdfs:comment"></span> ;
+          <span rel="v-s:deliverBy" data-template="v-ui:LabelTemplate"></span>
+          <span property="rdfs:comment"></span>
         </div>
       </td>
       <td property="v-s:description"></td>
@@ -179,7 +179,7 @@ v-s:LetterRegistryResultTemplate
          <div>
           <span property="v-s:from"></span>
           <span property="v-s:to"></span>
-        </div>     
+        </div>
       </td>
     </tr>
   </tbody>

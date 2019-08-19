@@ -27,29 +27,20 @@ fn main() -> std::io::Result<()> {
 
     let mut module = Module::default();
 
-    let param_name = "exim_slave_port";
-    let exim_slave_port = module.get_property(param_name);
+    let param_name = "exim_url";
+    let exim_slave_port = Module::get_property(param_name);
     if exim_slave_port.is_none() {
         error!("not found param {} in properties file", param_name);
         return Ok(());
     }
 
-    let param_name = "main_module_url";
-    let main_module_url = module.get_property(param_name);
-    if main_module_url.is_none() {
-        error!("not found param {} in properties file", param_name);
-        return Ok(());
-    }
-
     let systicket;
-    if let Ok(t) = module.storage.get_sys_ticket_id() {
+    if let Ok(t) = module.get_sys_ticket_id() {
         systicket = t;
     } else {
         error!("fail get systicket");
         return Ok(());
     }
-
-    let mut api = APIClient::new(main_module_url.unwrap());
 
     let mut server = Socket::new(Protocol::Rep0)?;
     if let Err(e) = server.listen(&exim_slave_port.unwrap()) {
@@ -59,7 +50,7 @@ fn main() -> std::io::Result<()> {
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let resp_msg = prepare_recv_msg(recv_msg.to_vec(), &mut api, &systicket);
+            let resp_msg = prepare_recv_msg(recv_msg.to_vec(), &systicket, &mut module);
 
             if let Err(e) = server.send(Message::from(resp_msg.as_ref())) {
                 error!("fail send {:?}", e);
@@ -72,7 +63,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> String {
+fn prepare_recv_msg(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> String {
     let mut recv_indv = Individual::new_raw(RawObj::new(recv_msg));
 
     if let Ok(uri) = parse_raw(&mut recv_indv) {
@@ -84,19 +75,40 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, api: &mut APIClient, systicket: &str) -> 
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
+        let source_veda = recv_indv.get_first_literal("source_veda");
+        if source_veda.is_err() {
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
+        }
+
+        let source_veda = source_veda.unwrap_or_default();
+        if source_veda.len() < 32 {
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
+        }
+
         let target_veda = recv_indv.get_first_literal("target_veda");
         if target_veda.is_err() {
             return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
         }
 
-        let mut indv = Individual::default();
-        let res = api.update(systicket, cmd, &mut indv);
+        let new_state = recv_indv.get_first_binobj("new_state");
+        if cmd != IndvOp::Remove && !new_state.is_err() {
+            let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
+            if let Ok(uri) = parse_raw(&mut indv) {
+                indv.parse_all();
+                indv.obj.uri = uri.clone();
+                indv.obj.add_uri("sys:source", &source_veda, 0);
 
-        if res.result != ResultCode::Ok {
-            error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
-            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate);
+                let res = module.api.update(systicket, cmd, &mut indv);
+
+                if res.result != ResultCode::Ok {
+                    error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
+                    return enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate);
+                } else {
+                    return enc_slave_resp(&recv_indv.obj.uri, ExImCode::Ok);
+                }
+            }
         }
     }
 
-    enc_slave_resp(&recv_indv.obj.uri, ExImCode::Ok)
+    enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate)
 }

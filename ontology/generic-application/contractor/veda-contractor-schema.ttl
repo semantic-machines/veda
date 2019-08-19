@@ -22,6 +22,7 @@ v-s:Contractor
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Document;
   rdfs:label "Контрагент"@ru ;
   rdfs:label "Contractor"@en ;
   v-ui:hasTemplate v-s:ContractorTemplate ;
