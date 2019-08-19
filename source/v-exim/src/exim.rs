@@ -118,7 +118,7 @@ pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_no
 pub fn get_db_id(module: &mut Module) -> Option<String> {
     let mut indv = Individual::default();
     if module.storage.set_binobj("cfg:system", &mut indv) {
-        if let Ok(c) = indv.get_first_literal("cfg:id") {
+        if let Ok(c) = indv.get_first_literal("sys:id") {
             return Some(c);
         }
     }
@@ -134,12 +134,12 @@ pub fn create_db_id(module: &mut Module) -> Option<String> {
         return None;
     }
 
-    let uuid1 = Uuid::new_v4().to_hyphenated().to_string();
+    let uuid1 = "sys:".to_owned() + &Uuid::new_v4().to_hyphenated().to_string();
     info!("create new db id = {}", uuid1);
 
     let mut new_indv = Individual::default();
     new_indv.obj.uri = "cfg:system".to_owned();
-    new_indv.obj.add_string("cfg:id", &uuid1, Lang::NONE, 0);
+    new_indv.obj.add_string("sys:id", &uuid1, Lang::NONE, 0);
 
     let res = module.api.update(&systicket, IndvOp::Put, &mut new_indv);
 

@@ -121,6 +121,20 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
+    fn is_exportable(onto: &mut Onto, prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> bool {
+        if let Ok(t) = new_state_indv.get_first_literal("rdf:type") {
+            if onto.is_some_entered(&t, &["v-s:OrganizationUnit".to_owned()]) {
+                if new_state_indv.get_first_literal("sys:source").is_err() {
+                    return true;
+                }
+            }
+            if t == "v-wf:DecisionForm" || t == "v-wf:takenDecision" {
+                return true;
+            }
+        }
+        return false;
+    }
+
     fn prepare_queue_element(onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
         if let Ok(uri) = parse_raw(msg) {
             msg.obj.uri = uri;
@@ -132,6 +146,17 @@ fn main() -> std::io::Result<()> {
 
             let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
+            let prev_state = msg.get_first_binobj("prev_state");
+            let mut prev_state_indv = if !prev_state.is_err() {
+                let mut indv = Individual::new_raw(RawObj::new(prev_state.unwrap_or_default()));
+                if let Ok(uri) = parse_raw(&mut indv) {
+                    indv.obj.uri = uri.clone();
+                }
+                indv
+            } else {
+                Individual::default()
+            };
+
             let new_state = msg.get_first_binobj("new_state");
             if cmd != IndvOp::Remove && new_state.is_err() {
                 return Err(-1);
@@ -142,27 +167,16 @@ fn main() -> std::io::Result<()> {
                 return Err(-1);
             }
 
-            let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-            if let Ok(uri) = parse_raw(&mut indv) {
-                let is_prepare = if let Ok(t) = indv.get_first_literal("rdf:type") {
-                    if onto.is_some_entered(&t, &["v-s:OrganizationUnit".to_owned()]) {
-                        true
-                    }
-                    if t == "v-wf:DecisionForm" || t == "v-wf:takenDecision" {
-                        true
-                    }
-                    false
-                };
-
-                if !is_prepare {
-                    Ok(())
+            let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
+            if let Ok(uri) = parse_raw(&mut new_state_indv) {
+                if !is_exportable(onto, &mut prev_state_indv, &mut new_state_indv) {
+                    return Ok(());
                 }
-
-                indv.parse_all();
-                indv.obj.uri = uri.clone();
+                new_state_indv.parse_all();
+                new_state_indv.obj.uri = uri.clone();
 
                 let mut raw: Vec<u8> = Vec::new();
-                if to_msgpack(&indv, &mut raw).is_ok() {
+                if to_msgpack(&new_state_indv, &mut raw).is_ok() {
                     let mut new_indv = Individual::default();
                     new_indv.obj.uri = msg.obj.uri.clone();
                     new_indv.obj.add_binary("new_state", raw, 0);

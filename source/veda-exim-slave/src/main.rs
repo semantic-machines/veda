@@ -75,6 +75,16 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> 
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
+        let source_veda = recv_indv.get_first_literal("source_veda");
+        if source_veda.is_err() {
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
+        }
+
+        let source_veda = source_veda.unwrap_or_default();
+        if source_veda.len() < 32 {
+            return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
+        }
+
         let target_veda = recv_indv.get_first_literal("target_veda");
         if target_veda.is_err() {
             return enc_slave_resp(&recv_indv.obj.uri, ExImCode::InvalidTarget);
@@ -86,6 +96,7 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> 
             if let Ok(uri) = parse_raw(&mut indv) {
                 indv.parse_all();
                 indv.obj.uri = uri.clone();
+                indv.obj.add_uri("sys:source", &source_veda, 0);
 
                 let res = module.api.update(systicket, cmd, &mut indv);
 
