@@ -234,10 +234,12 @@ veda.Module(function (veda) { "use strict";
     };
     template.on("save cancel delete destroy recover", function (e) {
       e.stopPropagation();
-      if (e.type !== "cancel") {
-        template.callModelMethod(e.type);
-      } else {
+      if (e.type === "cancel") {
         template.callModelMethod("reset");
+      } else if (e.type === "destroy") {
+        template.callModelMethod("remove");
+      } else {
+        template.callModelMethod(e.type);
       }
     });
     template.one("remove", function () {
