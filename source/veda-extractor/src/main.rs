@@ -106,7 +106,7 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            if let Err(e) = prepare_queue_element(&mut onto, &mut Individual::new_raw(raw), &mut queue_out, &db_id) {
+            if let Err(e) = prepare_queue_element(&mut module, &mut onto, &mut Individual::new_raw(raw), &mut queue_out, &db_id) {
                 error!("fail prepare queue element, err={}", e);
             }
 
@@ -121,25 +121,33 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
-    fn is_exportable(onto: &mut Onto, prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> bool {
+    fn is_exportable(module: &mut Module, onto: &mut Onto, _prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> Option<String> {
         if let Ok(itype) = new_state_indv.get_first_literal("rdf:type") {
+            // для всех потребителей выгружаем элемент орг струкутры не имеющий поля [sys:source]
             if onto.is_some_entered(&itype, &["v-s:OrganizationUnit".to_owned()]) {
                 if new_state_indv.get_first_literal("sys:source").is_err() {
-                    return true;
+                    return Some("*".to_owned());
                 }
             }
 
+            // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из другой системы
             if itype == "v-wf:takenDecision" {
+                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source") {
+                    return Some(src);
+                }
+            }
 
-                //v-wf:to
-
-                return true;
+            // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
+            if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
+                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:lastEditor", "sys:source") {
+                    return Some(src);
+                }
             }
         }
-        return false;
+        return None;
     }
 
-    fn prepare_queue_element(onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
+    fn prepare_queue_element(module: &mut Module, onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
         if let Ok(uri) = parse_raw(msg) {
             msg.obj.uri = uri;
 
@@ -173,9 +181,12 @@ fn main() -> std::io::Result<()> {
 
             let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
             if let Ok(uri) = parse_raw(&mut new_state_indv) {
-                if !is_exportable(onto, &mut prev_state_indv, &mut new_state_indv) {
+                let exportable = is_exportable(module, onto, &mut prev_state_indv, &mut new_state_indv);
+
+                if exportable.is_none() {
                     return Ok(());
                 }
+
                 new_state_indv.parse_all();
                 new_state_indv.obj.uri = uri.clone();
 
@@ -187,7 +198,7 @@ fn main() -> std::io::Result<()> {
                     new_indv.obj.add_integer("cmd", cmd as i64, 0);
                     new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
                     new_indv.obj.add_string("source_veda", db_id, Lang::NONE, 0);
-                    new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
+                    new_indv.obj.add_string("target_veda", &exportable.unwrap(), Lang::NONE, 0);
 
                     let mut raw1: Vec<u8> = Vec::new();
                     if to_msgpack(&new_indv, &mut raw1).is_ok() {
