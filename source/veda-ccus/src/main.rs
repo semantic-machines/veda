@@ -184,7 +184,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
 
             let mut indv = Individual::default();
 
-            storage.set_binobj(&msg, &mut indv);
+            storage.get_individual(&msg, &mut indv);
             let out_counter = if let Ok(c) = indv.get_first_integer("v-s:updateCounter") {
                 c
             } else {

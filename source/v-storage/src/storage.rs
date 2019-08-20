@@ -19,7 +19,7 @@ pub enum EStorage {
 }
 
 pub trait Storage {
-    fn set_binobj(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool;
+    fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool;
 }
 
 pub struct VStorage {
@@ -39,17 +39,17 @@ impl VStorage {
         }
     }
 
-    pub fn set_binobj(&mut self, uri: &str, iraw: &mut Individual) -> bool {
+    pub fn get_individual(&mut self, uri: &str, iraw: &mut Individual) -> bool {
         match &mut self.storage {
-            EStorage::TT(s) => s.set_binobj(StorageId::Individuals, uri, iraw),
-            EStorage::LMDB(s) => s.set_binobj(StorageId::Individuals, uri, iraw),
+            EStorage::TT(s) => s.get_individual_from_db(StorageId::Individuals, uri, iraw),
+            EStorage::LMDB(s) => s.get_individual_from_db(StorageId::Individuals, uri, iraw),
         }
     }
 
-    pub fn set_binobj_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
+    pub fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
         match &mut self.storage {
-            EStorage::TT(s) => s.set_binobj(storage, uri, iraw),
-            EStorage::LMDB(s) => s.set_binobj(storage, uri, iraw),
+            EStorage::TT(s) => s.get_individual_from_db(storage, uri, iraw),
+            EStorage::LMDB(s) => s.get_individual_from_db(storage, uri, iraw),
         }
     }
 }

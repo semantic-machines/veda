@@ -70,7 +70,7 @@ impl Module {
 
     pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
         let mut indv = Individual::default();
-        if self.storage.set_binobj_db(StorageId::Tickets, "systicket", &mut indv) {
+        if self.storage.get_individual_from_db(StorageId::Tickets, "systicket", &mut indv) {
             if let Ok(c) = indv.get_first_literal("v-s:resource") {
                 return Ok(c);
             }
