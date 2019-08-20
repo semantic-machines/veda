@@ -26,7 +26,7 @@ impl TTStorage {
 }
 
 impl Storage for TTStorage {
-    fn set_binobj(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
+    fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
         let key = (uri,);
 
         let space;

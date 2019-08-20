@@ -122,13 +122,17 @@ fn main() -> std::io::Result<()> {
     }
 
     fn is_exportable(onto: &mut Onto, prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> bool {
-        if let Ok(t) = new_state_indv.get_first_literal("rdf:type") {
-            if onto.is_some_entered(&t, &["v-s:OrganizationUnit".to_owned()]) {
+        if let Ok(itype) = new_state_indv.get_first_literal("rdf:type") {
+            if onto.is_some_entered(&itype, &["v-s:OrganizationUnit".to_owned()]) {
                 if new_state_indv.get_first_literal("sys:source").is_err() {
                     return true;
                 }
             }
-            if t == "v-wf:DecisionForm" || t == "v-wf:takenDecision" {
+
+            if itype == "v-wf:takenDecision" {
+
+                //v-wf:to
+
                 return true;
             }
         }

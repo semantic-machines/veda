@@ -148,7 +148,7 @@ fn main() -> std::io::Result<()> {
 
                     for el in &res.result {
                         let mut rindv: Individual = Individual::default();
-                        if module.storage.set_binobj(&el, &mut rindv) {
+                        if module.storage.get_individual(&el, &mut rindv) {
                             rindv.parse_all();
                             indvs.push(rindv);
                         }

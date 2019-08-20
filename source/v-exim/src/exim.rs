@@ -93,7 +93,7 @@ pub fn dec_slave_resp(msg: &[u8]) -> (&str, ExImCode) {
 pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_node_addresses: &mut HashMap<String, String>) {
     let mut node = Individual::default();
 
-    if module.storage.set_binobj("cfg:standart_node", &mut node) {
+    if module.storage.get_individual("cfg:standart_node", &mut node) {
         if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
             if c > *node_upd_counter {
                 link_node_addresses.clear();
@@ -101,7 +101,7 @@ pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_no
                     for el in v {
                         let mut link_node = Individual::default();
 
-                        if module.storage.set_binobj(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
+                        if module.storage.get_individual(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
                             if let Ok(addr) = link_node.get_first_literal("rdf:value") {
                                 link_node_addresses.insert(el, addr);
                             }
@@ -117,7 +117,7 @@ pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_no
 
 pub fn get_db_id(module: &mut Module) -> Option<String> {
     let mut indv = Individual::default();
-    if module.storage.set_binobj("cfg:system", &mut indv) {
+    if module.storage.get_individual("cfg:system", &mut indv) {
         if let Ok(c) = indv.get_first_literal("sys:id") {
             return Some(c);
         }

@@ -47,7 +47,7 @@ impl LMDBStorage {
 }
 
 impl Storage for LMDBStorage {
-    fn set_binobj(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
+    fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
         if storage == StorageId::Individuals {
             for _it in 0..2 {
                 let mut is_need_reopen = false;
