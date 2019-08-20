@@ -26,30 +26,30 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "exim-master" ] || [ $1 == "veda-exim-master" ] ; then
+if [ -z $1 ] || [ $1 == "exim-send" ] || [ $1 == "veda-exim-send" ] ; then
 
-    echo start make VEDA-EXIM-MASTER
-    rm ./veda-veda-exim-master
+    echo start make VEDA-EXIM-SEND
+    rm ./veda-veda-exim-send
 
-    cd source/veda-exim-master
+    cd source/veda-exim-send
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-exim-master $PWD
+    cp $CARGO_TARGET_DIR/release/veda-exim-send $PWD
 
-    echo end make VEDA-EXIM-MASTER
+    echo end make VEDA-EXIM-SEND
 fi
 
-if [ -z $1 ] || [ $1 == "exim-slave" ] || [ $1 == "veda-exim-slave" ] ; then
+if [ -z $1 ] || [ $1 == "exim-recv" ] || [ $1 == "veda-exim-recv" ] ; then
 
-    echo start make VEDA-EXIM-SLAVE
-    rm ./veda-veda-exim-slave
+    echo start make VEDA-EXIM-RECV
+    rm ./veda-veda-exim-recv
 
-    cd source/veda-exim-slave
+    cd source/veda-exim-recv
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-exim-slave $PWD
+    cp $CARGO_TARGET_DIR/release/veda-exim-recv $PWD
 
-    echo end make VEDA-EXIM-SLAVE
+    echo end make VEDA-EXIM-RECV
 fi
 
 if [ -z $1 ] || [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
