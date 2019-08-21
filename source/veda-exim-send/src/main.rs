@@ -132,7 +132,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_id: &str, 
         }
 
         let target_veda = target_veda.unwrap_or_default();
-        if target_veda != node_id {
+        if target_veda != "*" && target_veda != node_id {
             return Ok(());
         }
 
@@ -177,7 +177,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_id: &str, 
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
                     let req = Message::from(raw1.as_ref());
 
-                    info!("attempt send {} to {}", uri, node_addr);
+                    info!("send {} to {}", uri, node_addr);
 
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
@@ -204,7 +204,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_id: &str, 
                         return Err(ExImCode::TransmitFailed);
                     }
 
-                    info!("success send {} to {}", uri, node_addr);
+                    //info!("success send {} to {}", uri, node_addr);
                 }
             }
             // info! ("{:?}", raw);

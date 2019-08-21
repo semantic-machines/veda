@@ -121,29 +121,65 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 
-    fn is_exportable(module: &mut Module, onto: &mut Onto, _prev_state_indv: &mut Individual, new_state_indv: &mut Individual) -> Option<String> {
-        if let Ok(itype) = new_state_indv.get_first_literal("rdf:type") {
-            // для всех потребителей выгружаем элемент орг струкутры не имеющий поля [sys:source]
-            if onto.is_some_entered(&itype, &["v-s:OrganizationUnit".to_owned()]) {
-                if new_state_indv.get_first_literal("sys:source").is_err() {
+    fn is_exportable(
+        module: &mut Module,
+        onto: &mut Onto,
+        queue_out: &mut Queue,
+        _prev_state_indv: &mut Individual,
+        new_state_indv: &mut Individual,
+        db_id: &str,
+    ) -> Option<String> {
+        if new_state_indv.get_first_literal("sys:source").is_ok() {
+            return None;
+        }
+
+        if let Ok(types) = new_state_indv.get_literals("rdf:type") {
+            for itype in types {
+                // для всех потребителей выгружаем элемент орг струкутры не имеющий поля [sys:source]
+                if onto.is_some_entered(&itype, &["v-s:OrganizationUnit".to_owned()]) {
                     return Some("*".to_owned());
                 }
-            }
 
-            // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из другой системы
-            if itype == "v-wf:takenDecision" {
-                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source") {
-                    return Some(src);
+                // выгрузка person
+                if itype == "v-s:Person" {
+                    return Some("*".to_owned());
                 }
-            }
 
-            // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
-            if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
-                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:lastEditor", "sys:source") {
-                    return Some(src);
+                // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из другой системы
+                // и в поле [v-wf:onDocument] должен находится документ типа gen:InternalDocument
+                if itype == "v-wf:DecisionForm" {
+                    if let Ok(d) = new_state_indv.get_first_literal("v-wf:onDocument") {
+                        let mut doc = Individual::default();
+
+                        if !module.storage.get_individual(&d, &mut doc) {
+                            error!("fail read {} (v-wf:onDocument)", d);
+                            return None;
+                        }
+
+                        if let Ok(t) = new_state_indv.get_first_literal("rdf:type") {
+                            if t == "gen:InternalDocument" {
+                                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source") {
+                                    if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut doc, "?", db_id, &src, 0) {
+                                        error!("fail prepare message, err={:?}", e);
+                                        return None;
+                                    }
+
+                                    return Some(src);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
+                if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:lastEditor", "sys:source") {
+                        return Some(src);
+                    }
                 }
             }
         }
+
         return None;
     }
 
@@ -181,46 +217,48 @@ fn main() -> std::io::Result<()> {
 
             let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
             if let Ok(uri) = parse_raw(&mut new_state_indv) {
-                let exportable = is_exportable(module, onto, &mut prev_state_indv, &mut new_state_indv);
+                new_state_indv.obj.uri = uri.clone();
+                let exportable = is_exportable(module, onto, queue_out, &mut prev_state_indv, &mut new_state_indv, db_id);
 
                 if exportable.is_none() {
                     return Ok(());
                 }
+                let exportable = exportable.unwrap();
 
-                new_state_indv.parse_all();
-                new_state_indv.obj.uri = uri.clone();
-
-                let mut raw: Vec<u8> = Vec::new();
-                if to_msgpack(&new_state_indv, &mut raw).is_ok() {
-                    let mut new_indv = Individual::default();
-                    new_indv.obj.uri = msg.obj.uri.clone();
-                    new_indv.obj.add_binary("new_state", raw, 0);
-                    new_indv.obj.add_integer("cmd", cmd as i64, 0);
-                    new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
-                    new_indv.obj.add_string("source_veda", db_id, Lang::NONE, 0);
-                    new_indv.obj.add_string("target_veda", &exportable.unwrap(), Lang::NONE, 0);
-
-                    let mut raw1: Vec<u8> = Vec::new();
-                    if to_msgpack(&new_indv, &mut raw1).is_ok() {
-
-                        /*
-                        // test
-                        let mut msg = Individual::new_raw(RawObj::new(raw1));
-                        if let Ok(uri) = parse_raw(&mut msg) {
-                            msg.obj.uri = uri;
-
-                            msg.parse_all();
-
-                            info!("! {}", msg);
-                        }
-                        */
-                    }
-                    if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
-                        error!("fail push into queue, err={:?}", e);
-                        return Err(-1);
-                    }
+                if let Err(e) = add_to_queue(queue_out, cmd, &mut new_state_indv, &msg.obj.uri.clone(), db_id, &exportable, date.unwrap_or_default()) {
+                    error!("fail prepare message, err={:?}", e);
+                    return Err(-1);
                 }
+
                 // info! ("{:?}", raw);
+            }
+        }
+        Ok(())
+    }
+
+    fn add_to_queue(queue_out: &mut Queue, cmd: IndvOp, new_state_indv: &mut Individual, msg_id: &str, source: &str, target: &str, date: i64) -> Result<(), i32> {
+        new_state_indv.parse_all();
+
+        let mut raw: Vec<u8> = Vec::new();
+        if to_msgpack(&new_state_indv, &mut raw).is_ok() {
+            let mut new_indv = Individual::default();
+            new_indv.obj.uri = msg_id.to_string();
+            new_indv.obj.add_binary("new_state", raw, 0);
+            new_indv.obj.add_integer("cmd", cmd as i64, 0);
+            new_indv.obj.add_integer("date", date, 0);
+            new_indv.obj.add_string("source_veda", source, Lang::NONE, 0);
+            new_indv.obj.add_string("target_veda", target, Lang::NONE, 0);
+
+            info!("add to export queue: uri={}, source={}, target={}", new_state_indv.obj.uri, &source, &target);
+
+            let mut raw1: Vec<u8> = Vec::new();
+            if let Err(e) = to_msgpack(&new_indv, &mut raw1) {
+                error!("fail serialize, err={:?}", e);
+                return Err(-2);
+            }
+            if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
+                error!("fail push into queue, err={:?}", e);
+                return Err(-1);
             }
         }
         Ok(())
