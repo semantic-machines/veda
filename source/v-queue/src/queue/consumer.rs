@@ -9,17 +9,28 @@ use std::process;
 use sysinfo::SystemExt;
 
 pub struct Consumer {
-    is_ready: bool,
     pub name: String,
     pub queue: Queue,
-    ff_info_pop_w: File,
     pub count_popped: u32,
-    pos_record: u64,
     pub id: u32,
+
+    is_ready: bool,
+    pos_record: u64,
+    ff_info_pop_w: File,
+    base_path: String,
 
     // tmp
     pub header: Header,
     hash: Hasher,
+}
+
+impl Drop for Consumer {
+    fn drop(&mut self) {
+        let info_name_lock = self.base_path.to_owned() + "/" + &self.queue.name + "_info_pop_" + &self.name + ".lock";
+        if let Err(e) = remove_file(&info_name_lock) {
+            error!("consumer drop: queue:{}:{}:{}, fail remove lock file {}, err={:?}", self.queue.name, self.queue.id, self.name, &info_name_lock, e);
+        }
+    }
 }
 
 impl Consumer {
@@ -85,6 +96,7 @@ impl Consumer {
                                 crc: 0,
                                 msg_type: MsgType::String,
                             },
+                            base_path: base_path.to_string(),
                             id: 0,
                         };
 
