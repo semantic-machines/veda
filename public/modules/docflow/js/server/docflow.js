@@ -11,33 +11,35 @@ veda.Module(function (veda) { "use strict";
   {
       try
       {
+          if (decision_form['sys:source'])
+              return;
+
           var decision_form = document;
           var prev_state_decision_form = prev_state;
           var f_prev_takenDecision = null;
 
           if (prev_state_decision_form)
-        f_prev_takenDecision = prev_state_decision_form['v-wf:takenDecision'];
+			f_prev_takenDecision = prev_state_decision_form['v-wf:takenDecision'];
 
           var f_takenDecision = decision_form['v-wf:takenDecision'];
-
           if (!f_takenDecision && !f_prev_takenDecision)
               return;
 
-      var enforce_processing = veda.Util.hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: "Boolean"});
-      if (f_prev_takenDecision && !enforce_processing)
-      {
-        if (!f_takenDecision)
-        {
-          veda.Util.set_err_on_indv("attempt clear decision[" + veda.Util.getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
+		  var enforce_processing = veda.Util.hasValue(decision_form, 'v-wf:enforceProcessing', {data: true, type: "Boolean"});
+		  if (f_prev_takenDecision && !enforce_processing)
+		  {
+			if (!f_takenDecision)
+			{
+				veda.Util.set_err_on_indv("attempt clear decision[" + veda.Util.getUri(f_prev_takenDecision) + "], restore previous decision", document, "prepare decision form");
                 veda.Util.set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
-        }
-        else if (f_takenDecision.length != f_prev_takenDecision.length || veda.Util.getUri(f_takenDecision) != veda.Util.getUri(f_prev_takenDecision))
-        {
-          veda.Util.set_err_on_indv("attempt set another decision " + veda.Util.toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
+			}
+			else if (f_takenDecision.length != f_prev_takenDecision.length || veda.Util.getUri(f_takenDecision) != veda.Util.getUri(f_prev_takenDecision))
+			{
+				veda.Util.set_err_on_indv("attempt set another decision " + veda.Util.toJson (f_takenDecision) + ", restore previous decision", document, "prepare decision form");
                 veda.Util.set_field_to_document ('v-wf:takenDecision', f_prev_takenDecision, decision_form['@']);
-        }
-        return;
-      }
+			}
+			return;
+		  }
 
           if (decision_form['v-wf:isCompleted'] && decision_form['v-wf:isCompleted'][0].data == true)
               return;

@@ -106,7 +106,7 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
         }
 
         let mut indv = &mut Individual::new_raw(raw);
-        while let Err(e) = prepare_queue_element(&mut indv, &mut soc, node_addr) {
+        while let Err(e) = prepare_queue_element(&mut indv, &mut soc, node_id, node_addr) {
             error!("fail prepare queue element, err={}", e.as_string());
             if e != ExImCode::TransmitFailed {
                 break;
@@ -122,9 +122,19 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
     }
 }
 
-fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_addr: &str) -> Result<(), ExImCode> {
+fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr: &str) -> Result<(), ExImCode> {
     if let Ok(uri) = parse_raw(msg) {
         msg.obj.uri = uri;
+
+        let target_veda = msg.get_first_literal("target_veda");
+        if target_veda.is_err() {
+            return Err(ExImCode::InvalidMessage);
+        }
+
+        let target_veda = target_veda.unwrap_or_default();
+        if target_veda != "*" && target_veda != node_id {
+            return Ok(());
+        }
 
         let wcmd = msg.get_first_integer("cmd");
         if wcmd.is_err() {
@@ -137,8 +147,8 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_addr: &str
             return Err(ExImCode::InvalidMessage);
         }
 
-        let target_veda = msg.get_first_literal("target_veda");
-        if target_veda.is_err() {
+        let source_veda = msg.get_first_literal("source_veda");
+        if source_veda.is_err() {
             return Err(ExImCode::InvalidMessage);
         }
 
@@ -160,14 +170,14 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_addr: &str
                 new_indv.obj.add_binary("new_state", raw, 0);
                 new_indv.obj.add_integer("cmd", cmd as i64, 0);
                 new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
-                new_indv.obj.add_string("source_veda", "*", Lang::NONE, 0);
-                new_indv.obj.add_string("target_veda", "*", Lang::NONE, 0);
+                new_indv.obj.add_string("source_veda", &source_veda.unwrap_or_default(), Lang::NONE, 0);
+                new_indv.obj.add_string("target_veda", &target_veda, Lang::NONE, 0);
 
                 let mut raw1: Vec<u8> = Vec::new();
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
                     let req = Message::from(raw1.as_ref());
 
-                    info!("attempt send {} to {}", uri, node_addr);
+                    info!("send {} to {}", uri, node_addr);
 
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
@@ -194,7 +204,7 @@ fn prepare_queue_element(msg: &mut Individual, soc: &mut Socket, node_addr: &str
                         return Err(ExImCode::TransmitFailed);
                     }
 
-                    info!("success send {} to {}", uri, node_addr);
+                    //info!("success send {} to {}", uri, node_addr);
                 }
             }
             // info! ("{:?}", raw);
