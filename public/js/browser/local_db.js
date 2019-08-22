@@ -72,7 +72,7 @@ veda.Module(function (veda) { "use strict";
   proto.get = function (uri) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction(["individuals"], "readonly").objectStore("individuals").get(uri);
+      var request = self.db.transaction([store_name], "readonly").objectStore(store_name).get(uri);
       request.onerror = function(error) {
         reject(error);
       };
@@ -90,7 +90,7 @@ veda.Module(function (veda) { "use strict";
   proto.put = function (json) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction(["individuals"], "readwrite").objectStore("individuals").put(json, json["@"]);
+      var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).put(json, json["@"]);
       request.onerror = function(error) {
         reject(error);
       };
@@ -103,7 +103,7 @@ veda.Module(function (veda) { "use strict";
   proto.remove = function (uri) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction(["individuals"], "readwrite").objectStore("individuals").delete(uri);
+      var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).delete(uri);
       request.onerror = function(error) {
         reject(error);
       };

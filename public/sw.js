@@ -15,101 +15,6 @@ this.addEventListener('activate', function(event) {
   );
 });
 
-this.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open( STATIC ).then(function(cache) {
-      //Cache static resources
-      return cache.addAll([
-        // Index
-        '/',
-        '/favicon.ico',
-        '/index.html',
-        '/ontology.json',
-
-        // Styles
-        '/css/bootstrap.min.css',
-        '/css/codemirror/codemirror.css',
-        '/css/codemirror/fullscreen.css',
-        '/css/fullcalendar.min.css',
-        '/css/bootstrap-datetimepicker.min.css',
-        '/css/veda.css',
-        '/css/font-awesome.min.css',
-
-        // Utils & UI
-        '/js/common/app_model.js',
-        '/js/browser/lib/promise.js',
-        '/js/browser/lib/jquery.js',
-        '/js/browser/lib/jquery-ui.min.js',
-        '/js/browser/lib/bootstrap.min.js',
-        '/modules/docflow/js/browser/lib/jsplumb.js',
-        '/js/browser/lib/vis.min.js',
-        '/js/browser/lib/bootstrap-contextmenu.js',
-        '/js/browser/lib/n3-browser.min.js',
-        '/js/browser/lib/FileSaver.min.js',
-        '/js/browser/lib/autosize.min.js',
-        '/js/browser/lib/moment-with-locales.min.js',
-        '/js/browser/lib/bootstrap-datetimepicker.min.js',
-        '/js/browser/lib/fullcalendar.min.js',
-        '/js/browser/lib/locale/ru.js',
-        '/js/browser/lib/jquery.touchSwipe.min.js',
-        '/js/browser/lib/jszip.min.js',
-        '/js/browser/lib/marked.min.js',
-
-        // CodeMirror
-        '/js/browser/lib/codemirror/codemirror.js',
-        '/js/browser/lib/codemirror/mode/xml/xml.js',
-        '/js/browser/lib/codemirror/mode/javascript/javascript.js',
-        '/js/browser/lib/codemirror/mode/css/css.js',
-        '/js/browser/lib/codemirror/mode/turtle/turtle.js',
-        '/js/browser/lib/codemirror/mode/htmlmixed/htmlmixed.js',
-        '/js/browser/lib/codemirror/addon/edit/closebrackets.js',
-        '/js/browser/lib/codemirror/addon/edit/closetag.js',
-        '/js/browser/lib/codemirror/addon/edit/matchbrackets.js',
-        '/js/browser/lib/codemirror/addon/edit/matchtags.js',
-        '/js/browser/lib/codemirror/addon/fold/xml-fold.js',
-        '/js/browser/lib/codemirror/addon/display/fullscreen.js',
-
-        // Veda browser & server
-        '/js/common/lib/riot.js',
-        '/js/common/lib/sha256.js',
-        '/js/common/veda_spa.js',
-        '/js/common/util.js',
-        '/js/common/app_model.js?v=3',
-        '/js/common/individual_model.js',
-        '/js/common/user_model.js?v=1',
-        '/js/common/ontology_model.js',
-        '/js/common/numerator.js',
-
-        // Veda browser only
-        '/js/browser/update_service.js',
-        '/js/browser/notify.js',
-        '/js/browser/local_db.js?v=1',
-        '/js/browser/backend.js',
-        '/js/browser/util.js',
-        '/js/browser/veda_controls.js',
-        '/js/browser/table_sortable.js',
-        '/js/browser/individual_presenter.js',
-        '/modules/docflow/js/browser/veda_workflow_editor.js',
-        '/js/browser/app_presenter.js',
-        '/js/browser/auth.js?v=8',
-
-        // Fonts
-        '/fonts/FontAwesome.otf',
-        '/fonts/fontawesome-webfont.eot',
-        '/fonts/fontawesome-webfont.svg',
-        '/fonts/fontawesome-webfont.ttf?v=4.7.0',
-        '/fonts/fontawesome-webfont.woff?v=4.7.0',
-        '/fonts/fontawesome-webfont.woff2?v=4.7.0',
-        '/fonts/glyphicons-halflings-regular.eot',
-        '/fonts/glyphicons-halflings-regular.svg',
-        '/fonts/glyphicons-halflings-regular.ttf',
-        '/fonts/glyphicons-halflings-regular.woff',
-        '/fonts/glyphicons-halflings-regular.woff2'
-      ]);
-    })
-  );
-});
-
 var api_fns = {
   // GET
   'authenticate':'{"end_time":' + (Date.now() + 12 * 3600 * 1000) + ',"id":"","result":200,"user_uri":""}',
@@ -154,21 +59,191 @@ function getStaticResource(event) {
 }
 
 function getApiResponse(event, fn) {
+
+  var cloneRequest = event.request.method === "GET" ? undefined : event.request.clone();
+
   return fetch(event.request).then(function(response) {
     if (event.request.method === "GET") {
       return caches.open( API ).then(function(cache) {
         cache.put(event.request, response.clone());
         return response;
       });
+    } else if (event.request.method === "POST") {
+      var db = new LocalDB();
+      return db.then(function (db) {
+        Promise.all([serialize(cloneRequest), serialize(response)]).then(function (req_res) {
+          var request = JSON.stringify(req_res[0]);
+          var response = req_res[1];
+          db.put(request, response);
+        });
+        return response;
+      });
     }
-    return response;
   }).catch(function (err) {
-    return caches.match(event.request).then(function (match) {
-      if (match) {
-        return match;
-      } else {
-        return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
-      }
-    });
+    if (event.request.method === "GET") {
+      return caches.match(event.request).then(function (match) {
+        if (match) {
+          return match;
+        } else {
+          return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+        }
+      });
+    } else if (event.request.method === "POST") {
+      return serialize(cloneRequest).then(function (request) {
+        request = JSON.stringify(request);
+        var db = new LocalDB();
+        return db.then(function (db) {
+          return db.get(request).then(deserialize);
+        }).catch(function (err) {
+          return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+        });
+      });
+    }
   });
+}
+
+// indexedDB for non-GET requests
+var db_name = "veda-sw";
+var store_name = "sw";
+
+var fallback = {
+  get: function (key) {
+    if (typeof this[key] !== "undefined") {
+      return Promise.resolve(this[key]);
+    } else {
+      return Promise.reject();
+    }
+  },
+  put: function (key, value) {
+    this[key] = value;
+    return Promise.resolve(value);
+  },
+  remove: function (key) {
+    var result = delete this[key];
+    return Promise.resolve(result);
+  }
+};
+
+var LocalDB = function () {
+
+  var self = this;
+
+  if (LocalDB.prototype._singletonInstance) {
+    return Promise.resolve(LocalDB.prototype._singletonInstance);
+  }
+
+  return LocalDB.prototype._singletonInstance = initDB();
+
+  function initDB() {
+
+    return new Promise(function (resolve, reject) {
+
+      var openReq = indexedDB.open(db_name, 1);
+
+      openReq.onsuccess = function (event) {
+        var db = event.target.result;
+        self.db = db;
+        console.log("DB open success");
+        resolve(self);
+      };
+
+      openReq.onerror = function errorHandler(error) {
+        console.log("DB open error", error);
+        reject(error);
+      };
+
+      openReq.onupgradeneeded = function (event) {
+        var db = event.target.result;
+        db.createObjectStore(store_name);
+        console.log("DB create success");
+      };
+    }).catch(function (error) {
+      console.log("IndexedDB error, using in-memory fallback.\n", error);
+      return fallback;
+    });
+  }
+};
+
+var proto = LocalDB.prototype;
+
+proto.get = function (key) {
+  var self = this;
+  return new Promise(function (resolve, reject) {
+    var request = self.db.transaction([store_name], "readonly").objectStore(store_name).get(key);
+    request.onerror = function(error) {
+      reject(error);
+    };
+    request.onsuccess = function(event) {
+      var result = request.result;
+      if (typeof result !== "undefined") {
+        resolve(result);
+      } else {
+        reject();
+      }
+    };
+  });
+};
+
+proto.put = function (key, value) {
+  var self = this;
+  return new Promise(function (resolve, reject) {
+    var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).put(value, key);
+    request.onerror = function(error) {
+      reject(error);
+    };
+    request.onsuccess = function(event) {
+      resolve(value);
+    };
+  });
+};
+
+proto.remove = function (key) {
+  var self = this;
+  return new Promise(function (resolve, reject) {
+    var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).delete(key);
+    request.onerror = function(error) {
+      reject(error);
+    };
+    request.onsuccess = function(event) {
+      resolve(request.result);
+    };
+  });
+};
+
+function serialize(subject) {
+  var headers = {};
+  for (var entry of subject.headers.entries()) {
+    headers[entry[0]] = entry[1];
+  }
+  var serialized;
+  if (subject instanceof Request) {
+    serialized = {
+      url: subject.url,
+      headers: headers,
+      method: subject.method,
+      mode: subject.mode,
+      credentials: subject.credentials,
+      cache: subject.cache,
+      redirect: subject.redirect,
+      referrer: subject.referrer
+    };
+  } else {
+      serialized = {
+      url: subject.url,
+      headers: headers,
+      ok: subject.ok,
+      redirected: subject.redirected,
+      status: subject.status,
+      statusText: subject.statusText,
+      type: subject.type
+    };
+  }
+  return subject.clone().text().then(function(body) {
+    serialized.body = body;
+    return serialized;
+  });
+}
+
+function deserialize(subject) {
+  return subject instanceof Request ? new Request(subject.url, subject) : new Response(subject.body, subject);
 }
