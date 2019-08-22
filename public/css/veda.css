@@ -342,7 +342,7 @@ hr.black {
 }
 
 .login-form {
-  max-width: 500px;
+  max-width: 400px;
   padding: 15px;
   margin-top: 5%;
   margin-left: auto;
@@ -1488,5 +1488,4 @@ veda-control .radio:last-child, veda-control .checkbox:last-child {
 .row-attribute > div:first-child {
   text-align: right;
   font-weight: bold;
-  margin-top: 0.5em;
 }
