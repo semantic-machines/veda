@@ -145,6 +145,13 @@ fn main() -> std::io::Result<()> {
                     return Some("*".to_owned());
                 }
 
+                // выгрузка прав если они содержат ссылку на внешнего индивида
+                if itype == "v-s:PermissionStatement" {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:permissionSubject", "sys:source") {
+                        return Some(src);
+                    }
+                }
+
                 // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из другой системы
                 // и в поле [v-wf:onDocument] должен находится документ типа gen:InternalDocument
                 if itype == "v-wf:DecisionForm" {
@@ -156,7 +163,7 @@ fn main() -> std::io::Result<()> {
                             return None;
                         }
 
-                        if let Ok(t) = new_state_indv.get_first_literal("rdf:type") {
+                        if let Ok(t) = doc.get_first_literal("rdf:type") {
                             if t == "gen:InternalDocument" {
                                 if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source") {
                                     if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut doc, "?", db_id, &src, 0) {
@@ -173,7 +180,7 @@ fn main() -> std::io::Result<()> {
 
                 // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
                 if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
-                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:lastEditor", "sys:source") {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source") {
                         return Some(src);
                     }
                 }
