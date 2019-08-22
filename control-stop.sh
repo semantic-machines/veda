@@ -56,8 +56,8 @@ if [ $1 == "all" ] ; then
     killall -9 veda-ontologist
     killall -9 veda-geo-indexer
     killall -9 veda-extractor
-    killall -9 veda-exim-master
-    killall -9 veda-exim-slave
+    killall -9 veda-exim-send
+    killall -9 veda-exim-recv
 
     #tarantoolctl stop init_tarantool.lua
     pkill tarantool

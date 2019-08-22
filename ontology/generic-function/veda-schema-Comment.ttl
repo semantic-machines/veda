@@ -33,6 +33,7 @@ v-s:PsLinkedObjectForComment
   v-ui:forProperty v-s:linkedObject ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Document')"^^xsd:string ;
   rdfs:label "Спецификация свойства v-s:linkedObject для класса v-s:Comment"@ru ;
   rdfs:label "v-s:linkedObject property specification for v-s:Comment class"@en ;
 .

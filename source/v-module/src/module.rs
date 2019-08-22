@@ -70,11 +70,26 @@ impl Module {
 
     pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
         let mut indv = Individual::default();
-        if self.storage.set_binobj_db(StorageId::Tickets, "systicket", &mut indv) {
+        if self.storage.get_individual_from_db(StorageId::Tickets, "systicket", &mut indv) {
             if let Ok(c) = indv.get_first_literal("v-s:resource") {
                 return Ok(c);
             }
         }
         return Err(-1);
+    }
+
+    pub fn get_literal_of_link(&mut self, indv: &mut Individual, link: &str, field: &str) -> Option<String> {
+        if let Ok(v) = indv.get_literals(link) {
+            for el in v {
+                let mut to = Individual::default();
+
+                if self.storage.get_individual(&el, &mut to) {
+                    if let Ok(src) = to.get_first_literal(field) {
+                        return Some(src);
+                    }
+                }
+            }
+        }
+        None
     }
 }

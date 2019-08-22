@@ -1,11 +1,11 @@
 [package]
-name = "veda-exim-slave"
+name = "veda-exim-send"
 version = "0.1.0"
 authors = ["Valeriy Bushenev <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "veda-exim-slave"
+name = "veda-exim-send"
 path = "src/main.rs"
 
 [dependencies]

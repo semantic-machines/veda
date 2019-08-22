@@ -23,7 +23,7 @@ pub fn load_onto(ft_client: &mut FTClient, storage: &mut VStorage, onto: &mut On
         info!("load {} onto elements", res.count);
         for el in &res.result {
             let mut indv: Individual = Individual::default();
-            if storage.set_binobj(&el, &mut indv) {
+            if storage.get_individual(&el, &mut indv) {
                 onto.update(&mut indv);
             }
         }

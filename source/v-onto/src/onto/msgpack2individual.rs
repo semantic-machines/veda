@@ -59,6 +59,7 @@ pub fn parse_msgpack_to_predicate(expect_predicate: &str, iraw: &mut Individual)
                 if e == -1 {
                     error!("read_string_from_msgpack, err={}", e);
                 }
+                iraw.raw.cur = cur.position();
                 return false;
             }
         };

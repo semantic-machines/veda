@@ -104,6 +104,7 @@ fn prepare_recv_msg(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> 
                     error!("fail update, uri={}, result_code={:?}", recv_indv.obj.uri, res.result);
                     return enc_slave_resp(&recv_indv.obj.uri, ExImCode::FailUpdate);
                 } else {
+                    info!("success update, uri={}", recv_indv.obj.uri);
                     return enc_slave_resp(&recv_indv.obj.uri, ExImCode::Ok);
                 }
             }
