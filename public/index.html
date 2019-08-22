@@ -400,7 +400,7 @@
 
     <script type="text/javascript">
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(function(worker) {
+        navigator.serviceWorker.register('/sw-simple-offline.js', { scope: '/' }).then(function(worker) {
           console.log('Service workers registered:', worker.scope);
         }).catch(function(error) {
           // регистрация прошла неудачно

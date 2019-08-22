@@ -96,7 +96,7 @@ veda.Module(function (veda) { "use strict";
         }
       };
       xhr.onerror = function () {
-        reject( new BackendError(this) );
+        reject( new Error(this) );
       };
       xhr.open("GET", "/ontology.json", true);
       xhr.timeout = 120000;
