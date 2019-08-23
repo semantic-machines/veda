@@ -13,9 +13,16 @@
 # owl:versionInfo "1.3" ;
 .
 
-d:BobrovaAdmin
+#d:BobrovaAdmin
+#  rdf:type v-s:Membership ;
+#  v-s:resource d:org_RU1100220011_employee_10 ;
+#  v-s:memberOf cfg:SuperUser;
+#  rdfs:label "Боброва - Администратор";
+#.
+
+d:AllUsersGroup_SuperUser_membership
   rdf:type v-s:Membership ;
-  v-s:resource d:org_RU1100220011_employee_10 ;
   v-s:memberOf cfg:SuperUser;
-  rdfs:label "Боброва - Администратор";
+  v-s:resource cfg:AllUsersGroup ;
+  rdfs:label "Все пользователи входят в группу cfg:SuperUser" ;
 .
