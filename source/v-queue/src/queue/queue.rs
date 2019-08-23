@@ -278,6 +278,8 @@ impl Queue {
 
         if res {
             self.id = id;
+            self.right_edge = 0;
+            self.count_pushed = 0;
         }
 
         //info!("@ read info_queue: name={}, id={}", self.name, self.id);
