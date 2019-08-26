@@ -29,13 +29,7 @@ impl Storage for TTStorage {
     fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
         let key = (uri,);
 
-        let space;
-
-        if storage == StorageId::Individuals {
-            space = INDIVIDUALS_SPACE_ID;
-        } else {
-            space = TICKETS_SPACE_ID;
-        }
+        let space = if storage == StorageId::Individuals { INDIVIDUALS_SPACE_ID } else { TICKETS_SPACE_ID };
 
         let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 

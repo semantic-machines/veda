@@ -75,7 +75,7 @@ impl Module {
                 return Ok(c);
             }
         }
-        return Err(-1);
+        Err(-1)
     }
 
     pub fn get_literal_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Option<String> {

@@ -254,7 +254,7 @@ pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, m
         }
 
         let new_state = recv_indv.get_first_binobj("new_state");
-        if cmd != IndvOp::Remove && !new_state.is_err() {
+        if cmd != IndvOp::Remove && new_state.is_ok() {
             let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
             if let Ok(uri) = parse_raw(&mut indv) {
                 indv.parse_all();

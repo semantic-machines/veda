@@ -89,4 +89,3 @@ fn main() -> std::io::Result<()> {
         thread::sleep(time::Duration::from_millis(5000));
     }
 }
-
