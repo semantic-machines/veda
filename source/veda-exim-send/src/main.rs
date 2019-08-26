@@ -56,7 +56,7 @@ fn prepare_consumer(node_id: &str, node_addr: &str) {
         error!("fail connect to, {} {}, err={}", node_id, node_addr, e);
         return;
     }
-    info!("success connect to, {} {}", node_id, node_addr);
+    debug!("success connect to, {} {}", node_id, node_addr);
 
     let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
 

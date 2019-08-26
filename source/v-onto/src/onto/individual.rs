@@ -119,6 +119,7 @@ impl Individual {
         }
         false
     }
+
     /*
         pub fn get_resources(&mut self, predicate: &str) -> Result<Vec<Resource>, IndividualError> {
             for _ in 0..2 {
@@ -141,6 +142,7 @@ impl Individual {
             Err(IndividualError::None)
         }
     */
+
     pub fn get_literals(&mut self, predicate: &str) -> Result<Vec<String>, IndividualError> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
@@ -298,6 +300,22 @@ impl Individual {
             }
         }
     }
+
+    pub fn get_predicates_of_type(&mut self, rtype: DataType) -> Vec<String> {
+        self.parse_all();
+
+        let mut res: Vec<String> = Vec::new();
+
+        for (key, vals) in self.obj.resources.iter() {
+            for val in vals.iter() {
+                if val.rtype == rtype {
+                    res.push(key.to_string());
+                    break;
+                }
+            }
+        }
+        return res;
+    }
 }
 
 impl fmt::Display for Individual {
@@ -314,9 +332,9 @@ impl IndividualObj {
         }
     }
 
-    pub fn get_predicates(&self) -> Vec<String> {
-        self.resources.iter().map(|(key, _)| key.clone()).collect()
-    }
+    //    pub fn get_predicates(&self) -> Vec<String> {
+    //        self.resources.iter().map(|(key, _)| key.clone()).collect()
+    //    }
 
     pub fn add_bool(&mut self, predicate: &str, b: bool, order: u32) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
