@@ -78,12 +78,10 @@ impl Module {
         return Err(-1);
     }
 
-    pub fn get_literal_of_link(&mut self, indv: &mut Individual, link: &str, field: &str) -> Option<String> {
+    pub fn get_literal_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Option<String> {
         if let Ok(v) = indv.get_literals(link) {
             for el in v {
-                let mut to = Individual::default();
-
-                if self.storage.get_individual(&el, &mut to) {
+                if self.storage.get_individual(&el, to) {
                     if let Ok(src) = to.get_first_literal(field) {
                         return Some(src);
                     }

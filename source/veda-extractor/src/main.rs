@@ -147,7 +147,7 @@ fn main() -> std::io::Result<()> {
 
                 // выгрузка прав если они содержат ссылку на внешнего индивида
                 if itype == "v-s:PermissionStatement" {
-                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:permissionSubject", "sys:source") {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:permissionSubject", "sys:source", &mut Individual::default()) {
                         return Some(src);
                     }
                 }
@@ -164,10 +164,25 @@ fn main() -> std::io::Result<()> {
                         }
 
                         if let Ok(t) = doc.get_first_literal("rdf:type") {
-                            if t == "gen:InternalDocument" {
-                                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source") {
+                            if t == "gen:InternalDocument" || t == "gen:Contract" {
+                                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source", &mut Individual::default()) {
+                                    for predicate in doc.get_predicates_of_type(DataType::Uri) {
+                                        if predicate == "v-s:lastEditor" || predicate == "v-s:creator" || predicate == "v-s:initiator" {
+                                            continue;
+                                        }
+                                        let mut linked_doc = Individual::default();
+                                        if let Some(p) = module.get_literal_of_link(&mut doc, &predicate, "v-s:parent", &mut linked_doc) {
+                                            if p == doc.obj.uri {
+                                                if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut linked_doc, "?", db_id, &src, 0) {
+                                                    error!("fail add to queue, err={:?}", e);
+                                                    return None;
+                                                }
+                                            }
+                                        }
+                                    }
+
                                     if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut doc, "?", db_id, &src, 0) {
-                                        error!("fail prepare message, err={:?}", e);
+                                        error!("fail add to queue, err={:?}", e);
                                         return None;
                                     }
 
@@ -180,7 +195,7 @@ fn main() -> std::io::Result<()> {
 
                 // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
                 if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
-                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source") {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source", &mut Individual::default()) {
                         return Some(src);
                     }
                 }
