@@ -324,9 +324,9 @@ impl Consumer {
                 self.is_ready = false;
                 return Err(ErrorQueue::InvalidChecksum);
             }
-            return Ok(readed_size);
+            Ok(readed_size)
         } else {
-            return Err(ErrorQueue::FailRead);
+            Err(ErrorQueue::FailRead)
         }
     }
 

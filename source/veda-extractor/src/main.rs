@@ -45,7 +45,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    let mut onto = Onto::new();
+    let mut onto = Onto::default();
 
     info!("load onto start");
     load_onto(&mut module.fts, &mut module.storage, &mut onto);
@@ -202,7 +202,7 @@ fn main() -> std::io::Result<()> {
             }
         }
 
-        return None;
+        None
     }
 
     fn prepare_queue_element(module: &mut Module, onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
@@ -217,7 +217,7 @@ fn main() -> std::io::Result<()> {
             let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
             let prev_state = msg.get_first_binobj("prev_state");
-            let mut prev_state_indv = if !prev_state.is_err() {
+            let mut prev_state_indv = if prev_state.is_ok() {
                 let mut indv = Individual::new_raw(RawObj::new(prev_state.unwrap_or_default()));
                 if let Ok(uri) = parse_raw(&mut indv) {
                     indv.obj.uri = uri.clone();

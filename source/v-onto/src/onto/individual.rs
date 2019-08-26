@@ -52,7 +52,7 @@ pub struct Individual {
 impl Default for Individual {
     fn default() -> Self {
         Individual {
-            obj: IndividualObj::new(),
+            obj: IndividualObj::default(),
             raw: RawObj::new_empty(),
         }
     }
@@ -61,7 +61,7 @@ impl Default for Individual {
 impl Individual {
     pub fn new_raw(raw: RawObj) -> Self {
         Individual {
-            obj: IndividualObj::new(),
+            obj: IndividualObj::default(),
             raw,
         }
     }
@@ -314,7 +314,7 @@ impl Individual {
                 }
             }
         }
-        return res;
+        res
     }
 }
 
@@ -324,14 +324,16 @@ impl fmt::Display for Individual {
     }
 }
 
-impl IndividualObj {
-    pub fn new() -> Self {
+impl Default for IndividualObj {
+    fn default() -> Self {
         IndividualObj {
             uri: "".to_string(),
             resources: HashMap::new(),
         }
     }
+}
 
+impl IndividualObj {
     //    pub fn get_predicates(&self) -> Vec<String> {
     //        self.resources.iter().map(|(key, _)| key.clone()).collect()
     //    }

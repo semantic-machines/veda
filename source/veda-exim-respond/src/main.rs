@@ -47,16 +47,15 @@ fn main() -> std::io::Result<()> {
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-
             let msg = recv_msg.to_vec();
 
             if msg.len() > 1 && msg[0] == b'?' {
-                let node_id : &[u8] = &msg[2..msg.len()];
+                let node_id: &[u8] = &msg[2..msg.len()];
 
-                //""
+            //""
             } else {
                 let res = processing_message_contains_changes(msg, &systicket, &mut module);
-                if let Err(e) = server.send(Message::from(enc_slave_resp (&res.0, res.1).as_ref() )) {
+                if let Err(e) = server.send(Message::from(enc_slave_resp(&res.0, res.1).as_ref())) {
                     error!("fail send {:?}", e);
                 }
             }
