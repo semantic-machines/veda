@@ -26,30 +26,26 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "exim-send" ] || [ $1 == "veda-exim-send" ] ; then
+if [ -z $1 ] || [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
 
-    echo start make VEDA-EXIM-SEND
-    rm ./veda-veda-exim-send
+    rm ./veda-veda-exim-inquire
 
-    cd source/veda-exim-send
+    cd source/veda-exim-inquire
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-exim-send $PWD
+    cp $CARGO_TARGET_DIR/release/veda-exim-inquire $PWD
 
-    echo end make VEDA-EXIM-SEND
 fi
 
-if [ -z $1 ] || [ $1 == "exim-recv" ] || [ $1 == "veda-exim-recv" ] ; then
+if [ -z $1 ] || [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] ; then
 
-    echo start make VEDA-EXIM-RECV
-    rm ./veda-veda-exim-recv
+    rm ./veda-veda-exim-respond
 
-    cd source/veda-exim-recv
+    cd source/veda-exim-respond
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-exim-recv $PWD
+    cp $CARGO_TARGET_DIR/release/veda-exim-respond $PWD
 
-    echo end make VEDA-EXIM-RECV
 fi
 
 if [ -z $1 ] || [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then

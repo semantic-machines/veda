@@ -1,11 +1,11 @@
 [package]
-name = "veda-exim-recv"
+name = "veda-exim-respond"
 version = "0.1.0"
 authors = ["Valeriy Bushenev <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 
 [[bin]]
-name = "veda-exim-recv"
+name = "veda-exim-respond"
 path = "src/main.rs"
 
 [dependencies]

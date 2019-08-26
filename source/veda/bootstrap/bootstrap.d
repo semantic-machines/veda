@@ -243,8 +243,8 @@ void main(string[] args)
     modules[ "veda-webserver" ]     = new Module("veda-webserver", "veda-webserver", [], [], false, false, 15);
     modules[ "veda-geo-indexer" ]   = new Module("veda-geo-indexer", "veda-geo-indexer", [], [], false, false, 16);
     modules[ "veda-extractor" ]     = new Module("veda-extractor", "veda-extractor", [], [], false, false, 17);
-    modules[ "veda-exim-send" ]   = new Module("veda-exim-send", "veda-exim-send", [], [], false, false, 18);
-    modules[ "veda-exim-recv" ]    = new Module("veda-exim-recv", "veda-exim-recv", [], [], false, false, 19);
+    modules[ "veda-exim-send" ]   = new Module("veda-exim-inquire", "veda-exim-inquire", [], [], false, false, 18);
+    modules[ "veda-exim-recv" ]    = new Module("veda-exim-respond", "veda-exim-respond", [], [], false, false, 19);
     modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", "veda-gowebserver", [], [], false, false, 99);
 
     string[ string ] properties;
