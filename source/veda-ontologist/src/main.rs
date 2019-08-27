@@ -138,48 +138,59 @@ fn main() -> std::io::Result<()> {
         }
 
         if is_found_onto_changes && size_batch == 0 && Instant::now().duration_since(last_found_changes).as_secs() > 5 {
-            info!("prepare changes");
-
-            let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
-            if res.result_code == 200 && res.count > 0 {
-                let mut indvs = Vec::new();
-
-                for el in &res.result {
-                    let mut rindv: Individual = Individual::default();
-                    if module.storage.get_individual(&el, &mut rindv) {
-                        rindv.parse_all();
-                        indvs.push(rindv);
-                    } else {
-                        error!("fail read, uri={}", &el);
-                    }
+                if generate_file(&mut module, &query, ontology_file_path) {
+                    is_found_onto_changes = false;
                 }
-
-                let mut buf = String::new();
-
-                buf.push('[');
-                for el in indvs.iter() {
-                    if buf.len() > 1 {
-                        buf.push(',');
-                    }
-
-                    buf.push_str(&mut el.obj.as_json_str());
-                }
-                buf.push(']');
-
-                if let Ok(mut file) = File::create(ontology_file_path) {
-                    file.write_all(buf.as_bytes())?;
-                    info!("stored: count:{}, bytes:{}", indvs.len(), buf.len());
-                } else {
-                    error!("fail create file {}", ontology_file_path);
-                }
-                is_found_onto_changes = false;
-            } else {
-                error!("search return empty set, query: {}", &query);
-            }
         }
 
         thread::sleep(time::Duration::from_millis(3000));
     }
+}
+
+fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> bool {
+    info!("prepare changes");
+
+    let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", query));
+    if res.result_code == 200 && res.count > 0 {
+        let mut indvs = Vec::new();
+
+        for el in &res.result {
+            let mut rindv: Individual = Individual::default();
+            if module.storage.get_individual(&el, &mut rindv) {
+                rindv.parse_all();
+                indvs.push(rindv);
+            } else {
+                error!("fail read, uri={}", &el);
+            }
+        }
+
+        let mut buf = String::new();
+
+        buf.push('[');
+        for el in indvs.iter() {
+            if buf.len() > 1 {
+                buf.push(',');
+            }
+
+            buf.push_str(&el.obj.as_json_str());
+        }
+        buf.push(']');
+
+        if let Ok(mut file) = File::create(ontology_file_path) {
+            if let Err(e) = file.write_all(buf.as_bytes()) {
+                error!("fail write to file {:?}", e);
+            } else {
+                info!("stored: count:{}, bytes:{}", indvs.len(), buf.len());
+                return true;
+            }
+        } else {
+            error!("fail create file {}", ontology_file_path);
+        }
+    } else {
+        error!("search return empty set, query: {}", &query);
+    }
+
+    false
 }
 
 fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
