@@ -167,6 +167,7 @@ veda.Module(function (veda) { "use strict";
 
         if (uri) {
           loadIndicator.show();
+          window.scrollTo(0, 0);
           var individual = new veda.IndividualModel(uri);
           individual.present(container, template, mode, extra).then(function () {
             loadIndicator.hide();
