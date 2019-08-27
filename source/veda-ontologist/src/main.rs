@@ -125,7 +125,6 @@ fn main() -> std::io::Result<()> {
                 is_found_onto_changes = is_changes(&mut indv, &onto_types);
                 if is_found_onto_changes {
                     last_found_changes = Instant::now();
-                    info!("found onto changes from storage: uri={}", indv.obj.uri);
                 }
             }
 
@@ -192,10 +191,13 @@ fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
 
             if let Ok(uri) = parse_raw(&mut indv) {
                 indv.obj.uri = uri;
-                return indv.any_exists("rdf:type", &onto_types);
+                if indv.any_exists("rdf:type", &onto_types) {
+                    info!("found onto changes from storage: uri={}", &indv.obj.uri);
+                    return true;
+                }
             }
         } else {
-            warn!("field new_state no found, id={}", qel.obj.uri);
+            warn!("not found field [new_state], id={}", qel.obj.uri);
         }
     }
     false
