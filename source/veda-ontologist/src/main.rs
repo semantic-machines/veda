@@ -10,10 +10,10 @@ use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 use std::{thread, time};
+use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
-use v_search::{FTQuery};
-use v_module::module::*;
+use v_search::FTQuery;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -57,9 +57,9 @@ fn main() -> std::io::Result<()> {
         query.push_str("'");
     }
 
-//    while !ft_client.connect() {
-//        thread::sleep(time::Duration::from_millis(3000));
-//    }
+    //    while !ft_client.connect() {
+    //        thread::sleep(time::Duration::from_millis(3000));
+    //    }
 
     let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
     let mut total_prepared_count: u64 = 0;
@@ -141,39 +141,41 @@ fn main() -> std::io::Result<()> {
         if is_found_onto_changes && size_batch == 0 && Instant::now().duration_since(last_found_changes).as_secs() > 5 {
             info!("prepare changes");
 
-            if let Ok(mut file) = File::create(ontology_file_path) {
-                let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
-                if res.result_code == 200 && res.count > 0 {
-                    let mut indvs = Vec::new();
+            let res = module.fts.query(FTQuery::new_with_user("cfg:VedaSystem", &query));
+            if res.result_code == 200 && res.count > 0 {
+                let mut indvs = Vec::new();
 
-                    for el in &res.result {
-                        let mut rindv: Individual = Individual::default();
-                        if module.storage.get_individual(&el, &mut rindv) {
-                            rindv.parse_all();
-                            indvs.push(rindv);
-                        }
+                for el in &res.result {
+                    let mut rindv: Individual = Individual::default();
+                    if module.storage.get_individual(&el, &mut rindv) {
+                        rindv.parse_all();
+                        indvs.push(rindv);
+                    } else {
+                        error!("fail read, uri={}", &el);
                     }
-
-                    let mut buf = String::new();
-
-                    buf.push('[');
-                    for el in indvs.iter() {
-                        if buf.len() > 1 {
-                            buf.push(',');
-                        }
-
-                        buf.push_str(&mut el.obj.as_json_str());
-                    }
-                    buf.push(']');
-
-                    file.write_all(buf.as_bytes())?;
-                    info!("count stored {}", res.count);
-                    is_found_onto_changes = false;
-                } else {
-                    error!("search return empty set, query: {}", &query);
                 }
+
+                let mut buf = String::new();
+
+                buf.push('[');
+                for el in indvs.iter() {
+                    if buf.len() > 1 {
+                        buf.push(',');
+                    }
+
+                    buf.push_str(&mut el.obj.as_json_str());
+                }
+                buf.push(']');
+
+                if let Ok(mut file) = File::create(ontology_file_path) {
+                    file.write_all(buf.as_bytes())?;
+                    info!("stored: count:{}, bytes:{}", indvs.len(), buf.len());
+                } else {
+                    error!("fail create file {}", ontology_file_path);
+                }
+                is_found_onto_changes = false;
             } else {
-                error!("fail create file {}", ontology_file_path);
+                error!("search return empty set, query: {}", &query);
             }
         }
 
