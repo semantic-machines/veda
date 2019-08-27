@@ -1768,6 +1768,19 @@ v-ui:FileTemplateWithComment
   rdfs:label "File template"@en ;
   v-ui:forClass v-s:File ;
   v-ui:template """
+<script>
+  var fn = individual["v-s:fileName"][0];
+  var img = "jpg|jpeg|gif|png|bmp|svg";
+  if (typeof fn === "string" || fn instanceof String) {
+    var idx = fn.lastIndexOf("."),
+        ext = fn.substr(idx + 1);
+    $("span.icon", template).text(ext);
+    if ( img.indexOf(ext) < 0 ) {
+      $(".thumbnail", template).remove();
+    }
+  }
+  //# sourceURL=v-ui:FileTemplateWithComment
+</script>
 <div class="horizontal-card">
   <div class="thumbnail" about="@" data-template="v-ui:ModalImageTemplate"></div>
   <div class="description">
@@ -1786,15 +1799,6 @@ v-ui:FileTemplateWithComment
     </i>
   </div>
 </div>
-<script>
-  var fn = individual["v-s:fileName"][0];
-  if (typeof fn === "string" || fn instanceof String) {
-    var idx = fn.lastIndexOf("."),
-        ext = fn.substr(idx + 1);
-    $("span.icon", template).text(ext);
-  }
-  //# sourceURL=v-ui:FileTemplateWithComment
-</script>
   """ ;
 .
 v-ui:FileTemplateWithComment2
