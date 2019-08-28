@@ -31,7 +31,7 @@ v-s:Action
   rdfs:subClassOf v-s:Document ;
   rdfs:label "Мероприятие"@ru ;
   rdfs:label "Action"@en ;
-  v-ui:hasTemplate v-s:Action_Template ;
+#  v-ui:hasTemplate v-s:Action_Template ;
 .
 # --- В связи с вводом класса возникает предикат v-s:hasAction. Он описан в классе v-s:Activity
 
