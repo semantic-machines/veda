@@ -168,69 +168,6 @@ v-s:Settings
   rdfs:label "Настройки"@ru ;
   rdfs:label "Settings"@en ;
 .
-v-s:FavoritesIndicatorTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон индикатора избранных"@ru ;
-  rdfs:label "Favorites indicator template"@en ;
-  v-ui:template """
-<script>
-  indicateFavorite();
-  riot.route(indicateFavorite);
-
-  template.tooltip({
-    container: template,
-    placement: "bottom",
-    trigger: "hover",
-    title: (function () {
-      var titleStr;
-      return function () {
-        var current = getCurrent(location.hash);
-        var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
-        title.load().then(function (title) {
-          titleStr = title.toString();
-          template.find(".tooltip-inner").text(titleStr);
-        });
-        return titleStr ? titleStr : "...";
-      }
-    })()
-  }).click(function (e) {
-    var aspect = veda.user.aspect;
-    e.preventDefault();
-    var current = getCurrent(location.hash);
-    if ( aspect.hasValue("v-s:hasFavorite", current) ) {
-      aspect.removeValue("v-s:hasFavorite", current);
-    } else {
-      aspect.addValue("v-s:hasFavorite", current);
-    }
-    aspect.save();
-  });
-  veda.user.aspect.on("v-s:hasFavorite", function () {
-    indicateFavorite(location.hash);
-  });
-
-  function indicateFavorite(hash) {
-    var current = getCurrent(hash);
-    if ( current ) {
-      template.show();
-      if ( veda.user.aspect.hasValue("v-s:hasFavorite", current) ) {
-        template.addClass("fa-star").removeClass("fa-star-o");
-      } else {
-        template.removeClass("fa-star").addClass("fa-star-o");
-      }
-    } else {
-      template.hide();
-    }
-  }
-  function getCurrent(hash) {
-    var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
-    var re = new RegExp("^(\\w|-)+:.*?$");
-    return re.test(current_uri) ? new veda.IndividualModel(current_uri) : undefined;
-  }
-//# sourceURL=v-s:FavoritesIndicatorTemplate_pre
-</script>
-<a href="#" class="fa fa-lg"></a>
-  """ ;
-.
 
 v-s:PersonalAspectTemplate
   rdf:type v-ui:ClassTemplate ;

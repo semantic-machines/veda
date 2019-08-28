@@ -510,7 +510,6 @@ veda.Module(function (veda) { "use strict";
             templatesPromises.push( renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded) );
           }
           return Promise.all(templatesPromises).then(function (renderedTemplates) {
-            relContainer.append(renderedTemplates);
             if (limit < values.length && more) {
               relContainer.append( "<a class='more badge'>&darr; " + (values.length - limit) + "</a>" );
             }
