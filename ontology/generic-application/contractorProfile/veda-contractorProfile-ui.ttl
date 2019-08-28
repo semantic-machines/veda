@@ -592,19 +592,6 @@ v-s:ContractorCategoryRequestTemplate
   rdfs:label "Template for v-s:ContractorCategoryRequest class"@en ;
   v-ui:template """
 <script>
-  var hideAndshowsubContractorOf = $("#hideAndshowsubContractorOf", template);
-  individual.on("v-s:hasContractorInteractionCategory", handler);
-  template.one("remove", function () {
-    individual.off("v-s:hasContractorInteractionCategory", handler);
-  });
-  function handler() {
-    if ( individual.hasValue('v-s:hasContractorInteractionCategory', 'd:eb16f1abb93f44d89ae0492710ad4631') ) {
-      hideAndshowsubContractorOf.show();
-    } else {
-      hideAndshowsubContractorOf.hide();
-    }
-  }
-  handler();
 //# sourceURL=v-s:ContractorCategoryRequestTemplate_pre
 </script>
 <div>
@@ -617,19 +604,13 @@ v-s:ContractorCategoryRequestTemplate
         </h2>
       <span about="@" data-template="v-ui:RabbitHole"></span>
       </div>
-      <div class="col-md-3 col-sm-5">
-        <br>
-        <h4>
-          <span class="label label-danger">
-            <span about="v-s:contractorCategory" property="rdfs:label"></span>:
-            <span about="@" property="v-s:contractorCategory"></span>
-          </span>
-        </h4>
-      </div>
     </div>
     <hr class="margin-sm">
     <div class="row">
       <div class="col-md-9 col-sm-7">
+
+        <!--
+
         <em about="v-s:hasContractorInteractionCategory" property="rdfs:label"></em>
         <div rel="v-s:hasContractorInteractionCategory" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
         <veda-control data-type="link" rel="v-s:hasContractorInteractionCategory" class="-view edit search fulltext dropdown"></veda-control>
@@ -671,6 +652,8 @@ v-s:ContractorCategoryRequestTemplate
         <em about="v-s:expectedValueOfContract" class="view edit -search" property="rdfs:label"></em>
         <div about="@" rel="v-s:expectedValueOfContract" class="view edit -search" data-template="v-s:PriceTemplate" data-embedded="true"></div>
         <veda-control data-type="link" rel="v-s:expectedValueOfContract" class="-view edit -search create"></veda-control>
+        
+        -->
 
         <em about="rdfs:comment" property="rdfs:label"></em>
         <div property="rdfs:comment" class="view -edit -search"></div>
@@ -750,6 +733,7 @@ v-s:ContractorCategoryRequestTemplate
 </script>
     """ ;
 .
+
 
 v-s:PriceTemplate
   rdf:type v-ui:ClassTemplate ;
@@ -1502,18 +1486,16 @@ v-s:ContractorCategoryDecisionEmbeddedTemplate
   template.one("remove", function () {
     individual.off("v-s:isOrganizationOk", handler);
   });
-  function handler(values) {
-    if (values.length) {
-      if (values[0] === true) {
-        decisionContractorCategoryEmbeddedState.removeClass("panel-danger panel-warning").addClass("panel-success");
-      } else {
-        decisionContractorCategoryEmbeddedState.removeClass("panel-success panel-warning").addClass("panel-danger");
-      }
+  function handler() {
+    if (individual.hasValue('v-s:isOrganizationOk', true)) {
+      decisionContractorCategoryEmbeddedState.removeClass("panel-danger panel-warning").addClass("panel-success");
+    } else if (individual.hasValue('v-s:isOrganizationOk', false)) {
+      decisionContractorCategoryEmbeddedState.removeClass("panel-success panel-warning").addClass("panel-danger");
     } else {
       decisionContractorCategoryEmbeddedState.removeClass("panel-success panel-danger").addClass("panel-warning");
     }
   }
-  handler("v-s:isOrganizationOk", individual["v-s:isOrganizationOk"]);
+  handler();
 </script>
 <div>
   <div id="decisionContractorCategoryEmbeddedState" class="panel">
@@ -1621,133 +1603,3 @@ v-s:ContractorCategoryDepartmentDecisionEmbeddedTemplate
 </div>
    """ ;
 .
-
-
-# ------------------------------------------------------------ Серверные скрипты --
-
-# GH #289 (4)
-# Создать серверный скрипт, обрабатывающий сохранение индивидов класса v-s:ContractorCategoryDecision.
-# Заполнить поле v-s:isOrganizationOk, если
-# 4.1. Если заполнены хотя бы два из трех галочки в Резолюциях, и они одинаковые, то v-s:isOrganizationOk = их значение.
-# 4.2. Если заполнены хотя бы два из трех галочки в Резолюциях, и они разные, то v-s:isOrganizationOk = значению в СЭБ.
-# 4.3. Если заполнены все трех галочки в Резолюциях, то v-s:isOrganizationOk = значению по большинству.
-# 4.4. Если заполнены менее 2-х галочек в Резолюциях, то v-s:isOrganizationOk = значению в СЭБ.
-# Обрабатываемые галочки это поля
-# v-s:isContractorOkSecurityDepSummary из поля v-s:hasContractorCategoryDecisionSecurity   +
-# v-s:isContractorOkLegalDepSummary из поля v-s:hasContractorCategoryDecisionLegal
-# v-s:isContractorOkFinancialDepSummary из поля v-s:hasContractorCategoryDecisionFinancial +
-
-v-s:Event_ContractCategoryRequestDecision
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт обработки v-s:ContractorCategoryDecision" ;
-  rdfs:comment "Скрипт обработки v-s:ContractorCategoryDecision" ;
-  v-s:triggerByType v-s:ContractorCategoryDecision ;
-  v-s:preventByType v-s:Version ;
-  v-s:script """
-/* Available variables:
- * ticket = superuser ticket
- * document = captured document
- * user_uri = user whose actions triggered event
- * prev_state = previous state of the captured document
- * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_script_id = id of the parent script that triggered this event.
- * parent_document_id = id of the document that triggered this event.
- * super_classes = super classes of the document.
- */
-
-var decision = document;
-
-//print("************************** START **************************");
-
-var maxDate = 0;
-
-var isContractorOkSecurityDepSummary  = getOk("v-s:hasContractorCategoryDecisionSecurity", "v-s:isContractorOkSecurityDepSummary"),
-    isContractorOkFinancialDepSummary = getOk("v-s:hasContractorCategoryDecisionFinancial", "v-s:isContractorOkFinancialDepSummary");
-
-if ( maxDate ) {
-  decision["v-s:date"] = veda.Util.newDate(maxDate);
-}
-
-var filled_count = 0
-    + (isContractorOkFinancialDepSummary === undefined ? 0 : 1);
-
-var ok_sum = 0
-    + (isContractorOkFinancialDepSummary === undefined ? 0 : isContractorOkFinancialDepSummary ? 1 : -1);
-
-var isContractorOk = isContractorOkSecurityDepSummary;
-switch (true) {
-  case filled_count < 2 :
-  case filled_count === 2 && ok_sum === 0 :
-    isContractorOk = isContractorOkSecurityDepSummary;
-    //print("1", "filled_count", filled_count, "ok_sum", ok_sum, "isContractorOk = isContractorOkSecurityDepSummary");
-    break;
-  case filled_count >= 2 && ok_sum > 0 :
-    isContractorOk = true;
-    //print("2", "filled_count", filled_count, "ok_sum", ok_sum, "isContractorOk = true");
-    break;
-  case filled_count >= 2 && ok_sum < 0 :
-    isContractorOk = false;
-    //print("3", "filled_count", filled_count, "ok_sum", ok_sum, "isContractorOk = false");
-    break;
-}
-
-if ( isContractorOk !== undefined ) {
-  decision["v-s:isOrganizationOk"] = veda.Util.newBool(isContractorOk) ;
-} else {
-  delete decision["v-s:isOrganizationOk"] ;
-}
-put_individual(ticket, decision, _event_id);
-
-//print( "decision =", JSON.stringify(decision) );
-//print( "isContractorOkSecurityDepSummary", isContractorOkSecurityDepSummary );
-//print( "isContractorOkFinancialDepSummary", isContractorOkFinancialDepSummary );
-//print( "isContractorOk", isContractorOk );
-
-function getOk(property_uri, ok_uri) {
-  var dep_decision_uri = veda.Util.getUri( decision[property_uri] ),
-      dep_decision = dep_decision_uri ? get_individual( ticket, dep_decision_uri ) : undefined,
-      hasOk = dep_decision ? veda.Util.hasValue( dep_decision, ok_uri ) : undefined,
-      ok = hasOk ? dep_decision[ok_uri][0].data : undefined ;
-  if ( dep_decision && veda.Util.hasValue(dep_decision, "v-s:created") && dep_decision["v-s:created"][0].data > maxDate ) {
-    maxDate = dep_decision["v-s:created"][0].data;
-  }
-  return ok; // undefined || true || false
-}
-
-//print("*************************** END ***************************");
-  """ ;
-.
-
-v-s:Event_ContractCategoryRequestDecision_Department
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
-  rdfs:label "Скрипт обновляет v-s:ContractorCategoryDecision при сохранении отдельного решения департамента" ;
-  rdfs:comment "Скрипт обновляет v-s:ContractorCategoryDecision при сохранении отдельного решения департамента" ;
-  v-s:triggerByType v-s:ContractorCategoryDecisionSecurity ;
-  v-s:triggerByType v-s:ContractorCategoryDecisionFinancial ;
-  v-s:triggerByType v-s:ContractorCategoryDecisionLegal ;
-  v-s:preventByType v-s:Version ;
-  v-s:script """
-/* Available variables:
- * ticket = superuser ticket
- * document = captured document
- * user_uri = user whose actions triggered event
- * prev_state = previous state of the captured document
- * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
- * parent_script_id = id of the parent script that triggered this event.
- * parent_document_id = id of the document that triggered this event.
- * super_classes = super classes of the document.
- */
-//print("************************** START **************************");
-var decision_uri = veda.Util.getUri(document["v-s:backwardTarget"]),
-    decision = decision_uri ? get_individual(ticket, decision_uri) : undefined;
-if (!decision) { return; }
-if ( veda.Util.hasValue(document, "v-s:created") ) {
-  decision["v-s:date"] = document["v-s:created"];
-}
-put_individual(ticket, decision, _event_id);
-//print("*************************** END ***************************");
-  """ ;
-.
-
