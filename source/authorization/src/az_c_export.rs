@@ -1,4 +1,3 @@
-use crate::authorization::*;
 use lmdb_rs_m::core::{EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
 use lmdb_rs_m::{DbFlags, EnvBuilder, Environment};
 use std::cell::RefCell;
@@ -10,6 +9,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time;
 use std::time::SystemTime;
+use v_authorization::*;
 
 const TRACE_ACL: u8 = 0;
 const TRACE_GROUP: u8 = 1;
