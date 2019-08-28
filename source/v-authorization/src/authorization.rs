@@ -1,4 +1,7 @@
+extern crate core;
 /// This module gives function to check access of user to individual
+extern crate lmdb_rs_m;
+
 use core::fmt;
 use std::collections::HashMap;
 
@@ -297,7 +300,16 @@ fn authorize_obj_group(
     Ok(false)
 }
 
-fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8, uri: &str, access: u8, filter_value: &str, level: u8, db: &Database) -> Result<bool, i64> {
+fn prepare_obj_group(
+    azc: &mut AzContext,
+    trace: &mut Trace,
+    request_access: u8,
+    uri: &str,
+    access: u8,
+    filter_value: &str,
+    level: u8,
+    db: &Database,
+) -> Result<bool, i64> {
     if level > 32 {
         //        if trace.is_info {
         //            print_to_trace_info(trace, format!("ERR! level down > 32,
@@ -399,7 +411,7 @@ fn prepare_obj_group(azc: &mut AzContext, trace: &mut Trace, request_access: u8,
                     }
                 }
 
-                try!(prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db));
+                prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db)?;
             }
 
             if groups_set_len == 0 {
@@ -521,7 +533,8 @@ fn get_resource_groups(
                     ignore_exclusive
                 };
 
-                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, out_f_is_exclusive, t_ignore_exclusive) {
+                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, out_f_is_exclusive, t_ignore_exclusive)
+                {
                     Ok(_res) => {}
                     Err(e) => {
                         if e < 0 {
@@ -663,7 +676,15 @@ fn final_check(azc: &mut AzContext, trace: &mut Trace) -> bool {
     res
 }
 
-pub fn authorize(uri: &str, user_uri: &str, request_access: u8, filter_value: &str, filter_allow_access_to_other: u8, db: &Database, trace: &mut Trace) -> Result<u8, i64> {
+pub fn authorize(
+    uri: &str,
+    user_uri: &str,
+    request_access: u8,
+    filter_value: &str,
+    filter_allow_access_to_other: u8,
+    db: &Database,
+    trace: &mut Trace,
+) -> Result<u8, i64> {
     let s_groups = &mut HashMap::new();
 
     let mut azc = AzContext {
@@ -898,7 +919,13 @@ pub fn authorize(uri: &str, user_uri: &str, request_access: u8, filter_value: &s
         if trace.is_info {
             print_to_trace_info(
                 trace,
-                format!("result: uri={}, user={}, request={}, answer={}\n\n", azc.uri, azc.user_uri, access_to_pretty_string(azc.request_access), access_to_pretty_string(0)),
+                format!(
+                    "result: uri={}, user={}, request={}, answer={}\n\n",
+                    azc.uri,
+                    azc.user_uri,
+                    access_to_pretty_string(azc.request_access),
+                    access_to_pretty_string(0)
+                ),
             );
         }
 
