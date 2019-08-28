@@ -331,15 +331,15 @@ v-s:hasContractorCategoryDecisionSecurity
 .
 v-s:hasContractorCategoryDecisionLegal
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение ЮРО"@ru ;
+  rdfs:label "Заключение юр. отдела"@ru ;
   rdfs:label "Contractor category decision legal"@en ;
   rdfs:range v-s:ContractorCategoryDecisionLegal ;
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
 v-s:hasContractorCategoryDecisionFinancial
   rdf:type owl:ObjectProperty ;
-  rdfs:label "Заключение Бухгалтерии"@ru ;
-  rdfs:label "Resolution Financial"@en ;
+  rdfs:label "Заключение бухгалтерии"@ru ;
+  rdfs:label "Resolution accounting"@en ;
   rdfs:range v-s:ContractorCategoryDecisionFinancial ;
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
@@ -353,7 +353,7 @@ v-s:ContractorCategoryDecisionSecurity
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Labeled ;
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
-  rdfs:label "Заключение СЭБ"@ru ;
+  rdfs:label "Заключение СБ"@ru ;
   rdfs:label "Resolution Security"@en ;
   v-ui:hasTemplate v-s:ContractorCategoryDecisionSecurityTemplate ;
 .
@@ -394,14 +394,14 @@ v-s:contractorAssetsInspection
 .
 v-s:contractorSecurityDepSummary
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение СЭБ"@ru ;
+  rdfs:label "Заключение СБ"@ru ;
   rdfs:label "Security department summary"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:ContractorCategoryDecisionSecurity ;
 .
 v-s:isContractorOkSecurityDepSummary
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение СЭБ положительное?"@ru ;
+  rdfs:label "Заключение СБ положительное?"@ru ;
   rdfs:label "Security department summary"@en ;
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:ContractorCategoryDecisionSecurity ;
@@ -415,7 +415,7 @@ v-s:ContractorCategoryDecisionLegal
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Labeled ;
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
-  rdfs:label "Заключение ПУ"@ru ;
+  rdfs:label "Заключение юр. отдела"@ru ;
   rdfs:label "Resolution Legal"@en ;
   v-ui:hasTemplate v-s:ContractorCategoryDecisionLegalTemplate ;
 .
@@ -428,14 +428,14 @@ v-s:contractorOtherLegalRisk
 .
 v-s:contractorLegalDepSummary
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение ПУ"@ru ;
+  rdfs:label "Заключение юр. отдела"@ru ;
   rdfs:label "Legal department summary"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:ContractorCategoryDecisionLegal ;
 .
 v-s:isContractorOkLegalDepSummary
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение ПУ положительное?"@ru ;
+  rdfs:label "Заключение юр. отдела положительное?"@ru ;
   rdfs:label "Legal department summary"@en ;
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:ContractorCategoryDecisionLegal ;
@@ -449,21 +449,21 @@ v-s:ContractorCategoryDecisionFinancial
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Labeled ;
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
-  rdfs:label "Заключение Финансового директора"@ru ;
-  rdfs:label "Resolution Financial"@en ;
+  rdfs:label "Заключение бухгалтерии"@ru ;
+  rdfs:label "Resolution accounting"@en ;
   v-ui:hasTemplate v-s:ContractorCategoryDecisionFinancialTemplate ;
 .
 v-s:isContractorOkFinancialDepSummary
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение Финансового директора положительное?"@ru ;
-  rdfs:label "Financial department summary"@en ;
+  rdfs:label "Заключение бухгалтерии положительное?"@ru ;
+  rdfs:label "Accounting summary"@en ;
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:ContractorCategoryDecisionFinancial ;
 .
 v-s:contractorFinancialDepSummary
   rdf:type owl:DatatypeProperty ;
-  rdfs:label "Заключение Финансового директора"@ru ;
-  rdfs:label "Financial department summary"@en ;
+  rdfs:label "Заключение бухгалтерии"@ru ;
+  rdfs:label "Accounting summary"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:ContractorCategoryDecisionFinancial ;
 .
