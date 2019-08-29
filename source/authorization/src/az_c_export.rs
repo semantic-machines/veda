@@ -1,5 +1,6 @@
-use lmdb_rs_m::core::{EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
-use lmdb_rs_m::{DbFlags, EnvBuilder, Environment};
+use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
+use lmdb_rs_m::{MdbError, DbFlags, EnvBuilder, Environment};
+
 use std::cell::RefCell;
 use std::ffi::CStr;
 use std::ffi::CString;
@@ -178,6 +179,25 @@ fn check_for_reload() -> std::io::Result<bool> {
     Ok(false)
 }
 
+pub struct LMDBStorage<'a> {
+    db: &'a Database<'a>,
+}
+
+impl<'a> Storage for LMDBStorage<'a> {
+    fn get(&self, key: &str) -> Result<String, i64> {
+        match self.db.get::<String>(&key) {
+            Ok(val) => Ok(val),
+            Err(e) => match e {
+                MdbError::NotFound => Err(0),
+                _ => {
+                    eprintln!("ERR! Authorize: db.get {:?}, {}", e, key);
+                    Err(-1)
+                }
+            },
+        }
+    }
+}
+
 pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
     if _is_check_for_reload {
         if let Ok(true) = check_for_reload() {
@@ -238,11 +258,14 @@ pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_r
     }
 
     let db = txn.bind(&db_handle);
+    let storage = LMDBStorage {
+        db: &db,
+    };
 
     // 0. читаем фильтр прав у object (uri)
     let mut filter_value;
     let mut filter_allow_access_to_other = 0;
-    match get_from_db(&(FILTER_PREFIX.to_owned() + uri), &db) {
+    match storage.get(&(FILTER_PREFIX.to_owned() + uri)) {
         Ok(data) => {
             filter_value = data;
             if filter_value.len() < 3 {
@@ -270,5 +293,5 @@ pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_r
         }
     }
 
-    authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &db, trace)
+    authorize(uri, user_uri, request_access, &filter_value, filter_allow_access_to_other, &storage, trace)
 }

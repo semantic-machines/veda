@@ -5,9 +5,6 @@ extern crate lmdb_rs_m;
 use core::fmt;
 use std::collections::HashMap;
 
-use lmdb_rs_m::core::Database;
-use lmdb_rs_m::MdbError;
-
 const PERMISSION_PREFIX: &str = "P";
 pub const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
@@ -24,6 +21,10 @@ pub struct Right {
     marker: char,
     is_deleted: bool,
     level: u8,
+}
+
+pub trait Storage {
+    fn get(&self, key: &str) -> Result<String, i64>;
 }
 
 impl fmt::Debug for Right {
@@ -58,19 +59,6 @@ pub struct AzContext<'a> {
     tree_groups_o: &'a mut HashMap<String, String>,
     subject_groups: &'a mut HashMap<String, Right>,
     checked_groups: &'a mut HashMap<String, u8>,
-}
-
-pub fn get_from_db(key: &str, db: &Database) -> Result<String, i64> {
-    match db.get::<String>(&key) {
-        Ok(val) => Ok(val),
-        Err(e) => match e {
-            MdbError::NotFound => Err(0),
-            _ => {
-                eprintln!("ERR! Authorize: db.get {:?}, {}", e, key);
-                Err(-1)
-            }
-        },
-    }
 }
 
 pub fn get_elements_from_index(src: &str, results: &mut Vec<Right>) -> bool {
@@ -131,7 +119,7 @@ fn authorize_obj_group(
     object_group_id: &str,
     object_group_access: u8,
     filter_value: &str,
-    db: &Database,
+    db: &dyn Storage,
 ) -> Result<bool, i64> {
     let mut is_authorized = false;
     let mut calc_bits;
@@ -166,7 +154,7 @@ fn authorize_obj_group(
     //            print_to_trace_info(trace, format!("look acl_key: [{}]\n",
     // acl_key));        }
 
-    match get_from_db(&acl_key, &db) {
+    match db.get(&acl_key) {
         Ok(str) => {
             let permissions: &mut Vec<Right> = &mut Vec::new();
 
@@ -266,7 +254,7 @@ fn authorize_obj_group(
     }
 
     /*    if trace.is_info {
-        match get_from_db(&acl_key, &db) {
+        match db.get(&acl_key, &db) {
             Ok(str) => {
                 let permissions: &mut Vec<Right> = &mut Vec::new();
                 get_elements_from_index(&str, permissions);
@@ -308,7 +296,7 @@ fn prepare_obj_group(
     access: u8,
     filter_value: &str,
     level: u8,
-    db: &Database,
+    db: &dyn Storage,
 ) -> Result<bool, i64> {
     if level > 32 {
         //        if trace.is_info {
@@ -321,7 +309,7 @@ fn prepare_obj_group(
     let mut is_contain_suffix_group = false;
     let groups_set_len;
 
-    match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
+    match db.get(&(MEMBERSHIP_PREFIX.to_owned() + uri)) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
             get_elements_from_index(&groups_str, groups_set);
@@ -392,7 +380,7 @@ fn prepare_obj_group(
                 // uri));
                 //}
 
-                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, &db) {
+                match authorize_obj_group(azc, trace, request_access, &group.id, group.access, filter_value, db) {
                     Ok(res) => {
                         if res {
                             if !azc.is_need_exclusive_az {
@@ -411,7 +399,7 @@ fn prepare_obj_group(
                     }
                 }
 
-                prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, &db)?;
+                prepare_obj_group(azc, trace, request_access, &group.id, new_access, filter_value, level + 1, db)?;
             }
 
             if groups_set_len == 0 {
@@ -443,7 +431,7 @@ fn get_resource_groups(
     results: &mut HashMap<String, Right>,
     filter_value: &str,
     level: u8,
-    db: &Database,
+    db: &dyn Storage,
     out_f_is_exclusive: &mut bool,
     ignore_exclusive: bool,
 ) -> Result<bool, i64> {
@@ -454,7 +442,7 @@ fn get_resource_groups(
         return Ok(true);
     }
 
-    match get_from_db(&(MEMBERSHIP_PREFIX.to_owned() + uri), &db) {
+    match db.get(&(MEMBERSHIP_PREFIX.to_owned() + uri)) {
         Ok(groups_str) => {
             let groups_set: &mut Vec<Right> = &mut Vec::new();
             get_elements_from_index(&groups_str, groups_set);
@@ -533,7 +521,7 @@ fn get_resource_groups(
                     ignore_exclusive
                 };
 
-                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, &db, out_f_is_exclusive, t_ignore_exclusive)
+                match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, db, out_f_is_exclusive, t_ignore_exclusive)
                 {
                     Ok(_res) => {}
                     Err(e) => {
@@ -682,7 +670,7 @@ pub fn authorize(
     request_access: u8,
     filter_value: &str,
     filter_allow_access_to_other: u8,
-    db: &Database,
+    db: &dyn Storage,
     trace: &mut Trace,
 ) -> Result<u8, i64> {
     let s_groups = &mut HashMap::new();
@@ -711,7 +699,7 @@ pub fn authorize(
     //       print_to_trace_info(trace, "READ SUBJECT GROUPS\n".to_string());
     //   }
 
-    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, &db, &mut azc.is_need_exclusive_az, false) {
+    match get_resource_groups(azc.walked_groups_s, azc.tree_groups_s, trace, user_uri, 15, s_groups, &filter_value, 0, db, &mut azc.is_need_exclusive_az, false) {
         Ok(_res) => {}
         Err(e) => return Err(e),
     }
@@ -742,7 +730,7 @@ pub fn authorize(
     }
 
     if !trace.is_info && !trace.is_group && !trace.is_acl {
-        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) {
+        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -755,7 +743,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, &db) {
+        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -768,7 +756,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, &db) {
+        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -785,7 +773,7 @@ pub fn authorize(
             azc.checked_groups.clear();
             azc.walked_groups_o.clear();
 
-            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
+            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, db) {
                 Ok(res) => {
                     if res && final_check(&mut azc, trace) {
                         return Ok(azc.calc_right_res);
@@ -794,7 +782,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, &db) {
+            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, db) {
                 Ok(res) => {
                     if res && final_check(&mut azc, trace) {
                         return Ok(azc.calc_right_res);
@@ -803,7 +791,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, &db) {
+            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, db) {
                 Ok(res) => {
                     if res && final_check(&mut azc, trace) {
                         return Ok(azc.calc_right_res);
@@ -815,7 +803,7 @@ pub fn authorize(
     } else {
         // IF NEED TRACE
 
-        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, &db) {
+        match authorize_obj_group(&mut azc, trace, request_access_t, "v-s:AllResourcesGroup", 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -830,7 +818,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, &db) {
+        match authorize_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -845,7 +833,7 @@ pub fn authorize(
             Err(e) => return Err(e),
         }
 
-        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, &db) {
+        match prepare_obj_group(&mut azc, trace, request_access_t, uri, 15, &empty_filter_value, 0, db) {
             Ok(res) => {
                 if res {
                     if filter_value.is_empty() || (!filter_value.is_empty() && request_access == azc.calc_right_res) {
@@ -868,7 +856,7 @@ pub fn authorize(
             azc.checked_groups.clear();
             azc.walked_groups_o.clear();
 
-            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, &db) {
+            match authorize_obj_group(&mut azc, trace, request_access, "v-s:AllResourcesGroup", 15, &filter_value, db) {
                 Ok(res) => {
                     if res {
                         //                    if trace.is_info {
@@ -881,7 +869,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, &db) {
+            match authorize_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, db) {
                 Ok(res) => {
                     if res {
                         //                    if trace.is_info {
@@ -894,7 +882,7 @@ pub fn authorize(
                 Err(e) => return Err(e),
             }
 
-            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, &db) {
+            match prepare_obj_group(&mut azc, trace, request_access, uri, 15, &filter_value, 0, db) {
                 Ok(res) => {
                     if res {
                         //                    if trace.is_info {
