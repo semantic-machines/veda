@@ -100,8 +100,6 @@ v-s:FavoritesIndicatorTemplate
       console.log(subscriptionId);
       if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
         veda.user.aspect.removeValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId));
-        //template.removeClass("fa-star").addClass("fa-star-o");
-        console.log("remove");
         return new veda.IndividualModel(subscriptionId).remove();
       } else {
         var subscription = new veda.IndividualModel();
@@ -110,8 +108,6 @@ v-s:FavoritesIndicatorTemplate
         subscription["v-s:onDocument"] = [current];
         subscription["v-s:creator"] = [veda.user];
         veda.user.aspect.addValue("v-s:hasFavorite", subscription);
-        //template.addClass("fa-star").removeClass("fa-star-o");
-        console.log("save");
         return subscription.save();
       }
     }).then(function(result) {
@@ -303,26 +299,29 @@ var message = Mustache.render(bodyTemplate, view).replace (/&#x2F;/g, '/');
 var recepients = [];
 var subscription = get_individual(ticket, document["v-s:hasSubscription"][0].data);
 while (subscription) {
-   recepients.push(subscription["v-s:creator"][0]);
-   subscription = subscription["v-s:nextSubscription"]? get_individual(ticket, subscription["v-s:nextSubscription"][0].data) : null;
+  if (subscription["v-s:creator"][0].data !== author["v-s:employee"][0].data) {
+    recepients.push(subscription["v-s:creator"][0]);
+  };
+  subscription = subscription["v-s:nextSubscription"]? get_individual(ticket, subscription["v-s:nextSubscription"][0].data) : null;
 }
 //print("recepients=", veda.Util.toJson(recepients));
-var emailUri = veda.Util.genUri();
-var email= {
-    "@" : emailUri,
-    "rdf:type" : veda.Util.newUri("v-s:Email"),
-    "v-wf:to" : recepients,
-    "v-wf:from" : veda.Util.newUri("d:SYK-PORTALMS_appointment"),
-    "v-s:subject" : veda.Util.newStr(subject),
-    "v-s:messageBody" : veda.Util.newStr(message),
-    "v-s:hasMessageType" : veda.Util.newUri("v-s:OtherNotification"),
-    "v-s:origin" : veda.Util.newUri("v-s:SubscribedNotification_Event"),
-    "v-s:created" : veda.Util.newDate(new Date()),
-    "v-s:creator" : veda.Util.newUri("d:SYK-PORTALMS_appointment")
-};
-print('New email: ' + emailUri);
-put_individual(ticket, email, _event_id);
-
+if (recepients.length > 0) {
+  var emailUri = veda.Util.genUri();
+  var email= {
+      "@" : emailUri,
+      "rdf:type" : veda.Util.newUri("v-s:Email"),
+      "v-wf:to" : recepients,
+      "v-wf:from" : veda.Util.newUri("d:SYK-PORTALMS_appointment"),
+      "v-s:subject" : veda.Util.newStr(subject),
+      "v-s:messageBody" : veda.Util.newStr(message),
+      "v-s:hasMessageType" : veda.Util.newUri("v-s:OtherNotification"),
+      "v-s:origin" : veda.Util.newUri("v-s:SubscribedNotification_Event"),
+      "v-s:created" : veda.Util.newDate(new Date()),
+      "v-s:creator" : veda.Util.newUri("d:SYK-PORTALMS_appointment")
+  };
+  print('New email: ' + emailUri);
+  put_individual(ticket, email, _event_id);
+}
 //print("[v-s:SubscribedNotification_Event] *************************** END ***************************");
   """ ;
 .
