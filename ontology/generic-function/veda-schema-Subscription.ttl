@@ -75,9 +75,8 @@ v-s:FavoritesIndicatorTemplate
   rdfs:label "Favorites indicator template"@en ;
   v-ui:template """
 <script>
-  var current = getCurrent(location.hash);
-  var subscriptionId = "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32);
-  indicateFavorite(subscriptionId);
+  var current;
+  var subscriptionId;
   template.tooltip({
     container: template,
     placement: "bottom",
@@ -118,17 +117,25 @@ v-s:FavoritesIndicatorTemplate
     });
   });
 
+  riot.route(function (hash) {
+    current = getCurrent(hash);
+    subscriptionId = current? "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32) : undefined;
+    indicateFavorite(subscriptionId);
+  })
+
   function indicateFavorite(subscriptionId) {
-    if (current.is("v-s:Journaling")) {
-      template.show();
-      if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
-        template.addClass("fa-star").removeClass("fa-star-o");
+    current && current.is("v-s:Journaling").then(function(result) {
+      if (result) {
+        template.show();
+        if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
+          template.addClass("fa-star").removeClass("fa-star-o");
+        } else {
+          template.removeClass("fa-star").addClass("fa-star-o");
+        }
       } else {
-        template.removeClass("fa-star").addClass("fa-star-o");
+        template.hide();
       }
-    } else {
-      template.hide();
-    }
+    })
   }
   function getCurrent(hash) {
     var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
