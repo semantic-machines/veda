@@ -32,7 +32,6 @@ v-s:ContractorProfile
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:shortLabel}"^^xsd:string;
   rdfs:label "Досье контрагента"@ru ;
   rdfs:label "Contractor profile"@en ;
-  v-ui:hasTemplate v-s:ContractorProfileTemplate ;
 .
 # v-s:backwardTarget
 v-s:hasContractorCategoryRequest
@@ -244,7 +243,6 @@ v-s:ContractorCategoryRequest
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
   rdfs:label "Запрос на согласование контрагента"@ru ;
   rdfs:label "Contractor category request"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryRequestTemplate ;
   v-s:hasLinksTree v-s:ContractorCategoryRequestLinksTree ;
 .
 v-s:ContractorCategoryRequestLinksTree
@@ -312,7 +310,6 @@ v-s:ContractorCategoryDecision
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
   rdfs:label "Единый лист оценки"@ru ;
   rdfs:label "Assessment list"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryDecisionTemplate ;
 .
 v-s:isOrganizationOk
   rdf:type owl:DatatypeProperty ;
@@ -343,7 +340,13 @@ v-s:hasContractorCategoryDecisionFinancial
   rdfs:range v-s:ContractorCategoryDecisionFinancial ;
   rdfs:domain v-s:ContractorCategoryDecision ;
 .
-
+v-s:hasContractorCategoryDecisionManagement
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Заключение руководства"@ru ;
+  rdfs:label "Managenent resolution"@en ;
+  rdfs:range v-s:ContractorCategoryDecisionManagement ;
+  rdfs:domain v-s:ContractorCategoryDecision ;
+.
 # ------------------------------------------------------------
 v-s:ContractorCategoryDecisionSecurity
   rdf:type owl:Class ;
@@ -355,7 +358,6 @@ v-s:ContractorCategoryDecisionSecurity
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
   rdfs:label "Заключение СБ"@ru ;
   rdfs:label "Resolution Security"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryDecisionSecurityTemplate ;
 .
 v-s:contractorFrequentFounder
   rdf:type owl:DatatypeProperty ;
@@ -417,7 +419,6 @@ v-s:ContractorCategoryDecisionLegal
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
   rdfs:label "Заключение юр. отдела"@ru ;
   rdfs:label "Resolution Legal"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryDecisionLegalTemplate ;
 .
 v-s:contractorOtherLegalRisk
   rdf:type owl:DatatypeProperty ;
@@ -451,7 +452,6 @@ v-s:ContractorCategoryDecisionFinancial
   v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
   rdfs:label "Заключение бухгалтерии"@ru ;
   rdfs:label "Resolution accounting"@en ;
-  v-ui:hasTemplate v-s:ContractorCategoryDecisionFinancialTemplate ;
 .
 v-s:isContractorOkFinancialDepSummary
   rdf:type owl:DatatypeProperty ;
@@ -467,7 +467,32 @@ v-s:contractorFinancialDepSummary
   rdfs:range xsd:string ;
   rdfs:domain v-s:ContractorCategoryDecisionFinancial ;
 .
-
+#--------------------------------------------
+v-s:ContractorCategoryDecisionManagement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:backwardTarget.v-s:shortLabel} {@.v-s:created}" ;
+  rdfs:label "Заключение руководства"@ru ;
+  rdfs:label "Management resolution"@en ;
+.
+v-s:isContractorOkManagementSummary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Заключение руководства положительное?"@ru ;
+  rdfs:label "Management summary"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:ContractorCategoryDecisionFinancial ;
+.
+v-s:contractorManagementSummary
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Заключение руководства"@ru ;
+  rdfs:label "Management summary"@en ;
+  rdfs:range xsd:string ;
+  rdfs:domain v-s:ContractorCategoryDecisionFinancial ;
+.
 # ------------------------------------------------------------
 v-s:ContractorInteractionCategory
   rdf:type owl:Class ;
