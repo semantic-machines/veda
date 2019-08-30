@@ -1,7 +1,7 @@
 package main
 
 /*
- #cgo CFLAGS: -I../authorization
+ #cgo CFLAGS: -I../libauthorization
  #cgo LDFLAGS: -L../lib64 -lauthorization
  #include <authorization.h>
 */
