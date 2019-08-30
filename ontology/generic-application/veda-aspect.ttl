@@ -225,10 +225,40 @@ v-s:PersonalAspectTemplate
     </h4>
     <hr class="margin-lg">
     <ol rel="v-s:hasFavorite" class="columns-3">
-      <li about="@" data-template="v-ui:ClassNameLabelLinkTemplate"></li>
+      <li rel="v-s:onDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></li>
     </ol>
   </div>
 </div>
+<script>
+  var subscriptions = individual["v-s:hasFavorite"];
+  var subscribeDiff = [];
+  function favoriteHandler () {
+    if (individual["v-s:hasFavorite"].length < subscriptions.length) {
+      subscriptions.forEach(function(subscribe) {
+        var isExist = individual["v-s:hasFavorite"].some(function(f) {
+          return f.id == subscribe.id;
+        });
+        if (!isExist) subscribeDiff.push(subscribe);
+      });
+    };
+    subscriptions = individual["v-s:hasFavorite"];
+  }
+
+  function saveHandler() {
+    if (subscribeDiff.length > 0) {
+      subscribeDiff.forEach(function(subscribe) {
+        subscribe.remove();
+      });
+    };
+  }
+
+  individual.on("beforeSave", saveHandler);
+  individual.on("v-s:hasFavorite", favoriteHandler);
+  template.one("remove", function() {
+    individual.off("v-s:hasFavorite", favoriteHandler);
+    individual.off("beforeSave", saveHandler);
+  })
+</script>
   """ ;
 .
 
