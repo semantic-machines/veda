@@ -18,7 +18,7 @@ pub struct CountryData {
     pub sub_region: String,
 }
 
-static TEST_SPACE: &str = "test_space";
+static ACL_SPACE: &str = "ACL";
 static PRIMARY_INDEX: &str = "primary";
 
 pub struct TTEStorage<'a> {
@@ -51,7 +51,7 @@ pub struct RowTypeStruct {
 impl<'a> TTEStorage<'a> {
     fn get_impl(&self, key: &str) -> io::Result<Option<RowTypeStruct>> {
         let key: (&str,) = (key,);
-        match self.tarantool.index_get(TEST_SPACE, PRIMARY_INDEX, &key)? {
+        match self.tarantool.index_get(ACL_SPACE, PRIMARY_INDEX, &key)? {
             Some(tuple) => Ok(tuple.decode()?),
             None => Ok(None),
         }
