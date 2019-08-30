@@ -1,0 +1,355 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
+@prefix cfg: <http://semantic-machines.com/veda/config/> .
+
+<http://semantic-machines.com/veda/veda-schema-subscription/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Подписка"@ru ;
+  rdfs:label "Veda system ontology. Subscription"@en ;
+  v-s:loadPriority 11 ;
+.
+
+v-s:Subscribed
+  rdf:type owl:Class ;
+  rdfs:label "Подписанный объект"@ru ;
+  rdfs:label "Subscribed object"@en ;
+  v-ui:hasTemplate v-s:TestSubscribedTemplate ;
+.
+
+v-s:hasSubscription
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Subscribed ;
+  rdfs:label "Объект подписки"@ru ;
+  rdfs:label "Subscription object"@en ;
+  rdfs:range v-s:Subscription ;
+.
+
+v-s:Subscription
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:Journal ;
+  rdfs:label "Подписка"@ru ;
+  rdfs:label "Subscription"@en ;
+.
+
+v-s:nextSubscription
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Subscribed ;
+  rdfs:label "Следующая подписка"@ru ;
+  rdfs:label "Next subscription"@en ;
+  rdfs:range v-s:Subscription ;
+.
+
+v-s:prevSubscription
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:Subscribed ;
+  rdfs:label "Предыдущая подписка"@ru ;
+  rdfs:label "Previous subscription"@en ;
+  rdfs:range v-s:Subscription ;
+.
+
+v-s:Subscription_permission
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-s:Subscription ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate "true"^^xsd:boolean ;
+  rdfs:label "C. Все пользователи. Класс Subscription" ;
+.
+
+v-s:TestSubscribedTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон индикатора избранных"@ru ;
+  rdfs:label "Favorites indicator template"@en ;
+  v-ui:template """
+  <div></div>
+"""
+.
+
+v-s:FavoritesIndicatorTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон индикатора избранных"@ru ;
+  rdfs:label "Favorites indicator template"@en ;
+  v-ui:template """
+<script>
+  var current;
+  var subscriptionId;
+  template.tooltip({
+    container: template,
+    placement: "bottom",
+    trigger: "hover",
+    title: (function () {
+      var titleStr;
+      return function () {
+        var current = getCurrent(location.hash);
+        var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
+        title.load().then(function (title) {
+          titleStr = title.toString();
+          template.find(".tooltip-inner").text(titleStr);
+        });
+        return titleStr ? titleStr : "...";
+      }
+    })()
+  }).click(function (e) {
+    e.preventDefault();
+    Promise.resolve().then(function(){
+      console.log(subscriptionId);
+      if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
+        veda.user.aspect.removeValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId));
+        return new veda.IndividualModel(subscriptionId).remove();
+      } else {
+        var subscription = new veda.IndividualModel();
+        subscription.id = subscriptionId;
+        subscription["rdf:type"] = [new veda.IndividualModel("v-s:Subscription")];
+        subscription["v-s:onDocument"] = [current];
+        subscription["v-s:creator"] = [veda.user];
+        veda.user.aspect.addValue("v-s:hasFavorite", subscription);
+        return subscription.save();
+      }
+    }).then(function(result) {
+      indicateFavorite(subscriptionId);
+      veda.user.aspect.save();
+    }).catch(function(e) {
+      console.log(e);
+    });
+  });
+
+  riot.route(function (hash) {
+    current = getCurrent(hash);
+    subscriptionId = current? "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32) : undefined;
+    indicateFavorite(subscriptionId);
+  })
+
+  function indicateFavorite(subscriptionId) {
+    current && current.is("v-s:Journaling").then(function(result) {
+      if (result) {
+        template.show();
+        if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
+          template.addClass("fa-star").removeClass("fa-star-o");
+        } else {
+          template.removeClass("fa-star").addClass("fa-star-o");
+        }
+      } else {
+        template.hide();
+      }
+    })
+  }
+  function getCurrent(hash) {
+    var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
+    var re = new RegExp("^(\\w|-)+:.*?$");
+    return re.test(current_uri) ? new veda.IndividualModel(current_uri) : undefined;
+  }
+//# sourceURL=v-s:FavoritesIndicatorTemplate_pre
+</script>
+<a href="#" class="fa fa-lg"></a>
+  """ ;
+.
+
+v-s:SubscriptionSave_Event
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Обработка сохранения v-s:Subscription" ;
+  rdfs:comment "Обработка сохранения v-s:Subscription" ;
+  v-s:triggerByType v-s:Subscription ;
+  v-s:runAt "V8.LowPriority";
+  v-s:script """
+print("[v-s:SubscriptionSave_Event] ************************** START **************************");
+
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+// First class event
+if (parent_script_id) {
+  // print("Not first class event. Exit.");
+  return;
+}
+if (!document["v-s:onDocument"]) {
+  // print("Empty v-s:onDocument. Exit.");
+  return;
+}
+var journalUri = document["v-s:onDocument"][0].data + "j";
+var journal = get_individual(ticket, journalUri);
+if (!journal) {
+  // print("Not found journal. Exit.");
+  return;
+}
+
+var set_in_journal = {
+  "@": journalUri
+};
+if (prev_state) {
+  print(veda.Util.toJson(document["v-s:deleted"]));
+  if (!prev_state["v-s:deleted"] && document["v-s:deleted"] ) {
+
+    var prevSubscriptions = document["v-s:prevSubscription"]? document["v-s:prevSubscription"] : [];
+    var nextSubscriptions = document["v-s:nextSubscription"]? document["v-s:nextSubscription"] : [];
+
+    if (journal["v-s:hasSubscription"][0].data === document["@"]) {
+      if (document["v-s:nextSubscription"]) {
+        set_in_journal["v-s:hasSubscription"] = document["v-s:nextSubscription"];
+        set_in_individual(ticket, set_in_journal, _event_id);
+      } else {
+        journal["rdf:type"] = veda.Util.newUri("v-s:Journal");
+        journal["v-s:hasSubscription"] = [];
+        put_individual(ticket, journal, _event_id);
+      }
+    } 
+    if (prevSubscriptions.length > 0) {
+      var prev = get_individual(ticket, document["v-s:prevSubscription"][0].data);
+      prev["v-s:nextSubscription"] = nextSubscriptions;
+      put_individual(ticket, prev, _event_id);
+    }
+    if (nextSubscriptions.length > 0) {
+      var next = get_individual(ticket, document["v-s:nextSubscription"][0].data);
+      next["v-s:prevSubscription"] = prevSubscriptions;
+      put_individual(ticket, next, _event_id);
+    }
+    //remove_individual(ticket, document);
+  } else {
+    print("Unknown state. Exit.");
+  }
+} else {
+  if (journal["v-s:hasSubscription"]) {
+    var set_in_nextSubscribe = { 
+      "@": journal["v-s:hasSubscription"][0].data,
+      "v-s:prevSubscription": veda.Util.newUri(document["@"])
+    };
+    set_in_individual(ticket, set_in_nextSubscribe, _event_id);
+    document["v-s:nextSubscription"] = journal["v-s:hasSubscription"];
+    set_in_journal["v-s:hasSubscription"] = veda.Util.newUri(document["@"]);
+    put_individual(ticket, document, _event_id);
+  } else {
+    set_in_journal["rdf:type"] = journal["rdf:type"].concat(veda.Util.newUri("v-s:Subscribed"));
+    set_in_journal["v-s:hasSubscription"] = veda.Util.newUri(document["@"]);
+  }
+  set_in_individual(ticket, set_in_journal, _event_id);
+}
+print("[v-s:SubscriptionSave_Event] *************************** END ***************************");
+  """ ;
+.
+
+v-s:SubscribedNotification_Event
+  rdf:type v-s:Event ;
+  v-s:author cfg:VedaSystem ;
+  rdfs:label "Отправка уведомления от v-s:Subscribed" ;
+  rdfs:comment "Notification from v-s:Subscribed" ;
+  v-s:triggerByType v-s:Subscribed ;
+  v-s:script """
+//print("[v-s:SubscribedNotification_Event] ************************** START **************************");
+
+/* Available variables:
+ * ticket = superuser ticket
+ * document = captured document
+ * user_uri = user whose actions triggered event
+ * prev_state = previous state of the captured document
+ * _event_id = id of the event to prevent cycles in triggers. Must be passed to every function that modifies DB.
+ * parent_script_id = id of the parent script that triggered this event.
+ * parent_document_id = id of the document that triggered this event.
+ * super_classes = super classes of the document.
+ */
+
+// First class event
+if (parent_script_id) {
+  //print("parent_script_id=", parent_script_id);
+  if (parent_script_id !== "cfg:Event_3") {
+    //print("Not first class event. Exit.");
+    return;
+  }
+}
+if (!document["v-s:childRecord"]) {
+  //print("Empty journal. Exit.");
+  return;
+}
+if (!document["v-s:hasSubscription"]) {
+  //print("Hasn't subscription . Exit.");
+  document["rdf:type"] = veda.Util.newUri("v-s:Journal");
+  put_individual(ticket, document);
+  return; 
+}
+var doc = get_individual(ticket, document["v-s:onDocument"][0].data);
+//print("doc=", doc["@"]);
+var lastActionUri = document["v-s:childRecord"][document["v-s:childRecord"].length-1].data;
+//print("lastActionUri=", lastActionUri);
+var action = get_individual(ticket, lastActionUri);
+//print("action=", action["@"]);
+var author = get_individual(ticket, action["v-s:actor"][0].data);
+//print("author=", author["@"]);
+var actionType = get_individual(ticket, action["rdf:type"][0].data);
+//print("actionType=", actionType["@"]);
+
+var template = get_individual(ticket, 'v-s:msg-template-subscription-notify');
+var subjectTemplate = String(template['v-s:notificationSubject'][0].data);
+var bodyTemplate = String(template['v-s:notificationBody'][0].data);
+var view = {
+  "app_name": veda.Workflow.getAppName,
+  "docLabel": doc["rdfs:label"][0].data,
+  "author": author["rdfs:label"][0].data,
+  "actionType": actionType["rdfs:label"][0].data,
+  "actionDate": action["v-s:created"][0].data.toLocaleString("ru", {hour: '2-digit', minute: '2-digit', year: 'numeric', month: '2-digit', day: '2-digit'}),
+  "docUrl": "http://optiflow.mp.local:8080/#/"+doc['@']
+};
+//print("view=", veda.Util.toJson(view));
+var subject = Mustache.render(subjectTemplate, view).replace (/&#x2F;/g, '/');
+var message = Mustache.render(bodyTemplate, view).replace (/&#x2F;/g, '/');
+
+var recepients = [];
+var subscription = get_individual(ticket, document["v-s:hasSubscription"][0].data);
+while (subscription) {
+  if (subscription["v-s:creator"][0].data !== author["v-s:employee"][0].data) {
+    recepients.push(subscription["v-s:creator"][0]);
+  };
+  subscription = subscription["v-s:nextSubscription"]? get_individual(ticket, subscription["v-s:nextSubscription"][0].data) : null;
+}
+//print("recepients=", veda.Util.toJson(recepients));
+if (recepients.length > 0) {
+  var emailUri = veda.Util.genUri();
+  var email= {
+      "@" : emailUri,
+      "rdf:type" : veda.Util.newUri("v-s:Email"),
+      "v-wf:to" : recepients,
+      "v-wf:from" : veda.Util.newUri("d:SYK-PORTALMS_appointment"),
+      "v-s:subject" : veda.Util.newStr(subject),
+      "v-s:messageBody" : veda.Util.newStr(message),
+      "v-s:hasMessageType" : veda.Util.newUri("v-s:OtherNotification"),
+      "v-s:origin" : veda.Util.newUri("v-s:SubscribedNotification_Event"),
+      "v-s:created" : veda.Util.newDate(new Date()),
+      "v-s:creator" : veda.Util.newUri("d:SYK-PORTALMS_appointment")
+  };
+  print('New email: ' + emailUri);
+  put_individual(ticket, email, _event_id);
+}
+//print("[v-s:SubscribedNotification_Event] *************************** END ***************************");
+  """ ;
+.
+
+v-s:msg-template-subscription-notify
+  rdf:type v-s:Notification ;
+  v-s:hasMessageType v-s:OtherNotification ;
+  v-s:notificationLanguage v-ui:RU ;
+  v-s:notificationSubject "{{app_name}}. Уведомление: Изменение избранного документа" ;
+  v-s:notificationBody
+  """
+  Вы подписаны на изменения документа {{ docLabel }}
+  Ссылка на документ: {{ docUrl }}
+
+  Произошедшее событие: {{ actionType }} - {{ actionDate }}
+  Автор: {{ author }}
+
+
+  Чтобы отказаться от этих уведомлений, необходимо удалить документ из списка избранных в профиле пользователя или в интерфейсе просмотра документа (звездочка в верхнем меню приложения).
+
+  Это письмо сформировано автоматически, отвечать на него не нужно.
+  Система {{app_name}}
+""" ;
+.

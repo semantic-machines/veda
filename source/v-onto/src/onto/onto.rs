@@ -19,13 +19,15 @@ impl fmt::Display for Onto {
     }
 }
 
-impl Onto {
-    pub fn new() -> Self {
+impl Default for Onto {
+    fn default() -> Self {
         Onto {
             relations: HashMap::new(),
         }
     }
+}
 
+impl Onto {
     pub fn update(&mut self, indv: &mut Individual) -> bool {
         if let Ok(vtype) = indv.get_first_literal("rdf:type") {
             if vtype == "owl:Class"

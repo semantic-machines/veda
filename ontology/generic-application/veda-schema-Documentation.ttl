@@ -132,15 +132,42 @@ v-s:Request
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Controlled ;
+  rdfs:subClassOf v-s:Document;
   rdfs:label "Запрос"@ru ;
   rdfs:label "Request"@en ;
+  v-ui:hasTemplate v-s:Request_Template ;
 .
+
+#-----Регистрационный номер
+#v-s:registrationNumber
+
+#-----Статус
+#v-s:hasStatus
+
+#-----Дата
+#v-s:date 
+
+#-----Тема
+#v-s:theme
+
+#-----Мероприятие
+#v-s:hasAction
+v-s:PS_hasAction_Request
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Request ;
+  v-ui:forProperty v-s:hasAction ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  #v-ui:queryPrefix "('rdf:type'==='v-s:Action')" ;
+  rdfs:label "Спецификация свойства v-s:hasAction для класса v-s:Request"@ru ;
+  rdfs:label "v-s:hasAction property specification for v-s:Request classes"@en ;
+.
+
 
 #---------------------------------------------------------
 v-s:MaintainedObject
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:UserThing ;
-  rdfs:subClassOf v-s:Request ;
   rdfs:subClassOf v-s:Embedded ;
   rdfs:subClassOf v-s:BackwardLink ;
   rdfs:subClassOf v-s:ClassifiedRus ;

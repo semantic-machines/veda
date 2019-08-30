@@ -28,11 +28,24 @@ v-s:Action
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
+  rdfs:subClassOf v-s:Document ;
   rdfs:label "Мероприятие"@ru ;
   rdfs:label "Action"@en ;
+#  v-ui:hasTemplate v-s:Action_Template ;
 .
 # --- В связи с вводом класса возникает предикат v-s:hasAction. Он описан в классе v-s:Activity
 
+
+v-s:PS_hasAction_Action
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forProperty v-s:hasAction ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  #v-ui:queryPrefix "('rdf:type'==='v-s:Action')" ;
+  rdfs:label "Спецификация свойства v-s:hasAction для класса v-s:Action"@ru ;
+  rdfs:label "v-s:hasAction property specification for v-s:Action classes"@en ;
+.
 
 # ------------------------------------------------------------ Запланированное событие --
 v-s:ScheduledAction

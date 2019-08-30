@@ -45,7 +45,7 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    let mut onto = Onto::new();
+    let mut onto = Onto::default();
 
     info!("load onto start");
     load_onto(&mut module.fts, &mut module.storage, &mut onto);
@@ -147,7 +147,7 @@ fn main() -> std::io::Result<()> {
 
                 // выгрузка прав если они содержат ссылку на внешнего индивида
                 if itype == "v-s:PermissionStatement" {
-                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:permissionSubject", "sys:source") {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:permissionSubject", "sys:source", &mut Individual::default()) {
                         return Some(src);
                     }
                 }
@@ -164,10 +164,25 @@ fn main() -> std::io::Result<()> {
                         }
 
                         if let Ok(t) = doc.get_first_literal("rdf:type") {
-                            if t == "gen:InternalDocument" {
-                                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source") {
+                            if t == "gen:InternalDocument" || t == "gen:Contract" {
+                                if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source", &mut Individual::default()) {
+                                    for predicate in doc.get_predicates_of_type(DataType::Uri) {
+                                        if predicate == "v-s:lastEditor" || predicate == "v-s:creator" || predicate == "v-s:initiator" {
+                                            continue;
+                                        }
+                                        let mut linked_doc = Individual::default();
+                                        if let Some(p) = module.get_literal_of_link(&mut doc, &predicate, "v-s:parent", &mut linked_doc) {
+                                            if p == doc.obj.uri {
+                                                if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut linked_doc, "?", db_id, &src, 0) {
+                                                    error!("fail add to queue, err={:?}", e);
+                                                    return None;
+                                                }
+                                            }
+                                        }
+                                    }
+
                                     if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut doc, "?", db_id, &src, 0) {
-                                        error!("fail prepare message, err={:?}", e);
+                                        error!("fail add to queue, err={:?}", e);
                                         return None;
                                     }
 
@@ -180,14 +195,14 @@ fn main() -> std::io::Result<()> {
 
                 // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
                 if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
-                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source") {
+                    if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source", &mut Individual::default()) {
                         return Some(src);
                     }
                 }
             }
         }
 
-        return None;
+        None
     }
 
     fn prepare_queue_element(module: &mut Module, onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
@@ -202,7 +217,7 @@ fn main() -> std::io::Result<()> {
             let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
             let prev_state = msg.get_first_binobj("prev_state");
-            let mut prev_state_indv = if !prev_state.is_err() {
+            let mut prev_state_indv = if prev_state.is_ok() {
                 let mut indv = Individual::new_raw(RawObj::new(prev_state.unwrap_or_default()));
                 if let Ok(uri) = parse_raw(&mut indv) {
                     indv.obj.uri = uri.clone();

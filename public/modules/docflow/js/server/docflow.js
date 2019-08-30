@@ -11,10 +11,11 @@ veda.Module(function (veda) { "use strict";
   {
       try
       {
+          var decision_form = document;
+
           if (decision_form['sys:source'])
               return;
 
-          var decision_form = document;
           var prev_state_decision_form = prev_state;
           var f_prev_takenDecision = null;
 
