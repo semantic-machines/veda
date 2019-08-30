@@ -1,5 +1,5 @@
 use lmdb_rs_m::core::{Database, EnvCreateNoLock, EnvCreateNoMetaSync, EnvCreateNoSync, EnvCreateReadOnly};
-use lmdb_rs_m::{MdbError, DbFlags, EnvBuilder, Environment};
+use lmdb_rs_m::{DbFlags, EnvBuilder, Environment, MdbError};
 
 use std::cell::RefCell;
 use std::ffi::CStr;
@@ -196,6 +196,8 @@ impl<'a> Storage for LMDBStorage<'a> {
             },
         }
     }
+
+    fn fiber_yield(&self) {}
 }
 
 pub fn _authorize(uri: &str, user_uri: &str, request_access: u8, _is_check_for_reload: bool, trace: &mut Trace) -> Result<u8, i64> {
