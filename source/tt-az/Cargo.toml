@@ -1,0 +1,20 @@
+[package]
+name = "tarantool_authorization"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "tarantool_authorization"
+path = "src/lib.rs"
+crate-type = ["dylib"]
+
+[dependencies]
+tarantool_rust_api = { git = "https://github.com/zheludkovm/TarantoolRustAPI" }
+v_authorization = { path = "../v-authorization" }
+
+serde = "1"
+serde_derive = "1.0"
+serde_json = "1.0"
+regex = "0.2"
+
