@@ -25,6 +25,7 @@ pub struct Right {
 
 pub trait Storage {
     fn get(&self, key: &str) -> Result<String, i64>;
+    fn fiber_yield(&self);
 }
 
 impl fmt::Debug for Right {
