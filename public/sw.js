@@ -78,6 +78,8 @@ function getApiResponse(event, fn) {
         });
         return response;
       });
+    } else {
+      return response;
     }
   }).catch(function (err) {
     if (event.request.method === "GET") {
@@ -98,21 +100,62 @@ function getApiResponse(event, fn) {
           return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
         });
       });
+    } else if (event.request.method === "PUT") {
+      return enqueueRequest(cloneRequest).then(function (queue) {
+        console.log("Offline operation added to queue, queue length = ", queue.length);
+        return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+      });
+    } else {
+      return err;
     }
   });
 }
 
+function enqueueRequest(request) {
+  var db = new LocalDB();
+  return db.then(function (db) {
+    return serialize(request).then(function (serializedRequest) {
+      var request = JSON.stringify(serializedRequest);
+      return db.get("offline-queue").then(function(queue) {
+        queue = queue || [];
+        queue.push(request);
+        return db.put("offline-queue", queue);
+      });
+    });
+  });
+}
+
+function send_message_to_client(client, msg){
+  var channel = new MessageChannel();
+  channel.port1.onmessage = function (event) {
+    if (event.data.error) {
+      reject(event.data.error);
+    } else {
+      resolve(event.data);
+    }
+  };
+  client.postMessage(msg, [channel.port2]);
+}
+
+function send_message(msg){
+  clients.matchAll().then(function (clients) {
+    clients.forEach(function (client) {
+      send_message_to_client(client, msg);
+    });
+  });
+}
+
+setTimeout(function () {
+  send_message("Hello!");
+}, 3000);
+
 // indexedDB for non-GET requests
 var db_name = "veda-sw";
-var store_name = "sw";
+var store = "sw";
 
 var fallback = {
   get: function (key) {
-    if (typeof this[key] !== "undefined") {
-      return Promise.resolve(this[key]);
-    } else {
-      return Promise.reject();
-    }
+    return Promise.resolve(this[key]);
   },
   put: function (key, value) {
     this[key] = value;
@@ -154,7 +197,7 @@ var LocalDB = function () {
 
       openReq.onupgradeneeded = function (event) {
         var db = event.target.result;
-        db.createObjectStore(store_name);
+        db.createObjectStore(store);
         console.log("DB create success");
       };
     }).catch(function (error) {
@@ -169,17 +212,12 @@ var proto = LocalDB.prototype;
 proto.get = function (key) {
   var self = this;
   return new Promise(function (resolve, reject) {
-    var request = self.db.transaction([store_name], "readonly").objectStore(store_name).get(key);
+    var request = self.db.transaction([store], "readonly").objectStore(store).get(key);
     request.onerror = function(error) {
       reject(error);
     };
     request.onsuccess = function(event) {
-      var result = request.result;
-      if (typeof result !== "undefined") {
-        resolve(result);
-      } else {
-        reject();
-      }
+      resolve(request.result);
     };
   });
 };
@@ -187,7 +225,7 @@ proto.get = function (key) {
 proto.put = function (key, value) {
   var self = this;
   return new Promise(function (resolve, reject) {
-    var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).put(value, key);
+    var request = self.db.transaction([store], "readwrite").objectStore(store).put(value, key);
     request.onerror = function(error) {
       reject(error);
     };
@@ -200,7 +238,7 @@ proto.put = function (key, value) {
 proto.remove = function (key) {
   var self = this;
   return new Promise(function (resolve, reject) {
-    var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).delete(key);
+    var request = self.db.transaction([store], "readwrite").objectStore(store).delete(key);
     request.onerror = function(error) {
       reject(error);
     };

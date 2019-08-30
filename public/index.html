@@ -45,8 +45,10 @@
   </head>
   <body>
 
-    <div class="well well-sm text-center" id="install-app" style="display:none;">
-      Установите приложение и Вы сможете получать уведомления и работать офлайн!  <button id="install-app-btn" class="btn btn-sm btn-default">Установить</button>
+    <div class="container" id="install-app" style="display:none;">
+      <div class="well well-sm text-center no-margin">
+        Установите приложение и Вы сможете получать уведомления и работать офлайн!  <button id="install-app-btn" class="btn btn-sm btn-default">Установить</button>
+      </div>
     </div>
     <!-- Login form -->
     <div style="display:none;" class="login-form">
@@ -397,17 +399,6 @@
     </script>
 
     <!-- Javascript -->
-
-    <script type="text/javascript">
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw-simple-offline.js', { scope: '/' }).then(function(worker) {
-          console.log('Service workers registered:', worker.scope);
-        }).catch(function(error) {
-          // регистрация прошла неудачно
-          console.log('Registration failed with ' + error);
-        });
-      };
-    </script>
 
     <!-- Utils & UI -->
     <script type="text/javascript" src="./js/browser/lib/promise.js"></script>

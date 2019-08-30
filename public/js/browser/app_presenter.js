@@ -261,10 +261,24 @@ veda.Module(function (veda) { "use strict";
 
   });
 
-  // Install application prompt
-  if ('serviceWorker' in navigator) {
+  // Service workers
+  if ("serviceWorker" in navigator) {
+
+    // Install service worker
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(function(worker) {
+      console.log("Service workers registered:", worker.scope);
+    }).catch(function(error) {
+      // регистрация прошла неудачно
+      console.log("Registration failed with " + error);
+    });
+
+    navigator.serviceWorker.addEventListener("message", function (event) {
+      console.log("Received message from sw: " + event.data);
+    });
+
+    // Install application prompt
     var deferredPrompt;
-    window.addEventListener('beforeinstallprompt', function (e) {
+    window.addEventListener("beforeinstallprompt", function (e) {
       // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();
       // Stash the event so it can be triggered later.
@@ -281,14 +295,14 @@ veda.Module(function (veda) { "use strict";
 
     function addToHomeScreen() {
       var installApp = document.getElementById("install-app");
-      installApp.style.display = 'none';  // Hide the prompt
+      installApp.style.display = "none";  // Hide the prompt
       deferredPrompt.prompt();  // Wait for the user to respond to the prompt
       deferredPrompt.userChoice
         .then(function(choiceResult) {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted install prompt');
+          if (choiceResult.outcome === "accepted") {
+            console.log("User accepted install prompt");
           } else {
-            console.log('User dismissed install prompt');
+            console.log("User dismissed install prompt");
           }
           deferredPrompt = null;
         });
