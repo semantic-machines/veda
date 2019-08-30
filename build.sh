@@ -15,7 +15,7 @@ export CARGO_TARGET_DIR=$PWD/tmp
 
 if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
-    cd source/authorization
+    cd source/libauthorization
     cargo build --release
     cd $BUILD_PATH
     cp $CARGO_TARGET_DIR/release/libauthorization.so ./source/lib64/libauthorization.so

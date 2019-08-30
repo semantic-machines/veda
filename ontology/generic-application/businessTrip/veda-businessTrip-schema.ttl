@@ -68,6 +68,13 @@ v-s:hasSourceOfTransport
   rdfs:domain v-s:BusinessTrip ;
 .
 
+v-s:hasSourceOfFinancing
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Источник финансирования"@ru ;
+  rdfs:label "Source of financing"@en ;
+  rdfs:range v-s:ServicSource ;
+.
+
 # v-s:supplier
 # v-s:duration
 
