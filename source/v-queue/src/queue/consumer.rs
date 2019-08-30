@@ -208,7 +208,7 @@ impl Consumer {
             }
         }
 
-        info!("consumer ({}): count_pushed:{}, position:{}, id:{}, success:{}", self.name, self.count_popped, self.pos_record, self.id, res);
+        debug!("consumer ({}): count_pushed:{}, position:{}, id:{}, success:{}", self.name, self.count_popped, self.pos_record, self.id, res);
         res
     }
 
@@ -324,9 +324,9 @@ impl Consumer {
                 self.is_ready = false;
                 return Err(ErrorQueue::InvalidChecksum);
             }
-            return Ok(readed_size);
+            Ok(readed_size)
         } else {
-            return Err(ErrorQueue::FailRead);
+            Err(ErrorQueue::FailRead)
         }
     }
 

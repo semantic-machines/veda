@@ -453,7 +453,7 @@ func main() {
 
       ReadTimeout:  600 * time.Second,
       WriteTimeout: 600 * time.Second,
-      MaxKeepaliveDuration: 100 * time.Second,
+      MaxKeepaliveDuration: 600 * time.Second,
       ReadBufferSize: 8 * 1024,
     }
     err = h.ListenAndServe("0.0.0.0:" + webserverPort)

@@ -53,6 +53,21 @@ v-s:businessTripGoal
   rdfs:range xsd:string ;
   rdfs:domain v-s:BusinessTrip ;
 .
+v-s:hasBusinessTripReasonDeviationOnExpenses
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Причина отклонения"@ru ;
+  rdfs:label "Deviation reason"@en ;
+  rdfs:range v-s:BusinessTripReasonDeviationOnExpenses ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+v-s:hasSourceOfTransport
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Источник транспорта"@ru ;
+  rdfs:label "Source of transport"@en ;
+  rdfs:range v-s:ServicSource ;
+  rdfs:domain v-s:BusinessTrip ;
+.
+
 # v-s:supplier
 # v-s:duration
 

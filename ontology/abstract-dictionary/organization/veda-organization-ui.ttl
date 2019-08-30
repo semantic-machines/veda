@@ -570,10 +570,6 @@ v-s:SubsidiaryTemplate
     <em about="v-s:parentOrganization" property="rdfs:label"></em>
     <span about="@" rel="v-s:backwardTarget" data-template="v-ui:LabelLinkTemplate"></span>
 
-    <em about="v-s:parentUnit" property="rdfs:label"></em>
-    <div rel="v-s:parentUnit" class="view -edit -search" data-template="v-ui:LabelLinkTemplate"></div>
-    <veda-control data-type="link" rel="v-s:parentUnit" class="-view edit search fulltext"></veda-control>
-
     <hr class="view -edit -search">
 
     <em about="rdfs:label" property="rdfs:label"></em>

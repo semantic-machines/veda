@@ -2,9 +2,11 @@
 
 veda.Module(function (veda) { "use strict";
 
-  veda.IndividualModel.prototype.present = function (container, template, mode, extra) {
+  veda.IndividualModel.prototype.present = function (container, template, mode, extra, toAppend) {
 
     mode = mode || "view";
+
+    toAppend = typeof toAppend !== "undefined" ? toAppend : true;
 
     var toEmpty;
 
@@ -34,7 +36,7 @@ veda.Module(function (veda) { "use strict";
         }
         return template.load().then(function (template) {
           template = template["v-ui:template"][0].toString();
-          return renderTemplate(individual, container, template, mode, extra, toEmpty);
+          return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
         });
       } else {
         var isClass = individual.hasValue("rdf:type", "owl:Class") || individual.hasValue("rdf:type", "rdfs:Class");
@@ -43,7 +45,7 @@ veda.Module(function (veda) { "use strict";
           template = individual["v-ui:hasTemplate"][0];
           templatePromise = template.load().then(function (template) {
             template = template["v-ui:template"][0].toString();
-            return renderTemplate(individual, container, template, mode, extra, toEmpty);
+            return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
           });
         } else {
           var ontology = new veda.OntologyModel();
@@ -51,7 +53,7 @@ veda.Module(function (veda) { "use strict";
           if (defaultTemplateUri) {
             templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
               template = template["v-ui:template"][0].toString();
-              return renderTemplate(individual, container, template, mode, extra, toEmpty);
+              return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
             });
           } else {
             var typePromises = individual["rdf:type"].map(function (type) {
@@ -65,7 +67,7 @@ veda.Module(function (veda) { "use strict";
             }).then(function (templates) {
               var renderedTemplatesPromises = templates.map( function (template) {
                 template = template["v-ui:template"][0].toString();
-                return renderTemplate(individual, container, template, mode, extra, toEmpty);
+                return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
               });
               return Promise.all(renderedTemplatesPromises);
             }).then(function (renderedTemplates) {
@@ -83,7 +85,7 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function renderTemplate(individual, container, template, mode, extra, toEmpty) {
+  function renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend) {
     var match,
         pre_render_src,
         pre_render,
@@ -118,7 +120,10 @@ veda.Module(function (veda) { "use strict";
         if (toEmpty) {
           container.empty();
         }
-        container.append(processedTemplate);
+
+        if (toAppend) {
+          container.append(processedTemplate);
+        }
 
         if (post_render) {
           post_render.call(individual, veda, individual, container, processedTemplate, mode, extra);
@@ -506,8 +511,12 @@ veda.Module(function (veda) { "use strict";
           limit = limit_param || limit;
           relContainer.empty();
           var templatesPromises = [];
-          for (var i = 0, value; i < limit && (value = values[i]); i++) {
-            templatesPromises.push( renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded) );
+          var i = 0, value;
+          while( i < limit && (value = values[i]) ) {
+            if ( !relContainer.children("[resource='" + value.id + "']").length ) {
+              templatesPromises.push( renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, false) );
+              i++;
+            }
           }
           return Promise.all(templatesPromises).then(function (renderedTemplates) {
             relContainer.append(renderedTemplates);
@@ -739,8 +748,8 @@ veda.Module(function (veda) { "use strict";
     });
   }
 
-  function renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded) {
-    return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined).then(function (valTemplate) {
+  function renderRelationValue(about, isAbout, rel_uri, value, relContainer, relTemplate, template, mode, embedded, isEmbedded, toAppend) {
+    return value.present(relContainer, relTemplate, isEmbedded ? mode : undefined, undefined, toAppend).then(function (valTemplate) {
       if (isEmbedded) {
         valTemplate.data("isEmbedded", true);
         embedded.push(valTemplate);
