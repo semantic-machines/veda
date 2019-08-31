@@ -58,6 +58,8 @@ function getStaticResource(event) {
   });
 }
 
+var currentStatus = navigator.onLine;
+
 function getApiResponse(event, fn) {
   var cloneRequest = event.request.method === "GET" ? undefined : event.request.clone();
   return new Promise(function (resolve, reject) {
@@ -65,6 +67,10 @@ function getApiResponse(event, fn) {
       resolve(flushQueue());
     } else {
       reject();
+    }
+    if (currentStatus !== navigator.onLine) {
+      currentStatus = navigator.onLine;
+      send_message(currentStatus ? "online" : "offline");
     }
   })
   .then(function () {
@@ -300,5 +306,5 @@ function serialize(subject) {
 }
 
 function deserialize(subject) {
-  return subject instanceof Request ? new Request(subject.url, subject) : new Response(subject.body, subject);
+  return subject.method ? new Request(subject.url, subject) : new Response(subject.body, subject);
 }

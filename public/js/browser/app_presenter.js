@@ -273,7 +273,14 @@ veda.Module(function (veda) { "use strict";
     });
 
     navigator.serviceWorker.addEventListener("message", function (event) {
-      console.log("Received message from sw: " + event.data);
+      var offlineNote = document.getElementById("offline-note");
+      var message = event.data;
+      console.log("Received message from sw:", message);
+      if (message === "online") {
+        offlineNote.style.display = "none";
+      } else {
+        offlineNote.style.display = "block";
+      }
     });
 
     // Install application prompt
