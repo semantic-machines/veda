@@ -272,15 +272,15 @@ veda.Module(function (veda) { "use strict";
       console.log("Registration failed with " + error);
     });
 
-    navigator.serviceWorker.addEventListener("message", function (event) {
+    window.addEventListener("online", function (event) {
       var offlineNote = document.getElementById("offline-note");
-      var message = event.data;
-      console.log("Received message from sw:", message);
-      if (message === "online") {
-        offlineNote.style.display = "none";
-      } else {
-        offlineNote.style.display = "block";
-      }
+      offlineNote.style.display = "none";
+      navigator.serviceWorker.controller.postMessage("online");
+    });
+    window.addEventListener("offline", function (event) {
+      var offlineNote = document.getElementById("offline-note");
+      offlineNote.style.display = "block";
+      navigator.serviceWorker.controller.postMessage("offline");
     });
 
     // Install application prompt

@@ -58,8 +58,6 @@ function getStaticResource(event) {
   });
 }
 
-var currentStatus = navigator.onLine;
-
 function getApiResponse(event, fn) {
   var cloneRequest = event.request.method === "GET" ? undefined : event.request.clone();
   return new Promise(function (resolve, reject) {
@@ -67,10 +65,6 @@ function getApiResponse(event, fn) {
       resolve(flushQueue());
     } else {
       reject();
-    }
-    if (currentStatus !== navigator.onLine) {
-      currentStatus = navigator.onLine;
-      send_message(currentStatus ? "online" : "offline");
     }
   })
   .then(function () {
@@ -150,7 +144,6 @@ function flushQueue() {
             return fetch(request);
           });
         }, Promise.resolve()).then(function () {
-          console.log("Back online! Queued requests sent to server.");
           return db.remove("offline-queue");
         });
       } else {
@@ -159,18 +152,14 @@ function flushQueue() {
     });
   });
 }
-
-function send_message_to_client(client, msg) {
-  var channel = new MessageChannel();
-  client.postMessage(msg, [channel.port2]);
-}
-function send_message(msg){
-  clients.matchAll().then(function (clients) {
-    clients.forEach(function (client) {
-      send_message_to_client(client, msg);
+this.addEventListener("message", function (event) {
+  if (event.data === "online") {
+    console.log("Window said 'online', flushing queue");
+    flushQueue().then(function () {
+      console.log("Done, queue flushed");
     });
-  });
-}
+  }
+});
 
 // indexedDB for non-GET requests
 var db_name = "veda-sw";
