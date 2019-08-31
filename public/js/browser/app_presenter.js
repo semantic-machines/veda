@@ -266,35 +266,33 @@ veda.Module(function (veda) { "use strict";
 
     // Install service worker
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(function(worker) {
-      console.log("Service workers registered:", worker.scope);
+      console.log("Service worker registered:", worker.scope);
     }).catch(function(error) {
       // регистрация прошла неудачно
       console.log("Registration failed with " + error);
     });
 
-    window.addEventListener("online", function (event) {
+    // On/off-line handler
+    var lineHandler = function () {
       var offlineNote = document.getElementById("offline-note");
-      offlineNote.style.display = "none";
-      navigator.serviceWorker.controller.postMessage("online");
-    });
-    window.addEventListener("offline", function (event) {
-      var offlineNote = document.getElementById("offline-note");
-      offlineNote.style.display = "block";
-      navigator.serviceWorker.controller.postMessage("offline");
-    });
+      if (navigator.onLine) {
+        offlineNote.style.display = "none";
+        navigator.serviceWorker.controller.postMessage("online");
+      } else {
+        offlineNote.style.display = "block";
+        navigator.serviceWorker.controller.postMessage("offline");
+      }
+    }
+    window.addEventListener("online", lineHandler);
+    window.addEventListener("offline", lineHandler);
+    try {
+      lineHandler();
+    } catch (err) {
+      console.log("No SW registered yet");
+    }
 
     // Install application prompt
-    var deferredPrompt;
-    window.addEventListener("beforeinstallprompt", function (e) {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      deferredPrompt = e;
-      if ( !localStorage.rejectedInstall ) {
-        showAddToHomeScreen();
-      }
-    });
-    function showAddToHomeScreen() {
+    var showAddToHomeScreen = function () {
       var installApp = document.getElementById("install-app");
       var installBtn = document.getElementById("install-btn");
       var rejectInstallBtn = document.getElementById("reject-install-btn");
@@ -302,7 +300,7 @@ veda.Module(function (veda) { "use strict";
       installBtn.addEventListener("click", addToHomeScreen);
       rejectInstallBtn.addEventListener("click", rejectInstall);
     }
-    function addToHomeScreen() {
+    var addToHomeScreen = function () {
       var installApp = document.getElementById("install-app");
       installApp.style.display = "none";  // Hide the prompt
       deferredPrompt.prompt();  // Wait for the user to respond to the prompt
@@ -316,11 +314,20 @@ veda.Module(function (veda) { "use strict";
           deferredPrompt = null;
         });
     }
-    function rejectInstall() {
+    var rejectInstall = function () {
       var installApp = document.getElementById("install-app");
       installApp.style.display = "none";
       localStorage.rejectedInstall = true;
     }
+    var deferredPrompt;
+    window.addEventListener("beforeinstallprompt", function (e) {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      if ( !localStorage.rejectedInstall ) {
+        showAddToHomeScreen();
+      }
+    });
   }
-
 });
