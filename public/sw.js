@@ -1,7 +1,7 @@
-var STATIC = 'static-2';
-var API = 'api-1';
+var STATIC = "static-2";
+var API = "api-1";
 
-this.addEventListener('activate', function(event) {
+this.addEventListener("activate", function(event) {
   var cacheWhitelist = [ STATIC, API ];
 
   event.waitUntil(
@@ -41,7 +41,7 @@ var api_fns = {
 
 var re = /.*\/\/[^\/]*\/([^\/#?]*)/;
 
-this.addEventListener('fetch', function(event) {
+this.addEventListener("fetch", function(event) {
   var fn = event.request.url.match(re)[1];
   var isApi = fn in api_fns;
   event.respondWith( isApi ? getApiResponse(event, fn) : getStaticResource(event) );
@@ -59,35 +59,43 @@ function getStaticResource(event) {
 }
 
 function getApiResponse(event, fn) {
-
   var cloneRequest = event.request.method === "GET" ? undefined : event.request.clone();
-
-  return fetch(event.request).then(function(response) {
-    if (event.request.method === "GET") {
-      return caches.open( API ).then(function(cache) {
-        cache.put(event.request, response.clone());
-        return response;
-      });
-    } else if (event.request.method === "POST") {
-      var db = new LocalDB();
-      return db.then(function (db) {
-        Promise.all([serialize(cloneRequest), serialize(response)]).then(function (req_res) {
-          var request = JSON.stringify(req_res[0]);
-          var response = req_res[1];
-          db.put(request, response);
-        });
-        return response;
-      });
+  return new Promise(function (resolve, reject) {
+    if (navigator.onLine) {
+      resolve(flushQueue());
     } else {
-      return response;
+      reject();
     }
-  }).catch(function (err) {
+  })
+  .then(function () {
+    return fetch(event.request).then(function(response) {
+      if (event.request.method === "GET") {
+        return caches.open( API ).then(function(cache) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      } else if (event.request.method === "POST") {
+        var db = new LocalDB();
+        return db.then(function (db) {
+          Promise.all([serialize(cloneRequest), serialize(response)]).then(function (req_res) {
+            var request = JSON.stringify(req_res[0]);
+            var response = req_res[1];
+            db.put(request, response);
+          });
+          return response;
+        });
+      } else {
+        return response;
+      }
+    });
+  })
+  .catch(function (err) {
     if (event.request.method === "GET") {
       return caches.match(event.request).then(function (match) {
         if (match) {
           return match;
         } else {
-          return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+          return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
         }
       });
     } else if (event.request.method === "POST") {
@@ -97,13 +105,13 @@ function getApiResponse(event, fn) {
         return db.then(function (db) {
           return db.get(request).then(deserialize);
         }).catch(function (err) {
-          return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+          return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
         });
       });
     } else if (event.request.method === "PUT") {
       return enqueueRequest(cloneRequest).then(function (queue) {
         console.log("Offline operation added to queue, queue length = ", queue.length);
-        return new Response(api_fns[fn], { headers: { 'Content-Type': 'application/json' } });
+        return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
       });
     } else {
       return err;
@@ -111,32 +119,45 @@ function getApiResponse(event, fn) {
   });
 }
 
+// Offline PUT queue
 function enqueueRequest(request) {
   var db = new LocalDB();
   return db.then(function (db) {
     return serialize(request).then(function (serializedRequest) {
-      var request = JSON.stringify(serializedRequest);
       return db.get("offline-queue").then(function(queue) {
         queue = queue || [];
-        queue.push(request);
+        queue.push(serializedRequest);
         return db.put("offline-queue", queue);
       });
     });
   });
 }
-
-function send_message_to_client(client, msg){
-  var channel = new MessageChannel();
-  channel.port1.onmessage = function (event) {
-    if (event.data.error) {
-      reject(event.data.error);
-    } else {
-      resolve(event.data);
-    }
-  };
-  client.postMessage(msg, [channel.port2]);
+function flushQueue() {
+  var db = new LocalDB();
+  return db.then(function (db) {
+    return db.get("offline-queue").then(function(queue) {
+      if (queue && queue.length) {
+        return queue.reduce(function (prom, request) {
+          return prom.then(function () {
+            return deserialize(request);
+          }).then(function (request) {
+            return fetch(request);
+          });
+        }, Promise.resolve()).then(function () {
+          console.log("Back online! Queued requests sent to server.");
+          return db.remove("offline-queue");
+        });
+      } else {
+        return Promise.resolve();
+      }
+    });
+  });
 }
 
+function send_message_to_client(client, msg) {
+  var channel = new MessageChannel();
+  client.postMessage(msg, [channel.port2]);
+}
 function send_message(msg){
   clients.matchAll().then(function (clients) {
     clients.forEach(function (client) {
@@ -144,10 +165,6 @@ function send_message(msg){
     });
   });
 }
-
-setTimeout(function () {
-  send_message("Hello!");
-}, 3000);
 
 // indexedDB for non-GET requests
 var db_name = "veda-sw";
