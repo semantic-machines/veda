@@ -283,16 +283,18 @@ veda.Module(function (veda) { "use strict";
       e.preventDefault();
       // Stash the event so it can be triggered later.
       deferredPrompt = e;
-      showAddToHomeScreen();
+      if ( !localStorage.rejectedInstall ) {
+        showAddToHomeScreen();
+      }
     });
-
     function showAddToHomeScreen() {
       var installApp = document.getElementById("install-app");
-      var installAppBtn = document.getElementById("install-app-btn");
+      var installBtn = document.getElementById("install-btn");
+      var rejectInstallBtn = document.getElementById("reject-install-btn");
       installApp.style.display = "block";
-      installAppBtn.addEventListener("click", addToHomeScreen);
+      installBtn.addEventListener("click", addToHomeScreen);
+      rejectInstallBtn.addEventListener("click", rejectInstall);
     }
-
     function addToHomeScreen() {
       var installApp = document.getElementById("install-app");
       installApp.style.display = "none";  // Hide the prompt
@@ -306,6 +308,11 @@ veda.Module(function (veda) { "use strict";
           }
           deferredPrompt = null;
         });
+    }
+    function rejectInstall() {
+      var installApp = document.getElementById("install-app");
+      installApp.style.display = "none";
+      localStorage.rejectedInstall = true;
     }
   }
 
