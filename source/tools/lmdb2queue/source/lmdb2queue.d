@@ -18,6 +18,8 @@ Logger log()
 bool   to_queue;
 string after_id;
 
+public const string xapian_metadata_doc_id = "ItIsADocumentContainingTheNameOfTheFieldTtheNumberOfSlots";
+
 void main(string[] args)
 {
     if (args.length < 3)
