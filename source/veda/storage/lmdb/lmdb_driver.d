@@ -151,6 +151,11 @@ public class LmdbDriver : KeyValueDB
         return rc;
     }
 
+    public ResultCode store_kv(string in_key, string in_value)
+    {
+	return store (in_key, in_value, -1);
+    }
+
     public ResultCode store(string in_key, string in_value, long op_id)
     {
         if (db_is_opened == false)

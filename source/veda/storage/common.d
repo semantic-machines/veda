@@ -33,6 +33,7 @@ public interface KeyValueDB
     public long count_entries();
 
     public ResultCode store(string in_key, string in_value, long op_id);
+    public ResultCode store_kv(string in_key, string in_value);
     public ResultCode remove(string in_key);
     
     public DBType get_type ();
