@@ -81,7 +81,7 @@ public long convert(KeyValueDB dest, bool[ string ] opt)
     {
         string data = individual_cs.pop();
 
-        if (individual_cs.isReady == false)
+        if (individual_cs.is_ready == false)
         {
             log.trace("ERR! consumer not ready");
             break;
