@@ -1,5 +1,5 @@
 import std.stdio, core.stdc.stdlib, std.uuid, std.algorithm, std.typecons, std.json, std.conv, std.string, std.datetime;
-import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator_rlmdb;
+import veda.util.queue, veda.common.logger, veda.onto.individual, veda.onto.resource, veda.core.impl.app_context_creator;
 import veda.core.common.context, veda.core.common.type;
 import veda.storage.lmdb.lmdb_driver, veda.storage.lmdb.lmdb_header, veda.storage.common, veda.common.type, veda.onto.bj8individual.individual8json;
 import filters.filter_00, filters.filter_01, filters.filter_02, filters.filter_03;
@@ -85,7 +85,7 @@ void main(string[] args)
 
     if (command == "remove_from_veda")
     {
-        ctx     = create_new_ctx("vqueueuctl", log, opt.get("--mstorage_url", null) ~ "\0", opt.get("--lmdbsrv_url", null) ~ "\0");
+        ctx     = create_new_ctx("vqueueuctl", log, opt.get("--mstorage_url", null) ~ "\0");
         sticket = ctx.sys_ticket();
     }
 
