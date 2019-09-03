@@ -121,6 +121,9 @@ veda.Module(function (veda) { "use strict";
       portion.reduce(function (prom, item) {
         return prom.then(function () {
           return fn(item);
+        }).catch(function (error) {
+          console.log("Error processing item:", item);
+          console.log(error);
         });
       }, Promise.resolve()).then(function () {
         if ( (total - result.length) / total - processingProgress >= 0.05 ) {
