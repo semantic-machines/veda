@@ -214,9 +214,21 @@ v-s:AccountingDoc
   rdfs:subClassOf v-s:Financial ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:Contractual ; 
+  v-s:labelPattern "Исполнитель: {@.v-s:hasContractParticipantSupplier.v-s:hasOrganization.v-s:shortLabel} (№{@.v-s:registrationNumber}, {@.v-s:registrationDate}) -> Заказчик: {@.v-s:hasContractParticipantCustomer.v-s:hasOrganization.v-s:shortLabel} (№{@.v-s:registrationNumberIn}, {@.v-s:transactionDate}) {@.v-s:hasDocumentKind.v-s:shortLabel}" ;
   rdfs:label "Первичный документ"@ru ;
   rdfs:label "Accounting document"@en ;
 .
 
+#-----Ставка НДС,%
+v-s:vatRateForAccountingDoc
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Ставка НДС, %"@ru ;
+  rdfs:label "VAT rate, %"@en ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:AccountingDoc ;
+.
 # ------------------------------------------------------------ ШАБЛОНЫ --
 
