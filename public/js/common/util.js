@@ -116,21 +116,6 @@ veda.Module(function (veda) { "use strict";
     console.time("Processing total");
     processPortion();
 
-    //~ function processPortion() {
-      //~ var portion = result.splice(0, delta);
-      //~ portion.forEach( fn );
-      //~ if ( (total - result.length) / total - processingProgress >= 0.05 ) {
-        //~ processingProgress = (total - result.length) / total;
-        //~ console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
-      //~ }
-      //~ if ( result.length ) {
-        //~ setTimeout ? setTimeout(processPortion, pause) : processPortion();
-      //~ } else {
-        //~ console.log("Processing done:", total);
-        //~ console.timeEnd("Processing total");
-      //~ }
-    //~ }
-
     function processPortion() {
       var portion = result.splice(0, delta);
       portion.reduce(function (prom, item) {
