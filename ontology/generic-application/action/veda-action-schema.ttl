@@ -29,6 +29,7 @@ v-s:Action
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:BackwardLink ;  
   rdfs:label "Мероприятие"@ru ;
   rdfs:label "Action"@en ;
 #  v-ui:hasTemplate v-s:Action_Template ;
