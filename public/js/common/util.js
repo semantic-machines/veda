@@ -123,7 +123,7 @@ veda.Module(function (veda) { "use strict";
           return fn(item);
         }).catch(function (error) {
           console.log("Error processing item:", item);
-          console.log(error);
+          console.log(error, error.stack);
         });
       }, Promise.resolve()).then(function () {
         if ( (total - result.length) / total - processingProgress >= 0.05 ) {
