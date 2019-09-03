@@ -185,6 +185,56 @@ public class TarantoolDriver : KeyValueDB
 
     }
 
+    public ResultCode store_kv(string in_key, string in_value)
+    {
+        tnt_reply_ *reply = null;
+        tnt_stream *tuple = null;
+
+        try
+        {
+            tuple = tnt_object(null);
+
+            if (db_is_opened != true)
+            {
+                open();
+                if (db_is_opened != true)
+                    return ResultCode.ConnectError;
+            }
+
+            if (in_value.length < 3)
+                return ResultCode.InternalServerError;
+
+            tuple = tnt_object(null);
+            tnt_object_add_array(tuple, 2);
+
+            tnt_object_add_str(tuple, cast(const(char)*)in_key, cast(uint)in_key.length);
+            tnt_object_add_str(tuple, cast(const(char)*)in_value, cast(uint)in_value.length);
+
+            tnt_replace(tnt, space_id, tuple);
+            tnt_flush(tnt);
+
+            reply = tnt_reply_init(null);
+            tnt.read_reply(tnt, reply);
+            if (reply.code != 0)
+            {
+                log.trace("Insert failed [%s][%s] errcode=%s msg=%s", in_key, in_value, reply.code, to!string(reply.error));
+                return ResultCode.InternalServerError;
+            }
+
+            return ResultCode.Ok;
+        }
+        finally
+        {
+            if (reply !is null)
+                tnt_reply_free(reply);
+
+            if (tuple !is null)
+                tnt_stream_free(tuple);
+        }
+
+    }
+
+
     public ResultCode remove(string in_key)
     {
         if (db_is_opened != true)

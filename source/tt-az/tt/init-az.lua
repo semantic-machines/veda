@@ -4,12 +4,12 @@ box.cfg {
     listen = tt_port;
     io_collect_interval = nil;
     readahead = 16320;
-    memtx_memory = 4 * 1024 * 1024 * 1024;
-    memtx_min_tuple_size = 16;
-    memtx_max_tuple_size = 10 * 1024 * 1024;
-    vinyl_max_tuple_size = 10 * 1024 * 1024;
-    vinyl_memory = 10 * 1024 * 1024 * 1024;
-    vinyl_cache = 1024 * 1024 * 1024;
+    --memtx_memory = 4 * 1024 * 1024 * 1024;
+    --memtx_min_tuple_size = 16;
+    --memtx_max_tuple_size = 10 * 1024 * 1024;
+    vinyl_max_tuple_size = 1 * 1024 * 1024;
+    vinyl_memory = 1 * 1024 * 1024 * 1024;
+    vinyl_cache = 102 * 1024 * 1024;
     vinyl_write_threads = 2;
     wal_mode = "write";
     wal_max_size = 256 * 1024 * 1024;
@@ -19,9 +19,10 @@ box.cfg {
     force_recovery = true;
     log_level = 5;
     log = "./tarantool.log",
-    wal_dir = './db/wal',
-    memtx_dir = './db/memtx',
-    vinyl_dir = './db/vinyl',
+    --wal_dir = './db/wal',
+    --memtx_dir = './db/memtx',
+    --vinyl_dir = './db/vinyl',
+    work_dir='./db/tarantool',
 --    log_nonblock = true;
     too_long_threshold = 0.5;
     background = false;
@@ -30,23 +31,36 @@ box.cfg {
 
 local function bootstrap()
 
-    space = box.schema.space.create('ACL')
+    if box.space.INDIVIDUALS == nil then
+	space = box.schema.space.create('INDIVIDUALS')
+	print ('space.individuals:', space.id, '\n')
+    end
 
-    print ('space.acl:', space.id, '\n')
+    if box.space.TICKETS == nil then
+	space = box.schema.space.create('TICKETS')
+	print ('space.tickets:', space.id, '\n')
+    end
 
-    box.space.ACL:create_index('primary', {parts={1, 'string'}})
-    box.schema.user.grant('guest', 'read,write', 'space', 'ACL')
-    box.schema.user.grant('guest', 'read,write', 'universe')
+    if box.space.ACL == nil then
+	space = box.schema.space.create('ACL')
+	print ('space.acl:', space.id, '\n')
 
-    box.schema.user.create('veda6', {password = '123456'}, {if_not_exists = false})
-    box.schema.user.grant('veda6', 'read,write,execute', 'universe')
+	box.space.ACL:create_index('primary', {parts={1, 'string'}})
+	box.schema.user.grant('guest', 'read,write', 'space', 'ACL')
+	box.schema.user.grant('guest', 'read,write', 'universe')
 
-    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+	box.schema.user.create('veda6', {password = '123456'}, {if_not_exists = false})
+	box.schema.user.grant('veda6', 'read,write,execute', 'universe')
+
+--    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+--end
     box.schema.user.create('rust', { password = 'rust' })
     box.schema.user.grant('rust', 'read,write,execute', 'universe')
 
     box.schema.func.create('libtarantool_authorization.authorization', {language = 'C'})
     box.schema.user.grant('guest', 'execute', 'function', 'libtarantool_authorization.authorization')
+    end
+
 end
 
 bootstrap()

@@ -15,19 +15,27 @@ Logger log()
     return _log;
 }
 
-bool   to_queue;
-string after_id;
+bool                to_queue;
+string              after_id;
+
+public const string xapian_metadata_doc_id = "ItIsADocumentContainingTheNameOfTheFieldTtheNumberOfSlots";
 
 void main(string[] args)
 {
     if (args.length < 3)
     {
-        stderr.writeln("use lmdb_2_queue [output_queue_name] veda_queue/simple_queue");
+        stderr.writeln("use lmdb2queue [individual/string] [output_queue_name] [veda_queue/simple_queue]");
         return;
     }
 
-    string output_queue_name = args[ 1 ];
-    string queue_type        = args[ 2 ];
+    string source_type       = args[ 1 ];
+    string output_queue_name = args[ 2 ];
+
+    string queue_type;
+    if (source_type == "individual")
+    {
+        queue_type = args[ 3 ];
+    }
 
     to_queue = true;
     if (args.length == 4)
@@ -38,31 +46,30 @@ void main(string[] args)
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
-    string tarantool_url = properties.as!(string)("tarantool_url");
 
     log.trace("connect to lmdb");
-    const string individuals_db_path    = "./input/lmdb-individuals";
-    LmdbDriver   individual_lmdb_driver = new LmdbDriver(individuals_db_path, DBMode.R, "cnv", log);
+    const string db_path     = "./input/lmdb";
+    LmdbDriver   lmdb_driver = new LmdbDriver(db_path, DBMode.R, "cnv", log);
 
-    Queue        individual_queue;
-    individual_queue = new Queue("./out/queue", output_queue_name, Mode.RW, log);
-    if (individual_queue.open() == false)
+    Queue        out_queue;
+    out_queue = new Queue("./out/queue", output_queue_name, Mode.RW, log);
+    if (out_queue.open() == false)
     {
         log.trace("fail create queue");
         return;
     }
 
 
-    log.trace("migrate individuals");
+    log.trace("migrate data");
 
 
-    convert(individual_lmdb_driver, individual_queue, queue_type);
+    convert(lmdb_driver, out_queue, source_type, queue_type);
 
-    individual_queue.close();
+    out_queue.close();
 }
 
 
-public long convert(LmdbDriver src, Queue dest, string queue_type)
+public long convert(LmdbDriver src, Queue dest, string source_type, string queue_type)
 {
     src.open();
 
@@ -160,43 +167,51 @@ public long convert(LmdbDriver src, Queue dest, string queue_type)
                 if (to_queue == false)
                     continue;
 
-                Individual indv;
-                if (indv.deserialize(value) < 0)
+                if (source_type == "string")
                 {
-                    log.trace("ERR! %d KEY=[%s]", count, key);
+                    dest.push(str_key ~ "=" ~ value);
+                    log.trace("OK, %d KEY=[%s]", count, str_key);
                 }
                 else
                 {
-                    if (queue_type == "veda_queue")
+                    Individual indv;
+                    if (indv.deserialize(value) < 0)
                     {
-                        Individual imm;
-                        imm.uri = text(count);
-                        imm.addResource("cmd", Resource(DataType.Integer, 1));
-
-                        imm.addResource("uri", Resource(DataType.Uri, indv.uri));
-
-                        imm.addResource("new_state", Resource(DataType.String, indv.serialize()));
-
-                        imm.addResource("tnx_id", Resource(count));
-
-                        imm.addResource("src", Resource("?"));
-                        imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-                        imm.addResource("op_id", Resource(count));
-                        imm.addResource("u_count", Resource(count));
-                        imm.addResource("assigned_subsystems", Resource(0));
-
-                        //log.trace ("imm=[%s]", imm);
-
-                        string binobj = imm.serialize();
-
-                        dest.push(binobj);
-                        log.trace("OK, %d KEY=[%s]", count, str_key);
+                        log.trace("ERR! %d KEY=[%s]", count, key);
                     }
-                    else if (queue_type == "simple_queue")
+                    else
                     {
-                        string new_bin = indv.serialize();
-                        dest.push(new_bin);
-                        log.trace("OK, %d KEY=[%s]", count, str_key);
+                        if (queue_type == "veda_queue")
+                        {
+                            Individual imm;
+                            imm.uri = text(count);
+                            imm.addResource("cmd", Resource(DataType.Integer, 1));
+
+                            imm.addResource("uri", Resource(DataType.Uri, indv.uri));
+
+                            imm.addResource("new_state", Resource(DataType.String, indv.serialize()));
+
+                            imm.addResource("tnx_id", Resource(count));
+
+                            imm.addResource("src", Resource("?"));
+                            imm.addResource("date", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+                            imm.addResource("op_id", Resource(count));
+                            imm.addResource("u_count", Resource(count));
+                            imm.addResource("assigned_subsystems", Resource(0));
+
+                            //log.trace ("imm=[%s]", imm);
+
+                            string binobj = imm.serialize();
+
+                            dest.push(binobj);
+                            log.trace("OK, %d KEY=[%s]", count, str_key);
+                        }
+                        else if (queue_type == "simple_queue")
+                        {
+                            string new_bin = indv.serialize();
+                            dest.push(new_bin);
+                            log.trace("OK, %d KEY=[%s]", count, str_key);
+                        }
                     }
                 }
             }
