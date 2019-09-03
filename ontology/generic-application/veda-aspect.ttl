@@ -227,7 +227,7 @@ v-s:PersonalAspectTemplate
     <ol rel="v-s:hasFavorite" class="columns-3">
       <script>
         if ( !this.hasValue("rdf:type", "v-s:Subscription") ) {
-          template.removeAttr("rel");
+          template.attr("about", "@").removeAttr("rel");
         }
       </script>
       <li rel="v-s:onDocument" data-template="v-ui:ClassNameLabelLinkTemplate"></li>
