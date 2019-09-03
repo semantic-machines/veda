@@ -21,9 +21,11 @@ void main(string[] args)
 {
 //    if (args.length < 5)
 //    {
-//        stderr.writeln("use queue2tarantool [start_pos] [delta] [batch_size] [opt]");
+    stderr.writeln("use queue2tarantool [acl/individual] [start_pos] [delta] [batch_size] [opt]");
 //        return;
 //    }
+
+    string source_type = args[ 1 ];
 
     if (args.length > 4)
     {
@@ -36,8 +38,7 @@ void main(string[] args)
 
     log.trace("opt: %s", opt);
 
-    KeyValueDB individual_tt_storage;
-    KeyValueDB ticket_tt_storage;
+    KeyValueDB tt_storage;
 
     string[ string ] properties;
     properties = readProperties("./veda.properties");
@@ -46,42 +47,53 @@ void main(string[] args)
     log.trace("connect to tarantool");
     if (tarantool_url !is null)
     {
-        individual_tt_storage = new TarantoolDriver(log, "INDIVIDUALS", 512);
-        ticket_tt_storage     = new TarantoolDriver(log, "TICKETS", 513);
+        if (source_type == "acl")
+        {
+            tt_storage = new TarantoolDriver(log, "ACL", 514);
+        }
+        else
+        {
+            tt_storage = new TarantoolDriver(log, "INDIVIDUALS", 512);
+        }
     }
 
-    convert(individual_tt_storage, opt);
+    convert(source_type, tt_storage, opt);
 }
 
 
-public long convert(KeyValueDB dest, bool[ string ] opt)
+public long convert(string source_type, KeyValueDB dest, bool[ string ] opt)
 {
     long count;
 
-    auto individual_queue = new Queue("./input/queue", "individuals", Mode.R, log);
+    Queue in_queue;
+    
+    if (source_type == "acl")     
+		in_queue = new Queue("./input/queue", "acl", Mode.R, log);
+	else
+		in_queue = new Queue("./input/queue", "individuals", Mode.R, log);
 
-    if (individual_queue.open() == false)
+    if (in_queue.open() == false)
     {
         log.trace("ERR! fail open queue");
         return -1;
     }
 
-    auto new_id        = "cs_0";
-    auto individual_cs = new Consumer(individual_queue, "./", new_id ~ "", Mode.RW, log);
-    if (individual_cs.open() == false)
+    auto new_id  = "cs_0";
+    auto data_cs = new Consumer(in_queue, "./", new_id ~ "", Mode.RW, log);
+    if (data_cs.open() == false)
     {
         log.trace("ERR! fail open consumer");
         return -1;
     }
 
-    count = individual_cs.count_popped;
+    count = data_cs.count_popped;
     auto sw = StopWatch(AutoStart.no);
 
     while (true)
     {
-        string data = individual_cs.pop();
+        string data = data_cs.pop();
 
-        if (individual_cs.is_ready == false)
+        if (data_cs.is_ready == false)
         {
             log.trace("ERR! consumer not ready");
             break;
@@ -100,43 +112,62 @@ public long convert(KeyValueDB dest, bool[ string ] opt)
         }
 
         count++;
-        Individual indv;
-        if (indv.deserialize(data) < 0)
+
+        if (source_type == "acl")
         {
-            log.trace("ERR! %d DATA=[%s]", count, data);
+			auto els = data.split("=");
+			if (els.length == 2) 
+			{
+					auto key = els[0];
+					auto val = els[1];
+                    auto res = dest.store_kv(key, val);
+                    log.trace("%d res=%s, key=[%s], value=[%s]", data_cs.count_popped, res, key, val);
+			} 
+			else
+			{
+                log.trace("ERR! fail format of data, %d DATA=[%s]", count, data);
+			}
         }
         else
         {
-            bool need_store = true;
-            if (opt.get("check", false))
+            Individual indv;
+            if (indv.deserialize(data) < 0)
             {
-                Individual indv1;
-
-                sw.start();
-                dest.get_individual(indv.uri, indv1);
-                sw.stop();
-
-                if (indv1.getStatus() != ResultCode.Ok)
-                    need_store = true;
-                else
-                    need_store = false;
-
-                if (opt.get("trace", false))
-                {
-                    log.trace("TRACE, %d KEY=[%s] INDV+[%s]", individual_cs.count_popped, indv.uri, indv1);
-                }
+                log.trace("ERR! %d DATA=[%s]", count, data);
             }
-
-            if (need_store == true)
+            else
             {
-                string new_bin = indv.serialize();
-                dest.store(indv.uri, new_bin, -1);
-                log.trace("OK, %d KEY=[%s]", individual_cs.count_popped, indv.uri);
+                bool need_store = true;
+                if (opt.get("check", false))
+                {
+                    Individual indv1;
+
+                    sw.start();
+                    dest.get_individual(indv.uri, indv1);
+                    sw.stop();
+
+                    if (indv1.getStatus() != ResultCode.Ok)
+                        need_store = true;
+                    else
+                        need_store = false;
+
+                    if (opt.get("trace", false))
+                    {
+                        log.trace("TRACE, %d KEY=[%s] INDV+[%s]", data_cs.count_popped, indv.uri, indv1);
+                    }
+                }
+
+                if (need_store == true)
+                {
+                    string new_bin = indv.serialize();
+                    dest.store(indv.uri, new_bin, -1);
+                    log.trace("OK, %d KEY=[%s]", data_cs.count_popped, indv.uri);
+                }
             }
         }
 
 
-        individual_cs.commit_and_next(true);
+        data_cs.commit_and_next(true);
     }
 
     log.trace("count=%d", count);
