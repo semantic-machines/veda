@@ -141,6 +141,8 @@ fn authorize_obj_group(
         azc.checked_groups.insert(object_group_id.to_string(), object_group_access);
     }
 
+    db.fiber_yield();
+
     if trace.is_group {
         print_to_trace_group(trace, format!("{}\n", object_group_id));
     }
@@ -306,6 +308,8 @@ fn prepare_obj_group(
 
         return Ok(false);
     }
+
+    db.fiber_yield();
 
     let mut is_contain_suffix_group = false;
     let groups_set_len;
@@ -522,6 +526,8 @@ fn get_resource_groups(
                     ignore_exclusive
                 };
 
+                db.fiber_yield();
+
                 match get_resource_groups(walked_groups, tree_groups, trace, &group.id, 15, results, filter_value, level + 1, db, out_f_is_exclusive, t_ignore_exclusive)
                 {
                     Ok(_res) => {}
@@ -704,6 +710,7 @@ pub fn authorize(
         Ok(_res) => {}
         Err(e) => return Err(e),
     }
+    db.fiber_yield();
 
     azc.subject_groups = s_groups;
 
