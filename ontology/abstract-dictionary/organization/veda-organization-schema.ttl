@@ -107,6 +107,16 @@ v-s:hasCommunicationMean
   rdfs:range v-s:CommunicationMean ;
   rdfs:domain v-s:OrganizationUnit ;
 .
+v-s:PS_parentUnit_Organization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:parentUnit ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix " 'rdf:type' == 'v-s:Organization' ";
+  rdfs:label "Спецификация свойства v-s:parentUnit для класса v-s:Organization"@ru ;
+  rdfs:label "v-s:parentUnit property specification for v-s:Organization class"@en ;
+.
 # Перенести в управление контрагентами
 
 v-s:hasContractorProfile
