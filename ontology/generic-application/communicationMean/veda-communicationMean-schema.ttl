@@ -46,7 +46,7 @@ v-s:hasCommunicationMeanTarget
   rdfs:range v-s:CommunicationMeanTarget ;
 .
 # v-s:description
-# v-s:comment
+# rdfs:comment
 
 # ------------------------------------------------------------ КЛАССЫ --
 v-s:CommunicationMeanChannel
