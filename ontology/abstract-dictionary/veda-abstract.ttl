@@ -325,7 +325,7 @@ v-s:hasDocumentKind
 v-s:valid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Thing ;
-  rdfs:label "Действительно"@ru ;
+  rdfs:label "Действующий"@ru ;
   rdfs:label "Valid"@en ;
   rdfs:range xsd:boolean ;
 .
