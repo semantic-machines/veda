@@ -347,7 +347,7 @@ v-s:Attention
 .
 v-s:HeadOrganization
   rdf:type v-s:Bundle ;
-  rdfs:label "Головная организация"@ru ;
+  rdfs:label "Входит в объединения"@ru ;
   rdfs:label "Head organization"@en ;
 .
 v-s:StartTypingBundle
