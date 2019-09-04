@@ -30,6 +30,8 @@ v-s:Action
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Document ;
   rdfs:subClassOf v-s:BackwardLink ;  
+  rdfs:subClassOf v-s:Labeled ;
+  v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:description [0,100]}" ;
   rdfs:label "Мероприятие"@ru ;
   rdfs:label "Action"@en ;
 #  v-ui:hasTemplate v-s:Action_Template ;
