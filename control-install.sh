@@ -230,7 +230,7 @@ fi
     echo "--- MAKE LIBAUTHORIZATION ---"
 
     cd $INSTALL_PATH
-    cd source/authorization
+    cd source/libauthorization
     cargo build --release
     cd ..
     cd ..
