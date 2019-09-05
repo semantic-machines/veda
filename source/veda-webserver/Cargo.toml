@@ -6,7 +6,7 @@ edition = "2018"
 
 [[bin]]
 name = "veda-webserver"
-path = "src/main.rs"
+path = "src/lib.rs"
 
 [dependencies]
 actix = "0.8.3"
