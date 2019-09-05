@@ -209,7 +209,7 @@ public class FanoutProcess : VedaModule
                     }
                     catch (Throwable ex)
                     {
-                        if (ex.msg.indexOf("doesn't exist") < 0)
+                        if (ex.msg.indexOf("doesn't exist") < 0 && ex.msg.indexOf("Incorrect table name") < 0)
                         {
                             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                             mysql_conn.query("ROLLBACK");
