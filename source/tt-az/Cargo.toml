@@ -1,11 +1,11 @@
 [package]
-name = "tarantool_authorization"
+name = "tarantool_veda"
 version = "0.1.0"
 authors = ["itiu <ValeriyBushenev@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "tarantool_authorization"
+name = "tarantool_veda"
 path = "src/lib.rs"
 crate-type = ["dylib"]
 

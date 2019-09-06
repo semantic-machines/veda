@@ -46,21 +46,26 @@ local function bootstrap()
 	space = box.schema.space.create('ACL_INDEX')
 	print ('space.acl:', space.id, '\n')
 
-	box.space.ACL:create_index('primary', {parts={1, 'string'}})
+	box.space.ACL_INDEX:create_index('primary', {parts={1, 'string'}})
 	box.schema.user.grant('guest', 'read,write', 'space', 'ACL_INDEX')
---	box.schema.user.grant('guest', 'read,write', 'universe')
+    end
 
-	box.schema.user.create('veda6', {password = '123456'}, {if_not_exists = false})
+    if box.schema.user.exists ('veda6') == false then
+	box.schema.user.create('veda6', {password = '123456'})
 	box.schema.user.grant('veda6', 'read,write,execute', 'universe')
---end
-    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+    end
 
-    box.schema.user.create('rust', { password = 'rust' })
-    box.schema.user.grant('rust', 'read,write,execute', 'universe')
+    box.schema.user.grant('guest', 'read,write,execute', 'universe', nil, {if_not_exists=true})
 
-    box.schema.func.create('libtarantool_authorization.authorization', {language = 'C'})
-    box.schema.user.grant('guest', 'execute', 'function', 'libtarantool_authorization.authorization')
-end
+    if box.schema.user.exists ('rust') == false then
+	box.schema.user.create('rust', { password = 'rust' }, {if_not_exists = false})
+        box.schema.user.grant('rust', 'read,write,execute', 'universe')
+    end
+
+    if box.schema.func.exists ('libtarantool_veda.get_individual') == false then
+	box.schema.func.create('libtarantool_veda.get_individual', {language = 'C'}, {if_not_exists = false})
+	box.schema.user.grant('guest', 'execute', 'function', 'libtarantool_veda.get_individual')
+    end
 
     if box.space.TICKETS_CACHE == nil then
 	space = box.schema.space.create('TICKETS_CACHE')
@@ -79,12 +84,12 @@ local ffi = require('ffi')
 ffi.cdef[[
         void init_dictionaries_ffi();
     ]]
-rust = ffi.load('./libtarantool_authorization.so')
+rust = ffi.load('./libtarantool_veda.so')
 rust.init_dictionaries_ffi();
 local refresh_dict_fn = function() rust.init_dictionaries_ffi(); end;
 box.space._space:on_replace(refresh_dict_fn);
 box.space._index:on_replace(refresh_dict_fn);
 
-print("call rust !",json.encode(capi_connection:call('libtarantool_authorization.authorization', {'v-s:appUrl','cfg:VedaSystem', 15})))
+print("call rust !",json.encode(capi_connection:call('libtarantool_veda.get_individual', {'v-s:appUrl','cfg:VedaSystem'})))
 
 --os.exit();

@@ -1,7 +1,7 @@
 use std::io::Write;
 
-use actix::prelude::*;
-use actix_redis::RedisActor;
+//use actix::prelude::*;
+//use actix_redis::RedisActor;
 use actix_web::{middleware, web, App, HttpServer};
 
 use chrono::Local;
@@ -17,7 +17,7 @@ pub fn start_server() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "debug,actix_server=debug,actix_web=debug"),
+        None => std::env::set_var(env_var, "none,actix_server=none,actix_web=none"),
     }
 
     Builder::new()
@@ -28,20 +28,19 @@ pub fn start_server() -> std::io::Result<()> {
     HttpServer::new(|| {
         let conf = Ini::load_from_file("veda.properties").expect("fail load [veda.properties] file");
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
-        let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
+        //let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
         let tarantool_url = section.get("tarantool_url").expect("param [tarantool_url] not found in veda.properties").clone();
-        let redis_addr = section.get("redis_addr").expect("param [redis_addr] not found in veda.properties").clone();
-        let redis_addr1 = section.get("redis_addr").expect("param [redis_addr] not found in veda.properties").clone();
+        //let redis_addr = section.get("redis_addr").expect("param [redis_addr] not found in veda.properties").clone();
+        //let redis_addr1 = section.get("redis_addr").expect("param [redis_addr] not found in veda.properties").clone();
 
         let tarantool = tarantool::ClientConfig::new(tarantool_url.parse().unwrap(), "rust", "rust").build();
 
-        let address: Addr<SyncActor> = SyncArbiter::start(16, move || SyncActor::new(&ft_query_service_url, &redis_addr1));
-        let redis_addr = RedisActor::start(redis_addr.clone());
+        //let address: Addr<SyncActor> = SyncArbiter::start(16, move || SyncActor::new(&ft_query_service_url, &redis_addr1));
+        //let redis_addr = RedisActor::start(redis_addr.clone());
 
-        //        App::new().data(tarantool).route("/get_individual", web::to_async(get_individual_handler))
         App::new()
-            .data(address.clone())
-            .data(redis_addr)
+            //  .data(address.clone())
+            //  .data(redis_addr)
             .data(tarantool)
             .wrap(middleware::Logger::default())
             .service(web::resource("/get_individual").route(web::to_async(get_individual_handler)))
