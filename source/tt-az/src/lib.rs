@@ -6,6 +6,7 @@ extern crate tarantool_rust_api;
 #[macro_use]
 extern crate log;
 
+use serde_json::value::Value as JSONValue;
 use std::io;
 use std::vec::Vec;
 use tarantool_rust_api::tarantool::api::*;
@@ -85,21 +86,25 @@ impl<'a> Storage for TTIStorage<'a> {
     }
 }
 
-fn authorization_impl(tarantool: &TarantoolContext) -> io::Result<Vec<u8>> {
-    let (p_uri, p_ticket, p_request_access): (Option<String>, Option<String>, Option<u8>) = tarantool.decode_input_params()?;
+fn get_individual_impl(tarantool: &TarantoolContext) -> io::Result<JSONValue> {
+    let (p_uri, p_ticket): (Option<String>, Option<String>) = tarantool.decode_input_params()?;
 
-    let mut result: Vec<u8> = Vec::new();
+    let mut result = JSONValue::default();
 
-    if p_uri.is_none() || p_ticket.is_none() || p_request_access.is_none() {
+    if p_uri.is_none() || p_ticket.is_none() {
         return Ok(result);
     }
 
     let uri = p_uri.unwrap();
     let ticket = p_ticket.unwrap();
-    let request_access = p_request_access.unwrap();
+    let request_access = 15;
     let mut user_uri = "".to_owned();
 
-    info!("uri={}, user_uri={}, request_access={}\n", uri, user_uri, request_access);
+    let mut ii = Individual::default();
+    ii.obj.uri = uri.clone();
+    result = ii.obj.as_json();
+
+    println!("uri={}, user_uri={}, request_access={}\n", uri, user_uri, request_access);
     let filter_value = "";
     let filter_allow_access_to_other = 0;
 
@@ -130,19 +135,19 @@ fn authorization_impl(tarantool: &TarantoolContext) -> io::Result<Vec<u8>> {
         if tickets_storage.get_individual_from_db(&ticket, &mut ticket_obj) {
             if let Ok(s) = ticket_obj.get_first_literal("user_uri") {
                 if let Err(e) = tickets_cache_storage.put(&ticket, &s.clone()) {
-                    error!("fail update TICKETS_CACHE, err={:?}", e);
+                    println!("fail update TICKETS_CACHE, err={:?}", e);
                 }
                 user_uri = s;
             } else {
-                error!("[user_uri] not found in ticket: {}", ticket_obj);
+                println!("[user_uri] not found in ticket: {}", ticket_obj);
             }
         } else {
-            error!("ticket not found {}", ticket);
+            println!("ticket not found {}", ticket);
         }
     }
 
     if user_uri.len() < 2 {
-        error!("invalid user_uri {}", user_uri);
+        println!("invalid user_uri {}", user_uri);
         return Ok(result);
     }
 
@@ -153,15 +158,17 @@ fn authorization_impl(tarantool: &TarantoolContext) -> io::Result<Vec<u8>> {
 
     match authorize(&uri, &user_uri, request_access, &filter_value, filter_allow_access_to_other, &acl_storage, &mut trace) {
         Ok(res) => {
-            result.push(res);
-            return Ok(result);
+            let mut ii = Individual::default();
+            ii.obj.uri = uri;
+            return Ok(ii.obj.as_json());
         }
         Err(_e) => {}
     }
-
-    Ok(result)
+    let mut ii = Individual::default();
+    ii.obj.uri = uri;
+    return Ok(ii.obj.as_json());
 }
 
 tarantool_register_stored_procs! {
-    authorization => authorization_impl
+    get_individual => get_individual_impl
 }
