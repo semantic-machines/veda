@@ -17,5 +17,5 @@ pub mod server;
 use crate::server::*;
 
 fn main() -> std::io::Result<()> {
-    m0ain()
+    start_server()
 }
