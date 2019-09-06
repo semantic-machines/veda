@@ -33,32 +33,38 @@ local function bootstrap()
 
     if box.space.INDIVIDUALS == nil then
 	space = box.schema.space.create('INDIVIDUALS')
-	print ('space.individuals:', space.id, '\n')
+	print ('create space.individuals:', space.id, '\n')
     end
 
     if box.space.TICKETS == nil then
 	space = box.schema.space.create('TICKETS')
-	print ('space.tickets:', space.id, '\n')
+	print ('create space.tickets:', space.id, '\n')
     end
 
-    if box.space.ACL == nil then
-	space = box.schema.space.create('ACL')
+    if box.space.ACL_INDEX == nil then
+
+	space = box.schema.space.create('ACL_INDEX')
 	print ('space.acl:', space.id, '\n')
 
 	box.space.ACL:create_index('primary', {parts={1, 'string'}})
-	box.schema.user.grant('guest', 'read,write', 'space', 'ACL')
-	box.schema.user.grant('guest', 'read,write', 'universe')
+	box.schema.user.grant('guest', 'read,write', 'space', 'ACL_INDEX')
+--	box.schema.user.grant('guest', 'read,write', 'universe')
 
 	box.schema.user.create('veda6', {password = '123456'}, {if_not_exists = false})
 	box.schema.user.grant('veda6', 'read,write,execute', 'universe')
-
---    box.schema.user.grant('guest', 'read,write,execute', 'universe')
 --end
+    box.schema.user.grant('guest', 'read,write,execute', 'universe')
+
     box.schema.user.create('rust', { password = 'rust' })
     box.schema.user.grant('rust', 'read,write,execute', 'universe')
 
     box.schema.func.create('libtarantool_authorization.authorization', {language = 'C'})
     box.schema.user.grant('guest', 'execute', 'function', 'libtarantool_authorization.authorization')
+end
+
+    if box.space.TICKETS_CACHE == nil then
+	space = box.schema.space.create('TICKETS_CACHE')
+	print ('create space.tickets_cache:', space.id, '\n')
     end
 
 end
