@@ -42,12 +42,17 @@ local function bootstrap()
     end
 
     if box.space.ACL_INDEX == nil then
-
 	space = box.schema.space.create('ACL_INDEX')
 	print ('space.acl:', space.id, '\n')
-
 	box.space.ACL_INDEX:create_index('primary', {parts={1, 'string'}})
 	box.schema.user.grant('guest', 'read,write', 'space', 'ACL_INDEX')
+    end
+
+    if box.space.TICKETS_CACHE == nil then
+	space = box.schema.space.create('TICKETS_CACHE')
+	print ('create space.tickets_cache:', space.id, '\n')
+	box.space.TICKETS_CACHE:create_index('primary', {parts={1, 'string'}})
+	box.schema.user.grant('guest', 'read,write', 'space', 'TICKETS_CACHE')
     end
 
     if box.schema.user.exists ('veda6') == false then
@@ -65,11 +70,6 @@ local function bootstrap()
     if box.schema.func.exists ('libtarantool_veda.get_individual') == false then
 	box.schema.func.create('libtarantool_veda.get_individual', {language = 'C'}, {if_not_exists = false})
 	box.schema.user.grant('guest', 'execute', 'function', 'libtarantool_veda.get_individual')
-    end
-
-    if box.space.TICKETS_CACHE == nil then
-	space = box.schema.space.create('TICKETS_CACHE')
-	print ('create space.tickets_cache:', space.id, '\n')
     end
 
 end
