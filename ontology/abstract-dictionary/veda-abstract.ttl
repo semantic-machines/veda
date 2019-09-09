@@ -584,6 +584,22 @@ v-s:stakeholder
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
 .
+v-s:operator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Эксплуатант"@ru ;
+  rdfs:label "Operator"@en ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:proprietor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Собственник"@ru ;
+  rdfs:label "Proprietor"@en ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
 v-s:customer
   rdf:type owl:ObjectProperty ;
   rdfs:label "Заказчик"@ru ;
@@ -1229,6 +1245,7 @@ v-s:transactionDate
 v-s:Projectable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
+  rdfs:subClassOf v-s:Document;
   rdfs:label "Проектная сущность"@ru ;
   rdfs:label "Projectable thing"@en ;
 .
