@@ -2707,7 +2707,7 @@ v-ui:TreeTemplate
       var allowed = allowedClass.map(function (allowedClass) {
         return "'rdf:type'=='" + allowedClass.id + "'";
       }).join(" || ");
-      q = "(" + q + ") && (" + allowed + ")";
+      q = "( " + q + " ) && ( " + allowed + " )";
     }
     var sort = sort || "'rdfs:label_ru' asc, 'rdfs:label_en' asc, 'rdfs:label' asc";
     var unique;
@@ -2719,7 +2719,7 @@ v-ui:TreeTemplate
     }).then(function(queryResult) {
       unique = veda.Util.unique( queryResult.result );
       if (withDeleted) {
-        q = q + " && 'v-s:deleted'== true )";
+        q = q + " && ( 'v-s:deleted'== true )";
         return veda.Backend.query({
           ticket: veda.ticket,
           query: q,
