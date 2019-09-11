@@ -1,17 +1,22 @@
 dist: trusty
 sudo: required
 
+addons:
+  apt:
+    packages:
+      - google-chrome-stable
+
 language: node_js
 node_js: "stable"
 
 before_install:
-  - sudo apt-get update
+#  - sudo apt-get update
   - stty cols 80
   - sudo apt-get install nodejs-legacy
   - npm install -g grunt-cli
   - npm install grunt-contrib-qunit --save-dev
   - npm install grunt --save-dev
-  - sudo -E apt-get -yq --allow-unauthenticated --no-install-suggests --no-install-recommends $(travis_apt_get_options) install google-chrome-stable fluxbox
+#  - sudo -E apt-get -yq --allow-unauthenticated --no-install-suggests --no-install-recommends $(travis_apt_get_options) install google-chrome-stable fluxbox
 
 #addons:
 #  apt:
