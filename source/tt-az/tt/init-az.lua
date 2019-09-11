@@ -42,7 +42,7 @@ local function bootstrap()
     end
 
     if box.space.ACL_INDEX == nil then
-	space = box.schema.space.create('ACL_INDEX')
+	space = box.schema.space.create('ACL_INDEX', {engine='vinyl'})
 	print ('space.acl:', space.id, '\n')
 	box.space.ACL_INDEX:create_index('primary', {parts={1, 'string'}})
 	box.schema.user.grant('guest', 'read,write', 'space', 'ACL_INDEX')

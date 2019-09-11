@@ -19,19 +19,19 @@ pub struct TTIStorage<'a> {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct RowTypeStruct {
+pub struct KVGet {
     pub name: String,
     pub data: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct RowTypeStructPut {
+pub struct KVPut {
     pub name: String,
     pub data: String,
 }
 
 impl<'a> TTIStorage<'a> {
-    fn get_impl(&self, key: &str) -> io::Result<Option<RowTypeStruct>> {
+    fn get_impl(&self, key: &str) -> io::Result<Option<KVGet>> {
         let key = (key,);
         match self.tarantool.index_get(&self.space, PRIMARY_INDEX, &key)? {
             Some(tuple) => Ok(tuple.decode()?),
@@ -48,7 +48,7 @@ impl<'a> TTIStorage<'a> {
     }
 
     fn put(&self, key: &str, value: &str) -> io::Result<bool> {
-        let val = RowTypeStructPut {
+        let val = KVPut {
             name: key.to_string(),
             data: value.to_string(),
         };
