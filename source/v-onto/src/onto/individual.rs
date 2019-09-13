@@ -4,6 +4,7 @@ use crate::resource::{Resource, Value};
 use std::collections::HashMap;
 use std::fmt;
 
+#[derive(PartialEq, Debug, Clone)]
 pub enum IndividualError {
     None,
     ParseError,
@@ -347,11 +348,31 @@ impl IndividualObj {
         });
     }
 
+    pub fn set_bool(&mut self, predicate: &str, b: bool) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::Boolean,
+            order: 0,
+            value: Value::Bool(b),
+        });
+    }
+
     pub fn add_datetime(&mut self, predicate: &str, i: i64, order: u32) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Datetime,
             order: order as u16,
+            value: Value::Int(i),
+        });
+    }
+
+    pub fn set_datetime(&mut self, predicate: &str, i: i64) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::Datetime,
+            order: 0,
             value: Value::Int(i),
         });
     }
@@ -365,11 +386,31 @@ impl IndividualObj {
         });
     }
 
+    pub fn set_binary(&mut self, predicate: &str, v: Vec<u8>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::Binary,
+            order: 0,
+            value: Value::Binary(v),
+        });
+    }
+
     pub fn add_integer(&mut self, predicate: &str, i: i64, order: u32) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Integer,
             order: order as u16,
+            value: Value::Int(i),
+        });
+    }
+
+    pub fn set_integer(&mut self, predicate: &str, i: i64) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::Integer,
+            order: 0,
             value: Value::Int(i),
         });
     }
@@ -383,11 +424,31 @@ impl IndividualObj {
         });
     }
 
+    pub fn set_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::Decimal,
+            order: 0,
+            value: Value::Num(mantissa, exponent),
+        });
+    }
+
     pub fn add_uri(&mut self, predicate: &str, s: &str, order: u32) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Uri,
             order: order as u16,
+            value: Value::Str(s.to_owned(), Lang::NONE),
+        });
+    }
+
+    pub fn set_uri(&mut self, predicate: &str, s: &str) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::Uri,
+            order: 0,
             value: Value::Str(s.to_owned(), Lang::NONE),
         });
     }
@@ -400,4 +461,15 @@ impl IndividualObj {
             value: Value::Str(s.to_owned(), lang),
         });
     }
+
+    pub fn set_string(&mut self, predicate: &str, s: &str, lang: Lang) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        values.push(Resource {
+            rtype: DataType::String,
+            order: 0,
+            value: Value::Str(s.to_owned(), lang),
+        });
+    }
+
 }
