@@ -1,8 +1,8 @@
 extern crate rmp as msgpack;
-use msgpack::encode::*;
 use crate::datatype::*;
 use crate::individual::*;
 use crate::resource::*;
+use msgpack::encode::*;
 use std::io::Write;
 
 fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
