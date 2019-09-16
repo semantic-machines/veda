@@ -1,11 +1,11 @@
 extern crate rmp as msgpack;
-use msgpack::decode::*;
-use msgpack::Marker;
-use std::io::Cursor;
 use crate::datatype::*;
 use crate::individual::*;
 use crate::parser::*;
 use crate::resource::*;
+use msgpack::decode::*;
+use msgpack::Marker;
+use std::io::Cursor;
 
 pub fn parse_msgpack(raw: &mut RawObj) -> Result<String, i8> {
     if raw.data.is_empty() || raw.raw_type != RawType::MSGPACK {

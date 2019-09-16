@@ -339,6 +339,11 @@ impl IndividualObj {
     //        self.resources.iter().map(|(key, _)| key.clone()).collect()
     //    }
 
+    pub fn clear(&mut self, predicate: &str) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+    }
+
     pub fn add_bool(&mut self, predicate: &str, b: bool, order: u32) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
@@ -453,6 +458,18 @@ impl IndividualObj {
         });
     }
 
+    pub fn set_uris(&mut self, predicate: &str, ss: Vec<String>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        for s in ss {
+            values.push(Resource {
+                rtype: DataType::Uri,
+                order: 0,
+                value: Value::Str(s.to_owned(), Lang::NONE),
+            });
+        }
+    }
+
     pub fn add_string(&mut self, predicate: &str, s: &str, lang: Lang, order: u32) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
@@ -471,5 +488,4 @@ impl IndividualObj {
             value: Value::Str(s.to_owned(), lang),
         });
     }
-
 }

@@ -1,11 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate env_logger;
-
-extern crate futures;
-extern crate futures_state_stream;
-extern crate tiberius;
-extern crate tokio;
 
 use chrono::{Local, NaiveDateTime};
 use env_logger::Builder;
@@ -138,8 +132,14 @@ concat( [t2].[Note27]+CHAR(13)+CHAR(10),
   [t2].[Note34]+CHAR(13)+CHAR(10)) as Equipment
 FROM [WIN-PAK PRO].[dbo].[Card] t1
  JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
-WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0
- ";
+WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0 ";
+
+    let asccess_level_query = "\
+    SELECT
+    [t2].[AccessLevelID]
+    FROM [WIN-PAK PRO].[dbo].[Card] t1
+    JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
+    WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
     let conn_str = "".to_owned();
 
@@ -150,36 +150,57 @@ WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0
     }
     let param1 = card_number.unwrap_or_default();
 
-    let mut res = (false, 0i64, 0i64, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
+    let mut card_data = (false, 0i64, 0i64, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
+    let mut access_levels = Vec::new();
 
-    let future = SqlConnection::connect(conn_str.as_str()).and_then(|conn| {
-        conn.query(card_data_query, &[&param1.as_str()]).for_each(|row| {
-            res = (
-                true,
-                row.get::<_, NaiveDateTime>(0).timestamp(),
-                row.get::<_, NaiveDateTime>(1).timestamp(),
-                row.get::<_, &str>(2).to_owned(),
-                row.get::<_, &str>(3).to_owned(),
-                row.get::<_, &str>(4).to_owned(),
-                row.get::<_, &str>(5).to_owned(),
-                row.get::<_, &str>(6).to_owned(),
-            );
-            Ok(())
+    let future = SqlConnection::connect(conn_str.as_str())
+        .and_then(|conn| {
+            conn.query(card_data_query, &[&param1.as_str()]).for_each(|row| {
+                card_data = (
+                    true,
+                    row.get::<_, NaiveDateTime>(0).timestamp(),
+                    row.get::<_, NaiveDateTime>(1).timestamp(),
+                    row.get::<_, &str>(2).to_owned(),
+                    row.get::<_, &str>(3).to_owned(),
+                    row.get::<_, &str>(4).to_owned(),
+                    row.get::<_, &str>(5).to_owned(),
+                    row.get::<_, &str>(6).to_owned(),
+                );
+                Ok(())
+            })
         })
-    });
+        .and_then(|conn| {
+            conn.query(asccess_level_query, &[&param1.as_str()]).for_each(|row| {
+                access_levels.push(row.get::<_, i32>(0).to_owned());
+                Ok(())
+            })
+        });
     current_thread::block_on_all(future).unwrap();
 
-    if res.0 {
-        info!("found={:?}", res);
+    if card_data.0 {
+        info!("card_data={:?}", card_data);
 
-        indv.obj.set_datetime("v-s:dateFrom", res.1);
-        indv.obj.set_datetime("v-s:dateTo", res.2);
-        indv.obj.set_string("v-s:description", res.3.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:tabNumber", res.4.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:birthday", res.5.as_str(), Lang::NONE);
-        indv.obj.set_string("rdfs:comment", res.6.as_str(), Lang::NONE);
-        indv.obj.set_string("mnd-s:passEquipment", res.7.as_str(), Lang::NONE);
+        indv.obj.set_datetime("v-s:dateFrom", card_data.1);
+        indv.obj.set_datetime("v-s:dateTo", card_data.2);
+        indv.obj.set_string("v-s:description", card_data.3.as_str(), Lang::NONE);
+        indv.obj.set_string("v-s:tabNumber", card_data.4.as_str(), Lang::NONE);
+        indv.obj.set_string("v-s:birthday", card_data.5.as_str(), Lang::NONE);
+        indv.obj.set_string("rdfs:comment", card_data.6.as_str(), Lang::NONE);
+        indv.obj.set_string("mnd-s:passEquipment", card_data.7.as_str(), Lang::NONE);
         indv.obj.set_uri("v-s:editor", "cfg:VedaSystem");
+
+        let mut access_level_uris = Vec::new();
+        for level in access_levels {
+            let mut indv = Individual::default();
+            if module.storage.get_individual(&("d:winpak_accesslevel_".to_string() + &level.to_string()), &mut indv) {
+                if let Ok(v) = indv.get_first_literal("v-s:registrationNumber") {
+                    if level.to_string() == v {
+                        access_level_uris.push(indv.obj.uri);
+                    }
+                }
+            }
+        }
+        indv.obj.set_uris("mnd-s:hasAccessLevel", access_level_uris);
 
         let res = module.api.update(systicket, IndvOp::Put, indv);
 
