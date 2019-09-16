@@ -111,36 +111,32 @@ fn main() -> std::io::Result<()> {
 }
 
 const CARD_NUMBER_FIELD_NAME: &str = "mnd-s:cardNumber";
-
-fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Individual) {
-    let card_data_query = "\
-SELECT
-[t1].[ActivationDate],
-[t1].[ExpirationDate],
+const CARD_DATA_QUERY: &str = "\
+SELECT [t1].[ActivationDate], [t1].[ExpirationDate],
 concat([t2].[LastName],' ',[t2].[FirstName],' ',[t2].[Note1]) as Description,
 [t2].[Note2] as TabNumber,
 [t2].[Note17] as Birthday,
 concat( [t2].[Note4]+' ',
-  CASE WHEN [t2].[Note6]='0' THEN null ELSE [t2].[Note6]+' ' END,
-  CASE WHEN [t2].[Note7]='0' THEN null ELSE [t2].[Note7]+' ' END,
-  CASE WHEN [t2].[Note8]='0' THEN null ELSE [t2].[Note8] END) as Comment,
-concat( LTRIM([t2].[Note27])+CHAR(13)+CHAR(10),
-  LTRIM([t2].[Note28])+CHAR(13)+CHAR(10),
-  LTRIM([t2].[Note29])+CHAR(13)+CHAR(10),
-  LTRIM([t2].[Note30])+CHAR(13)+CHAR(10),
-  LTRIM([t2].[Note33])+CHAR(13)+CHAR(10),
-  LTRIM([t2].[Note34])+CHAR(13)+CHAR(10)) as Equipment
+CASE WHEN [t2].[Note6]='0' THEN null ELSE [t2].[Note6]+' ' END,
+CASE WHEN [t2].[Note7]='0' THEN null ELSE [t2].[Note7]+' ' END,
+CASE WHEN [t2].[Note8]='0' THEN null ELSE [t2].[Note8] END) as Comment,
+concat( CASE WHEN LTRIM([t2].[Note27])='' THEN null ELSE LTRIM([t2].[Note27]+CHAR(13)+CHAR(10)) END,
+CASE WHEN LTRIM([t2].[Note28])='' THEN null ELSE LTRIM([t2].[Note28]+CHAR(13)+CHAR(10)) END,
+CASE WHEN LTRIM([t2].[Note29])='' THEN null ELSE LTRIM([t2].[Note29]+CHAR(13)+CHAR(10)) END,
+CASE WHEN LTRIM([t2].[Note30])='' THEN null ELSE LTRIM([t2].[Note30]+CHAR(13)+CHAR(10)) END,
+CASE WHEN LTRIM([t2].[Note33])='' THEN null ELSE LTRIM([t2].[Note33]+CHAR(13)+CHAR(10)) END,
+CASE WHEN LTRIM([t2].[Note34])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END) as Equipment
 FROM [WIN-PAK PRO].[dbo].[Card] t1
- JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
+JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
 WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0 ";
 
-    let asccess_level_query = "\
-    SELECT
-    [t2].[AccessLevelID]
-    FROM [WIN-PAK PRO].[dbo].[Card] t1
-    JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
-    WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
+const ACCESS_LEVEL_QUERY: &str = "\
+SELECT [t2].[AccessLevelID]
+FROM [WIN-PAK PRO].[dbo].[Card] t1
+JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
+WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
+fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Individual) {
     let conn_str = "".to_owned();
 
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
@@ -155,7 +151,7 @@ WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0 ";
 
     let future = SqlConnection::connect(conn_str.as_str())
         .and_then(|conn| {
-            conn.query(card_data_query, &[&param1.as_str()]).for_each(|row| {
+            conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
                 card_data = (
                     true,
                     row.get::<_, NaiveDateTime>(0).timestamp(),
@@ -170,7 +166,7 @@ WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0 ";
             })
         })
         .and_then(|conn| {
-            conn.query(asccess_level_query, &[&param1.as_str()]).for_each(|row| {
+            conn.query(ACCESS_LEVEL_QUERY, &[&param1.as_str()]).for_each(|row| {
                 access_levels.push(row.get::<_, i32>(0).to_owned());
                 Ok(())
             })
