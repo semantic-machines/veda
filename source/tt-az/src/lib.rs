@@ -3,7 +3,6 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate tarantool_rust_api;
-extern crate log;
 
 use std::io;
 use std::vec::Vec;

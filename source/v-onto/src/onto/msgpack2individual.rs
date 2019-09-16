@@ -1,9 +1,7 @@
 extern crate rmp as msgpack;
-
 use msgpack::decode::*;
 use msgpack::Marker;
 use std::io::Cursor;
-
 use crate::datatype::*;
 use crate::individual::*;
 use crate::parser::*;

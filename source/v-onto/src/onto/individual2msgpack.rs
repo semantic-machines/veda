@@ -1,7 +1,5 @@
 extern crate rmp as msgpack;
-
 use msgpack::encode::*;
-
 use crate::datatype::*;
 use crate::individual::*;
 use crate::resource::*;
