@@ -124,12 +124,12 @@ concat( [t2].[Note4]+' ',
   CASE WHEN [t2].[Note6]='0' THEN null ELSE [t2].[Note6]+' ' END,
   CASE WHEN [t2].[Note7]='0' THEN null ELSE [t2].[Note7]+' ' END,
   CASE WHEN [t2].[Note8]='0' THEN null ELSE [t2].[Note8] END) as Comment,
-concat( [t2].[Note27]+CHAR(13)+CHAR(10),
-  [t2].[Note28]+CHAR(13)+CHAR(10),
-  [t2].[Note29]+CHAR(13)+CHAR(10),
-  [t2].[Note30]+CHAR(13)+CHAR(10),
-  [t2].[Note33]+CHAR(13)+CHAR(10),
-  [t2].[Note34]+CHAR(13)+CHAR(10)) as Equipment
+concat( LTRIM([t2].[Note27])+CHAR(13)+CHAR(10),
+  LTRIM([t2].[Note28])+CHAR(13)+CHAR(10),
+  LTRIM([t2].[Note29])+CHAR(13)+CHAR(10),
+  LTRIM([t2].[Note30])+CHAR(13)+CHAR(10),
+  LTRIM([t2].[Note33])+CHAR(13)+CHAR(10),
+  LTRIM([t2].[Note34])+CHAR(13)+CHAR(10)) as Equipment
 FROM [WIN-PAK PRO].[dbo].[Card] t1
  JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
 WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0 ";

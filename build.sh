@@ -26,9 +26,20 @@ if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
+if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
 
-    rm ./veda-veda-exim-inquire
+    rm ./veda-winpak
+
+    cd source/veda-winpak
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-winpak $PWD
+
+fi
+
+if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
+
+    rm ./veda-exim-inquire
 
     cd source/veda-exim-inquire
     cargo build --release
@@ -37,9 +48,9 @@ if [ -z $1 ] || [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] ; then
+if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] ; then
 
-    rm ./veda-veda-exim-respond
+    rm ./veda-exim-respond
 
     cd source/veda-exim-respond
     cargo build --release
@@ -48,7 +59,7 @@ if [ -z $1 ] || [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
+if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
 
     echo start make VEDA-EXTRACTOR
     rm ./veda-extractor
@@ -87,7 +98,7 @@ if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] ; then
     echo end make VEDA-ONTOLOGIST
 fi
 
-if [ -z $1 ] || [ $1 == "geo-indexer" ] || [ $1 == "veda-geo-indexer" ] ; then
+if [ $1 == "geo-indexer" ] || [ $1 == "veda-geo-indexer" ] ; then
 
     echo start make VEDA-GEO-INDEXER
     rm ./veda-geo-indexer
@@ -100,7 +111,7 @@ if [ -z $1 ] || [ $1 == "geo-indexer" ] || [ $1 == "veda-geo-indexer" ] ; then
     echo end make VEDA-GEO-INDEXER
 fi
 
-if [ -z $1 ] || [ $1 == "webserver" ] || [ $1 == "veda-webserver" ] ; then
+if [ $1 == "webserver" ] || [ $1 == "veda-webserver" ] ; then
 
     echo start make VEDA-WEBSERVER
     rm ./veda-webserver
@@ -161,7 +172,7 @@ if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
     ./tools/build-component.sh veda-ft-query ft-query
 fi
 
-if [ -z $1 ] || [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
+if [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
     ./tools/build-component.sh veda-input-queue input-queue
 fi
 
