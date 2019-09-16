@@ -183,7 +183,6 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Indi
         indv.obj.set_string("v-s:birthday", card_data.5.as_str(), Lang::NONE);
         indv.obj.set_string("rdfs:comment", card_data.6.as_str(), Lang::NONE);
         indv.obj.set_string("mnd-s:passEquipment", card_data.7.as_str(), Lang::NONE);
-        indv.obj.set_uri("v-s:editor", "cfg:VedaSystem");
 
         let mut access_level_uris = Vec::new();
         for level in access_levels {
@@ -197,16 +196,21 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Indi
             }
         }
         indv.obj.set_uris("mnd-s:hasAccessLevel", access_level_uris);
+    } else {
+        error!("card [{}] not found in winpak database", param1);
+        indv.obj.clear("v-s:errorMessage");
+        indv.obj.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU, 0);
+        indv.obj.add_string("v-s:errorMessage", "Card not found", Lang::EN, 1);
+    }
+    indv.obj.set_uri("v-s:editor", "cfg:VedaSystem");
 
-        let res = module.api.update(systicket, IndvOp::Put, indv);
-
-        if res.result != ResultCode::Ok {
-            error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
-            return;
-        } else {
-            info!("success update, uri={}", indv.obj.uri);
-            return;
-        }
+    let res = module.api.update(systicket, IndvOp::Put, indv);
+    if res.result != ResultCode::Ok {
+        error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
+        return;
+    } else {
+        info!("success update, uri={}", indv.obj.uri);
+        return;
     }
 }
 
