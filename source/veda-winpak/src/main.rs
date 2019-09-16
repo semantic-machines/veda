@@ -137,7 +137,11 @@ JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
 WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Individual) {
-    let conn_str = "server=tcp:SYK-VS07,1433;integratedsecurity=true;database=WIN-PAK PRO;user=mp\\SYK-PORTALMS;password=%rfVgT6y".to_owned();
+    let conn_str = get_conn_string(module);
+    if conn_str.is_err() {
+        error!("fail read connection info: err={:?}", conn_str.err());
+        return;
+    }
 
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
     if card_number.is_err() {
@@ -149,7 +153,7 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Indi
     let mut card_data = (false, 0i64, 0i64, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
     let mut access_levels = Vec::new();
 
-    let future = SqlConnection::connect(conn_str.as_str())
+    let future = SqlConnection::connect(conn_str.unwrap().as_str())
         .and_then(|conn| {
             conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
                 card_data = (
@@ -253,4 +257,50 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, msg: &mut Individ
         }
     }
     Ok(())
+}
+
+pub fn get_conn_string(module: &mut Module) -> Result<String, String> {
+    let mut conn = Individual::default();
+    let conn_winpak_id = "cfg:conn_winpak";
+    if module.storage.get_individual(conn_winpak_id, &mut conn) {
+        if let Ok(t) = conn.get_first_literal("v-s:transport") {
+            if t != "mssql" {
+                return Err("invalid connect type, expect [mssql]".to_owned());
+            }
+        }
+
+        let host = if let Ok(v) = conn.get_first_literal("v-s:host") {
+            v
+        } else {
+            return Err(("not found param [v-s:host] in ".to_string() + conn_winpak_id).to_owned());
+        };
+
+        let port = if let Ok(v) = conn.get_first_integer("v-s:port") {
+            v
+        } else {
+            return Err(("not found param [v-s:port] in ".to_string() + conn_winpak_id).to_owned());
+        };
+
+        let login = if let Ok(v) = conn.get_first_literal("v-s:login") {
+            v
+        } else {
+            return Err(("not found param [v-s:login] in ".to_string() + conn_winpak_id).to_owned());
+        };
+
+        let pass = if let Ok(v) = conn.get_first_literal("v-s:password") {
+            v
+        } else {
+            return Err(("not found param [v-s:password] in ".to_string() + conn_winpak_id).to_owned());
+        };
+
+        let database = if let Ok(v) = conn.get_first_literal("v-s:sql_database") {
+            v
+        } else {
+            return Err(("not found param [v-s:sql_database] in ".to_string() + conn_winpak_id).to_owned());
+        };
+
+        Ok(format!("server=tcp:{},{};integratedsecurity=true;database={};user={};password={}", host, port, database, login, pass))
+    } else {
+        return Err("not found [".to_owned() + conn_winpak_id + "]");
+    }
 }
