@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate env_logger;
 
 use chrono::Local;
 use env_logger::Builder;

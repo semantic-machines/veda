@@ -1,17 +1,12 @@
-extern crate core;
 /// This module gives function to check access of user to individual
-extern crate lmdb_rs_m;
-
 use core::fmt;
 use std::collections::HashMap;
 
 const PERMISSION_PREFIX: &str = "P";
 pub const FILTER_PREFIX: &str = "F";
 const MEMBERSHIP_PREFIX: &str = "M";
-
 const M_IS_EXCLUSIVE: char = 'X';
 const M_IGNORE_EXCLUSIVE: char = 'N';
-
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 

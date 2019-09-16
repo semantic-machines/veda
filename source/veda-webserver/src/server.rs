@@ -1,15 +1,10 @@
 use std::io::Write;
-
-//use actix::prelude::*;
-//use actix_redis::RedisActor;
 use actix_web::{middleware, web, App, HttpServer};
-
 use chrono::Local;
 use env_logger::Builder;
 use ini::Ini;
 use log::LevelFilter;
 use rusty_tarantool::tarantool;
-
 use crate::geo::*;
 use crate::individuals::*;
 

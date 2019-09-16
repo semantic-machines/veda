@@ -1,10 +1,8 @@
 #[macro_use]
 extern crate enum_primitive_derive;
-extern crate num_traits;
 #[macro_use]
 extern crate log;
-extern crate env_logger;
-extern crate uuid;
+
 use nng::{Message, Socket};
 use num_traits::{FromPrimitive, ToPrimitive};
 use std::collections::HashMap;
