@@ -11,12 +11,11 @@ use v_module::module::*;
 use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
 //use v_search::FTQuery;
-use v_onto::datatype::Lang;
-
 use futures::Future;
 use futures_state_stream::StateStream;
 use tiberius::SqlConnection;
 use tokio::runtime::current_thread;
+use v_onto::datatype::Lang;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -31,6 +30,8 @@ fn main() -> std::io::Result<()> {
         .init();
 
     let mut module = Module::default();
+
+    let mut conn_str = String::default();
 
     let systicket;
     if let Ok(t) = module.get_sys_ticket_id() {
@@ -48,6 +49,17 @@ fn main() -> std::io::Result<()> {
     let mut total_prepared_count: u64 = 0;
 
     loop {
+        if conn_str.is_empty() {
+            let conn_str_w = get_conn_string(&mut module);
+            if conn_str_w.is_err() {
+                error!("fail read connection info: err={:?}", conn_str_w.err());
+                error!("sleep and repeate...");
+                thread::sleep(time::Duration::from_millis(10000));
+                continue;
+            }
+            conn_str = conn_str_w.unwrap();
+        }
+
         let mut size_batch = 0;
 
         // read queue current part info
@@ -93,8 +105,14 @@ fn main() -> std::io::Result<()> {
                 }
             }
 
-            if let Err(e) = prepare_queue_element(&mut module, &systicket, &mut Individual::new_raw(raw)) {
-                error!("fail prepare queue element, err={}", e);
+            if let Err(e) = prepare_queue_element(&mut module, &systicket, &conn_str, &mut Individual::new_raw(raw)) {
+                error!("fail prepare queue element, err={:?}", e);
+                if e == ResultCode::ConnectError {
+                    error!("sleep and repeate...");
+                    thread::sleep(time::Duration::from_millis(10000));
+                    conn_str.clear();
+                    continue;
+                }
             }
 
             queue_consumer.commit_and_next();
@@ -136,24 +154,18 @@ FROM [WIN-PAK PRO].[dbo].[Card] t1
 JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
 WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
-fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Individual) {
-    let conn_str = get_conn_string(module);
-    if conn_str.is_err() {
-        error!("fail read connection info: err={:?}", conn_str.err());
-        return;
-    }
-
+fn update_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
     if card_number.is_err() {
         error!("fail read {} {:?}", CARD_NUMBER_FIELD_NAME, card_number.err());
-        return;
+        return ResultCode::UnprocessableEntity;
     }
     let param1 = card_number.unwrap_or_default();
 
     let mut card_data = (false, 0i64, 0i64, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
     let mut access_levels = Vec::new();
 
-    let future = SqlConnection::connect(conn_str.unwrap().as_str())
+    let future = SqlConnection::connect(conn_str)
         .and_then(|conn| {
             conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
                 card_data = (
@@ -175,7 +187,19 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Indi
                 Ok(())
             })
         });
-    current_thread::block_on_all(future).unwrap();
+
+    if let Err(e) = current_thread::block_on_all(future) {
+        error!("fail execute sql query, err={:?}", e);
+        match e {
+            tiberius::Error::Server(_) => {
+                return ResultCode::ConnectError;
+            }
+            tiberius::Error::Io(_) => {
+                return ResultCode::ConnectError;
+            }
+            _ => {}
+        }
+    }
 
     if card_data.0 {
         info!("card_data={:?}", card_data);
@@ -211,27 +235,27 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, indv: &mut Indi
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {
         error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
-        return;
+        return ResultCode::DatabaseModifiedError;
     } else {
         info!("success update, uri={}", indv.obj.uri);
-        return;
+        return ResultCode::Ok;
     }
 }
 
-fn prepare_queue_element(module: &mut Module, systicket: &str, msg: &mut Individual) -> Result<(), i32> {
+fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, msg: &mut Individual) -> Result<(), ResultCode> {
     if let Ok(uri) = parse_raw(msg) {
         msg.obj.uri = uri;
 
         let wcmd = msg.get_first_integer("cmd");
         if wcmd.is_err() {
-            return Err(-1);
+            return Err(ResultCode::UnprocessableEntity);
         }
 
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let new_state = msg.get_first_binobj("new_state");
         if cmd != IndvOp::Remove && new_state.is_err() {
-            return Err(-1);
+            return Err(ResultCode::UnprocessableEntity);
         }
 
         let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
@@ -248,7 +272,10 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, msg: &mut Individ
                             }
                         }
 
-                        update_data_from_winpak(module, systicket, &mut new_state_indv);
+                        let res = update_data_from_winpak(module, systicket, conn_str, &mut new_state_indv);
+                        if res == ResultCode::ConnectError {
+                            return Err(res);
+                        }
                     }
                 }
             }
@@ -282,7 +309,7 @@ pub fn get_conn_string(module: &mut Module) -> Result<String, String> {
         };
 
         let login = if let Ok(v) = conn.get_first_literal("v-s:login") {
-            v
+            v.replace("\\\\", "\\")
         } else {
             return Err(("not found param [v-s:login] in ".to_string() + conn_winpak_id).to_owned());
         };
