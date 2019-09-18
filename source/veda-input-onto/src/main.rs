@@ -8,6 +8,7 @@ use log::LevelFilter;
 use notify::{RecommendedWatcher, RecursiveMode, Result as NotifyResult, Watcher};
 use rio_api::parser::TriplesParser;
 use rio_turtle::{TurtleError, TurtleParser};
+use std::collections::HashMap;
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
@@ -16,6 +17,7 @@ use std::time::Duration;
 use std::{fs, io};
 use v_module::module::*;
 use v_module::onto::*;
+use v_onto::individual::Individual;
 use v_onto::onto::*;
 
 fn main() -> NotifyResult<()> {
@@ -50,7 +52,11 @@ fn main() -> NotifyResult<()> {
     info!("load onto end");
     if onto.relations.len() > 0 {
         info!("ontology not found");
-        collect_files(&onto_path, &mut list_candidate_files);
+        collect_file_paths(&onto_path, &mut list_candidate_files);
+    }
+
+    if !list_candidate_files.is_empty() {
+        processing_files(list_candidate_files);
     }
 
     let (tx, rx) = unbounded();
@@ -66,7 +72,7 @@ fn main() -> NotifyResult<()> {
     }
 }
 
-fn collect_files(onto_path: &str, res: &mut Vec<String>) {
+fn collect_file_paths(onto_path: &str, res: &mut Vec<String>) {
     fn prepare_file(d: &DirEntry, res: &mut Vec<String>) {
         let path = d.path().as_path().to_owned();
         if let Some(ext) = path.extension() {
@@ -83,14 +89,51 @@ fn collect_files(onto_path: &str, res: &mut Vec<String>) {
     visit_dirs(Path::new(&onto_path), res, &prepare_file).unwrap_or_default();
 }
 
-fn parse_file(file_path: &str) {
-    let res = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap().parse_all(&mut |t| {
-        info!("{:?}", t);
-        Ok(()) as Result<(), TurtleError>
-    });
+fn processing_files(files: Vec<String>) {
+    for file in files {
+        parse_file(&file);
+    }
+}
 
-    if let Err(e) = res {
-        error!("fail parse ttl, err={}", e);
+fn parse_file(file_path: &str) {
+    let mut individuals: HashMap<String, Individual> = HashMap::new();
+
+    let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
+
+    let mut namespaces: HashMap<String, String> = HashMap::new();
+    loop {
+        for ns in &parser.namespaces {
+            if !namespaces.contains_key(ns.1) {
+                namespaces.insert(ns.1.clone(), ns.0.clone());
+            }
+        }
+
+        let res = parser.parse_step(&mut |t| {
+            //info!("namespaces: {:?}", namespaces);
+            let indv = individuals.entry(t.subject.to_string()).or_default();
+
+            if indv.obj.uri.is_empty() {
+                indv.obj.uri = t.subject.to_string();
+            }
+
+            let predicate = t.predicate.iri;
+
+            info!("{:?}", predicate);
+            Ok(()) as Result<(), TurtleError>
+        });
+
+        if let Err(e) = res {
+            error!("fail parse ttl, err={}", e);
+            break;
+        }
+
+        if parser.is_end() {
+            break;
+        }
+    }
+
+    for indv in individuals {
+        info!("ind: {}", indv.1);
     }
 }
 
