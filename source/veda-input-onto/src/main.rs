@@ -104,19 +104,36 @@ fn parse_file(file_path: &str) {
     loop {
         for ns in &parser.namespaces {
             if !namespaces.contains_key(ns.1) {
-                namespaces.insert(ns.1.clone(), ns.0.clone());
+                if let Some(s) = ns.1.get(0..ns.1.len() - 1) {
+                    namespaces.insert(s.to_owned(), ns.0.clone());
+                }
             }
         }
 
+        let mut is_subject = false;
+
         let res = parser.parse_step(&mut |t| {
             //info!("namespaces: {:?}", namespaces);
-            let indv = individuals.entry(t.subject.to_string()).or_default();
 
-            if indv.obj.uri.is_empty() {
-                indv.obj.uri = t.subject.to_string();
+            if !is_subject {
+                let mut subject = t.subject.to_string();
+
+                if subject.starts_with('<') {
+                    if let Some(s) = subject.get(1..subject.len() - 1) {
+                        subject = s.to_string();
+                    }
+                }
+
+                let s = to_prefix_form(&subject, &namespaces);
+                if s.is_empty() {
+                    error!("invalid subject={:?}", subject);
+                }
+                let indv = individuals.entry(s.to_owned()).or_default();
+                indv.obj.uri = s;
+                is_subject = true;
             }
 
-            let predicate = t.predicate.iri;
+            let predicate = to_prefix_form(t.predicate.iri, &namespaces);
 
             info!("{:?}", predicate);
             Ok(()) as Result<(), TurtleError>
@@ -135,6 +152,36 @@ fn parse_file(file_path: &str) {
     for indv in individuals {
         info!("ind: {}", indv.1);
     }
+}
+
+fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
+    let mut res = String::default();
+
+    if let Some(s) = namespaces.get(iri) {
+        res.push_str(s);
+        res.push(':');
+        return res;
+    }
+
+    let pos = if let Some(pos) = iri.rfind(|c| c == '#' || c == '/') {
+        pos
+    } else {
+        return iri.to_owned();
+    };
+
+    if let Some(s) = iri.get(0..pos) {
+        if let Some(s) = namespaces.get(s) {
+            res.push_str(s);
+            res.push(':');
+            if let Some(s) = iri.get(pos + 1..) {
+                res.push_str(s);
+            }
+        } else {
+            return iri.to_owned();
+        }
+    }
+
+    return res;
 }
 
 fn visit_dirs(dir: &Path, res: &mut Vec<String>, cb: &dyn Fn(&DirEntry, &mut Vec<String>)) -> io::Result<()> {
