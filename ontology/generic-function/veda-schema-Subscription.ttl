@@ -75,8 +75,6 @@ v-s:FavoritesIndicatorTemplate
   rdfs:label "Favorites indicator template"@en ;
   v-ui:template """
 <script>
-  var current;
-  var subscriptionId;
   template.tooltip({
     container: template,
     placement: "bottom",
@@ -84,32 +82,35 @@ v-s:FavoritesIndicatorTemplate
     title: (function () {
       var titleStr;
       return function () {
-        var current = getCurrent(location.hash);
-        var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
-        title.load().then(function (title) {
-          titleStr = title.toString();
-          template.find(".tooltip-inner").text(titleStr);
+        getCurrent().then(function (current) {
+          var title = veda.user.aspect.hasValue("v-s:hasFavorite", current) ? new veda.IndividualModel("v-s:RemoveFromFavorites") : new veda.IndividualModel("v-s:AddToFavorites");
+          title.load().then(function (title) {
+            titleStr = title.toString();
+            template.find(".tooltip-inner").text(titleStr);
+          });
         });
         return titleStr ? titleStr : "...";
       }
     })()
   }).click(function (e) {
     e.preventDefault();
-    Promise.resolve().then(function(){
-      if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
+    getCurrent().then(function (current) {
+      var subscriptionId = "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32);
+      if ( veda.user.aspect.hasValue("v-s:hasFavorite", subscriptionId) ) {
         veda.user.aspect.removeValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId));
+        indicateFavorite(current);
         return new veda.IndividualModel(subscriptionId).remove();
       } else {
         var subscription = new veda.IndividualModel();
         subscription.id = subscriptionId;
-        subscription["rdf:type"] = [new veda.IndividualModel("v-s:Subscription")];
-        subscription["v-s:onDocument"] = [current];
-        subscription["v-s:creator"] = [veda.user];
+        subscription["rdf:type"] = [ new veda.IndividualModel("v-s:Subscription") ];
+        subscription["v-s:onDocument"] = [ current ];
+        subscription["v-s:creator"] = [ veda.user ];
         veda.user.aspect.addValue("v-s:hasFavorite", subscription);
+        indicateFavorite(current);
         return subscription.save();
       }
     }).then(function(result) {
-      indicateFavorite(subscriptionId);
       veda.user.aspect.save();
     }).catch(function(e) {
       console.log(e);
@@ -117,18 +118,17 @@ v-s:FavoritesIndicatorTemplate
   });
 
   riot.route(function (hash) {
-    current = getCurrent(hash);
-    subscriptionId = current? "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32) : undefined;
-    indicateFavorite(subscriptionId);
-  })
+    getCurrent().then(indicateFavorite);
+  });
 
-  function indicateFavorite(subscriptionId) {
-    current && current.load().then(function(loaded) {
-      return loaded.is(("v-s:Journaling"));
-    }).then(function(result) {
-      if (result) {
-        template.show();
-        if ( veda.user.aspect.hasValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId)) ) {
+  function indicateFavorite(current) {
+    current && current.load().then(function(current) {
+      return current.is("v-s:Journaling");
+    }).then(function(isJournaling) {
+      if (isJournaling) {
+        var subscriptionId = "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32);
+        template.show().attr("data-subscription", subscriptionId);
+        if ( veda.user.aspect.hasValue("v-s:hasFavorite", subscriptionId) ) {
           template.addClass("fa-star").removeClass("fa-star-o");
         } else {
           template.removeClass("fa-star").addClass("fa-star-o");
@@ -136,17 +136,31 @@ v-s:FavoritesIndicatorTemplate
       } else {
         template.hide();
       }
-    })
+    });
   }
 
-  function getCurrent(hash) {
-    var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
-    var re = new RegExp("^(\\w|-)+:.*?$");
-    return re.test(current_uri) ? new veda.IndividualModel(current_uri) : undefined;
+  function getCurrent() {
+    var hash = location.hash;
+    return new Promise(function (resolve, reject) {
+      var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
+      var re = new RegExp("^(\\w|-)+:.*?$");
+      if ( re.test(current_uri) ) {
+        resolve( new veda.IndividualModel(current_uri).load() );
+      } else {
+        resolve();
+      }
+    }).then(function (current) {
+      if (!current) { return; }
+      var isTask = current.hasValue("rdf:type", "v-wf:DecisionForm");
+      if ( isTask ) {
+        current = current["v-wf:onDocument"][0];
+      }
+      return current;
+    });
   }
 //# sourceURL=v-s:FavoritesIndicatorTemplate_pre
 </script>
-<a href="#" class="fa fa-lg"></a>
+<a href="#" class="fa fa-lg" style="display:none;"></a>
   """ ;
 .
 
@@ -206,7 +220,7 @@ if (prev_state) {
         journal["v-s:hasSubscription"] = [];
         put_individual(ticket, journal, _event_id);
       }
-    } 
+    }
     if (prevSubscriptions.length > 0) {
       var prev = get_individual(ticket, document["v-s:prevSubscription"][0].data);
       prev["v-s:nextSubscription"] = nextSubscriptions;
@@ -223,7 +237,7 @@ if (prev_state) {
   }
 } else {
   if (journal["v-s:hasSubscription"]) {
-    var set_in_nextSubscribe = { 
+    var set_in_nextSubscribe = {
       "@": journal["v-s:hasSubscription"][0].data,
       "v-s:prevSubscription": veda.Util.newUri(document["@"])
     };
@@ -277,7 +291,7 @@ if (!document["v-s:hasSubscription"]) {
   //print("Hasn't subscription . Exit.");
   document["rdf:type"] = veda.Util.newUri("v-s:Journal");
   put_individual(ticket, document);
-  return; 
+  return;
 }
 var doc = get_individual(ticket, document["v-s:onDocument"][0].data);
 //print("doc=", doc["@"]);
