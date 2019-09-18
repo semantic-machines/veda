@@ -94,7 +94,8 @@ v-s:FavoritesIndicatorTemplate
     })()
   }).click(function (e) {
     e.preventDefault();
-    getCurrent().then(function (current) {
+    getCurrent(location.hash).then(function (current) {
+      if ( !current ) { return; }
       var subscriptionId = "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32);
       if ( veda.user.aspect.hasValue("v-s:hasFavorite", subscriptionId) ) {
         veda.user.aspect.removeValue("v-s:hasFavorite", new veda.IndividualModel(subscriptionId));
@@ -118,7 +119,7 @@ v-s:FavoritesIndicatorTemplate
   });
 
   riot.route(function (hash) {
-    getCurrent().then(indicateFavorite);
+    getCurrent(hash).then(indicateFavorite);
   });
 
   function indicateFavorite(current) {
@@ -127,7 +128,7 @@ v-s:FavoritesIndicatorTemplate
     }).then(function(isJournaling) {
       if (isJournaling) {
         var subscriptionId = "d:" + Sha256.hash(veda.user_uri + current.id).substr(0,32);
-        template.show().attr("data-subscription", subscriptionId);
+        template.show();
         if ( veda.user.aspect.hasValue("v-s:hasFavorite", subscriptionId) ) {
           template.addClass("fa-star").removeClass("fa-star-o");
         } else {
@@ -139,8 +140,7 @@ v-s:FavoritesIndicatorTemplate
     });
   }
 
-  function getCurrent() {
-    var hash = location.hash;
+  function getCurrent(hash) {
     return new Promise(function (resolve, reject) {
       var current_uri = hash ? decodeURI(hash).slice(2).split("/")[0] : "";
       var re = new RegExp("^(\\w|-)+:.*?$");
