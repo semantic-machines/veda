@@ -6,6 +6,9 @@ use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
 use notify::{RecommendedWatcher, RecursiveMode, Result as NotifyResult, Watcher};
+use rio_api::model::Literal::{LanguageTaggedString, Simple, Typed};
+use rio_api::model::NamedOrBlankNode;
+use rio_api::model::Term::{BlankNode, Literal, NamedNode};
 use rio_api::parser::TriplesParser;
 use rio_turtle::{TurtleError, TurtleParser};
 use std::collections::HashMap;
@@ -50,7 +53,7 @@ fn main() -> NotifyResult<()> {
     info!("load onto start");
     load_onto(&mut module.fts, &mut module.storage, &mut onto);
     info!("load onto end");
-    if onto.relations.len() > 0 {
+    if !onto.relations.is_empty() {
         info!("ontology not found");
         collect_file_paths(&onto_path, &mut list_candidate_files);
     }
@@ -116,13 +119,10 @@ fn parse_file(file_path: &str) {
             //info!("namespaces: {:?}", namespaces);
 
             if !is_subject {
-                let mut subject = t.subject.to_string();
-
-                if subject.starts_with('<') {
-                    if let Some(s) = subject.get(1..subject.len() - 1) {
-                        subject = s.to_string();
-                    }
-                }
+                let subject = match t.subject {
+                    NamedOrBlankNode::BlankNode(n) => n.id,
+                    NamedOrBlankNode::NamedNode(n) => n.iri,
+                };
 
                 let s = to_prefix_form(&subject, &namespaces);
                 if s.is_empty() {
@@ -135,7 +135,25 @@ fn parse_file(file_path: &str) {
 
             let predicate = to_prefix_form(t.predicate.iri, &namespaces);
 
-            info!("{:?}", predicate);
+            info!("[{:?}]", predicate);
+            match t.object {
+                BlankNode(n) => info!("BlankNode {}", n.id),
+                NamedNode(n) => info!("NamedNode {}", n.iri),
+                Literal(l) => match l {
+                    Simple {
+                        value,
+                    } => info!("val={}", value),
+                    LanguageTaggedString {
+                        value,
+                        language,
+                    } => info!("val={}, lang={}", value, language),
+                    Typed {
+                        value,
+                        datatype,
+                    } => info!("val={}, type={}", value, datatype),
+                },
+            }
+
             Ok(()) as Result<(), TurtleError>
         });
 
@@ -149,8 +167,8 @@ fn parse_file(file_path: &str) {
         }
     }
 
-    for indv in individuals {
-        info!("ind: {}", indv.1);
+    for (_, value) in individuals {
+        info!("ind: {}", value);
     }
 }
 
@@ -181,7 +199,7 @@ fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
         }
     }
 
-    return res;
+    res
 }
 
 fn visit_dirs(dir: &Path, res: &mut Vec<String>, cb: &dyn Fn(&DirEntry, &mut Vec<String>)) -> io::Result<()> {
