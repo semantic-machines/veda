@@ -20,6 +20,7 @@ use std::time::Duration;
 use std::{fs, io};
 use v_module::module::*;
 use v_module::onto::*;
+use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 use v_onto::onto::*;
 
@@ -113,36 +114,38 @@ fn parse_file(file_path: &str) {
             }
         }
 
-        let mut is_subject = false;
-
         let res = parser.parse_step(&mut |t| {
             //info!("namespaces: {:?}", namespaces);
 
-            if !is_subject {
-                let subject = match t.subject {
-                    NamedOrBlankNode::BlankNode(n) => n.id,
-                    NamedOrBlankNode::NamedNode(n) => n.iri,
-                };
+            let indv;
 
-                let s = to_prefix_form(&subject, &namespaces);
-                if s.is_empty() {
-                    error!("invalid subject={:?}", subject);
-                }
-                let indv = individuals.entry(s.to_owned()).or_default();
+            let subject = match t.subject {
+                NamedOrBlankNode::BlankNode(n) => n.id,
+                NamedOrBlankNode::NamedNode(n) => n.iri,
+            };
+
+            let s = to_prefix_form(&subject, &namespaces);
+            if s.is_empty() {
+                error!("invalid subject={:?}", subject);
+            }
+
+            indv = individuals.entry(s.to_owned()).or_default();
+
+            if indv.obj.uri.is_empty() {
                 indv.obj.uri = s;
-                is_subject = true;
             }
 
             let predicate = to_prefix_form(t.predicate.iri, &namespaces);
 
             info!("[{:?}]", predicate);
             match t.object {
-                BlankNode(n) => info!("BlankNode {}", n.id),
-                NamedNode(n) => info!("NamedNode {}", n.iri),
+                BlankNode(n) => error!("BlankNode {}", n.id),
+                NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces), 0),
+
                 Literal(l) => match l {
                     Simple {
                         value,
-                    } => info!("val={}", value),
+                    } => indv.obj.add_string(&predicate, value, Lang::NONE, 0),
                     LanguageTaggedString {
                         value,
                         language,
