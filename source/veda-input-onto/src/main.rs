@@ -62,9 +62,13 @@ fn main() -> NotifyResult<()> {
         collect_file_paths(&onto_path, &mut list_candidate_files);
     }
 
+    info!("prepare {} files", list_candidate_files.len ());
+
     if !list_candidate_files.is_empty() {
         processing_files(list_candidate_files);
     }
+
+    info!("watch file changes...");
 
     let (tx, rx) = unbounded();
     let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_secs(2))?;
@@ -223,7 +227,7 @@ fn parse_file(file_path: &str) {
         }
     }
 
-    info!("{}, load {}", file_path, individuals.len());
+    //info!("{}, load {}", file_path, individuals.len());
 
     //for (_, value) in individuals {
     //    info!("ind: {}", value);
