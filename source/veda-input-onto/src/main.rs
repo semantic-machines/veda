@@ -62,7 +62,7 @@ fn main() -> NotifyResult<()> {
         collect_file_paths(&onto_path, &mut list_candidate_files);
     }
 
-    info!("prepare {} files", list_candidate_files.len ());
+    info!("start prepare files");
 
     if !list_candidate_files.is_empty() {
         processing_files(list_candidate_files);
@@ -83,37 +83,24 @@ fn main() -> NotifyResult<()> {
     }
 }
 
-fn collect_file_paths(onto_path: &str, res: &mut Vec<String>) {
-    fn prepare_file(d: &DirEntry, res: &mut Vec<String>) {
-        let path = d.path().as_path().to_owned();
-        if let Some(ext) = path.extension() {
-            if let Some(ext) = ext.to_str() {
-                if ext != "ttl" {
-                    return;
-                }
-            }
-        } else {
-            return;
-        }
-        if let Some(path) = path.to_str() {
-            res.push(path.to_owned());
-        }
-    }
-    visit_dirs(Path::new(&onto_path), res, &prepare_file).unwrap_or_default();
-}
-
 fn processing_files(files: Vec<String>) {
+    let mut file2indv: HashMap<String, HashMap<String, Individual>> = HashMap::new();
+
     for file in files {
-        parse_file(&file);
+        let mut individuals = file2indv.entry(file.to_owned()).or_default();
+        let (onto_id, load_priority) = parse_file(&file, &mut individuals);
+        info!("ontology: {} {} {}", file, onto_id, load_priority);
     }
+    info!("end prepare {} files", file2indv.len());
 }
 
-fn parse_file(file_path: &str) {
-    let mut individuals: HashMap<String, Individual> = HashMap::new();
-
+fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) -> (String, i64) {
     let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
 
     let mut namespaces: HashMap<String, String> = HashMap::new();
+    let mut onto_id = String::default();
+    let mut load_priority = 999;
+
     loop {
         for ns in &parser.namespaces {
             if !namespaces.contains_key(ns.1) {
@@ -123,10 +110,10 @@ fn parse_file(file_path: &str) {
             }
         }
 
+        let mut id = String::default();
+
         let res = parser.parse_step(&mut |t| {
             //info!("namespaces: {:?}", namespaces);
-
-            let indv;
 
             let subject = match t.subject {
                 NamedOrBlankNode::BlankNode(n) => n.id,
@@ -138,9 +125,10 @@ fn parse_file(file_path: &str) {
                 error!("invalid subject={:?}", subject);
             }
 
-            indv = individuals.entry(s.to_owned()).or_default();
+            let indv = individuals.entry(s.to_owned()).or_default();
 
             if indv.obj.uri.is_empty() {
+                id.insert_str(0, &s);
                 indv.obj.uri = s;
             }
 
@@ -222,6 +210,15 @@ fn parse_file(file_path: &str) {
             break;
         }
 
+        let indv = individuals.entry(id).or_default();
+        if indv.any_exists("rdf:type", &["owl:Ontology"]) {
+            if let Ok(v) = indv.get_first_integer("v-s:loadPriority") {
+                load_priority = v;
+            }
+            onto_id.insert_str(0, &indv.obj.uri);
+            //            info!("ontology: {}", indv.obj.uri);
+        }
+
         if parser.is_end() {
             break;
         }
@@ -232,6 +229,7 @@ fn parse_file(file_path: &str) {
     //for (_, value) in individuals {
     //    info!("ind: {}", value);
     //}
+    (onto_id, load_priority)
 }
 
 fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
@@ -294,4 +292,23 @@ fn normalize_datetime_string(d: &str) -> String {
         }
     }
     d.to_owned()
+}
+
+fn collect_file_paths(onto_path: &str, res: &mut Vec<String>) {
+    fn prepare_file(d: &DirEntry, res: &mut Vec<String>) {
+        let path = d.path().as_path().to_owned();
+        if let Some(ext) = path.extension() {
+            if let Some(ext) = ext.to_str() {
+                if ext != "ttl" {
+                    return;
+                }
+            }
+        } else {
+            return;
+        }
+        if let Some(path) = path.to_str() {
+            res.push(path.to_owned());
+        }
+    }
+    visit_dirs(Path::new(&onto_path), res, &prepare_file).unwrap_or_default();
 }
