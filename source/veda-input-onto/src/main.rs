@@ -2,6 +2,7 @@
 extern crate log;
 
 use chrono::Local;
+use chrono::NaiveDateTime;
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
@@ -11,11 +12,13 @@ use rio_api::model::NamedOrBlankNode;
 use rio_api::model::Term::{BlankNode, Literal, NamedNode};
 use rio_api::parser::TriplesParser;
 use rio_turtle::{TurtleError, TurtleParser};
+use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
 use std::path::Path;
+use std::str::FromStr;
 use std::time::Duration;
 use std::{fs, io};
 use v_module::module::*;
@@ -85,6 +88,8 @@ fn collect_file_paths(onto_path: &str, res: &mut Vec<String>) {
                     return;
                 }
             }
+        } else {
+            return;
         }
         if let Some(path) = path.to_str() {
             res.push(path.to_owned());
@@ -137,7 +142,7 @@ fn parse_file(file_path: &str) {
 
             let predicate = to_prefix_form(t.predicate.iri, &namespaces);
 
-            info!("[{:?}]", predicate);
+            //info!("[{:?}]", predicate);
             match t.object {
                 BlankNode(n) => error!("BlankNode {}", n.id),
                 NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces), 0),
@@ -149,11 +154,59 @@ fn parse_file(file_path: &str) {
                     LanguageTaggedString {
                         value,
                         language,
-                    } => info!("val={}, lang={}", value, language),
+                    } => indv.obj.add_string(&predicate, value, Lang::from_str(language), 0),
                     Typed {
                         value,
                         datatype,
-                    } => info!("val={}, type={}", value, datatype),
+                    } => match datatype.iri {
+                        "http://www.w3.org/2001/XMLSchema#string" => {
+                            indv.obj.add_string(&predicate, value, Lang::NONE, 0);
+                        }
+                        "http://www.w3.org/2001/XMLSchema#nonNegativeInteger" => {
+                            if let Ok(v) = value.parse::<i64>() {
+                                indv.obj.add_integer(&predicate, v, 0);
+                            } else {
+                                error!("fail parse [{}] to integer", value);
+                            }
+                        }
+                        "http://www.w3.org/2001/XMLSchema#integer" => {
+                            if let Ok(v) = value.trim().parse::<i64>() {
+                                indv.obj.add_integer(&predicate, v, 0);
+                            } else {
+                                error!("fail parse [{}] to integer", value);
+                            }
+                        }
+                        "http://www.w3.org/2001/XMLSchema#boolean" => {
+                            if let Ok(v) = value.parse::<bool>() {
+                                indv.obj.add_bool(&predicate, v, 0);
+                            } else {
+                                error!("fail parse [{}] to bool", value);
+                            }
+                        }
+                        "http://www.w3.org/2001/XMLSchema#decimal" => {
+                            let qq = Decimal::from_str(value);
+                            if let Ok(v) = qq {
+                                let exp = v.scale() as i32 * -1;
+                                if let Ok(m) = value.replace('.', "").parse::<i64>() {
+                                    indv.obj.add_decimal_d(&predicate, m, exp as i64, 0);
+                                    //                                    info!("{}{}", m, exp);
+                                }
+                            } else {
+                                error!("fail parse [{}] to decimal", value);
+                            }
+                        }
+                        "http://www.w3.org/2001/XMLSchema#dateTime" => {
+                            let vv = normalize_datetime_string(value);
+                            if let Ok(v) = NaiveDateTime::parse_from_str(&vv, "%Y-%m-%dT%H:%M:%S") {
+                                indv.obj.add_datetime(&predicate, v.timestamp(), 0);
+                            } else {
+                                error!("fail parse [{}] to datetime", value);
+                            }
+                        }
+                        _ => {
+                            error!("unknown type {}", datatype.iri);
+                        }
+                    },
                 },
             }
 
@@ -161,7 +214,7 @@ fn parse_file(file_path: &str) {
         });
 
         if let Err(e) = res {
-            error!("fail parse ttl, err={}", e);
+            error!("fail parse {}, err={}", file_path, e);
             break;
         }
 
@@ -170,9 +223,11 @@ fn parse_file(file_path: &str) {
         }
     }
 
-    for (_, value) in individuals {
-        info!("ind: {}", value);
-    }
+    info!("{}, load {}", file_path, individuals.len());
+
+    //for (_, value) in individuals {
+    //    info!("ind: {}", value);
+    //}
 }
 
 fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
@@ -218,4 +273,21 @@ fn visit_dirs(dir: &Path, res: &mut Vec<String>, cb: &dyn Fn(&DirEntry, &mut Vec
         }
     }
     Ok(())
+}
+
+fn normalize_datetime_string(d: &str) -> String {
+    if d.len() == 24 {
+        if let Some(v) = d.get(0..d.len() - 5) {
+            return v.to_owned();
+        }
+    } else if d.len() == 10 {
+        return d.to_owned() + "T00:00:00";
+    } else {
+        if d.ends_with('Z') {
+            if let Some(v) = d.get(0..d.len() - 1) {
+                return v.to_owned();
+            }
+        }
+    }
+    d.to_owned()
 }
