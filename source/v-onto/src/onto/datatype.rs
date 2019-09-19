@@ -19,3 +19,13 @@ pub enum Lang {
     /// Английский
     EN = 2,
 }
+
+impl Lang {
+    pub fn from_str(l: &str) -> Lang {
+        match l {
+            "ru" => Lang::RU,
+            "en" => Lang::EN,
+            _ => Lang::NONE,
+        }
+    }
+}
