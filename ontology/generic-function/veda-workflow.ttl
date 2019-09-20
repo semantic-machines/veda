@@ -1989,16 +1989,25 @@ v-wf:instanceOf
 v-wf:inVars
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Входящие переменные"@ru ;
+  rdfs:label "Входные переменные"@ru ;
+  rdfs:label "Input variables"@en ;
   rdfs:domain v-wf:Process ;
   rdfs:domain v-wf:WorkItem ;
   rdfs:range v-wf:Variable ;
 .
-
+v-wf:hasStartForm
+  rdf:type rdf:Property ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Стартовая форма"@ru ;
+  rdfs:label "Start form"@en ;
+  rdfs:domain v-wf:Process ;
+  rdfs:range rdfs:Resource ;
+.
 v-wf:localVars
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
   rdfs:label "Локальные переменные"@ru ;
+  rdfs:label "Local variables"@en ;
   rdfs:domain v-wf:Process ;
   rdfs:domain v-wf:WorkItem ;
   rdfs:range v-wf:Variable ;
@@ -2007,7 +2016,8 @@ v-wf:localVars
 v-wf:outVars
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Исходящие переменные"@ru ;
+  rdfs:label "Выходные переменные"@ru ;
+  rdfs:label "Output variables"@en ;
   rdfs:domain v-wf:Process ;
   rdfs:domain v-wf:WorkItem ;
   rdfs:domain v-wf:WorkOrder ;
@@ -2017,7 +2027,8 @@ v-wf:outVars
 v-wf:parentWorkOrder
   rdf:type rdf:Property ;
   rdfs:isDefinedBy v-wf: ;
-  rdfs:label "Относится к рабочему заданию"@ru ;
+  rdfs:label "Связанное рабочее задание"@ru ;
+  rdfs:label "Related work order"@en ;
   rdfs:domain v-wf:Process ;
   rdfs:range v-wf:WorkOrder ;
 .
