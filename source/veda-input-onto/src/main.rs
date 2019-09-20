@@ -6,6 +6,7 @@ use chrono::NaiveDateTime;
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
+use md5::{Digest, Md5};
 use notify::{RecommendedWatcher, RecursiveMode, Result as NotifyResult, Watcher};
 use rio_api::model::Literal::{LanguageTaggedString, Simple, Typed};
 use rio_api::model::NamedOrBlankNode;
@@ -17,7 +18,7 @@ use std::collections::HashMap;
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::time::Duration;
 use std::{fs, io};
@@ -49,7 +50,7 @@ fn main() -> NotifyResult<()> {
         return Ok(());
     }
 
-    let mut list_candidate_files: Vec<String> = Vec::new();
+    let mut list_candidate_files: Vec<PathBuf> = Vec::new();
 
     let onto_path = "ontology".to_owned();
 
@@ -65,7 +66,7 @@ fn main() -> NotifyResult<()> {
     info!("start prepare files");
 
     if !list_candidate_files.is_empty() {
-        processing_files(list_candidate_files);
+        processing_files(list_candidate_files, &mut module);
     }
 
     info!("watch file changes...");
@@ -83,14 +84,74 @@ fn main() -> NotifyResult<()> {
     }
 }
 
-fn processing_files(files: Vec<String>) {
-    let mut file2indv: HashMap<String, HashMap<String, Individual>> = HashMap::new();
+fn get_hash_of_file(file_path: &str) -> io::Result<String> {
+    let mut rfile = File::open(&file_path)?;
+    let mut hasher = Md5::new();
+    io::copy(&mut rfile, &mut hasher)?;
+    Ok(hex::encode(hasher.result()).to_uppercase())
+}
 
-    for file in files {
-        let mut individuals = file2indv.entry(file.to_owned()).or_default();
-        let (onto_id, load_priority) = parse_file(&file, &mut individuals);
-        info!("ontology: {} {} {}", file, onto_id, load_priority);
+fn extract_path_and_name(path: &PathBuf) -> Option<(&str, &str)> {
+    let sfp;
+    if let Some(s) = path.to_str() {
+        sfp = s;
+    } else {
+        return None;
     }
+
+    if let Some(s) = path.file_name() {
+        if let Some(ss) = s.to_str() {
+            return Some((sfp, ss));
+        }
+    }
+
+    None
+}
+
+fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module) {
+    let mut file2indv: HashMap<String, HashMap<String, Individual>> = HashMap::new();
+    let mut priority_list: Vec<(i64, String, String)> = Vec::new();
+
+    for file_path in file_paths {
+        let path;
+        let name;
+        if let Some(w) = extract_path_and_name(&file_path) {
+            path = w.0;
+            name = w.1;
+        } else {
+            continue;
+        }
+
+        let mut file_need_for_load = true;
+        let new_hash = get_hash_of_file(path);
+
+        match new_hash {
+            Err(e) => {
+                error!("fail calculate HASH of file {}, err={}", &path, e);
+            }
+            Ok(new_h) => {
+                let mut indv: Individual = Individual::default();
+                if module.storage.get_individual(&("d:".to_string() + &name), &mut indv) {
+                    if let Ok(old_h) = indv.get_first_literal("v-s:hash") {
+                        if old_h == new_h {
+                            file_need_for_load = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        if file_need_for_load {
+            let mut individuals = file2indv.entry(path.to_owned()).or_default();
+            let (onto_id, load_priority) = parse_file(path, &mut individuals);
+            //        info!("ontology: {} {} {}", &file, onto_id, load_priority);
+            priority_list.push((load_priority, onto_id, path.to_owned()));
+        }
+    }
+
+    priority_list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    //info!("priority_list: {:?}", priority_list);
+
     info!("end prepare {} files", file2indv.len());
 }
 
@@ -262,21 +323,6 @@ fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
     res
 }
 
-fn visit_dirs(dir: &Path, res: &mut Vec<String>, cb: &dyn Fn(&DirEntry, &mut Vec<String>)) -> io::Result<()> {
-    if dir.is_dir() {
-        for entry in fs::read_dir(dir)? {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_dir() {
-                visit_dirs(&path, res, cb)?;
-            } else {
-                cb(&entry, res);
-            }
-        }
-    }
-    Ok(())
-}
-
 fn normalize_datetime_string(d: &str) -> String {
     if d.len() == 24 {
         if let Some(v) = d.get(0..d.len() - 5) {
@@ -294,8 +340,8 @@ fn normalize_datetime_string(d: &str) -> String {
     d.to_owned()
 }
 
-fn collect_file_paths(onto_path: &str, res: &mut Vec<String>) {
-    fn prepare_file(d: &DirEntry, res: &mut Vec<String>) {
+fn collect_file_paths(onto_path: &str, res: &mut Vec<PathBuf>) {
+    fn prepare_file(d: &DirEntry, res: &mut Vec<PathBuf>) {
         let path = d.path().as_path().to_owned();
         if let Some(ext) = path.extension() {
             if let Some(ext) = ext.to_str() {
@@ -306,9 +352,22 @@ fn collect_file_paths(onto_path: &str, res: &mut Vec<String>) {
         } else {
             return;
         }
-        if let Some(path) = path.to_str() {
-            res.push(path.to_owned());
-        }
+        res.push(path);
     }
     visit_dirs(Path::new(&onto_path), res, &prepare_file).unwrap_or_default();
+}
+
+fn visit_dirs(dir: &Path, res: &mut Vec<PathBuf>, cb: &dyn Fn(&DirEntry, &mut Vec<PathBuf>)) -> io::Result<()> {
+    if dir.is_dir() {
+        for entry in fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                visit_dirs(&path, res, cb)?;
+            } else {
+                cb(&entry, res);
+            }
+        }
+    }
+    Ok(())
 }
