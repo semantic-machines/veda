@@ -1,11 +1,12 @@
 #[macro_use]
 extern crate log;
 
-use chrono::{Local, NaiveDateTime};
+use chrono::prelude::*;
+//use chrono::{Local, NaiveDateTime};
 use env_logger::Builder;
 use log::LevelFilter;
 use std::io::Write;
-use std::{thread, time};
+use std::{thread, time as std_time};
 use v_api::*;
 use v_module::module::*;
 use v_onto::{individual::*, parser::*};
@@ -13,7 +14,9 @@ use v_queue::{consumer::*, record::*};
 //use v_search::FTQuery;
 use futures::Future;
 use futures_state_stream::StateStream;
+use std::ops::Sub;
 use tiberius::SqlConnection;
+use time::Duration;
 use tokio::runtime::current_thread;
 use v_onto::datatype::Lang;
 
@@ -54,7 +57,7 @@ fn main() -> std::io::Result<()> {
             if conn_str_w.is_err() {
                 error!("fail read connection info: err={:?}", conn_str_w.err());
                 error!("sleep and repeate...");
-                thread::sleep(time::Duration::from_millis(10000));
+                thread::sleep(std_time::Duration::from_millis(10000));
                 continue;
             }
             conn_str = conn_str_w.unwrap();
@@ -109,7 +112,7 @@ fn main() -> std::io::Result<()> {
                 error!("fail prepare queue element, err={:?}", e);
                 if e == ResultCode::ConnectError {
                     error!("sleep and repeate...");
-                    thread::sleep(time::Duration::from_millis(10000));
+                    thread::sleep(std_time::Duration::from_millis(10000));
                     conn_str.clear();
                     continue;
                 }
@@ -124,13 +127,13 @@ fn main() -> std::io::Result<()> {
             }
         }
 
-        thread::sleep(time::Duration::from_millis(3000));
+        thread::sleep(std_time::Duration::from_millis(3000));
     }
 }
-
+const WINPAK_TIMEZONE: i64 = 3;
 const CARD_NUMBER_FIELD_NAME: &str = "mnd-s:cardNumber";
 const CARD_DATA_QUERY: &str = "\
-SELECT [t1].[ActivationDate], [t1].[ExpirationDate],
+SELECT [t1].[ActivationDate], [t1].[ExpirationDate], [t1].[RecordID],
 concat([t2].[LastName],' ',[t2].[FirstName],' ',[t2].[Note1]) as Description,
 [t2].[Note2] as TabNumber,
 [t2].[Note17] as Birthday,
@@ -139,11 +142,15 @@ CASE WHEN [t2].[Note6]='0' THEN null ELSE [t2].[Note6]+' ' END,
 CASE WHEN [t2].[Note7]='0' THEN null ELSE [t2].[Note7]+' ' END,
 CASE WHEN [t2].[Note8]='0' THEN null ELSE [t2].[Note8] END) as Comment,
 concat( CASE WHEN LTRIM([t2].[Note27])='' THEN null ELSE LTRIM([t2].[Note27]+CHAR(13)+CHAR(10)) END,
-CASE WHEN LTRIM([t2].[Note28])='' THEN null ELSE LTRIM([t2].[Note28]+CHAR(13)+CHAR(10)) END,
-CASE WHEN LTRIM([t2].[Note29])='' THEN null ELSE LTRIM([t2].[Note29]+CHAR(13)+CHAR(10)) END,
-CASE WHEN LTRIM([t2].[Note30])='' THEN null ELSE LTRIM([t2].[Note30]+CHAR(13)+CHAR(10)) END,
-CASE WHEN LTRIM([t2].[Note33])='' THEN null ELSE LTRIM([t2].[Note33]+CHAR(13)+CHAR(10)) END,
-CASE WHEN LTRIM([t2].[Note34])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END) as Equipment
+  CASE WHEN LTRIM([t2].[Note28])='' THEN null ELSE LTRIM([t2].[Note28]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note29])='' THEN null ELSE LTRIM([t2].[Note29]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note30])='' THEN null ELSE LTRIM([t2].[Note30]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note33])='' THEN null ELSE LTRIM([t2].[Note33]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note34])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note37])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note38])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note39])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
+  CASE WHEN LTRIM([t2].[Note40])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END) as Equipment
 FROM [WIN-PAK PRO].[dbo].[Card] t1
 JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
 WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0 ";
@@ -162,7 +169,7 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str,
     }
     let param1 = card_number.unwrap_or_default();
 
-    let mut card_data = (false, 0i64, 0i64, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
+    let mut card_data = (false, 0i64, 0i64, 0i32, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
     let mut access_levels = Vec::new();
 
     let future = SqlConnection::connect(conn_str)
@@ -170,13 +177,14 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str,
             conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
                 card_data = (
                     true,
-                    row.get::<_, NaiveDateTime>(0).timestamp(),
-                    row.get::<_, NaiveDateTime>(1).timestamp(),
-                    row.get::<_, &str>(2).to_owned(),
+                    row.get::<_, NaiveDateTime>(0).sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(),
+                    row.get::<_, NaiveDateTime>(1).sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(),
+                    row.get::<_, i32>(2).to_owned(),
                     row.get::<_, &str>(3).to_owned(),
                     row.get::<_, &str>(4).to_owned(),
                     row.get::<_, &str>(5).to_owned(),
                     row.get::<_, &str>(6).to_owned(),
+                    row.get::<_, &str>(7).to_owned(),
                 );
                 Ok(())
             })
@@ -204,13 +212,15 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str,
     if card_data.0 {
         info!("card_data={:?}", card_data);
 
+        indv.obj.clear("v-s:errorMessage");
         indv.obj.set_datetime("v-s:dateFrom", card_data.1);
         indv.obj.set_datetime("v-s:dateTo", card_data.2);
-        indv.obj.set_string("v-s:description", card_data.3.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:tabNumber", card_data.4.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:birthday", card_data.5.as_str(), Lang::NONE);
-        indv.obj.set_string("rdfs:comment", card_data.6.as_str(), Lang::NONE);
-        indv.obj.set_string("mnd-s:passEquipment", card_data.7.as_str(), Lang::NONE);
+        indv.obj.set_integer("mnd-s:winpakCardRecordId", card_data.3.into());
+        indv.obj.set_string("v-s:description", card_data.4.as_str(), Lang::NONE);
+        indv.obj.set_string("v-s:tabNumber", card_data.5.as_str(), Lang::NONE);
+        indv.obj.set_string("v-s:birthday", card_data.6.as_str(), Lang::NONE);
+        indv.obj.set_string("rdfs:comment", card_data.7.as_str(), Lang::NONE);
+        indv.obj.set_string("mnd-s:passEquipment", card_data.8.as_str(), Lang::NONE);
 
         let mut access_level_uris = Vec::new();
         for level in access_levels {
@@ -226,11 +236,22 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str,
         indv.obj.set_uris("mnd-s:hasAccessLevel", access_level_uris);
     } else {
         error!("card [{}] not found in winpak database", param1);
+
+        indv.obj.clear("v-s:dateFrom");
+        indv.obj.clear("v-s:dateTo");
+        indv.obj.clear("mnd-s:winpakCardRecordId");
+        indv.obj.clear("v-s:description");
+        indv.obj.clear("v-s:tabNumber");
+        indv.obj.clear("v-s:birthday");
+        indv.obj.clear("rdfs:comment");
+        indv.obj.clear("mnd-s:passEquipment");
+        indv.obj.clear("mnd-s:hasAccessLevel");
+
         indv.obj.clear("v-s:errorMessage");
         indv.obj.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU, 0);
         indv.obj.add_string("v-s:errorMessage", "Card not found", Lang::EN, 1);
     }
-    indv.obj.set_uri("v-s:editor", "cfg:VedaSystem");
+    indv.obj.set_uri("v-s:lastEditor", "cfg:VedaSystem");
 
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {
@@ -266,7 +287,7 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
                 for itype in types {
                     if itype == "mnd-s:SourceDataRequestForPass" {
                         //v-s:creator", "cfg:VedaSystem"
-                        if let Ok(v) = new_state_indv.get_first_literal("v-s:editor") {
+                        if let Ok(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
                             if v == "cfg:VedaSystem" {
                                 return Ok(());
                             }
