@@ -123,28 +123,32 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module) {
         }
 
         let mut file_need_for_load = true;
-        let new_hash = get_hash_of_file(path);
+        let mut file_info_indv: Individual = Individual::default();
+        let new_id = "d:".to_string() + &name;
 
-        match new_hash {
-            Err(e) => {
-                error!("fail calculate HASH of file {}, err={}", &path, e);
-            }
+        let new_hash = match get_hash_of_file(path) {
             Ok(new_h) => {
-                let mut indv: Individual = Individual::default();
-                if module.storage.get_individual(&("d:".to_string() + &name), &mut indv) {
-                    if let Ok(old_h) = indv.get_first_literal("v-s:hash") {
+                if module.storage.get_individual(&new_id, &mut file_info_indv) {
+                    if let Ok(old_h) = file_info_indv.get_first_literal("v-s:hash") {
                         if old_h == new_h {
                             file_need_for_load = false;
                         }
                     }
                 }
+                Some(new_h)
             }
-        }
+            Err(e) => {
+                error!("fail calculate HASH of file {}, err={}", &path, e);
+                None
+            }
+        };
+        file_info_indv.obj.uri = new_id;
 
         if file_need_for_load {
             let mut individuals = file2indv.entry(path.to_owned()).or_default();
             let (onto_id, load_priority) = parse_file(path, &mut individuals);
             //        info!("ontology: {} {} {}", &file, onto_id, load_priority);
+            full_file_info_indv(&onto_id, individuals, &mut file_info_indv, new_hash, path, name);
             priority_list.push((load_priority, onto_id, path.to_owned()));
         }
     }
@@ -155,18 +159,37 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module) {
     info!("end prepare {} files", file2indv.len());
 }
 
+fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individual>, new_indv: &mut Individual, hash: Option<String>, path: &str, name: &str) {
+    if let Some(h) = hash {
+        new_indv.obj.set_string("v-s:hash", &h, Lang::NONE);
+    }
+    new_indv.obj.set_uri("rdf:type", "v-s:TTLFile");
+    //    new_indv.obj.set_uri("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
+    new_indv.obj.set_uri("v-s:filePath", path);
+    new_indv.obj.set_uri("v-s:fileUri", name);
+    new_indv.obj.clear("v-s:resource");
+
+    for indv in individuals.values_mut() {
+        new_indv.obj.add_uri("v-s:resource", &indv.obj.uri, 0);
+        indv.obj.set_uri("rdfs:isDefinedBy", onto_id);
+    }
+}
+
 fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) -> (String, i64) {
     let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
 
-    let mut namespaces: HashMap<String, String> = HashMap::new();
+    let mut namespaces2id: HashMap<String, String> = HashMap::new();
+    let mut id2namespaces: HashMap<String, String> = HashMap::new();
+
     let mut onto_id = String::default();
     let mut load_priority = 999;
 
     loop {
         for ns in &parser.namespaces {
-            if !namespaces.contains_key(ns.1) {
+            if !namespaces2id.contains_key(ns.1) {
                 if let Some(s) = ns.1.get(0..ns.1.len() - 1) {
-                    namespaces.insert(s.to_owned(), ns.0.clone());
+                    namespaces2id.insert(s.to_owned(), ns.0.clone());
+                    id2namespaces.insert(ns.0.clone(), s.to_owned());
                 }
             }
         }
@@ -181,7 +204,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                 NamedOrBlankNode::NamedNode(n) => n.iri,
             };
 
-            let s = to_prefix_form(&subject, &namespaces);
+            let s = to_prefix_form(&subject, &namespaces2id);
             if s.is_empty() {
                 error!("invalid subject={:?}", subject);
             }
@@ -193,12 +216,12 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                 indv.obj.uri = s;
             }
 
-            let predicate = to_prefix_form(t.predicate.iri, &namespaces);
+            let predicate = to_prefix_form(t.predicate.iri, &namespaces2id);
 
             //info!("[{:?}]", predicate);
             match t.object {
                 BlankNode(n) => error!("BlankNode {}", n.id),
-                NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces), 0),
+                NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces2id), 0),
 
                 Literal(l) => match l {
                     Simple {
@@ -276,6 +299,11 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
             if let Ok(v) = indv.get_first_integer("v-s:loadPriority") {
                 load_priority = v;
             }
+
+            if let Some(s) = id2namespaces.get(&indv.obj.uri) {
+                indv.obj.set_uri("v-s:fullUrl", s);
+            }
+
             onto_id.insert_str(0, &indv.obj.uri);
             //            info!("ontology: {}", indv.obj.uri);
         }
@@ -293,10 +321,10 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     (onto_id, load_priority)
 }
 
-fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
+fn to_prefix_form(iri: &str, namespaces2id: &HashMap<String, String>) -> String {
     let mut res = String::default();
 
-    if let Some(s) = namespaces.get(iri) {
+    if let Some(s) = namespaces2id.get(iri) {
         res.push_str(s);
         res.push(':');
         return res;
@@ -309,7 +337,7 @@ fn to_prefix_form(iri: &str, namespaces: &HashMap<String, String>) -> String {
     };
 
     if let Some(s) = iri.get(0..pos) {
-        if let Some(s) = namespaces.get(s) {
+        if let Some(s) = namespaces2id.get(s) {
             res.push_str(s);
             res.push(':');
             if let Some(s) = iri.get(pos + 1..) {
