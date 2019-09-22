@@ -162,7 +162,8 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
             for indv_file in indvs.values() {
                 let mut indv_db = Individual::default();
                 if module.storage.get_individual(&indv_file.obj.uri, &mut indv_db) {
-                    if !indv_db.obj.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion"]) {
+                    indv_db.parse_all();
+                    if !indv_db.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion", "v-s:fullUrl"]) {
                         let res = module.api.update(systicket, IndvOp::Put, &indv_file);
 
                         if res.result != ResultCode::Ok {
@@ -190,7 +191,7 @@ fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individu
     new_indv.obj.clear("v-s:resource");
 
     for indv in individuals.values_mut() {
-        new_indv.obj.add_uri("v-s:resource", &indv.obj.uri, 0);
+        new_indv.obj.add_uri("v-s:resource", &indv.obj.uri);
         indv.obj.set_uri("rdfs:isDefinedBy", onto_id);
     }
 }
@@ -215,7 +216,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
         }
 
         let mut id = String::default();
-
+        let mut idx = 0;
         let res = parser.parse_step(&mut |t| {
             //info!("namespaces: {:?}", namespaces);
 
@@ -241,40 +242,40 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
             //info!("[{:?}]", predicate);
             match t.object {
                 BlankNode(n) => error!("BlankNode {}", n.id),
-                NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces2id), 0),
+                NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces2id)),
 
                 Literal(l) => match l {
                     Simple {
                         value,
-                    } => indv.obj.add_string(&predicate, value, Lang::NONE, 0),
+                    } => indv.obj.add_string(&predicate, value, Lang::NONE),
                     LanguageTaggedString {
                         value,
                         language,
-                    } => indv.obj.add_string(&predicate, value, Lang::from_str(language), 0),
+                    } => indv.obj.add_string(&predicate, value, Lang::from_str(language)),
                     Typed {
                         value,
                         datatype,
                     } => match datatype.iri {
                         "http://www.w3.org/2001/XMLSchema#string" => {
-                            indv.obj.add_string(&predicate, value, Lang::NONE, 0);
+                            indv.obj.add_string(&predicate, value, Lang::NONE);
                         }
                         "http://www.w3.org/2001/XMLSchema#nonNegativeInteger" => {
                             if let Ok(v) = value.parse::<i64>() {
-                                indv.obj.add_integer(&predicate, v, 0);
+                                indv.obj.add_integer(&predicate, v);
                             } else {
                                 error!("fail parse [{}] to integer", value);
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#integer" => {
                             if let Ok(v) = value.trim().parse::<i64>() {
-                                indv.obj.add_integer(&predicate, v, 0);
+                                indv.obj.add_integer(&predicate, v);
                             } else {
                                 error!("fail parse [{}] to integer", value);
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#boolean" => {
                             if let Ok(v) = value.parse::<bool>() {
-                                indv.obj.add_bool(&predicate, v, 0);
+                                indv.obj.add_bool(&predicate, v);
                             } else {
                                 error!("fail parse [{}] to bool", value);
                             }
@@ -284,7 +285,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                             if let Ok(v) = qq {
                                 let exp = v.scale() as i32 * -1;
                                 if let Ok(m) = value.replace('.', "").parse::<i64>() {
-                                    indv.obj.add_decimal_d(&predicate, m, exp as i64, 0);
+                                    indv.obj.add_decimal_d(&predicate, m, exp as i64);
                                     //                                    info!("{}{}", m, exp);
                                 }
                             } else {
@@ -294,7 +295,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                         "http://www.w3.org/2001/XMLSchema#dateTime" => {
                             let vv = normalize_datetime_string(value);
                             if let Ok(v) = NaiveDateTime::parse_from_str(&vv, "%Y-%m-%dT%H:%M:%S") {
-                                indv.obj.add_datetime(&predicate, v.timestamp(), 0);
+                                indv.obj.add_datetime(&predicate, v.timestamp());
                             } else {
                                 error!("fail parse [{}] to datetime", value);
                             }
@@ -306,6 +307,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                 },
             }
 
+            idx += 1;
             Ok(()) as Result<(), TurtleError>
         });
 
