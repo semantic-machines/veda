@@ -317,6 +317,29 @@ impl Individual {
         }
         res
     }
+
+    pub fn compare(&self, b: &Individual, ignore_predicates: Vec<&str>) -> bool {
+        if self.obj.uri != b.obj.uri {
+            return false;
+        }
+
+        let keys = self.obj.resources.keys();
+
+        for predicate in keys {
+            if ignore_predicates.contains(&predicate.as_str()) {
+                continue;
+            }
+
+            let a_values = self.obj.resources.get(predicate.as_str());
+            let b_values = b.obj.resources.get(predicate.as_str());
+
+            if a_values != b_values {
+                return false;
+            }
+        }
+
+        true
+    }
 }
 
 impl fmt::Display for Individual {
@@ -339,12 +362,8 @@ impl IndividualObj {
     //        self.resources.iter().map(|(key, _)| key.clone()).collect()
     //    }
 
-    //pub fn remove(&mut self, predicate: &str) -> bool {
-    //    unimplemented!();
-    //}
-
-    pub fn compare(&mut self, b: &Individual, ignore_predicates: Vec<&str>) -> bool {
-        unimplemented!();
+    pub fn remove(&mut self, predicate: &str) -> bool {
+        self.resources.remove(predicate).is_some()
     }
 
     pub fn clear(&mut self, predicate: &str) {
@@ -352,11 +371,11 @@ impl IndividualObj {
         values.clear();
     }
 
-    pub fn add_bool(&mut self, predicate: &str, b: bool, order: u32) {
+    pub fn add_bool(&mut self, predicate: &str, b: bool) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Boolean,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Bool(b),
         });
     }
@@ -371,11 +390,11 @@ impl IndividualObj {
         });
     }
 
-    pub fn add_datetime(&mut self, predicate: &str, i: i64, order: u32) {
+    pub fn add_datetime(&mut self, predicate: &str, i: i64) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Datetime,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Int(i),
         });
     }
@@ -390,11 +409,11 @@ impl IndividualObj {
         });
     }
 
-    pub fn add_binary(&mut self, predicate: &str, v: Vec<u8>, order: u32) {
+    pub fn add_binary(&mut self, predicate: &str, v: Vec<u8>) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Binary,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Binary(v),
         });
     }
@@ -409,11 +428,11 @@ impl IndividualObj {
         });
     }
 
-    pub fn add_integer(&mut self, predicate: &str, i: i64, order: u32) {
+    pub fn add_integer(&mut self, predicate: &str, i: i64) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Integer,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Int(i),
         });
     }
@@ -428,11 +447,11 @@ impl IndividualObj {
         });
     }
 
-    pub fn add_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64, order: u32) {
+    pub fn add_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Decimal,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Num(mantissa, exponent),
         });
     }
@@ -447,11 +466,11 @@ impl IndividualObj {
         });
     }
 
-    pub fn add_uri(&mut self, predicate: &str, s: &str, order: u32) {
+    pub fn add_uri(&mut self, predicate: &str, s: &str) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::Uri,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Str(s.to_owned(), Lang::NONE),
         });
     }
@@ -478,11 +497,11 @@ impl IndividualObj {
         }
     }
 
-    pub fn add_string(&mut self, predicate: &str, s: &str, lang: Lang, order: u32) {
+    pub fn add_string(&mut self, predicate: &str, s: &str, lang: Lang) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
             rtype: DataType::String,
-            order: order as u16,
+            order: values.len() as u16,
             value: Value::Str(s.to_owned(), lang),
         });
     }

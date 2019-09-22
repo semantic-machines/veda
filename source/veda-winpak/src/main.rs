@@ -248,8 +248,8 @@ fn update_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str,
         indv.obj.clear("mnd-s:hasAccessLevel");
 
         indv.obj.clear("v-s:errorMessage");
-        indv.obj.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU, 0);
-        indv.obj.add_string("v-s:errorMessage", "Card not found", Lang::EN, 1);
+        indv.obj.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU);
+        indv.obj.add_string("v-s:errorMessage", "Card not found", Lang::EN);
     }
     indv.obj.set_uri("v-s:lastEditor", "cfg:VedaSystem");
 
