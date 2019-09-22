@@ -330,10 +330,11 @@ impl Individual {
                 continue;
             }
 
-            let a_values = self.obj.resources.get(predicate.as_str());
-            let b_values = b.obj.resources.get(predicate.as_str());
+            let a_value = self.obj.resources.get(predicate.as_str());
+            let b_value = b.obj.resources.get(predicate.as_str());
 
-            if a_values != b_values {
+            if a_value != b_value {
+                info!("A != B, predicate={}, A={:?}, B={:?}", predicate, a_value, b_value);
                 return false;
             }
         }
