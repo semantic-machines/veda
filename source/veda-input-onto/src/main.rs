@@ -22,6 +22,7 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::time::Duration;
 use std::{fs, io};
+use v_api::*;
 use v_module::module::*;
 use v_module::onto::*;
 use v_onto::datatype::Lang;
@@ -66,7 +67,7 @@ fn main() -> NotifyResult<()> {
     info!("start prepare files");
 
     if !list_candidate_files.is_empty() {
-        processing_files(list_candidate_files, &mut module);
+        processing_files(list_candidate_files, &mut module, &systicket);
     }
 
     info!("watch file changes...");
@@ -108,7 +109,7 @@ fn extract_path_and_name(path: &PathBuf) -> Option<(&str, &str)> {
     None
 }
 
-fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module) {
+fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &str) {
     let mut file2indv: HashMap<String, HashMap<String, Individual>> = HashMap::new();
     let mut priority_list: Vec<(i64, String, String)> = Vec::new();
 
@@ -155,6 +156,25 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module) {
 
     priority_list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
     //info!("priority_list: {:?}", priority_list);
+
+    for (_load_priority, _onto_id, path) in priority_list {
+        if let Some(indvs) = file2indv.get(&path) {
+            for indv_file in indvs.values() {
+                let mut indv_db = Individual::default();
+                if module.storage.get_individual(&indv_file.obj.uri, &mut indv_db) {
+                    if !indv_db.obj.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion"]) {
+                        let res = module.api.update(systicket, IndvOp::Put, &indv_file);
+
+                        if res.result != ResultCode::Ok {
+                            error!("fail update, uri={}, result_code={:?}", indv_file.obj.uri, res.result);
+                        } else {
+                            info!("success update, uri={}", indv_file.obj.uri);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     info!("end prepare {} files", file2indv.len());
 }

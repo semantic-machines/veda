@@ -339,6 +339,14 @@ impl IndividualObj {
     //        self.resources.iter().map(|(key, _)| key.clone()).collect()
     //    }
 
+    //pub fn remove(&mut self, predicate: &str) -> bool {
+    //    unimplemented!();
+    //}
+
+    pub fn compare(&mut self, b: &Individual, ignore_predicates: Vec<&str>) -> bool {
+        unimplemented!();
+    }
+
     pub fn clear(&mut self, predicate: &str) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.clear();
