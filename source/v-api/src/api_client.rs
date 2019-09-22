@@ -254,7 +254,7 @@ impl APIClient {
         self.is_ready
     }
 
-    pub fn update(&mut self, ticket: &str, cmd: IndvOp, indv: &mut Individual) -> OpResult {
+    pub fn update(&mut self, ticket: &str, cmd: IndvOp, indv: &Individual) -> OpResult {
         if !self.is_ready {
             self.connect();
         }

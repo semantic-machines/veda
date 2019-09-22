@@ -190,7 +190,7 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
                 let mut raw1: Vec<u8> = Vec::new();
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
                     info!("send {} to {}", uri, node_addr);
-                    let req = Message::from(raw1.as_ref());
+                    let req = Message::from(raw1.as_slice());
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
                         return Err(ExImCode::TransmitFailed);

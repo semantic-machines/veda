@@ -54,7 +54,7 @@ fn main() -> std::io::Result<()> {
             //""
             } else {
                 let res = processing_message_contains_changes(msg, &systicket, &mut module);
-                if let Err(e) = server.send(Message::from(enc_slave_resp(&res.0, res.1).as_ref())) {
+                if let Err(e) = server.send(Message::from(enc_slave_resp(&res.0, res.1).as_bytes())) {
                     error!("fail send {:?}", e);
                 }
             }
