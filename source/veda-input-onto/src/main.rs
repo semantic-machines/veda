@@ -147,8 +147,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
         };
         file_info_indv.obj.uri = new_id;
 
-        if file_need_for_load
-        {
+        if file_need_for_load {
             let mut individuals = file2indv.entry(path.to_owned()).or_default();
             let (onto_id, _onto_url, load_priority) = parse_file(path, &mut individuals);
             //        info!("ontology: {} {} {}", &file, onto_id, load_priority);
@@ -218,8 +217,8 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     let mut load_priority = 999;
 
     let dt: DateTime<Local> = Local::now();
-    //    let timezone = Duration::seconds((dt.offset().local_minus_utc() + 3600) as i64);
-    let timezone = Duration::seconds((dt.offset().local_minus_utc()) as i64);
+    let timezone = Duration::seconds((dt.offset().local_minus_utc() + 3600) as i64);
+    //let timezone = Duration::seconds((dt.offset().local_minus_utc()) as i64);
 
     loop {
         for ns in &parser.namespaces {
@@ -309,19 +308,16 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#dateTime" => {
-                            let vv;
-
                             if value.contains('Z') {
-                                vv = value.to_owned();
-                                if let Ok(v) = DateTime::parse_from_rfc3339(&vv) {
+                                if let Ok(v) = DateTime::parse_from_rfc3339(&value) {
                                     indv.obj.add_datetime(&predicate, v.timestamp());
                                 } else {
                                     error!("fail parse [{}] to datetime", value);
                                 }
                             } else {
-                                vv = normalize_datetime_string(value);
-                                if let Ok(v) = NaiveDateTime::parse_from_str(&vv, "%Y-%m-%dT%H:%M:%S") {
+                                if let Ok(v) = NaiveDateTime::parse_from_str(&normalize_datetime_string(value), "%Y-%m-%dT%H:%M:%S") {
                                     indv.obj.add_datetime(&predicate, v.sub(timezone).timestamp());
+                                //                                    indv.obj.add_datetime(&predicate, v.timestamp());
                                 } else {
                                     error!("fail parse [{}] to datetime", value);
                                 }
