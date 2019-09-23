@@ -193,7 +193,7 @@ v-s:PersonalAspectTemplate
   <div class="row" style="display: flex; flex-flow: row wrap;">
     <div class="blanks col-md-4 col-sm-6 col-xs-12" style="display: flex;">
       <div class="sheet" style="width:100%;">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:Create" property="rdfs:label"></span></h4>
+        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-file-text-o text-muted margin-md-h"></i><span about="v-s:CreateBundle" property="rdfs:label"></span></h4>
         <div rel="v-s:hasBlank">
           <a href="#/@" class="btn btn-success btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
         </div>
