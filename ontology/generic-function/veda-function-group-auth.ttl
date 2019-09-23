@@ -484,7 +484,7 @@ v-s:AllUsersGroup_GroupGenerator_BaseUser_membership
 v-s:GroupsGeneratorsAreActual
   rdf:type rdfs:Resource ;
   rdfs:label "Признак актуальности генераторов групп" ;
-  rdf:value false ;
+  rdf:value "false"^^xsd:boolean ;
 .
 
 v-s:Event_GroupGenerator
