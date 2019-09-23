@@ -293,7 +293,7 @@ veda.Module(function (veda) { "use strict";
               .map( function (value) {
                 var q = value.data;
                 if ( !q.match(/[\+\-\*]/) ) {
-                  var lines = q.split("\n");
+                  var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
                     var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
                     line = words.map(function (word) { return "+" + word + "*"; });
