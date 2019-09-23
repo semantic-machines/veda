@@ -334,7 +334,7 @@ impl Individual {
             let b_value = b.obj.resources.get(predicate.as_str());
 
             if a_value != b_value {
-                info!("A != B, predicate={}, A={:?}, B={:?}", predicate, a_value, b_value);
+                info!("A != B, uri={}, predicate={}, A={:?}, B={:?}", self.obj.uri, predicate, a_value, b_value);
                 return false;
             }
         }
