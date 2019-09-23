@@ -564,8 +564,8 @@ v-s:LetterRegistrationRecordTemplate
     <div class="row">
       <div class="col-sm-6">
         <em about="v-s:registrationNumber" property="rdfs:label"></em>
-        <div property="v-s:registrationNumber" class="view -edit search"></div>
-        <veda-control property="v-s:registrationNumber" data-type="string" class="-view edit search"></veda-control>
+        <div property="v-s:registrationNumber" class="view -edit -search"></div>
+        <veda-control property="v-s:registrationNumber" data-type="text" class="-view edit search"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:registrationDate" property="rdfs:label"></em>

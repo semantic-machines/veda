@@ -31,7 +31,7 @@ v-s:ContractorTemplate
     <div class="col-md-4">
       <em about="v-s:registrationNumber" property="rdfs:label"></em>
       <div property="v-s:registrationNumber" class="view -edit -search"></div>
-      <veda-control data-type="string" property="v-s:registrationNumber" class="-view edit search"></veda-control>
+      <veda-control data-type="text" property="v-s:registrationNumber" class="-view edit search"></veda-control>
     </div>
     <div class="col-md-2">
       <em about="v-s:taxId" property="rdfs:label"></em>
