@@ -291,15 +291,17 @@ veda.Module(function (veda) { "use strict";
             oneProp = values
               .filter(function(item){return !!item && !!item.valueOf();})
               .map( function (value) {
-                //return "'" + property_uri + "'=='" + value.data + "*'";
                 var q = value.data;
                 if ( !q.match(/[\+\-\*]/) ) {
-                  q = q.split(" ")
-                       .filter(function (token) { return token.length > 0; })
-                       .map(function (token) { return "+" + token + "*"; })
-                       .join(" ");
+                  var lines = q.split("\n");
+                  var lineQueries = lines.map(function (line) {
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
+                    line = words.map(function (word) { return "+" + word + "*"; });
+                    return "'" + property_uri + "'=='" + line + "'";
+                  });
+                  q = lineQueries.join(" || ");
                 }
-                return "'" + property_uri + "'=='" + q + "'";
+                return q;
               })
               .join(" || ");
             break;
