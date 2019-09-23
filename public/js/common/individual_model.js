@@ -826,13 +826,13 @@ veda.Module(function (veda) { "use strict";
    * @return {Object} self.
    */
   proto.valueOf = function () {
-    return this;
+    return this.id;
   };
 
   /**
    * @method
-   * Prefetch linked objects. Useful for presenting objects with many links.
-   * @param {property_uri, ...} Property chain to get value.
+   * Get values for first property chain branch.
+   * @param {property_uri, ...} Property chain to get values.
    */
   proto.getPropertyChain = function () {
     var args = Array.prototype.slice.call(arguments);
@@ -848,6 +848,52 @@ veda.Module(function (veda) { "use strict";
       return [];
     }).catch(function (error) {
       console.log(error);
+    });
+  };
+
+  /**
+   * @method
+   * Get values for all property chain branches.
+   * @param {property_uri, ...} Property chain to get values.
+   */
+  proto.getChainValue = function () {
+    var individuals = this;
+    if ( !Array.isArray(individuals) ) {
+      individuals = [individuals];
+    }
+    var properties = Array.prototype.slice.call(arguments);
+    var property_uri = properties.shift();
+    var promises = individuals.map(function (individual) {
+      return individual.load();
+    });
+    return Promise.all(promises).then(function (individuals) {
+      var children = individuals.reduce(function (acc, individual) {
+        return acc.concat(individual[property_uri]);
+      }, []);
+      if ( !properties.length ) {
+        return children;
+      } else {
+        return proto.getChainValue.apply(children, properties);
+      }
+    }).catch(function (error) {
+      console.log(error);
+      return [];
+    });
+  };
+
+  /**
+   * @method
+   * Check value for all property chain branches.
+   * @param {property_uri, ..., value} Property chain and a value to check.
+   */
+  proto.hasChainValue = function () {
+    var length = arguments.length;
+    var sought_value = arguments[length - 1];
+    var args = Array.prototype.slice.call(arguments, 0, length - 1);
+    return this.getChainValue.apply(this, args).then(function (values) {
+      return values.reduce(function (state, value) {
+        return state || sought_value.valueOf() == value.valueOf();
+      }, false);
     });
   };
 
