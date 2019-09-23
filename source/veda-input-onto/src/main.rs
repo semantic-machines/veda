@@ -218,7 +218,8 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     let mut load_priority = 999;
 
     let dt: DateTime<Local> = Local::now();
-    let timezone = Duration::seconds((dt.offset().local_minus_utc() + 3600) as i64);
+    //    let timezone = Duration::seconds((dt.offset().local_minus_utc() + 3600) as i64);
+    let timezone = Duration::seconds((dt.offset().local_minus_utc()) as i64);
 
     loop {
         for ns in &parser.namespaces {
@@ -308,11 +309,22 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#dateTime" => {
-                            let vv = normalize_datetime_string(value);
-                            if let Ok(v) = NaiveDateTime::parse_from_str(&vv, "%Y-%m-%dT%H:%M:%S") {
-                                indv.obj.add_datetime(&predicate, v.sub(timezone).timestamp());
+                            let vv;
+
+                            if value.contains('Z') {
+                                vv = value.to_owned();
+                                if let Ok(v) = DateTime::parse_from_rfc3339(&vv) {
+                                    indv.obj.add_datetime(&predicate, v.timestamp());
+                                } else {
+                                    error!("fail parse [{}] to datetime", value);
+                                }
                             } else {
-                                error!("fail parse [{}] to datetime", value);
+                                vv = normalize_datetime_string(value);
+                                if let Ok(v) = NaiveDateTime::parse_from_str(&vv, "%Y-%m-%dT%H:%M:%S") {
+                                    indv.obj.add_datetime(&predicate, v.sub(timezone).timestamp());
+                                } else {
+                                    error!("fail parse [{}] to datetime", value);
+                                }
                             }
                         }
                         _ => {
@@ -403,12 +415,6 @@ fn normalize_datetime_string(d: &str) -> String {
         }
     } else if d.len() == 10 {
         return d.to_owned() + "T00:00:00";
-    } else {
-        if d.ends_with('Z') {
-            if let Some(v) = d.get(0..d.len() - 1) {
-                return v.to_owned();
-            }
-        }
     }
     d.to_owned()
 }
