@@ -51,12 +51,8 @@ v-s:hasCertificationDocumentType
   rdfs:range v-s:CertificationDocumentType ;
 .
 #-----Вид документа
-v-s:hasDocumentKind
-  rdf:type owl:ObjectProperty ;
-  rdfs:domain v-s:CertificationDocument ;
-  rdfs:label "Вид документа"^^xsd:string;
-  rdfs:range v-s:DocumentKind ;
-.
+#v-s:hasDocumentKind
+
 #-----Регистрационный номер
 #v-s:registrationNumber
 
@@ -66,10 +62,10 @@ v-s:hasDocumentKind
 #-----Дата начала
 #v-s:dateFrom
 
-#-----Дата окончания 
+#-----Дата окончания
 #v-s:dateTo
 
-#-----Вложение 
+#-----Вложение
 #v-s:attachment
 
 #-----Участники
