@@ -296,7 +296,7 @@ veda.Module(function (veda) { "use strict";
                   var lines = q.trim().split("\n");
                   var lineQueries = lines.map(function (line) {
                     var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-                    line = words.map(function (word) { return "+" + word + "*"; });
+                    line = words.map(function (word) { return word + "*"; }).join(" ");
                     return "'" + property_uri + "'=='" + line + "'";
                   });
                   q = lineQueries.join(" || ");
