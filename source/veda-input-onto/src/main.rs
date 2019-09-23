@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate log;
 
-use chrono::Local;
 use chrono::NaiveDateTime;
+use chrono::{DateTime, Local};
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
@@ -18,10 +18,12 @@ use std::collections::HashMap;
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
+use std::ops::Sub;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
-use std::time::Duration;
+use std::time as std_time;
 use std::{fs, io};
+use time::Duration;
 use v_api::*;
 use v_module::module::*;
 use v_module::onto::*;
@@ -73,7 +75,7 @@ fn main() -> NotifyResult<()> {
     info!("watch file changes...");
 
     let (tx, rx) = unbounded();
-    let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_secs(2))?;
+    let mut watcher: RecommendedWatcher = Watcher::new(tx, std_time::Duration::from_secs(2))?;
 
     watcher.watch(onto_path, RecursiveMode::Recursive)?;
 
@@ -145,9 +147,10 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
         };
         file_info_indv.obj.uri = new_id;
 
-        if file_need_for_load {
+        if file_need_for_load
+        {
             let mut individuals = file2indv.entry(path.to_owned()).or_default();
-            let (onto_id, load_priority) = parse_file(path, &mut individuals);
+            let (onto_id, _onto_url, load_priority) = parse_file(path, &mut individuals);
             //        info!("ontology: {} {} {}", &file, onto_id, load_priority);
             full_file_info_indv(&onto_id, individuals, &mut file_info_indv, new_hash, path, name);
             priority_list.push((load_priority, onto_id, path.to_owned()));
@@ -158,8 +161,13 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
     //info!("priority_list: {:?}", priority_list);
 
     for (_load_priority, _onto_id, path) in priority_list {
-        if let Some(indvs) = file2indv.get(&path) {
-            for indv_file in indvs.values() {
+        if let Some(indvs) = file2indv.get_mut(&path) {
+            for indv_file in indvs.values_mut() {
+                if !indv_file.is_exists("rdf:type") {
+                    error!("{}: [{}] not contain [rdf:type], ignore it !!!", path, indv_file.obj.uri);
+                    continue;
+                }
+
                 let mut indv_db = Individual::default();
                 if module.storage.get_individual(&indv_file.obj.uri, &mut indv_db) {
                     indv_db.parse_all();
@@ -192,25 +200,32 @@ fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individu
 
     for indv in individuals.values_mut() {
         new_indv.obj.add_uri("v-s:resource", &indv.obj.uri);
-        indv.obj.set_uri("rdfs:isDefinedBy", onto_id);
+
+        if !indv.is_exists("rdfs:isDefinedBy") {
+            indv.obj.set_uri("rdfs:isDefinedBy", onto_id);
+        }
     }
 }
 
-fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) -> (String, i64) {
+fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) -> (String, String, i64) {
     let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
 
     let mut namespaces2id: HashMap<String, String> = HashMap::new();
     let mut id2namespaces: HashMap<String, String> = HashMap::new();
 
     let mut onto_id = String::default();
+    let mut onto_url = String::default();
     let mut load_priority = 999;
+
+    let dt: DateTime<Local> = Local::now();
+    let timezone = Duration::seconds((dt.offset().local_minus_utc() + 3600) as i64);
 
     loop {
         for ns in &parser.namespaces {
             if !namespaces2id.contains_key(ns.1) {
                 if let Some(s) = ns.1.get(0..ns.1.len() - 1) {
                     namespaces2id.insert(s.to_owned(), ns.0.clone());
-                    id2namespaces.insert(ns.0.clone(), s.to_owned());
+                    id2namespaces.insert(ns.0.to_owned() + ":", s.to_owned());
                 }
             }
         }
@@ -295,7 +310,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                         "http://www.w3.org/2001/XMLSchema#dateTime" => {
                             let vv = normalize_datetime_string(value);
                             if let Ok(v) = NaiveDateTime::parse_from_str(&vv, "%Y-%m-%dT%H:%M:%S") {
-                                indv.obj.add_datetime(&predicate, v.timestamp());
+                                indv.obj.add_datetime(&predicate, v.sub(timezone).timestamp());
                             } else {
                                 error!("fail parse [{}] to datetime", value);
                             }
@@ -316,18 +331,26 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
             break;
         }
 
-        let indv = individuals.entry(id).or_default();
-        if indv.any_exists("rdf:type", &["owl:Ontology"]) {
-            if let Ok(v) = indv.get_first_integer("v-s:loadPriority") {
-                load_priority = v;
+        if !id.is_empty() {
+            let indv = individuals.entry(id).or_default();
+
+            if indv.obj.uri.is_empty() {
+                error!("individual not content uri");
             }
 
-            if let Some(s) = id2namespaces.get(&indv.obj.uri) {
-                indv.obj.set_uri("v-s:fullUrl", s);
-            }
+            if indv.any_exists("rdf:type", &["owl:Ontology"]) {
+                if let Ok(v) = indv.get_first_integer("v-s:loadPriority") {
+                    load_priority = v;
+                }
 
-            onto_id.insert_str(0, &indv.obj.uri);
-            //            info!("ontology: {}", indv.obj.uri);
+                if let Some(s) = id2namespaces.get(&indv.obj.uri) {
+                    onto_url.insert_str(0, s.as_str());
+                    indv.obj.set_uri("v-s:fullUrl", s);
+                }
+
+                onto_id.insert_str(0, &indv.obj.uri);
+                //            info!("ontology: {}", indv.obj.uri);
+            }
         }
 
         if parser.is_end() {
@@ -340,7 +363,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     //for (_, value) in individuals {
     //    info!("ind: {}", value);
     //}
-    (onto_id, load_priority)
+    (onto_id, onto_url, load_priority)
 }
 
 fn to_prefix_form(iri: &str, namespaces2id: &HashMap<String, String>) -> String {
