@@ -3023,7 +3023,7 @@ v-ui:generic
         <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
       </div>
       <div class="col-md-8 col-xs-7">
-        <div property="rdfs:label"></div>
+        <div property="rdfs:label" class='view -edit -search'></div>
         <veda-control property="rdfs:label" data-type="multilingualString" class='-view edit search'></veda-control>
       </div>
     </div>
