@@ -38,7 +38,7 @@ v-s:hasContractorCategoryRequest
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-s:ContractorProfile ;
   rdfs:label "Запрос на согласование контрагента"@ru ;
-  rdfs:label ""@en ;
+  rdfs:label "Contractor category request"@en ;
   rdfs:range v-s:ContractorCategoryRequest ;
 .
 # v-s:hasClassifierOKVED

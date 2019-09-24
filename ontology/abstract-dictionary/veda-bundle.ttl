@@ -149,7 +149,7 @@ v-s:Update
   rdfs:label "Обновить"@ru ;
   rdfs:label "Update"@en ;
 .
-v-s:Find
+v-s:FindBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Find"@en ;
