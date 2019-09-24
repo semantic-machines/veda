@@ -23,7 +23,6 @@ import { Selector, t } from 'testcafe';
       .click('span[about="v-s:UserThing"] button.btn.btn-default.button-delete')
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')
       .wait(5000)
-      .debug()
       .click('div.results a.glyphicon.glyphicon-search')
       .wait(2000)
       .click('button#edit')
