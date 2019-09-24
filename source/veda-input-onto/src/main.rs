@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate log;
 
-use chrono::NaiveDateTime;
-use chrono::{DateTime, Local};
+use chrono::offset::LocalResult::Single;
+use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
@@ -23,7 +23,6 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::time as std_time;
 use std::{fs, io};
-use time::Duration;
 use v_api::*;
 use v_module::module::*;
 use v_module::onto::*;
@@ -216,10 +215,6 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     let mut onto_url = String::default();
     let mut load_priority = 999;
 
-    let dt: DateTime<Local> = Local::now();
-    let timezone = Duration::seconds((dt.offset().local_minus_utc() + 3600) as i64);
-    //let timezone = Duration::seconds((dt.offset().local_minus_utc()) as i64);
-
     loop {
         for ns in &parser.namespaces {
             if !namespaces2id.contains_key(ns.1) {
@@ -315,9 +310,19 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                                     error!("fail parse [{}] to datetime", value);
                                 }
                             } else {
-                                if let Ok(v) = NaiveDateTime::parse_from_str(&normalize_datetime_string(value), "%Y-%m-%dT%H:%M:%S") {
-                                    indv.obj.add_datetime(&predicate, v.sub(timezone).timestamp());
-                                //                                    indv.obj.add_datetime(&predicate, v.timestamp());
+                                let ndt;
+                                if value.len() == 10 {
+                                    ndt = NaiveDateTime::parse_from_str(&(value.to_owned() + "T00:00:00"), "%Y-%m-%dT%H:%M:%S");
+                                } else {
+                                    ndt = NaiveDateTime::parse_from_str(&value, "%Y-%m-%dT%H:%M:%S")
+                                }
+
+                                if let Ok(v) = ndt {
+                                    if let Single(offset) = Local.offset_from_local_datetime(&v) {
+                                        indv.obj.add_datetime(&predicate, v.sub(offset).timestamp());
+                                    } else {
+                                        indv.obj.add_datetime(&predicate, v.timestamp());
+                                    }
                                 } else {
                                     error!("fail parse [{}] to datetime", value);
                                 }
@@ -356,7 +361,11 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                     indv.obj.set_uri("v-s:fullUrl", s);
                 }
 
+                //if indv.obj.uri.contains('/') {
+                //    onto_id.insert_str(0, &file_path);
+                //} else {
                 onto_id.insert_str(0, &indv.obj.uri);
+                //}
                 //            info!("ontology: {}", indv.obj.uri);
             }
         }
@@ -367,10 +376,6 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     }
 
     //info!("{}, load {}", file_path, individuals.len());
-
-    //for (_, value) in individuals {
-    //    info!("ind: {}", value);
-    //}
     (onto_id, onto_url, load_priority)
 }
 
@@ -402,17 +407,6 @@ fn to_prefix_form(iri: &str, namespaces2id: &HashMap<String, String>) -> String 
     }
 
     res
-}
-
-fn normalize_datetime_string(d: &str) -> String {
-    if d.len() == 24 {
-        if let Some(v) = d.get(0..d.len() - 5) {
-            return v.to_owned();
-        }
-    } else if d.len() == 10 {
-        return d.to_owned() + "T00:00:00";
-    }
-    d.to_owned()
 }
 
 fn collect_file_paths(onto_path: &str, res: &mut Vec<PathBuf>) {
