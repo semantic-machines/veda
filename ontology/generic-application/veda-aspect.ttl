@@ -204,7 +204,7 @@ v-s:PersonalAspectTemplate
     </div>
     <div class="registries col-md-4 col-sm-6 col-xs-12" style="display: flex;">
       <div class="sheet" style="width:100%;">
-        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table text-muted margin-md-h"></i><span about="v-s:Find" property="rdfs:label"></span></h4>
+        <h4 class="text-center" style="text-transform: uppercase"><i class="fa fa-table text-muted margin-md-h"></i><span about="v-s:FindBundle" property="rdfs:label"></span></h4>
         <div rel="v-s:hasRegistry">
           <a href="#/@" class="btn btn-info btn-lg btn-block margin-lg" about="@" property="rdfs:label" style="white-space: normal;"></a>
         </div>
