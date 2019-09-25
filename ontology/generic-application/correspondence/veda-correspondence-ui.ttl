@@ -612,14 +612,16 @@ v-s:LetterRegistrationRecordTemplate
       }
     });
   }
-
-  if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
-    template.addClass("panel-info");
-    template.children(":first").addClass("bg-info");
-  } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
-    template.addClass("panel-success");
-    template.children(":first").addClass("bg-success");
-  }
+  //временное решение так как при быстрой загрузке template.parent() пустой
+  setTimeout(function(){
+    if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
+      template.addClass("panel-info");
+      template.children(":first").addClass("bg-info");
+    } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
+      template.addClass("panel-success");
+      template.children(":first").addClass("bg-success");
+    }
+  }, 300);
   //# sourceURL=v-s:LetterRegistrationRecordTemplate_post
 </script>
   """ ;
