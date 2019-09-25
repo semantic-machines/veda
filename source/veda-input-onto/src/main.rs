@@ -7,7 +7,7 @@ use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
 use md5::{Digest, Md5};
-use notify::{RecommendedWatcher, RecursiveMode, Result as NotifyResult, Watcher};
+use notify::{EventKind, RecommendedWatcher, RecursiveMode, Result as NotifyResult, Watcher};
 use rio_api::model::Literal::{LanguageTaggedString, Simple, Typed};
 use rio_api::model::NamedOrBlankNode;
 use rio_api::model::Term::{BlankNode, Literal, NamedNode};
@@ -80,7 +80,20 @@ fn main() -> NotifyResult<()> {
 
     loop {
         match rx.recv() {
-            Ok(event) => println!("changed: {:?}", event),
+            Ok(w_event) => {
+                if let Ok(event) = w_event {
+                    match event.kind {
+                        EventKind::Create(_) | EventKind::Modify(_) => {
+                            if event.flag().is_some() {
+                                println!("changed: {:?}", event);
+                                println!("paths {:?}", event.paths);
+                                processing_files(event.paths, &mut module, &systicket);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
             Err(err) => println!("watch error: {:?}", err),
         };
     }
@@ -126,7 +139,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
 
         let mut file_need_for_load = true;
         let mut file_info_indv: Individual = Individual::default();
-        let new_id = "d:".to_string() + &name;
+        let new_id = "d:".to_string() + name;
 
         let new_hash = match get_hash_of_file(path) {
             Ok(new_h) => {
