@@ -2536,15 +2536,16 @@ v-ui:TreeTemplate
 
   function renderRows(values_uris, parentRow) {
     var cont = $("<div>");
+    var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
+        tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
+    $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+
     return Promise.all(values_uris.map(function (valueUri, index) {
       var value = new veda.IndividualModel(valueUri);
       return value.load().then(function (value) {
         if ( !allowedFilterFn.call(value) ) {
           return;
         }
-        var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
-            tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
-        $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
         return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
           // Pre-check children
           getChildren([], value, false).then(function (children) {
@@ -2553,7 +2554,6 @@ v-ui:TreeTemplate
               tmpl.find(".select-deep").remove();
             }
           });
-
           if (target && rel_uri) {
             var selectRow = $(".select-row", tmpl);
             var selectDeep = $(".select-deep", tmpl);
@@ -2573,6 +2573,25 @@ v-ui:TreeTemplate
       });
     })).then(function () {
       if ( parentRow ) {
+        var addButton = $("<tr data-level='"+(parentLvl+1)+"'><td></td><td><button class='btn btn-sm btn-primary' style='margin-left: " + 16 * (parentLvl + 1) + "px;'>Добавить</button></td><td></td><tr>");
+        addButton.click(function(){
+          var parentUri = parentRow.attr("resource");
+          var type = $(this).closest("tr").prev("tr").attr("typeof");
+          var newItem = new veda.IndividualModel();
+          newItem["rdf:type"] = [new veda.IndividualModel(type)];
+          newItem["v-s:hasParentLink"] = [new veda.IndividualModel(parentUri)];
+          var modal = veda.Util.showModal(newItem, undefined, "edit");
+          newItem.one("afterReset", function () {
+            modal.modal("hide").remove();
+          });
+          newItem.one("afterSave", function () {
+            setTimeout(function() {
+              redrawBranch(parentRow);  
+            }, 100);
+            modal.modal("hide").remove();
+          });
+        });
+        cont.append(addButton);
         parentRow.after( cont.children() );
       } else {
         tbody.append( cont.children() );
@@ -2633,6 +2652,21 @@ v-ui:TreeTemplate
     });
   }
 
+  function redrawBranch(branchRow) {
+    var thatLvl = parseInt( branchRow.attr("data-level") );
+    branchRow.nextUntil("[data-level=" + thatLvl + "]").remove();
+
+    var value = new veda.IndividualModel(branchRow.attr("resource"));
+    if (value && value.children) delete value.children;
+    getChildren([], value, false).then(function (children) {
+      return renderRows(children, branchRow).then(function () {
+        var nextLvl = parseInt(branchRow.next().attr("data-level"));
+        if ( isNaN(nextLvl) || nextLvl <= thatLvl ) {
+          console.log("unexpected!!!!!!");
+        }
+      });
+    });
+  }
   function propertyModifiedHandler(values) {
     $(".value-row", template).each(function () {
       var $this = $(this),
