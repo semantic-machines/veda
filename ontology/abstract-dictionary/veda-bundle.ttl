@@ -380,3 +380,8 @@ v-s:ErrorBundle
   rdfs:label "Ошибка"@ru ;
   rdfs:label "Error"@en ;
 .
+v-s:CreateBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
+.
