@@ -80,8 +80,9 @@ v-s:PsDeliveryMethodForDelivery
   v-ui:forClass v-s:Delivery ;
   v-ui:forProperty v-s:deliverBy ;
   v-ui:forProperty v-s:date ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
+	v-ui:queryPrefix "('@'=='d:727' || '@'=='d:b9d2da6785ee42b2bcb054fd8295c539' || '@'=='d:683' || '@'=='d:700')"^^xsd:string ;
+	v-ui:minCardinality 0 ;
+	v-ui:maxCardinality 1 ;
   rdfs:label "Спецификация v-s:deliverBy, v-s:date  для класса v-s:Delivery"@ru ;
   rdfs:label "v-s:deliverBy, v-s:date for v-s:Delivery class"@en ;
 .
