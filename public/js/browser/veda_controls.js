@@ -1283,6 +1283,7 @@
       if (e.type === "view") {
         $("div.radio", control).addClass("disabled");
         $("input", control).attr("disabled", "true");
+        $(this).removeClass("has-error");
       } else {
         $("div.radio", control).removeClass("disabled");
         $("input", control).removeAttr("disabled");
