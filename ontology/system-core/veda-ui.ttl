@@ -2540,6 +2540,10 @@ v-ui:TreeTemplate
         tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
     $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
 
+    if (!parentRow) {
+      tmpl.find("[about]").first().removeAttr("data-template").removeAttr("about");
+    }
+
     return Promise.all(values_uris.map(function (valueUri, index) {
       var value = new veda.IndividualModel(valueUri);
       return value.load().then(function (value) {
