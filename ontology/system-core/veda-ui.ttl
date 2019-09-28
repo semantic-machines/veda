@@ -2687,11 +2687,7 @@ v-ui:TreeTemplate
 
   // Render tree
   root.forEach( function (root, index, roots) {
-    renderRows([root.id]).then(function () {
-      if (roots.length === 1) {
-        tbody.find(".expand").click();
-      }
-    });
+    renderRows([root.id]);
   });
 
   function getChildren(acc, root, goDeeper) {
@@ -2772,12 +2768,12 @@ v-ui:TreeTemplate
     });
   }
 
-  if (!this.hasValue("rdf:type", "v-ui:Tree")) {
+  if (!this.hasValue("rdf:type", "v-ui:Tree") || !this.hasValue("rdfs:label")) {
     $(".heading", template).remove();
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
-<div class="container sheet table-responsive">
+<div>
   <style scoped>
     tr > th:first-child, tr > td:first-child {
       border-right: 1px solid #ddd;
