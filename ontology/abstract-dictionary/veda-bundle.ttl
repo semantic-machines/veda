@@ -209,11 +209,6 @@ v-s:InvertSelection
   rdfs:label "Инвертировать"@ru ;
   rdfs:label "Invert"@en ;
 .
-v-s:CreateBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Создать"@ru ;
-  rdfs:label "Create"@en ;
-.
 v-s:CreateReport
   rdf:type v-s:Bundle ;
   rdfs:label "Сформировать отчёт"@ru ;
