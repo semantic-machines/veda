@@ -200,6 +200,32 @@ impl Individual {
         Err(IndividualError::None)
     }
 
+    pub fn get_first_bool(&mut self, predicate: &str) -> Result<bool, IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => match &v[0].value {
+                    Value::Bool(s) => {
+                        return Ok(*s);
+                    }
+                    _ => {
+                        return Err(IndividualError::ParseError);
+                    }
+                },
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
     pub fn get_first_binobj(&mut self, predicate: &str) -> Result<Vec<u8>, IndividualError> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
