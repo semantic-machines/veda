@@ -242,6 +242,20 @@ v-fs:AttributiveSearchModel
   this["v-fs:authorized"] = [ this["v-fs:authorized"][0] || 0 ];
   this["v-fs:sortOrder"] = [ this["v-fs:sortOrder"][0] || "'v-s:created' desc" ];
 
+  function evalQuery (query) {
+    return new Promise(function (resolve, reject) {
+      try {
+        var result = query.replace(/{(.*)}/g, function (match) {
+          return eval(match);
+        });
+        resolve(result);
+      } catch (error) {
+        console.log("Query evaluation error", error);
+        reject(error);
+      }
+    });
+  };
+
   // Search method
   this.search = function (cursor) {
     if (cursor > 0) {
@@ -254,9 +268,11 @@ v-fs:AttributiveSearchModel
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
     var queryString = "";
     if ( self.hasValue("v-fs:fulltextQuery") ) {
-      queryString += self["v-fs:fulltextQuery"][0];
-    }
-    if ( self.hasValue("v-fs:searchBlank") ) {
+      var fullText = self["v-fs:fulltextQuery"][0];
+      return evalQuery(fullText).then(function (fullText) {
+        return performQuery.call(self, fullText);
+      });
+    } else if ( self.hasValue("v-fs:searchBlank") ) {
       return self["v-fs:searchBlank"][0].load()
         .then(function (searchBlank) {
           return searchBlank.initBlank();
@@ -323,7 +339,6 @@ v-fs:AttributiveSearchModel
         self.trigger("search:complete", self["v-fs:searchResult"]);
         return self["v-fs:searchResult"];
       } else {
-        self.trigger("search:delta", delta);
         return delta ;
       }
     });
