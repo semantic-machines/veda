@@ -112,7 +112,7 @@ v-s:ApplicationTemplate
   v-ui:forClass v-s:Application ;
   v-ui:template """
 <script>
-  if (!veda.appointment.hasValue("v-s:parentUnit", "d:org_RU1100220011")) {
+  if (!veda.appointment.hasValue("v-s:parentOrganization", "d:org_RU1100220011")) {
     individual["v-s:hasCreate"] = individual["v-s:hasCreate"].filter(function(create) {
       return create.id != "hack:PersonalAccountCreate";
     })
