@@ -2540,10 +2540,6 @@ v-ui:TreeTemplate
         tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
     $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
 
-    if (!parentRow) {
-      tmpl.find("[about]").first().removeAttr("data-template").removeAttr("about");
-    }
-
     return Promise.all(values_uris.map(function (valueUri, index) {
       var value = new veda.IndividualModel(valueUri);
       return value.load().then(function (value) {
@@ -2691,7 +2687,11 @@ v-ui:TreeTemplate
 
   // Render tree
   root.forEach( function (root, index, roots) {
-    renderRows([root.id]);
+    renderRows([root.id]).then(function () {
+      if (roots.length === 1) {
+        tbody.find(".expand").click();
+      }
+    });
   });
 
   function getChildren(acc, root, goDeeper) {
@@ -2772,12 +2772,12 @@ v-ui:TreeTemplate
     });
   }
 
-  if (!this.hasValue("rdf:type", "v-ui:Tree") || !this.hasValue("rdfs:label")) {
+  if (!this.hasValue("rdf:type", "v-ui:Tree")) {
     $(".heading", template).remove();
   }
   //# sourceURL=v-ui:TreeTemplate
 </script>
-<div>
+<div class="container sheet table-responsive">
   <style scoped>
     tr > th:first-child, tr > td:first-child {
       border-right: 1px solid #ddd;

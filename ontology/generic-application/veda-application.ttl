@@ -112,17 +112,6 @@ v-s:ApplicationTemplate
   v-ui:forClass v-s:Application ;
   v-ui:template """
 <script>
-  if (!veda.appointment.hasValue("v-s:parentOrganization", "d:org_RU1100220011")) {
-    individual["v-s:hasCreate"] = individual["v-s:hasCreate"].filter(function(create) {
-      return create.id != "hack:PersonalAccountCreate";
-    })
-    individual["v-s:hasRegistry"] = individual["v-s:hasRegistry"].filter(function(registry) {
-      return registry.id != "hack:PersonalAccountSearch";
-    })
-    individual["v-s:hasReport"] = individual["v-s:hasReport"].filter(function(report) {
-      return report.id != "hack:OutdatedRequest";
-    })
-  }
   if (!individual.hasValue("v-s:hasBlank") && !individual.hasValue("v-s:hasCreate")) {
     $(".blanks", template).remove();
   }
@@ -138,12 +127,27 @@ v-s:ApplicationTemplate
     <div class="clearfix">
       <div class="pull-left" style="width:78px;" about="@" rel="v-s:hasIcon" data-template="v-ui:ImageTemplate"></div>
       <h2 class="pull-left margin-lg-h" style="color: #555;">
-        <span property="rdfs:label"></span>
+        <span href="#/@" property="rdfs:label"></span>
         <small property="rdfs:comment"></small>
       </h2>
+      <div class="pull-right margin-lg" about="@" rel="v-s:hasSettings">
+        <a class="btn btn-primary" href="#/@">
+          <span about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></span>
+        </a>
+      </div>
     </div>
     <hr class="margin-md">
-    <div about="@" property="v-s:description" class="markdown"></div>
+    <div class="row">
+      <div class="col-lg-8 col-sm-6" style="border-right: 1px dotted #ddd;">
+        <div about="@" property="v-s:description" class="markdown"></div>
+        <!--em about="v-s:responsible" property="rdfs:label"></em>
+        <div about="@" rel="v-s:responsible" class="margin-md"></div-->
+      </div>
+      <div class="col-lg-4 col-sm-6">
+        <em about="v-s:ManualBundle" property="rdfs:label"></em>
+        <div about="@" rel="v-s:attachment" data-template="v-ui:FileTemplate"></div>
+      </div>
+    </div>
   </div>
   <div class="row" style="display: flex; flex-flow: row wrap;">
     <div class="blanks col-md-4 col-sm-6 col-xs-12" style="display: flex;">
