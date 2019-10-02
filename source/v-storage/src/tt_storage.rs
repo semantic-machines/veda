@@ -39,9 +39,10 @@ impl Storage for TTStorage {
             if let Ok(uri) = parse_raw(iraw) {
                 iraw.obj.uri = uri;
                 return true;
-            } else {
-                error!("TTStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
             }
+            //else {
+            //    error!("TTStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
+            //}
         }
 
         false

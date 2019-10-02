@@ -32,11 +32,47 @@ v-s:LocalRegulatoryDocument
   rdfs:subClassOf v-s:Contractual ;
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Document;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Labeled ;  
   rdfs:label "Локальный нормативный документ"@ru ;
   rdfs:label "Local Regulatory document"@en ;
+  v-s:hasNumeration v-s:RegistrationNumberYearNumeration2_6 ;
+  v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:title}" ;  
 .
 # v-s:hasDocumentKind
+v-s:PS_hasDocumentKind_LocalRegulatoryDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:LocalRegulatoryDocument ;
+  v-ui:forProperty v-s:hasDocumentKind ;
+  v-ui:queryPrefix "('v-s:hasParentLink'=='d:6869e29efeb24915b43992e210b530aa')"^^xsd:string ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:hasDocumentKind для класса v-s:LocalRegulatoryDocument"@ru ;
+  rdfs:label "v-s:hasDocumentKind property specification for v-s:LocalRegulatoryDocument class"@en ;
+.
+
 # v-s:registrationNumber
+# v-s:valid
+v-s:PS_valid_LocalRegulatoryDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:LocalRegulatoryDocument ;
+  v-ui:forProperty v-s:valid ;
+  v-ui:defaultValue "true"^^xsd:boolean;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:valid для класса v-s:LocalRegulatoryDocument"@ru ;
+  rdfs:label "v-s:valid property specification for v-s:LocalRegulatoryDocument class"@en ;
+.
+#v-s:title
+v-s:PS_title_LocalRegulatoryDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:LocalRegulatoryDocument ;
+  v-ui:forProperty v-s:title ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  rdfs:label "Спецификация свойства v-s:valid для класса v-s:LocalRegulatoryDocument"@ru ;
+  rdfs:label "v-s:valid property specification for v-s:LocalRegulatoryDocument class"@en ;
+.
 
 v-s:hasVersionOfLocalRegulatoryDocument
   rdf:type owl:ObjectProperty ;
@@ -46,13 +82,23 @@ v-s:hasVersionOfLocalRegulatoryDocument
   rdfs:domain v-s:LocalRegulatoryDocument ;
 .
 
+v-s:isAccessLimited
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Ограниченный доступ"@ru ;
+  rdfs:label "Is access limited"@en ;
+  rdfs:range xsd:boolean ;
+  rdfs:domain v-s:LocalRegulatoryDocument ;
+.
+
 #---------------------------------------------------------
 v-s:VersionOfLocalRegulatoryDocument
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:LocalRegulatoryDocument ;
   rdfs:subClassOf v-s:Contractual ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:label "Версия локального нормативного документа"@ru ;
   rdfs:label "Verions of local regulatory document"@en ;
+  v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:title}" ;
 .
 v-s:hasDescriptionOfChange
   rdf:type owl:ObjectProperty ;
@@ -61,6 +107,16 @@ v-s:hasDescriptionOfChange
   rdfs:range v-s:DescriptionOfChange ;
   rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
 .
+v-s:PS_hasDescriptionOfChange_VersionOfLocalRegulatoryDocument
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:VersionOfLocalRegulatoryDocument ;
+  v-ui:forProperty v-s:hasDescriptionOfChange ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 100 ;
+  rdfs:label "Спецификация свойства v-s:hasDescriptionOfChange для класса v-s:VersionOfLocalRegulatoryDocument"@ru ;
+  rdfs:label "v-s:hasDescriptionOfChange property specification for v-s:VersionOfLocalRegulatoryDocument class"@en ;
+.
+
 v-s:hasAddendum
   rdf:type owl:ObjectProperty ;
   rdfs:label "Приложение"@ru ;
@@ -68,6 +124,7 @@ v-s:hasAddendum
   rdfs:range v-s:Addendum ;
   rdfs:domain v-s:VersionOfLocalRegulatoryDocument ;
 .
+
 # --- В связи с вводом класса может использоваться предикат v-s:hasVersionOfLocalRegulatoryDocument. Он описан в классе v-s:LocalRegulatoryDocument
 
 #---------------------------------------------------------

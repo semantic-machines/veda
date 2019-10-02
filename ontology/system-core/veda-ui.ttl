@@ -2243,24 +2243,28 @@ v-ui:DocumentEventTemplate
       <div about="@" rel="v-s:documentVersion" data-template="v-ui:LabelLinkTemplate"></div>
       <div about="@" rel="v-wf:onProcess">
         <script>
-          var href = null;
-          var startForm = this.properties["v-wf:hasStartForm"];
-          if (startForm) {
-            href = startForm[0].data;
-          } else {
-            //Устаревший вариант
-            try {
-              var startFormVar = this["v-wf:inVars"].filter(function (vrbl) {
-                return vrbl.hasValue("v-wf:variableName",  "startForm_id");
+          if ( individual.hasValue("v-wf:hasStartForm") ) {
+            var startForm = individual["v-wf:hasStartForm"][0];
+            $("[about='start-form']", template).attr("about", startForm.id);
+          } else { // Проверим наличие переменной стартовой формы
+            var inVars = individual["v-wf:inVars"].map(function (inVar) {
+              return inVar.load();
+            });
+            if (inVars.length) {
+              return Promise.all(inVars).then(function (inVars) {
+                var startFormVar = inVars.filter(function (inVar) {
+                  return inVar.hasValue("v-wf:variableName",  "startForm_id");
+                });
+                var startForm = startFormVar[0]["v-wf:variableValue"][0];
+                $("[about='start-form']", template).attr("about", startForm.id);
+              }).catch(function () {
+                $("[about='start-form']", template).remove();
               });
-              href = startFormVar[0]["v-wf:variableValue"][0].id;
-            } catch (e) {}
-          };
-          if (href != null) {
-            $("[about='start-form']", template).attr("about", href);
-          } else {
-            $("[about='start-form']", template).remove();
+            } else {
+              $("[about='start-form']", template).remove();
+            }
           }
+          //# sourceURL=v-ui:DocumentEventTemplate_inline
         </script>
         <div>
           <a about="@" class="process-id" href="#/@" rel="v-wf:instanceOf" data-template="v-ui:LabelTemplate"></a>
@@ -2532,15 +2536,16 @@ v-ui:TreeTemplate
 
   function renderRows(values_uris, parentRow) {
     var cont = $("<div>");
+    var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
+        tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
+    $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
+
     return Promise.all(values_uris.map(function (valueUri, index) {
       var value = new veda.IndividualModel(valueUri);
       return value.load().then(function (value) {
         if ( !allowedFilterFn.call(value) ) {
           return;
         }
-        var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
-            tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
-        $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
         return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
           // Pre-check children
           getChildren([], value, false).then(function (children) {
@@ -2549,7 +2554,6 @@ v-ui:TreeTemplate
               tmpl.find(".select-deep").remove();
             }
           });
-
           if (target && rel_uri) {
             var selectRow = $(".select-row", tmpl);
             var selectDeep = $(".select-deep", tmpl);
@@ -2569,6 +2573,25 @@ v-ui:TreeTemplate
       });
     })).then(function () {
       if ( parentRow ) {
+        var addButton = $("<tr data-level='"+(parentLvl+1)+"'><td></td><td><button class='btn btn-sm btn-primary' style='margin-left: " + 16 * (parentLvl + 1) + "px;'>Добавить</button></td><td></td><tr>");
+        addButton.click(function(){
+          var parentUri = parentRow.attr("resource");
+          var type = $(this).closest("tr").prev("tr").attr("typeof");
+          var newItem = new veda.IndividualModel();
+          newItem["rdf:type"] = [new veda.IndividualModel(type)];
+          newItem["v-s:hasParentLink"] = [new veda.IndividualModel(parentUri)];
+          var modal = veda.Util.showModal(newItem, undefined, "edit");
+          newItem.one("afterReset", function () {
+            modal.modal("hide").remove();
+          });
+          newItem.one("afterSave", function () {
+            setTimeout(function() {
+              redrawBranch(parentRow);  
+            }, 100);
+            modal.modal("hide").remove();
+          });
+        });
+        cont.append(addButton);
         parentRow.after( cont.children() );
       } else {
         tbody.append( cont.children() );
@@ -2629,6 +2652,21 @@ v-ui:TreeTemplate
     });
   }
 
+  function redrawBranch(branchRow) {
+    var thatLvl = parseInt( branchRow.attr("data-level") );
+    branchRow.nextUntil("[data-level=" + thatLvl + "]").remove();
+
+    var value = new veda.IndividualModel(branchRow.attr("resource"));
+    if (value && value.children) delete value.children;
+    getChildren([], value, false).then(function (children) {
+      return renderRows(children, branchRow).then(function () {
+        var nextLvl = parseInt(branchRow.next().attr("data-level"));
+        if ( isNaN(nextLvl) || nextLvl <= thatLvl ) {
+          console.log("unexpected!!!!!!");
+        }
+      });
+    });
+  }
   function propertyModifiedHandler(values) {
     $(".value-row", template).each(function () {
       var $this = $(this),
@@ -2707,7 +2745,7 @@ v-ui:TreeTemplate
       var allowed = allowedClass.map(function (allowedClass) {
         return "'rdf:type'=='" + allowedClass.id + "'";
       }).join(" || ");
-      q = "(" + q + ") && (" + allowed + ")";
+      q = "( " + q + " ) && ( " + allowed + " )";
     }
     var sort = sort || "'rdfs:label_ru' asc, 'rdfs:label_en' asc, 'rdfs:label' asc";
     var unique;
@@ -2719,7 +2757,7 @@ v-ui:TreeTemplate
     }).then(function(queryResult) {
       unique = veda.Util.unique( queryResult.result );
       if (withDeleted) {
-        q = q + " && 'v-s:deleted'== true )";
+        q = q + " && ( 'v-s:deleted'== true )";
         return veda.Backend.query({
           ticket: veda.ticket,
           query: q,
@@ -3019,7 +3057,7 @@ v-ui:generic
         <strong about="rdfs:label" property="rdfs:label" class="text-muted"></strong>
       </div>
       <div class="col-md-8 col-xs-7">
-        <div property="rdfs:label"></div>
+        <div property="rdfs:label" class='view -edit -search'></div>
         <veda-control property="rdfs:label" data-type="multilingualString" class='-view edit search'></veda-control>
       </div>
     </div>

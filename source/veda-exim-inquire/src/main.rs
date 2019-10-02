@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate env_logger;
 
 use chrono::Local;
 use env_logger::Builder;
@@ -59,7 +58,7 @@ fn main() -> std::io::Result<()> {
 
             // request changes from slave node
             loop {
-                let req = Message::from(("?,".to_owned() + &node_id).as_ref());
+                let req = Message::from(("?,".to_owned() + &node_id).as_bytes());
                 info!("send request for changes to {}", node_addr);
                 if let Err(e) = soc.send(req) {
                     error!("fail send request to slave node, err={:?}", e);

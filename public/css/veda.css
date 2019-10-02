@@ -796,11 +796,9 @@ fieldset[disabled] .form-control {
 
 .link-control .header {
   width: 100%;
-  padding: 5px 15px;
+  padding: 8px 15px;
   border-bottom: 1px solid #ccc;
   background-color: #eee;
-  display: table;
-  content: " ";
   clear: both;
 }
 .link-control .header > .actions > * {
@@ -808,7 +806,7 @@ fieldset[disabled] .form-control {
   border-bottom: 1px dashed #707070;
   margin-right: 10px;
 }
-.link-control .header > .actions > *:last {
+.link-control .header > .actions > *:last-child {
   margin-right: 0px;
 }
 

@@ -1,23 +1,11 @@
-#[macro_use]
-extern crate redis_async;
-#[macro_use]
-extern crate serde_derive;
-#[macro_use]
-extern crate log;
-
 use actix::prelude::*;
 use actix_redis::{Command, Error as ARError, RedisActor};
-use actix_web::{middleware, web, App, Error as AWError, HttpResponse, HttpServer};
-use chrono::Local;
-use env_logger::Builder;
+use actix_web::{web, Error as AWError, HttpResponse};
 use futures::future::Future;
-use ini::Ini;
-use log::LevelFilter;
 use redis::geo::{RadiusOptions, RadiusOrder, RadiusSearchResult, Unit};
 use redis::{Commands, Connection, RedisError};
 use redis_async::resp::RespValue;
 use std::collections::HashSet;
-use std::io::Write;
 use v_search::{FTClient, FTQuery};
 
 #[derive(Deserialize)]
@@ -37,7 +25,7 @@ pub struct GeoQuery {
     ticket: String,
 }
 
-fn geo_query(info: web::Json<GeoQuery>, db: web::Data<Addr<SyncActor>>) -> impl Future<Item = HttpResponse, Error = AWError> {
+pub fn geo_query(info: web::Json<GeoQuery>, db: web::Data<Addr<SyncActor>>) -> impl Future<Item = HttpResponse, Error = AWError> {
     let info = info.into_inner();
 
     db.send(GeoQuery {
@@ -72,7 +60,7 @@ fn geo_query(info: web::Json<GeoQuery>, db: web::Data<Addr<SyncActor>>) -> impl 
     })
 }
 
-fn geo_radius(info: web::Json<GeoRadius>, redis: web::Data<Addr<RedisActor>>) -> impl Future<Item = HttpResponse, Error = AWError> {
+pub fn geo_radius(info: web::Json<GeoRadius>, redis: web::Data<Addr<RedisActor>>) -> impl Future<Item = HttpResponse, Error = AWError> {
     let info = info.into_inner();
 
     redis.send(Command(resp_array!["GEORADIUS", "my_gis", info.lon.to_string(), info.lat.to_string(), info.rad.to_string(), "m"])).map_err(AWError::from).and_then(
@@ -110,7 +98,7 @@ pub struct SyncActor {
 }
 
 impl SyncActor {
-    fn new(ft_addr: &str, redis_addr: &str) -> SyncActor {
+    pub fn new(ft_addr: &str, redis_addr: &str) -> SyncActor {
         info!("connect to search:{}, redis:{} ", &ft_addr, &redis_addr);
 
         let redis_addr = "redis://".to_owned() + &redis_addr.to_owned() + "/";
@@ -173,43 +161,4 @@ impl Handler<GeoQuery> for SyncActor {
 
         Ok(res)
     }
-}
-
-fn main() -> std::io::Result<()> {
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info,actix_server=info,actix_web=info"),
-    }
-
-    Builder::new()
-        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
-        .init();
-
-    let conf = Ini::load_from_file("veda.properties").expect("fail load [veda.properties] file");
-    let section = conf.section(None::<String>).expect("fail parse veda.properties");
-    let webserver_port = section.get("geo_port").expect("param [geo_port] not found in veda.properties").clone();
-    let ft_query_service_url = section.get("ft_query_service_url").expect("param [ft_query_service_url] not found in veda.properties").clone();
-    let redis_addr = section.get("redis_addr").expect("param [redis_addr] not found in veda.properties").clone();
-    let redis_addr1 = section.get("redis_addr").expect("param [redis_addr] not found in veda.properties").clone();
-
-    info!("WEBSERVER PORT={:?}, redis addr={:?}", webserver_port, &redis_addr);
-
-    let _sys = actix_rt::System::new("example");
-
-    let address: Addr<SyncActor> = SyncArbiter::start(16, move || SyncActor::new(&ft_query_service_url, &redis_addr1));
-
-    HttpServer::new(move || {
-        let redis_addr = RedisActor::start(redis_addr.clone());
-
-        App::new()
-            .data(address.clone())
-            .data(redis_addr)
-            .wrap(middleware::Logger::default())
-            .service(web::resource("/geo_radius").route(web::post().to_async(geo_radius)))
-            .service(web::resource("/geo_radius_query").route(web::post().to_async(geo_query)))
-    })
-    .bind("[::]:".to_owned() + &webserver_port)?
-    .run()
 }

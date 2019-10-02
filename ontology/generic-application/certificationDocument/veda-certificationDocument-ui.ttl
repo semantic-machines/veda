@@ -77,7 +77,7 @@ v-s:CertificationDocumentTemplate
       <div class="col-md-3">
         <em about="v-s:registrationNumber" property="rdfs:label" class="view edit -search"></em>
         <div property="v-s:registrationNumber" class="view -edit -search"></div>
-        <veda-control property="v-s:registrationNumber" data-type="string" class="-view edit -search"></veda-control>
+        <veda-control property="v-s:registrationNumber" data-type="text" class="-view edit -search"></veda-control>
       </div>
       <div class="col-md-3">
         <em about="v-s:registrationDate" property="rdfs:label" class="view edit -search"></em>

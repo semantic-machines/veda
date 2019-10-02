@@ -118,17 +118,25 @@ veda.Module(function (veda) { "use strict";
 
     function processPortion() {
       var portion = result.splice(0, delta);
-      portion.forEach( fn );
-      if ( (total - result.length) / total - processingProgress >= 0.05 ) {
-        processingProgress = (total - result.length) / total;
-        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
-      }
-      if ( result.length ) {
-        setTimeout ? setTimeout(processPortion, pause) : processPortion();
-      } else {
-        console.log("Processing done:", total);
-        console.timeEnd("Processing total");
-      }
+      portion.reduce(function (prom, item) {
+        return prom.then(function () {
+          return fn(item);
+        }).catch(function (error) {
+          console.log("Error processing item:", item);
+          console.log(error, error.stack);
+        });
+      }, Promise.resolve()).then(function () {
+        if ( (total - result.length) / total - processingProgress >= 0.05 ) {
+          processingProgress = (total - result.length) / total;
+          console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
+        }
+        if ( result.length ) {
+          setTimeout ? setTimeout(processPortion, pause) : processPortion();
+        } else {
+          console.log("Processing done:", total);
+          console.timeEnd("Processing total");
+        }
+      });
     }
   };
 
@@ -283,15 +291,18 @@ veda.Module(function (veda) { "use strict";
             oneProp = values
               .filter(function(item){return !!item && !!item.valueOf();})
               .map( function (value) {
-                //return "'" + property_uri + "'=='" + value.data + "*'";
                 var q = value.data;
                 if ( !q.match(/[\+\-\*]/) ) {
-                  q = q.split(" ")
-                       .filter(function (token) { return token.length > 0; })
-                       .map(function (token) { return "+" + token + "*"; })
-                       .join(" ");
+                  var lines = q.trim().split("\n");
+                  var lineQueries = lines.map(function (line) {
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
+                    line = words.map(function (word) { return "+" + word + "*"; }).join(" ");
+                    return "'" + property_uri + "'=='" + line + "'";
+                  });
+                  return lineQueries.join(" || ");
+                } else {
+                  return "'" + property_uri + "'=='" + q + "'";
                 }
-                return "'" + property_uri + "'=='" + q + "'";
               })
               .join(" || ");
             break;
@@ -571,7 +582,7 @@ veda.Module(function (veda) { "use strict";
     if (!_sep)
       _sep = ' ' ;
     var str = _bundle1['rdfs:label'][0] + _sep + _bundle2['rdfs:label'][0] ;
-    return str ; 
+    return str ;
   };
 
   veda.Util.newBool = function (_data) {

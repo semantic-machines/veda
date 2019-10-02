@@ -112,8 +112,7 @@ v-s:InternalDocumentTemplate
         <div class="panel panel-default">
           <div class="panel-body bg-default">
             <em about="v-s:registrationNumber" property="rdfs:label"></em>
-            <div about="@" property="v-s:registrationNumber" class="-view edit -search"></div>
-            <div property="v-s:registrationNumber" class="view -edit search"></div>
+            <div property="v-s:registrationNumber" class="view -edit -search"></div>
             <veda-control data-type="text" property="v-s:registrationNumber" class="-view -edit search"></veda-control>
             <em about="v-s:hasDocumentKind" property="rdfs:label"></em>
             <div rel="v-s:hasDocumentKind" class="view -edit search" data-template="v-ui:LabelTemplate"></div>

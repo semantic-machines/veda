@@ -1,10 +1,8 @@
 #[macro_use]
 extern crate enum_primitive_derive;
-extern crate num_traits;
 #[macro_use]
 extern crate log;
-extern crate env_logger;
-extern crate uuid;
+
 use nng::{Message, Socket};
 use num_traits::{FromPrimitive, ToPrimitive};
 use std::collections::HashMap;
@@ -182,17 +180,17 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
             if to_msgpack(&indv, &mut raw).is_ok() {
                 let mut new_indv = Individual::default();
                 new_indv.obj.uri = uri.clone();
-                new_indv.obj.add_uri("uri", &uri, 0);
-                new_indv.obj.add_binary("new_state", raw, 0);
-                new_indv.obj.add_integer("cmd", cmd as i64, 0);
-                new_indv.obj.add_integer("date", date.unwrap_or_default(), 0);
-                new_indv.obj.add_string("source_veda", &source_veda.unwrap_or_default(), Lang::NONE, 0);
-                new_indv.obj.add_string("target_veda", &target_veda, Lang::NONE, 0);
+                new_indv.obj.add_uri("uri", &uri);
+                new_indv.obj.add_binary("new_state", raw);
+                new_indv.obj.add_integer("cmd", cmd as i64);
+                new_indv.obj.add_integer("date", date.unwrap_or_default());
+                new_indv.obj.add_string("source_veda", &source_veda.unwrap_or_default(), Lang::NONE);
+                new_indv.obj.add_string("target_veda", &target_veda, Lang::NONE);
 
                 let mut raw1: Vec<u8> = Vec::new();
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
                     info!("send {} to {}", uri, node_addr);
-                    let req = Message::from(raw1.as_ref());
+                    let req = Message::from(raw1.as_slice());
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
                         return Err(ExImCode::TransmitFailed);
@@ -259,7 +257,7 @@ pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, m
             if let Ok(uri) = parse_raw(&mut indv) {
                 indv.parse_all();
                 indv.obj.uri = uri.clone();
-                indv.obj.add_uri("sys:source", &source_veda, 0);
+                indv.obj.add_uri("sys:source", &source_veda);
 
                 let res = module.api.update(systicket, cmd, &mut indv);
 
@@ -348,7 +346,7 @@ pub fn create_db_id(module: &mut Module) -> Option<String> {
 
     let mut new_indv = Individual::default();
     new_indv.obj.uri = "cfg:system".to_owned();
-    new_indv.obj.add_string("sys:id", &uuid1, Lang::NONE, 0);
+    new_indv.obj.add_string("sys:id", &uuid1, Lang::NONE);
 
     let res = module.api.update(&systicket, IndvOp::Put, &mut new_indv);
 

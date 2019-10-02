@@ -1,0 +1,124 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
+
+
+<http://semantic-machines.com/veda/veda-technicalDocument-schema/>
+  rdf:type owl:Ontology ;
+  rdfs:label "Онтология системы Veda. Технический документ. Схема."@ru ;
+  rdfs:label "Veda system ontology. Technical document. Schema."@en ;
+  v-s:loadPriority 11 ;
+.
+
+#---------------------------------------------------------
+v-s:TechnicalDocument
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:Journaling ;
+  rdfs:subClassOf v-s:Projectable ;
+  rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Maintained ;
+  rdfs:subClassOf v-s:Registered ;
+  rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Financial ;
+  rdfs:subClassOf v-s:BackwardLink ;
+  rdfs:subClassOf v-s:ClassifiedRus ;
+  v-s:labelPattern "{@.v-s:shortLabel} - {@.v-s:title} - {@.v-s:hasClassifierSectionOfProjectDocumentation.v-s:shortLabel} - {@.v-s:hasClassifierMarkOfWorkingDrawingsSet.v-s:shortLabel}" ;
+  rdfs:label "Технический документ"@ru ;
+  rdfs:label "Technical document"@en ;
+  v-s:hasNumeration v-s:RegistrationNumberYearNumeration2_6 ;
+.
+
+#v-s:title
+v-s:PS_title_TechnicalDocument 
+	rdf:type v-ui:PropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:title ;
+	v-ui:minCardinality 1 ;
+	v-ui:maxCardinality 1 ;
+	rdfs:label "Спецификация свойства v-s:title для класса v-s:TechnicalDocument"@ru ;
+	rdfs:label "v-s:title property specification for v-s:TechnicalDocument class"@en ;
+.
+
+#v-s:hasLifecycleStage
+v-s:PS_hasLifecycleStage_TechnicalDocument
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:hasLifecycleStage ;
+	v-ui:queryPrefix "('rdf:type'=='v-s:LifecycleStage' && ('v-s:hasParentLink'=='d:a6uu8yexul97649zuczu37abf4f' || 'v-s:hasParentLink'=='d:i5kydruq51ybqqw5wbvgqevtqb'|| 'v-s:hasParentLink'=='d:lq47gp7z6dg6e7xeuv2p6l1rvj')) || '@'=='d:lq47gp7z6dg6e7xeuv2p6l1rvj'"^^xsd:string ;
+	v-ui:minCardinality 1 ;
+	v-ui:maxCardinality 1 ;
+	rdfs:label "Спецификация свойства v-s:hasLifecycleStage для класса v-s:TechnicalDocument"@ru ;
+	rdfs:label "v-s:hasLifecycleStage property specification for v-s:TechnicalDocument class"@en ;
+.
+
+#v-s:hasClassifierSectionOfProjectDocumentation
+v-s:PS_hasClassifierSectionOfProjectDocumentation_TechnicalDocument
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:hasClassifierSectionOfProjectDocumentation ;
+	v-ui:minCardinality 0 ;
+	v-ui:maxCardinality 100 ;
+	rdfs:label "Спецификация свойства v-s:hasClassifierSectionOfProjectDocumentation для класса gen:TechnicalDocument"@ru ;
+	rdfs:label "v-s:hasClassifierSectionOfProjectDocumentation property specification for gen:TechnicalDocument class"@en ;
+.
+
+#v-s:hasDocumentKind
+v-s:PS_hasDocumentKind_TechnicalDocument
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:hasDocumentKind ;
+	#Техническая документация
+	v-ui:queryPrefix "('rdf:type'=='v-s:DocumentKind' && 'v-s:hasParentLink'=='d:zh95m47jqjtl4dtq68h4zsm2')"^^xsd:string ;
+	v-ui:minCardinality 1 ;
+	v-ui:maxCardinality 1 ;
+	rdfs:label "Спецификация свойства v-s:hasDocumentKind для класса v-s:TechnicalDocument"@ru ;
+	rdfs:label "v-s:hasDocumentKind property specification for v-s:TechnicalDocument class"@en ;
+.
+
+#v-s:hasClassifierMarkOfWorkingDrawingsSet
+v-s:PS_hasClassifierMarkOfWorkingDrawingsSet_TechnicalDocument 
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:hasClassifierMarkOfWorkingDrawingsSet ;
+	v-ui:minCardinality 0 ;
+	v-ui:maxCardinality 100 ;
+	rdfs:label "Спецификация свойства v-s:hasClassifierMarkOfWorkingDrawingsSet для класса v-s:TechnicalDocument"@ru ;
+	rdfs:label "v-s:hasClassifierMarkOfWorkingDrawingsSet property specification for v-s:TechnicalDocument class"@en ;
+.
+
+#-----Документы, входящие в комплект
+v-s:hasTechnicalDocument
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Документы, входящие в комплект"@ru ;
+  rdfs:label "Documents included in the kit"@en ;
+  rdfs:range v-s:TechnicalDocument ;
+  rdfs:domain v-s:TechnicalDocument ;
+.
+v-s:PS_hasTechnicalDocument_TechnicalDocument
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:hasTechnicalDocument ;
+	v-ui:minCardinality 0 ;
+	v-ui:maxCardinality 1000 ;
+	rdfs:label "Спецификация свойства gen:hasTechnicalDocument для класса v-s:TechnicalDocument"@ru ;
+	rdfs:label "gen:hasTechnicalDocument property specification for v-s:TechnicalDocument class"@en ;
+.
+
+#v-s:backwardTarget 
+v-s:PS_backwardTarget_TechnicalDocument
+	rdf:type v-ui:ObjectPropertySpecification ;
+	v-ui:forClass v-s:TechnicalDocument ;
+	v-ui:forProperty v-s:backwardTarget ;
+	v-ui:minCardinality 0 ;
+	v-ui:maxCardinality 1 ;
+	v-ui:queryPrefix "'rdf:type'=='gen:TechnicalDocument'" ;
+	rdfs:label "Спецификация v-s:backwardTarget для класса gen:TechnicalDocument"@ru ;
+	rdfs:label "v-s:backwardTarget specification for gen:TechnicalDocument"@en ;
+.
