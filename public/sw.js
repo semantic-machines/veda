@@ -158,8 +158,23 @@ this.addEventListener("message", function (event) {
     flushQueue().then(function () {
       console.log("Done, queue flushed");
     });
+  } else if (typeof event.data === "object") {
+    auth = event.data;
   }
 });
+
+var auth;
+
+function checkTicket () {
+  return fetch("is_ticket_valid?ticket=" + auth.ticket)
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(myJson) {
+      console.log(JSON.stringify(myJson));
+    });
+}
+
 
 // indexedDB for non-GET requests
 var db_name = "veda-sw";
