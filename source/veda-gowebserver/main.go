@@ -309,8 +309,14 @@ case ConnectError:
 //requestHandler passes request context pointer to handler according to request pass
 func requestHandler(ctx *fasthttp.RequestCtx) {
 
+  // Fake headers
   ctx.Response.Header.Set("server", "nginx/1.8.1")
   ctx.Response.Header.SetCanonical([]byte("server"), []byte("nginx/1.8.1"))
+
+  // Security headers
+  ctx.Response.Header.Set("X-XSS-Protection", "1; mode=block")
+  ctx.Response.Header.Set("X-Content-Type-Options", "nosniff")
+  ctx.Response.Header.Set("X-Frame-Options", "sameorigin")
 
   routeParts := strings.Split(string(ctx.Path()[:]), "/")
   if len(routeParts) >= 2 && routeParts[1] == "files" {
