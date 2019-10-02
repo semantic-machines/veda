@@ -39,6 +39,19 @@ impl VStorage {
         }
     }
 
+    pub fn get_individual1<'a>(&mut self, uri: &str, iraw: &'a mut Individual) -> Option<&'a mut Individual> {
+        let res = match &mut self.storage {
+            EStorage::TT(s) => s.get_individual_from_db(StorageId::Individuals, uri, iraw),
+            EStorage::LMDB(s) => s.get_individual_from_db(StorageId::Individuals, uri, iraw),
+        };
+
+        if res {
+            return Some(iraw);
+        }
+
+        None
+    }
+
     pub fn get_individual(&mut self, uri: &str, iraw: &mut Individual) -> bool {
         match &mut self.storage {
             EStorage::TT(s) => s.get_individual_from_db(StorageId::Individuals, uri, iraw),
