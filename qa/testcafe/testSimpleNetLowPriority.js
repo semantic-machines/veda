@@ -18,7 +18,7 @@ import { Selector, t } from 'testcafe';
       .dragToElement('.state-io-condition-input .ep', '.glyphicon-stop')
       .click('button#workflow-save-button')
       .click('li[about="v-fs:FulltextSearch"]')
-      .typeText('veda-control[property="*"] input.form-control', 'Тестовый шаблон маршурута lowPriority')
+      .typeText('veda-control[property="*"] input.form-control', 'Тестовый шаблон маршрута lowPriority')
       .click('small[about="v-fs:AdvancedSearchBundle"]')
       .click('span[about="v-s:UserThing"] button.btn.btn-default.button-delete')
       .click('div.input-group span.input-group-btn #custom-search-button.search-button')

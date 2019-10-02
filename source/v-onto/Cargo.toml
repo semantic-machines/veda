@@ -10,12 +10,9 @@ path = "src/onto/lib.rs"
 [dependencies]
 byteorder = ">= 0.5.0"
 cbor-codec = { git = "https://github.com/itiu/cbor-codec.git" }
-human-panic = "1.0.1"
 rmp = "^0.8"
-rmp-serde = "0.13.7"
 rmp-serialize = "0.8.0"
 serde = "1.0"
 serde_json = "1.0"
-owning_ref = "0.3"
 log = "0.4"
-rust_decimal = "1.0.2"
+rust_decimal = "1.0.3"

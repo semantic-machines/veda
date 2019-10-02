@@ -24,7 +24,7 @@ void main(string[] args)
 {
     if (args.length < 3)
     {
-        stderr.writeln("use lmdb2queue [individual/string] [output_queue_name] [veda_queue/simple_queue]");
+        stderr.writeln("use lmdb2queue [individual/string] [output_queue_name] [veda_queue/simple_queue] [after_id]");
         return;
     }
 
@@ -38,10 +38,10 @@ void main(string[] args)
     }
 
     to_queue = true;
-    if (args.length == 4)
+    if (args.length == 5)
     {
         to_queue = false;
-        after_id = args[ 3 ];
+        after_id = args[ 4 ];
     }
 
     string[ string ] properties;
@@ -212,6 +212,11 @@ public long convert(LmdbDriver src, Queue dest, string source_type, string queue
                             dest.push(new_bin);
                             log.trace("OK, %d KEY=[%s]", count, str_key);
                         }
+			else
+			{
+                            log.trace("ERR, unknown type %s", queue_type);
+			    return -1;
+			}
                     }
                 }
             }

@@ -239,7 +239,7 @@ class FanoutProcess : VedaModule
         }
         else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Person")))
         {
-            foreach (Resource elt; indv.getResources("rdf:type"))
+            foreach (Resource elt; indv.getResources("v-s:hasAccount"))
             {
                 string ac_uri = elt.uri;
                 if (ac_uri is null)

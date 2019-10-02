@@ -564,8 +564,8 @@ v-s:LetterRegistrationRecordTemplate
     <div class="row">
       <div class="col-sm-6">
         <em about="v-s:registrationNumber" property="rdfs:label"></em>
-        <div property="v-s:registrationNumber" class="view -edit search"></div>
-        <veda-control property="v-s:registrationNumber" data-type="string" class="-view edit search"></veda-control>
+        <div property="v-s:registrationNumber" class="view -edit -search"></div>
+        <veda-control property="v-s:registrationNumber" data-type="text" class="-view edit search"></veda-control>
       </div>
       <div class="col-sm-6">
         <em about="v-s:registrationDate" property="rdfs:label"></em>
@@ -612,14 +612,16 @@ v-s:LetterRegistrationRecordTemplate
       }
     });
   }
-
-  if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
-    template.addClass("panel-info");
-    template.children(":first").addClass("bg-info");
-  } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
-    template.addClass("panel-success");
-    template.children(":first").addClass("bg-success");
-  }
+  //временное решение так как при быстрой загрузке template.parent() пустой
+  setTimeout(function(){
+    if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordSender" ) {
+      template.addClass("panel-info");
+      template.children(":first").addClass("bg-info");
+    } else if ( template.parent().attr("rel") === "v-s:hasLetterRegistrationRecordRecipient" ) {
+      template.addClass("panel-success");
+      template.children(":first").addClass("bg-success");
+    }
+  }, 300);
   //# sourceURL=v-s:LetterRegistrationRecordTemplate_post
 </script>
   """ ;

@@ -149,7 +149,7 @@ v-s:Update
   rdfs:label "Обновить"@ru ;
   rdfs:label "Update"@en ;
 .
-v-s:Find
+v-s:FindBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Find"@en ;
@@ -208,11 +208,6 @@ v-s:InvertSelection
   rdf:type v-s:Bundle ;
   rdfs:label "Инвертировать"@ru ;
   rdfs:label "Invert"@en ;
-.
-v-s:Create
-  rdf:type v-s:Bundle ;
-  rdfs:label "Создать"@ru ;
-  rdfs:label "Create"@en ;
 .
 v-s:CreateReport
   rdf:type v-s:Bundle ;
@@ -347,7 +342,7 @@ v-s:Attention
 .
 v-s:HeadOrganization
   rdf:type v-s:Bundle ;
-  rdfs:label "Головная организация"@ru ;
+  rdfs:label "Входит в объединения"@ru ;
   rdfs:label "Head organization"@en ;
 .
 v-s:StartTypingBundle
@@ -375,11 +370,6 @@ v-s:CoordinationList
   rdfs:label "Лист согласования"@ru ;
   rdfs:label "Coordination list"@en ;
 .
-v-s:CreateBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Создать"@ru ;
-  rdfs:label "Create"@en ;
-.
 v-s:SuccessBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Успешно"@ru ;
@@ -389,4 +379,9 @@ v-s:ErrorBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Ошибка"@ru ;
   rdfs:label "Error"@en ;
+.
+v-s:CreateBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
 .

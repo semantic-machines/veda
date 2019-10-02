@@ -243,15 +243,7 @@ v-s:ContractorLock_permission1
 .
 
 # ------------------------------------------------------------ ВКЛЮЧЕНИЯ В ГРУППЫ --
-v-s:Organization_Environment_membership
-  rdf:type v-s:Membership ;
-  v-s:memberOf v-s:Organization_Environment ;
-  v-s:resource v-s:Organization ;
-  v-s:resource v-s:Organization_group ;
-  v-s:resource v-s:Subsidiary ;
-  v-s:resource v-s:Subsidiary_group ;
-  rdfs:label "Члены группы Окружение Organization - схема и индивиды" ;
-.
+
 v-s:Contractor_Environment_membership
   rdf:type v-s:Membership ;
   v-s:memberOf v-s:Contractor_Environment ;

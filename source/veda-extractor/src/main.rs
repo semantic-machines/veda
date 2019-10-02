@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate log;
-extern crate env_logger;
 
 use chrono::Local;
 use env_logger::Builder;
@@ -265,11 +264,11 @@ fn main() -> std::io::Result<()> {
         if to_msgpack(&new_state_indv, &mut raw).is_ok() {
             let mut new_indv = Individual::default();
             new_indv.obj.uri = msg_id.to_string();
-            new_indv.obj.add_binary("new_state", raw, 0);
-            new_indv.obj.add_integer("cmd", cmd as i64, 0);
-            new_indv.obj.add_integer("date", date, 0);
-            new_indv.obj.add_string("source_veda", source, Lang::NONE, 0);
-            new_indv.obj.add_string("target_veda", target, Lang::NONE, 0);
+            new_indv.obj.add_binary("new_state", raw);
+            new_indv.obj.add_integer("cmd", cmd as i64);
+            new_indv.obj.add_integer("date", date);
+            new_indv.obj.add_string("source_veda", source, Lang::NONE);
+            new_indv.obj.add_string("target_veda", target, Lang::NONE);
 
             info!("add to export queue: uri={}, source={}, target={}", new_state_indv.obj.uri, &source, &target);
 

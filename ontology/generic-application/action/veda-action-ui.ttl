@@ -5,6 +5,7 @@
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
 @prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
+@prefix v-fc: <http://semantic-machines.com/veda/veda-function-create/> .
 
 
 <http://semantic-machines.com/veda/veda-action-ui>
@@ -40,4 +41,443 @@ v-s:PsResponsibleForAction
   v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
   rdfs:label "Спецификация свойства responsible для класса Action"@ru ;
   rdfs:label "Responsible property specification for Action class"@en ;
+.
+
+
+v-s:RequestCreate
+  a v-fc:Create;
+  rdfs:label "Заявка"@ru ;
+  rdfs:label "Request"@en ;
+  v-fc:hasBlank v-s:RequestBlank ;
+.
+v-s:RequestBlank
+  a v-fc:Blank;
+  rdfs:label "Заявка"@ru ;
+  rdfs:label "Request"@en ;
+  v-fc:targetType v-s:Request ;
+.
+# ------------------------------------------------------------Шаблон для Action--
+v-s:Action_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Мероприятия"@ru ;
+  rdfs:label "Action template"@en ;
+  v-ui:forClass v-s:Action;
+  v-ui:template
+  """
+<div>
+  <div class="container sheet">
+    <h3 class="margin-sm">
+      <span about="@" property="rdf:type"></span>
+      <small about="@" property="rdfs:label" class="view edit -search"></small>
+    </h3>
+    <span about="@" data-template="v-ui:RabbitHole"></span>
+    <section id="MainProperties">
+      <h4 class="section-header" about="v-s:MainProperties" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:hasStatus" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-3 col-xs-3">
+          <div rel="v-s:hasStatus" class="view -edit search" data-template="v-ui:StatusTemplate"></div>
+          <veda-control data-type="link" rel="v-s:hasStatus" class="-view edit search fulltext dropdown"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:responsible" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div rel="v-s:responsible" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="link" rel="v-s:responsible" class="-view edit search fulltext"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:responsibleDepartment" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div rel="v-s:responsibleDepartment" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="link" rel="v-s:responsibleDepartment" class="-view edit search fulltext"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:responsibleOrganization" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div rel="v-s:responsibleOrganization" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="link" rel="v-s:responsibleOrganization" class="-view edit search fulltext"></veda-control>
+        </div>
+      </div>
+      <!--<div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:description" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div property="v-s:description" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="text" property="v-s:description" class="-view edit search"></veda-control>
+        </div>
+      </div>-->
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:attachment" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div rel="v-s:attachment" class="view -edit search" data-template="v-ui:FileTemplateWithComment"></div>
+          <veda-control data-type="file" rel="v-s:attachment" class="-view edit search"></veda-control>
+        </div>
+      </div>
+    </section>
+    <section id="hasAction">
+      <h4 class="section-header" about="v-s:hasAction" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:datePlan" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-3 col-xs-3">
+          <div property="v-s:datePlan" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="date" property="v-s:datePlan" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:timeEffort" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <veda-control data-type="worktime" property="v-s:timeEffort" class="view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:taskDescription" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div property="v-s:taskDescription" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="text" property="v-s:taskDescription" class="-view edit search"></veda-control>
+        </div>
+      </div>
+    </section>
+    <section id="hasAction">
+      <h4 class="section-header" about="v-s:hasAction" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:dateFact" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-3 col-xs-3">
+          <div property="v-s:dateFact" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="date" property="v-s:dateFact" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:timeEffort" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <veda-control data-type="worktime" property="v-s:count" class="view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-4">
+          <label about="v-s:reportDescription" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div property="v-s:reportDescription" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="text" property="v-s:reportDescription" class="-view edit search"></veda-control>
+        </div>
+      </div>
+    </section>
+    <section id="hasAction">
+      <h4 class="section-header" about="v-s:hasAction" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:hasAction" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <!--<div rel="v-s:hasAction" class="view edit -search" data-template="v-s:ActionEmbedded_Template" data-embedded="true"></div>-->
+          <!--<veda-control rel="v-s:hasAction" data-type="link" class="-view edit -search create"></veda-control>-->
+          <table class="table table-condensed table-bordered">
+            <thead>
+              <tr class="active">
+                <th width="1%">
+                  <span class="glyphicon glyphicon-zoom-in"></span>
+                </th>
+                <!--<th width="1%">№</th>-->
+                <th about="v-s:hasStatus" property="rdfs:label"></th>
+                <th about="mnd-s:PassCorrespondentPersonBundle" property="rdfs:label"></th>
+                <th about="mnd-s:PassCorrespondentPersonBundle" property="rdfs:label"></th>
+                <th  about="v-s:responsible" property="rdfs:label"></th>
+                <th  about="v-s:taskDescription" property="rdfs:label"></th>
+                <th  about="v-s:hasAction" property="rdfs:label"></th>
+                <th class="-view edit -search" ></th>
+              </tr>
+            </thead>
+            <tbody rel="v-s:hasAction" data-embedded="true" data-limit="10" data-more="true">
+              <tr>
+                <th width="1%">
+                  <span about="@" data-template="v-ui:IconModalTemplate"></span>
+                </th>
+                <td>
+                  <div about="@" rel="v-s:hasStatus" data-template="v-ui:StatusTemplate" class="view  edit search"></div>
+                  <veda-control data-type="link" rel="v-s:hasStatus" class="-view -edit search fulltext dropdown"></veda-control>
+                </td>
+                <td>
+                  <div about="@" property="mnd-s:PassCorrespondentPersonBundle" class="view  edit -search"></div>
+                </td>
+                 <td>
+                  <div about="@" property="mnd-s:PassCorrespondentPersonBundle" class="view  edit -search"></div>
+                </td>
+                <td>
+                  <div about="@" rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view  edit search"></div>
+                  <veda-control data-type="link" rel="v-s:responsible" class="-view -edit search fulltext dropdown"></veda-control>
+                </td>
+                <td>
+                  <div about="@" property="v-s:taskDescription" class="view  edit -search"></div>
+                </td>
+                <td>
+                  <div about="@" rel="v-s:hasAction" data-template="v-ui:ClassNameLabelLinkTemplate" class="view  edit search"></div>
+                  <veda-control data-type="link" rel="v-s:hasAction" class="-view -edit search fulltext dropdown"></veda-control>
+                </td>
+                <td width="100px" class="-view edit -search">
+                  <button type="button" class="action glyphicon glyphicon-duplicate -view edit -search"></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+            <veda-control data-type="link" rel="v-s:hasAction" class="-view edit -search create create-modal"></veda-control>
+        </div>
+      </div>
+    </section>
+    <section id="SystemProperties">
+      <h4 class="section-header" about="v-ui:SystemPropertiesTemplate" property="rdfs:comment"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="mnd-s:CreatedBundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="row">
+            <div class="col-sm-6 col-xs-6">
+              <veda-control data-type="link" rel="v-s:creator" class="-view -edit search fulltext"></veda-control>
+              <div about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+              <div rel="v-s:creator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+            </div>
+            <div class="col-sm-6 col-xs-6">
+              <veda-control property="v-s:created" data-type="date" class="-view -edit search"></veda-control>
+              <div about="@" property="v-s:created" class="view edit -search"></div>
+              <div property="v-s:created" class="-view -edit search"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="mnd-s:EditedBundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="row">
+            <div class="col-sm-6 col-xs-6">
+              <veda-control data-type="link" rel="v-s:lastEditor" class="-view -edit search fulltext"></veda-control>
+              <div about="@" rel="v-s:lastEditor" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+              <div rel="v-s:lastEditor" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+            </div>
+            <div class="col-sm-6 col-xs-6">
+              <veda-control data-type="date" property="v-s:edited" class="-view -edit search"></veda-control>
+              <div about="@" property="v-s:edited" class="view edit -search"></div>
+              <div property="v-s:edited" class="-view -edit search"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <hr>
+    <div class="actions">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
+    </div>
+  </div>
+</div>
+""" ;
+.
+
+
+# ------------------------------------------------------------Шаблон для Request--
+v-s:Request_Template
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон Заявки"@ru ;
+  rdfs:label "Request template"@en ;
+  v-ui:forClass v-s:Request;
+  v-ui:template
+  """
+<div>
+  <div class="container sheet">
+    <h3 class="margin-sm">
+      <span about="@" property="rdf:type"></span>
+      <small about="@" property="rdfs:label" class="view edit -search"></small>
+    </h3>
+    <section id="MainProperties">
+      <h4 class="section-header" about="v-s:MainProperties" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:registrationNumber" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-3 col-xs-3">
+          <div property="v-s:registrationNumber" class="view -edit -search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="text" property="v-s:registrationNumber" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:hasStatus" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-3 col-xs-3">
+          <div rel="v-s:hasStatus" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="link" rel="v-s:hasStatus" class="-view edit search fulltext dropdown"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:date" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-3 col-xs-3">
+          <div property="v-s:date" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:theme" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div property="v-s:theme" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
+          <veda-control data-type="string" property="v-s:theme" class="-view edit search"></veda-control>
+        </div>
+      </div>
+    </section>
+    <section id="hasAction">
+      <h4 class="section-header" about="v-s:hasAction" property="rdfs:label"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="v-s:hasAction" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <!--<div rel="v-s:hasAction" class="view edit -search" data-template="v-s:ActionEmbedded_Template" data-embedded="true"></div>-->
+          <!--<veda-control rel="v-s:hasAction" data-type="link" class="-view edit -search create"></veda-control>-->
+          <table class="table table-condensed table-bordered">
+            <thead>
+              <tr class="active">
+                <th width="1%">
+                  <span class="glyphicon glyphicon-zoom-in"></span>
+                </th>
+                <!--<th width="1%">№</th>-->
+                <th about="v-s:hasStatus" property="rdfs:label"></th>
+                <th about="mnd-s:PassCorrespondentPersonBundle" property="rdfs:label"></th>
+                <th about="mnd-s:PassCorrespondentPersonBundle" property="rdfs:label"></th>
+                <th  about="v-s:responsible" property="rdfs:label"></th>
+                <th  about="v-s:taskDescription" property="rdfs:label"></th>
+                <th  about="v-s:hasAction" property="rdfs:label"></th>
+                <th class="-view edit -search" ></th>
+              </tr>
+            </thead>
+            <tbody rel="v-s:hasAction" data-embedded="true" data-limit="10" data-more="true">
+              <tr>
+                <th width="1%">
+                  <span about="@" data-template="v-ui:IconModalTemplate"></span>
+                </th>
+                <td>
+                  <div about="@" rel="v-s:hasStatus" data-template="v-ui:StatusTemplate" class="view  edit search"></div>
+                  <veda-control data-type="link" rel="v-s:hasStatus" class="-view -edit search fulltext dropdown"></veda-control>
+                </td>
+                <td>
+                  <div about="@" property="mnd-s:PassCorrespondentPersonBundle" class="view  edit -search"></div>
+                </td>
+                 <td>
+                  <div about="@" property="mnd-s:PassCorrespondentPersonBundle" class="view  edit -search"></div>
+                </td>
+                <td>
+                  <div about="@" rel="v-s:responsible" data-template="v-ui:LabelTemplate" class="view  edit search"></div>
+                  <veda-control data-type="link" rel="v-s:responsible" class="-view -edit search fulltext dropdown"></veda-control>
+                </td>
+                <td>
+                  <div about="@" property="v-s:taskDescription" class="view  edit -search"></div>
+                </td>
+                <td>
+                  <div about="@" rel="v-s:hasAction" data-template="v-ui:ClassNameLabelLinkTemplate" class="view  edit search"></div>
+                  <veda-control data-type="link" rel="v-s:hasAction" class="-view -edit search fulltext dropdown"></veda-control>
+                </td>
+                <td width="100px" class="-view edit -search">
+                  <button type="button" class="action glyphicon glyphicon-duplicate -view edit -search"></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+            <veda-control data-type="link" rel="v-s:hasAction" class="-view edit -search create create-modal"></veda-control>
+        </div>
+      </div>
+    </section>
+    <section id="SystemProperties">
+      <h4 class="section-header" about="v-ui:SystemPropertiesTemplate" property="rdfs:comment"></h4>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="mnd-s:CreatedBundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="row">
+            <div class="col-sm-6 col-xs-6">
+              <veda-control data-type="link" rel="v-s:creator" class="-view -edit search fulltext"></veda-control>
+              <div about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+              <div rel="v-s:creator" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+            </div>
+            <div class="col-sm-6 col-xs-6">
+              <veda-control property="v-s:created" data-type="date" class="-view -edit search"></veda-control>
+              <div about="@" property="v-s:created" class="view edit -search"></div>
+              <div property="v-s:created" class="-view -edit search"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row row-attribute">
+        <div class="col-sm-3 col-xs-5">
+          <label about="mnd-s:EditedBundle" property="rdfs:label"></label>
+        </div>
+        <div class="col-sm-9 col-xs-7">
+          <div class="row">
+            <div class="col-sm-6 col-xs-6">
+              <veda-control data-type="link" rel="v-s:lastEditor" class="-view -edit search fulltext"></veda-control>
+              <div about="@" rel="v-s:lastEditor" data-template="v-ui:LabelTemplate" class="view edit -search"></div>
+              <div rel="v-s:lastEditor" data-template="v-ui:LabelTemplate" class="-view -edit search"></div>
+            </div>
+            <div class="col-sm-6 col-xs-6">
+              <veda-control data-type="date" property="v-s:edited" class="-view -edit search"></veda-control>
+              <div about="@" property="v-s:edited" class="view edit -search"></div>
+              <div property="v-s:edited" class="-view -edit search"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <hr>
+    <!-- BUTTONS -->
+    <div class="actions view edit -search">
+      <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="send edit save cancel delete journal journal-dms task"></span>
+    </div>
+  </div>
+</div>
+<script>
+  $("#bluePlus", template).click(function () {
+    individual.save();
+    var _class = new veda.IndividualModel("v-s:Action"),
+        action = new veda.IndividualModel(),
+        tmpl = new veda.IndividualModel("v-s:Action_Template");
+    action["rdf:type"] = [_class];
+    action["v-s:parent"] = [individual];
+    /*action["v-s:backwardTarget"] = [individual];
+    action["v-s:backwardProperty"] = [new veda.IndividualModel("v-s:hasAction")];*/
+    var modal = veda.Util.showModal(action, tmpl, "edit");
+    action.one("beforeReset", function () {
+      modal.modal("hide").remove();
+    });
+    action.one("afterSave", function () {
+      modal.modal("hide").remove();
+    });
+  });
+</script>
+""" ;
 .

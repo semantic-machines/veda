@@ -9,7 +9,6 @@ path = "src/lib.rs"
 
 [dependencies]
 futures = "0.1"
-human-panic = "1.0.1"
 log = "0.4"
 rusty_tarantool = { git = "https://github.com/itiu/RustyTarantool.git" }
 tokio = "0.1"

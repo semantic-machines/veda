@@ -85,9 +85,13 @@ v-s:actualState
   rdfs:range xsd:string ;
   rdfs:domain v-s:Initiative ;
 .
-
-
-
+v-s:financialEffectAvailability
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Initiative ;
+  rdfs:label "Наличие финансового эффекта"@ru ;
+  rdfs:label "Financial effect"@en ;
+  rdfs:range xsd:boolean ;
+.
 
 # -- Может в Проект а не в Инициативу. Используется ли в Идее
 v-s:projectManager
@@ -111,8 +115,12 @@ v-s:Idea
   rdfs:subClassOf v-s:Initiative ;
   rdfs:subClassOf v-s:Maintained ;
   rdfs:subClassOf v-s:Document ;
+  rdfs:subClassOf v-s:Labeled ;
+  rdfs:subClassOf v-s:Enumerated ;
   rdfs:label "Идея"@ru ;
   rdfs:label "Idea"@en ;
+  v-s:labelPattern "{@.rdf:type.rdfs:label} {@.v-s:registrationNumber}. {@.v-s:title}" ;
+  v-s:hasNumeration v-s:RegistrationNumberIdeaAndProjectsNumeration ;  
 .
 #--------------------------------------------------
 v-s:Project
