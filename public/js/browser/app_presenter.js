@@ -291,6 +291,14 @@ veda.Module(function (veda) { "use strict";
       console.log("No SW registered yet");
     }
 
+    //~ veda.on("started", function () {
+      //~ navigator.serviceWorker.controller.postMessage({
+        //~ end_time: localStorage.end_time,
+        //~ ticket: localStorage.ticket,
+        //~ user_uri: localStorage.user_uri
+      //~ });
+    //~ });
+
     // Install application prompt
     var showAddToHomeScreen = function () {
       var installApp = document.getElementById("install-app");
