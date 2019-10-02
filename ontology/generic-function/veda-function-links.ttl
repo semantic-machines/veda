@@ -239,7 +239,14 @@ v-s:LinksListTemplate
     individual.off("afterSave", saveHandler);
   });
   function saveHandler() {
-    $("[rel='v-s:hasLink']", template).children().trigger("save");
+    var children = $("[rel='v-s:hasLink']", template).children();
+    children.each(function () {
+      var link_template = $(this);
+      var link_uri = link_template.attr("resource");
+      var link = new veda.IndividualModel(link_uri);
+      link.save();
+      link_template.trigger("view");
+    });
   }
 
   individual.on("v-s:hasLink", linksHandler);
