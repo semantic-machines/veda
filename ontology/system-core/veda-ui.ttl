@@ -2569,14 +2569,15 @@ v-ui:TreeTemplate
               selectRow.remove();
             }
           }
+          return value["rdf:type"][0].id;
         });
       });
     })).then(function () {
       if ( parentRow ) {
-        var addButton = $("<tr data-level='"+(parentLvl+1)+"'><td></td><td><button class='btn btn-sm btn-primary' style='margin-left: " + 16 * (parentLvl + 1) + "px;'>Добавить</button></td><td></td><tr>");
+        var addButton = $("<button class='btn btn-sm btn-primary pull-right'>Добавить</button>");
         addButton.click(function(){
           var parentUri = parentRow.attr("resource");
-          var type = $(this).closest("tr").prev("tr").attr("typeof");
+          var type = $(this).closest("tr").attr("typeof");
           var newItem = new veda.IndividualModel();
           newItem["rdf:type"] = [new veda.IndividualModel(type)];
           newItem["v-s:hasParentLink"] = [new veda.IndividualModel(parentUri)];
@@ -2591,7 +2592,8 @@ v-ui:TreeTemplate
             modal.modal("hide").remove();
           });
         });
-        cont.append(addButton);
+        //cont.append(addButton);
+        parentRow.children().last().append(addButton);
         parentRow.after( cont.children() );
       } else {
         tbody.append( cont.children() );
