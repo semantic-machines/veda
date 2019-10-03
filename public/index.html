@@ -41,7 +41,7 @@
 
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="cache-control" content="no-cache" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:;" />
   </head>
   <body>
 
@@ -97,7 +97,7 @@
 
     <!-- Autocomplete feature -->
     <iframe name="autocomplete-frame" style="display:none" src="about:blank"></iframe>
-    <form target="autocomplete-frame" method="post" action="about:invalid" autocomplete="on" onkeypress="return (event.keyCode !== 13 || event.target.tagName === 'TEXTAREA')">
+    <form target="autocomplete-frame" method="post" action="about:blank" autocomplete="on" onkeypress="return (event.keyCode !== 13 || event.target.tagName === 'TEXTAREA')">
       <!-- Application container -->
       <div id="app"></div>
     </form>
@@ -432,11 +432,11 @@
     <script type="text/javascript" src="./js/common/lib/riot.js"></script>
     <script type="text/javascript" src="./js/common/lib/sha256.js"></script>
     <script type="text/javascript" src="./js/common/veda_spa.js"></script>
-    <script type="text/javascript" src="./js/common/util.js"></script>
+    <script type="text/javascript" src="./js/common/util.js?v=4"></script>
     <script type="text/javascript" src="./js/common/app_model.js?v=3"></script>
-    <script type="text/javascript" src="./js/common/individual_model.js"></script>
+    <script type="text/javascript" src="./js/common/individual_model.js?v=1"></script>
     <script type="text/javascript" src="./js/common/user_model.js?v=1"></script>
-    <script type="text/javascript" src="./js/common/ontology_model.js"></script>
+    <script type="text/javascript" src="./js/common/ontology_model.js?v=1"></script>
     <script type="text/javascript" src="./js/common/numerator.js"></script>
 
     <!-- Veda browser only -->
@@ -445,9 +445,9 @@
     <script type="text/javascript" src="./js/browser/local_db.js?v=1"></script>
     <script type="text/javascript" src="./js/browser/backend.js"></script>
     <script type="text/javascript" src="./js/browser/util.js"></script>
-    <script type="text/javascript" src="./js/browser/veda_controls.js"></script>
+    <script type="text/javascript" src="./js/browser/veda_controls.js?v=1"></script>
     <script type="text/javascript" src="./js/browser/table_sortable.js"></script>
-    <script type="text/javascript" src="./js/browser/individual_presenter.js"></script>
+    <script type="text/javascript" src="./js/browser/individual_presenter.js?v=2"></script>
     <script type="text/javascript" src="./modules/docflow/js/browser/veda_workflow_editor.js"></script>
     <script type="text/javascript" src="./js/browser/app_presenter.js"></script>
     <script type="text/javascript" src="./js/browser/auth.js?v=8"></script>
