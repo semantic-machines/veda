@@ -298,6 +298,29 @@ impl Individual {
         Err(IndividualError::None)
     }
 
+    pub fn get_first_datetime(&mut self, predicate: &str) -> Result<i64, IndividualError> {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    if let Value::Datetime(i) = &v[0].value {
+                        return Ok(*i);
+                    }
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        Err(IndividualError::None)
+    }
+
     pub fn get_first_float(&mut self, predicate: &str) -> Result<f64, IndividualError> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
@@ -422,7 +445,7 @@ impl IndividualObj {
         values.push(Resource {
             rtype: DataType::Datetime,
             order: values.len() as u16,
-            value: Value::Int(i),
+            value: Value::Datetime(i),
         });
     }
 
@@ -432,7 +455,7 @@ impl IndividualObj {
         values.push(Resource {
             rtype: DataType::Datetime,
             order: 0,
-            value: Value::Int(i),
+            value: Value::Datetime(i),
         });
     }
 

@@ -7,6 +7,7 @@ pub enum Value {
     Bool(bool),
     Num(i64, i64),
     Binary(Vec<u8>),
+    Datetime(i64)
 }
 
 #[derive(Debug, PartialEq)]
@@ -43,6 +44,14 @@ impl Resource {
 
     pub fn get_int(&self) -> i64 {
         if let Value::Int(t) = self.value {
+            t
+        } else {
+            0
+        }
+    }
+
+    pub fn get_datetime(&self) -> i64 {
+        if let Value::Datetime(t) = self.value {
             t
         } else {
             0
