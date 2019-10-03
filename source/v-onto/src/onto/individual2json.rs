@@ -53,6 +53,9 @@ impl Serialize for Resource {
             Value::Int(i) => {
                 tup.serialize_field("data", &*i)?;
             }
+            Value::Datetime(i) => {
+                tup.serialize_field("data", &*i)?;
+            }
             Value::Bool(b) => {
                 tup.serialize_field("data", &*b)?;
             }
@@ -94,6 +97,7 @@ impl Serialize for Value {
                 serializer.serialize_str(&d.to_string())
             }
             Value::Int(i) => serializer.serialize_i64(*i),
+            Value::Datetime(i) => serializer.serialize_i64(*i),
             Value::Bool(b) => serializer.serialize_bool(*b),
             Value::Str(s, l) => {
                 //serializer.serialize_newtype_variant("type", 0, "data", s)
