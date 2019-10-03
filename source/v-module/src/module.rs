@@ -90,4 +90,13 @@ impl Module {
         }
         None
     }
+
+    pub fn get_individual(&mut self, uri: &str) -> Option<Box<Individual>> {
+        let mut iraw = Box::new (Individual::default());
+        if !self.storage.get_individual (uri, &mut iraw) {
+            return None;
+        }
+        Some(iraw)
+    }
+
 }

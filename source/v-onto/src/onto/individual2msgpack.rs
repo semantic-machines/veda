@@ -27,7 +27,7 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
         DataType::Datetime => {
             write_array_len(out, 2)?;
             write_u8(out, r.rtype.clone() as u8)?;
-            write_sint(out, r.get_int())?;
+            write_sint(out, r.get_datetime())?;
         }
         DataType::Decimal => {
             write_array_len(out, 3)?;
