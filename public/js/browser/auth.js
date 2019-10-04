@@ -32,12 +32,12 @@ veda.Module(function (veda) { "use strict";
           if (ntlm) {
             var params = {
               type: "POST",
-              url: ntlm + "ad/",
+              url: "/ad/",
               data: {
                 "login": login,
                 "password": password
               },
-              dataType : "json",
+              dataType: "json",
               async: true
             };
             return $.ajax(params);
