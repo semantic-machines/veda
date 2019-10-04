@@ -18,99 +18,38 @@ import (
 type ResultCode uint32
 
 const (
-    zero                         ResultCode =  0
-
-    /// 200
-    Ok                           ResultCode =  200
-
-    /// 201
-    Created                      ResultCode =  201
-
-    /// 204
-    NoContent                   ResultCode =  204
-
-    /// 400
-    BadRequest                  ResultCode =  400
-
-    /// 403
-    Forbidden                    ResultCode =  403
-
-    /// 404
-    NotFound                    ResultCode =  404
-
-    /// 422
-    UnprocessableEntity         ResultCode =  422
-
-    /// 429
-    TooManyRequests             ResultCode =  429
-
-    /// 464
-    SecretExpired               ResultCode =  464
-
-    /// 465
-    EmptyPassword               ResultCode =  465
-
-    /// 466
-    NewPasswordIsEqualToOld   ResultCode =  466
-
-    /// 467
-    InvalidPassword             ResultCode =  467
-
-    /// 468
-    InvalidSecret               ResultCode =  468
-
-    /// 469
-    PasswordExpired             ResultCode =  469
-
-    /// 470
-    TicketNotFound             ResultCode =  470
-
-    /// 471
-    TicketExpired               ResultCode =  471
-
-    /// 472
-    NotAuthorized               ResultCode =  472
-
-    /// 473
-    AuthenticationFailed        ResultCode =  473
-
-    /// 474
-    NotReady                    ResultCode =  474
-
-    /// 475
-    FailOpenTransaction        ResultCode =  475
-
-    /// 476
-    FailCommit                  ResultCode =  476
-
-    /// 477
-    FailStore                   ResultCode =  477
-
-    /// 500
-    InternalServerError        ResultCode =  500
-
-    /// 501
-    NotImplemented              ResultCode =  501
-
-    /// 503
-    ServiceUnavailable          ResultCode =  503
-
-    InvalidIdentifier           ResultCode =  904
-
-    /// 999
-    DatabaseModifiedError        ResultCode =  999
-
-    /// 1021
-    DiskFull                    ResultCode =  1021
-
-    /// 1022
-    DuplicateKey                ResultCode =  1022
-
-    /// 1118
-    SizeTooLarge               ResultCode =  1118
-
-    /// 4000
-    ConnectError                ResultCode =  4000
+    zero                    ResultCode = 0
+    Ok                      ResultCode = 200
+    Created                 ResultCode = 201
+    NoContent               ResultCode = 204
+    BadRequest              ResultCode = 400
+    Forbidden               ResultCode =  403
+    NotFound                ResultCode =  404
+    UnprocessableEntity     ResultCode =  422
+    TooManyRequests         ResultCode =  429
+    SecretExpired           ResultCode =  464
+    EmptyPassword           ResultCode =  465
+    NewPasswordIsEqualToOld ResultCode =  466
+    InvalidPassword         ResultCode =  467
+    InvalidSecret           ResultCode =  468
+    PasswordExpired         ResultCode =  469
+    TicketNotFound          ResultCode =  470
+    TicketExpired           ResultCode =  471
+    NotAuthorized           ResultCode =  472
+    AuthenticationFailed    ResultCode =  473
+    NotReady                ResultCode =  474
+    FailOpenTransaction     ResultCode =  475
+    FailCommit              ResultCode =  476
+    FailStore               ResultCode =  477
+    InternalServerError     ResultCode =  500
+    NotImplemented          ResultCode =  501
+    ServiceUnavailable      ResultCode =  503
+    InvalidIdentifier       ResultCode =  904
+    DatabaseModifiedError   ResultCode =  999
+    DiskFull                ResultCode =  1021
+    DuplicateKey            ResultCode =  1022
+    SizeTooLarge            ResultCode =  1118
+    ConnectError            ResultCode =  4000
 )
 
 type ticket struct {
@@ -306,96 +245,6 @@ case ConnectError:
   return exceptionJSON
 }
 
-//requestHandler passes request context pointer to handler according to request pass
-func requestHandler(ctx *fasthttp.RequestCtx) {
-
-  // Fake headers
-  ctx.Response.Header.Set("server", "nginx/1.8.1")
-  ctx.Response.Header.SetCanonical([]byte("server"), []byte("nginx/1.8.1"))
-
-  // Security headers
-  ctx.Response.Header.Set("X-XSS-Protection", "1; mode=block")
-  ctx.Response.Header.Set("X-Content-Type-Options", "nosniff")
-  ctx.Response.Header.Set("X-Frame-Options", "sameorigin")
-
-  routeParts := strings.Split(string(ctx.Path()[:]), "/")
-  if len(routeParts) >= 2 && routeParts[1] == "files" {
-    files(ctx, routeParts)
-    return
-  }
-
-  switch string(ctx.Path()[:]) {
-    case "/api/get_individual":
-      getIndividual(ctx)
-
-    case "/api/get_individuals":
-      getIndividuals(ctx)
-
-    case "/api/put_individual":
-      putIndividual(ctx)
-
-    case "/api/put_individuals":
-      putIndividuals(ctx)
-
-    case "/api/remove_individual":
-      removeIndividual(ctx)
-
-    case "/api/remove_from_individual":
-      removeFromIndividual(ctx)
-
-    case "/api/set_in_individual":
-      setInIndividual(ctx)
-
-    case "/api/add_to_individual":
-      addToIndividual(ctx)
-
-    case "/api/authenticate":
-      authenticate(ctx)
-
-    case "/api/get_rights":
-      getRights(ctx)
-
-    case "/api/get_rights_origin":
-      getAclData(ctx, GetRightsOrigin)
-
-    case "/api/get_membership":
-      getAclData(ctx, GetMembership)
-
-    case "/api/get_ticket_trusted":
-      getTicketTrusted(ctx)
-
-    case "/api/is_ticket_valid":
-      isTicketValid(ctx)
-
-    case "/api/query":
-      query(ctx)
-
-    case "/api/send_to_module":
-      sendToModule(ctx)
-
-    case "/api/get_operation_state":
-      getOperationState(ctx)
-
-    //for tests request only sending file is needed
-    case "/tests":
-      ctx.SendFile("public/tests.html")
-
-    case "/ontology.json":
-      ctx.Response.Header.Set("Cache-Control", "max-age=43200, no-cache, must-revalidate, private")
-      ctx.SendFile("public/ontology.json")
-
-    default:
-      ctx.Response.Header.Set("Cache-Control", "max-age=43200, must-revalidate, private")
-      fs := &fasthttp.FS{
-        Root:       "public/",
-        IndexNames: []string{"index.html"},
-        Compress:   true,
-      }
-      fsHandler := fs.NewRequestHandler()
-      fsHandler(ctx)
-  }
-}
-
 func getGOMAXPROCS() int {
   return runtime.GOMAXPROCS(0)
 }
@@ -452,33 +301,89 @@ func main() {
   ontologyCache = make(map[string]Individual)
   mifCache = make(map[int]*ModuleInfoFile)
 
-  go func() {
-    h := fasthttp.Server{
-      Handler:            requestHandler,
-      MaxRequestBodySize: 10 * 1024 * 1024 * 1024,
+  // File server
+  fs := &fasthttp.FS {
+    Root:                 "public/",
+    IndexNames:           []string{"index.html"},
+    Compress:             true,
+  }
+  fsHandler := fs.NewRequestHandler()
 
-      // These timeouts trigger high iowait without the CL 34784
-      // if many requests are sent over more than 100K
-      // keep-alive http connections.
+  // Request handler
+  requestHandler := func (ctx *fasthttp.RequestCtx) {
+    ctx.Response.Header.Set("server", "nginx/1.8.1")
+    ctx.Response.Header.SetCanonical([]byte("server"), []byte("nginx/1.8.1"))
+    ctx.Response.Header.Set("X-XSS-Protection", "1; mode=block")
+    ctx.Response.Header.Set("X-Content-Type-Options", "nosniff")
+    ctx.Response.Header.Set("X-Frame-Options", "sameorigin")
 
-      ReadTimeout:  600 * time.Second,
-      WriteTimeout: 600 * time.Second,
-      MaxKeepaliveDuration: 600 * time.Second,
-      ReadBufferSize: 8 * 1024,
+    routeParts := strings.Split(string(ctx.Path()[:]), "/")
+    if len(routeParts) >= 2 && routeParts[1] == "files" {
+      files(ctx, routeParts)
+      return
     }
-    err = h.ListenAndServe("0.0.0.0:" + webserverPort)
+
+    switch string(ctx.Path()[:]) {
+      case "/api/get_individual":
+        getIndividual(ctx)
+      case "/api/get_individuals":
+        getIndividuals(ctx)
+      case "/api/put_individual":
+        putIndividual(ctx)
+      case "/api/put_individuals":
+        putIndividuals(ctx)
+      case "/api/remove_individual":
+        removeIndividual(ctx)
+      case "/api/remove_from_individual":
+        removeFromIndividual(ctx)
+      case "/api/set_in_individual":
+        setInIndividual(ctx)
+      case "/api/add_to_individual":
+        addToIndividual(ctx)
+      case "/api/authenticate":
+        authenticate(ctx)
+      case "/api/get_rights":
+        getRights(ctx)
+      case "/api/get_rights_origin":
+        getAclData(ctx, GetRightsOrigin)
+      case "/api/get_membership":
+        getAclData(ctx, GetMembership)
+      case "/api/get_ticket_trusted":
+        getTicketTrusted(ctx)
+      case "/api/is_ticket_valid":
+        isTicketValid(ctx)
+      case "/api/query":
+        query(ctx)
+      case "/api/send_to_module":
+        sendToModule(ctx)
+      case "/api/get_operation_state":
+        getOperationState(ctx)
+      case "/tests":
+        ctx.SendFile("public/tests.html")
+      case "/ontology.json":
+        ctx.Response.Header.Set("Cache-Control", "max-age=43200, no-cache, must-revalidate, private")
+        ctx.SendFile("public/ontology.json")
+      default:
+        fsHandler(ctx)
+    }
+  }
+
+  // Server instance
+  server := fasthttp.Server {
+    Handler:              requestHandler,
+    MaxRequestBodySize:   10 * 1024 * 1024 * 1024,
+    ReadTimeout:          600 * time.Second,
+    WriteTimeout:         600 * time.Second,
+    MaxKeepaliveDuration: 600 * time.Second,
+    ReadBufferSize:       8 * 1024,
+  }
+
+  go func() {
+    err = server.ListenAndServe("0.0.0.0:" + webserverPort)
     if err != nil {
       log.Fatal("ERR! ON STARTUP HTTP WEBSERVER ", err)
     }
   }()
-
-  if useHTTPS {
-    err = fasthttp.ListenAndServeTLS("0.0.0.0:"+webserverHTTPSPort, "ssl-certs/server.crt",
-      "ssl-certs/server.key", requestHandler)
-    if err != nil {
-      log.Fatal("ERR! ON STARTUP HTTPS WEBSERVER", err)
-    }
-  }
 
   fmt.Println("web server ready, listen " + webserverPort)
   select {}
