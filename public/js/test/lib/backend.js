@@ -7,12 +7,9 @@ if (typeof exports === 'object') {
 
 function Backend () {
 
-//  var base = "http://127.0.0.1:8080/";
-    var base = "";
-
   function call_server(params) {
     var method = params.method,
-        url = base + params.url,
+        url = params.url,
         data = params.data,
         xhr = new XMLHttpRequest();
     if (method === "GET") {
@@ -46,26 +43,12 @@ function Backend () {
     }
   }
 
-  this.flush = function flush(module_id, wait_op_id) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "flush",
-      data: {
-        "module_id": isObj ? arg.module_id : module_id,
-        "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
-      }
-    };
-    return call_server(params);
-  }
-
   this.get_rights = function get_rights(ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_rights",
+      url: "api/get_rights",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
@@ -79,7 +62,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_rights_origin",
+      url: "api/get_rights_origin",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
@@ -93,7 +76,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_membership",
+      url: "api/get_membership",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
@@ -109,7 +92,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "authenticate",
+      url: "api/authenticate",
       data: {
         "login": isObj ? arg.login : login,
         "password": isObj ? arg.password : password
@@ -123,7 +106,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_ticket_trusted",
+      url: "api/get_ticket_trusted",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "login": isObj ? arg.login : login
@@ -137,7 +120,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "is_ticket_valid",
+      url: "api/is_ticket_valid",
       data: {
         "ticket": isObj ? arg.ticket : ticket
       }
@@ -150,7 +133,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_operation_state",
+      url: "api/get_operation_state",
       data: {
         "module_id": isObj ? arg.module_id : module_id,
         "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
@@ -171,63 +154,12 @@ function Backend () {
     }
   }
 
-  this.restart = function restart(ticket) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "restart",
-      data: {
-        "ticket": isObj ? arg.ticket : ticket
-      }
-    };
-    return call_server(params);
-  }
-
-  this.backup = function backup(to_binlog) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "backup",
-      data: {
-        "to_binlog": isObj ? arg.to_binlog : to_binlog
-      }
-    };
-    return call_server(params);
-  }
-
-  this.count_individuals = function count_individuals() {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "count_individuals",
-      data: {}
-    };
-    return call_server(params);
-  }
-
-  this.set_trace = function set_trace(idx, state) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "set_trace",
-      data: {
-        "idx": isObj ? arg.idx : idx,
-        "state" : isObj ? arg.state : state
-      }
-    };
-    return call_server(params);
-  }
-
   this.query = function query(ticket, query, sort, databases, reopen, top, limit, from) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "query",
+      url: "api/query",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : query,
@@ -247,7 +179,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_individual",
+      url: "api/get_individual",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
@@ -262,7 +194,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "POST",
-      url: "get_individuals",
+      url: "api/get_individuals",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uris": isObj ? arg.uris : uris
@@ -278,7 +210,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "remove_individual",
+      url: "api/remove_individual",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
@@ -296,7 +228,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "put_individual",
+      url: "api/put_individual",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -314,7 +246,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "add_to_individual",
+      url: "api/add_to_individual",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -332,7 +264,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "set_in_individual",
+      url: "api/set_in_individual",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -350,7 +282,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "remove_from_individual",
+      url: "api/remove_from_individual",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -368,7 +300,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "put_individuals",
+      url: "api/put_individuals",
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individuals": isObj ? arg.individuals : individuals,
@@ -376,36 +308,6 @@ function Backend () {
         "prepare_events": true,
         "event_id" : (isObj ? arg.event_id : event_id) || "",
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
-      }
-    };
-    return call_server(params);
-  }
-
-  /////////////////////////////////////////
-
-  this.get_property_value = function get_property_value(ticket, uri, property_uri) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "get_property_value",
-      data: {
-        "ticket": isObj ? arg.ticket : ticket,
-        "uri": isObj ? arg.uri : uri,
-        "property_uri": isObj ? arg.property_uri : property_uri
-      }
-    };
-    return call_server(params);
-  }
-
-  this.execute_script = function execute_script(script) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "POST",
-      url: "execute_script",
-      data: {
-        "script": isObj ? arg.script : script
       }
     };
     return call_server(params);

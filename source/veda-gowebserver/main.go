@@ -325,70 +325,74 @@ func requestHandler(ctx *fasthttp.RequestCtx) {
   }
 
   switch string(ctx.Path()[:]) {
-  case "/get_individual":
-    getIndividual(ctx)
-  case "/get_individuals":
-    getIndividuals(ctx)
+    case "/api/get_individual":
+      getIndividual(ctx)
 
-  case "/put_individual":
-    putIndividual(ctx)
-  case "/put_individuals":
-    putIndividuals(ctx)
+    case "/api/get_individuals":
+      getIndividuals(ctx)
 
-  case "/remove_individual":
-    removeIndividual(ctx)
-  case "/remove_from_individual":
-    removeFromIndividual(ctx)
+    case "/api/put_individual":
+      putIndividual(ctx)
 
-  case "/set_in_individual":
-    setInIndividual(ctx)
+    case "/api/put_individuals":
+      putIndividuals(ctx)
 
-  case "/add_to_individual":
-    addToIndividual(ctx)
+    case "/api/remove_individual":
+      removeIndividual(ctx)
 
-  case "/authenticate":
-    authenticate(ctx)
+    case "/api/remove_from_individual":
+      removeFromIndividual(ctx)
 
-  case "/get_rights":
-    getRights(ctx)
-  case "/get_rights_origin":
-    getAclData(ctx, GetRightsOrigin)
-  case "/get_membership":
-    getAclData(ctx, GetMembership)
+    case "/api/set_in_individual":
+      setInIndividual(ctx)
 
-  case "/get_ticket_trusted":
-    getTicketTrusted(ctx)
-  case "/is_ticket_valid":
-    isTicketValid(ctx)
+    case "/api/add_to_individual":
+      addToIndividual(ctx)
 
-  case "/query":
-    query(ctx)
+    case "/api/authenticate":
+      authenticate(ctx)
 
-  case "/send_to_module":
-    sendToModule(ctx)
+    case "/api/get_rights":
+      getRights(ctx)
 
-  case "/get_operation_state":
-    getOperationState(ctx)
-  case "/flush":
-    break
+    case "/api/get_rights_origin":
+      getAclData(ctx, GetRightsOrigin)
 
-  //for tests request only sending file is needed
-  case "/tests":
-    ctx.SendFile("public/tests.html")
+    case "/api/get_membership":
+      getAclData(ctx, GetMembership)
 
-  case "/ontology.json":
-    ctx.Response.Header.Set("Cache-Control", "max-age=43200, no-cache, must-revalidate, private")
-    ctx.SendFile("public/ontology.json")
+    case "/api/get_ticket_trusted":
+      getTicketTrusted(ctx)
 
-  default:
-    ctx.Response.Header.Set("Cache-Control", "max-age=43200, must-revalidate, private")
-    fs := &fasthttp.FS{
-      Root:       "public/",
-      IndexNames: []string{"index.html"},
-      Compress:   true,
-    }
-    fsHandler := fs.NewRequestHandler()
-    fsHandler(ctx)
+    case "/api/is_ticket_valid":
+      isTicketValid(ctx)
+
+    case "/api/query":
+      query(ctx)
+
+    case "/api/send_to_module":
+      sendToModule(ctx)
+
+    case "/api/get_operation_state":
+      getOperationState(ctx)
+
+    //for tests request only sending file is needed
+    case "/tests":
+      ctx.SendFile("public/tests.html")
+
+    case "/ontology.json":
+      ctx.Response.Header.Set("Cache-Control", "max-age=43200, no-cache, must-revalidate, private")
+      ctx.SendFile("public/ontology.json")
+
+    default:
+      ctx.Response.Header.Set("Cache-Control", "max-age=43200, must-revalidate, private")
+      fs := &fasthttp.FS{
+        Root:       "public/",
+        IndexNames: []string{"index.html"},
+        Compress:   true,
+      }
+      fsHandler := fs.NewRequestHandler()
+      fsHandler(ctx)
   }
 }
 
