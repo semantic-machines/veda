@@ -11,7 +11,7 @@
   rdfs:label "Онтология индексирования данных системы Веда"@ru ;
   rdfs:label "Veda system data index ontology"@en ;
   owl:versionInfo "3.7" ;
-  v-s:loadPriority 0 ;
+  v-s:loadPriority 1 ;
 .
 vdi:ClassIndex
   rdf:type owl:Class ;
