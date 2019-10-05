@@ -91,9 +91,16 @@ impl Module {
         None
     }
 
-    pub fn get_individual(&mut self, uri: &str) -> Option<Box<Individual>> {
+    pub fn get_individual_h(&mut self, uri: &str) -> Option<Box<Individual>> {
         let mut iraw = Box::new (Individual::default());
         if !self.storage.get_individual (uri, &mut iraw) {
+            return None;
+        }
+        Some(iraw)
+    }
+
+    pub fn get_individual<'a>(&mut self, uri: &str, iraw: &'a mut Individual ) -> Option<&'a mut Individual> {
+        if !self.storage.get_individual (uri, iraw) {
             return None;
         }
         Some(iraw)
