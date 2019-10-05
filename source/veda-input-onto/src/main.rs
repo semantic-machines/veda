@@ -60,7 +60,7 @@ fn main() -> NotifyResult<()> {
     info!("load onto start");
     load_onto(&mut module.fts, &mut module.storage, &mut onto);
     info!("load onto end");
-    if !onto.relations.is_empty() {
+    if onto.relations.is_empty() {
         info!("ontology not found");
         collect_file_paths(&onto_path, &mut list_candidate_files);
     }
@@ -143,7 +143,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
 
         let new_hash = match get_hash_of_file(path) {
             Ok(new_h) => {
-                if module.storage.get_individual(&new_id, &mut file_info_indv) {
+                if module.get_individual(&new_id, &mut file_info_indv).is_some() {
                     if let Ok(old_h) = file_info_indv.get_first_literal("v-s:hash") {
                         if old_h == new_h {
                             file_need_for_load = false;
@@ -171,7 +171,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
     priority_list.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
     //info!("priority_list: {:?}", priority_list);
 
-    for (_load_priority, _onto_id, path) in priority_list {
+    for (load_priority, _onto_id, path) in priority_list {
         if let Some(indvs) = file2indv.get_mut(&path) {
             for indv_file in indvs.values_mut() {
                 if !indv_file.is_exists("rdf:type") {
@@ -179,17 +179,24 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
                     continue;
                 }
 
-                let mut indv_db = Individual::default();
-                if module.storage.get_individual(&indv_file.obj.uri, &mut indv_db) {
+                let is_need_store = if let Some(indv_db) = module.get_individual(&indv_file.obj.uri, &mut Individual::default()) {
                     indv_db.parse_all();
                     if !indv_db.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion", "v-s:fullUrl"]) {
-                        let res = module.api.update(systicket, IndvOp::Put, &indv_file);
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    true
+                };
 
-                        if res.result != ResultCode::Ok {
-                            error!("fail update, uri={}, result_code={:?}", indv_file.obj.uri, res.result);
-                        } else {
-                            info!("success update, uri={}", indv_file.obj.uri);
-                        }
+                if is_need_store {
+                    let res = module.api.update(systicket, IndvOp::Put, &indv_file);
+
+                    if res.result != ResultCode::Ok {
+                        error!("fail update, {}, file={}, uri={}, result_code={:?}", load_priority, path, indv_file.obj.uri, res.result);
+                    } else {
+                        info!("success update, {}, file={}, uri={}", load_priority, path, indv_file.obj.uri);
                     }
                 }
             }
