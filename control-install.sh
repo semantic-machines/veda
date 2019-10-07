@@ -166,37 +166,6 @@ else
     echo "--- NANOMSG INSTALLED ---"
 fi
 
-### LIB RAPTOR ###
-
-sudo apt-get remove -y libraptor2-0
-ldconfig -p | grep libraptor2
-if [ "$1" = force ] || ! ldconfig -p | grep libraptor2 ; then
-    echo "--- INSTALL LIB RAPTOR ---"
-    sudo apt-get install -y gtk-doc-tools
-    sudo apt-get install -y libxml2-dev
-    sudo apt-get install -y flex
-    sudo apt-get install -y bison
-
-    mkdir tmp
-    cd tmp
-
-    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P .
-    tar -xvzf raptor2_2_0_15.tar.gz
-
-    cd raptor-raptor2_2_0_15
-    autoreconf -i
-    ./autogen.sh
-    ./make
-    sudo make install
-    sudo ldconfig
-    cd ..
-    cd ..
-    cd ..
-
-else
-    echo "--- LIB RAPTOR INSTALLED ---"
-fi
-
 if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
     TTC=d93096a9d39e36c456af82e5e53c6ca4f4be608f
