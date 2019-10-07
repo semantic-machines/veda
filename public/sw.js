@@ -1,8 +1,9 @@
-var STATIC = "static-2";
-var API = "api-1";
+var API = "api-0";
+var FILES = "files-0";
+var STATIC = "static-0";
 
 this.addEventListener("activate", function(event) {
-  var cacheWhitelist = [ STATIC, API ];
+  var cacheWhitelist = [ API, FILES, STATIC ];
 
   event.waitUntil(
     caches.keys().then(function(keyList) {
@@ -14,6 +15,44 @@ this.addEventListener("activate", function(event) {
     })
   );
 });
+
+this.addEventListener("fetch", function(event) {
+  var url = new URL(event.request.url);
+  var type = url.pathname.indexOf("/api") === 0 ? "API" : url.pathname.indexOf("/files") === 0 ? "FILES" : "STATIC";
+  switch (true) {
+    case type === "STATIC":
+      event.respondWith(handleSTATIC(event));
+      break;
+    case type === "FILES":
+      event.respondWith(handleFILES(event));
+      break;
+    case type === "API":
+      event.respondWith(handleAPI(event));
+      break;
+  }
+});
+
+function handleSTATIC(event) {
+  return caches.match(event.request).then(function(resp) {
+    return resp || fetch(event.request).then(function(response) {
+      return caches.open( STATIC ).then(function(cache) {
+        cache.put(event.request, response.clone());
+        return response;
+      });
+    });
+  });
+}
+
+function handleFILES(event) {
+  return caches.match(event.request).then(function(resp) {
+    return resp || fetch(event.request).then(function(response) {
+      return caches.open( FILES ).then(function(cache) {
+        cache.put(event.request, response.clone());
+        return response;
+      });
+    });
+  });
+}
 
 var api_fns = {
   // GET
@@ -39,26 +78,11 @@ var api_fns = {
   'put_individuals':'{"op_id":0,"result":200}'
 };
 
-var re = /.*\/\/[^\/]*\/([^\/#?]*)/;
+function handleAPI(event) {
+  var fn;
+  var url = new URL(event.request.url);
+  fn = url.pathname.split("/")[1];
 
-this.addEventListener("fetch", function(event) {
-  var fn = event.request.url.match(re)[1];
-  var isApi = fn in api_fns;
-  event.respondWith( isApi ? getApiResponse(event, fn) : getStaticResource(event) );
-});
-
-function getStaticResource(event) {
-  return caches.match(event.request).then(function(resp) {
-    return resp || fetch(event.request).then(function(response) {
-      return caches.open( STATIC ).then(function(cache) {
-        cache.put(event.request, response.clone());
-        return response;
-      });
-    });
-  });
-}
-
-function getApiResponse(event, fn) {
   var cloneRequest = event.request.method === "GET" ? undefined : event.request.clone();
   return new Promise(function (resolve, reject) {
     if (navigator.onLine) {
