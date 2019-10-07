@@ -486,6 +486,7 @@ v-s:DeliveryTemplate
   <h3>
     <span about="v-s:Delivery" property="rdfs:label"></span>
   </h3>
+  <span about="@" data-template="v-ui:RabbitHole" class="view edit -search"></span>
   <hr>
   <div class="row">
     <div class="col-md-4">
