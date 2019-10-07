@@ -1065,10 +1065,7 @@ v-fs:AttributiveSearchInlineTemplate
   function formHandler () {
     self.search()
       .then(renderResult)
-      .then(clearSelected)
-      .then(function () {
-        scrollTo(self.scroll);
-      });
+      .then(clearSelected);
   }
 
   // Remember scroll position
@@ -1322,14 +1319,16 @@ v-fs:AttributiveSearchInlineTemplate
 
   // Show results on load if they are available (e.g. if we came back)
   if ( self.hasValue("v-fs:searchResult") ) {
-    renderResult( self["v-fs:searchResult"] );
-    setToggleSelectAll();
-    if ( location.hash.indexOf(individual.id) >= 0 ) {
-      scrollTo(self.scroll);
-    }
+    return renderResult( self["v-fs:searchResult"] )
+      .then(setToggleSelectAll)
+      .then(function () {
+        if ( location.hash.indexOf(individual.id) >= 0 ) {
+          scrollTo(self.scroll);
+        }
+      });
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
-    self.search()
+    return self.search()
       .then(renderResult)
       .then(clearSelected)
       .then(function () {
