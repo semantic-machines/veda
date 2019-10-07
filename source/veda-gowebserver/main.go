@@ -111,136 +111,72 @@ func codeToJsonException(code ResultCode) []byte {
   exception := make(map[string]interface{})
 
   switch code {
-case zero:
-    exception["statusMessage"] = "zero"
+    case zero:                    exception["statusMessage"] = "zero"                     // 0
 
-    /// 200
-case Ok:
-    exception["statusMessage"] = "Ok"
+    case Ok:                      exception["statusMessage"] = "Ok"                       // 200
 
-    /// 201
-case Created:
-    exception["statusMessage"] = "Created"
+    case Created:                 exception["statusMessage"] = "Created"                  // 201
 
-    /// 204
-case NoContent:
-    exception["statusMessage"] = "NoContent"
+    case NoContent:               exception["statusMessage"] = "NoContent"                // 204
 
-    /// 400
-case BadRequest:
-    exception["statusMessage"] = "Bad_Request"
+    case BadRequest:              exception["statusMessage"] = "Bad_Request"              // 400
 
-    /// 403
-case Forbidden:
-    exception["statusMessage"] = "Forbidden"
+    case Forbidden:               exception["statusMessage"] = "Forbidden"                // 403
 
-    /// 404
-case NotFound:
-    exception["statusMessage"] = "NotFound"
+    case NotFound:                exception["statusMessage"] = "NotFound"                 // 404
 
-    /// 422
-case UnprocessableEntity:
-    exception["statusMessage"] = "UnprocessableEntity"
+    case UnprocessableEntity:     exception["statusMessage"] = "UnprocessableEntity"      // 422
 
-    /// 429
-case TooManyRequests:
-    exception["statusMessage"] = "TooManyRequests"
+    case TooManyRequests:         exception["statusMessage"] = "TooManyRequests"          // 429
 
-    /// 464
-case SecretExpired:
-    exception["statusMessage"] = "SecretExpired"
+    case SecretExpired:           exception["statusMessage"] = "SecretExpired"            // 464
 
-    /// 465
-case EmptyPassword:
-    exception["statusMessage"] = "EmptyPassword"
+    case EmptyPassword:           exception["statusMessage"] = "EmptyPassword"            // 465
 
-    /// 466
-case NewPasswordIsEqualToOld:
-    exception["statusMessage"] = "NewPasswordIsEqualToOld"
+    case NewPasswordIsEqualToOld: exception["statusMessage"] = "NewPasswordIsEqualToOld"  // 466
 
-    /// 467
-case InvalidPassword:
-    exception["statusMessage"] = "InvalidPassword"
+    case InvalidPassword:         exception["statusMessage"] = "InvalidPassword"          // 467
 
-    /// 468
-case InvalidSecret:
-    exception["statusMessage"] = "InvalidSecret"
+    case InvalidSecret:           exception["statusMessage"] = "InvalidSecret"            // 468
 
-    /// 469
-case PasswordExpired:
-    exception["statusMessage"] = "PasswordExpired"
+    case PasswordExpired:         exception["statusMessage"] = "PasswordExpired"          // 469
 
-    /// 470
-case TicketNotFound:
-    exception["statusMessage"] = "TicketNotFound"
+    case TicketNotFound:          exception["statusMessage"] = "TicketNotFound"           // 470
 
-    /// 471
-case TicketExpired:
-    exception["statusMessage"] = "TicketExpired"
+    case TicketExpired:           exception["statusMessage"] = "TicketExpired"            // 471
 
-    /// 472
-case NotAuthorized:
-    exception["statusMessage"] = "NotAuthorized"
+    case NotAuthorized:           exception["statusMessage"] = "NotAuthorized"            // 472
 
-    /// 473
-case AuthenticationFailed:
-    exception["statusMessage"] = "AuthenticationFailed"
+    case AuthenticationFailed:    exception["statusMessage"] = "AuthenticationFailed"     // 473
 
-    /// 474
-case NotReady:
-    exception["statusMessage"] = "NotReady"
+    case NotReady:                exception["statusMessage"] = "NotReady"                 // 474
 
-    /// 475
-case FailOpenTransaction:
-    exception["statusMessage"] = "FailOpenTransaction"
+    case FailOpenTransaction:     exception["statusMessage"] = "FailOpenTransaction"      // 475
 
-    /// 476
-case FailCommit:
-    exception["statusMessage"] = "FailCommit"
+    case FailCommit:              exception["statusMessage"] = "FailCommit"               // 476
 
-    /// 477
-case FailStore:
-    exception["statusMessage"] = "FailStore"
+    case FailStore:               exception["statusMessage"] = "FailStore"                // 477
 
-    /// 500
-case InternalServerError:
-    exception["statusMessage"] = "InternalServerError"
+    case InternalServerError:     exception["statusMessage"] = "InternalServerError"      // 500
 
-    /// 501
-case NotImplemented:
-    exception["statusMessage"] = "NotImplemented"
+    case NotImplemented:          exception["statusMessage"] = "NotImplemented"           // 501
 
-    /// 503
-case ServiceUnavailable:
-    exception["statusMessage"] = "ServiceUnavailable"
+    case ServiceUnavailable:      exception["statusMessage"] = "ServiceUnavailable"       // 503
 
-case InvalidIdentifier:
-    exception["statusMessage"] = "InvalidIdentifier"
+    case InvalidIdentifier:       exception["statusMessage"] = "InvalidIdentifier"        // 904
 
-    /// 999
-case DatabaseModifiedError:
-    exception["statusMessage"] = "DatabaseModifiedError"
+    case DatabaseModifiedError:   exception["statusMessage"] = "DatabaseModifiedError"    // 999
 
-    /// 1021
-case DiskFull:
-    exception["statusMessage"] = "DiskFull"
+    case DiskFull:                exception["statusMessage"] = "DiskFull"                 // 1021
 
-    /// 1022
-case DuplicateKey:
-    exception["statusMessage"] = "DuplicateKey"
+    case DuplicateKey:            exception["statusMessage"] = "DuplicateKey"             // 1022
 
-    /// 1118
-case SizeTooLarge:
-    exception["statusMessage"] = "SizeTooLarge"
+    case SizeTooLarge:            exception["statusMessage"] = "SizeTooLarge"             // 1118
 
-    /// 4000
-case ConnectError:
-    exception["statusMessage"] = "ConnectError"
+    case ConnectError:            exception["statusMessage"] = "ConnectError"             // 4000
 
-  default:
-    exception["statusMessage"] = "UnknownError"
+    default: exception["statusMessage"] = "UnknownError"
   }
-
   exceptionJSON, _ := json.Marshal(exception)
   return exceptionJSON
 }
