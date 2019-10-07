@@ -229,6 +229,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
     let mut parser = TurtleParser::new(BufReader::new(File::open(file_path).unwrap()), "").unwrap();
 
     let mut namespaces2id: HashMap<String, String> = HashMap::new();
+    let mut id2orignamespaces: HashMap<String, String> = HashMap::new();
     let mut id2namespaces: HashMap<String, String> = HashMap::new();
 
     let mut onto_id = String::default();
@@ -240,7 +241,8 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
             if !namespaces2id.contains_key(ns.1) {
                 if let Some(s) = ns.1.get(0..ns.1.len() - 1) {
                     namespaces2id.insert(s.to_owned(), ns.0.clone());
-                    id2namespaces.insert(ns.0.to_owned() + ":", s.to_owned());
+                    id2orignamespaces.insert(ns.0.to_owned() + ":", ns.1.to_owned());
+                    id2namespaces.insert(ns.0.to_owned() + ":", s.to_string());
                 }
             }
         }
@@ -376,17 +378,15 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                     load_priority = v;
                 }
 
-                if let Some(s) = id2namespaces.get(&indv.obj.uri) {
-                    onto_url.insert_str(0, s.as_str());
-                    indv.obj.set_uri("v-s:fullUrl", s);
+                if let Some(s) = id2orignamespaces.get(&indv.obj.uri) {
+                    indv.obj.set_string("v-s:fullUrl", &s, Lang::NONE);
                 }
 
-                //if indv.obj.uri.contains('/') {
-                //    onto_id.insert_str(0, &file_path);
-                //} else {
+                if let Some(s) = id2namespaces.get(&indv.obj.uri) {
+                    onto_url.insert_str(0, s.as_str());
+                }
+
                 onto_id.insert_str(0, &indv.obj.uri);
-                //}
-                //            info!("ontology: {}", indv.obj.uri);
             }
         }
 
