@@ -35,7 +35,6 @@
     	    "../../lib64/liblmdb.a",
     	    "../../veda/util/queue.d",
     	    "../../veda/util/container.d",
-    	    "../../veda/util/tests_tools.d",
     	    "../../veda/util/module_info.d"
 	],
 	"libs":["nanomsg", "tarantool"],

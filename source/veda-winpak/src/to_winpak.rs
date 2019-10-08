@@ -42,7 +42,7 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
     }
     let backward_target = backward_target.unwrap();
 
-    let indv_b = module.get_individual(&backward_target);
+    let indv_b = module.get_individual_h(&backward_target);
     if indv_b.is_none() {
         error!("not found {}", &backward_target);
         return ResultCode::NotFound;
@@ -62,7 +62,7 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
     }
     let source_data_request_pass = source_data_request_pass.unwrap();
 
-    let indv_c = module.get_individual(&source_data_request_pass.as_str());
+    let indv_c = module.get_individual_h(&source_data_request_pass.as_str());
     if indv_c.is_none() {
         error!("not found {}", source_data_request_pass);
         return ResultCode::NotFound;
