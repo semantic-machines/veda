@@ -9,6 +9,14 @@ import (
 
 //getOperationState readds state of requested operation in requested module
 func getOperationState(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getOperationState", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	//Reading parametrs from request context
 	moduleID, _ := ctx.QueryArgs().GetUint("module_id")
 	waitOpID, _ := ctx.QueryArgs().GetUint("wait_op_id")

@@ -41,7 +41,6 @@
     	    "../../veda/util/queue.d",
     	    "../../veda/util/container.d",
     	    "../../veda/util/module_info.d",
-    	    "../../veda/util/tests_tools.d",
     	    "../../veda/ft_query/ft_query.d",
     	    "../../veda/util/properd.d"
 	],

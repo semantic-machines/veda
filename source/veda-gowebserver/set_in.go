@@ -12,6 +12,14 @@ import (
 //request is redirected to veda server via socket
 //veda-server set the given field to the given value
 func setInIndividual(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in setInIndividual", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	timestamp := time.Now()
 
 	var assignedSubsystems uint64
