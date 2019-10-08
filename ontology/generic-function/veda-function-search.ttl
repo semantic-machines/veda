@@ -1065,10 +1065,7 @@ v-fs:AttributiveSearchInlineTemplate
   function formHandler () {
     self.search()
       .then(renderResult)
-      .then(clearSelected)
-      .then(function () {
-        scrollTo(self.scroll);
-      });
+      .then(clearSelected);
   }
 
   // Remember scroll position
