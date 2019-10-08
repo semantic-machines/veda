@@ -238,13 +238,14 @@ void main(string[] args)
     modules[ "veda-fanout-sql-lp" ] = new Module("veda-fanout-sql-lp", "veda-fanout-sql-lp", [], [ "fanout_sql_lp" ], false, false, 10);
     modules[ "veda-input-queue" ]   = new Module("veda-input-queue", "veda-input-queue", [], [], false, false, 11);
     modules[ "veda-ttlreader" ]     = new Module("veda-ttlreader", "veda-ttlreader", [], [], false, false, 12);
+    modules[ "veda-input-onto" ]    = new Module("veda-input-onto", "veda-input-onto", [], [], false, false, 12);
     modules[ "veda-ccus" ]          = new Module("veda-ccus", "veda-ccus", [], [], false, false, 13);
     modules[ "veda-ontologist" ]    = new Module("veda-ontologist", "veda-ontologist", [], [], false, false, 14);
     modules[ "veda-webserver" ]     = new Module("veda-webserver", "veda-webserver", [], [], false, false, 15);
     modules[ "veda-geo-indexer" ]   = new Module("veda-geo-indexer", "veda-geo-indexer", [], [], false, false, 16);
     modules[ "veda-extractor" ]     = new Module("veda-extractor", "veda-extractor", [], [], false, false, 17);
-    modules[ "veda-exim-inquire" ]     = new Module("veda-exim-inquire", "veda-exim-inquire", [], [], false, false, 18);
-    modules[ "veda-exim-respond" ]     = new Module("veda-exim-respond", "veda-exim-respond", [], [], false, false, 19);
+    modules[ "veda-exim-inquire" ]  = new Module("veda-exim-inquire", "veda-exim-inquire", [], [], false, false, 18);
+    modules[ "veda-exim-respond" ]  = new Module("veda-exim-respond", "veda-exim-respond", [], [], false, false, 19);
     modules[ "veda-winpak" ]        = new Module("veda-winpak", "veda-winpak", [], [], false, false, 20);
     modules[ "veda-gowebserver" ]   = new Module("veda-gowebserver", "veda-gowebserver", [], [], false, false, 99);
 
