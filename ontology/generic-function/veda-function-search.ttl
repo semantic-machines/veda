@@ -523,7 +523,7 @@ v-fs:AttributiveSearchTemplate
       };
       if ( exportAs === "xls" ) {
         // Tags
-        var tags = new RegExp("<\/?(a|span|p|div|button) ?.*?>", "gi");
+        var tags = new RegExp("<\\/?(a|span|p|div|button) ?.*?>", "gi");
         // Numbers with decimal point
         var decimal = new RegExp("([^\\d\\.\\:]+\\d+)\\.(\\d+[^\\d\\.\\:]+)", "gi");
         ctx.table = ctx.table.replace(tags, " ").replace(decimal, "$1,$2");

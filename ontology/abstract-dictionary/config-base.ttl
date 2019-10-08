@@ -14,7 +14,7 @@
   rdfs:label "Онтология Веда. Обработчики событий"@ru ;
   rdfs:label "Veda ontology. Event handlers"@en ;
 #  owl:versionInfo "1.0" ;
-  v-s:loadPriority 2 ;
+  v-s:loadPriority 3;
 .
 
 cfg:Event_0
