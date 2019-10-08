@@ -23,6 +23,11 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(InternalServerError))
 		return
 	}
+	defer func() {
+	     if r := recover(); r != nil {
+        	log.Println("Recovered in f", r)
+    	    }
+	}()
 
 	if form.Value["path"] == nil {
 		log.Printf("ERR!, UPLOAD FILE: path not defined or null content, form=%v, request=%v\n", form, ctx.String())

@@ -267,26 +267,30 @@ v-fs:AttributiveSearchModel
     }
     var sort = self.hasValue("v-fs:sortOrder") ? self["v-fs:sortOrder"][0] : undefined;
     var queryString = "";
-    if ( self.hasValue("v-fs:fulltextQuery") ) {
-      var fullText = self["v-fs:fulltextQuery"][0];
-      return evalQuery(fullText).then(function (fullText) {
-        return performQuery.call(self, fullText);
-      });
-    } else if ( self.hasValue("v-fs:searchBlank") ) {
-      return self["v-fs:searchBlank"][0].load()
-        .then(function (searchBlank) {
-          return searchBlank.initBlank();
-        })
-        .then(function (blankObject) {
-          if ( queryString.length ) {
-            queryString += " && "
-          }
-          return queryString += veda.Util.queryFromIndividual(blankObject);
-        })
-        .then(performQuery.bind(self));
-    } else {
-      return performQuery.call(self, queryString);
-    }
+
+    var fullText = self.hasValue("v-fs:fulltextQuery") && evalQuery(self["v-fs:fulltextQuery"][0]);
+
+    return Promise.resolve(fullText)
+      .then(function (fullText) {
+        if (fullText) {
+          queryString += fullText;
+        }
+        if ( self.hasValue("v-fs:searchBlank") ) {
+          return self["v-fs:searchBlank"][0].load()
+            .then(function (searchBlank) {
+              return searchBlank.initBlank();
+            })
+            .then(function (blankObject) {
+              if ( queryString.length ) {
+                queryString += " && ";
+              }
+              return queryString += veda.Util.queryFromIndividual(blankObject);
+            })
+        } else {
+          return queryString;
+        }
+      })
+      .then(performQuery.bind(self));
   };
 
   function performQuery(queryString) {
@@ -837,6 +841,10 @@ v-fs:AttributiveSearchInlineTemplate
       border-bottom: 7px solid gray;
       border-left: 7px solid transparent;
     }
+    .marked {
+      outline-offset: -2px;
+      outline: 2px solid #aaa;
+    }
   </style>
   <div class="params">
     <div class="search-form"></div>
@@ -1065,10 +1073,7 @@ v-fs:AttributiveSearchInlineTemplate
   function formHandler () {
     self.search()
       .then(renderResult)
-      .then(clearSelected)
-      .then(function () {
-        scrollTo(self.scroll);
-      });
+      .then(clearSelected);
   }
 
   // Remember scroll position
@@ -1093,16 +1098,9 @@ v-fs:AttributiveSearchInlineTemplate
       .then(renderResult)
       .then(clearSelected)
       .then(function () {
-        if (!self.scroll) {
-          var position = $(".results", template).offset().top;
-          scrollTo(position);
-        }
-      })
-      .then(function () {
-        if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo(self.scroll);
-          delete self.scroll;
-        }
+        var position = self.scroll || $(".results", template).offset().top;
+        scrollTo(position);
+        delete self.scroll;
         toggleSpin(searchButtons);
       })
       .catch(function (error) {
@@ -1159,7 +1157,7 @@ v-fs:AttributiveSearchInlineTemplate
   // Mark clicked row
   $(".search-result", template).on("click", ".result-container > [resource]", function () {
     var that = $(this);
-    that.addClass("warning").siblings(".warning").removeClass("warning");
+    that.addClass("marked").siblings(".marked").removeClass("marked");
     self.marked = that.attr("resource");
   });
 
@@ -1279,7 +1277,7 @@ v-fs:AttributiveSearchInlineTemplate
         return result.present(resultContainer, individual.resultTemplate).then(function (tmpl) {
           $(".serial-number", tmpl).text(total - delta + i + 1);
           if (result.id === self.marked) {
-            tmpl.addClass("warning");
+            tmpl.addClass("marked");
           }
           tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
 
@@ -1322,14 +1320,16 @@ v-fs:AttributiveSearchInlineTemplate
 
   // Show results on load if they are available (e.g. if we came back)
   if ( self.hasValue("v-fs:searchResult") ) {
-    renderResult( self["v-fs:searchResult"] );
-    setToggleSelectAll();
-    if ( location.hash.indexOf(individual.id) >= 0 ) {
-      scrollTo(self.scroll);
-    }
+    return renderResult( self["v-fs:searchResult"] )
+      .then(setToggleSelectAll)
+      .then(function () {
+        if ( location.hash.indexOf(individual.id) >= 0 ) {
+          scrollTo(self.scroll);
+        }
+      });
   // Search on load
   } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
-    self.search()
+    return self.search()
       .then(renderResult)
       .then(clearSelected)
       .then(function () {
