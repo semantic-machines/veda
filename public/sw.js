@@ -44,14 +44,18 @@ function handleSTATIC(event) {
 }
 
 function handleFILES(event) {
-  return caches.match(event.request).then(function(resp) {
-    return resp || fetch(event.request).then(function(response) {
-      return caches.open( FILES ).then(function(cache) {
-        cache.put(event.request, response.clone());
-        return response;
+  if (event.request.method === "GET") {
+    return caches.match(event.request).then(function(resp) {
+      return resp || fetch(event.request).then(function(response) {
+        return caches.open( FILES ).then(function(cache) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
       });
     });
-  });
+  } else {
+    return fetch(event.request);
+  }
 }
 
 var api_fns = {
