@@ -1,13 +1,11 @@
 use chrono::{NaiveDateTime, Utc};
-use futures::Future;
-use tiberius::SqlConnection;
+use futures::{Future};
+use tiberius::{BoxableIo, Error, SqlConnection, Transaction};
 use tokio::runtime::current_thread;
 use v_api::*;
 use v_module::module::*;
 use v_onto::individual::*;
 use voca_rs::*;
-
-const COLUMNS_OF_DEVICES: &'static [&'static str] = &["Note27", "Note28", "Note29", "Note30", "Note33", "Note34", "Note37", "Note38", "Note39", "Note40"];
 
 const UPD_COLUMN_QUERY: &str = "\
 UPDATE t1
@@ -33,7 +31,6 @@ VALUES (0,@P1,0,0,0,0,@P2,@P3,0,0,0,0,0,0,0,0)";
 
 pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let module_label = indv.get_first_literal("v-s:moduleLabel");
-
     if module_label.is_err() || module_label.unwrap() != "winpak pe44 update" {
         return ResultCode::NotFound;
     }
@@ -81,19 +78,27 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
     }
     let card_number = card_number.unwrap();
 
+    let columm_names = vec![
+        "Note27".to_string(),
+        "Note28".to_string(),
+        "Note29".to_string(),
+        "Note30".to_string(),
+        "Note33".to_string(),
+        "Note34".to_string(),
+        "Note37".to_string(),
+        "Note38".to_string(),
+        "Note39".to_string(),
+        "Note40".to_string(),
+    ];
     if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
         if let Ok(pass_equipment) = indv_b.get_first_literal("mnd-s:passEquipment") {
-            let mut idx = 0;
-            for el in split_str_for_winpak_db_columns(&pass_equipment, 64) {
-                let column = COLUMNS_OF_DEVICES[idx];
-                idx += 1;
+            let column_values = split_str_for_winpak_db_columns(&pass_equipment, 64);
 
-                let future = SqlConnection::connect(conn_str).and_then(|conn| conn.exec(UPD_COLUMN_QUERY, &[&column, &el, &card_number.as_str()]));
-                if let Err(e) = current_thread::block_on_all(future) {
-                    error!("fail execute sql query, err={:?}", e);
-                    return ResultCode::NotFound;
-                }
-            }
+            let future = SqlConnection::connect(conn_str)
+                .and_then(|conn| conn.transaction())
+                .and_then(|trans| update_column(0, columm_names, column_values, card_number, trans))
+                .and_then(|trans| trans.commit());
+            current_thread::block_on_all(future).unwrap();
         }
     } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
         let date_from = indv_b.get_first_datetime("v-s:dateFrom");
@@ -121,33 +126,71 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
             let winpak_card_record_id = winpak_card_record_id.unwrap();
 
             if !access_levels.is_empty() {
-                let future = SqlConnection::connect(conn_str).and_then(|conn| conn.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]));
-                if let Err(e) = current_thread::block_on_all(future) {
-                    error!("fail execute sql query, err={:?}", e);
-                    return ResultCode::DatabaseModifiedError;
-                } else {
-                    for alv in access_levels {
-                        if let Some(alvcts) = alv.rsplit("_").next() {
-                            let future = SqlConnection::connect(conn_str)
-                                .and_then(|conn| conn.exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &winpak_card_record_id.as_str(), &alvcts]));
-                            if let Err(e) = current_thread::block_on_all(future) {
-                                error!("fail execute sql query, err={:?}", e);
-                                return ResultCode::DatabaseModifiedError;
-                            }
-                        }
-                    }
-                }
+                let future = SqlConnection::connect(conn_str)
+                    .and_then(|conn| conn.transaction())
+                    .and_then(|trans| clear_access_level(card_number, trans))
+                    .and_then(|trans| update_access_level(0, access_levels, winpak_card_record_id, trans))
+                    .and_then(|trans| trans.commit());
+                current_thread::block_on_all(future).unwrap();
             }
         }
     }
 
-    ResultCode::Ok
+    ResultCode::NotFound
 }
 
-fn split_str_for_winpak_db_columns(src: &str, len: usize) -> Vec<&str> {
-    let res: Vec<&str> = Vec::new();
+fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(result, trans)| {
+        assert_eq!(result, 1);
+        Ok(trans)
+    }))
+}
+
+fn update_access_level<I: BoxableIo + 'static>(
+    idx: usize,
+    levels: Vec<String>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    Box::new(
+        transaction
+            .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
+            .and_then(|(result, trans)| {
+                assert_eq!(result, 1);
+                Ok(trans)
+            })
+            .and_then(move |trans| update_access_level(idx + 1, levels, card_number, trans)),
+    )
+}
+
+fn update_column<I: BoxableIo + 'static>(
+    idx: usize,
+    names: Vec<String>,
+    values: Vec<String>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if idx < names.len() {
+        Box::new(
+            transaction
+                .exec(UPD_COLUMN_QUERY, &[&names.get(idx).unwrap().as_str(), &values.get(idx).unwrap().as_str(), &card_number.as_str()])
+                .and_then(|(result, trans)| {
+                    assert_eq!(result, 1);
+                    Ok(trans)
+                })
+                .and_then(move |trans| update_column(idx + 1, names, values, card_number, trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
+fn split_str_for_winpak_db_columns(src: &str, len: usize) -> Vec<String> {
+    let mut res: Vec<String> = Vec::new();
     if src.contains('\n') {
-        return src.split('\n').collect();
+        for el in src.split('\n') {
+            res.push(el.to_string());
+        }
     } else {
         let mut start = 0;
         let mut end = len;
@@ -161,6 +204,5 @@ fn split_str_for_winpak_db_columns(src: &str, len: usize) -> Vec<&str> {
             end += len;
         }
     }
-
     res
 }
