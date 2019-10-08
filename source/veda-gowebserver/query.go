@@ -11,6 +11,14 @@ import (
 //query function handle query request with fulltext search
 //query request redirects to fr-query module via socket
 func query(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in query", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now()
 

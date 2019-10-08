@@ -12,6 +12,14 @@ import (
 //request is redirected to veda-server via socket
 //veda-server removes the given field from the individual
 func removeFromIndividual(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in removeFromIndividual", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	timestamp := time.Now()
 
 	var assignedSubsystems uint64
@@ -77,6 +85,14 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
 //request redirected to veda-server via socket
 //veda-server removes given individual from the storage
 func removeIndividual(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in removeIndividual", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	timestamp := time.Now()
 
 	var assignedSubsystems uint64
