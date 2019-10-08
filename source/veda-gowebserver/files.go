@@ -114,6 +114,13 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 
 //files is handler for this rest request, routeParts is parts of request path separated by slash
 func files(ctx *fasthttp.RequestCtx, routeParts []string) {
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in files", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
   //Reqding client ticket key from request
   ticketKey := string(ctx.Request.Header.Cookie("ticket"))
   timestamp := time.Now()

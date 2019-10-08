@@ -106,6 +106,14 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 
 //isTicketValid handles is_ticket_valid request
 func isTicketValid(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in isTicketValid", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	var ticketKey string
 	//Decode parametrs from requestn context
 	ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
