@@ -837,6 +837,10 @@ v-fs:AttributiveSearchInlineTemplate
       border-bottom: 7px solid gray;
       border-left: 7px solid transparent;
     }
+    .marked {
+      outline-offset: -2px;
+      outline: 2px solid #aaa;
+    }
   </style>
   <div class="params">
     <div class="search-form"></div>
@@ -1149,7 +1153,7 @@ v-fs:AttributiveSearchInlineTemplate
   // Mark clicked row
   $(".search-result", template).on("click", ".result-container > [resource]", function () {
     var that = $(this);
-    that.addClass("warning").siblings(".warning").removeClass("warning");
+    that.addClass("marked").siblings(".marked").removeClass("marked");
     self.marked = that.attr("resource");
   });
 
@@ -1269,7 +1273,7 @@ v-fs:AttributiveSearchInlineTemplate
         return result.present(resultContainer, individual.resultTemplate).then(function (tmpl) {
           $(".serial-number", tmpl).text(total - delta + i + 1);
           if (result.id === self.marked) {
-            tmpl.addClass("warning");
+            tmpl.addClass("marked");
           }
           tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
 
