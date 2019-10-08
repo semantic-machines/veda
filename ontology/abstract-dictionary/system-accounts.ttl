@@ -8,13 +8,12 @@
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 
-@prefix cfgb: <http://semantic-machines.com/veda/system-accounts/> .
 <http://semantic-machines.com/veda/system-account>
   rdf:type owl:Ontology ;
   rdfs:label "Онтология Веда. Системные учетные записи"@ru ;
   rdfs:label "Veda ontology. System accounts"@en ;
 #  owl:versionInfo "1.0" ;
-  v-s:loadPriority 3 ;
+  v-s:loadPriority 4;
 .
 
 cfg:org_Veda

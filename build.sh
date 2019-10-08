@@ -72,6 +72,17 @@ if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
     echo end make VEDA-EXTRACTOR
 fi
 
+if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] ; then
+
+    rm ./veda-input-onto
+
+    cd source/veda-input-onto
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-input-onto $PWD
+
+fi
+
 if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
 
     echo start make VEDA-CCUS
@@ -162,10 +173,6 @@ fi
 
 if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] ; then
     ./tools/build-component.sh veda-ft-indexer ft-indexer
-fi
-
-if [ -z $1 ] || [ $1 == "ttlreader" ] || [ $1 == "veda-ttlreader" ] ; then
-    ./tools/build-component.sh veda-ttlreader ttlreader
 fi
 
 if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
