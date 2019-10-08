@@ -19,14 +19,14 @@ this.addEventListener("activate", function(event) {
 this.addEventListener("fetch", function(event) {
   var url = new URL(event.request.url);
   var type = url.pathname.indexOf("/api") === 0 ? "API" : url.pathname.indexOf("/files") === 0 ? "FILES" : "STATIC";
-  switch (true) {
-    case type === "STATIC":
+  switch (type) {
+    case "STATIC":
       event.respondWith(handleSTATIC(event));
       break;
-    case type === "FILES":
+    case "FILES":
       event.respondWith(handleFILES(event));
       break;
-    case type === "API":
+    case "API":
       event.respondWith(handleAPI(event));
       break;
   }
@@ -44,14 +44,18 @@ function handleSTATIC(event) {
 }
 
 function handleFILES(event) {
-  return caches.match(event.request).then(function(resp) {
-    return resp || fetch(event.request).then(function(response) {
-      return caches.open( FILES ).then(function(cache) {
-        cache.put(event.request, response.clone());
-        return response;
+  if (event.request.method === "GET") {
+    return caches.match(event.request).then(function(resp) {
+      return resp || fetch(event.request).then(function(response) {
+        return caches.open( FILES ).then(function(cache) {
+          cache.put(event.request, response.clone());
+          return response;
+        });
       });
     });
-  });
+  } else {
+    return fetch(event.request);
+  }
 }
 
 var api_fns = {
