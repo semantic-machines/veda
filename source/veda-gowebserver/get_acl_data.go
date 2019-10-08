@@ -8,6 +8,14 @@ import (
 
 //getAclData performs request GetRightsOrigin of GetMembership, this is set by operation parametr
 func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getAclData", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	var uri string
 	var ticketKey string
 	var ticket ticket

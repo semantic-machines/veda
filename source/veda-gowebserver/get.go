@@ -13,6 +13,13 @@ const queueStatePrefix = "srv:queue-state-"
 
 func getIndividual(ctx *fasthttp.RequestCtx) {
 
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getIndividual", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now()
 	var uri string
@@ -144,6 +151,13 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 }
 
 func getIndividuals(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getIndividuals", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
 
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 
