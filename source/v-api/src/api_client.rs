@@ -246,9 +246,9 @@ impl APIClient {
         }
 
         if let Err(e) = self.client.dial(self.addr.as_str()) {
-            error!("api-client:fail dial to ro-storage, [{}], err={}", self.addr, e);
+            error!("api-client:fail dial to main module, [{}], err={}", self.addr, e);
         } else {
-            info!("sucess connect to main module, [{}]", self.addr);
+            info!("success connect to main module, [{}]", self.addr);
             self.is_ready = true;
         }
         self.is_ready
@@ -271,6 +271,7 @@ impl APIClient {
             "event_id" : ""
         });
 
+        info!("SEND {}", query.to_string());
         let req = Message::from(query.to_string().as_bytes());
 
         if let Err(e) = self.client.send(req) {

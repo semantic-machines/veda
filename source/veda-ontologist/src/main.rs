@@ -61,14 +61,14 @@ fn main() -> std::io::Result<()> {
     //        thread::sleep(time::Duration::from_millis(3000));
     //    }
 
-    let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-    let mut total_prepared_count: u64 = 0;
-
     let ontology_file_path = "public/ontology.json";
-    ///////
     let mut is_found_onto_changes = false;
     let mut last_found_changes = Instant::now();
 
+    let mut queue_consumer = Consumer::new("./data/queue", "ontologist", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let mut total_prepared_count: u64 = 0;
+
+    ////
     loop {
         if !Path::new(ontology_file_path).exists() {
             is_found_onto_changes = true;
@@ -120,9 +120,7 @@ fn main() -> std::io::Result<()> {
             }
 
             if !is_found_onto_changes {
-                let mut indv = Individual::default();
-                indv.raw = raw;
-                is_found_onto_changes = is_changes(&mut indv, &onto_types);
+                is_found_onto_changes = is_changes(&mut Individual::new_raw(raw), &onto_types);
                 if is_found_onto_changes {
                     last_found_changes = Instant::now();
                 }
@@ -138,9 +136,9 @@ fn main() -> std::io::Result<()> {
         }
 
         if is_found_onto_changes && size_batch == 0 && Instant::now().duration_since(last_found_changes).as_secs() > 5 {
-                if generate_file(&mut module, &query, ontology_file_path) {
-                    is_found_onto_changes = false;
-                }
+            if generate_file(&mut module, &query, ontology_file_path) {
+                is_found_onto_changes = false;
+            }
         }
 
         thread::sleep(time::Duration::from_millis(3000));

@@ -902,67 +902,6 @@ class Queue
     }
 }
 
-unittest
-{
-    import std.datetime, std.uuid;
-    import veda.util.tests_tools;
-    import veda.onto.individual, veda.onto.resource;
-
-    Logger log = new Logger("test", "log", "QUEUE");
-
-    Queue  queue = new Queue("queue1" ~ randomUUID().toString(), Mode.RW, log);
-    queue.open(Mode.RW);
-    assert(queue.is_ready);
-
-    Consumer cs = new Consumer(queue, "consumer1", log);
-    cs.open();
-
-    assert(cs.is_ready);
-
-    Individual new_indv_A1 = generate_new_test_individual();
-    string     binobj      = new_indv_A1.serialize();
-    queue.push(binobj);
-
-    Individual new_indv_A = generate_new_test_individual();
-    binobj = new_indv_A.serialize();
-
-    queue.push(binobj);
-    queue.push(binobj);
-    queue.push(binobj);
-
-    string val = cs.pop();
-    val = cs.pop();
-    val = cs.pop();
-
-    Individual indv_B;
-    indv_B.deserialize(val);
-
-    bool compare_res = new_indv_A.compare(indv_B);
-    if (compare_res == false)
-        writefln("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
-
-    assert(compare_res);
-
-    val = cs.pop();
-
-    Individual indv_B1;
-    indv_B1.deserialize(val);
-
-    compare_res = new_indv_A1.compare(indv_B1);
-    if (compare_res == false)
-        writefln("new_indv_A1 [%s] != indv_B [%s]", new_indv_A1, indv_B1);
-
-    assert(compare_res);
-
-    //queue.close();
-    //cs.close();
-
-    queue.remove();
-    cs.remove();
-
-    writeln("unittest [Queue] Ok");
-}
-
 private ushort ushort_from_buff(ubyte[] buff, int pos)
 {
     ushort res = *((cast(ushort *)(buff.ptr + pos)));

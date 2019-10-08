@@ -175,10 +175,6 @@ if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] ; then
     ./tools/build-component.sh veda-ft-indexer ft-indexer
 fi
 
-if [ -z $1 ] || [ $1 == "ttlreader" ] || [ $1 == "veda-ttlreader" ] ; then
-    ./tools/build-component.sh veda-ttlreader ttlreader
-fi
-
 if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
     ./tools/build-component.sh veda-ft-query ft-query
 fi

@@ -13,6 +13,13 @@ import (
 //veda-server stores individual into storage
 func putIndividual(ctx *fasthttp.RequestCtx) {
 
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in putIndividual", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	timestamp := time.Now()
 	var ticketKey, eventID string
 

@@ -9,6 +9,14 @@ import (
 
 //authenticate checks validity of login and password and gives user new ticket
 func authenticate(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in authenticate", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	request := make(map[string]interface{})
 
 	//fill request to veda-server

@@ -14,6 +14,14 @@ import (
 //request redirected to veda-server
 //veda-server sends the given message to the given module
 func sendToModule(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in sendToModule", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	//log.Println("@SEND TO MODULE")
 	log.Println("@QUERY ", string(ctx.QueryArgs().QueryString()))
 
