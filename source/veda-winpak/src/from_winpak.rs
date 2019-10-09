@@ -46,7 +46,7 @@ WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
     if card_number.is_err() {
-        error!("fail read {} {:?}", CARD_NUMBER_FIELD_NAME, card_number.err());
+        error!("fail read {}.{} {:?}", CARD_NUMBER_FIELD_NAME, indv.obj.uri, card_number.err());
         return ResultCode::UnprocessableEntity;
     }
     let param1 = card_number.unwrap_or_default();

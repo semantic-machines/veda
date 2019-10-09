@@ -1,5 +1,5 @@
 use chrono::{NaiveDateTime, Utc};
-use futures::{Future};
+use futures::Future;
 use tiberius::{BoxableIo, Error, SqlConnection, Transaction};
 use tokio::runtime::current_thread;
 use v_api::*;
@@ -7,12 +7,11 @@ use v_module::module::*;
 use v_onto::individual::*;
 use voca_rs::*;
 
-const UPD_COLUMN_QUERY: &str = "\
-UPDATE t1
-SET [t1].[@P1]=@P2
+const LPART_UPD_COLUMN_QUERY: &str = "\
+=@P1
 FROM [WIN-PAK PRO].[dbo].[CardHolder] t1
 JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[CardHolderID]=[t1].[RecordId]
-WHERE LTRIM([t2].[CardNumber])=@P3 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
+WHERE LTRIM([t2].[CardNumber])=@P2 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 const UPD_DATE_QUERY: &str = "\
 UPDATE [WIN-PAK PRO].[dbo].[Card]
@@ -171,9 +170,10 @@ fn update_column<I: BoxableIo + 'static>(
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     if idx < names.len() {
+        let query = "UPDATE t1 SET [t1].".to_string() +names.get(idx).unwrap() + LPART_UPD_COLUMN_QUERY;
         Box::new(
             transaction
-                .exec(UPD_COLUMN_QUERY, &[&names.get(idx).unwrap().as_str(), &values.get(idx).unwrap().as_str(), &card_number.as_str()])
+                .exec(query, &[&values.get(idx).unwrap().as_str(), &card_number.as_str()])
                 .and_then(|(result, trans)| {
                     assert_eq!(result, 1);
                     Ok(trans)
@@ -187,19 +187,24 @@ fn update_column<I: BoxableIo + 'static>(
 
 fn split_str_for_winpak_db_columns(src: &str, len: usize) -> Vec<String> {
     let mut res: Vec<String> = Vec::new();
-    if src.contains('\n') {
-        for el in src.split('\n') {
-            res.push(el.to_string());
-        }
-    } else {
+    for el in src.split('\n') {
         let mut start = 0;
         let mut end = len;
-        let mut res = Vec::new();
         loop {
-            if end >= src.len() {
+            if end >= el.len() {
+                end = el.len();
+            }
+
+            let ss = chop::substring(el, start, end);
+            if !ss.is_empty() {
+                res.push(chop::substring(el, start, end));
+            } else {
                 break;
             }
-            res.push(chop::substring(src, start, end));
+
+            if end >= el.len() {
+                break;
+            }
             start = end;
             end += len;
         }

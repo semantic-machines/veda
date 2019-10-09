@@ -209,7 +209,7 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
                         if res == ResultCode::ConnectError {
                             return Err(res);
                         }
-                    } else if itype == "v-s:ExternalModuleHandler-XXX" {
+                    } else if itype == "v-s:ExternalModuleHandler" {
                         //v-s:creator", "cfg:VedaSystem"
                         if let Ok(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
                             if v == "cfg:VedaSystem" {
