@@ -755,9 +755,8 @@
       populate();
     }
 
-    select.on("focusin", function () {
+    select.on("mousedown", function (e) {
       populate();
-      select.click(); //IE workaround
     });
 
     select.change(function () {
@@ -812,21 +811,29 @@
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
-        renderOptions(options);
-        return;
+        return renderOptions(options);
       } else if (source) {
-        source.replace(/^{.*}$/g, function (match) {
-          return new Promise(function (resolve, reject) {
-            resolve( eval(match) );
-          })
-          .then(renderOptions)
-          .catch(function (error) {
-            console.log(error);
+        return new Promise(function (resolve, reject) {
+          source.replace(/^{.*}$/g, function (match) {
+            try {
+              resolve( eval(match) );
+            } catch (error) {
+              reject(error);
+            }
           });
+        })
+        .then(renderOptions)
+        .catch(function (error) {
+          console.log("Source evaluation error", error);
         });
       } else if (queryPrefix) {
-        return evalQueryPrefix().then(function (queryPrefix) {
-          return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
+        return evalQueryPrefix()
+        .then(function (queryPrefix) {
+          return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+        })
+        .then(renderOptions)
+        .catch(function (error) {
+          console.log("Query evaluation error", error);
         });
       }
     }
@@ -834,10 +841,10 @@
     function renderOptions(options) {
       select.empty();
       first_opt.text(placeholder).data("value", null).appendTo(select);
-      options.map(function (value, index) {
+      var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
         var opt = first_opt.clone().appendTo(select);
-        renderValue(value).then(function (rendered) {
+        return renderValue(value).then(function (rendered) {
           opt.text(rendered).data("value", value);
           if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
             opt.addClass("deleted");
@@ -845,17 +852,20 @@
           if ( isSingle && individual.hasValue(property_uri, value) ) {
             opt.prop("selected", true);
           }
+          return rendered;
         });
       });
+      return Promise.all(optionsPromises);
     }
 
     function handler() {
       if (isSingle) {
-        populate();
-        $("option", control).each(function () {
-          var value = $(this).data("value");
-          var hasValue = !!value && individual.hasValue(property_uri, value);
-          $(this).prop("selected", hasValue);
+        populate().then(function () {
+          $("option", control).each(function () {
+            var value = $(this).data("value");
+            var hasValue = !!value && individual.hasValue(property_uri, value);
+            $(this).prop("selected", hasValue);
+          });
         });
       }
     }
@@ -879,6 +889,10 @@
         var dataDeleted = $(this).data("deleted");
         withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
+    });
+    this.on("update", function (e) {
+      e.stopPropagation();
+      populate();
     });
     this.val = function (value) {
       if (!value) return $("select", this).val();
