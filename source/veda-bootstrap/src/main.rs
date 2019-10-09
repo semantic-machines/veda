@@ -18,7 +18,7 @@ use sysinfo::{ProcessExt, SystemExt};
 struct Module {
     name: String,
     exec_name: String,
-    param: HashMap<String, String>,
+    args: String,
     order: u32,
     is_enabled: bool,
 }
@@ -62,18 +62,35 @@ fn main() {
         vmodules.push(el);
     }
     vmodules.sort_by(|a, b| a.order.partial_cmp(&b.order).unwrap());
-    for module in vmodules {
-        info!("{:?}", module);
-        if let Some(args) = module.param.get("args") {
-            Command::new(module.exec_name.to_string()).arg(args).spawn();
+
+    let started = start_modules(vmodules);
+    info!("started {:?}", started);
+}
+
+fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, u32)>> {
+    let mut res = Vec::new();
+    for module in modules {
+        info!("start {:?}", module);
+        let child;
+        if module.args.is_empty() {
+            child = Command::new(module.exec_name.to_string()).spawn();
         } else {
-            Command::new(module.exec_name.to_string()).spawn();
+            child = Command::new(module.exec_name.to_string()).arg(&module.args).spawn();
+        }
+        if child.is_err() {
+            return Err(Error::new(ErrorKind::Other, format!("fail execute {}, err={:?}", module.exec_name, child.err())));
+        } else {
+            let pid = child.unwrap().id();
+            info!("{} start module {}, {}, {}", pid, module.name, module.exec_name, module.args);
+            res.push((module.name.to_owned(), pid));
         }
     }
+    Ok(res)
 }
 
 fn get_modules_info() -> io::Result<HashMap<String, Module>> {
     let mut modules: HashMap<String, Module> = HashMap::new();
+    let path = "./";
 
     let f = File::open("veda.modules")?;
     let file = &mut BufReader::new(&f);
@@ -86,41 +103,47 @@ fn get_modules_info() -> io::Result<HashMap<String, Module>> {
                     continue;
                 }
 
+                let mut params = HashMap::new();
+
+                loop {
+                    if let Some(p) = file.lines().next() {
+                        if let Ok(p) = p {
+                            if p.starts_with('\t') || p.starts_with(' ') {
+                                info!("param={}", p);
+                                if let Some(eq_pos) = p.find('=') {
+                                    let nm: &str = &p[0..eq_pos].trim();
+                                    let vl: &str = &p[eq_pos + 1..].trim();
+
+                                    params.insert(nm.to_string(), vl.to_string());
+                                }
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
                 let mut module = Module {
                     name: line.to_string(),
-                    param: Default::default(),
+                    args: String::new(),
                     order,
                     is_enabled: true,
                     exec_name: String::new(),
                 };
                 order += 1;
 
-                loop {
-                    if let Some(p) = file.lines().next() {
-                        if let Ok(p) = p {
-                            if p.starts_with('\t') {
-                                info!("param={}", p);
-                                if let Some(eq_pos) = p.find('=') {
-                                    let nm: &str = &p[0..eq_pos].trim();
-                                    let vl: &str = &p[eq_pos + 1..].trim();
-
-                                    module.param.insert(nm.to_string(), vl.to_string());
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                    }
+                if let Some(m) = params.get("args") {
+                    module.args = m.to_owned();
                 }
 
-                let module_name = if let Some(m) = module.param.get("module") {
+                let module_name = if let Some(m) = params.get("module") {
                     "veda-".to_string() + m
                 } else {
                     "veda-".to_string() + line.trim()
                 };
 
                 if Path::new(&module_name).exists() {
-                    module.exec_name = module_name.to_string();
+                    module.exec_name = path.to_string() + &module_name;
                     modules.insert(line, module);
                 } else {
                     return Err(Error::new(ErrorKind::Other, format!("not found module [{:?}]", module_name)));
