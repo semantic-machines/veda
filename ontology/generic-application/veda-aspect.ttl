@@ -163,11 +163,6 @@ v-s:RemoveFromFavorites
   rdfs:label "Удалить избранное"@ru ;
   rdfs:label "Remove favorite"@en ;
 .
-v-s:Settings
-  rdf:type v-s:Bundle ;
-  rdfs:label "Настройки"@ru ;
-  rdfs:label "Settings"@en ;
-.
 
 v-s:PersonalAspectTemplate
   rdf:type v-ui:ClassTemplate ;
