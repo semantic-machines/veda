@@ -151,7 +151,7 @@ if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] ; then
     ./tools/build-component.sh veda-ro-storage ro-storage
 fi
 
-if [ -z $1 ] || [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
+if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./tools/build-component.sh veda-authorization authorization
 fi
 
