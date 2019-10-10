@@ -29,6 +29,7 @@
         if (e.which === 13) { input.change(); }
         if (timeout) { clearTimeout(timeout); }
         timeout = setTimeout(keyupHandler, defaultDelay, e);
+        if (e.which !== 9) { input.focus(); }
       });
 
     individual.on(property_uri, propertyModifiedHandler);
@@ -76,6 +77,7 @@
         input.data("prev", input.val());
         input.change();
       }
+      if (e.which !== 9) { input.focus(); }
     }
 
     this.on("view edit search", function (e) {
@@ -506,6 +508,7 @@
           if (e.which === 13) { formControl.change(); }
           if (timeout) { clearTimeout(timeout); }
           timeout = setTimeout(keyupHandler, defaultDelay, e);
+          if (e.which !== 9) { input.focus(); }
         });
 
       individual.get(property_uri).forEach(function (value) {
@@ -535,6 +538,7 @@
         input.data("prev", input.val());
         input.change();
       }
+      if (e.which !== 9) { input.focus(); }
     }
 
     function handler (values) {
