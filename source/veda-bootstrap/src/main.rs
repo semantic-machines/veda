@@ -131,6 +131,9 @@ fn start_module(module: &Module) -> io::Result<Child> {
                     error!("can not create pid file for {} {}, err={:?}", &module.name, p.id(), e);
                 }
             }
+            if module.name == "mstorage".to_owned() {
+                thread::sleep(time::Duration::from_millis(100));
+            }
             Ok(p)
         }
         Err(e) => Err(e),
