@@ -51,23 +51,42 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
     }
     let param1 = card_number.unwrap_or_default();
 
-    let mut card_data = (false, 0i64, 0i64, 0i32, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
+    let mut card_data = (false, 0i64, 0i64, 0i32, None, None, None, None, None);
     let mut access_levels = Vec::new();
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| {
             conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
-                card_data = (
-                    true,
-                    row.get::<_, NaiveDateTime>(0).sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(),
-                    row.get::<_, NaiveDateTime>(1).sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(),
-                    row.get::<_, i32>(2).to_owned(),
-                    row.get::<_, &str>(3).to_owned(),
-                    row.get::<_, &str>(4).to_owned(),
-                    row.get::<_, &str>(5).to_owned(),
-                    row.get::<_, &str>(6).to_owned(),
-                    row.get::<_, &str>(7).to_owned(),
-                );
+                let f1 = row.get::<_, NaiveDateTime>(0);
+                let f2 = row.get::<_, NaiveDateTime>(1);
+                let f3 = row.get::<_, i32>(2);
+                let f4 = if let Some(v) = row.get::<_, Option<&str>>(3) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f5 = if let Some(v) = row.get::<_, Option<&str>>(4) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f6 = if let Some(v) = row.get::<_, Option<&str>>(5) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f7 = if let Some(v) = row.get::<_, Option<&str>>(6) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f8 = if let Some(v) = row.get::<_, Option<&str>>(7) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+
+                card_data = (true, f1.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(), f2.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(), f3, f4, f5, f6, f7, f8);
                 Ok(())
             })
         })
@@ -98,11 +117,26 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         indv.obj.set_datetime("v-s:dateFrom", card_data.1);
         indv.obj.set_datetime("v-s:dateTo", card_data.2);
         indv.obj.set_integer("mnd-s:winpakCardRecordId", card_data.3.into());
-        indv.obj.set_string("v-s:description", card_data.4.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:tabNumber", card_data.5.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:birthday", card_data.6.as_str(), Lang::NONE);
-        indv.obj.set_string("rdfs:comment", card_data.7.as_str(), Lang::NONE);
-        indv.obj.set_string("mnd-s:passEquipment", card_data.8.as_str(), Lang::NONE);
+
+        if let Some(s) = card_data.4 {
+            indv.obj.set_string("v-s:description", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.5 {
+            indv.obj.set_string("v-s:tabNumber", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.6 {
+            indv.obj.set_string("v-s:birthday", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.7 {
+            indv.obj.set_string("rdfs:comment", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.8 {
+            indv.obj.set_string("mnd-s:passEquipment", &s, Lang::NONE);
+        }
 
         let mut access_level_uris = Vec::new();
         for level in access_levels {
