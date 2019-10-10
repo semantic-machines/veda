@@ -1,8 +1,6 @@
 // Veda controls implemented as JQuery plugins
 ;(function( $ ) { "use strict";
 
-  var defaultDelay = 750;
-
   // INPUT CONTROLS
 
   // Generic literal input behaviour
@@ -28,8 +26,7 @@
         if (!control.isSingle) { return; }
         if (e.which === 13) { input.change(); }
         if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(keyupHandler, defaultDelay, e);
-        if (e.which !== 9) { input.focus(); }
+        timeout = setTimeout(keyupHandler, 50, e);
       });
 
     individual.on(property_uri, propertyModifiedHandler);
@@ -507,8 +504,7 @@
         .keyup( function (e) {
           if (e.which === 13) { formControl.change(); }
           if (timeout) { clearTimeout(timeout); }
-          timeout = setTimeout(keyupHandler, defaultDelay, e);
-          if (e.which !== 9) { input.focus(); }
+          timeout = setTimeout(keyupHandler, 50, e);
         });
 
       individual.get(property_uri).forEach(function (value) {
@@ -1948,8 +1944,8 @@
           if (timeout) { clearTimeout(timeout); }
           var value = e.target.value;
           if (value.length >= minLength) {
-            timeout = setTimeout(performSearch, defaultDelay, e, value);
-          } else if (!value.length)  {
+            timeout = setTimeout(performSearch, 750, e, value);
+          } else if (!value.length) {
             if (isSingle) {
               individual.set(rel_uri, []);
             }
