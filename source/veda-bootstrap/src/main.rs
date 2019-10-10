@@ -6,13 +6,13 @@ use env_logger::Builder;
 use log::LevelFilter;
 use std::collections::HashMap;
 use std::fs::File;
-use std::io;
 use std::io::Write;
 use std::io::{BufRead, BufReader};
 use std::io::{Error, ErrorKind};
 use std::path::Path;
-use std::process::Command;
-use sysinfo::{ProcessExt, SystemExt};
+use std::process::{Child, Command};
+use std::{io, thread, time};
+use sysinfo::{ProcessExt, ProcessStatus, SystemExt};
 
 #[derive(Debug)]
 struct Module {
@@ -43,15 +43,9 @@ fn main() {
     let modules = modules.unwrap();
 
     let mut sys = sysinfo::System::new();
-
-    println!("total memory: {} kB", sys.get_total_memory());
-    println!("used memory : {} kB", sys.get_used_memory());
-    println!("total swap  : {} kB", sys.get_total_swap());
-    println!("used swap   : {} kB", sys.get_used_swap());
-
     sys.refresh_processes();
     for (pid, proc) in sys.get_process_list() {
-        if proc.name().starts_with("veda") && proc.name() != "veda-bootstrap" {
+        if proc.name().starts_with("veda") && proc.name() != "veda-bootstrap" && proc.name() != "veda" {
             error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
             return;
         }
@@ -64,28 +58,121 @@ fn main() {
     vmodules.sort_by(|a, b| a.order.partial_cmp(&b.order).unwrap());
 
     let started = start_modules(vmodules);
-    info!("started {:?}", started);
+
+    if started.is_err() {
+        error!("veda not started, exit. err={:?}", started.err());
+        return;
+    }
+
+    watch_started_modules(&modules, &mut started.unwrap());
+    //info!("started {:?}", started);
 }
 
-fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, u32)>> {
-    let mut res = Vec::new();
-    for module in modules {
-        info!("start {:?}", module);
-        let child;
-        if module.args.is_empty() {
-            child = Command::new(module.exec_name.to_string()).spawn();
-        } else {
-            child = Command::new(module.exec_name.to_string()).arg(&module.args).spawn();
+fn is_ok_process(sys: &mut sysinfo::System, pid: u32) -> bool {
+    if let Some(proc) = sys.get_process(pid as i32) {
+        match proc.status() {
+            ProcessStatus::Idle => true,
+            ProcessStatus::Run => true,
+            ProcessStatus::Sleep => true,
+            _ => false,
         }
+    } else {
+        false
+    }
+}
+
+fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<(String, Child)>) {
+    loop {
+        let mut sys = sysinfo::System::new();
+        sys.refresh_processes();
+        for (name, process) in processes.iter_mut() {
+            if !is_ok_process(&mut sys, process.id()) {
+                error!("found dead module {} {}", process.id(), name);
+
+                if let Ok(_0) = process.kill() {
+                    warn!("attempt stop module {} {}", process.id(), name);
+                }
+
+                if let Some(module) = modules.get(name) {
+                    let child = start_module(module);
+                    if child.is_err() {
+                        error!("fail execute {}, err={:?}", module.exec_name, child.err());
+                    } else {
+                        let child = child.unwrap();
+                        info!("{} restart module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
+                        *process = child;
+                    }
+                } else {
+                    error!("? internal error, not found module {}", name)
+                }
+            }
+        }
+        thread::sleep(time::Duration::from_millis(1000));
+    }
+}
+
+fn start_module(module: &Module) -> io::Result<Child> {
+    let datetime: DateTime<Local> = Local::now();
+    let log_path = "logs/veda-".to_owned() + &module.name + "-" + &datetime.format("%Y-%m-%d %H:%M:%S.%f").to_string();
+    let std_log_file = File::create(log_path.to_string());
+    let err_log_file = File::create(log_path);
+
+    let child = if module.args.is_empty() {
+        Command::new(module.exec_name.to_string()).stdout(std_log_file.unwrap()).stderr(err_log_file.unwrap()).spawn()
+    } else {
+        Command::new(module.exec_name.to_string()).stdout(std_log_file.unwrap()).stderr(err_log_file.unwrap()).arg(&module.args).spawn()
+    };
+
+    match child {
+        Ok(p) => {
+            if let Ok(mut file) = File::create(".pids/__".to_owned() + &module.name + "-pid") {
+                if let Err(e) = file.write_all(format!("{}", p.id()).as_bytes()) {
+                    error!("can not create pid file for {} {}, err={:?}", &module.name, p.id(), e);
+                }
+            }
+            Ok(p)
+        }
+        Err(e) => Err(e),
+    }
+}
+
+fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, Child)>> {
+    let mut started_processes = Vec::new();
+    for module in modules {
+        //info!("start {:?}", module);
+        let child = start_module(module);
         if child.is_err() {
             return Err(Error::new(ErrorKind::Other, format!("fail execute {}, err={:?}", module.exec_name, child.err())));
         } else {
-            let pid = child.unwrap().id();
-            info!("{} start module {}, {}, {}", pid, module.name, module.exec_name, module.args);
-            res.push((module.name.to_owned(), pid));
+            let child = child.unwrap();
+            info!("{} start module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
+            started_processes.push((module.name.to_owned(), child));
         }
     }
-    Ok(res)
+
+    let mut sys = sysinfo::System::new();
+    thread::sleep(time::Duration::from_millis(500));
+    sys.refresh_processes();
+    let mut success_started = 0;
+    for (name, process) in started_processes.iter() {
+        if is_ok_process(&mut sys, process.id()) {
+            success_started += 1;
+        } else {
+            error!("fail start: {} {}", process.id(), name)
+        }
+    }
+
+    if success_started < started_processes.len() {
+        for (name, process) in started_processes.iter_mut() {
+            if let Ok(_0) = process.kill() {
+                warn!("stop process {} {}", process.id(), name);
+            }
+        }
+
+        return Err(Error::new(ErrorKind::Other, "fail start"));
+    }
+
+    Ok(started_processes)
 }
 
 fn get_modules_info() -> io::Result<HashMap<String, Module>> {
@@ -116,6 +203,8 @@ fn get_modules_info() -> io::Result<HashMap<String, Module>> {
 
                                     params.insert(nm.to_string(), vl.to_string());
                                 }
+                            } else {
+                                break;
                             }
                         }
                     } else {

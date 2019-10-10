@@ -137,9 +137,14 @@ fi
 
 if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] ; then
 
-    ./tools/build-component.sh veda-bootstrap bootstrap
+    cd source/veda-bootstrap
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-bootstrap $PWD
+
     rm veda
     rename "s/veda-bootstrap/veda/g" *
+
 fi
 
 if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
