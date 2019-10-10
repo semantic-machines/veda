@@ -271,7 +271,7 @@ impl APIClient {
             "event_id" : ""
         });
 
-        info!("SEND {}", query.to_string());
+        debug!("SEND {}", query.to_string());
         let req = Message::from(query.to_string().as_bytes());
 
         if let Err(e) = self.client.send(req) {

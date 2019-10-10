@@ -170,7 +170,7 @@ fn update_column<I: BoxableIo + 'static>(
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     if idx < names.len() {
-        let query = "UPDATE t1 SET [t1].".to_string() +names.get(idx).unwrap() + LPART_UPD_COLUMN_QUERY;
+        let query = "UPDATE t1 SET [t1].".to_string() + names.get(idx).unwrap() + LPART_UPD_COLUMN_QUERY;
         Box::new(
             transaction
                 .exec(query, &[&values.get(idx).unwrap().as_str(), &card_number.as_str()])
