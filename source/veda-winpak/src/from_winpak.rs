@@ -51,15 +51,16 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
     }
     let param1 = card_number.unwrap_or_default();
 
-    let mut card_data = (false, 0i64, 0i64, 0i32, None, None, None, None, None);
+    let mut card_data = (false, None, None, None, None, None, None, None, None);
     let mut access_levels = Vec::new();
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| {
             conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
-                let f1 = row.get::<_, NaiveDateTime>(0);
-                let f2 = row.get::<_, NaiveDateTime>(1);
-                let f3 = row.get::<_, i32>(2);
+                let f1 = row.get::<_, Option<NaiveDateTime>>(0);
+                let f2 = row.get::<_, Option<NaiveDateTime>>(1);
+                let f3 = row.get::<_, Option<i32>>(2);
+
                 let f4 = if let Some(v) = row.get::<_, Option<&str>>(3) {
                     Some(v.to_owned())
                 } else {
@@ -86,7 +87,7 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
                     None
                 };
 
-                card_data = (true, f1.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(), f2.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(), f3, f4, f5, f6, f7, f8);
+                card_data = (true, f1, f2, f3, f4, f5, f6, f7, f8);
                 Ok(())
             })
         })
@@ -114,9 +115,18 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         info!("card_data={:?}", card_data);
 
         indv.obj.clear("v-s:errorMessage");
-        indv.obj.set_datetime("v-s:dateFrom", card_data.1);
-        indv.obj.set_datetime("v-s:dateTo", card_data.2);
-        indv.obj.set_integer("mnd-s:winpakCardRecordId", card_data.3.into());
+
+        if let Some(v) = card_data.1 {
+            indv.obj.set_datetime("v-s:dateFrom", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+        }
+
+        if let Some(v) = card_data.2 {
+            indv.obj.set_datetime("v-s:dateTo", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+        }
+
+        if let Some(v) = card_data.3 {
+            indv.obj.set_integer("mnd-s:winpakCardRecordId", v.into());
+        }
 
         if let Some(s) = card_data.4 {
             indv.obj.set_string("v-s:description", &s, Lang::NONE);
