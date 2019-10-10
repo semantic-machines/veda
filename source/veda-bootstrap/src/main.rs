@@ -94,13 +94,14 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                 }
 
                 if let Some(module) = modules.get(name) {
-                    let child = start_module(module);
-                    if child.is_err() {
-                        error!("fail execute {}, err={:?}", module.exec_name, child.err());
-                    } else {
-                        let child = child.unwrap();
-                        info!("{} restart module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
-                        *process = child;
+                    match start_module(module) {
+                        Ok(child) => {
+                            info!("{} restart module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
+                            *process = child;
+                        }
+                        Err(e) => {
+                            error!("fail execute {}, err={:?}", module.exec_name, e);
+                        }
                     }
                 } else {
                     error!("? internal error, not found module {}", name)
@@ -140,13 +141,14 @@ fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, Child)>> {
     let mut started_processes = Vec::new();
     for module in modules {
         //info!("start {:?}", module);
-        let child = start_module(module);
-        if child.is_err() {
-            return Err(Error::new(ErrorKind::Other, format!("fail execute {}, err={:?}", module.exec_name, child.err())));
-        } else {
-            let child = child.unwrap();
-            info!("{} start module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
-            started_processes.push((module.name.to_owned(), child));
+        match start_module(module) {
+            Ok(child) => {
+                info!("{} start module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
+                started_processes.push((module.name.to_owned(), child));
+            }
+            Err(e) => {
+                return Err(Error::new(ErrorKind::Other, format!("fail execute {}, err={:?}", module.exec_name, e)));
+            }
         }
     }
 
@@ -183,63 +185,56 @@ fn get_modules_info() -> io::Result<HashMap<String, Module>> {
     let file = &mut BufReader::new(&f);
 
     let mut order = 0;
-    loop {
-        if let Some(l) = file.lines().next() {
-            if let Ok(line) = l {
-                if line.starts_with('#') || line.starts_with('\t') || line.starts_with('\n') || line.starts_with(' ') || line.is_empty() {
-                    continue;
-                }
 
-                let mut params = HashMap::new();
+    while let Some(l) = file.lines().next() {
+        if let Ok(line) = l {
+            if line.starts_with('#') || line.starts_with('\t') || line.starts_with('\n') || line.starts_with(' ') || line.is_empty() {
+                continue;
+            }
 
-                loop {
-                    if let Some(p) = file.lines().next() {
-                        if let Ok(p) = p {
-                            if p.starts_with('\t') || p.starts_with(' ') {
-                                info!("param={}", p);
-                                if let Some(eq_pos) = p.find('=') {
-                                    let nm: &str = &p[0..eq_pos].trim();
-                                    let vl: &str = &p[eq_pos + 1..].trim();
+            let mut params = HashMap::new();
 
-                                    params.insert(nm.to_string(), vl.to_string());
-                                }
-                            } else {
-                                break;
-                            }
+            while let Some(p) = file.lines().next() {
+                if let Ok(p) = p {
+                    if p.starts_with('\t') || p.starts_with(' ') {
+                        info!("param={}", p);
+                        if let Some(eq_pos) = p.find('=') {
+                            let nm: &str = &p[0..eq_pos].trim();
+                            let vl: &str = &p[eq_pos + 1..].trim();
+
+                            params.insert(nm.to_string(), vl.to_string());
                         }
                     } else {
                         break;
                     }
                 }
-
-                let mut module = Module {
-                    name: line.to_string(),
-                    args: String::new(),
-                    order,
-                    is_enabled: true,
-                    exec_name: String::new(),
-                };
-                order += 1;
-
-                if let Some(m) = params.get("args") {
-                    module.args = m.to_owned();
-                }
-
-                let module_name = if let Some(m) = params.get("module") {
-                    "veda-".to_string() + m
-                } else {
-                    "veda-".to_string() + line.trim()
-                };
-
-                if Path::new(&module_name).exists() {
-                    module.exec_name = path.to_string() + &module_name;
-                    modules.insert(line, module);
-                } else {
-                    return Err(Error::new(ErrorKind::Other, format!("not found module [{:?}]", module_name)));
-                }
             }
-        } else {
-            break;
+
+            let mut module = Module {
+                name: line.to_string(),
+                args: String::new(),
+                order,
+                is_enabled: true,
+                exec_name: String::new(),
+            };
+            order += 1;
+
+            if let Some(m) = params.get("args") {
+                module.args = m.to_owned();
+            }
+
+            let module_name = if let Some(m) = params.get("module") {
+                "veda-".to_string() + m
+            } else {
+                "veda-".to_string() + line.trim()
+            };
+
+            if Path::new(&module_name).exists() {
+                module.exec_name = path.to_string() + &module_name;
+                modules.insert(line, module);
+            } else {
+                return Err(Error::new(ErrorKind::Other, format!("not found module [{:?}]", module_name)));
+            }
         }
     }
     Ok(modules)
