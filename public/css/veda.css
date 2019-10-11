@@ -1474,12 +1474,6 @@ svg.process-path-highlight path
   margin-top: 1.5em;
   margin-bottom: 1em;
 }
-veda-control .radio:first-child, veda-control .checkbox:first-child {
-  margin-top: 0;
-}
-veda-control .radio:last-child, veda-control .checkbox:last-child {
-  margin-bottom: 0;
-}
 .row-attribute {
   margin-top: 1em;
 }
