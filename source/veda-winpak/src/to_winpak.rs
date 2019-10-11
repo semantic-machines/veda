@@ -97,7 +97,15 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
                 .and_then(|conn| conn.transaction())
                 .and_then(|trans| update_column(0, columm_names, column_values, card_number, trans))
                 .and_then(|trans| trans.commit());
-            current_thread::block_on_all(future).unwrap();
+            match current_thread::block_on_all(future) {
+                Ok(_) => {
+                    info!("UPDATE COLUMNS IS Ok");
+                }
+                Err(e) => {
+                    error!("fail execute query, err={:?}", e);
+                    return ResultCode::DatabaseModifiedError;
+                }
+            }
         }
     } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
         let date_from = indv_b.get_first_datetime("v-s:dateFrom");
@@ -110,19 +118,31 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
                     &[&NaiveDateTime::from_timestamp(date_from.unwrap(), 0), &NaiveDateTime::from_timestamp(date_to.unwrap(), 0), &card_number.as_str()],
                 )
             });
-            if let Err(e) = current_thread::block_on_all(future) {
-                error!("fail execute sql query, err={:?}", e);
-                return ResultCode::DatabaseModifiedError;
+            match current_thread::block_on_all(future) {
+                Ok((_r, _t)) => {
+                    info!("UPDATE DATE IS Ok");
+                }
+                Err(e) => {
+                    error!("fail execute query, err={:?}", e);
+                    return ResultCode::DatabaseModifiedError;
+                }
             }
         }
     } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
-        if let Ok(access_levels) = indv_b.get_literals("mnd-s:hasAccessLevel") {
-            let winpak_card_record_id = indv_c.get_first_literal("mnd-s:winpakCardRecordId");
+        if let Ok(access_levels_uris) = indv_b.get_literals("mnd-s:hasAccessLevel") {
+            let winpak_card_record_id = indv_c.get_first_integer("mnd-s:winpakCardRecordId");
             if winpak_card_record_id.is_err() {
-                error!("not found {}", source_data_request_pass);
+                error!("in {} not found [mnd-s:winpakCardRecordId]", indv_c.obj.uri);
                 return ResultCode::NotFound;
             }
             let winpak_card_record_id = winpak_card_record_id.unwrap();
+
+            let mut access_levels: Vec<String> = Vec::new();
+            for l in access_levels_uris {
+                if let Some(nl) = l.rsplit("_").next () {
+                    access_levels.push(nl.to_string());
+                }
+            }
 
             if !access_levels.is_empty() {
                 let future = SqlConnection::connect(conn_str)
@@ -130,7 +150,15 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
                     .and_then(|trans| clear_access_level(card_number, trans))
                     .and_then(|trans| update_access_level(0, access_levels, winpak_card_record_id, trans))
                     .and_then(|trans| trans.commit());
-                current_thread::block_on_all(future).unwrap();
+                match current_thread::block_on_all(future) {
+                    Ok(_) => {
+                        info!("UPDATE ACCESS LEVELS IS Ok");
+                    }
+                    Err(e) => {
+                        error!("fail execute query, err={:?}", e);
+                        return ResultCode::DatabaseModifiedError;
+                    }
+                }
             }
         }
     }
@@ -139,8 +167,7 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
 }
 
 fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(result, trans)| {
-        assert_eq!(result, 1);
+    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| {
         Ok(trans)
     }))
 }
@@ -148,18 +175,21 @@ fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: 
 fn update_access_level<I: BoxableIo + 'static>(
     idx: usize,
     levels: Vec<String>,
-    card_number: String,
+    card_number_id: i64,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(
-        transaction
-            .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
-            .and_then(|(result, trans)| {
-                assert_eq!(result, 1);
-                Ok(trans)
-            })
-            .and_then(move |trans| update_access_level(idx + 1, levels, card_number, trans)),
-    )
+    if idx < levels.len() {
+        Box::new(
+            transaction
+                .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number_id, &levels.get(idx).unwrap().as_str()])
+                .and_then(|(_result, trans)| {
+                    Ok(trans)
+                })
+                .and_then(move |trans| update_access_level(idx + 1, levels, card_number_id, trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
 }
 
 fn update_column<I: BoxableIo + 'static>(
@@ -170,12 +200,21 @@ fn update_column<I: BoxableIo + 'static>(
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     if idx < names.len() {
-        let query = "UPDATE t1 SET [t1].".to_string() + names.get(idx).unwrap() + LPART_UPD_COLUMN_QUERY;
+        let column_name = names.get(idx).unwrap();
+        let query = "UPDATE t1 SET [t1].[".to_string() + column_name + "]" + LPART_UPD_COLUMN_QUERY;
+        let column_val = if let Some(v) = values.get(idx) {
+            v.as_str()
+        } else {
+            ""
+        };
+        info!("card [{}], update column [{}]=[{}]", card_number.to_owned(), column_name, column_val);
+        info!("query= {}", query);
+
         Box::new(
             transaction
-                .exec(query, &[&values.get(idx).unwrap().as_str(), &card_number.as_str()])
+                .exec(query, &[&column_val, &card_number.as_str()])
                 .and_then(|(result, trans)| {
-                    assert_eq!(result, 1);
+                    info!("count:{}", result);
                     Ok(trans)
                 })
                 .and_then(move |trans| update_column(idx + 1, names, values, card_number, trans)),
