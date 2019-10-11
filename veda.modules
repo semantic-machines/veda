@@ -20,9 +20,9 @@ scripts-lp
     module = scripts
     args = lp
 
-#scripts-lp1
+scripts-lp1
     module = scripts
-    args = ltr
+    args = lp1
 
 scripts-main
     module = scripts
