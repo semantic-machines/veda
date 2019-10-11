@@ -1,11 +1,16 @@
 use chrono::{NaiveDateTime, Utc};
 use futures::Future;
+use std::ops::Add;
 use tiberius::{BoxableIo, Error, SqlConnection, Transaction};
+use time::Duration;
 use tokio::runtime::current_thread;
 use v_api::*;
 use v_module::module::*;
+use v_onto::datatype::Lang;
 use v_onto::individual::*;
 use voca_rs::*;
+
+const WINPAK_TIMEZONE: i64 = 3;
 
 const LPART_UPD_COLUMN_QUERY: &str = "\
 =@P1
@@ -21,61 +26,86 @@ UPDATE [WIN-PAK PRO].[dbo].[Card]
 const CLEAR_ACCESS_LEVEL: &str = "\
 UPDATE [WIN-PAK PRO].[dbo].[CardAccessLevels]
    SET [Deleted]=1
-   WHERE [RecordID]=@P1 and [Deleted]=0";
+   WHERE [CardID]=@P1 and [Deleted]=0";
 
 const INSERT_ACCESS_LEVEL: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardAccessLevels]
  (AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,CardID,AccessLevelID,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
 VALUES (0,@P1,0,0,0,0,@P2,@P3,0,0,0,0,0,0,0,0)";
 
-pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
+pub fn sync_data_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
+    let (sync_res, info) = sync_data_to_winpak_wo_update(module, conn_str, indv);
+    if sync_res == ResultCode::ConnectError {
+        return sync_res;
+    }
+
+    indv.obj.set_uri("v-s:lastEditor", "cfg:VedaSystem");
+
+    if sync_res == ResultCode::Ok {
+        indv.obj.set_uri("v-s:hasStatus", "v-s:StatusAccepted");
+    } else {
+        indv.obj.set_uri("v-s:hasStatus", "v-s:StatusRejected");
+        indv.obj.add_string("v-s:errorMessage", info, Lang::RU);
+    }
+    indv.obj.clear("v-s:errorMessage");
+
+    info!("update from {}, status={:?}, info={}", indv.obj.uri, sync_res, info);
+    let res = module.api.update(systicket, IndvOp::Put, indv);
+    if res.result != ResultCode::Ok {
+        error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
+    } else {
+        info!("success update, uri={}", indv.obj.uri);
+    }
+    sync_res
+}
+
+fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
     let module_label = indv.get_first_literal("v-s:moduleLabel");
     if module_label.is_err() || module_label.unwrap() != "winpak pe44 update" {
-        return ResultCode::NotFound;
+        return (ResultCode::NotFound, "исходные данные некорректны");
     }
 
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
     if backward_target.is_err() {
         error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);
-        return ResultCode::NotFound;
+        return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let backward_target = backward_target.unwrap();
 
     let indv_b = module.get_individual_h(&backward_target);
     if indv_b.is_none() {
         error!("not found {}", &backward_target);
-        return ResultCode::NotFound;
+        return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let mut indv_b = indv_b.unwrap();
-
-    let has_change_kind_for_pass = indv_b.get_first_literal("mnd-s:hasChangeKindForPass");
-    if has_change_kind_for_pass.is_err() {
-        error!("not found [mnd-s:hasChangeKindForPass] in {}", indv_b.obj.uri);
-        return ResultCode::NotFound;
-    }
 
     let source_data_request_pass = indv_b.get_first_literal("mnd-s:hasSourceDataRequestForPass");
     if source_data_request_pass.is_err() {
         error!("not found [mnd-s:hasSourceDataRequestForPass] in {}", indv_b.obj.uri);
-        return ResultCode::NotFound;
+        return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let source_data_request_pass = source_data_request_pass.unwrap();
 
     let indv_c = module.get_individual_h(&source_data_request_pass.as_str());
     if indv_c.is_none() {
         error!("not found {}", source_data_request_pass);
-        return ResultCode::NotFound;
+        return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let mut indv_c = indv_c.unwrap();
 
-    let has_change_kind_for_pass = has_change_kind_for_pass.unwrap();
-
-    let card_number = indv_c.get_first_literal("mnd-s:cardNumber");
-    if card_number.is_err() {
-        error!("not found [mnd-s:cardNumber] in {}", indv_c.obj.uri);
-        return ResultCode::NotFound;
+    let has_change_kind_for_pass = indv_b.get_literals("mnd-s:hasChangeKindForPass");
+    if has_change_kind_for_pass.is_err() {
+        error!("not found [mnd-s:hasChangeKindForPass] in {}", indv_b.obj.uri);
+        return (ResultCode::NotFound, "исходные данные некорректны");
     }
-    let card_number = card_number.unwrap();
+    let has_change_kind_for_passes = has_change_kind_for_pass.unwrap();
+
+    let wcard_number = indv_c.get_first_literal("mnd-s:cardNumber");
+    if wcard_number.is_err() {
+        error!("not found [mnd-s:cardNumber] in {}", indv_c.obj.uri);
+        return (ResultCode::NotFound, "исходные данные некорректны");
+    }
+    let card_number = wcard_number.unwrap();
 
     let columm_names = vec![
         "Note27".to_string(),
@@ -89,87 +119,82 @@ pub fn sync_data_to_winpak(module: &mut Module, systicket: &str, conn_str: &str,
         "Note39".to_string(),
         "Note40".to_string(),
     ];
-    if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
-        if let Ok(pass_equipment) = indv_b.get_first_literal("mnd-s:passEquipment") {
-            let column_values = split_str_for_winpak_db_columns(&pass_equipment, 64);
 
-            let future = SqlConnection::connect(conn_str)
-                .and_then(|conn| conn.transaction())
-                .and_then(|trans| update_column(0, columm_names, column_values, card_number, trans))
-                .and_then(|trans| trans.commit());
-            match current_thread::block_on_all(future) {
-                Ok(_) => {
-                    info!("UPDATE COLUMNS IS Ok");
-                }
-                Err(e) => {
-                    error!("fail execute query, err={:?}", e);
-                    return ResultCode::DatabaseModifiedError;
-                }
-            }
-        }
-    } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
-        let date_from = indv_b.get_first_datetime("v-s:dateFrom");
-        let date_to = indv_b.get_first_datetime("v-s:dateTo");
+    let mut column_values = Vec::new();
+    let mut date_from = Err(IndividualError::None);
+    let mut date_to = Err(IndividualError::None);
+    let mut winpak_card_record_id = 0;
+    let mut access_levels: Vec<String> = Vec::new();
 
-        if date_to.is_ok() && date_from.is_ok() {
-            let future = SqlConnection::connect(conn_str).and_then(|conn| {
-                conn.exec(
-                    UPD_DATE_QUERY,
-                    &[&NaiveDateTime::from_timestamp(date_from.unwrap(), 0), &NaiveDateTime::from_timestamp(date_to.unwrap(), 0), &card_number.as_str()],
-                )
-            });
-            match current_thread::block_on_all(future) {
-                Ok((_r, _t)) => {
-                    info!("UPDATE DATE IS Ok");
-                }
-                Err(e) => {
-                    error!("fail execute query, err={:?}", e);
-                    return ResultCode::DatabaseModifiedError;
-                }
+    for has_change_kind_for_pass in has_change_kind_for_passes {
+        if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
+            if let Ok(pass_equipment) = indv_b.get_first_literal("mnd-s:passEquipment") {
+                split_str_for_winpak_db_columns(&pass_equipment, 64, &mut column_values);
             }
-        }
-    } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
-        if let Ok(access_levels_uris) = indv_b.get_literals("mnd-s:hasAccessLevel") {
-            let winpak_card_record_id = indv_c.get_first_integer("mnd-s:winpakCardRecordId");
-            if winpak_card_record_id.is_err() {
-                error!("in {} not found [mnd-s:winpakCardRecordId]", indv_c.obj.uri);
-                return ResultCode::NotFound;
-            }
-            let winpak_card_record_id = winpak_card_record_id.unwrap();
-
-            let mut access_levels: Vec<String> = Vec::new();
-            for l in access_levels_uris {
-                if let Some(nl) = l.rsplit("_").next () {
-                    access_levels.push(nl.to_string());
+        } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
+            date_from = indv_b.get_first_datetime("v-s:dateFrom");
+            date_to = indv_b.get_first_datetime("v-s:dateTo");
+        } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
+            if let Ok(access_levels_uris) = indv_b.get_literals("mnd-s:hasAccessLevel") {
+                let wwinpak_card_record_id = indv_c.get_first_integer("mnd-s:winpakCardRecordId");
+                if wwinpak_card_record_id.is_err() {
+                    error!("in {} not found [mnd-s:winpakCardRecordId]", indv_c.obj.uri);
+                    return (ResultCode::NotFound, "исходные данные некорректны");
                 }
-            }
-
-            if !access_levels.is_empty() {
-                let future = SqlConnection::connect(conn_str)
-                    .and_then(|conn| conn.transaction())
-                    .and_then(|trans| clear_access_level(card_number, trans))
-                    .and_then(|trans| update_access_level(0, access_levels, winpak_card_record_id, trans))
-                    .and_then(|trans| trans.commit());
-                match current_thread::block_on_all(future) {
-                    Ok(_) => {
-                        info!("UPDATE ACCESS LEVELS IS Ok");
-                    }
-                    Err(e) => {
-                        error!("fail execute query, err={:?}", e);
-                        return ResultCode::DatabaseModifiedError;
+                winpak_card_record_id = wwinpak_card_record_id.unwrap();
+                for l in access_levels_uris {
+                    if let Some(nl) = l.rsplit("_").next() {
+                        access_levels.push(nl.to_string());
                     }
                 }
             }
         }
     }
 
-    ResultCode::NotFound
+    let future = SqlConnection::connect(conn_str)
+        .and_then(|conn| conn.transaction())
+        .and_then(|trans| update_date(date_from, date_to, card_number.to_string(), trans))
+        .and_then(|trans| update_column(0, columm_names, column_values, card_number.to_string(), trans))
+        .and_then(|trans| clear_access_level(winpak_card_record_id, trans))
+        .and_then(|trans| update_access_level(0, access_levels, winpak_card_record_id, trans))
+        .and_then(|trans| trans.commit());
+    match current_thread::block_on_all(future) {
+        Ok(_) => {
+            return (ResultCode::Ok, "данные обновлены");
+        }
+        Err(e) => {
+            error!("fail execute query, err={:?}", e);
+            return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+        }
+    }
 }
 
-fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| {
-        Ok(trans)
-    }))
+fn update_date<I: BoxableIo + 'static>(
+    date_from: Result<i64, IndividualError>,
+    date_to: Result<i64, IndividualError>,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if date_to.is_ok() && date_from.is_ok() {
+        Box::new(
+            transaction
+                .exec(
+                    UPD_DATE_QUERY,
+                    &[
+                        &NaiveDateTime::from_timestamp(date_from.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &NaiveDateTime::from_timestamp(date_to.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &card_number.as_str(),
+                    ],
+                )
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
+}
+
+fn clear_access_level<I: BoxableIo + 'static>(card_number: i64, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number]).and_then(|(_result, trans)| Ok(trans)))
 }
 
 fn update_access_level<I: BoxableIo + 'static>(
@@ -182,9 +207,7 @@ fn update_access_level<I: BoxableIo + 'static>(
         Box::new(
             transaction
                 .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number_id, &levels.get(idx).unwrap().as_str()])
-                .and_then(|(_result, trans)| {
-                    Ok(trans)
-                })
+                .and_then(|(_result, trans)| Ok(trans))
                 .and_then(move |trans| update_access_level(idx + 1, levels, card_number_id, trans)),
         )
     } else {
@@ -199,7 +222,7 @@ fn update_column<I: BoxableIo + 'static>(
     card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if idx < names.len() {
+    if idx < values.len() && idx < names.len()  {
         let column_name = names.get(idx).unwrap();
         let query = "UPDATE t1 SET [t1].[".to_string() + column_name + "]" + LPART_UPD_COLUMN_QUERY;
         let column_val = if let Some(v) = values.get(idx) {
@@ -207,14 +230,13 @@ fn update_column<I: BoxableIo + 'static>(
         } else {
             ""
         };
-        info!("card [{}], update column [{}]=[{}]", card_number.to_owned(), column_name, column_val);
-        info!("query= {}", query);
+        //info!("card [{}], update column [{}]=[{}]", card_number.to_owned(), column_name, column_val);
+        //info!("query= {}", query);
 
         Box::new(
             transaction
                 .exec(query, &[&column_val, &card_number.as_str()])
-                .and_then(|(result, trans)| {
-                    info!("count:{}", result);
+                .and_then(|(_result, trans)| {
                     Ok(trans)
                 })
                 .and_then(move |trans| update_column(idx + 1, names, values, card_number, trans)),
@@ -224,8 +246,7 @@ fn update_column<I: BoxableIo + 'static>(
     }
 }
 
-fn split_str_for_winpak_db_columns(src: &str, len: usize) -> Vec<String> {
-    let mut res: Vec<String> = Vec::new();
+fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<String>) {
     for el in src.split('\n') {
         let mut start = 0;
         let mut end = len;
@@ -248,5 +269,4 @@ fn split_str_for_winpak_db_columns(src: &str, len: usize) -> Vec<String> {
             end += len;
         }
     }
-    res
 }
