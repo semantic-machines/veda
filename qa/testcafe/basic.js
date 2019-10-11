@@ -48,8 +48,8 @@ export default class basic {
   }
 
   async createTestUI(label, timeStamp) {
-    const number = Selector('veda-control[property="v-ui:testInteger"] div select.form-control').find('option').withText('2');
-    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
+    const number = Selector('veda-control[property="v-ui:testInteger"] select.form-control').find('option').withText('2');
+    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
     await t
       .click('#menu')
       .click('li[id="menu"] li[resource="v-s:Create"]')
@@ -74,8 +74,8 @@ export default class basic {
   }
 
   async createTestUiForAttributiveSearch(label, comment, testString, date) {
-    const number = Selector('veda-control[property="v-ui:testInteger"] div select.form-control').find('option').withText('2');
-    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
+    const number = Selector('veda-control[property="v-ui:testInteger"] select.form-control').find('option').withText('2');
+    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
     await t
       .click('#menu')
       .click('li[id="menu"] li[resource="v-s:Create"]')
