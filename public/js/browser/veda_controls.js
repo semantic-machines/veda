@@ -6,15 +6,14 @@
   // Generic literal input behaviour
   var veda_literal_input = function( options ) {
     var opts = $.extend( {}, veda_literal_input.defaults, options ),
-      control = $(opts.template),
-      input = $(".form-control", control),
+      input = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       property_uri = opts.property_uri,
       individual = opts.individual,
       timeout;
 
-    control.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
+    input.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
 
     input
       .attr({
@@ -23,20 +22,20 @@
       })
       .on("change focusout", changeHandler)
       .keyup( function (e) {
-        if (!control.isSingle) { return; }
+        if (!input.isSingle) { return; }
         if (e.which === 13) { input.change(); }
         if (timeout) { clearTimeout(timeout); }
         timeout = setTimeout(keyupHandler, 50, e);
       });
 
     individual.on(property_uri, propertyModifiedHandler);
-    control.one("remove", function () {
+    input.one("remove", function () {
       individual.off(property_uri, propertyModifiedHandler);
     });
     propertyModifiedHandler();
 
     function propertyModifiedHandler () {
-      if (control.isSingle) {
+      if (input.isSingle) {
         var field = input[0];
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
@@ -56,7 +55,7 @@
     }
     function changeHandler (e) {
       var value = opts.parser(this.value);
-      if (control.isSingle) {
+      if (input.isSingle) {
         individual.set(property_uri, [value]);
       } else {
         individual.set(property_uri, individual.get(property_uri).concat(value));
@@ -76,35 +75,29 @@
       }
       if (e.which !== 9) { input.focus(); }
     }
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
-
     this.val = function (value) {
       if (!value) return input.val();
       return input.val( veda.Util.formatValue(value) );
     };
-
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      input.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: "body",
         trigger: "manual",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
-      });
-      input.on("focusin", function () {
-        control.tooltip("show");
+      }).one("remove", function () {
+        input.tooltip("destroy");
+      }).on("focusin", function () {
+        input.tooltip("show");
       }).on("focusout change", function () {
-        control.tooltip("hide");
+        input.tooltip("hide");
       });
     }
-
-    return control;
+    return input;
   };
   veda_literal_input.defaults = {
     parser: function (input) {
@@ -181,14 +174,13 @@
   $.fn.veda_text = function( options ) {
     var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
       control = veda_literal_input.call(this, opts);
-    var ta = $("textarea", control);
-    ta.attr("rows", this.attr("rows"));
-    autosize(ta);
+    control.attr("rows", this.attr("rows"));
+    autosize(control);
     this.on("edit", function () {
-      autosize.update(ta);
+      autosize.update(control);
     });
     this.one("remove", function () {
-      autosize.destroy(ta);
+      autosize.destroy(control);
     });
     this.append(control);
     return this;
@@ -475,8 +467,7 @@
   // Generic multilingual input behaviour
   var veda_multilingual = function( options ) {
     var opts = $.extend( {}, veda_multilingual.defaults, options ),
-      control = $(opts.template),
-      inputTemplate = control.children().remove(),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
@@ -484,7 +475,7 @@
       timeout;
 
     Object.keys(veda.user.preferences.language).map(function (language_name) {
-      var localedInput = inputTemplate.clone();
+      var localedInput = $(opts.template);
 
       localedInput.find(".language-tag").text(language_name);
 
@@ -496,7 +487,7 @@
           "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
         })
         .on("change focusout", function () {
-          var values = control.find(".form-control").map(function () {
+          var values = that.find(".form-control").map(function () {
             return opts.parser( this.value, this );
           }).get();
           individual.set(property_uri, values);
@@ -513,13 +504,13 @@
         }
       });
 
-      control.append( localedInput );
+      that.append( localedInput );
     });
 
-    var input = control.find(".form-control");
+    var input = that.find(".form-control");
 
     individual.on(property_uri, handler);
-    control.one("remove", function () {
+    that.one("remove", function () {
       individual.off(property_uri, handler);
     });
 
@@ -562,11 +553,11 @@
       });
     }
 
-    this.on("view edit search", function (e) {
+    that.on("view edit search", function (e) {
       e.stopPropagation();
     });
 
-    this.val = function (value) {
+    that.val = function (value) {
       if (!value) {
         return parser( input.val() );
       }
@@ -578,24 +569,23 @@
     };
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      that.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: "body",
         trigger: "manual",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        that.tooltip("destroy");
       });
       input.on("focusin", function () {
-        control.tooltip("show");
+        that.tooltip("show");
       }).on("focusout change", function () {
-        control.tooltip("hide");
+        that.tooltip("hide");
       });
     }
 
-    return control;
+    return that;
   };
   veda_multilingual.defaults = {
     parser: function (input, el) {
@@ -611,15 +601,15 @@
   // Multilingual string control
   $.fn.veda_multilingualString = function (options) {
     var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
-        $this = $(this);
+        that = $(this);
     init();
     veda.on("language:changed", init);
-    $this.one("remove", function () {
+    that.one("remove", function () {
       veda.off("language:changed", init);
     });
     function init() {
-      $this.empty();
-      $this.append( veda_multilingual.call($this, opts) );
+      that.empty();
+      veda_multilingual.call(that, opts);
     }
     return this;
   };
@@ -630,25 +620,24 @@
   // Multilingual text control
   $.fn.veda_multilingualText = function (options) {
     var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
-      $this = $(this);
+      that = $(this);
     init();
     veda.on("language:changed", init);
-    $this.one("remove", function () {
+    that.one("remove", function () {
       veda.off("language:changed", init);
     });
     function init() {
-      $this.empty();
-      var control = veda_multilingual.call($this, opts);
-      var ta = $("textarea", control);
-      ta.attr("rows", $this.attr("rows"));
+      that.empty();
+      veda_multilingual.call(that, opts);
+      var ta = $("textarea", that);
+      ta.attr("rows", that.attr("rows"));
       autosize(ta);
-      $this.on("edit", function () {
+      that.on("edit", function () {
         autosize.update(ta);
       });
-      $this.one("remove", function () {
+      that.one("remove", function () {
         autosize.destroy(ta);
       });
-      $this.append(control);
     }
     return this;
   };
@@ -660,7 +649,6 @@
   $.fn.veda_boolean = function( options ) {
     var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
       control = $( opts.template ),
-      input = $("input", control),
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec;
@@ -668,12 +656,12 @@
     function handler (doc_property_uri) {
       if (individual.hasValue(property_uri)) {
         if (individual.get(property_uri)[0] === true) {
-          input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
+          control.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
         } else {
-          input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
+          control.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
         }
       } else {
-        input.prop("readonly", true).prop("indeterminate", true);
+        control.prop("readonly", true).prop("indeterminate", true);
       }
     }
     handler();
@@ -683,30 +671,30 @@
       individual.off(property_uri, handler);
     });
 
-    input.click( function () {
-      if ( input.prop("readonly") ) {
+    control.click( function () {
+      if ( control.prop("readonly") ) {
         individual.set(property_uri, [false]);
-      } else if ( !input.prop("checked") ) {
+      } else if ( !control.prop("checked") ) {
         individual.set(property_uri, []);
       } else {
         individual.set(property_uri, [true]);
       }
     });
 
-    if ( input.closest(".checkbox.disabled").length ) {
-      input.attr("disabled", "disabled");
+    if ( control.closest(".checkbox.disabled").length ) {
+      control.attr("disabled", "disabled");
     }
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        input.attr("disabled", "disabled");
+        control.attr("disabled", "disabled");
         control.parents("label").tooltip("destroy");
       } else {
-        if ( input.closest(".checkbox.disabled").length ) {
-          input.attr("disabled", "disabled");
+        if ( control.closest(".checkbox.disabled").length ) {
+          control.attr("disabled", "disabled");
         } else {
-          input.removeAttr("disabled");
+          control.removeAttr("disabled");
         }
         if (spec && spec.hasValue("v-ui:tooltip")) {
           control.parents("label").tooltip({
@@ -734,7 +722,6 @@
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      select = $("select", control),
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
@@ -755,12 +742,12 @@
       populate();
     }
 
-    select.on("mousedown", function (e) {
+    control.on("mousedown", function (e) {
       populate();
     });
 
-    select.change(function () {
-      var value = $("option:selected", select).data("value");
+    control.change(function () {
+      var value = $("option:selected", control).data("value");
       if (isSingle) {
         individual.set(property_uri, [value]);
       } else {
@@ -839,11 +826,11 @@
     }
 
     function renderOptions(options) {
-      select.empty();
-      first_opt.text(placeholder).data("value", null).appendTo(select);
+      control.empty();
+      first_opt.text(placeholder).data("value", null).appendTo(control);
       var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
-        var opt = first_opt.clone().appendTo(select);
+        var opt = first_opt.clone().appendTo(control);
         return renderValue(value).then(function (rendered) {
           opt.text(rendered).data("value", value);
           if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
@@ -895,8 +882,8 @@
       populate();
     });
     this.val = function (value) {
-      if (!value) return $("select", this).val();
-      return $("select", this).val( renderValue(value) );
+      if (!value) return control.val();
+      return control.val( renderValue(value) );
     };
     this.populate = function () {
       populate();
@@ -913,12 +900,11 @@
 
   $.fn.veda_checkbox = function (options) {
     var opts = $.extend( {}, $.fn.veda_checkbox.defaults, options ),
-      control = $(opts.template),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      holder = $(".checkbox", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || "),
@@ -988,10 +974,10 @@
     }
 
     function renderOptions(options) {
-      control.empty();
+      that.empty();
       options.map(function (value, index) {
         if (index >= 100) { return; }
-        var hld = holder.clone().appendTo(control);
+        var hld = $(opts.template).appendTo(that);
         renderValue(value).then(function (rendered) {
           var lbl = $("label", hld).append( rendered );
           var chk = $("input", lbl).data("value", value);
@@ -1012,7 +998,7 @@
     }
 
     function handler(doc_property_uri) {
-      $("input", control).each(function () {
+      $("input", that).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);
         $(this).prop("checked", hasValue);
@@ -1020,26 +1006,25 @@
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "left",
         container: "body",
         trigger: "hover",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
     }
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.checkbox", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
+        $(this).children().addClass("disabled");
+        $("input", this).attr("disabled", "true");
       } else {
-        $("div.checkbox", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
+        $(this).children().removeClass("disabled");
+        $("input", this).removeAttr("disabled");
       }
       if (e.type === "search") {
         var dataDeleted = $(this).data("deleted");
@@ -1055,7 +1040,6 @@
       populate();
       return this;
     };
-    this.append(control);
     return this;
   };
   $.fn.veda_checkbox.defaults = {
@@ -1066,12 +1050,11 @@
 
   $.fn.veda_radio = function (options) {
     var opts = $.extend( {}, $.fn.veda_radio.defaults, options ),
-      control = $(opts.template),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      holder = $(".radio", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
       queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || "),
@@ -1141,10 +1124,10 @@
     }
 
     function renderOptions(options) {
-      control.empty();
+      that.empty();
       options.map(function (value, index) {
         if (index >= 100) { return; }
-        var hld = holder.clone().appendTo(control);
+        var hld = $(opts.template).appendTo(that);
         renderValue(value).then(function (rendered) {
           var lbl = $("label", hld).append( rendered );
           var rad = $("input", lbl).data("value", value);
@@ -1167,7 +1150,7 @@
     }
 
     function changeHandler() {
-      $("input", control).each(function () {
+      $("input", that).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);
         $(this).prop("checked", hasValue);
@@ -1175,26 +1158,25 @@
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "left",
         container: "body",
         trigger: "hover",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
     }
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.radio", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
+        $("div.radio", this).addClass("disabled");
+        $("input", this).attr("disabled", "true");
       } else {
-        $("div.radio", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
+        $("div.radio", this).removeClass("disabled");
+        $("input", this).removeAttr("disabled");
       }
       if (e.type === "search") {
         var dataDeleted = $(this).data("deleted");
@@ -1210,7 +1192,6 @@
       populate();
       return this;
     };
-    this.append(control);
     return this;
   };
   $.fn.veda_radio.defaults = {
@@ -1220,11 +1201,10 @@
 //new radio control
   $.fn.veda_booleanRadio = function (options) {
     var opts = $.extend( {}, $.fn.veda_booleanRadio.defaults, options ),
-      control = $(opts.template),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      holder = $(".radio", control),
       trueOption = {
         label: spec && spec.hasValue("v-ui:trueLabel") ?
           Promise.resolve(spec.get("v-ui:trueLabel").join(" ")) :
@@ -1242,6 +1222,7 @@
         value: false
       },
       options = [trueOption, falseOption];
+
     renderOptions();
 
     individual.on(property_uri, changeHandler);
@@ -1250,9 +1231,9 @@
     });
 
     function renderOptions() {
-      control.empty();
+      that.empty();
       options.map(function (option) {
-        var hld = holder.clone().appendTo(control);
+        var hld = $(opts.template).appendTo(that);
         option.label.then(function(label) {
           var lbl = $("label", hld).append( label );
           var rad = $("input", lbl).data("value", option.value);
@@ -1272,7 +1253,7 @@
     }
 
     function changeHandler() {
-      $("input", control).each(function () {
+      $("input", that).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);
         $(this).prop("checked", hasValue);
@@ -1280,27 +1261,26 @@
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "left",
         container: "body",
         trigger: "hover",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
     }
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.radio", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
+        $("div.radio", this).addClass("disabled");
+        $("input", this).attr("disabled", "true");
         $(this).removeClass("has-error");
       } else {
-        $("div.radio", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
+        $("div.radio", this).removeClass("disabled");
+        $("input", this).removeAttr("disabled");
       }
     });
     this.val = function (value) {
@@ -1312,7 +1292,6 @@
       populate();
       return this;
     };
-    this.append(control);
     return this;
   };
   $.fn.veda_booleanRadio.defaults = {
@@ -1322,6 +1301,7 @@
   // Numeration control
   $.fn.veda_numeration = function( options ) {
     var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
+      that = this,
       control = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
@@ -1346,25 +1326,24 @@
 
     input.val(individual.get(property_uri)[0]);
     individual.on(property_uri, singleValueHandler);
-    control.one("remove", function () {
+    this.one("remove", function () {
       individual.off(property_uri, singleValueHandler);
     });
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: "body",
         trigger: "manual",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
       input.on("focusin", function () {
-        control.tooltip("show");
+        that.tooltip("show");
       }).on("focusout change", function () {
-        control.tooltip("hide");
+        that.tooltip("hide");
       });
     }
 
@@ -1486,7 +1465,6 @@
     mode: "javascript",
     parser: function (input) {
       return (input || null);
-      //return new String(input);
     }
   };
 
@@ -1602,17 +1580,17 @@
   $.fn.veda_file = function( options ) {
     var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
         control = $(opts.template),
+        browseButton = $(control[0]),
+        fileInput = $(control[1]),
+        indicatorPercentage = $(".indicator-percentage", browseButton),
+        indicatorSpinner = $(".indicator-spinner", browseButton),
         spec = opts.spec,
         individual = opts.individual,
         rel_uri = opts.property_uri,
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
         range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
-        accept = this.attr("accept"),
-        fileInput = $("[type='file']", control),
-        browseButton = $(".browse", control),
-        indicatorPercentage = $(".indicator-percentage", control),
-        indicatorSpinner = $(".indicator-spinner", control);
+        accept = this.attr("accept");
 
     if (!isSingle) { fileInput.attr("multiple", "multiple"); }
     if (accept) { fileInput.attr("accept", accept); }
@@ -1753,6 +1731,24 @@
       var newVal = new veda.IndividualModel();
       newVal["rdf:type"] = rangeRestriction ? [ rangeRestriction ] : [ (new veda.IndividualModel(rel_uri))["rdfs:range"][0] ];
       return newVal;
+    }
+
+    if (isSingle) {
+      $(".clear", control).click(function () {
+        individual.clearValue(rel_uri);
+        $(".fulltext", control).val("");
+      });
+      this.on("view edit search", function (e) {
+        e.stopPropagation();
+        if (e.type === "search") {
+          var isSingle = false || $(this).data("single");
+          if (!isSingle) {
+            $(".clear", control).remove();
+          }
+        }
+      });
+    } else {
+      $(".clear", control).remove();
     }
 
     // Create feature
