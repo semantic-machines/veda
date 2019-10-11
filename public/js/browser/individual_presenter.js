@@ -587,6 +587,18 @@ veda.Module(function (veda) { "use strict";
 
     // Validation with support of embedded templates (arbitrary depth)
 
+    function debounce(fn, delay) {
+      var timeout;
+      return function () {
+        var that = this;
+        var args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+          fn.apply(that, args);
+        }, delay);
+      }
+    }
+
     // Initial validation state
     var validation = {state: true};
     template.data("validation", validation);
@@ -620,7 +632,8 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       }
     }
-    template.on("internal-validate", validateTemplate);
+    template.on("internal-validate", debounce(validateTemplate, 500));
+    //template.on("internal-validate", validateTemplate);
 
     function triggerValidation() {
       if (mode === "edit") {
