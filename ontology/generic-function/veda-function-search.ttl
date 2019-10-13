@@ -1049,10 +1049,8 @@ v-fs:AttributiveSearchInlineTemplate
 
   function setupBlank () {
     searchBlank.initBlank().then(function (blankObject) {
-      blankObject.on("search", formHandler);
       blankObject.on("propertyModified", hideResults);
       template.one("remove", function () {
-        blankObject.off("search", formHandler);
         blankObject.off("propertyModified", hideResults);
       });
       if ( searchBlankTemplate && searchBlankContainer.length ) {
@@ -1070,11 +1068,6 @@ v-fs:AttributiveSearchInlineTemplate
 
   function hideResults () {
     $(".results", template).addClass("hidden");
-  }
-  function formHandler () {
-    self.search()
-      .then(renderResult)
-      .then(clearSelected);
   }
 
   // Remember scroll position
@@ -1109,6 +1102,12 @@ v-fs:AttributiveSearchInlineTemplate
         toggleSpin(searchButtons);
       });
   }
+
+  // Listen to model 'search' event
+  self.on("search", searchHandler);
+  template.one("remove", function () {
+    self.off("search", searchHandler);
+  });
 
   // Search button handler
   searchButton.click(searchHandler);
