@@ -363,7 +363,6 @@ v-ft:Inbox
   v-ui:hasTemplate v-ft:InboxTemplate ;
   v-fs:applicableOperation v-ft:MakeDecisionOperation ;
 .
-
 v-ft:InboxBlank
   rdf:type v-fc:Blank ;
   rdfs:label "Бланк входящих задач"@ru ;
@@ -684,11 +683,10 @@ v-ft:ActorFilterTemplate
       individual.actor = actor_uri;
       if (actor_uri === "v-ft:MyBundle") {
         individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
-        individual.trigger("search");
       } else {
         individual[actor_property] = [ new veda.IndividualModel(actor_uri) ];
-        individual.trigger("search");
       }
+      new veda.IndividualModel(folder).trigger("search");
     });
 
     if (!individual.actor) {
