@@ -2139,7 +2139,7 @@
       control.one("remove", function () {
         control.tooltip("destroy");
       });
-      $("input", control).on("focusin", function () {
+      $("textarea", control).on("focusin", function () {
         control.tooltip("show");
       }).on("focusout change", function () {
         control.tooltip("hide");
