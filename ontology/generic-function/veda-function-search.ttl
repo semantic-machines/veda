@@ -207,7 +207,20 @@ v-fs:authorized
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:integer ;
 .
-
+v-fs:selected
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Выбрано"@ru ;
+  rdfs:label "Selected"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range rdfs:Resource ;
+.
+v-fs:operation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Выбрано"@ru ;
+  rdfs:label "Selected"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range v-s:Operation ;
+.
 v-fs:SearchBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Поиск"@ru ;
@@ -404,6 +417,8 @@ v-fs:AttributiveSearchManagementTemplate
       individual.clone().then(function (personalRegistry) {
         personalRegistry["rdf:type"] = [ new veda.IndividualModel("v-fs:PersonalSearch") ];
         personalRegistry["v-fs:searchResult"] = [];
+        personalRegistry["v-fs:selected"] = [];
+        personalRegistry["v-fs:operation"] = [];
         personalRegistry["v-fs:authorized"] = [];
         personalRegistry["v-fs:cursor"] = [];
         personalRegistry["v-fs:estimated"] = [];
@@ -650,16 +665,15 @@ v-fs:SelectedResultsActionsTemplate
 <script>
   var self = this;
   function selectedHandler() {
-    var selectedL = self.selected && Object.keys(self.selected).length || 0;
-    if (!selectedL) {
-      template.addClass("hidden");
-    } else {
+    if ( self.hasValue("v-fs:selected") ) {
       template.removeClass("hidden");
+    } else {
+      template.addClass("hidden");
     }
   }
-  self.on("selected", selectedHandler);
+  self.on("v-fs:selected", selectedHandler);
   template.one("remove", function () {
-    self.off("selected", selectedHandler);
+    self.off("v-fs:selected", selectedHandler);
   });
   selectedHandler();
 
@@ -702,16 +716,10 @@ v-fs:SelectedResultsActionsTemplate
         operationContainer = $(".operation-container", template).empty();
     operation["rdf:type"] = [ operationClass ];
     //operation["v-s:dataQuery"] = self["v-fs:query"];
-    operation["v-s:data"] = Object.keys(self.selected).map(function (value_uri) {
-      return new veda.IndividualModel(value_uri);
-    });
+    operation["v-s:data"] = self["v-fs:selected"].slice();
     var modal = veda.Util.showSmallModal(operation);
     modal.on("click", ".action#start", function () {
-      if (self.operation !== operation) {
-        self.operation = operation;
-        operationContainer.empty();
-        operation.present(operationContainer, "v-s:OperationStatusTemplate");
-      }
+      self["v-fs:operation"] = [ operation ];
       modal.on("hidden.bs.modal", function () {
         modal.modal("hide").remove();
       });
@@ -724,15 +732,8 @@ v-fs:SelectedResultsActionsTemplate
     <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
   </button>
   <ul class="dropdown-menu operations"></ul>
-  <div class="pull-left operation-container margin-md-h"></div>
+  <div rel="v-fs:operation" data-template="v-s:OperationStatusTemplate" class="pull-left operation-container margin-md-h"></div>
 </div>
-<script>
-  if (this.operation) {
-    var operationContainer = $(".operation-container", template);
-    this.operation.present(operationContainer, "v-s:OperationStatusTemplate");
-  }
-//# sourceURL=v-fs:SelectedResultsActionsTemplate_post
-</script>
   """ ;
 .
 
@@ -1127,7 +1128,6 @@ v-fs:AttributiveSearchInlineTemplate
   function moreResultsHandler() {
     return self.search( self["v-fs:cursor"][0] )
       .then(renderResult)
-      .then(setToggleSelectAll)
       .catch(function (error) {
         console.log(error);
       });
@@ -1187,14 +1187,13 @@ v-fs:AttributiveSearchInlineTemplate
   });
 
   // Select results
-  self.selected = self.selected || {};
   var toggleSelectAll = searchResultContainer.find(".toggle-select-all");
   searchResultContainer.on("click", ".toggle-select", toggleSelect);
 
   toggleSelectAll.click(function () {
-    var selectedL = Object.keys(self.selected).length;
+    var selectedL = self["v-fs:selected"].length;
     var resultsL = resultContainer.children().length;
-    if ( resultsL !== 0 && selectedL !== 0 && (resultsL !== selectedL || resultsL === selectedL) ) {
+    if ( resultsL !== 0 && selectedL !== 0 ) {
       clearSelected();
     } else if ( resultsL !== 0 && selectedL === 0) {
       selectAll();
@@ -1202,7 +1201,7 @@ v-fs:AttributiveSearchInlineTemplate
     setToggleSelectAll();
   });
   function setToggleSelectAll() {
-    var selectedL = Object.keys(self.selected).length;
+    var selectedL = self["v-fs:selected"].length;
     var resultsL = resultContainer.children().length;
     if ( resultsL !== 0 && resultsL === selectedL ) {
       toggleSelectAll.prop("checked", true);
@@ -1213,32 +1212,34 @@ v-fs:AttributiveSearchInlineTemplate
       toggleSelectAll.prop("indeterminate", false);
       toggleSelectAll.prop("checked", false);
     }
-    self.trigger("selected");
   }
   function clearSelected() {
-    self.selected = {};
+    self.clearValue("v-fs:selected");
     searchResultContainer.find(".toggle-select:checked").prop("checked", false);
-    setToggleSelectAll();
   }
   function selectAll() {
-    self.selected = {};
+    self.clearValue("v-fs:selected");
     searchResultContainer.find(".toggle-select")
       .prop("checked", true)
       .each(function () {
         var result_uri = $(this).closest("[resource]").attr("resource");
-        self.selected[result_uri] = true;
+        self.addValue("v-fs:selected", new veda.IndividualModel(result_uri));
       });
   }
   function toggleSelect() {
     var $this = $(this);
     var result_uri = $this.closest("[resource]").attr("resource");
+    var result = new veda.IndividualModel(result_uri);
     if ( $this.is(":checked") ) {
-      self.selected[result_uri] = true;
+      self.addValue("v-fs:selected", result);
     } else {
-      delete self.selected[result_uri];
+      self.removeValue("v-fs:selected", result);
     }
-    setToggleSelectAll()
   }
+  self.on("v-fs:selected", setToggleSelectAll);
+  template.one("remove", function () {
+    self.off("v-fs:selected", setToggleSelectAll);
+  });
 
   // Render result
   function renderResult(resultDelta) {
@@ -1279,7 +1280,7 @@ v-fs:AttributiveSearchInlineTemplate
           if (result.id === self.marked) {
             tmpl.addClass("marked");
           }
-          tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
+          tmpl.find(".toggle-select").prop("checked", self.hasValue("v-fs:selected", result));
 
           $("td", tmpl).each( function () {
             var text = this.innerText || this.textContent;
@@ -1302,7 +1303,7 @@ v-fs:AttributiveSearchInlineTemplate
           return tmpl;
         });
       });
-    }, Promise.resolve());
+    }, Promise.resolve()).then(setToggleSelectAll);
   }
 
   // Spinner
@@ -1321,7 +1322,6 @@ v-fs:AttributiveSearchInlineTemplate
   // Show results on load if they are available (e.g. if we came back)
   if ( self.hasValue("v-fs:searchResult") ) {
     return renderResult( self["v-fs:searchResult"] )
-      .then(setToggleSelectAll)
       .then(function () {
         if ( location.hash.indexOf(individual.id) >= 0 ) {
           scrollTo(self.scroll);
