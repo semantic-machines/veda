@@ -362,6 +362,7 @@ v-ft:Inbox
   v-fs:sortOrder "'v-s:created' desc" ;
   v-ui:hasTemplate v-ft:InboxTemplate ;
   v-fs:applicableOperation v-ft:MakeDecisionOperation ;
+  v-fs:searchOnLoad true ;
 .
 v-ft:InboxBlank
   rdf:type v-fc:Blank ;
@@ -380,6 +381,7 @@ v-ft:Outbox
   v-fs:searchResultTemplate v-ft:TaskResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
   v-ui:hasTemplate v-ft:InboxTemplate ;
+  v-fs:searchOnLoad true ;
 .
 v-ft:OutboxBlank
   rdf:type v-fc:Blank ;
@@ -398,6 +400,7 @@ v-ft:Completed
   v-fs:searchResultTemplate v-ft:CompletedResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
   v-ui:hasTemplate v-ft:InboxTemplate ;
+  v-fs:searchOnLoad true ;
 .
 v-ft:CompletedBlank
   rdf:type v-fc:Blank ;
@@ -416,6 +419,7 @@ v-ft:OutboxCompleted
   v-fs:searchResultTemplate v-ft:CompletedResultTemplate ;
   v-fs:sortOrder "'v-s:created' desc"^^xsd:string ;
   v-ui:hasTemplate v-ft:InboxTemplate ;
+  v-fs:searchOnLoad true ;
 .
 v-ft:OutboxCompletedBlank
   rdf:type v-fc:Blank ;

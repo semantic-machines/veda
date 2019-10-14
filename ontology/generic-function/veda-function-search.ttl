@@ -941,7 +941,6 @@ v-fs:AttributiveSearchInlineTemplate
       searchBlankContainer = $(".search-form", template),
       searchResultContainer = $(".search-result", template),
       searchButton = $("#search-button.search-button", template),
-      resetButton = $("#reset-button.reset-button", template),
       moreResults = $(".more-results", template),
       allResults = $(".all-results", template),
       noMoreResults = $(".no-more-results", template),
@@ -997,79 +996,6 @@ v-fs:AttributiveSearchInlineTemplate
     });
   }
 
-  // Read extra parameters from URL
-  var hash = window.location.hash;
-  var tokens = decodeURI(hash).slice(2).split("/"),
-      uri = tokens[0],
-      extra = tokens[4];
-  if (uri === self.id) {
-    if (extra) {
-      extra = extra.split("&").reduce(function (acc, pair) {
-        var split = pair.split("="),
-            property_uri = split[0] || "",
-            values = split[1].split("|") || "";
-        acc[property_uri] = acc[property_uri] || [];
-        values.forEach(function (value) {
-          acc[property_uri].push( parse(property_uri, value) );
-        });
-        return acc;
-      }, {});
-    }
-  }
-  function parse (property_uri, value) {
-    var property = new veda.IndividualModel(property_uri);
-    var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
-    var parsed;
-    switch (range) {
-      case "xsd:string": parsed = value; break;
-      case "xsd:integer":
-      case "xsd:decimal": parsed = parseFloat( value.split(" ").join("").split(",").join(".") ); break;
-      case "xsd:boolean": parsed = value === "true"; break;
-      case "xsd:dateTime": parsed = new Date(value); break;
-      default: parsed = new veda.IndividualModel(value);
-    }
-    return parsed;
-  }
-
-  // Render search form
-  if ( searchBlank ) {
-    searchBlank.load().then(function(searchBlank) {
-      setupBlank();
-      resetButton.click(function () {
-        searchBlank.object.off("*");
-        delete searchBlank.object;
-        setupBlank();
-        hideResults();
-      });
-    });
-  } else {
-    $(".params", template).remove();
-    resetButton.remove();
-  }
-
-  function setupBlank () {
-    searchBlank.initBlank().then(function (blankObject) {
-      blankObject.on("propertyModified", hideResults);
-      template.one("remove", function () {
-        blankObject.off("propertyModified", hideResults);
-      });
-      if ( searchBlankTemplate && searchBlankContainer.length ) {
-        searchBlankContainer.empty();
-        blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
-      }
-      // Populate blank with extra parameters from URL
-      if (extra) {
-        for (var property_uri in extra) {
-          blankObject[property_uri] = extra[property_uri];
-        }
-      }
-    });
-  }
-
-  function hideResults () {
-    $(".results", template).addClass("hidden");
-  }
-
   // Remember scroll position
   template.one("remove", function () {
     self.scroll = $(window).scrollTop();
@@ -1102,12 +1028,6 @@ v-fs:AttributiveSearchInlineTemplate
         toggleSpin(searchButtons);
       });
   }
-
-  // Listen to model 'search' event
-  self.on("search", searchHandler);
-  template.one("remove", function () {
-    self.off("search", searchHandler);
-  });
 
   // Search button handler
   searchButton.click(searchHandler);
@@ -1318,25 +1238,98 @@ v-fs:AttributiveSearchInlineTemplate
     }
   }
 
-  // Show results on load if they are available (e.g. if we came back)
-  if ( self.hasValue("v-fs:searchResult") ) {
-    return renderResult( self["v-fs:searchResult"] )
-      .then(function () {
-        if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo(self.scroll);
-        }
-      });
-  // Search on load
-  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
-    return self.search()
-      .then(renderResult)
-      .then(clearSelected)
-      .then(function () {
-        if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo(self.scroll);
-        }
-      });
+  // Read extra parameters from URL
+  var hash = window.location.hash;
+  var tokens = decodeURI(hash).slice(2).split("/"),
+      uri = tokens[0],
+      extra = tokens[4];
+  if (uri === self.id) {
+    if (extra) {
+      extra = extra.split("&").reduce(function (acc, pair) {
+        var split = pair.split("="),
+            property_uri = split[0] || "",
+            values = split[1].split("|") || "";
+        acc[property_uri] = acc[property_uri] || [];
+        values.forEach(function (value) {
+          acc[property_uri].push( parse(property_uri, value) );
+        });
+        return acc;
+      }, {});
+    }
   }
+  function parse (property_uri, value) {
+    var property = new veda.IndividualModel(property_uri);
+    var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
+    var parsed;
+    switch (range) {
+      case "xsd:string": parsed = value; break;
+      case "xsd:integer":
+      case "xsd:decimal": parsed = parseFloat( value.split(" ").join("").split(",").join(".") ); break;
+      case "xsd:boolean": parsed = value === "true"; break;
+      case "xsd:dateTime": parsed = new Date(value); break;
+      default: parsed = new veda.IndividualModel(value);
+    }
+    return parsed;
+  }
+
+  // Render search form
+  return Promise.resolve().then(function () {
+    if ( searchBlank ) {
+      return searchBlank.load().then(function(searchBlank) {
+        $("#reset-button.reset-button", template).click(function () {
+          searchBlank.object.off("*");
+          delete searchBlank.object;
+          setupBlank();
+          hideResults();
+        });
+        return setupBlank();
+      });
+    } else {
+      $(".params", template).remove();
+      $("#reset-button.reset-button", template).remove();
+    }
+    function setupBlank () {
+      return searchBlank.initBlank().then(function (blankObject) {
+        blankObject.on("propertyModified", hideResults);
+        template.one("remove", function () {
+          blankObject.off("propertyModified", hideResults);
+        });
+        if ( searchBlankTemplate && searchBlankContainer.length ) {
+          searchBlankContainer.empty();
+          return blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
+        }
+        // Populate blank with extra parameters from URL
+        if (extra) {
+          for (var property_uri in extra) {
+            blankObject[property_uri] = extra[property_uri];
+          }
+        }
+      });
+    }
+    function hideResults () {
+      $(".results", template).addClass("hidden");
+    }
+  }).then(function () {
+    // Search on load
+    if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
+      return self.search()
+        .then(renderResult)
+        .then(clearSelected)
+        .then(function () {
+          if ( location.hash.indexOf(individual.id) >= 0 ) {
+            scrollTo(self.scroll);
+          }
+        });
+    // Show results on load if they are available (e.g. if we came back)
+    } else if ( self.hasValue("v-fs:searchResult") ) {
+      return renderResult( self["v-fs:searchResult"] )
+        .then(function () {
+          if ( location.hash.indexOf(individual.id) >= 0 ) {
+            scrollTo(self.scroll);
+          }
+        });
+    }
+  });
 
   //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
 </script>
