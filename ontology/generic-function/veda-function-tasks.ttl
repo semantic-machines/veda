@@ -1209,8 +1209,8 @@ v-ft:MakeDecisionOperationTemplate
   v-ui:template """
 <script>
   function intersect (arr1, arr2) {
-    arr1.sort();
-    arr2.sort();
+    arr1.sort(sorter);
+    arr2.sort(sorter);
     var i = 0, j = 0, res = [], el1, el2;
     while ((el1 = arr1[i]) && (el2 = arr2[j])) {
       if (el2 < el1) {
@@ -1224,8 +1224,11 @@ v-ft:MakeDecisionOperationTemplate
       }
     }
     return res;
-  }
 
+    function sorter (a, b) {
+      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    }
+  }
   var possible = this["v-s:data"].map(function (task) {
     return task["v-wf:possibleDecisionClass"];
   });
