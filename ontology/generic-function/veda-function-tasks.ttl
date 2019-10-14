@@ -467,6 +467,7 @@ v-ft:InboxTemplate
     if ( individual["v-fs:cursor"][0] >= individual["v-fs:top"][0] ) {
       individual["v-fs:top"] = individual["v-fs:cursor"];
     }
+    individual.clearValue("v-fs:searchResult");
   });
 //# sourceURL=v-ft:InboxTemplate_pre
 </script>
@@ -681,6 +682,7 @@ v-ft:ActorFilterTemplate
 
     template.on("click", "li a", function (e) {
       e.preventDefault();
+      e.stopPropagation();
       var $this = $(this);
       $this.parent().addClass("active").siblings().removeClass("active");
       var actor_uri = $this.children(".actor").attr("about");
@@ -693,12 +695,13 @@ v-ft:ActorFilterTemplate
       new veda.IndividualModel(folder).trigger("search");
     });
 
-    if (!individual.actor) {
+    if ( !individual.actor || individual.actor === "v-ft:MyBundle" ) {
       individual.actor = "v-ft:MyBundle";
+      individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
+    } else {
+      individual[actor_property] = [ new veda.IndividualModel(individual.actor) ];
     }
-    var actor = $("li > a > [about='" + individual.actor + "']", template);
-    actor.click();
-
+    template.children().first().addClass("active");
   });
 
   // Update counter if counter & results count do not match

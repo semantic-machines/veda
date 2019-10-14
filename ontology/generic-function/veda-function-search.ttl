@@ -1028,6 +1028,10 @@ v-fs:AttributiveSearchInlineTemplate
         toggleSpin(searchButtons);
       });
   }
+  self.on("search", searchHandler);
+  template.one("remove", function () {
+    self.off("search", searchHandler);
+  });
 
   // Search button handler
   searchButton.click(searchHandler);
