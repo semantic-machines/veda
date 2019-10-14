@@ -69,6 +69,7 @@ export default class basic {
       .click(number)
       .click(checkbox)
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
+      .wait(2000)
       .click('button#save')
       .wait(2000)
   }
