@@ -993,6 +993,10 @@
               individual.removeValue(property_uri, value);
             }
           });
+          if (opts.mode === "view") {
+            hld.addClass("disabled");
+            chk.attr("disabled", "disabled");
+          }
         });
       });
     }
@@ -1145,6 +1149,10 @@
               }));
             }
           });
+          if (opts.mode === "view") {
+            hld.addClass("disabled");
+            chk.attr("disabled", "disabled");
+          }
         });
       });
     }
