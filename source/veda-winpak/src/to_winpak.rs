@@ -24,14 +24,18 @@ UPDATE [WIN-PAK PRO].[dbo].[Card]
    WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
 
 const CLEAR_ACCESS_LEVEL: &str = "\
-UPDATE [WIN-PAK PRO].[dbo].[CardAccessLevels]
-   SET [Deleted]=1
-   WHERE [CardID]=@P1 and [Deleted]=0";
+UPDATE t1
+   SET [t1].[Deleted]=1
+FROM [WIN-PAK PRO].[dbo].[CardAccessLevels] t1
+    JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[RecordID]=[t1].[CardID]
+WHERE LTRIM([t2].[CardNumber])=@P1 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 const INSERT_ACCESS_LEVEL: &str = "\
-INSERT INTO [WIN-PAK PRO].[dbo].[CardAccessLevels]
- (AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,CardID,AccessLevelID,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (0,@P1,0,0,0,0,@P2,@P3,0,0,0,0,0,0,0,0)";
+INSERT INTO [WIN-PAK PRO].[dbo].[CardAccessLevels]  (AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,CardID,AccessLevelID,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
+VALUES (0,@P1,0,0,0,0,
+    (SELECT RecordID FROM [WIN-PAK PRO].[dbo].[Card] WHERE LTRIM([CardNumber])=@P2 and [Deleted]=0),
+    @P3,0,0,0,0,0,0,0,0)";
+
 
 pub fn sync_data_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let (sync_res, info) = sync_data_to_winpak_wo_update(module, conn_str, indv);
@@ -84,14 +88,6 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
         error!("not found [mnd-s:hasSourceDataRequestForPass] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
-    let source_data_request_pass = source_data_request_pass.unwrap();
-
-    let indv_c = module.get_individual_h(&source_data_request_pass.as_str());
-    if indv_c.is_none() {
-        error!("not found {}", source_data_request_pass);
-        return (ResultCode::NotFound, "исходные данные некорректны");
-    }
-    let mut indv_c = indv_c.unwrap();
 
     let has_change_kind_for_pass = indv_b.get_literals("mnd-s:hasChangeKindForPass");
     if has_change_kind_for_pass.is_err() {
@@ -100,9 +96,9 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
     }
     let has_change_kind_for_passes = has_change_kind_for_pass.unwrap();
 
-    let wcard_number = indv_c.get_first_literal("mnd-s:cardNumber");
+    let wcard_number = indv_b.get_first_literal("mnd-s:cardNumber");
     if wcard_number.is_err() {
-        error!("not found [mnd-s:cardNumber] in {}", indv_c.obj.uri);
+        error!("not found [mnd-s:cardNumber] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let card_number = wcard_number.unwrap();
@@ -123,7 +119,6 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
     let mut column_values = Vec::new();
     let mut date_from = Err(IndividualError::None);
     let mut date_to = Err(IndividualError::None);
-    let mut winpak_card_record_id = 0;
     let mut access_levels: Vec<String> = Vec::new();
 
     for has_change_kind_for_pass in has_change_kind_for_passes {
@@ -136,12 +131,6 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
             date_to = indv_b.get_first_datetime("v-s:dateTo");
         } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
             if let Ok(access_levels_uris) = indv_b.get_literals("mnd-s:hasAccessLevel") {
-                let wwinpak_card_record_id = indv_c.get_first_integer("mnd-s:winpakCardRecordId");
-                if wwinpak_card_record_id.is_err() {
-                    error!("in {} not found [mnd-s:winpakCardRecordId]", indv_c.obj.uri);
-                    return (ResultCode::NotFound, "исходные данные некорректны");
-                }
-                winpak_card_record_id = wwinpak_card_record_id.unwrap();
                 for l in access_levels_uris {
                     if let Some(nl) = l.rsplit("_").next() {
                         access_levels.push(nl.to_string());
@@ -153,10 +142,10 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
-        .and_then(|trans| update_date(date_from, date_to, card_number.to_string(), trans))
         .and_then(|trans| update_column(0, columm_names, column_values, card_number.to_string(), trans))
-        .and_then(|trans| clear_access_level(winpak_card_record_id, trans))
-        .and_then(|trans| update_access_level(0, access_levels, winpak_card_record_id, trans))
+        .and_then(|trans| update_date(date_from, date_to, card_number.to_string(), trans))
+        .and_then(|trans| clear_access_level(card_number.to_string(), trans))
+        .and_then(|trans| update_access_level(0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
     match current_thread::block_on_all(future) {
         Ok(_) => {
@@ -193,22 +182,22 @@ fn update_date<I: BoxableIo + 'static>(
     }
 }
 
-fn clear_access_level<I: BoxableIo + 'static>(card_number: i64, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number]).and_then(|(_result, trans)| Ok(trans)))
+fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
 }
 
 fn update_access_level<I: BoxableIo + 'static>(
     idx: usize,
     levels: Vec<String>,
-    card_number_id: i64,
+    card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     if idx < levels.len() {
         Box::new(
             transaction
-                .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number_id, &levels.get(idx).unwrap().as_str()])
+                .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
                 .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_access_level(idx + 1, levels, card_number_id, trans)),
+                .and_then(move |trans| update_access_level(idx + 1, levels, card_number, trans)),
         )
     } else {
         Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
@@ -222,7 +211,7 @@ fn update_column<I: BoxableIo + 'static>(
     card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if idx < values.len() && idx < names.len()  {
+    if idx < values.len() && idx < names.len() {
         let column_name = names.get(idx).unwrap();
         let query = "UPDATE t1 SET [t1].[".to_string() + column_name + "]" + LPART_UPD_COLUMN_QUERY;
         let column_val = if let Some(v) = values.get(idx) {
@@ -236,9 +225,7 @@ fn update_column<I: BoxableIo + 'static>(
         Box::new(
             transaction
                 .exec(query, &[&column_val, &card_number.as_str()])
-                .and_then(|(_result, trans)| {
-                    Ok(trans)
-                })
+                .and_then(|(_result, trans)| Ok(trans))
                 .and_then(move |trans| update_column(idx + 1, names, values, card_number, trans)),
         )
     } else {
