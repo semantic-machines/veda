@@ -67,15 +67,42 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     }
     let card_number = wcard_number.unwrap();
 
+    let mut vehicle_reg_num = Result::Err(IndividualError::None);
+    let mut vehicle_model = None;
+    let mut suppl_taxid = None;
+    let mut suppl_shlabel = None;
+    let mut vehicle_comment = String::new();
+    let mut parent_regdate = None;
+
+    let mut equipment_list = Vec::new();
+
+    get_equipment_list(&mut indv_b, &mut equipment_list);
+    let date_from = indv_b.get_first_datetime("v-s:dateFrom");
+    let date_to = indv_b.get_first_datetime("v-s:dateTo");
+
+    let mut is_vehicle = false;
+    let mut is_man = false;
+
     for has_kind_for_pass in has_kind_for_passes {
         if has_kind_for_pass == "d:c94b6f98986d493cae4a3a37249101dc"
             || has_kind_for_pass == "d:5f5be080f1004af69742bc574c030609"
             || has_kind_for_pass == "d:1799f1e110054b5a9ef819754b0932ce"
-        {}
+        {
+            vehicle_reg_num = indv_b.get_first_literal("mnd-s:passVehicleRegistrationNumber");
+            vehicle_model = module.get_literal_of_link(&mut indv_b, "v-s:hasVehicleModel", "rdfs:label", &mut Individual::default());
+            suppl_taxid = module.get_literal_of_link(&mut indv_b, "v-s:supplier", "v-s:taxId", &mut Individual::default());
+            suppl_shlabel = module.get_literal_of_link(&mut indv_b, "v-s:supplier", "v-s:shortLabel", &mut Individual::default());
+            vehicle_comment = indv_b.get_first_literal("rdfs:comment").unwrap_or_default();
+            parent_regdate = module.get_datetime_of_link(&mut indv_b, "v-s:parent", "v-s:registrationDate", &mut Individual::default());
+
+            is_vehicle = true;
+        }
         if has_kind_for_pass == "d:ece7e741557e406bb996809163810c6e"
             || has_kind_for_pass == "d:a149d268628b46ae8d40c6ea0ac7f3dd"
             || has_kind_for_pass == "d:228e15d5afe544c099c337ceafa47ea6"
-        {}
+        {
+            is_man = true;
+        }
     }
 
     let mut access_levels: Vec<String> = Vec::new();
@@ -83,6 +110,23 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
+        .and_then(|trans| update_equipment(0, get_equipment_field_names(), equipment_list, card_number.to_string(), trans))
+        .and_then(|trans| clear_card(card_number.to_string(), trans))
+        .and_then(|trans| {
+            insert_card(
+                is_vehicle,
+                date_from,
+                date_to,
+                card_number.to_string(),
+                vehicle_reg_num,
+                vehicle_model,
+                suppl_taxid,
+                suppl_shlabel,
+                vehicle_comment,
+                parent_regdate,
+                trans,
+            )
+        })
         .and_then(|trans| clear_access_level(card_number.to_string(), trans))
         .and_then(|trans| update_access_level(0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
