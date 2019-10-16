@@ -725,7 +725,7 @@
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || "),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:SelectValueBundle"),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
@@ -771,7 +771,7 @@
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{\s*.*?\s*}/g, function (match) { return eval(match); })
+            return interpolate(template);
           } else {
             return individual.toString();
           }
@@ -781,47 +781,37 @@
       }
     }
 
-    function evalQueryPrefix () {
-      return new Promise(function (resolve, reject) {
-        try {
-          var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
-            return eval(match);
-          });
-          resolve(result);
-        } catch (error) {
-          console.log("Query prefix evaluation error", error);
-          reject(error);
-        }
-      });
-    };
+    function interpolate (str) {
+      try {
+        var result = str.replace(/{\s*.*?\s*}/g, function (match) {
+          return eval(match);
+        });
+        return Promise.resolve(result);
+      } catch (error) {
+        console.log("Interpolation error", str);
+        return Promise.reject(error);
+      }
+    }
 
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
         return renderOptions(options);
       } else if (source) {
-        return new Promise(function (resolve, reject) {
-          source.replace(/^{.*}$/g, function (match) {
-            try {
-              resolve( eval(match) );
-            } catch (error) {
-              reject(error);
-            }
+        return Promise.resolve(eval(source))
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Source error", source);
           });
-        })
-        .then(renderOptions)
-        .catch(function (error) {
-          console.log("Source evaluation error", error);
-        });
       } else if (queryPrefix) {
-        return evalQueryPrefix()
-        .then(function (queryPrefix) {
-          return ftQuery(queryPrefix, undefined, undefined, withDeleted);
-        })
-        .then(renderOptions)
-        .catch(function (error) {
-          console.log("Query evaluation error", error);
-        });
+        return interpolate(queryPrefix)
+          .then(function (queryPrefix) {
+            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+          })
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Query prefix error", queryPrefix);
+          });
       }
     }
 
@@ -881,14 +871,6 @@
       e.stopPropagation();
       populate();
     });
-    this.val = function (value) {
-      if (!value) return control.val();
-      return control.val( renderValue(value) );
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
     this.append(control);
     return this;
   };
@@ -907,7 +889,7 @@
       spec = opts.spec,
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || "),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -924,11 +906,23 @@
       this.removeAttr("data-template");
     }
 
+    function interpolate (str) {
+      try {
+        var result = str.replace(/{\s*.*?\s*}/g, function (match) {
+          return eval(match);
+        });
+        return Promise.resolve(result);
+      } catch (error) {
+        console.log("Interpolation error", str);
+        return Promise.reject(error);
+      }
+    }
+
     function renderValue (value) {
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{\s*.*?\s*}/g, function (match) { return eval(match); })
+            return interpolate(template);
           } else {
             return individual.toString();
           }
@@ -938,47 +932,34 @@
       }
     }
 
-    function evalQueryPrefix () {
-      return new Promise(function (resolve, reject) {
-        try {
-          var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
-            return eval(match);
-          });
-          resolve(result);
-        } catch (error) {
-          console.log("Query prefix evaluation error", error);
-          reject(error);
-        }
-      });
-    };
-
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
-        renderOptions(options);
-        return;
+        return renderOptions(options);
       } else if (source) {
-        source.replace(/^{.*}$/g, function (match) {
-          try {
-            return ( options = eval(match) );
-          } catch (error) {
-            console.log(error);
-            return ( options = [] );
-          }
-        });
+        return Promise.resolve(eval(source))
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Source error", source);
+          });
       } else if (queryPrefix) {
-        return evalQueryPrefix().then(function (queryPrefix) {
-          return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        });
+        return interpolate(queryPrefix)
+          .then(function (queryPrefix) {
+            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+          })
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Query prefix error", queryPrefix);
+          });
       }
     }
 
     function renderOptions(options) {
       that.empty();
-      options.map(function (value, index) {
+      var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
         var hld = $(opts.template).appendTo(that);
-        renderValue(value).then(function (rendered) {
+        return renderValue(value).then(function (rendered) {
           var lbl = $("label", hld).append( rendered );
           var chk = $("input", lbl).data("value", value);
           if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
@@ -999,6 +980,7 @@
           }
         });
       });
+      return Promise.all(optionsPromises);
     }
 
     function handler(doc_property_uri) {
@@ -1021,6 +1003,11 @@
       });
     }
 
+    this.on("update", function (e) {
+      e.stopPropagation();
+      populate();
+    });
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
@@ -1035,15 +1022,6 @@
         withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value; });
-      populate();
-      return this;
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
     return this;
   };
   $.fn.veda_checkbox.defaults = {
@@ -1061,7 +1039,7 @@
       spec = opts.spec,
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || "),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -1078,11 +1056,23 @@
       this.removeAttr("data-template");
     }
 
+    function interpolate (str) {
+      try {
+        var result = str.replace(/{\s*.*?\s*}/g, function (match) {
+          return eval(match);
+        });
+        return Promise.resolve(result);
+      } catch (error) {
+        console.log("Interpolation error", str);
+        return Promise.reject(error);
+      }
+    }
+
     function renderValue (value) {
       if (value instanceof veda.IndividualModel) {
         return value.load().then(function (individual) {
           if (template) {
-            return template.replace(/{\s*.*?\s*}/g, function (match) { return eval(match); })
+            return interpolate(template);
           } else {
             return individual.toString();
           }
@@ -1092,47 +1082,34 @@
       }
     }
 
-    function evalQueryPrefix () {
-      return new Promise(function (resolve, reject) {
-        try {
-          var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
-            return eval(match);
-          });
-          resolve(result);
-        } catch (error) {
-          console.log("Query prefix evaluation error", error);
-          reject(error);
-        }
-      });
-    };
-
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
-        renderOptions(options);
-        return;
+        return renderOptions(options);
       } else if (source) {
-        source.replace(/^{.*}$/g, function (match) {
-          try {
-            return ( options = eval(match) );
-          } catch (error) {
-            console.log(error);
-            return "";
-          }
-        });
+        return Promise.resolve(eval(source))
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Source error", source);
+          });
       } else if (queryPrefix) {
-        return evalQueryPrefix().then(function (queryPrefix) {
-          return ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        });
+        return interpolate(queryPrefix)
+          .then(function (queryPrefix) {
+            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+          })
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Query prefix error", queryPrefix);
+          });
       }
     }
 
     function renderOptions(options) {
       that.empty();
-      options.map(function (value, index) {
+      var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
         var hld = $(opts.template).appendTo(that);
-        renderValue(value).then(function (rendered) {
+        return renderValue(value).then(function (rendered) {
           var lbl = $("label", hld).append( rendered );
           var rad = $("input", lbl).data("value", value);
           if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
@@ -1151,7 +1128,7 @@
           });
           if (opts.mode === "view") {
             hld.addClass("disabled");
-            chk.attr("disabled", "disabled");
+            rad.attr("disabled", "disabled");
           }
         });
       });
@@ -1177,6 +1154,11 @@
       });
     }
 
+    this.on("update", function (e) {
+      e.stopPropagation();
+      populate();
+    });
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
@@ -1191,15 +1173,6 @@
         withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value; });
-      populate();
-      return this;
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
     return this;
   };
   $.fn.veda_radio.defaults = {
@@ -1280,6 +1253,11 @@
       });
     }
 
+    this.on("update", function (e) {
+      e.stopPropagation();
+      renderOptions();
+    });
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
@@ -1291,15 +1269,6 @@
         $("input", this).removeAttr("disabled");
       }
     });
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value; });
-      populate();
-      return this;
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
     return this;
   };
   $.fn.veda_booleanRadio.defaults = {
@@ -1701,14 +1670,14 @@
       template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
       individual = opts.individual,
       spec = opts.spec,
-      placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
+      placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
       rel_uri = opts.property_uri,
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
-      queryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
-      sort = this.data("sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
-      withDeleted = false || this.data("deleted");
+      withDeleted = false || this.attr("data-deleted");
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
