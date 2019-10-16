@@ -73,29 +73,14 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     }
     let card_number = wcard_number.unwrap();
 
-    let columm_names = vec![
-        "Note27".to_string(),
-        "Note28".to_string(),
-        "Note29".to_string(),
-        "Note30".to_string(),
-        "Note33".to_string(),
-        "Note34".to_string(),
-        "Note37".to_string(),
-        "Note38".to_string(),
-        "Note39".to_string(),
-        "Note40".to_string(),
-    ];
-
-    let mut column_values = Vec::new();
+    let mut equipment_list = Vec::new();
     let mut date_from = Err(IndividualError::None);
     let mut date_to = Err(IndividualError::None);
     let mut access_levels: Vec<String> = Vec::new();
 
     for has_change_kind_for_pass in has_change_kind_for_passes {
         if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
-            if let Ok(pass_equipment) = indv_b.get_first_literal("mnd-s:passEquipment") {
-                split_str_for_winpak_db_columns(&pass_equipment, 64, &mut column_values);
-            }
+            get_equipment_list(&mut indv_b, &mut equipment_list);
         } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
             date_from = indv_b.get_first_datetime("v-s:dateFrom");
             date_to = indv_b.get_first_datetime("v-s:dateTo");
@@ -106,8 +91,8 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
-        .and_then(|trans| update_column(0, columm_names, column_values, card_number.to_string(), trans))
-        .and_then(|trans| update_date(date_from, date_to, card_number.to_string(), trans))
+        .and_then(|trans| update_equipment(0, get_equipment_field_names(), equipment_list, card_number.to_string(), trans))
+        .and_then(|trans| update_card_date(date_from, date_to, card_number.to_string(), trans))
         .and_then(|trans| clear_access_level(card_number.to_string(), trans))
         .and_then(|trans| update_access_level(0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
