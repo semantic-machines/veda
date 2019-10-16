@@ -2,6 +2,10 @@
 
 # Encoding: UTF-8
 
+# schedule example:
+# crontab -e
+# 00 3 * * * cd /home/ubuntuadmin/veda && ./control-backup.sh
+
 mkdir logs-log
 
 find ./backup/optiflow-backup* -mmin +7200 -delete
@@ -14,17 +18,6 @@ export PATH="$PATH:/sbin/"
 # Stop veda
 ./control-stop.sh
 
-./queue-slice-on-date.sh
-
-# Create backup of databases
-#zip $backup_path/data.zip ./data -1 -r -x "./data/files/*"
-zip $backup_path/data-ft-base.gz ./data/xapian-info ./data/xapian-search-base -r -1
-zip $backup_path/data-ft-deleted.gz ./data/xapian-search-deleted -r -1
-zip $backup_path/data-ft-system.gz ./data/xapian-search-system -r -1
-zip $backup_path/data-acl.zip ./data/acl-indexes -r -0
-zip $backup_path/data-indv.zip ./data/lmdb-individuals ./data/uris -r -0
-zip $backup_path/data-misc.zip ./data/lmdb-tickets ./data/module-info -r -0
-
 # Create backup of logs
 zip $backup_path/log.zip ./logs/*.log -1 -r
 logslog_path=logs-log/logs-$TIMESTAMP
@@ -33,6 +26,15 @@ cp $backup_path/log.zip $logslog_path/log.zip
 
 # Backup config.ttl
 cp ./ontology/config.ttl $backup_path/config.ttl
+
+# Create backup of databases
+#zip $backup_path/data.zip ./data -1 -r -x "./data/files/*"
+zip $backup_path/data-indv.zip ./data/lmdb-individuals ./data/uris -r -0
+zip $backup_path/data-acl.zip ./data/acl-indexes -r -0
+zip $backup_path/data-misc.zip ./data/lmdb-tickets ./data/module-info -r -0
+zip $backup_path/data-ft-base.gz ./data/xapian-info ./data/xapian-search-base -r -1
+zip $backup_path/data-ft-deleted.gz ./data/xapian-search-deleted -r -1
+zip $backup_path/data-ft-system.gz ./data/xapian-search-system -r -1
 
 # Detele old backups and logs
 find ./data/lmdb-individuals.* -exec mv {} ./backup/binlogs \;
