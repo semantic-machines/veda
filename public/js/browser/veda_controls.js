@@ -752,7 +752,7 @@
         individual.set(property_uri, [value]);
       } else {
         if ( !individual.hasValue(property_uri, value) ) {
-          individual.set(property_uri, individual.get(property_uri).concat( value ));
+          individual.addValue(property_uri, value);
         }
         $(this).children(":first").prop("selected", true);
       }
@@ -1119,11 +1119,9 @@
           rad.prop("checked", hasValue);
           rad.change(function () {
             if ( rad.is(":checked") ) {
-              individual.set(property_uri, [rad.data("value")]);
+              individual.set(property_uri, [value]);
             } else {
-              individual.set(property_uri, individual.get(property_uri).filter( function (i) {
-                return i.valueOf() !== rad.data("value").valueOf();
-              }));
+              individual.removeValue(property_uri, value);
             }
           });
           if (opts.mode === "view") {
