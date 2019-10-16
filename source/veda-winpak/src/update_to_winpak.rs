@@ -1,43 +1,13 @@
-use chrono::{NaiveDateTime, Utc};
+use crate::common_winpak::*;
 use futures::Future;
-use std::ops::Add;
-use tiberius::{BoxableIo, Error, SqlConnection, Transaction};
-use time::Duration;
+use tiberius::SqlConnection;
 use tokio::runtime::current_thread;
 use v_api::*;
 use v_module::module::*;
 use v_onto::datatype::Lang;
 use v_onto::individual::*;
-use voca_rs::*;
 
-const WINPAK_TIMEZONE: i64 = 3;
-
-const LPART_UPD_COLUMN_QUERY: &str = "\
-=@P1
-FROM [WIN-PAK PRO].[dbo].[CardHolder] t1
-JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[CardHolderID]=[t1].[RecordId]
-WHERE LTRIM([t2].[CardNumber])=@P2 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
-
-const UPD_DATE_QUERY: &str = "\
-UPDATE [WIN-PAK PRO].[dbo].[Card]
-   SET [ActivationDate]=@P1, [ExpirationDate]=@P2
-   WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
-
-const CLEAR_ACCESS_LEVEL: &str = "\
-UPDATE t1
-   SET [t1].[Deleted]=1
-FROM [WIN-PAK PRO].[dbo].[CardAccessLevels] t1
-    JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[RecordID]=[t1].[CardID]
-WHERE LTRIM([t2].[CardNumber])=@P1 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
-
-const INSERT_ACCESS_LEVEL: &str = "\
-INSERT INTO [WIN-PAK PRO].[dbo].[CardAccessLevels]  (AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,CardID,AccessLevelID,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (0,@P1,0,0,0,0,
-    (SELECT RecordID FROM [WIN-PAK PRO].[dbo].[Card] WHERE LTRIM([CardNumber])=@P2 and [Deleted]=0),
-    @P3,0,0,0,0,0,0,0,0)";
-
-
-pub fn sync_data_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
+pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let (sync_res, info) = sync_data_to_winpak_wo_update(module, conn_str, indv);
     if sync_res == ResultCode::ConnectError {
         return sync_res;
@@ -154,106 +124,6 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
         Err(e) => {
             error!("fail execute query, err={:?}", e);
             return (ResultCode::DatabaseModifiedError, "ошибка обновления");
-        }
-    }
-}
-
-fn update_date<I: BoxableIo + 'static>(
-    date_from: Result<i64, IndividualError>,
-    date_to: Result<i64, IndividualError>,
-    card_number: String,
-    transaction: Transaction<I>,
-) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if date_to.is_ok() && date_from.is_ok() {
-        Box::new(
-            transaction
-                .exec(
-                    UPD_DATE_QUERY,
-                    &[
-                        &NaiveDateTime::from_timestamp(date_from.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
-                        &NaiveDateTime::from_timestamp(date_to.unwrap(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
-                        &card_number.as_str(),
-                    ],
-                )
-                .and_then(|(_result, trans)| Ok(trans)),
-        )
-    } else {
-        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
-    }
-}
-
-fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
-}
-
-fn update_access_level<I: BoxableIo + 'static>(
-    idx: usize,
-    levels: Vec<String>,
-    card_number: String,
-    transaction: Transaction<I>,
-) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if idx < levels.len() {
-        Box::new(
-            transaction
-                .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
-                .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_access_level(idx + 1, levels, card_number, trans)),
-        )
-    } else {
-        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
-    }
-}
-
-fn update_column<I: BoxableIo + 'static>(
-    idx: usize,
-    names: Vec<String>,
-    values: Vec<String>,
-    card_number: String,
-    transaction: Transaction<I>,
-) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if idx < values.len() && idx < names.len() {
-        let column_name = names.get(idx).unwrap();
-        let query = "UPDATE t1 SET [t1].[".to_string() + column_name + "]" + LPART_UPD_COLUMN_QUERY;
-        let column_val = if let Some(v) = values.get(idx) {
-            v.as_str()
-        } else {
-            ""
-        };
-        //info!("card [{}], update column [{}]=[{}]", card_number.to_owned(), column_name, column_val);
-        //info!("query= {}", query);
-
-        Box::new(
-            transaction
-                .exec(query, &[&column_val, &card_number.as_str()])
-                .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_column(idx + 1, names, values, card_number, trans)),
-        )
-    } else {
-        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
-    }
-}
-
-fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<String>) {
-    for el in src.split('\n') {
-        let mut start = 0;
-        let mut end = len;
-        loop {
-            if end >= el.len() {
-                end = el.len();
-            }
-
-            let ss = chop::substring(el, start, end);
-            if !ss.is_empty() {
-                res.push(chop::substring(el, start, end));
-            } else {
-                break;
-            }
-
-            if end >= el.len() {
-                break;
-            }
-            start = end;
-            end += len;
         }
     }
 }

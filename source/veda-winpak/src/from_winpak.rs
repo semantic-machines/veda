@@ -4,6 +4,7 @@ use v_api::*;
 use v_module::module::*;
 use v_onto::individual::*;
 //use v_search::FTQuery;
+use crate::common_winpak::*;
 use futures::Future;
 use futures_state_stream::StateStream;
 use std::ops::Sub;
@@ -11,37 +12,6 @@ use tiberius::SqlConnection;
 use time::Duration;
 use tokio::runtime::current_thread;
 use v_onto::datatype::Lang;
-
-const WINPAK_TIMEZONE: i64 = 3;
-const CARD_NUMBER_FIELD_NAME: &str = "mnd-s:cardNumber";
-const CARD_DATA_QUERY: &str = "\
-SELECT [t1].[ActivationDate], [t1].[ExpirationDate], [t1].[RecordID],
-concat([t2].[LastName],' ',[t2].[FirstName],' ',[t2].[Note1]) as Description,
-[t2].[Note2] as TabNumber,
-[t2].[Note17] as Birthday,
-concat( [t2].[Note4]+' ',
-CASE WHEN [t2].[Note6]='0' THEN null ELSE [t2].[Note6]+' ' END,
-CASE WHEN [t2].[Note7]='0' THEN null ELSE [t2].[Note7]+' ' END,
-CASE WHEN [t2].[Note8]='0' THEN null ELSE [t2].[Note8] END) as Comment,
-concat( CASE WHEN LTRIM([t2].[Note27])='' THEN null ELSE LTRIM([t2].[Note27]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note28])='' THEN null ELSE LTRIM([t2].[Note28]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note29])='' THEN null ELSE LTRIM([t2].[Note29]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note30])='' THEN null ELSE LTRIM([t2].[Note30]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note33])='' THEN null ELSE LTRIM([t2].[Note33]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note34])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note37])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note38])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note39])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note40])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END) as Equipment
-FROM [WIN-PAK PRO].[dbo].[Card] t1
-JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
-WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
-
-const ACCESS_LEVEL_QUERY: &str = "\
-SELECT [t2].[AccessLevelID]
-FROM [WIN-PAK PRO].[dbo].[Card] t1
-JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
-WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
