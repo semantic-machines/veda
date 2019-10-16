@@ -8,7 +8,7 @@ use v_onto::datatype::Lang;
 use v_onto::individual::*;
 
 pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
-    let (sync_res, info) = sync_data_to_winpak_wo_update(module, conn_str, indv);
+    let (sync_res, info) = sync_data_to_winpak(module, conn_str, indv);
     if sync_res == ResultCode::ConnectError {
         return sync_res;
     }
@@ -33,7 +33,7 @@ pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
     sync_res
 }
 
-fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
+fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
     let module_label = indv.get_first_literal("v-s:moduleLabel");
     if module_label.is_err() || module_label.unwrap() != "winpak pe44 update" {
         return (ResultCode::NotFound, "исходные данные некорректны");
@@ -100,13 +100,7 @@ fn sync_data_to_winpak_wo_update<'a>(module: &mut Module, conn_str: &str, indv: 
             date_from = indv_b.get_first_datetime("v-s:dateFrom");
             date_to = indv_b.get_first_datetime("v-s:dateTo");
         } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
-            if let Ok(access_levels_uris) = indv_b.get_literals("mnd-s:hasAccessLevel") {
-                for l in access_levels_uris {
-                    if let Some(nl) = l.rsplit("_").next() {
-                        access_levels.push(nl.to_string());
-                    }
-                }
-            }
+            get_access_level(&mut indv_b, &mut access_levels);
         }
     }
 

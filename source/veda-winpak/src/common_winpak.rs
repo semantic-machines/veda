@@ -3,7 +3,7 @@ use futures::Future;
 use std::ops::Add;
 use tiberius::{BoxableIo, Error, Transaction};
 use time::Duration;
-use v_onto::individual::IndividualError;
+use v_onto::individual::{Individual, IndividualError};
 use voca_rs::chop;
 
 pub const WINPAK_TIMEZONE: i64 = 3;
@@ -159,6 +159,16 @@ pub fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<Stri
             }
             start = end;
             end += len;
+        }
+    }
+}
+
+pub fn get_access_level(indv: &mut Individual, access_levels: &mut Vec<String>) {
+    if let Ok(access_levels_uris) = indv.get_literals("mnd-s:hasAccessLevel") {
+        for l in access_levels_uris {
+            if let Some(nl) = l.rsplit("_").next() {
+                access_levels.push(nl.to_string());
+            }
         }
     }
 }
