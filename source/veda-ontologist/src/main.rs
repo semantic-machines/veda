@@ -194,7 +194,7 @@ fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> 
 fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
     if let Ok(uri) = parse_raw(qel) {
         qel.obj.uri = uri;
-        if let Ok(new_state) = qel.get_first_binobj("new_state") {
+        if let Some(new_state) = qel.get_first_binobj("new_state") {
             let mut indv: Individual = Individual::default();
             indv.raw = RawObj::new(new_state);
 

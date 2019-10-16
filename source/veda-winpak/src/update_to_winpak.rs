@@ -35,12 +35,12 @@ pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
 
 fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
     let module_label = indv.get_first_literal("v-s:moduleLabel");
-    if module_label.is_err() || module_label.unwrap() != "winpak pe44 update" {
+    if module_label.is_none() || module_label.unwrap() != "winpak pe44 update" {
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
 
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
-    if backward_target.is_err() {
+    if backward_target.is_none() {
         error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
@@ -54,28 +54,28 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut indv_b = indv_b.unwrap();
 
     let source_data_request_pass = indv_b.get_first_literal("mnd-s:hasSourceDataRequestForPass");
-    if source_data_request_pass.is_err() {
+    if source_data_request_pass.is_none() {
         error!("not found [mnd-s:hasSourceDataRequestForPass] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
 
     let has_change_kind_for_pass = indv_b.get_literals("mnd-s:hasChangeKindForPass");
-    if has_change_kind_for_pass.is_err() {
+    if has_change_kind_for_pass.is_none() {
         error!("not found [mnd-s:hasChangeKindForPass] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let has_change_kind_for_passes = has_change_kind_for_pass.unwrap();
 
     let wcard_number = indv_b.get_first_literal("mnd-s:cardNumber");
-    if wcard_number.is_err() {
+    if wcard_number.is_none() {
         error!("not found [mnd-s:cardNumber] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let card_number = wcard_number.unwrap();
 
     let mut equipment_list = Vec::new();
-    let mut date_from = Err(IndividualError::None);
-    let mut date_to = Err(IndividualError::None);
+    let mut date_from = None;
+    let mut date_to = None;
     let mut access_levels: Vec<String> = Vec::new();
 
     for has_change_kind_for_pass in has_change_kind_for_passes {

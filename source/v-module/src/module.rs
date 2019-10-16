@@ -75,7 +75,7 @@ impl Module {
     pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
         let mut indv = Individual::default();
         if self.storage.get_individual_from_db(StorageId::Tickets, "systicket", &mut indv) {
-            if let Ok(c) = indv.get_first_literal("v-s:resource") {
+            if let Some(c) = indv.get_first_literal("v-s:resource") {
                 return Ok(c);
             }
         }
@@ -83,12 +83,10 @@ impl Module {
     }
 
     pub fn get_literal_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Option<String> {
-        if let Ok(v) = indv.get_literals(link) {
+        if let Some(v) = indv.get_literals(link) {
             for el in v {
                 if self.storage.get_individual(&el, to) {
-                    if let Ok(src) = to.get_first_literal(field) {
-                        return Some(src);
-                    }
+                    return to.get_first_literal(field);
                 }
             }
         }
@@ -96,12 +94,10 @@ impl Module {
     }
 
     pub fn get_datetime_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Option<i64> {
-        if let Ok(v) = indv.get_literals(link) {
+        if let Some(v) = indv.get_literals(link) {
             for el in v {
                 if self.storage.get_individual(&el, to) {
-                    if let Ok(src) = to.get_first_datetime(field) {
-                        return Some(src);
-                    }
+                    return to.get_first_datetime(field);
                 }
             }
         }

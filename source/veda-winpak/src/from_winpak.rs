@@ -15,8 +15,8 @@ use v_onto::datatype::Lang;
 
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
-    if card_number.is_err() {
-        error!("fail read {}.{} {:?}", CARD_NUMBER_FIELD_NAME, indv.obj.uri, card_number.err());
+    if card_number.is_none() {
+        error!("fail read {}.{}", CARD_NUMBER_FIELD_NAME, indv.obj.uri);
         return ResultCode::UnprocessableEntity;
     }
     let param1 = card_number.unwrap_or_default();
@@ -122,7 +122,7 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         for level in access_levels {
             let mut indv = Individual::default();
             if module.storage.get_individual(&("d:winpak_accesslevel_".to_string() + &level.to_string()), &mut indv) {
-                if let Ok(v) = indv.get_first_literal("v-s:registrationNumber") {
+                if let Some(v) = indv.get_first_literal("v-s:registrationNumber") {
                     if level.to_string() == v {
                         access_level_uris.push(indv.obj.uri);
                     }
