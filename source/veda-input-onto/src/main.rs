@@ -144,7 +144,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
         let new_hash = match get_hash_of_file(path) {
             Ok(new_h) => {
                 if module.get_individual(&new_id, &mut file_info_indv).is_some() {
-                    if let Ok(old_h) = file_info_indv.get_first_literal("v-s:hash") {
+                    if let Some(old_h) = file_info_indv.get_first_literal("v-s:hash") {
                         if old_h == new_h {
                             file_need_for_load = false;
                         }
@@ -374,7 +374,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
             }
 
             if indv.any_exists("rdf:type", &["owl:Ontology"]) {
-                if let Ok(v) = indv.get_first_integer("v-s:loadPriority") {
+                if let Some(v) = indv.get_first_integer("v-s:loadPriority") {
                     load_priority = v;
                 }
 

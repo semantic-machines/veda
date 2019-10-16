@@ -136,37 +136,37 @@ pub fn get_conn_string(module: &mut Module) -> Result<String, String> {
     let mut conn = Individual::default();
     let conn_winpak_id = "cfg:conn_winpak";
     if module.storage.get_individual(conn_winpak_id, &mut conn) {
-        if let Ok(t) = conn.get_first_literal("v-s:transport") {
+        if let Some(t) = conn.get_first_literal("v-s:transport") {
             if t != "mssql" {
                 return Err("invalid connect type, expect [mssql]".to_owned());
             }
         }
 
-        let host = if let Ok(v) = conn.get_first_literal("v-s:host") {
+        let host = if let Some(v) = conn.get_first_literal("v-s:host") {
             v
         } else {
             return Err(("not found param [v-s:host] in ".to_string() + conn_winpak_id).to_owned());
         };
 
-        let port = if let Ok(v) = conn.get_first_integer("v-s:port") {
+        let port = if let Some(v) = conn.get_first_integer("v-s:port") {
             v
         } else {
             return Err(("not found param [v-s:port] in ".to_string() + conn_winpak_id).to_owned());
         };
 
-        let login = if let Ok(v) = conn.get_first_literal("v-s:login") {
+        let login = if let Some(v) = conn.get_first_literal("v-s:login") {
             v.replace("\\\\", "\\")
         } else {
             return Err(("not found param [v-s:login] in ".to_string() + conn_winpak_id).to_owned());
         };
 
-        let pass = if let Ok(v) = conn.get_first_literal("v-s:password") {
+        let pass = if let Some(v) = conn.get_first_literal("v-s:password") {
             v
         } else {
             return Err(("not found param [v-s:password] in ".to_string() + conn_winpak_id).to_owned());
         };
 
-        let database = if let Ok(v) = conn.get_first_literal("v-s:sql_database") {
+        let database = if let Some(v) = conn.get_first_literal("v-s:sql_database") {
             v
         } else {
             return Err(("not found param [v-s:sql_database] in ".to_string() + conn_winpak_id).to_owned());
@@ -183,14 +183,14 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
         msg.obj.uri = uri;
 
         let wcmd = msg.get_first_integer("cmd");
-        if wcmd.is_err() {
+        if wcmd.is_none() {
             return Err(ResultCode::UnprocessableEntity);
         }
 
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let new_state = msg.get_first_binobj("new_state");
-        if cmd != IndvOp::Remove && new_state.is_err() {
+        if cmd != IndvOp::Remove && new_state.is_none() {
             return Err(ResultCode::UnprocessableEntity);
         }
 
@@ -198,11 +198,11 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
         if let Ok(uri) = parse_raw(&mut new_state_indv) {
             new_state_indv.obj.uri = uri.clone();
 
-            if let Ok(types) = new_state_indv.get_literals("rdf:type") {
+            if let Some(types) = new_state_indv.get_literals("rdf:type") {
                 for itype in types {
                     if itype == "mnd-s:SourceDataRequestForPass" {
                         //v-s:creator", "cfg:VedaSystem"
-                        if let Ok(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
+                        if let Some(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
                             if v == "cfg:VedaSystem" {
                                 return Ok(());
                             }
@@ -214,7 +214,7 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
                         }
                     } else if itype == "v-s:ExternalModuleHandler" {
                         //v-s:creator", "cfg:VedaSystem"
-                        if let Ok(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
+                        if let Some(v) = new_state_indv.get_first_literal("v-s:lastEditor") {
                             if v == "cfg:VedaSystem" {
                                 return Ok(());
                             }

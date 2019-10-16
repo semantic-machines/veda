@@ -129,7 +129,7 @@ fn prepare_queue_element(msg: &mut Individual, geo_index: &mut Connection) -> Re
         msg.obj.uri = uri;
 
         let new_state = msg.get_first_binobj("new_state");
-        if new_state.is_err() {
+        if new_state.is_none() {
             return Err(-1);
         }
 
@@ -150,7 +150,7 @@ fn prepare_queue_element(msg: &mut Individual, geo_index: &mut Connection) -> Re
                 info!("found spatial");
 
                 let label = indv.get_first_literal("rdfs:label");
-                if label.is_err() {
+                if label.is_none() {
                     error!("rdfs:label not found, skip");
                 } else {
                     match geo_index.geo_add("my_gis", (Coord::lon_lat(lnt, ltt), &indv.obj.uri)) {

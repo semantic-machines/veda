@@ -35,12 +35,12 @@ pub fn insert_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
 
 fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
     let module_label = indv.get_first_literal("v-s:moduleLabel");
-    if module_label.is_err() || module_label.unwrap() != "winpak pe44 create" {
+    if module_label.is_none() || module_label.unwrap() != "winpak pe44 create" {
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
 
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
-    if backward_target.is_err() {
+    if backward_target.is_none() {
         error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
@@ -54,20 +54,20 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut indv_b = indv_b.unwrap();
 
     let has_kind_for_pass = indv_b.get_literals("mnd-s:hasPassKind");
-    if has_kind_for_pass.is_err() {
+    if has_kind_for_pass.is_none() {
         error!("not found [mnd-s:hasKindForPass] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let has_kind_for_passes = has_kind_for_pass.unwrap();
 
     let wcard_number = indv_b.get_first_literal("mnd-s:cardNumber");
-    if wcard_number.is_err() {
+    if wcard_number.is_none() {
         error!("not found [mnd-s:cardNumber] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let card_number = wcard_number.unwrap();
 
-    let mut vehicle_reg_num = Result::Err(IndividualError::None);
+    let mut vehicle_reg_num = None;
     let mut vehicle_model = None;
     let mut suppl_taxid = None;
     let mut suppl_shlabel = None;

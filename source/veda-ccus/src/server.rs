@@ -335,17 +335,13 @@ fn prepare_queue_el(
     }
 
     // берем поле [uri]
-    if let Ok(uri_from_queue) = msg.get_first_literal("uri") {
+    if let Some(uri_from_queue) = msg.get_first_literal("uri") {
         // найдем есть ли среди uri на которые есть подписки, uri из очереди
         if let Some(el) = uri2sessions.get_mut(&uri_from_queue) {
             debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, el.sessions);
 
             // берем u_counter
-            let counter_from_queue = if let Ok(c) = msg.get_first_integer("u_count") {
-                c as u64
-            } else {
-                0
-            };
+            let counter_from_queue= msg.get_first_integer("u_count").unwrap_or_default() as u64;
             debug!("uri={}, {}", uri_from_queue, counter_from_queue);
 
             el.counter = counter_from_queue;

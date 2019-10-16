@@ -29,7 +29,7 @@ impl Default for Onto {
 
 impl Onto {
     pub fn update(&mut self, indv: &mut Individual) -> bool {
-        if let Ok(vtype) = indv.get_first_literal("rdf:type") {
+        if let Some(vtype) = indv.get_first_literal("rdf:type") {
             if vtype == "owl:Class"
                 || vtype == "rdfs:Class"
                 || vtype == "rdf:Property"
@@ -38,13 +38,13 @@ impl Onto {
                 || vtype == "owl:DatatypeProperty"
             {
                 let subs = if vtype == "owl:Class" || vtype == "rdfs:Class" {
-                    if let Ok(_subclasses) = indv.get_literals("rdfs:subClassOf") {
+                    if let Some(_subclasses) = indv.get_literals("rdfs:subClassOf") {
                         _subclasses
                     } else {
                         Vec::new()
                     }
                 } else if vtype == "rdf:Property" || vtype == "owl:ObjectProperty" || vtype == "owl:DatatypeProperty" {
-                    if let Ok(_subproperties) = indv.get_literals("rdfs:subPropertyOf") {
+                    if let Some(_subproperties) = indv.get_literals("rdfs:subPropertyOf") {
                         _subproperties
                     } else {
                         Vec::new()

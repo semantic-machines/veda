@@ -128,11 +128,11 @@ fn main() -> std::io::Result<()> {
         new_state_indv: &mut Individual,
         db_id: &str,
     ) -> Option<String> {
-        if new_state_indv.get_first_literal("sys:source").is_ok() {
+        if new_state_indv.get_first_literal("sys:source").is_some() {
             return None;
         }
 
-        if let Ok(types) = new_state_indv.get_literals("rdf:type") {
+        if let Some(types) = new_state_indv.get_literals("rdf:type") {
             for itype in types {
                 // для всех потребителей выгружаем элемент орг струкутры не имеющий поля [sys:source]
                 if onto.is_some_entered(&itype, &["v-s:OrganizationUnit".to_owned()]) {
@@ -154,7 +154,7 @@ fn main() -> std::io::Result<()> {
                 // выгрузка формы решения у которого в поле [v-wf:to] находится индивид из другой системы
                 // и в поле [v-wf:onDocument] должен находится документ типа gen:InternalDocument
                 if itype == "v-wf:DecisionForm" {
-                    if let Ok(d) = new_state_indv.get_first_literal("v-wf:onDocument") {
+                    if let Some(d) = new_state_indv.get_first_literal("v-wf:onDocument") {
                         let mut doc = Individual::default();
 
                         if !module.storage.get_individual(&d, &mut doc) {
@@ -162,7 +162,7 @@ fn main() -> std::io::Result<()> {
                             return None;
                         }
 
-                        if let Ok(t) = doc.get_first_literal("rdf:type") {
+                        if let Some(t) = doc.get_first_literal("rdf:type") {
                             if t == "gen:InternalDocument" || t == "gen:Contract" {
                                 if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source", &mut Individual::default()) {
                                     for predicate in doc.get_predicates_of_type(DataType::Uri) {
@@ -209,14 +209,14 @@ fn main() -> std::io::Result<()> {
             msg.obj.uri = uri;
 
             let wcmd = msg.get_first_integer("cmd");
-            if wcmd.is_err() {
+            if wcmd.is_none() {
                 return Err(-1);
             }
 
             let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
             let prev_state = msg.get_first_binobj("prev_state");
-            let mut prev_state_indv = if prev_state.is_ok() {
+            let mut prev_state_indv = if prev_state.is_some() {
                 let mut indv = Individual::new_raw(RawObj::new(prev_state.unwrap_or_default()));
                 if let Ok(uri) = parse_raw(&mut indv) {
                     indv.obj.uri = uri.clone();
@@ -227,12 +227,12 @@ fn main() -> std::io::Result<()> {
             };
 
             let new_state = msg.get_first_binobj("new_state");
-            if cmd != IndvOp::Remove && new_state.is_err() {
+            if cmd != IndvOp::Remove && new_state.is_none() {
                 return Err(-1);
             }
 
             let date = msg.get_first_integer("date");
-            if date.is_err() {
+            if date.is_none() {
                 return Err(-1);
             }
 

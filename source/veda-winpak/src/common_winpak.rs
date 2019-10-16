@@ -82,10 +82,10 @@ VALUES (1,@P1,0,0,0,0,@P2,0,SCOPE_IDENTITY(),-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,
 
 pub fn insert_card<I: BoxableIo + 'static>(
     is_vehicle: bool,
-    date_from: Result<i64, IndividualError>,
-    date_to: Result<i64, IndividualError>,
+    date_from: Option<i64>,
+    date_to: Option<i64>,
     card_number: String,
-    vehicle_reg_num: Result<String, IndividualError>,
+    vehicle_reg_num: Option<String>,
     vehicle_model: Option<String>,
     suppl_taxid: Option<String>,
     suppl_shlabel: Option<String>,
@@ -129,12 +129,12 @@ UPDATE [WIN-PAK PRO].[dbo].[Card]
     WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
 
 pub fn update_card_date<I: BoxableIo + 'static>(
-    date_from: Result<i64, IndividualError>,
-    date_to: Result<i64, IndividualError>,
+    date_from: Option<i64>,
+    date_to: Option<i64>,
     card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if date_to.is_ok() && date_from.is_ok() {
+    if date_to.is_some() && date_from.is_some() {
         Box::new(
             transaction
                 .exec(
@@ -254,7 +254,7 @@ pub fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<Stri
 }
 
 pub fn get_access_level(indv: &mut Individual, access_levels: &mut Vec<String>) {
-    if let Ok(access_levels_uris) = indv.get_literals("mnd-s:hasAccessLevel") {
+    if let Some(access_levels_uris) = indv.get_literals("mnd-s:hasAccessLevel") {
         for l in access_levels_uris {
             if let Some(nl) = l.rsplit("_").next() {
                 access_levels.push(nl.to_string());
@@ -264,7 +264,7 @@ pub fn get_access_level(indv: &mut Individual, access_levels: &mut Vec<String>) 
 }
 
 pub fn get_equipment_list(indv: &mut Individual, list: &mut Vec<String>) {
-    if let Ok(pass_equipment) = indv.get_first_literal("mnd-s:passEquipment") {
+    if let Some(pass_equipment) = indv.get_first_literal("mnd-s:passEquipment") {
         split_str_for_winpak_db_columns(&pass_equipment, 64, list);
     }
 }
