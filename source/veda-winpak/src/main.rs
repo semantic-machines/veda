@@ -1,3 +1,8 @@
+mod common_winpak;
+mod from_winpak;
+mod insert_to_winpak;
+mod update_to_winpak;
+
 #[macro_use]
 extern crate log;
 
@@ -13,10 +18,8 @@ use v_onto::{individual::*, parser::*};
 use v_queue::{consumer::*, record::*};
 //use v_search::FTQuery;
 use crate::from_winpak::sync_data_from_winpak;
-use crate::to_winpak::sync_data_to_winpak;
-
-mod from_winpak;
-mod to_winpak;
+use crate::insert_to_winpak::insert_to_winpak;
+use crate::update_to_winpak::update_to_winpak;
 
 fn main() -> std::io::Result<()> {
     let env_var = "RUST_LOG";
@@ -217,7 +220,12 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
                             }
                         }
 
-                        let res = sync_data_to_winpak(module, systicket, conn_str, &mut new_state_indv);
+                        let res = update_to_winpak(module, systicket, conn_str, &mut new_state_indv);
+                        if res == ResultCode::ConnectError {
+                            return Err(res);
+                        }
+
+                        let res = insert_to_winpak(module, systicket, conn_str, &mut new_state_indv);
                         if res == ResultCode::ConnectError {
                             return Err(res);
                         }

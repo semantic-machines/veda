@@ -95,6 +95,19 @@ impl Module {
         None
     }
 
+    pub fn get_datetime_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Option<i64> {
+        if let Ok(v) = indv.get_literals(link) {
+            for el in v {
+                if self.storage.get_individual(&el, to) {
+                    if let Ok(src) = to.get_first_datetime(field) {
+                        return Some(src);
+                    }
+                }
+            }
+        }
+        None
+    }
+
     pub fn get_individual_h(&mut self, uri: &str) -> Option<Box<Individual>> {
         let mut iraw = Box::new(Individual::default());
         if !self.storage.get_individual(uri, &mut iraw) {
