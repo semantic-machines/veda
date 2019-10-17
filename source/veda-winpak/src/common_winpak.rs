@@ -3,7 +3,8 @@ use futures::Future;
 use std::ops::Add;
 use tiberius::{BoxableIo, Error, Transaction};
 use time::Duration;
-use v_onto::individual::{Individual, IndividualError};
+use v_module::module::Module;
+use v_onto::individual::*;
 use voca_rs::chop;
 
 pub const WINPAK_TIMEZONE: i64 = 3;
@@ -45,72 +46,95 @@ pub fn clear_card<I: BoxableIo + 'static>(card_number: String, transaction: Tran
 }
 
 // INSERT CARD
-const INSERT_CARD: &str = "\
+const INSERT_VEHICLE_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
-(
-	AccountID,
-	TimeStamp,
-	UserID,
-	NodeId,
-	Deleted,
-	UserPriority,
-	CardNumber,
-	Issue,
-	CardHolderID,
-	AccessLevelID,
-	ActivationDate,
-	ExpirationDate,
-	NoOfUsesLeft,
-	CMDFileID,
-	CardStatus,
-	Display,
-	BackDrop1ID,
-	BackDrop2ID,
-	ActionGroupID,
-	LastReaderHID,
-	PrintStatus,
-	SpareW1,
-	SpareW2,
-	SpareW3,
-	SpareW4,
-	SpareDW1,
-	SpareDW2,
-	SpareDW3,
-	SpareDW4
-)
+(AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
+CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
 VALUES (1,@P1,0,0,0,0,@P2,0,SCOPE_IDENTITY(),-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
+
+const INSERT_HUMAN_CARD: &str = "\
+INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
+(AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
+Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32)
+VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15";
 
 pub fn insert_card<I: BoxableIo + 'static>(
     is_vehicle: bool,
-    date_from: Option<i64>,
-    date_to: Option<i64>,
+    is_human: bool,
+    module: &mut Module,
     card_number: String,
-    vehicle_reg_num: Option<String>,
-    vehicle_model: Option<String>,
-    suppl_taxid: Option<String>,
-    suppl_shlabel: Option<String>,
-    comment: String,
-    parent_regdat: Option<i64>,
+    indv: &mut Individual,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     if is_vehicle {
-        let label = vehicle_reg_num.unwrap_or_default() + " " + vehicle_model.unwrap_or_default().as_str();
+        let label = indv.get_first_literal("mnd-s:passVehicleRegistrationNumber").unwrap_or_default()
+            + " "
+            + module.get_literal_of_link(indv, "v-s:hasVehicleModel", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str();
 
         Box::new(
             transaction
                 .exec(
-                    INSERT_CARD,
+                    INSERT_VEHICLE_CARD,
                     &[
                         &Utc::now().naive_utc(),
                         &label.as_str(),
-                        &suppl_taxid.unwrap_or_default().as_str(),
-                        &suppl_shlabel.unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(indv, "v-s:supplier", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &label.as_str(),
                         &label.as_str(),
-                        &comment.as_str(),
-                        &NaiveDateTime::from_timestamp(date_from.unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
-                        &NaiveDateTime::from_timestamp(date_to.unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
-                        &parent_regdat.unwrap_or_default(),
+                        &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
+                        &NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:dateFrom").unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:dateTo").unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
+                        &card_number.as_str(),
+                    ],
+                )
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else if is_human {
+        let mut first_name = String::new();
+        let mut last_name = String::new();
+        let mut middle_name = String::new();
+        let mut tab_number = String::new();
+        let mut birthday = 0;
+        let mut icp = Individual::default();
+
+        if let Some(cp) = indv.get_first_literal("v-s:correspondentPerson") {
+            if module.get_individual(&cp, &mut icp).is_some() {
+                if let Some(employee) = module.get_individual(&mut icp.get_first_literal("v-s:employee").unwrap_or_default(), &mut Individual::default()) {
+                    first_name = employee.get_first_literal("v-s:firstName").unwrap_or_default();
+                    last_name = employee.get_first_literal("v-s:lastName").unwrap_or_default();
+                    middle_name = employee.get_first_literal("v-s:middleName").unwrap_or_default();
+                    tab_number = employee.get_first_literal("v-s:tabNumber").unwrap_or_default();
+                    birthday = employee.get_first_datetime("v-s:birthday").unwrap_or_default();
+                }
+            }
+        } else {
+            first_name = indv.get_first_literal("mnd-s:passFirstName").unwrap_or_default();
+            last_name = indv.get_first_literal("mnd-s:passLastName").unwrap_or_default();
+            middle_name = indv.get_first_literal("mnd-s:middleLastName").unwrap_or_default();
+            birthday = indv.get_first_datetime("v-s:birthday").unwrap_or_default();
+        }
+
+        Box::new(
+            transaction
+                .exec(
+                    INSERT_HUMAN_CARD,
+                    &[
+                        &Utc::now().naive_utc(),
+                        &first_name.as_str(),
+                        &last_name.as_str(),
+                        &middle_name.as_str(),
+                        &tab_number.as_str(),
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(&mut icp, "v-s:occupation", "v-s:title", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &last_name.as_str(),
+                        &first_name.as_str(),
+                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
+                        &module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
                         &card_number.as_str(),
                     ],
                 )
