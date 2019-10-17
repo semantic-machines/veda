@@ -664,49 +664,54 @@ v-fs:SelectedResultsActionsTemplate
   v-ui:template """
 <script>
   var self = this;
-  function selectedHandler() {
-    if ( self.hasValue("v-fs:selected") ) {
-      template.removeClass("hidden");
-    } else {
-      template.addClass("hidden");
-    }
-  }
-  self.on("v-fs:selected", selectedHandler);
+  self.on("v-fs:selected", populateOps);
   template.one("remove", function () {
-    self.off("v-fs:selected", selectedHandler);
+    self.off("v-fs:selected", populateOps);
   });
-  selectedHandler();
+  var populated = populateOps();
 
-  $(".dropdown-toggle", template).one("click", function () {
-    var dropdown = $(".dropdown-menu", template);
-    var operationTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>";
-    var operationDisabledTemplate = "<li class='disabled'><a about='@' href='#' property='rdfs:label'></a></li>";
-    function renderOperation(operation) {
-      operation.rights
-        .then(function (rights) {
-          return rights.hasValue("v-s:canCreate", true) ? operationTemplate : operationDisabledTemplate ;
-        })
-        .then(function (templateString) {
-          operation.present(dropdown, operationTemplate)
-        });
-    }
-    var applicableOperations = self["v-fs:applicableOperation"];
-    applicableOperations.forEach(renderOperation);
-    veda.Backend.query({
+  $(".dropdown-menu, .single-operation", template).on("click", "[resource]", createOp);
+
+  function populateOps() {
+    template.toggleClass("hidden", !self.hasValue("v-fs:selected"));
+    if ( populated ) { return; }
+    var multi = $(".multi-operation", template);
+    var list = $(".dropdown-menu", template);
+    var listTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>";
+    var single = $(".single-operation", template);
+    var singleTemplate = "<span about='@' href='#' property='rdfs:label'></span>";
+    var applicableOps = self["v-fs:applicableOperation"];
+    return veda.Backend.query({
       ticket: veda.ticket,
       query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'"
-    }).then(function (response) {
-      if ( dropdown.children().length && response.result.length ) {
-        dropdown.append("<li role='separator' class='divider'></li>");
-      }
-      return response.result.map(function (operation_uri) {
-        var operation = new veda.IndividualModel(operation_uri);
-        renderOperation(operation);
+    })
+    .then(function (response) {
+      response.result.forEach(function (operation_uri) {
+        applicableOps.push(new veda.IndividualModel(operation_uri));
       });
+      return Promise.all(applicableOps.map(function (op) {
+        return op.canCreate();
+      }));
+    })
+    .then(function (canCreate) {
+      applicableOps = applicableOps.filter(function (_, i) {
+        return canCreate[i];
+      });
+      if ( applicableOps.length === 0 ) {
+        template.remove();
+      } else if ( applicableOps.length === 1 ) {
+        multi.remove();
+        applicableOps[0].present(single, singleTemplate);
+      } else if ( applicableOps.length > 1 ) {
+        single.remove();
+        applicableOps.forEach(function (op) {
+          op.present(list, listTemplate);
+        });
+      }
     });
-  });
+  }
 
-  $(".dropdown-menu", template).on("click", "[resource]", function (e) {
+  function createOp (e) {
     e.preventDefault();
     var $this = $(this);
     if ( $this.hasClass("disabled") ) { return; }
@@ -724,16 +729,20 @@ v-fs:SelectedResultsActionsTemplate
         modal.modal("hide").remove();
       });
     });
-  });
+  }
+
 //# sourceURL=v-fs:SelectedResultsActionsTemplate_pre
 </script>
-<div class="btn-group">
-  <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu operations"></ul>
+<span class="hidden">
+  <button type="button" class="pull-left btn btn-xs btn-primary single-operation"></button>
+  <div class="pull-left btn-group multi-operation">
+    <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu operations"></ul>
+  </div>
   <div rel="v-fs:operation" data-template="v-s:OperationStatusTemplate" class="pull-left operation-container margin-md-h"></div>
-</div>
+</span>
   """ ;
 .
 
