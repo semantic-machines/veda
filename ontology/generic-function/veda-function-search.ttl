@@ -670,7 +670,8 @@ v-fs:SelectedResultsActionsTemplate
   });
   var populated = populateOps();
 
-  $(".dropdown-menu, .single-operation", template).on("click", "[resource]", createOp);
+  $(".dropdown-menu", template).on("click", "[resource]", createOp);
+  $(".single-operation", template).on("click", createOp);
 
   function populateOps() {
     template.toggleClass("hidden", !self.hasValue("v-fs:selected"));
@@ -715,7 +716,7 @@ v-fs:SelectedResultsActionsTemplate
     e.preventDefault();
     var $this = $(this);
     if ( $this.hasClass("disabled") ) { return; }
-    var operationClassUri = $this.attr("resource"),
+    var operationClassUri = $this.attr("resource") || $this.children().first().attr("resource"),
         operationClass = new veda.IndividualModel(operationClassUri),
         operation = new veda.IndividualModel(),
         operationContainer = $(".operation-container", template).empty();
