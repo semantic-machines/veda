@@ -113,7 +113,7 @@ impl Module {
     }
 
     pub fn get_individual<'a>(&mut self, uri: &str, iraw: &'a mut Individual) -> Option<&'a mut Individual> {
-        if !self.storage.get_individual(uri, iraw) {
+        if uri.is_empty() || !self.storage.get_individual(uri, iraw) {
             return None;
         }
         Some(iraw)
