@@ -1168,6 +1168,13 @@ v-ft:MakeDecisionOperation
   v-ui:hasTemplate v-ft:MakeDecisionOperationTemplate ;
 .
 
+v-ft:MakeDecisionOperationRights
+  rdf:type v-s:PermissionStatement ;
+  v-s:permissionObject v-ft:MakeDecisionOperation ;
+  v-s:permissionSubject cfg:AllUsersGroup ;
+  v-s:canCreate true ;
+.
+
 v-ft:groupDecisionClass
   rdf:type owl:ObjectProperty ;
   rdfs:domain v-ft:MakeDecisionOperation ;
