@@ -56,7 +56,7 @@ const INSERT_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
 (AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
 CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (1,@P1,0,0,0,0,@P2,0,SCOPE_IDENTITY(),-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
+VALUES (1,@P1,0,0,0,0,@P2,0,(SELECT SCOPE_IDENTITY()),-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
 
 pub fn insert_card<I: BoxableIo + 'static>(
     card_number: String,
@@ -89,7 +89,7 @@ const INSERT_HUMAN_CARDHOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
 (AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
 Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32)
-VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15";
+VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15)";
 
 pub fn insert_card_holder<I: BoxableIo + 'static>(
     is_vehicle: bool,
@@ -128,6 +128,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
         let mut middle_name = String::new();
         let mut tab_number = String::new();
         let mut birthday = 0;
+        let mut occupation = String::new();
         let mut icp = Individual::default();
 
         if let Some(cp) = indv.get_first_literal("v-s:correspondentPerson") {
@@ -139,12 +140,14 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                     tab_number = employee.get_first_literal("v-s:tabNumber").unwrap_or_default();
                     birthday = employee.get_first_datetime("v-s:birthday").unwrap_or_default();
                 }
+                occupation = module.get_literal_of_link(&mut icp, "v-s:occupation", "v-s:title", &mut Individual::default()).unwrap_or_default();
             }
         } else {
             first_name = indv.get_first_literal("mnd-s:passFirstName").unwrap_or_default();
             last_name = indv.get_first_literal("mnd-s:passLastName").unwrap_or_default();
-            middle_name = indv.get_first_literal("mnd-s:middleLastName").unwrap_or_default();
+            middle_name = indv.get_first_literal("mnd-s:passMiddleName").unwrap_or_default();
             birthday = indv.get_first_datetime("v-s:birthday").unwrap_or_default();
+            occupation = indv.get_first_literal("mnd-s:passPosition").unwrap_or_default();
         }
 
         Box::new(
@@ -160,7 +163,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str(),
-                        &module.get_literal_of_link(&mut icp, "v-s:occupation", "v-s:title", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &occupation.as_str(),
                         &last_name.as_str(),
                         &first_name.as_str(),
                         &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%Y-%m-%d").to_string().as_str(),
