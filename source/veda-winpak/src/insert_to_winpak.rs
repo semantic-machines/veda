@@ -79,15 +79,18 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             || has_kind_for_pass == "d:5f5be080f1004af69742bc574c030609"
             || has_kind_for_pass == "d:1799f1e110054b5a9ef819754b0932ce"
         {
-            is_vehicle = true;
+            is_human = true;
         }
         if has_kind_for_pass == "d:ece7e741557e406bb996809163810c6e"
             || has_kind_for_pass == "d:a149d268628b46ae8d40c6ea0ac7f3dd"
             || has_kind_for_pass == "d:228e15d5afe544c099c337ceafa47ea6"
         {
-            is_human = true;
+            is_vehicle = true;
         }
     }
+
+    let date_from = indv.get_first_datetime("v-s:dateFrom");
+    let date_to = indv.get_first_datetime("v-s:dateTo");
 
     let mut access_levels: Vec<String> = Vec::new();
     get_access_level(&mut indv_b, &mut access_levels);
@@ -96,7 +99,8 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         .and_then(|conn| conn.transaction())
         .and_then(|trans| update_equipment(0, get_equipment_field_names(), equipment_list, card_number.to_string(), trans))
         .and_then(|trans| clear_card(card_number.to_string(), trans))
-        .and_then(|trans| insert_card(is_human, is_vehicle, module, card_number.to_string(), &mut indv_b, trans))
+        .and_then(|trans| insert_card(card_number.to_string(), date_from, date_to, trans))
+        .and_then(|trans| insert_card_holder(is_human, is_vehicle, module, card_number.to_string(), &mut indv_b, trans))
         .and_then(|trans| clear_access_level(card_number.to_string(), trans))
         .and_then(|trans| update_access_level(0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
