@@ -41,24 +41,57 @@ WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 // CLEAR CARD
 
+pub const CLEAR_CARD: &str = "\
+UPDATE [WIN-PAK PRO].[dbo].[Card]
+SET [Deleted]=1,[CardStatus]=0,[AccessLevelID]=0
+WHERE LTRIM([CardNumber])=@P1 and [Deleted]=0";
+
 pub fn clear_card<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
+    Box::new(transaction.exec(CLEAR_CARD, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
 }
 
 // INSERT CARD
-const INSERT_VEHICLE_CARD: &str = "\
+
+const INSERT_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
 (AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
 CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
 VALUES (1,@P1,0,0,0,0,@P2,0,SCOPE_IDENTITY(),-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
 
-const INSERT_HUMAN_CARD: &str = "\
+pub fn insert_card<I: BoxableIo + 'static>(
+    card_number: String,
+    date_from: Option<i64>,
+    date_to: Option<i64>,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    Box::new(
+        transaction
+            .exec(
+                INSERT_CARD,
+                &[
+                    &Utc::now().naive_utc(),
+                    &card_number.as_str(),
+                    &NaiveDateTime::from_timestamp(date_from.unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                    &NaiveDateTime::from_timestamp(date_to.unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                ],
+            )
+            .and_then(|(_result, trans)| Ok(trans)),
+    )
+}
+
+// INSERT CARD HOLDER
+const INSERT_VEHICLE_HOLDER: &str = "\
+INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
+(AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32)
+VALUES(1,@P1,0,0,0,0,@P2,'183','ТРАНСПОРТ',@P3,@P4,'0',@P5,@P6,@P7,@P8,@P9)";
+
+const INSERT_HUMAN_CARDHOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
 (AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
 Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32)
 VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15";
 
-pub fn insert_card<I: BoxableIo + 'static>(
+pub fn insert_card_holder<I: BoxableIo + 'static>(
     is_vehicle: bool,
     is_human: bool,
     module: &mut Module,
@@ -74,7 +107,7 @@ pub fn insert_card<I: BoxableIo + 'static>(
         Box::new(
             transaction
                 .exec(
-                    INSERT_VEHICLE_CARD,
+                    INSERT_VEHICLE_HOLDER,
                     &[
                         &Utc::now().naive_utc(),
                         &label.as_str(),
@@ -83,8 +116,6 @@ pub fn insert_card<I: BoxableIo + 'static>(
                         &label.as_str(),
                         &label.as_str(),
                         &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
-                        &NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:dateFrom").unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
-                        &NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:dateTo").unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
                         &module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
                         &card_number.as_str(),
                     ],
@@ -119,7 +150,7 @@ pub fn insert_card<I: BoxableIo + 'static>(
         Box::new(
             transaction
                 .exec(
-                    INSERT_HUMAN_CARD,
+                    INSERT_HUMAN_CARDHOLDER,
                     &[
                         &Utc::now().naive_utc(),
                         &first_name.as_str(),
@@ -132,9 +163,15 @@ pub fn insert_card<I: BoxableIo + 'static>(
                         &module.get_literal_of_link(&mut icp, "v-s:occupation", "v-s:title", &mut Individual::default()).unwrap_or_default().as_str(),
                         &last_name.as_str(),
                         &first_name.as_str(),
-                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%Y-%m-%d").to_string().as_str(),
                         &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
-                        &module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
+                        &NaiveDateTime::from_timestamp(
+                            module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
+                            0,
+                        )
+                        .format("%Y-%m-%d")
+                        .to_string()
+                        .as_str(),
                         &card_number.as_str(),
                     ],
                 )
