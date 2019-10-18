@@ -139,6 +139,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     } else {
         let ftran = SqlConnection::connect(conn_str)
             .and_then(|conn| conn.transaction())
+            .and_then(|trans| clear_temp_field_of_cardholder(cardholder_id.get(), trans))
             .and_then(|trans| update_equipment_where_id(equipment_list, cardholder_id.get(), trans))
             .and_then(|trans| clear_card(card_number.to_string(), trans))
             .and_then(|trans| insert_card(now, card_number.to_string(), date_from, date_to, cardholder_id.get(), trans))
