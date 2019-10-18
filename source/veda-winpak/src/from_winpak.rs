@@ -1,17 +1,15 @@
-use chrono::prelude::*;
-//use chrono::{Local, NaiveDateTime};
-use v_api::*;
-use v_module::module::*;
-use v_onto::individual::*;
-//use v_search::FTQuery;
 use crate::common_winpak::*;
+use chrono::prelude::*;
 use futures::Future;
 use futures_state_stream::StateStream;
 use std::ops::Sub;
 use tiberius::SqlConnection;
 use time::Duration;
 use tokio::runtime::current_thread;
+use v_api::*;
+use v_module::module::*;
 use v_onto::datatype::Lang;
+use v_onto::individual::*;
 
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
