@@ -183,11 +183,20 @@ veda.Module(function (veda) { "use strict";
       hours = date.getHours(),
       mins = date.getMinutes(),
       secs = date.getSeconds(),
+
+      UTCday = date.getUTCDate(),
+      UTCmonth = date.getUTCMonth() + 1,
+      UTCyear = date.getUTCFullYear(),
+      UTChours = date.getUTCHours(),
+      UTCmins = date.getUTCMinutes(),
+      UTCsecs = date.getUTCSeconds(),
+      UTCmillis = date.getUTCMilliseconds(),
       fdate, ftime;
-    month = zeroPref(month); day = zeroPref(day);
-    hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
-    fdate = [day, month, year].join(".");
-    ftime = [hours, mins, secs].join(":");
+    if ( (UTChours + UTCmins + UTCsecs + UTCmillis) === 0 ) {
+      return [zeroPref(day), zeroPref(month), year].join(".");
+    }
+    fdate = [zeroPref(day), zeroPref(month), year].join(".");
+    ftime = [zeroPref(hours), zeroPref(mins), zeroPref(secs)].join(":");
     return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
   };
   function formatNumber (n) {
@@ -441,9 +450,9 @@ veda.Module(function (veda) { "use strict";
               }, "");
               parts.push(part);
             }
-            
+
           })
-          return parts.join(", ");          
+          return parts.join(", ");
         }
         var temp = [];
         intermediates.forEach(function(item) {
