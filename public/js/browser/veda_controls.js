@@ -412,7 +412,13 @@
     parser: function (input) {
       if (input) {
         var timestamp = moment(input, "DD.MM.YYYY").toDate();
-        return new Date(timestamp);
+        var symbolicDate = new Date(timestamp);
+        var d = symbolicDate.getDate();
+        var m = symbolicDate.getMonth();
+        var y = symbolicDate.getFullYear();
+        symbolicDate.setUTCFullYear(y, m ,d);
+        symbolicDate.setUTCHours(0, 0, 0, 0);
+        return symbolicDate;
       }
       return null;
     },
@@ -454,7 +460,9 @@
     parser: function (input) {
       if (input) {
         var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
-        return new Date(timestamp);
+        var absolutDate = new Date(timestamp);
+        absolutDate.setMilliseconds(1);
+        return absolutDate;
       }
       return null;
     },
