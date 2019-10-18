@@ -104,6 +104,11 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
     indv: &mut Individual,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    let regdate =
+        NaiveDateTime::from_timestamp(module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(), 0)
+            .format("%d.%m.%Y")
+            .to_string();
+
     if is_vehicle {
         let label = indv.get_first_literal("mnd-s:passVehicleRegistrationNumber").unwrap_or_default()
             + " "
@@ -121,7 +126,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &label.as_str(),
                         &label.as_str(),
                         &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
-                        &module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
+                        &regdate.as_str(),
                         &card_number.as_str(),
                         &id,
                     ],
@@ -172,15 +177,9 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &occupation.as_str(),
                         &last_name.as_str(),
                         &first_name.as_str(),
-                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%Y-%m-%d").to_string().as_str(),
+                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%d.%m.%Y").to_string().as_str(),
                         &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
-                        &NaiveDateTime::from_timestamp(
-                            module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
-                            0,
-                        )
-                        .format("%Y-%m-%d")
-                        .to_string()
-                        .as_str(),
+                        &regdate.as_str(),
                         &card_number.as_str(),
                         &id,
                     ],
@@ -319,6 +318,12 @@ pub fn update_equipment_where_id<I: BoxableIo + 'static>(
         transaction
             .exec(UPDATE_EQUIPMENT_WHERE_ID, &[&tv[0], &tv[1], &tv[2], &tv[3], &tv[4], &tv[5], &tv[6], &tv[7], &tv[8], &tv[9], &id])
             .and_then(|(_result, trans)| Ok(trans)),
+    )
+}
+
+pub fn clear_temp_field_of_cardholder<I: BoxableIo + 'static>(id: i32, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    Box::new(
+        transaction.exec("UPDATE t1 SET [t1].[Note24] = '' FROM [WIN-PAK PRO].[dbo].[CardHolder] t1 WHERE [RecordID]=@P1", &[&id]).and_then(|(_result, trans)| Ok(trans)),
     )
 }
 
