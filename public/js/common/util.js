@@ -197,7 +197,7 @@ veda.Module(function (veda) { "use strict";
     }
     fdate = [zeroPref(day), zeroPref(month), year].join(".");
     ftime = [zeroPref(hours), zeroPref(mins), zeroPref(secs)].join(":");
-    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
+    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === 0 ? ftime.substr(0, 5) : ftime) );
   };
   function formatNumber (n) {
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
