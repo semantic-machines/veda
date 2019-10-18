@@ -31,8 +31,7 @@ pub fn get_individual_handler(req: HttpRequest, params: web::Query<GetIndividual
 fn indv_to_json(data: Vec<u8>) -> JSONValue {
     //    info! ("data={:?}", data);
     let mut indv = Individual::new_raw(RawObj::new(data));
-    if let Ok(uri) = parse_raw(&mut indv) {
-        indv.obj.uri = uri;
+    if parse_raw(&mut indv).is_ok() {
         indv.parse_all();
         //        info! ("indv={}", indv);
         return indv.obj.as_json();

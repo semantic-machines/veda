@@ -11,7 +11,7 @@ then
 fi
 ./tools/update-version-ttl.sh
 
-export CARGO_TARGET_DIR=$PWD/tmp
+export CARGO_TARGET_DIR=$HOME/tmp
 
 if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
 

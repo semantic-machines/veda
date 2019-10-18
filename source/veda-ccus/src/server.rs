@@ -328,8 +328,7 @@ fn prepare_queue_el(
     session2uris: &mut HashMap<usize, HashMap<String, u64>>,
 ) -> Result<(), i32> {
     // запустим ленивый парсинг сообщения в Individual
-    if let Ok(uri) = parse_raw(msg) {
-        msg.obj.uri = uri;
+    if parse_raw(msg).is_ok() {
     } else {
         return Err(-1);
     }

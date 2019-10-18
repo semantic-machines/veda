@@ -205,8 +205,7 @@ fn main() -> std::io::Result<()> {
     }
 
     fn prepare_queue_element(module: &mut Module, onto: &mut Onto, msg: &mut Individual, queue_out: &mut Queue, db_id: &str) -> Result<(), i32> {
-        if let Ok(uri) = parse_raw(msg) {
-            msg.obj.uri = uri;
+        if parse_raw(msg).is_ok() {
 
             let wcmd = msg.get_first_integer("cmd");
             if wcmd.is_none() {
@@ -218,8 +217,7 @@ fn main() -> std::io::Result<()> {
             let prev_state = msg.get_first_binobj("prev_state");
             let mut prev_state_indv = if prev_state.is_some() {
                 let mut indv = Individual::new_raw(RawObj::new(prev_state.unwrap_or_default()));
-                if let Ok(uri) = parse_raw(&mut indv) {
-                    indv.obj.uri = uri.clone();
+                if parse_raw(&mut indv).is_ok() {
                 }
                 indv
             } else {
@@ -237,8 +235,7 @@ fn main() -> std::io::Result<()> {
             }
 
             let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-            if let Ok(uri) = parse_raw(&mut new_state_indv) {
-                new_state_indv.obj.uri = uri.clone();
+            if parse_raw(&mut new_state_indv).is_ok() {
                 let exportable = is_exportable(module, onto, queue_out, &mut prev_state_indv, &mut new_state_indv, db_id);
 
                 if exportable.is_none() {

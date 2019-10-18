@@ -137,8 +137,7 @@ pub fn processing_consumer_of_node(queue_consumer: &mut Consumer, soc: &mut Sock
 }
 
 fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr: &str) -> Result<(), ExImCode> {
-    if let Ok(uri) = parse_raw(msg) {
-        msg.obj.uri = uri;
+    if parse_raw(msg).is_ok() {
 
         let target_veda = msg.get_first_literal("target_veda");
         if target_veda.is_none() {
@@ -172,15 +171,14 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
         }
 
         let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-        if let Ok(uri) = parse_raw(&mut indv) {
+        if parse_raw(&mut indv).is_ok() {
             indv.parse_all();
-            indv.obj.uri = uri.clone();
 
             let mut raw: Vec<u8> = Vec::new();
             if to_msgpack(&indv, &mut raw).is_ok() {
                 let mut new_indv = Individual::default();
-                new_indv.obj.uri = uri.clone();
-                new_indv.obj.add_uri("uri", &uri);
+                new_indv.obj.uri = indv.obj.uri.clone();
+                new_indv.obj.add_uri("uri", &indv.obj.uri);
                 new_indv.obj.add_binary("new_state", raw);
                 new_indv.obj.add_integer("cmd", cmd as i64);
                 new_indv.obj.add_integer("date", date.unwrap_or_default());
@@ -189,7 +187,7 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
 
                 let mut raw1: Vec<u8> = Vec::new();
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
-                    info!("send {} to {}", uri, node_addr);
+                    info!("send {} to {}", indv.obj.uri, node_addr);
                     let req = Message::from(raw1.as_slice());
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
@@ -205,8 +203,8 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
                     let msg = wmsg.unwrap();
 
                     let res = dec_slave_resp(msg.as_ref());
-                    if res.0 != uri {
-                        error!("recv message invalid, expected uri={}, recv uri={}", uri, res.0);
+                    if res.0 != indv.obj.uri {
+                        error!("recv message invalid, expected uri={}, recv uri={}", indv.obj.uri, res.0);
                         return Err(ExImCode::TransmitFailed);
                     }
 
@@ -227,8 +225,7 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
 pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> (String, ExImCode) {
     let mut recv_indv = Individual::new_raw(RawObj::new(recv_msg));
 
-    if let Ok(uri) = parse_raw(&mut recv_indv) {
-        recv_indv.obj.uri = uri;
+    if parse_raw(&mut recv_indv).is_ok() {
 
         let wcmd = recv_indv.get_first_integer("cmd");
         if wcmd.is_none() {
@@ -254,9 +251,8 @@ pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, m
         let new_state = recv_indv.get_first_binobj("new_state");
         if cmd != IndvOp::Remove && new_state.is_some() {
             let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-            if let Ok(uri) = parse_raw(&mut indv) {
+            if parse_raw(&mut indv).is_ok() {
                 indv.parse_all();
-                indv.obj.uri = uri.clone();
                 indv.obj.add_uri("sys:source", &source_veda);
 
                 let res = module.api.update(systicket, cmd, &mut indv);
