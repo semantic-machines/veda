@@ -13,18 +13,15 @@ veda.Module(function Backend(veda) { "use strict";
     var duration = 10000;
     notify("danger", {name: "Connection error"});
     interval = setInterval(function () {
-      try {
-        var ontoVsn = get_individual(veda.ticket, "cfg:OntoVsn");
-        if (ontoVsn) {
+      veda.Backend.reset_individual(veda.ticket, "cfg:OntoVsn")
+        .then(function () {
           clearInterval(interval);
           interval = undefined;
           notify("success", {name: "Connection restored"});
-        } else {
+        })
+        .catch(function (error) {
           notify("danger", {name: "Connection error"});
-        }
-      } catch (ex) {
-        notify("danger", {name: "Connection error"});
-      }
+        });
     }, duration);
   }
 
@@ -68,7 +65,7 @@ veda.Module(function Backend(veda) { "use strict";
     this.status = result.status;
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
-    if (result.status === 0) {
+    if (result.status === 0 || result.status === 503) {
       serverWatch();
     }
     if (result.status === 470 || result.status === 471) {
