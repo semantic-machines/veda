@@ -47,6 +47,7 @@ v-s:Pass
   rdfs:subClassOf v-s:Journaling ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Temporal ;
+  rdfs:subClassOf v-s:Embedded ;
   rdfs:label "Пропуск"@ru ;
   rdfs:label "Pass"@en ;
 .

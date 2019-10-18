@@ -185,11 +185,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
             let mut indv = Individual::default();
 
             storage.get_individual(&msg, &mut indv);
-            let out_counter = if let Ok(c) = indv.get_first_integer("v-s:updateCounter") {
-                c
-            } else {
-                0
-            };
+            let out_counter = indv.get_first_integer("v-s:updateCounter").unwrap_or_default();
 
             info!("main: {:?}->{}", indv.obj.uri, out_counter);
 

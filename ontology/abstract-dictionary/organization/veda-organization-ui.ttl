@@ -998,32 +998,42 @@ v-s:NewAppointmentTemplate
     individual.off('v-s:employee', setDefaultAppointment);
   });
 
-  function beforeSaveHandler() {
+  $(".actions #save").off("click");
+  $(".actions #save").on("click", function() {
     var occupationCode = individual['v-s:occupation'][0]['v-s:subjectCode'][0];
     var personTabNumber = individual['v-s:employee'][0]['v-s:tabNumber'][0];
     var tempEmployee = individual['v-s:employee'][0];
     var tempOccupation = individual['v-s:occupation'][0];
-    if (tempOccupation.isNew()) {
-      tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
-      tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
-      tempOccupation.save();
-      individual['v-s:occupation'] = [tempOccupation];
-    }
-
-    if (defaultAppointment){
-      tempEmployee['v-s:defaultAppointment'] = [ new veda.IndividualModel(defaultAppointment) ];
-    } else {
-      tempEmployee['v-s:defaultAppointment'] = [individual];
-    }
-    tempEmployee['v-s:hasAppointment'] = tempEmployee['v-s:hasAppointment'].concat(individual);
-    if (tempEmployee.isNew()) {
-      tempEmployee['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
-      tempEmployee.save();
-    }
-    individual['v-s:employee'] = [ tempEmployee ];
+    Promise.resolve().then(function(){
+      if (tempOccupation.isNew()) {
+        tempOccupation['v-s:parentUnit'] = individual['v-s:parentUnit'];
+        tempOccupation['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+        return tempOccupation.save();
+      }
+      return undefined;
+    }).then(function(savedOccupation){
+      if (savedOccupation) {
+        individual['v-s:occupation'] = [savedOccupation];
+      }
+      if (defaultAppointment){
+        tempEmployee['v-s:defaultAppointment'] = [ new veda.IndividualModel(defaultAppointment) ];
+      } else {
+        tempEmployee['v-s:defaultAppointment'] = [individual];
+      }
+      tempEmployee['v-s:hasAppointment'] = tempEmployee['v-s:hasAppointment'].concat(individual);
+      if (tempEmployee.isNew()) {
+        tempEmployee['v-s:parentOrganization'] = individual['v-s:parentOrganization'];
+      }
+      return tempEmployee.save();
+    }).then(function(savedEmployee) {
+      if (savedEmployee) {
+        individual['v-s:employee'] = [ tempEmployee ];  
+      }
+      individual.save();
+    });
     return false;
-  }
-  individual.one('beforeSave', beforeSaveHandler);
+  });
+
   //# sourceURL=v-s:NewAppointmentTemplate_post
 </script>
   """ ;

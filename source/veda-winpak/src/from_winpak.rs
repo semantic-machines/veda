@@ -1,73 +1,61 @@
+use crate::common_winpak::*;
 use chrono::prelude::*;
-//use chrono::{Local, NaiveDateTime};
-use v_api::*;
-use v_module::module::*;
-use v_onto::individual::*;
-//use v_search::FTQuery;
 use futures::Future;
 use futures_state_stream::StateStream;
 use std::ops::Sub;
 use tiberius::SqlConnection;
 use time::Duration;
 use tokio::runtime::current_thread;
+use v_api::*;
+use v_module::module::*;
 use v_onto::datatype::Lang;
-
-const WINPAK_TIMEZONE: i64 = 3;
-const CARD_NUMBER_FIELD_NAME: &str = "mnd-s:cardNumber";
-const CARD_DATA_QUERY: &str = "\
-SELECT [t1].[ActivationDate], [t1].[ExpirationDate], [t1].[RecordID],
-concat([t2].[LastName],' ',[t2].[FirstName],' ',[t2].[Note1]) as Description,
-[t2].[Note2] as TabNumber,
-[t2].[Note17] as Birthday,
-concat( [t2].[Note4]+' ',
-CASE WHEN [t2].[Note6]='0' THEN null ELSE [t2].[Note6]+' ' END,
-CASE WHEN [t2].[Note7]='0' THEN null ELSE [t2].[Note7]+' ' END,
-CASE WHEN [t2].[Note8]='0' THEN null ELSE [t2].[Note8] END) as Comment,
-concat( CASE WHEN LTRIM([t2].[Note27])='' THEN null ELSE LTRIM([t2].[Note27]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note28])='' THEN null ELSE LTRIM([t2].[Note28]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note29])='' THEN null ELSE LTRIM([t2].[Note29]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note30])='' THEN null ELSE LTRIM([t2].[Note30]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note33])='' THEN null ELSE LTRIM([t2].[Note33]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note34])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note37])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note38])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note39])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END,
-  CASE WHEN LTRIM([t2].[Note40])='' THEN null ELSE LTRIM([t2].[Note34]+CHAR(13)+CHAR(10)) END) as Equipment
-FROM [WIN-PAK PRO].[dbo].[Card] t1
-JOIN [WIN-PAK PRO].[dbo].[CardHolder] t2 ON [t2].[RecordID]=[t1].[CardHolderID]
-WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
-
-const ACCESS_LEVEL_QUERY: &str = "\
-SELECT [t2].[AccessLevelID]
-FROM [WIN-PAK PRO].[dbo].[Card] t1
-JOIN [WIN-PAK PRO].[dbo].[CardAccessLevels] t2 ON [t2].[CardID]=[t1].[RecordID]
-WHERE LTRIM([t1].[CardNumber])=@P1 and [t1].[deleted]=0 and [t2].[deleted]=0";
+use v_onto::individual::*;
 
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
-    if card_number.is_err() {
-        error!("fail read {} {:?}", CARD_NUMBER_FIELD_NAME, card_number.err());
+    if card_number.is_none() {
+        error!("fail read {}.{}", CARD_NUMBER_FIELD_NAME, indv.obj.uri);
         return ResultCode::UnprocessableEntity;
     }
     let param1 = card_number.unwrap_or_default();
 
-    let mut card_data = (false, 0i64, 0i64, 0i32, "".to_string(), "".to_string(), "".to_string(), "".to_string(), "".to_string());
+    let mut card_data = (false, None, None, None, None, None, None, None, None);
     let mut access_levels = Vec::new();
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| {
             conn.query(CARD_DATA_QUERY, &[&param1.as_str()]).for_each(|row| {
-                card_data = (
-                    true,
-                    row.get::<_, NaiveDateTime>(0).sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(),
-                    row.get::<_, NaiveDateTime>(1).sub(Duration::hours(WINPAK_TIMEZONE)).timestamp(),
-                    row.get::<_, i32>(2).to_owned(),
-                    row.get::<_, &str>(3).to_owned(),
-                    row.get::<_, &str>(4).to_owned(),
-                    row.get::<_, &str>(5).to_owned(),
-                    row.get::<_, &str>(6).to_owned(),
-                    row.get::<_, &str>(7).to_owned(),
-                );
+                let f1 = row.get::<_, Option<NaiveDateTime>>(0);
+                let f2 = row.get::<_, Option<NaiveDateTime>>(1);
+                let f3 = row.get::<_, Option<i32>>(2);
+
+                let f4 = if let Some(v) = row.get::<_, Option<&str>>(3) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f5 = if let Some(v) = row.get::<_, Option<&str>>(4) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f6 = if let Some(v) = row.get::<_, Option<&str>>(5) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f7 = if let Some(v) = row.get::<_, Option<&str>>(6) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+                let f8 = if let Some(v) = row.get::<_, Option<&str>>(7) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
+
+                card_data = (true, f1, f2, f3, f4, f5, f6, f7, f8);
                 Ok(())
             })
         })
@@ -95,20 +83,44 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         info!("card_data={:?}", card_data);
 
         indv.obj.clear("v-s:errorMessage");
-        indv.obj.set_datetime("v-s:dateFrom", card_data.1);
-        indv.obj.set_datetime("v-s:dateTo", card_data.2);
-        indv.obj.set_integer("mnd-s:winpakCardRecordId", card_data.3.into());
-        indv.obj.set_string("v-s:description", card_data.4.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:tabNumber", card_data.5.as_str(), Lang::NONE);
-        indv.obj.set_string("v-s:birthday", card_data.6.as_str(), Lang::NONE);
-        indv.obj.set_string("rdfs:comment", card_data.7.as_str(), Lang::NONE);
-        indv.obj.set_string("mnd-s:passEquipment", card_data.8.as_str(), Lang::NONE);
+
+        if let Some(v) = card_data.1 {
+            indv.obj.set_datetime("v-s:dateFrom", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+        }
+
+        if let Some(v) = card_data.2 {
+            indv.obj.set_datetime("v-s:dateTo", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+        }
+
+        if let Some(v) = card_data.3 {
+            indv.obj.set_integer("mnd-s:winpakCardRecordId", v.into());
+        }
+
+        if let Some(s) = card_data.4 {
+            indv.obj.set_string("v-s:description", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.5 {
+            indv.obj.set_string("v-s:tabNumber", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.6 {
+            indv.obj.set_string("v-s:birthday", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.7 {
+            indv.obj.set_string("rdfs:comment", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.8 {
+            indv.obj.set_string("mnd-s:passEquipment", &s, Lang::NONE);
+        }
 
         let mut access_level_uris = Vec::new();
         for level in access_levels {
             let mut indv = Individual::default();
             if module.storage.get_individual(&("d:winpak_accesslevel_".to_string() + &level.to_string()), &mut indv) {
-                if let Ok(v) = indv.get_first_literal("v-s:registrationNumber") {
+                if let Some(v) = indv.get_first_literal("v-s:registrationNumber") {
                     if level.to_string() == v {
                         access_level_uris.push(indv.obj.uri);
                     }

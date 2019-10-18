@@ -207,7 +207,20 @@ v-fs:authorized
   rdfs:domain v-fs:AttributiveSearch ;
   rdfs:range xsd:integer ;
 .
-
+v-fs:selected
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Выбрано"@ru ;
+  rdfs:label "Selected"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range rdfs:Resource ;
+.
+v-fs:operation
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Выбрано"@ru ;
+  rdfs:label "Selected"@en ;
+  rdfs:domain v-fs:AttributiveSearch ;
+  rdfs:range v-s:Operation ;
+.
 v-fs:SearchBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Поиск"@ru ;
@@ -404,6 +417,8 @@ v-fs:AttributiveSearchManagementTemplate
       individual.clone().then(function (personalRegistry) {
         personalRegistry["rdf:type"] = [ new veda.IndividualModel("v-fs:PersonalSearch") ];
         personalRegistry["v-fs:searchResult"] = [];
+        personalRegistry["v-fs:selected"] = [];
+        personalRegistry["v-fs:operation"] = [];
         personalRegistry["v-fs:authorized"] = [];
         personalRegistry["v-fs:cursor"] = [];
         personalRegistry["v-fs:estimated"] = [];
@@ -649,90 +664,91 @@ v-fs:SelectedResultsActionsTemplate
   v-ui:template """
 <script>
   var self = this;
-  function selectedHandler() {
-    var selectedL = self.selected && Object.keys(self.selected).length || 0;
-    if (!selectedL) {
-      template.addClass("hidden");
-    } else {
-      template.removeClass("hidden");
-    }
-  }
-  self.on("selected", selectedHandler);
+  self.on("v-fs:selected", populateOps);
   template.one("remove", function () {
-    self.off("selected", selectedHandler);
+    self.off("v-fs:selected", populateOps);
   });
-  selectedHandler();
+  var populated;
+  if ( self.hasValue("v-fs:selected") ) {
+    populateOps();
+  }
+  $(".dropdown-menu", template).on("click", "[resource]", createOp);
+  $(".single-operation", template).on("click", createOp);
 
-  $(".dropdown-toggle", template).one("click", function () {
-    var dropdown = $(".dropdown-menu", template);
-    var operationTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>";
-    var operationDisabledTemplate = "<li class='disabled'><a about='@' href='#' property='rdfs:label'></a></li>";
-    function renderOperation(operation) {
-      operation.rights
-        .then(function (rights) {
-          return rights.hasValue("v-s:canCreate", true) ? operationTemplate : operationDisabledTemplate ;
-        })
-        .then(function (templateString) {
-          operation.present(dropdown, operationTemplate)
-        });
-    }
-    var applicableOperations = self["v-fs:applicableOperation"];
-    applicableOperations.forEach(renderOperation);
-    veda.Backend.query({
+  function populateOps() {
+    template.toggleClass("hidden", !self.hasValue("v-fs:selected"));
+    if ( populated ) { return; }
+    populated = true;
+    var multi = $(".multi-operation", template);
+    var list = $(".dropdown-menu", template);
+    var listTemplate = "<li><a about='@' href='#' property='rdfs:label'></a></li>";
+    var single = $(".single-operation", template);
+    var singleTemplate = "<span about='@' href='#' property='rdfs:label'></span>";
+    var applicableOps = self["v-fs:applicableOperation"];
+    return veda.Backend.query({
       ticket: veda.ticket,
       query: "'rdf:type' === 'owl:Class' && 'rdfs:subClassOf' === 'v-s:GenericOperation'"
-    }).then(function (response) {
-      if ( dropdown.children().length && response.result.length ) {
-        dropdown.append("<li role='separator' class='divider'></li>");
-      }
-      return response.result.map(function (operation_uri) {
-        var operation = new veda.IndividualModel(operation_uri);
-        renderOperation(operation);
+    })
+    .then(function (response) {
+      response.result.forEach(function (operation_uri) {
+        applicableOps.push(new veda.IndividualModel(operation_uri));
       });
+      return Promise.all(applicableOps.map(function (op) {
+        return op.canCreate();
+      }));
+    })
+    .then(function (canCreate) {
+      applicableOps = applicableOps.filter(function (_, i) {
+        return canCreate[i];
+      });
+      if ( applicableOps.length === 0 ) {
+        template.remove();
+        return;
+      } else if ( applicableOps.length === 1 ) {
+        multi.remove();
+        applicableOps[0].present(single, singleTemplate);
+      } else if ( applicableOps.length > 1 ) {
+        single.remove();
+        applicableOps.forEach(function (op) {
+          op.present(list, listTemplate);
+        });
+      }
+      $(".hidden", template).removeClass("hidden");
     });
-  });
+  }
 
-  $(".dropdown-menu", template).on("click", "[resource]", function (e) {
+  function createOp (e) {
     e.preventDefault();
     var $this = $(this);
     if ( $this.hasClass("disabled") ) { return; }
-    var operationClassUri = $this.attr("resource"),
+    var operationClassUri = $this.attr("resource") || $this.children().first().attr("resource"),
         operationClass = new veda.IndividualModel(operationClassUri),
         operation = new veda.IndividualModel(),
         operationContainer = $(".operation-container", template).empty();
     operation["rdf:type"] = [ operationClass ];
     //operation["v-s:dataQuery"] = self["v-fs:query"];
-    operation["v-s:data"] = Object.keys(self.selected).map(function (value_uri) {
-      return new veda.IndividualModel(value_uri);
-    });
+    operation["v-s:data"] = self["v-fs:selected"].slice();
     var modal = veda.Util.showSmallModal(operation);
     modal.on("click", ".action#start", function () {
-      if (self.operation !== operation) {
-        self.operation = operation;
-        operationContainer.empty();
-        operation.present(operationContainer, "v-s:OperationStatusTemplate");
-      }
+      self["v-fs:operation"] = [ operation ];
       modal.on("hidden.bs.modal", function () {
         modal.modal("hide").remove();
       });
     });
-  });
+  }
+
 //# sourceURL=v-fs:SelectedResultsActionsTemplate_pre
 </script>
-<div class="btn-group">
-  <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu operations"></ul>
-  <div class="pull-left operation-container margin-md-h"></div>
+<div class="hidden" style="margin-top:-3px;">
+  <button type="button" class="pull-left btn btn-xs btn-primary single-operation hidden"></button>
+  <div class="pull-left btn-group multi-operation hidden">
+    <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span about="v-fs:PerformOperation" property="rdfs:label"></span> <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu operations"></ul>
+  </div>
+  <div rel="v-fs:operation" data-template="v-s:OperationStatusTemplate" class="pull-left operation-container margin-md-h"></div>
 </div>
-<script>
-  if (this.operation) {
-    var operationContainer = $(".operation-container", template);
-    this.operation.present(operationContainer, "v-s:OperationStatusTemplate");
-  }
-//# sourceURL=v-fs:SelectedResultsActionsTemplate_post
-</script>
   """ ;
 .
 
@@ -940,7 +956,6 @@ v-fs:AttributiveSearchInlineTemplate
       searchBlankContainer = $(".search-form", template),
       searchResultContainer = $(".search-result", template),
       searchButton = $("#search-button.search-button", template),
-      resetButton = $("#reset-button.reset-button", template),
       moreResults = $(".more-results", template),
       allResults = $(".all-results", template),
       noMoreResults = $(".no-more-results", template),
@@ -996,86 +1011,6 @@ v-fs:AttributiveSearchInlineTemplate
     });
   }
 
-  // Read extra parameters from URL
-  var hash = window.location.hash;
-  var tokens = decodeURI(hash).slice(2).split("/"),
-      uri = tokens[0],
-      extra = tokens[4];
-  if (uri === self.id) {
-    if (extra) {
-      extra = extra.split("&").reduce(function (acc, pair) {
-        var split = pair.split("="),
-            property_uri = split[0] || "",
-            values = split[1].split("|") || "";
-        acc[property_uri] = acc[property_uri] || [];
-        values.forEach(function (value) {
-          acc[property_uri].push( parse(property_uri, value) );
-        });
-        return acc;
-      }, {});
-    }
-  }
-  function parse (property_uri, value) {
-    var property = new veda.IndividualModel(property_uri);
-    var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
-    var parsed;
-    switch (range) {
-      case "xsd:string": parsed = value; break;
-      case "xsd:integer":
-      case "xsd:decimal": parsed = parseFloat( value.split(" ").join("").split(",").join(".") ); break;
-      case "xsd:boolean": parsed = value === "true"; break;
-      case "xsd:dateTime": parsed = new Date(value); break;
-      default: parsed = new veda.IndividualModel(value);
-    }
-    return parsed;
-  }
-
-  // Render search form
-  if ( searchBlank ) {
-    searchBlank.load().then(function(searchBlank) {
-      setupBlank();
-      resetButton.click(function () {
-        searchBlank.object.off("*");
-        delete searchBlank.object;
-        setupBlank();
-        hideResults();
-      });
-    });
-  } else {
-    $(".params", template).remove();
-    resetButton.remove();
-  }
-
-  function setupBlank () {
-    searchBlank.initBlank().then(function (blankObject) {
-      blankObject.on("search", formHandler);
-      blankObject.on("propertyModified", hideResults);
-      template.one("remove", function () {
-        blankObject.off("search", formHandler);
-        blankObject.off("propertyModified", hideResults);
-      });
-      if ( searchBlankTemplate && searchBlankContainer.length ) {
-        searchBlankContainer.empty();
-        blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
-      }
-      // Populate blank with extra parameters from URL
-      if (extra) {
-        for (var property_uri in extra) {
-          blankObject[property_uri] = extra[property_uri];
-        }
-      }
-    });
-  }
-
-  function hideResults () {
-    $(".results", template).addClass("hidden");
-  }
-  function formHandler () {
-    self.search()
-      .then(renderResult)
-      .then(clearSelected);
-  }
-
   // Remember scroll position
   template.one("remove", function () {
     self.scroll = $(window).scrollTop();
@@ -1108,6 +1043,10 @@ v-fs:AttributiveSearchInlineTemplate
         toggleSpin(searchButtons);
       });
   }
+  self.on("search", searchHandler);
+  template.one("remove", function () {
+    self.off("search", searchHandler);
+  });
 
   // Search button handler
   searchButton.click(searchHandler);
@@ -1127,7 +1066,6 @@ v-fs:AttributiveSearchInlineTemplate
   function moreResultsHandler() {
     return self.search( self["v-fs:cursor"][0] )
       .then(renderResult)
-      .then(setToggleSelectAll)
       .catch(function (error) {
         console.log(error);
       });
@@ -1187,14 +1125,13 @@ v-fs:AttributiveSearchInlineTemplate
   });
 
   // Select results
-  self.selected = self.selected || {};
   var toggleSelectAll = searchResultContainer.find(".toggle-select-all");
   searchResultContainer.on("click", ".toggle-select", toggleSelect);
 
   toggleSelectAll.click(function () {
-    var selectedL = Object.keys(self.selected).length;
+    var selectedL = self["v-fs:selected"].length;
     var resultsL = resultContainer.children().length;
-    if ( resultsL !== 0 && selectedL !== 0 && (resultsL !== selectedL || resultsL === selectedL) ) {
+    if ( resultsL !== 0 && selectedL !== 0 ) {
       clearSelected();
     } else if ( resultsL !== 0 && selectedL === 0) {
       selectAll();
@@ -1202,7 +1139,7 @@ v-fs:AttributiveSearchInlineTemplate
     setToggleSelectAll();
   });
   function setToggleSelectAll() {
-    var selectedL = Object.keys(self.selected).length;
+    var selectedL = self["v-fs:selected"].length;
     var resultsL = resultContainer.children().length;
     if ( resultsL !== 0 && resultsL === selectedL ) {
       toggleSelectAll.prop("checked", true);
@@ -1213,32 +1150,34 @@ v-fs:AttributiveSearchInlineTemplate
       toggleSelectAll.prop("indeterminate", false);
       toggleSelectAll.prop("checked", false);
     }
-    self.trigger("selected");
   }
   function clearSelected() {
-    self.selected = {};
+    self.clearValue("v-fs:selected");
     searchResultContainer.find(".toggle-select:checked").prop("checked", false);
-    setToggleSelectAll();
   }
   function selectAll() {
-    self.selected = {};
+    self.clearValue("v-fs:selected");
     searchResultContainer.find(".toggle-select")
       .prop("checked", true)
       .each(function () {
         var result_uri = $(this).closest("[resource]").attr("resource");
-        self.selected[result_uri] = true;
+        self.addValue("v-fs:selected", new veda.IndividualModel(result_uri));
       });
   }
   function toggleSelect() {
     var $this = $(this);
     var result_uri = $this.closest("[resource]").attr("resource");
+    var result = new veda.IndividualModel(result_uri);
     if ( $this.is(":checked") ) {
-      self.selected[result_uri] = true;
+      self.addValue("v-fs:selected", result);
     } else {
-      delete self.selected[result_uri];
+      self.removeValue("v-fs:selected", result);
     }
-    setToggleSelectAll()
   }
+  self.on("v-fs:selected", setToggleSelectAll);
+  template.one("remove", function () {
+    self.off("v-fs:selected", setToggleSelectAll);
+  });
 
   // Render result
   function renderResult(resultDelta) {
@@ -1279,7 +1218,7 @@ v-fs:AttributiveSearchInlineTemplate
           if (result.id === self.marked) {
             tmpl.addClass("marked");
           }
-          tmpl.find(".toggle-select").prop("checked", self.selected[result.id] ? true : false);
+          tmpl.find(".toggle-select").prop("checked", self.hasValue("v-fs:selected", result));
 
           $("td", tmpl).each( function () {
             var text = this.innerText || this.textContent;
@@ -1302,7 +1241,7 @@ v-fs:AttributiveSearchInlineTemplate
           return tmpl;
         });
       });
-    }, Promise.resolve());
+    }, Promise.resolve()).then(setToggleSelectAll);
   }
 
   // Spinner
@@ -1318,26 +1257,98 @@ v-fs:AttributiveSearchInlineTemplate
     }
   }
 
-  // Show results on load if they are available (e.g. if we came back)
-  if ( self.hasValue("v-fs:searchResult") ) {
-    return renderResult( self["v-fs:searchResult"] )
-      .then(setToggleSelectAll)
-      .then(function () {
-        if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo(self.scroll);
-        }
-      });
-  // Search on load
-  } else if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
-    return self.search()
-      .then(renderResult)
-      .then(clearSelected)
-      .then(function () {
-        if ( location.hash.indexOf(individual.id) >= 0 ) {
-          scrollTo(self.scroll);
-        }
-      });
+  // Read extra parameters from URL
+  var hash = window.location.hash;
+  var tokens = decodeURI(hash).slice(2).split("/"),
+      uri = tokens[0],
+      extra = tokens[4];
+  if (uri === self.id) {
+    if (extra) {
+      extra = extra.split("&").reduce(function (acc, pair) {
+        var split = pair.split("="),
+            property_uri = split[0] || "",
+            values = split[1].split("|") || "";
+        acc[property_uri] = acc[property_uri] || [];
+        values.forEach(function (value) {
+          acc[property_uri].push( parse(property_uri, value) );
+        });
+        return acc;
+      }, {});
+    }
   }
+  function parse (property_uri, value) {
+    var property = new veda.IndividualModel(property_uri);
+    var range = property.hasValue("rdfs:range") ? property["rdfs:range"][0].id : "rdfs:Resource";
+    var parsed;
+    switch (range) {
+      case "xsd:string": parsed = value; break;
+      case "xsd:integer":
+      case "xsd:decimal": parsed = parseFloat( value.split(" ").join("").split(",").join(".") ); break;
+      case "xsd:boolean": parsed = value === "true"; break;
+      case "xsd:dateTime": parsed = new Date(value); break;
+      default: parsed = new veda.IndividualModel(value);
+    }
+    return parsed;
+  }
+
+  // Render search form
+  return Promise.resolve().then(function () {
+    if ( searchBlank ) {
+      return searchBlank.load().then(function(searchBlank) {
+        $("#reset-button.reset-button", template).click(function () {
+          searchBlank.object.off("*");
+          delete searchBlank.object;
+          setupBlank();
+          hideResults();
+        });
+        return setupBlank();
+      });
+    } else {
+      $(".params", template).remove();
+      $("#reset-button.reset-button", template).remove();
+    }
+    function setupBlank () {
+      return searchBlank.initBlank().then(function (blankObject) {
+        blankObject.on("propertyModified", hideResults);
+        template.one("remove", function () {
+          blankObject.off("propertyModified", hideResults);
+        });
+        if ( searchBlankTemplate && searchBlankContainer.length ) {
+          searchBlankContainer.empty();
+          return blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
+        }
+        // Populate blank with extra parameters from URL
+        if (extra) {
+          for (var property_uri in extra) {
+            blankObject[property_uri] = extra[property_uri];
+          }
+        }
+      });
+    }
+    function hideResults () {
+      $(".results", template).addClass("hidden");
+    }
+  }).then(function () {
+    // Search on load
+    if ( individual.hasValue("v-fs:searchOnLoad", true) ) {
+      return self.search()
+        .then(renderResult)
+        .then(clearSelected)
+        .then(function () {
+          if ( location.hash.indexOf(individual.id) >= 0 ) {
+            scrollTo(self.scroll);
+          }
+        });
+    // Show results on load if they are available (e.g. if we came back)
+    } else if ( self.hasValue("v-fs:searchResult") ) {
+      return renderResult( self["v-fs:searchResult"] )
+        .then(function () {
+          if ( location.hash.indexOf(individual.id) >= 0 ) {
+            scrollTo(self.scroll);
+          }
+        });
+    }
+  });
 
   //# sourceURL=v-fs:AttributiveSearchInlineTemplate_post
 </script>

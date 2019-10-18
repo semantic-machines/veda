@@ -207,7 +207,7 @@ v-s:ContactsTemplate
         getTemplate(org).then(function (tmpl) {
           return org.present(orgTree, tmpl);
         }).then(function (rendered) {
-          $('.value-row a.expand', rendered).click();
+          $('.value-row a.expand.glyphicon-chevron-right', template).click();
         });
       });
     }

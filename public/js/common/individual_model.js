@@ -102,7 +102,7 @@ veda.Module(function (veda) { "use strict";
       serialized = serialized.concat( this.filtered[property_uri] );
     }
     var uniq = unique(serialized);
-    if ( JSON.stringify(this.properties[property_uri]) !== JSON.stringify(uniq) ) {
+    if ( JSON.stringify(uniq) !== JSON.stringify(this.properties[property_uri] || []) ) {
       if (uniq.length) {
         this.properties[property_uri] = uniq;
       } else {
@@ -366,6 +366,7 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
           };
         }
+        veda.cache.remove(self.id);
         self.trigger("afterLoad", self);
         return self;
       });

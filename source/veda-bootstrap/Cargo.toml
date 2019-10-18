@@ -1,0 +1,11 @@
+[package]
+name = "veda-bootstrap"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4"
+chrono = "0.4"
+env_logger = "0.6"
+sysinfo = "0.9.5"

@@ -121,13 +121,14 @@ v-s:RequestDelegationTemplate
     $("#delegator-control", template).removeClass("-edit").addClass("edit");
     $("#delegator-value", template).removeClass("edit").addClass("-edit");
     $("#position-control", template).removeClass("-edit").addClass("edit");
+    $("#position-container", template).removeClass("-edit").addClass("edit");
   } else {
     $("#custom-label", template).remove();
   }
   //# sourceURL=v-s:RequestDelegationTemplate_pre
 </script>
 <div class="container sheet">
-  <h2 about="v-s:RequestDelegation" property="rdfs:label"></h2>
+  <h2 about="@" rel="rdf:type" data-template="v-ui:LabelTemplate"></h2>
   <hr>
   <div class="row">
     <div class="col-md-6 col-xs-12">
@@ -140,7 +141,7 @@ v-s:RequestDelegationTemplate
   <div class="row">
     <div class="col-md-6 col-xs-12">
       <em about="v-s:delegatedPosition" property="rdfs:label"></em>
-      <div rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view edit search"></div>
+      <div id="position-container" rel="v-s:delegatedPosition" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
       <veda-control id="position-control" data-type="link" rel="v-s:delegatedPosition" class="-view -edit search fulltext" data-deleted="true"></veda-control>
       <div id="positions" class="-view edit -search">
         <div class="checkbox">
@@ -179,15 +180,35 @@ v-s:RequestDelegationTemplate
     </div>
   </div>
   <br>
-  <div class="view -edit -search">
-    <hr class="margin-md">
-    <div class="row row-attribute view edit -search">
-      <div class="col-sm-3 col-xs-5">
-        <label about="v-s:createdAppointment" property="rdfs:label"></label>
-      </div>
-      <div class="col-sm-9 col-xs-7" about="@" rel="v-s:createdAppointment" data-template="v-ui:LabelLinkTemplate"></div>
+  <section class="view -edit -search">
+    <h4 class="section-header" about="v-s:createdAppointment" property="rdfs:label"></h4>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
+            <th about="v-s:employee" property="rdfs:label"></th>
+            <th about="v-s:occupation" property="rdfs:label"></th>
+            <th about="v-s:dateFrom" property="rdfs:label"></th>
+            <th about="v-s:dateTo" property="rdfs:label"></th>
+            <th about="v-s:origin" property="rdfs:label"></th>
+            <th about="v-s:created" property="rdfs:label"></th>
+          </tr>
+        </thead>
+        <tbody rel="v-s:createdAppointment">
+          <tr>
+            <td width="1%"><a href="#/@" class="glyphicon glyphicon-search"></a></td>
+            <td rel="v-s:employee" data-template="v-ui:LabelTemplate"></td>
+            <td rel="v-s:occupation" data-template="v-ui:LabelTemplate"></td>
+            <td property="v-s:dateFrom"></td>
+            <td property="v-s:dateTo"></td>
+            <td property="v-s:origin"></td>
+            <td property="v-s:created"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
+  </section>
   <br>
   <div class="actions view edit -search">
     <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel delete"></span>
@@ -195,11 +216,11 @@ v-s:RequestDelegationTemplate
 </div>
 <script>
   individual.on("v-s:delegatedPosition", delegatedPositionHandler);
-  individual.on("v-s:delegator v-s:delegate", delegatorDelegateHandler);
+  individual.on("v-s:delegator v-s:delegate", extractEmployee);
   individual.on("v-s:delegator", delegatorHandler);
   template.one("remove", function () {
     individual.off("v-s:delegatedPosition", delegatedPositionHandler);
-    individual.off("v-s:delegator v-s:delegate", delegatorDelegateHandler);
+    individual.off("v-s:delegator v-s:delegate", extractEmployee);
     individual.off("v-s:delegator", delegatorHandler);
   });
   delegatedPositionHandler(individual["v-s:delegatedPosition"]);
@@ -226,7 +247,7 @@ v-s:RequestDelegationTemplate
       $("#positions", template).addClass("has-error");
     }
   }
-  function delegatorDelegateHandler(property_uri, values) {
+  function extractEmployee(property_uri, values) {
     if ( values.length && values[0].hasValue("rdf:type", "v-s:Appointment") ) {
       individual[property_uri] = values[0]["v-s:employee"];
     }
@@ -235,45 +256,45 @@ v-s:RequestDelegationTemplate
     $("#positions", template).empty();
     if (values.length) {
       var delegator = values[0];
-      veda.Backend.query(veda.ticket, "('rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "')")
-      .then(function (queryResult) {
-        return queryResult.result;
-      })
-      .then(function (appointments_ids) {
-        return veda.Backend.get_individuals(veda.ticket, appointments_ids);
-      })
-      .then(function (appointments) {
-        var positions_ids = appointments.map(function (appointment_json) {
-          var appointment = new veda.IndividualModel(appointment_json);
-          return appointment["v-s:occupation"][0].id;
+      var queryStr = "( 'rdf:type' === 'v-s:Appointment' && 'v-s:employee' == '" + delegator.id + "' )";
+      veda.Backend.query(veda.ticket, queryStr)
+        .then(function (queryResult) {
+          return veda.Backend.get_individuals(veda.ticket, queryResult.result);
+        })
+        .then(function (appointments) {
+          var positions_ids = appointments.map(function (appointment_json) {
+            var appointment = new veda.IndividualModel(appointment_json);
+            return appointment["v-s:occupation"][0].id;
+          });
+          return positions_ids;
+        })
+        .then(function (positions_ids) {
+          return veda.Backend.get_individuals(veda.ticket, positions_ids);
+        })
+        .then(function (positions) {
+          positions.map(function (position_json) {
+            var position = new veda.IndividualModel(position_json);
+            var tmpl = $(positionTemplate);
+            var input = tmpl.find(".input");
+            var label = tmpl.find(".position-label");
+            if ( individual.hasValue("v-s:delegatedPosition", position) ) {
+              input.prop("checked", "checked");
+            }
+            input.prop( "id", position.id );
+            if (mode === "view") {
+              input.prop("disabled", "disabled");
+            }
+            label.text( position.toString() );
+            tmpl.appendTo( $("#positions", template) );
+          });
         });
-        return positions_ids;
-      })
-      .then(function (positions_ids) {
-        return veda.Backend.get_individuals(veda.ticket, positions_ids);
-      })
-      .then(function (positions) {
-        positions.map(function (position_json) {
-          var position = new veda.IndividualModel(position_json);
-          var tmpl = $(positionTemplate);
-          var input = tmpl.find(".input");
-          var label = tmpl.find(".position-label");
-          if ( individual.hasValue("v-s:delegatedPosition", position) ) {
-            input.prop("checked", "checked");
-          }
-          input.prop( "id", position.id );
-          if (mode === "view") {
-            input.prop("disabled", "disabled");
-          }
-          label.text( position.toString() );
-          tmpl.appendTo( $("#positions", template) );
-        });
-      });
     }
   }
 
-  if ( mode === "edit" && individual.isNew() ) {
+  if ( individual.isNew() && !individual.hasValue("v-s:delegator") ) {
     individual["v-s:delegator"] = [ veda.user ];
+  } else if ( individual.isNew() && individual.hasValue("v-s:delegator") ) {
+    delegatorHandler(individual["v-s:delegator"]);
   }
 
   template.on("view edit", function (e) {
@@ -361,8 +382,6 @@ v-s:RequestDelegationRegistryBlank
   rdfs:label "Заявка на делегирование"@ru ;
   rdfs:label "Delegation request"@en ;
   v-fc:targetType v-s:RequestDelegation ;
-  v-fc:targetType v-s:RequestDelegationUser ;
-  v-fc:targetType v-s:RequestDelegationAdmin ;
 .
 
 # ------------------------------------------------------------ УПРАВЛЕНИЕ ПРАВАМИ --
@@ -443,6 +462,7 @@ var request_uri = document["@"],
     request_type = veda.Util.getUri(document["rdf:type"]),
     requestDateFrom = new Date(document["v-s:dateFrom"][0].data),
     requestDateTo = new Date(document["v-s:dateTo"][0].data),
+    request_origin = request_type === "v-s:RequestDelegationUser" ? "user" : "admin",
     now = new Date(),
     delegator_uri = veda.Util.getUri(document["v-s:delegator"]) || "",
     delegate_uri = veda.Util.getUri(document["v-s:delegate"]),
@@ -485,61 +505,42 @@ position_uris.map(function (position_uri) {
   var uri = "d:" + Sha256.hash( ["delegated", delegator_uri, delegate_uri, position_uri].join("_").split(":").join("_") ).substring(40);
   var appointment = get_individual(ticket, uri);
 
-  /* label calculates on server automatically
-  // Compute label
-  var appointment_label;
-  if ( !custom_label ) {
-    try {
-      var delegate = get_individual(ticket, delegate_uri);
-      var position = get_individual(ticket, position_uri);
-      var delegate_labels = delegate["rdfs:label"];
-      var position_labels = position["rdfs:label"];
-      //print('delegate_labels:', JSON.stringify(delegate_labels), 'position_labels:', JSON.stringify(position_labels));
-      appointment_label = delegate_labels.map(function (item) {
-        var lang = item.lang;
-        var pos_label = position_labels.map( function (label) {
-          return label.lang === lang ? label.data : undefined;
-        }).filter( function (val) {
-          return val !== undefined;
-        });
-        item.data = item.data + " : " + pos_label.join(", ") + " (*)";
-        return item;
-      });
-    } catch (error) {
-      //print(error);
-      appointment_label = veda.Util.newStr(uri);
-    }
-  }*/
-
   if ( !appointment ) {
     appointment = {
       "@": uri,
       "rdf:type": veda.Util.newUri("v-s:Appointment"),
-      //"rdfs:label": custom_label || appointment_label,
       "v-s:employee": veda.Util.newUri(delegate_uri),
       "v-s:occupation": veda.Util.newUri(position_uri),
       "v-s:parentOrganization": veda.Util.newUri(parent_uri),
       "v-s:dateFrom": dateFrom,
       "v-s:dateTo": dateTo,
-      //"v-s:official": veda.Util.newBool(true),
       "v-s:origin": veda.Util.newStr(request_type === "v-s:RequestDelegationUser" ? "user" : "admin"),
       "v-s:deleted": veda.Util.newBool(!isActual),
       "rdfs:comment": veda.Util.newStr("создано cfg:Event_Delegation")
     };
-    //print("[cfg:Event_Delegation] new appointment created", uri);
-  } else {
+    print("[cfg:Event_Delegation] new appointment created", uri);
+  }
+
+  var appointment_origin = veda.Util.getFirstValue(appointment["v-s:origin"]);
+  var appointment_deleted = veda.Util.getFirstValue(appointment["v-s:deleted"]);
+  var updateAllowed = request_origin === "admin" || request_origin === appointment_origin || appointment_deleted;
+
+  if ( updateAllowed ) {
     // Update dates
+    appointment["v-s:origin"] = veda.Util.newStr(request_type === "v-s:RequestDelegationUser" ? "user" : "admin");
     appointment["v-s:dateFrom"] = dateFrom;
     appointment["v-s:dateTo"] = dateTo;
     appointment["v-s:deleted"] = veda.Util.newBool(!isActual);
-    //print("[cfg:Event_Delegation] appointment dates updated", uri, "| isActual =", isActual);
+    print("[cfg:Event_Delegation] set appointment dates", uri, "| isActual =", isActual);
+  } else {
+    print("[cfg:Event_Delegation] dates update is not allowed!");
   }
 
   allDelegated["rdf:value"] = allDelegated["rdf:value"].filter(function (item) {
     return item.data !== uri;
   });
 
-  if ( request_deleted ) {
+  if ( request_deleted && updateAllowed ) {
     appointment["v-s:deleted"] = veda.Util.newBool(true);
     delegate = get_individual(ticket, delegate_uri);
     delegate["v-s:hasAppointment"] = delegate["v-s:hasAppointment"] || [];
@@ -550,14 +551,16 @@ position_uris.map(function (position_uri) {
     delegate["v-s:defaultAppointment"] = delegate["v-s:defaultAppointment"].filter( function (item) {
       return item.data !== uri;
     });
-    //print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
+    print("[cfg:Event_Delegation] request delegation deleted => delete appointment, update delegate");
     put_individual(ticket, delegate, _event_id);
   } else {
     allDelegated["rdf:value"].push({ data: uri, type: "Uri" });
   }
 
-  //print("[cfg:Event_Delegation] appointment =", JSON.stringify(appointment));
-  put_individual(ticket, appointment, _event_id);
+  if ( updateAllowed ) {
+    put_individual(ticket, appointment, _event_id);
+    print("[cfg:Event_Delegation] appointment saved =", JSON.stringify(appointment));
+  }
 
   document["v-s:createdAppointment"] = document["v-s:createdAppointment"] || [];
     document["v-s:createdAppointment"] = document["v-s:createdAppointment"].filter( function (item) {

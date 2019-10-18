@@ -17,7 +17,10 @@ veda.Module(function (veda) { "use strict";
     var buffer = [];
     var socketDelay = 1000;
     var socketTimeout;
-    var reconnectDelay = 5000 + Math.round(Math.random() * 5000);
+    var reconnectDelayInitial = 2500 + Math.round(Math.random() * 2500); // 2.5 - 5 sec
+    var reconnectDelay = reconnectDelayInitial;
+    var reconnectDelayFactor = 1.1;
+    var reconnectDelayLimit = 5 * 60 * 1000; // 5 min
 
     return veda.UpdateService.prototype._singletonInstance = initSocket();
 
@@ -94,6 +97,7 @@ veda.Module(function (veda) { "use strict";
     }
 
     function openedHandler(event) {
+      reconnectDelay = reconnectDelayInitial;
       console.log("client: websocket opened", event.target.url);
       this.sendMessage("ccus=" + veda.ticket);
       self.restore();
@@ -105,10 +109,9 @@ veda.Module(function (veda) { "use strict";
     }
 
     function closedHandler(event) {
+      reconnectDelay = reconnectDelay < reconnectDelayLimit ? reconnectDelay * reconnectDelayFactor : reconnectDelayLimit ;
       console.log("client: websocket closed", event.target.url, "| re-connect in", reconnectDelay / 1000, "sec");
-      setTimeout(function () {
-        initSocket();
-      }, reconnectDelay);
+      setTimeout(initSocket, reconnectDelay);
     }
 
   };
