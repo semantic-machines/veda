@@ -366,6 +366,7 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
           };
         }
+        veda.cache.remove(self.id);
         self.trigger("afterLoad", self);
         return self;
       });
