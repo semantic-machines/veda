@@ -35,11 +35,6 @@ pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
 }
 
 fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
-    let module_label = indv.get_first_literal("v-s:moduleLabel");
-    if module_label.is_none() || module_label.unwrap() != "winpak pe44 update" {
-        return (ResultCode::NotFound, "исходные данные некорректны");
-    }
-
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
     if backward_target.is_none() {
         error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);
@@ -54,18 +49,15 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     }
     let mut indv_b = indv_b.unwrap();
 
-    let source_data_request_pass = indv_b.get_first_literal("mnd-s:hasSourceDataRequestForPass");
-    if source_data_request_pass.is_none() {
-        error!("not found [mnd-s:hasSourceDataRequestForPass] in {}", indv_b.obj.uri);
-        return (ResultCode::NotFound, "исходные данные некорректны");
-    }
+    let btype = indv_b.get_first_literal("rdf:type").unwrap_or_default();
 
     let has_change_kind_for_pass = indv_b.get_literals("mnd-s:hasChangeKindForPass");
-    if has_change_kind_for_pass.is_none() {
+    if btype != "mnd-s:Pass" && has_change_kind_for_pass.is_none() {
         error!("not found [mnd-s:hasChangeKindForPass] in {}", indv_b.obj.uri);
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
-    let has_change_kind_for_passes = has_change_kind_for_pass.unwrap();
+
+    let has_change_kind_for_passes = has_change_kind_for_pass.unwrap_or_default();
 
     let wcard_number = indv_b.get_first_literal("mnd-s:cardNumber");
     if wcard_number.is_none() {
@@ -79,14 +71,21 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut date_to = None;
     let mut access_levels: Vec<String> = Vec::new();
 
-    for has_change_kind_for_pass in has_change_kind_for_passes {
-        if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
-            get_equipment_list(&mut indv_b, &mut equipment_list);
-        } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
-            date_from = indv_b.get_first_datetime("v-s:dateFrom");
-            date_to = indv_b.get_first_datetime("v-s:dateTo");
-        } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
-            get_access_level(&mut indv_b, &mut access_levels);
+    if btype == "mnd-s:Pass" {
+        get_equipment_list(&mut indv_b, &mut equipment_list);
+        date_from = indv_b.get_first_datetime("v-s:dateFrom");
+        date_to = indv_b.get_first_datetime("v-s:dateTo");
+        get_access_level(&mut indv_b, &mut access_levels);
+    } else {
+        for has_change_kind_for_pass in has_change_kind_for_passes {
+            if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
+                get_equipment_list(&mut indv_b, &mut equipment_list);
+            } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
+                date_from = indv_b.get_first_datetime("v-s:dateFrom");
+                date_to = indv_b.get_first_datetime("v-s:dateTo");
+            } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
+                get_access_level(&mut indv_b, &mut access_levels);
+            }
         }
     }
 
