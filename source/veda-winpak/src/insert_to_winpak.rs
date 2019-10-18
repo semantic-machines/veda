@@ -37,11 +37,6 @@ pub fn insert_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
 }
 
 fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
-    let module_label = indv.get_first_literal("v-s:moduleLabel");
-    if module_label.is_none() || module_label.unwrap() != "winpak pe44 create" {
-        return (ResultCode::NotFound, "исходные данные некорректны");
-    }
-
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
     if backward_target.is_none() {
         error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);

@@ -220,14 +220,20 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
                             }
                         }
 
-                        let res = update_to_winpak(module, systicket, conn_str, &mut new_state_indv);
-                        if res == ResultCode::ConnectError {
-                            return Err(res);
+                        let module_label = new_state_indv.get_first_literal("v-s:moduleLabel").unwrap_or_default();
+
+                        if module_label == "winpak pe44 create" {
+                            let res = insert_to_winpak(module, systicket, conn_str, &mut new_state_indv);
+                            if res == ResultCode::ConnectError {
+                                return Err(res);
+                            }
                         }
 
-                        let res = insert_to_winpak(module, systicket, conn_str, &mut new_state_indv);
-                        if res == ResultCode::ConnectError {
-                            return Err(res);
+                        if module_label == "winpak pe44 update" {
+                            let res = update_to_winpak(module, systicket, conn_str, &mut new_state_indv);
+                            if res == ResultCode::ConnectError {
+                                return Err(res);
+                            }
                         }
                     }
                 }
