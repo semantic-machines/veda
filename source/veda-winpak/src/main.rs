@@ -179,8 +179,7 @@ pub fn get_conn_string(module: &mut Module) -> Result<String, String> {
 }
 
 fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, msg: &mut Individual) -> Result<(), ResultCode> {
-    if let Ok(uri) = parse_raw(msg) {
-        msg.obj.uri = uri;
+    if parse_raw(msg).is_ok() {
 
         let wcmd = msg.get_first_integer("cmd");
         if wcmd.is_none() {
@@ -195,8 +194,7 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
         }
 
         let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-        if let Ok(uri) = parse_raw(&mut new_state_indv) {
-            new_state_indv.obj.uri = uri.clone();
+        if parse_raw(&mut new_state_indv).is_ok() {
 
             if let Some(types) = new_state_indv.get_literals("rdf:type") {
                 for itype in types {

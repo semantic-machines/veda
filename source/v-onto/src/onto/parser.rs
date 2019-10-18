@@ -22,7 +22,7 @@ pub fn parse_to_predicate(expect_predicate: &str, iraw: &mut Individual) -> bool
 
 const MSGPACK_MAGIC_HEADER: u8 = 146;
 
-pub fn parse_raw(iraw: &mut Individual) -> Result<String, i8> {
+pub fn parse_raw(iraw: &mut Individual) -> Result<(), i8> {
     if iraw.raw.data.is_empty() {
         return Err(-1);
     }
@@ -35,10 +35,17 @@ pub fn parse_raw(iraw: &mut Individual) -> Result<String, i8> {
         iraw.raw.raw_type = RawType::CBOR;
     }
 
-    if iraw.raw.raw_type == RawType::MSGPACK {
-        return parse_msgpack(&mut iraw.raw);
+    let res = if iraw.raw.raw_type == RawType::MSGPACK {
+        parse_msgpack(&mut iraw.raw)
     } else if iraw.raw.raw_type == RawType::CBOR {
-        return parse_cbor(&mut iraw.raw);
+        parse_cbor(&mut iraw.raw)
+    } else {
+        Err(-1)
+    };
+
+    if let Ok(uri) = res {
+        iraw.obj.uri = uri;
+        return Ok(());
     }
 
     Err(-1)

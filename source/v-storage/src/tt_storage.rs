@@ -40,8 +40,7 @@ impl Storage for TTStorage {
         if let Ok(v) = self.rt.block_on(resp) {
             iraw.raw.data = v[5..].to_vec();
 
-            if let Ok(uri) = parse_raw(iraw) {
-                iraw.obj.uri = uri;
+            if parse_raw(iraw).is_ok() {
                 return true;
             }
             //else {
