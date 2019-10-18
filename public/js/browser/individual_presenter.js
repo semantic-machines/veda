@@ -22,7 +22,7 @@ veda.Module(function (veda) { "use strict";
 
     return this.load().then(function (individual) {
 
-      var offlineTemplate = "<h5 class='container sheet text-center text-muted'>Вы работаете офлайн. Этот объект сейчас недоступен / You are offline. This object is not available now</h5>";
+      var offlineTemplate = "<h5 class='container sheet text-center text-muted'>Нет связи с сервером. Этот объект сейчас недоступен / Server disconnected. This object is not available now</h5>";
 
       if (template) {
         if (template instanceof veda.IndividualModel) {
