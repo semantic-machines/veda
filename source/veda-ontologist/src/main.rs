@@ -192,14 +192,12 @@ fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> 
 }
 
 fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
-    if let Ok(uri) = parse_raw(qel) {
-        qel.obj.uri = uri;
-        if let Ok(new_state) = qel.get_first_binobj("new_state") {
+    if parse_raw(qel).is_ok() {
+        if let Some(new_state) = qel.get_first_binobj("new_state") {
             let mut indv: Individual = Individual::default();
             indv.raw = RawObj::new(new_state);
 
-            if let Ok(uri) = parse_raw(&mut indv) {
-                indv.obj.uri = uri;
+            if parse_raw(&mut indv).is_ok() {
                 if indv.any_exists("rdf:type", &onto_types) {
                     info!("found onto changes from storage: uri={}", &indv.obj.uri);
                     return true;

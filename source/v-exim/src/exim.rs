@@ -137,11 +137,10 @@ pub fn processing_consumer_of_node(queue_consumer: &mut Consumer, soc: &mut Sock
 }
 
 fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr: &str) -> Result<(), ExImCode> {
-    if let Ok(uri) = parse_raw(msg) {
-        msg.obj.uri = uri;
+    if parse_raw(msg).is_ok() {
 
         let target_veda = msg.get_first_literal("target_veda");
-        if target_veda.is_err() {
+        if target_veda.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
 
@@ -151,36 +150,35 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
         }
 
         let wcmd = msg.get_first_integer("cmd");
-        if wcmd.is_err() {
+        if wcmd.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let new_state = msg.get_first_binobj("new_state");
-        if cmd != IndvOp::Remove && new_state.is_err() {
+        if cmd != IndvOp::Remove && new_state.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
 
         let source_veda = msg.get_first_literal("source_veda");
-        if source_veda.is_err() {
+        if source_veda.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
 
         let date = msg.get_first_integer("date");
-        if date.is_err() {
+        if date.is_none() {
             return Err(ExImCode::InvalidMessage);
         }
 
         let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-        if let Ok(uri) = parse_raw(&mut indv) {
+        if parse_raw(&mut indv).is_ok() {
             indv.parse_all();
-            indv.obj.uri = uri.clone();
 
             let mut raw: Vec<u8> = Vec::new();
             if to_msgpack(&indv, &mut raw).is_ok() {
                 let mut new_indv = Individual::default();
-                new_indv.obj.uri = uri.clone();
-                new_indv.obj.add_uri("uri", &uri);
+                new_indv.obj.uri = indv.obj.uri.clone();
+                new_indv.obj.add_uri("uri", &indv.obj.uri);
                 new_indv.obj.add_binary("new_state", raw);
                 new_indv.obj.add_integer("cmd", cmd as i64);
                 new_indv.obj.add_integer("date", date.unwrap_or_default());
@@ -189,7 +187,7 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
 
                 let mut raw1: Vec<u8> = Vec::new();
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
-                    info!("send {} to {}", uri, node_addr);
+                    info!("send {} to {}", indv.obj.uri, node_addr);
                     let req = Message::from(raw1.as_slice());
                     if let Err(e) = soc.send(req) {
                         error!("fail send to slave node, err={:?}", e);
@@ -205,8 +203,8 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
                     let msg = wmsg.unwrap();
 
                     let res = dec_slave_resp(msg.as_ref());
-                    if res.0 != uri {
-                        error!("recv message invalid, expected uri={}, recv uri={}", uri, res.0);
+                    if res.0 != indv.obj.uri {
+                        error!("recv message invalid, expected uri={}, recv uri={}", indv.obj.uri, res.0);
                         return Err(ExImCode::TransmitFailed);
                     }
 
@@ -227,17 +225,16 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
 pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> (String, ExImCode) {
     let mut recv_indv = Individual::new_raw(RawObj::new(recv_msg));
 
-    if let Ok(uri) = parse_raw(&mut recv_indv) {
-        recv_indv.obj.uri = uri;
+    if parse_raw(&mut recv_indv).is_ok() {
 
         let wcmd = recv_indv.get_first_integer("cmd");
-        if wcmd.is_err() {
+        if wcmd.is_none() {
             return (recv_indv.obj.uri, ExImCode::InvalidCmd);
         }
         let cmd = IndvOp::from_i64(wcmd.unwrap_or_default());
 
         let source_veda = recv_indv.get_first_literal("source_veda");
-        if source_veda.is_err() {
+        if source_veda.is_none() {
             return (recv_indv.obj.uri, ExImCode::InvalidTarget);
         }
 
@@ -247,16 +244,15 @@ pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, m
         }
 
         let target_veda = recv_indv.get_first_literal("target_veda");
-        if target_veda.is_err() {
+        if target_veda.is_none() {
             return (recv_indv.obj.uri, ExImCode::InvalidTarget);
         }
 
         let new_state = recv_indv.get_first_binobj("new_state");
-        if cmd != IndvOp::Remove && new_state.is_ok() {
+        if cmd != IndvOp::Remove && new_state.is_some() {
             let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
-            if let Ok(uri) = parse_raw(&mut indv) {
+            if parse_raw(&mut indv).is_ok() {
                 indv.parse_all();
-                indv.obj.uri = uri.clone();
                 indv.obj.add_uri("sys:source", &source_veda);
 
                 let res = module.api.update(systicket, cmd, &mut indv);
@@ -301,15 +297,15 @@ pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_no
     let mut node = Individual::default();
 
     if module.storage.get_individual("cfg:standart_node", &mut node) {
-        if let Ok(c) = node.get_first_integer("v-s:updateCounter") {
+        if let Some(c) = node.get_first_integer("v-s:updateCounter") {
             if c > *node_upd_counter {
                 link_node_addresses.clear();
-                if let Ok(v) = node.get_literals("cfg:linked_node") {
+                if let Some(v) = node.get_literals("cfg:linked_node") {
                     for el in v {
                         let mut link_node = Individual::default();
 
                         if module.storage.get_individual(&el, &mut link_node) && !link_node.is_exists("v-s:delete") {
-                            if let Ok(addr) = link_node.get_first_literal("rdf:value") {
+                            if let Some(addr) = link_node.get_first_literal("rdf:value") {
                                 link_node_addresses.insert(el, addr);
                             }
                         }
@@ -325,7 +321,7 @@ pub fn get_linked_nodes(module: &mut Module, node_upd_counter: &mut i64, link_no
 pub fn get_db_id(module: &mut Module) -> Option<String> {
     let mut indv = Individual::default();
     if module.storage.get_individual("cfg:system", &mut indv) {
-        if let Ok(c) = indv.get_first_literal("sys:id") {
+        if let Some(c) = indv.get_first_literal("sys:id") {
             return Some(c);
         }
     }

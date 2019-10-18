@@ -220,6 +220,7 @@
             <i class="fa fa-sitemap"></i>
           </div>
           <textarea rows="1" class="form-control fulltext"></textarea>
+          <div class="input-group-addon btn btn-default clear">&#10005;</div>
           <div class="input-group-addon btn btn-default dropdown">
             <i class="caret"></i>
           </div>
@@ -245,42 +246,32 @@
 
     <!-- String control template -->
     <script type="html/template" id="string-control-template">
-      <div>
-        <input type="text" class="form-control" autocomplete="on" />
-      </div>
-    </script>
-
-    <!-- Password control template -->
-    <script type="html/template" id="password-control-template">
-      <div>
-        <input type="password" class="form-control" autocomplete="on" />
-      </div>
+      <input type="text" class="form-control" autocomplete="on" />
     </script>
 
     <!-- Text control template -->
     <script type="html/template" id="text-control-template">
-      <div>
-        <textarea class="form-control" rows="1" />
-      </div>
+      <textarea class="form-control" rows="1" />
+    </script>
+
+    <!-- Password control template -->
+    <script type="html/template" id="password-control-template">
+      <input type="password" class="form-control" autocomplete="on" />
     </script>
 
     <!-- Multilingual string control template -->
     <script type="html/template" id="multilingual-string-control-template">
-      <div>
-        <div class="input-group">
-          <div class="input-group-addon"><small class="language-tag"></small></div>
-          <input type="text" class="form-control" lang="" autocomplete="on" />
-        </div>
+      <div class="input-group">
+        <div class="input-group-addon"><small class="language-tag"></small></div>
+        <input type="text" class="form-control" lang="" autocomplete="on" />
       </div>
     </script>
 
     <!-- Multilingual text control template -->
     <script type="html/template" id="multilingual-text-control-template">
-      <div>
-        <div class="input-group">
-          <div class="input-group-addon"><small class="language-tag"></small></div>
-          <textarea class="form-control" lang="" rows="1" />
-        </div>
+      <div class="input-group">
+        <div class="input-group-addon"><small class="language-tag"></small></div>
+        <textarea class="form-control" lang="" rows="1" />
       </div>
     </script>
 
@@ -301,9 +292,7 @@
 
     <!-- Integer control template -->
     <script type="html/template" id="integer-control-template">
-      <div>
-        <input type="text" class="form-control" placeholder="#" />
-      </div>
+      <input type="text" class="form-control" placeholder="#" />
     </script>
 
     <!-- WorkTime control template -->
@@ -355,57 +344,44 @@
 
     <!-- Decimal control template -->
     <script type="html/template" id="decimal-control-template">
-      <div>
-        <input type="text" class="form-control" placeholder="#.#" />
-      </div>
+      <input type="text" class="form-control" placeholder="#.#" />
     </script>
 
     <!-- Boolean control template -->
     <script type="html/template" id="boolean-control-template">
-      <span>
-        <input type="checkbox" />
-      </span>
+      <input type="checkbox" />
     </script>
 
     <!-- Option select control template -->
     <script type="html/template" id="select-control-template">
-      <div>
-        <select class="form-control">
-          <option></option>
-        </select>
-      </div>
+      <select class="form-control">
+        <option></option>
+      </select>
     </script>
 
     <!-- Checkbox control template -->
     <script type="html/template" id="checkbox-control-template">
-      <div>
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" />
-          </label>
-        </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" />
+        </label>
       </div>
     </script>
 
     <!-- Radio control template -->
     <script type="html/template" id="radio-control-template">
-      <div>
-        <div class="radio">
-          <label>
-            <input type="radio" />
-          </label>
-        </div>
+      <div class="radio">
+        <label>
+          <input type="radio" />
+        </label>
       </div>
     </script>
 
     <!-- File control template -->
     <script type="html/template" id="file-control-template">
-      <div>
-        <input type="file" style="display:none"/>
-        <button class="browse btn btn-default">
-          Browse...<strong class="indicator-percentage"></strong><span class="indicator-spinner fa fa-spinner fa-pulse fa-lg fa-fw text-info" style="display:none"></span>
-        </button>
-      </div>
+      <button class="browse btn btn-default">
+        Browse...<strong class="indicator-percentage"></strong><span class="indicator-spinner fa fa-spinner fa-pulse fa-lg fa-fw text-info" style="display:none"></span>
+      </button><input type="file" style="display:none"/>
     </script>
 
     <!-- Javascript -->

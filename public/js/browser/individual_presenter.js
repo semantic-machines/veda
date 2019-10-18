@@ -2,7 +2,12 @@
 
 veda.Module(function (veda) { "use strict";
 
+  //~ var count = 0;
+
   veda.IndividualModel.prototype.present = function (container, template, mode, extra, toAppend) {
+
+    //~ var timer = ++count + "___(" + this.id +").present()";
+    //~ console.time(timer);
 
     mode = mode || "view";
 
@@ -82,6 +87,10 @@ veda.Module(function (veda) { "use strict";
         return templatePromise;
       }
     })
+    //~ .then(function (template) {
+      //~ console.timeEnd(timer);
+      //~ return template;
+    //~ })
     .catch(function (error) {
       console.log("Presenter error", error);
     });
@@ -589,6 +598,18 @@ veda.Module(function (veda) { "use strict";
 
     // Validation with support of embedded templates (arbitrary depth)
 
+    function debounce(fn, delay) {
+      var timeout;
+      return function () {
+        var that = this;
+        var args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+          fn.apply(that, args);
+        }, delay);
+      }
+    }
+
     // Initial validation state
     var validation = {state: true};
     template.data("validation", validation);
@@ -622,7 +643,8 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       }
     }
-    template.on("internal-validate", validateTemplate);
+    template.on("internal-validate", debounce(validateTemplate, 500));
+    //template.on("internal-validate", validateTemplate);
 
     function triggerValidation() {
       if (mode === "edit") {

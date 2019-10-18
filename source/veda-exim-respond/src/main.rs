@@ -38,7 +38,7 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    let mut server = Socket::new(Protocol::Rep0)?;
+    let server = Socket::new(Protocol::Rep0)?;
     if let Err(e) = server.listen(&exim_slave_port.unwrap()) {
         error!("fail listen, {:?}", e);
         return Ok(());

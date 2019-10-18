@@ -183,12 +183,21 @@ veda.Module(function (veda) { "use strict";
       hours = date.getHours(),
       mins = date.getMinutes(),
       secs = date.getSeconds(),
+
+      UTCday = date.getUTCDate(),
+      UTCmonth = date.getUTCMonth() + 1,
+      UTCyear = date.getUTCFullYear(),
+      UTChours = date.getUTCHours(),
+      UTCmins = date.getUTCMinutes(),
+      UTCsecs = date.getUTCSeconds(),
+      UTCmillis = date.getUTCMilliseconds(),
       fdate, ftime;
-    month = zeroPref(month); day = zeroPref(day);
-    hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
-    fdate = [day, month, year].join(".");
-    ftime = [hours, mins, secs].join(":");
-    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
+    if ( (UTChours + UTCmins + UTCsecs + UTCmillis) === 0 ) {
+      return [zeroPref(day), zeroPref(month), year].join(".");
+    }
+    fdate = [zeroPref(day), zeroPref(month), year].join(".");
+    ftime = [zeroPref(hours), zeroPref(mins), zeroPref(secs)].join(":");
+    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === 0 ? ftime.substr(0, 5) : ftime) );
   };
   function formatNumber (n) {
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
@@ -375,7 +384,6 @@ veda.Module(function (veda) { "use strict";
     function get (uri) {
       return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
     }
-
     try {
 
       var availableLanguages = get("v-ui:AvailableLanguage");
@@ -384,7 +392,6 @@ veda.Module(function (veda) { "use strict";
         var language = get(languageUri);
         return language["rdf:value"][0].data;
       });
-
       return individual["rdf:type"].reduce(function (acc, typeValue) {
         var typeUri = typeValue.data;
         var type = get(typeUri);
@@ -421,28 +428,42 @@ veda.Module(function (veda) { "use strict";
 
     function get_localized_chain(language, uri) {
       var properties = [].slice.call(arguments, 2);
-      var intermediate = get(uri);
-      if (!intermediate) { return ""; }
+      var startPoint = get(uri);
+      if (!startPoint) { return ""; }
+      var intermediates = [startPoint];
       for (var i = 0, property; (property = properties[i]); i++) {
         var length = properties.length;
         if (i === length - 1) {
-          if (!intermediate[property] || !intermediate[property].length) return "";
-          return intermediate[property].reduce(function (acc, value) {
-            if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
-              var data = value.data;
-              if (data instanceof Date) {
-                data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
-              }
-              return acc += data;
-            } else {
-              return acc;
+          var parts = [];
+          intermediates.forEach(function(item) {
+            if (item[property]) {
+              var part = item[property].reduce(function (acc, value) {
+                if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
+                  var data = value.data;
+                  if (data instanceof Date) {
+                    data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+                  }
+                  return acc += data;
+                } else {
+                  return acc;
+                }
+              }, "");
+              parts.push(part);
             }
-          }, "");
+
+          })
+          return parts.join(", ");
         }
-        if ( veda.Util.hasValue(intermediate, property) ) {
-          var intermediateUri = intermediate[property][0].data;
-          intermediate = get(intermediateUri);
-          if (!intermediate) { return ""; }
+        var temp = [];
+        intermediates.forEach(function(item) {
+          if (veda.Util.hasValue(item, property)) {
+            item[property].forEach(function(propertyItem) {
+              temp.push(get(propertyItem.data));
+            });
+          }
+        });
+        if (temp.length) {
+          intermediates = temp;
         } else {
           return "";
         }

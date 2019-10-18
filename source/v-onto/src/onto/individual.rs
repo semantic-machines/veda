@@ -144,20 +144,21 @@ impl Individual {
         }
     */
 
-    pub fn get_literals(&mut self, predicate: &str) -> Result<Vec<String>, IndividualError> {
+    pub fn get_literals(&mut self, predicate: &str) -> Option<Vec<String>> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
-                    return Ok(v
-                        .iter()
-                        .map(|el| {
-                            if let Value::Str(s, _l) = &el.value {
-                                s.to_string()
-                            } else {
-                                "".to_string()
-                            }
-                        })
-                        .collect::<Vec<String>>());
+                    return Some(
+                        v.iter()
+                            .map(|el| {
+                                if let Value::Str(s, _l) = &el.value {
+                                    s.to_string()
+                                } else {
+                                    "".to_string()
+                                }
+                            })
+                            .collect::<Vec<String>>(),
+                    );
                 }
                 None => {
                     if self.raw.cur < self.raw.data.len() as u64 {
@@ -171,18 +172,18 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_literal(&mut self, predicate: &str) -> Result<String, IndividualError> {
+    pub fn get_first_literal(&mut self, predicate: &str) -> Option<String> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => match &v[0].value {
                     Value::Str(s, _l) => {
-                        return Ok(s.to_string());
+                        return Some(s.to_string());
                     }
                     _ => {
-                        return Err(IndividualError::ParseError);
+                        return None;
                     }
                 },
                 None => {
@@ -197,18 +198,18 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_bool(&mut self, predicate: &str) -> Result<bool, IndividualError> {
+    pub fn get_first_bool(&mut self, predicate: &str) -> Option<bool> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => match &v[0].value {
                     Value::Bool(s) => {
-                        return Ok(*s);
+                        return Some(*s);
                     }
                     _ => {
-                        return Err(IndividualError::ParseError);
+                        return None;
                     }
                 },
                 None => {
@@ -223,18 +224,18 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_binobj(&mut self, predicate: &str) -> Result<Vec<u8>, IndividualError> {
+    pub fn get_first_binobj(&mut self, predicate: &str) -> Option<Vec<u8>> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => match &v[0].value {
                     Value::Binary(s) => {
-                        return Ok(s.clone());
+                        return Some(s.clone());
                     }
                     _ => {
-                        return Err(IndividualError::ParseError);
+                        return None;
                     }
                 },
                 None => {
@@ -249,15 +250,15 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_integer(&mut self, predicate: &str) -> Result<i64, IndividualError> {
+    pub fn get_first_integer(&mut self, predicate: &str) -> Option<i64> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
                     if let Value::Int(i) = &v[0].value {
-                        return Ok(*i);
+                        return Some(*i);
                     }
                 }
                 None => {
@@ -272,15 +273,15 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_number(&mut self, predicate: &str) -> Result<(i64, i64), IndividualError> {
+    pub fn get_first_number(&mut self, predicate: &str) -> Option<(i64, i64)> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
                     if let Value::Num(m, e) = &v[0].value {
-                        return Ok((*m, *e));
+                        return Some((*m, *e));
                     }
                 }
                 None => {
@@ -295,15 +296,15 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_datetime(&mut self, predicate: &str) -> Result<i64, IndividualError> {
+    pub fn get_first_datetime(&mut self, predicate: &str) -> Option<i64> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
                     if let Value::Datetime(i) = &v[0].value {
-                        return Ok(*i);
+                        return Some(*i);
                     }
                 }
                 None => {
@@ -318,14 +319,14 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
-    pub fn get_first_float(&mut self, predicate: &str) -> Result<f64, IndividualError> {
+    pub fn get_first_float(&mut self, predicate: &str) -> Option<f64> {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
-                    return Ok(v[0].get_float());
+                    return Some(v[0].get_float());
                 }
                 None => {
                     if self.raw.cur < self.raw.data.len() as u64 {
@@ -339,7 +340,7 @@ impl Individual {
                 }
             }
         }
-        Err(IndividualError::None)
+        None
     }
 
     pub fn parse_all(&mut self) {

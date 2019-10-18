@@ -61,8 +61,7 @@ impl Storage for LMDBStorage {
                                     Ok(val) => {
                                         iraw.raw.data = val;
 
-                                        if let Ok(uri) = parse_raw(iraw) {
-                                            iraw.obj.uri = uri;
+                                        if parse_raw(iraw).is_ok() {
                                             return true;
                                         } else {
                                             error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
@@ -126,8 +125,7 @@ impl Storage for LMDBStorage {
                                     Ok(val) => {
                                         iraw.raw.data = val;
 
-                                        if let Ok(uri) = parse_raw(iraw) {
-                                            iraw.obj.uri = uri;
+                                        if parse_raw(iraw).is_ok() {
                                             return true;
                                         } else {
                                             error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
