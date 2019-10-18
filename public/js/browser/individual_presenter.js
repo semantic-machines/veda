@@ -2,7 +2,12 @@
 
 veda.Module(function (veda) { "use strict";
 
+  //~ var count = 0;
+
   veda.IndividualModel.prototype.present = function (container, template, mode, extra, toAppend) {
+
+    //~ var timer = ++count + "___(" + this.id +").present()";
+    //~ console.time(timer);
 
     mode = mode || "view";
 
@@ -80,6 +85,10 @@ veda.Module(function (veda) { "use strict";
         return templatePromise;
       }
     })
+    //~ .then(function (template) {
+      //~ console.timeEnd(timer);
+      //~ return template;
+    //~ })
     .catch(function (error) {
       console.log("Presenter error", error);
     });
