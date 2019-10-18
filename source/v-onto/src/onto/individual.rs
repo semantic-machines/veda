@@ -148,16 +148,17 @@ impl Individual {
         for _ in 0..2 {
             match self.obj.resources.get(predicate) {
                 Some(v) => {
-                    return Some(v
-                        .iter()
-                        .map(|el| {
-                            if let Value::Str(s, _l) = &el.value {
-                                s.to_string()
-                            } else {
-                                "".to_string()
-                            }
-                        })
-                        .collect::<Vec<String>>());
+                    return Some(
+                        v.iter()
+                            .map(|el| {
+                                if let Value::Str(s, _l) = &el.value {
+                                    s.to_string()
+                                } else {
+                                    "".to_string()
+                                }
+                            })
+                            .collect::<Vec<String>>(),
+                    );
                 }
                 None => {
                     if self.raw.cur < self.raw.data.len() as u64 {

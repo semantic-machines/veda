@@ -7,7 +7,7 @@ pub enum Value {
     Bool(bool),
     Num(i64, i64),
     Binary(Vec<u8>),
-    Datetime(i64)
+    Datetime(i64),
 }
 
 #[derive(Debug, PartialEq)]
