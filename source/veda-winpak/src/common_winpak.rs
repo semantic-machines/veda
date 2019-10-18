@@ -1,4 +1,4 @@
-use chrono::{NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 use futures::Future;
 use std::ops::Add;
 use tiberius::{BoxableIo, Error, Transaction};
@@ -56,12 +56,14 @@ const INSERT_CARD: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[Card]
 (AccountID,TimeStamp,UserID,NodeId,Deleted,UserPriority,CardNumber,Issue,CardHolderID,AccessLevelID,ActivationDate,ExpirationDate,NoOfUsesLeft,CMDFileID,
 CardStatus,Display,BackDrop1ID,BackDrop2ID,ActionGroupID,LastReaderHID,PrintStatus,SpareW1,SpareW2,SpareW3,SpareW4,SpareDW1,SpareDW2,SpareDW3,SpareDW4)
-VALUES (1,@P1,0,0,0,0,@P2,0,(SELECT SCOPE_IDENTITY()),-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
+VALUES (1,@P1,0,0,0,0,@P2,0,@P5,-1,@P3,@P4,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0)";
 
 pub fn insert_card<I: BoxableIo + 'static>(
+    now: NaiveDateTime,
     card_number: String,
     date_from: Option<i64>,
     date_to: Option<i64>,
+    id: i32,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     Box::new(
@@ -69,10 +71,11 @@ pub fn insert_card<I: BoxableIo + 'static>(
             .exec(
                 INSERT_CARD,
                 &[
-                    &Utc::now().naive_utc(),
+                    &now,
                     &card_number.as_str(),
                     &NaiveDateTime::from_timestamp(date_from.unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
                     &NaiveDateTime::from_timestamp(date_to.unwrap_or_default(), 0).add(Duration::hours(WINPAK_TIMEZONE)),
+                    &id,
                 ],
             )
             .and_then(|(_result, trans)| Ok(trans)),
@@ -82,16 +85,18 @@ pub fn insert_card<I: BoxableIo + 'static>(
 // INSERT CARD HOLDER
 const INSERT_VEHICLE_HOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
-(AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32)
-VALUES(1,@P1,0,0,0,0,@P2,'183','ТРАНСПОРТ',@P3,@P4,'0',@P5,@P6,@P7,@P8,@P9)";
+(AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32,Note24)
+VALUES(1,@P1,0,0,0,0,@P2,'183','ТРАНСПОРТ',@P3,@P4,'0',@P5,@P6,@P7,@P8,@P9,@P10)";
 
 const INSERT_HUMAN_CARDHOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
 (AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
-Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32)
-VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15)";
+Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note24)
+VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15,@P16)";
 
 pub fn insert_card_holder<I: BoxableIo + 'static>(
+    id: &str,
+    now: NaiveDateTime,
     is_vehicle: bool,
     is_human: bool,
     module: &mut Module,
@@ -109,7 +114,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                 .exec(
                     INSERT_VEHICLE_HOLDER,
                     &[
-                        &Utc::now().naive_utc(),
+                        &now,
                         &label.as_str(),
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
@@ -118,6 +123,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
                         &module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(),
                         &card_number.as_str(),
+                        &id,
                     ],
                 )
                 .and_then(|(_result, trans)| Ok(trans)),
@@ -155,7 +161,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                 .exec(
                     INSERT_HUMAN_CARDHOLDER,
                     &[
-                        &Utc::now().naive_utc(),
+                        &now,
                         &first_name.as_str(),
                         &last_name.as_str(),
                         &middle_name.as_str(),
@@ -176,6 +182,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         .to_string()
                         .as_str(),
                         &card_number.as_str(),
+                        &id,
                     ],
                 )
                 .and_then(|(_result, trans)| Ok(trans)),
@@ -238,6 +245,7 @@ VALUES (0,@P1,0,0,0,0,
     @P3,0,0,0,0,0,0,0,0)";
 
 pub fn update_access_level<I: BoxableIo + 'static>(
+    now: NaiveDateTime,
     idx: usize,
     levels: Vec<String>,
     card_number: String,
@@ -246,9 +254,9 @@ pub fn update_access_level<I: BoxableIo + 'static>(
     if idx < levels.len() {
         Box::new(
             transaction
-                .exec(INSERT_ACCESS_LEVEL, &[&Utc::now().naive_utc(), &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
+                .exec(INSERT_ACCESS_LEVEL, &[&now, &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
                 .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_access_level(idx + 1, levels, card_number, trans)),
+                .and_then(move |trans| update_access_level(now, idx + 1, levels, card_number, trans)),
         )
     } else {
         Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
@@ -257,39 +265,61 @@ pub fn update_access_level<I: BoxableIo + 'static>(
 
 // UPDATE EQUIPMENT
 
-pub const LPART_UPD_EQUIPMENT_QUERY: &str = "\
-=@P1
+pub const UPDATE_EQUIPMENT: &str = "\
+UPDATE t1 SET
+    [t1].[Note27] = @P1, [t1].[Note28] = @P2, [t1].[Note29] = @P3, [t1].[Note30] = @P4, [t1].[Note33] = @P5,
+    [t1].[Note34] = @P6, [t1].[Note37] = @P7, [t1].[Note38] = @P8, [t1].[Note39] = @P9, [t1].[Note40] = @P10
 FROM [WIN-PAK PRO].[dbo].[CardHolder] t1
 JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[CardHolderID]=[t1].[RecordId]
-WHERE LTRIM([t2].[CardNumber])=@P2 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
+WHERE LTRIM([t2].[CardNumber])=@P11 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 pub fn update_equipment<I: BoxableIo + 'static>(
-    idx: usize,
-    names: Vec<String>,
     values: Vec<String>,
     card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if idx < values.len() && idx < names.len() {
-        let column_name = names.get(idx).unwrap();
-        let query = "UPDATE t1 SET [t1].[".to_string() + column_name + "]" + LPART_UPD_EQUIPMENT_QUERY;
-        let column_val = if let Some(v) = values.get(idx) {
-            v.as_str()
+    let mut tv: Vec<&str> = Vec::new();
+    for idx in 0..10 {
+        if let Some(s) = values.get(idx) {
+            tv.push(s.as_str());
         } else {
-            ""
-        };
-        //info!("card [{}], update column [{}]=[{}]", card_number.to_owned(), column_name, column_val);
-        //info!("query= {}", query);
-
-        Box::new(
-            transaction
-                .exec(query, &[&column_val, &card_number.as_str()])
-                .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_equipment(idx + 1, names, values, card_number, trans)),
-        )
-    } else {
-        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+            tv.push("");
+        }
     }
+
+    Box::new(
+        transaction
+            .exec(UPDATE_EQUIPMENT, &[&tv[0], &tv[1], &tv[2], &tv[3], &tv[4], &tv[5], &tv[6], &tv[7], &tv[8], &tv[9], &card_number.as_str()])
+            .and_then(|(_result, trans)| Ok(trans)),
+    )
+}
+
+pub const UPDATE_EQUIPMENT_WHERE_ID: &str = "\
+UPDATE t1 SET
+    [t1].[Note27] = @P1, [t1].[Note28] = @P2, [t1].[Note29] = @P3, [t1].[Note30] = @P4, [t1].[Note33] = @P5,
+    [t1].[Note34] = @P6, [t1].[Note37] = @P7, [t1].[Note38] = @P8, [t1].[Note39] = @P9, [t1].[Note40] = @P10
+FROM [WIN-PAK PRO].[dbo].[CardHolder] t1
+   WHERE [RecordID]=@P11";
+
+pub fn update_equipment_where_id<I: BoxableIo + 'static>(
+    values: Vec<String>,
+    id: i32,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    let mut tv: Vec<&str> = Vec::new();
+    for idx in 0..10 {
+        if let Some(s) = values.get(idx) {
+            tv.push(s.as_str());
+        } else {
+            tv.push("");
+        }
+    }
+
+    Box::new(
+        transaction
+            .exec(UPDATE_EQUIPMENT_WHERE_ID, &[&tv[0], &tv[1], &tv[2], &tv[3], &tv[4], &tv[5], &tv[6], &tv[7], &tv[8], &tv[9], &id])
+            .and_then(|(_result, trans)| Ok(trans)),
+    )
 }
 
 pub fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<String>) {
@@ -331,19 +361,4 @@ pub fn get_equipment_list(indv: &mut Individual, list: &mut Vec<String>) {
     if let Some(pass_equipment) = indv.get_first_literal("mnd-s:passEquipment") {
         split_str_for_winpak_db_columns(&pass_equipment, 64, list);
     }
-}
-
-pub fn get_equipment_field_names() -> Vec<String> {
-    vec![
-        "Note27".to_string(),
-        "Note28".to_string(),
-        "Note29".to_string(),
-        "Note30".to_string(),
-        "Note33".to_string(),
-        "Note34".to_string(),
-        "Note37".to_string(),
-        "Note38".to_string(),
-        "Note39".to_string(),
-        "Note40".to_string(),
-    ]
 }

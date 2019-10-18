@@ -1,4 +1,5 @@
 use crate::common_winpak::*;
+use chrono::Utc;
 use futures::Future;
 use tiberius::SqlConnection;
 use tokio::runtime::current_thread;
@@ -89,12 +90,14 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         }
     }
 
+    let now = Utc::now().naive_utc();
+
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
-        .and_then(|trans| update_equipment(0, get_equipment_field_names(), equipment_list, card_number.to_string(), trans))
+        .and_then(|trans| update_equipment(equipment_list, card_number.to_string(), trans))
         .and_then(|trans| update_card_date(date_from, date_to, card_number.to_string(), trans))
         .and_then(|trans| clear_access_level(card_number.to_string(), trans))
-        .and_then(|trans| update_access_level(0, access_levels, card_number.to_string(), trans))
+        .and_then(|trans| update_access_level(now, 0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
     match current_thread::block_on_all(future) {
         Ok(_) => {

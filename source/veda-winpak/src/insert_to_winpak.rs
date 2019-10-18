@@ -1,5 +1,8 @@
 use crate::common_winpak::*;
+use chrono::Utc;
 use futures::Future;
+use futures_state_stream::StateStream;
+use std::cell::Cell;
 use tiberius::SqlConnection;
 use tokio::runtime::current_thread;
 use v_api::*;
@@ -95,22 +98,61 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut access_levels: Vec<String> = Vec::new();
     get_access_level(&mut indv_b, &mut access_levels);
 
-    let future = SqlConnection::connect(conn_str)
-        .and_then(|conn| conn.transaction())
-        .and_then(|trans| update_equipment(0, get_equipment_field_names(), equipment_list, card_number.to_string(), trans))
-        .and_then(|trans| clear_card(card_number.to_string(), trans))
-        .and_then(|trans| insert_card(card_number.to_string(), date_from, date_to, trans))
-        .and_then(|trans| insert_card_holder(is_human, is_vehicle, module, card_number.to_string(), &mut indv_b, trans))
-        .and_then(|trans| clear_access_level(card_number.to_string(), trans))
-        .and_then(|trans| update_access_level(0, access_levels, card_number.to_string(), trans))
-        .and_then(|trans| trans.commit());
-    match current_thread::block_on_all(future) {
-        Ok(_) => {
-            return (ResultCode::Ok, "данные обновлены");
-        }
+    let now = Utc::now().naive_utc();
+    let id = now.format("%Y-%m-%d %H:%M:%S.f").to_string();
+
+    let ftran = SqlConnection::connect(conn_str).and_then(|conn| conn.transaction());
+    let ftran =
+        ftran.and_then(|trans| insert_card_holder(&id, now, is_human, is_vehicle, module, card_number.to_string(), &mut indv_b, trans)).and_then(|trans| trans.commit());
+    match current_thread::block_on_all(ftran) {
+        Ok(_) => {}
         Err(e) => {
             error!("fail execute query, err={:?}", e);
+        }
+    }
+
+    let cardholder_id = Cell::new(0);
+
+    let ftran = SqlConnection::connect(conn_str).and_then(|conn| conn.transaction());
+    let ftran = ftran.and_then(|conn| {
+        conn.query("SELECT [RecordID] FROM [WIN-PAK PRO].[dbo].[CardHolder] WHERE [Note32]=@P1 and [Note24]=@P2", &[&card_number.as_str(), &id.as_str()]).for_each(
+            |row| {
+                if cardholder_id.get() == 0 {
+                    cardholder_id.set(row.get::<_, i32>(0).to_owned());
+                    info!("@2 cardholder_id={:?}", cardholder_id);
+                }
+                Ok(())
+            },
+        )
+    });
+    match current_thread::block_on_all(ftran) {
+        Ok(_) => {}
+        Err(e) => {
+            error!("fail insert CardHolder, err={:?}", e);
             return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+        }
+    }
+
+    if cardholder_id.get() == 0 {
+        error!("ошибка получения id для CardHolder");
+        return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+    } else {
+        let ftran = SqlConnection::connect(conn_str)
+            .and_then(|conn| conn.transaction())
+            .and_then(|trans| update_equipment_where_id(equipment_list, cardholder_id.get(), trans))
+            .and_then(|trans| clear_card(card_number.to_string(), trans))
+            .and_then(|trans| insert_card(now, card_number.to_string(), date_from, date_to, cardholder_id.get(), trans))
+            .and_then(|trans| clear_access_level(card_number.to_string(), trans))
+            .and_then(|trans| update_access_level(now, 0, access_levels, card_number.to_string(), trans))
+            .and_then(|trans| trans.commit());
+        match current_thread::block_on_all(ftran) {
+            Ok(_) => {
+                return (ResultCode::Ok, "данные обновлены");
+            }
+            Err(e) => {
+                error!("fail execute query, err={:?}", e);
+                return (ResultCode::DatabaseModifiedError, "ошибка обновления");
+            }
         }
     }
 }
