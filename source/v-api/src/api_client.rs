@@ -266,7 +266,7 @@ impl APIClient {
         let query = json!({
             "function": cmd.as_string(),
             "ticket": ticket,
-            "individuals": [ indv.obj.as_json() ],
+            "individuals": [ indv.get_obj().as_json() ],
             "assigned_subsystems": 0,
             "event_id" : ""
         });

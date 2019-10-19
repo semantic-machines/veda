@@ -178,12 +178,12 @@ fn send_changes(msg: &mut Individual, soc: &mut Socket, node_id: &str, node_addr
             if to_msgpack(&indv, &mut raw).is_ok() {
                 let mut new_indv = Individual::default();
                 new_indv.set_id(indv.get_id());
-                new_indv.obj.add_uri("uri", indv.get_id());
-                new_indv.obj.add_binary("new_state", raw);
-                new_indv.obj.add_integer("cmd", cmd as i64);
-                new_indv.obj.add_integer("date", date.unwrap_or_default());
-                new_indv.obj.add_string("source_veda", &source_veda.unwrap_or_default(), Lang::NONE);
-                new_indv.obj.add_string("target_veda", &target_veda, Lang::NONE);
+                new_indv.add_uri("uri", indv.get_id());
+                new_indv.add_binary("new_state", raw);
+                new_indv.add_integer("cmd", cmd as i64);
+                new_indv.add_integer("date", date.unwrap_or_default());
+                new_indv.add_string("source_veda", &source_veda.unwrap_or_default(), Lang::NONE);
+                new_indv.add_string("target_veda", &target_veda, Lang::NONE);
 
                 let mut raw1: Vec<u8> = Vec::new();
                 if to_msgpack(&new_indv, &mut raw1).is_ok() {
@@ -253,7 +253,7 @@ pub fn processing_message_contains_changes(recv_msg: Vec<u8>, systicket: &str, m
             let mut indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
             if parse_raw(&mut indv).is_ok() {
                 indv.parse_all();
-                indv.obj.add_uri("sys:source", &source_veda);
+                indv.add_uri("sys:source", &source_veda);
 
                 let res = module.api.update(systicket, cmd, &mut indv);
 
@@ -342,7 +342,7 @@ pub fn create_db_id(module: &mut Module) -> Option<String> {
 
     let mut new_indv = Individual::default();
     new_indv.set_id("cfg:system");
-    new_indv.obj.add_string("sys:id", &uuid1, Lang::NONE);
+    new_indv.add_string("sys:id", &uuid1, Lang::NONE);
 
     let res = module.api.update(&systicket, IndvOp::Put, &mut new_indv);
 
