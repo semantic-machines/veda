@@ -124,10 +124,9 @@ fn get_individual_impl(tarantool: &TarantoolContext) -> io::Result<Vec<u8>> {
         if let Ok(v) = tickets_storage.get_raw(&ticket) {
             let mut ticket_obj = Individual::new_raw(RawObj::new(v));
 
-            if let Ok(uri) = parse_raw(&mut ticket_obj) {
-                ticket_obj.obj.uri = uri;
+            if parse_raw(&mut ticket_obj).is_ok() {
 
-                if let Ok(s) = ticket_obj.get_first_literal("ticket:accessor") {
+                if let Some(s) = ticket_obj.get_first_literal("ticket:accessor") {
                     if let Err(e) = tickets_cache_storage.put(&ticket, &s.clone()) {
                         println!("fail update TICKETS_CACHE, err={:?}", e);
                     }

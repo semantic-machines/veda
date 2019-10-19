@@ -24,12 +24,12 @@ pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
     }
     indv.obj.clear("v-s:errorMessage");
 
-    info!("update from {}, status={:?}, info={}", indv.obj.uri, sync_res, info);
+    info!("update from {}, status={:?}, info={}", indv.get_id(), sync_res, info);
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {
-        error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
+        error!("fail update, uri={}, result_code={:?}", indv.get_id(), res.result);
     } else {
-        info!("success update, uri={}", indv.obj.uri);
+        info!("success update, uri={}", indv.get_id());
     }
     sync_res
 }
@@ -37,7 +37,7 @@ pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
 fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
     if backward_target.is_none() {
-        error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);
+        error!("not found [v-s:backwardTarget] in {}", indv.get_id());
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let backward_target = backward_target.unwrap();
@@ -53,7 +53,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let has_change_kind_for_pass = indv_b.get_literals("mnd-s:hasChangeKindForPass");
     if btype != "mnd-s:Pass" && has_change_kind_for_pass.is_none() {
-        error!("not found [mnd-s:hasChangeKindForPass] in {}", indv_b.obj.uri);
+        error!("not found [mnd-s:hasChangeKindForPass] in {}", indv_b.get_id());
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
 
@@ -61,7 +61,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let wcard_number = indv_b.get_first_literal("mnd-s:cardNumber");
     if wcard_number.is_none() {
-        error!("not found [mnd-s:cardNumber] in {}", indv_b.obj.uri);
+        error!("not found [mnd-s:cardNumber] in {}", indv_b.get_id());
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let card_number = wcard_number.unwrap();

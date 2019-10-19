@@ -11,7 +11,7 @@ pub enum IndividualError {
 }
 
 pub struct IndividualObj {
-    pub uri: String,
+    pub(crate) uri: String,
     pub resources: HashMap<String, Vec<Resource>>,
 }
 
@@ -65,6 +65,14 @@ impl Individual {
             obj: IndividualObj::default(),
             raw,
         }
+    }
+
+    pub fn set_id (&mut self, id: &str) {
+        self.obj.uri = id.to_owned();
+    }
+
+    pub fn get_id (&self) -> &str {
+        &self.obj.uri
     }
 
     pub fn is_exists(&mut self, predicate: &str) -> bool {
