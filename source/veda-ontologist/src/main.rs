@@ -195,7 +195,7 @@ fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
     if parse_raw(qel).is_ok() {
         if let Some(new_state) = qel.get_first_binobj("new_state") {
             let mut indv: Individual = Individual::default();
-            indv.raw = RawObj::new(new_state);
+            indv.set_raw(new_state.as_slice());
 
             if parse_raw(&mut indv).is_ok() {
                 if indv.any_exists("rdf:type", &onto_types) {
