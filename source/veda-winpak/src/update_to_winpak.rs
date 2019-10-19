@@ -14,15 +14,15 @@ pub fn update_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
         return sync_res;
     }
 
-    indv.obj.set_uri("v-s:lastEditor", "cfg:VedaSystem");
+    indv.set_uri("v-s:lastEditor", "cfg:VedaSystem");
 
     if sync_res == ResultCode::Ok {
-        indv.obj.set_uri("v-s:hasStatus", "v-s:StatusAccepted");
+        indv.set_uri("v-s:hasStatus", "v-s:StatusAccepted");
     } else {
-        indv.obj.set_uri("v-s:hasStatus", "v-s:StatusRejected");
-        indv.obj.add_string("v-s:errorMessage", info, Lang::RU);
+        indv.set_uri("v-s:hasStatus", "v-s:StatusRejected");
+        indv.add_string("v-s:errorMessage", info, Lang::RU);
     }
-    indv.obj.clear("v-s:errorMessage");
+    indv.clear("v-s:errorMessage");
 
     info!("update from {}, status={:?}, info={}", indv.get_id(), sync_res, info);
     let res = module.api.update(systicket, IndvOp::Put, indv);

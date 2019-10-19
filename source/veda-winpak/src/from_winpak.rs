@@ -82,38 +82,38 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
     if card_data.0 {
         info!("card_data={:?}", card_data);
 
-        indv.obj.clear("v-s:errorMessage");
+        indv.clear("v-s:errorMessage");
 
         if let Some(v) = card_data.1 {
-            indv.obj.set_datetime("v-s:dateFrom", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+            indv.set_datetime("v-s:dateFrom", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
         }
 
         if let Some(v) = card_data.2 {
-            indv.obj.set_datetime("v-s:dateTo", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+            indv.set_datetime("v-s:dateTo", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
         }
 
         if let Some(v) = card_data.3 {
-            indv.obj.set_integer("mnd-s:winpakCardRecordId", v.into());
+            indv.set_integer("mnd-s:winpakCardRecordId", v.into());
         }
 
         if let Some(s) = card_data.4 {
-            indv.obj.set_string("v-s:description", &s, Lang::NONE);
+            indv.set_string("v-s:description", &s, Lang::NONE);
         }
 
         if let Some(s) = card_data.5 {
-            indv.obj.set_string("v-s:tabNumber", &s, Lang::NONE);
+            indv.set_string("v-s:tabNumber", &s, Lang::NONE);
         }
 
         if let Some(s) = card_data.6 {
-            indv.obj.set_string("v-s:birthday", &s, Lang::NONE);
+            indv.set_string("v-s:birthday", &s, Lang::NONE);
         }
 
         if let Some(s) = card_data.7 {
-            indv.obj.set_string("rdfs:comment", &s, Lang::NONE);
+            indv.set_string("rdfs:comment", &s, Lang::NONE);
         }
 
         if let Some(s) = card_data.8 {
-            indv.obj.set_string("mnd-s:passEquipment", &s, Lang::NONE);
+            indv.set_string("mnd-s:passEquipment", &s, Lang::NONE);
         }
 
         let mut access_level_uris = Vec::new();
@@ -127,25 +127,25 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
                 }
             }
         }
-        indv.obj.set_uris("mnd-s:hasAccessLevel", access_level_uris);
+        indv.set_uris("mnd-s:hasAccessLevel", access_level_uris);
     } else {
         error!("card [{}] not found in winpak database", param1);
 
-        indv.obj.clear("v-s:dateFrom");
-        indv.obj.clear("v-s:dateTo");
-        indv.obj.clear("mnd-s:winpakCardRecordId");
-        indv.obj.clear("v-s:description");
-        indv.obj.clear("v-s:tabNumber");
-        indv.obj.clear("v-s:birthday");
-        indv.obj.clear("rdfs:comment");
-        indv.obj.clear("mnd-s:passEquipment");
-        indv.obj.clear("mnd-s:hasAccessLevel");
+        indv.clear("v-s:dateFrom");
+        indv.clear("v-s:dateTo");
+        indv.clear("mnd-s:winpakCardRecordId");
+        indv.clear("v-s:description");
+        indv.clear("v-s:tabNumber");
+        indv.clear("v-s:birthday");
+        indv.clear("rdfs:comment");
+        indv.clear("mnd-s:passEquipment");
+        indv.clear("mnd-s:hasAccessLevel");
 
-        indv.obj.clear("v-s:errorMessage");
-        indv.obj.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU);
-        indv.obj.add_string("v-s:errorMessage", "Card not found", Lang::EN);
+        indv.clear("v-s:errorMessage");
+        indv.add_string("v-s:errorMessage", "Карта не найдена", Lang::RU);
+        indv.add_string("v-s:errorMessage", "Card not found", Lang::EN);
     }
-    indv.obj.set_uri("v-s:lastEditor", "cfg:VedaSystem");
+    indv.set_uri("v-s:lastEditor", "cfg:VedaSystem");
 
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {

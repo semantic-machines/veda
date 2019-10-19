@@ -170,7 +170,7 @@ fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> 
                 buf.push(',');
             }
 
-            buf.push_str(&el.obj.as_json_str());
+            buf.push_str(&el.get_obj().as_json_str());
         }
         buf.push(']');
 

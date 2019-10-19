@@ -208,19 +208,19 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
 
 fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individual>, new_indv: &mut Individual, hash: Option<String>, path: &str, name: &str) {
     if let Some(h) = hash {
-        new_indv.obj.set_string("v-s:hash", &h, Lang::NONE);
+        new_indv.set_string("v-s:hash", &h, Lang::NONE);
     }
-    new_indv.obj.set_uri("rdf:type", "v-s:TTLFile");
+    new_indv.set_uri("rdf:type", "v-s:TTLFile");
     //    new_indv.obj.set_uri("v-s:created", Resource(DataType.Datetime, Clock.currTime().toUnixTime()));
-    new_indv.obj.set_uri("v-s:filePath", path);
-    new_indv.obj.set_uri("v-s:fileUri", name);
-    new_indv.obj.clear("v-s:resource");
+    new_indv.set_uri("v-s:filePath", path);
+    new_indv.set_uri("v-s:fileUri", name);
+    new_indv.clear("v-s:resource");
 
     for indv in individuals.values_mut() {
-        new_indv.obj.add_uri("v-s:resource", &indv.get_id());
+        new_indv.add_uri("v-s:resource", &indv.get_id());
 
         if !indv.is_exists("rdfs:isDefinedBy") {
-            indv.obj.set_uri("rdfs:isDefinedBy", onto_id);
+            indv.set_uri("rdfs:isDefinedBy", onto_id);
         }
     }
 }
@@ -274,40 +274,40 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
             //info!("[{:?}]", predicate);
             match t.object {
                 BlankNode(n) => error!("BlankNode {}", n.id),
-                NamedNode(n) => indv.obj.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces2id)),
+                NamedNode(n) => indv.add_uri(&predicate, &to_prefix_form(n.iri, &namespaces2id)),
 
                 Literal(l) => match l {
                     Simple {
                         value,
-                    } => indv.obj.add_string(&predicate, value, Lang::NONE),
+                    } => indv.add_string(&predicate, value, Lang::NONE),
                     LanguageTaggedString {
                         value,
                         language,
-                    } => indv.obj.add_string(&predicate, value, Lang::from_str(language)),
+                    } => indv.add_string(&predicate, value, Lang::from_str(language)),
                     Typed {
                         value,
                         datatype,
                     } => match datatype.iri {
                         "http://www.w3.org/2001/XMLSchema#string" => {
-                            indv.obj.add_string(&predicate, value, Lang::NONE);
+                            indv.add_string(&predicate, value, Lang::NONE);
                         }
                         "http://www.w3.org/2001/XMLSchema#nonNegativeInteger" => {
                             if let Ok(v) = value.parse::<i64>() {
-                                indv.obj.add_integer(&predicate, v);
+                                indv.add_integer(&predicate, v);
                             } else {
                                 error!("fail parse [{}] to integer", value);
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#integer" => {
                             if let Ok(v) = value.trim().parse::<i64>() {
-                                indv.obj.add_integer(&predicate, v);
+                                indv.add_integer(&predicate, v);
                             } else {
                                 error!("fail parse [{}] to integer", value);
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#boolean" => {
                             if let Ok(v) = value.parse::<bool>() {
-                                indv.obj.add_bool(&predicate, v);
+                                indv.add_bool(&predicate, v);
                             } else {
                                 error!("fail parse [{}] to bool", value);
                             }
@@ -317,7 +317,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                             if let Ok(v) = qq {
                                 let exp = v.scale() as i32 * -1;
                                 if let Ok(m) = value.replace('.', "").parse::<i64>() {
-                                    indv.obj.add_decimal_d(&predicate, m, exp as i64);
+                                    indv.add_decimal_d(&predicate, m, exp as i64);
                                     //                                    info!("{}{}", m, exp);
                                 }
                             } else {
@@ -327,7 +327,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                         "http://www.w3.org/2001/XMLSchema#dateTime" => {
                             if value.contains('Z') {
                                 if let Ok(v) = DateTime::parse_from_rfc3339(&value) {
-                                    indv.obj.add_datetime(&predicate, v.timestamp());
+                                    indv.add_datetime(&predicate, v.timestamp());
                                 } else {
                                     error!("fail parse [{}] to datetime", value);
                                 }
@@ -341,9 +341,9 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
 
                                 if let Ok(v) = ndt {
                                     if let Single(offset) = Local.offset_from_local_datetime(&v) {
-                                        indv.obj.add_datetime(&predicate, v.sub(offset).timestamp());
+                                        indv.add_datetime(&predicate, v.sub(offset).timestamp());
                                     } else {
-                                        indv.obj.add_datetime(&predicate, v.timestamp());
+                                        indv.add_datetime(&predicate, v.timestamp());
                                     }
                                 } else {
                                     error!("fail parse [{}] to datetime", value);
@@ -379,7 +379,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                 }
 
                 if let Some(s) = id2orignamespaces.get(indv.get_id()) {
-                    indv.obj.set_string("v-s:fullUrl", &s, Lang::NONE);
+                    indv.set_string("v-s:fullUrl", &s, Lang::NONE);
                 }
 
                 if let Some(s) = id2namespaces.get(indv.get_id()) {
