@@ -38,7 +38,7 @@ impl Storage for TTStorage {
         let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 
         if let Ok(v) = self.rt.block_on(resp) {
-            iraw.raw.data = v[5..].to_vec();
+            iraw.set_raw(&v[5..]);
 
             if parse_raw(iraw).is_ok() {
                 return true;

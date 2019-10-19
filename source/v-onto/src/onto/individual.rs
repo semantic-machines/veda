@@ -47,7 +47,7 @@ impl RawObj {
 
 pub struct Individual {
     pub obj: IndividualObj,
-    pub raw: RawObj,
+    pub(crate) raw: RawObj,
 }
 
 impl Default for Individual {
@@ -65,6 +65,14 @@ impl Individual {
             obj: IndividualObj::default(),
             raw,
         }
+    }
+
+    pub fn set_raw(&mut self, data: &[u8]) {
+        self.raw.data = data.to_vec();
+    }
+
+    pub fn get_raw_len(&self) -> usize{
+        self.raw.data.len()
     }
 
     pub fn set_id (&mut self, id: &str) {

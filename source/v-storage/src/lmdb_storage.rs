@@ -57,14 +57,14 @@ impl Storage for LMDBStorage {
                             Ok(txn) => {
                                 let db = txn.bind(&handle);
 
-                                match db.get::<Vec<u8>>(&uri) {
+                                match db.get::<&[u8]>(&uri) {
                                     Ok(val) => {
-                                        iraw.raw.data = val;
+                                        iraw.set_raw(val);
 
                                         if parse_raw(iraw).is_ok() {
                                             return true;
                                         } else {
-                                            error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
+                                            error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.get_raw_len(), uri);
                                             return false;
                                         }
                                     }
@@ -121,14 +121,14 @@ impl Storage for LMDBStorage {
                             Ok(txn) => {
                                 let db = txn.bind(&handle);
 
-                                match db.get::<Vec<u8>>(&uri) {
+                                match db.get::<&[u8]>(&uri) {
                                     Ok(val) => {
-                                        iraw.raw.data = val;
+                                        iraw.set_raw(val);
 
                                         if parse_raw(iraw).is_ok() {
                                             return true;
                                         } else {
-                                            error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.raw.data.len(), uri);
+                                            error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.get_raw_len(), uri);
                                             return false;
                                         }
                                     }
