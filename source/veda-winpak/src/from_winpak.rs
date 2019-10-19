@@ -14,7 +14,7 @@ use v_onto::individual::*;
 pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &str, indv: &mut Individual) -> ResultCode {
     let card_number = indv.get_first_literal(CARD_NUMBER_FIELD_NAME);
     if card_number.is_none() {
-        error!("fail read {}.{}", CARD_NUMBER_FIELD_NAME, indv.obj.uri);
+        error!("fail read {}.{}", CARD_NUMBER_FIELD_NAME, indv.get_id());
         return ResultCode::UnprocessableEntity;
     }
     let param1 = card_number.unwrap_or_default();
@@ -122,7 +122,7 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
             if module.storage.get_individual(&("d:winpak_accesslevel_".to_string() + &level.to_string()), &mut indv) {
                 if let Some(v) = indv.get_first_literal("v-s:registrationNumber") {
                     if level.to_string() == v {
-                        access_level_uris.push(indv.obj.uri);
+                        access_level_uris.push(indv.get_id().to_owned());
                     }
                 }
             }
@@ -149,10 +149,10 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
 
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {
-        error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
+        error!("fail update, uri={}, result_code={:?}", indv.get_id(), res.result);
         return ResultCode::DatabaseModifiedError;
     } else {
-        info!("success update, uri={}", indv.obj.uri);
+        info!("success update, uri={}", indv.get_id());
         return ResultCode::Ok;
     }
 }

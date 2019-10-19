@@ -199,12 +199,12 @@ fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
 
             if parse_raw(&mut indv).is_ok() {
                 if indv.any_exists("rdf:type", &onto_types) {
-                    info!("found onto changes from storage: uri={}", &indv.obj.uri);
+                    info!("found onto changes from storage: uri={}", indv.get_id());
                     return true;
                 }
             }
         } else {
-            warn!("not found field [new_state], id={}", qel.obj.uri);
+            warn!("not found field [new_state], id={}", qel.get_id());
         }
     }
     false

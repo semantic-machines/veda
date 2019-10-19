@@ -187,7 +187,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
             storage.get_individual(&msg, &mut indv);
             let out_counter = indv.get_first_integer("v-s:updateCounter").unwrap_or_default();
 
-            info!("main: {:?}->{}", indv.obj.uri, out_counter);
+            info!("main: {:?}->{}", indv.get_id(), out_counter);
 
             if let Err(e) = sender.send((out_counter, msg_id)) {
                 error!("NOT SEND RESPONSE, err={}", e);
