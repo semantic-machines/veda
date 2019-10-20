@@ -183,9 +183,9 @@ veda.Module(function (veda) { "use strict";
       riot.route(location.hash);
     })
 
-    .catch( function (err) {
+    .catch( function (error) {
       var notify = new veda.Notify();
-      notify("danger", err);
+      notify("danger", error);
     });
 
   });
@@ -263,35 +263,34 @@ veda.Module(function (veda) { "use strict";
 
   });
 
-  // Service workers
+  // Service worker
   if ("serviceWorker" in navigator) {
 
-    // Install service worker
+    // Install SW
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(function(worker) {
       console.log("Service worker registered:", worker.scope);
     }).catch(function(error) {
-      // регистрация прошла неудачно
       console.log("Registration failed with " + error);
     });
 
     // On/off-line handler
     var lineHandler = function () {
-      var offlineNote = document.getElementById("offline-note");
-      if (navigator.onLine) {
-        offlineNote.style.display = "none";
-        navigator.serviceWorker.controller.postMessage("online");
-      } else {
-        offlineNote.style.display = "block";
-        navigator.serviceWorker.controller.postMessage("offline");
+      try {
+        var offlineNote = document.getElementById("offline-note");
+        if (navigator.onLine) {
+          offlineNote.style.display = "none";
+          navigator.serviceWorker.controller.postMessage("online");
+        } else {
+          offlineNote.style.display = "block";
+          navigator.serviceWorker.controller.postMessage("offline");
+        }
+      } catch (error) {
+        console.log("No SW registered yet");
       }
     }
     window.addEventListener("online", lineHandler);
     window.addEventListener("offline", lineHandler);
-    try {
-      lineHandler();
-    } catch (err) {
-      console.log("No SW registered yet");
-    }
+    lineHandler();
 
     //~ veda.on("started", function () {
       //~ navigator.serviceWorker.controller.postMessage({
