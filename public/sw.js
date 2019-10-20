@@ -81,9 +81,17 @@ var api_fns = {
   'put_individuals':'{"op_id":0,"result":200}'
 };
 
+function handleError(response) {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
+}
+
 function handleAPI(event) {
   var cloneRequest = event.request.method !== "GET" && event.request.clone() ;
   return fetch(event.request)
+    .then(handleError)
     .then(function(response) {
       if (event.request.method === "GET") {
         return caches.open( API ).then(function(cache) {
