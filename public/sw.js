@@ -86,7 +86,7 @@ var api_fns = {
 
 function handleError(response) {
   if (!response.ok) {
-    throw Error(response.statusText);
+    throw response;
   }
   return response;
 }
@@ -175,10 +175,11 @@ function flushQueue() {
             return fetch(request);
           });
         }, Promise.resolve()).then(function () {
-          return db.remove("offline-queue");
+          db.remove("offline-queue");
+          return queue.length;
         });
       } else {
-        return Promise.resolve();
+        return Promise.resolve(0);
       }
     });
   });
@@ -186,26 +187,11 @@ function flushQueue() {
 this.addEventListener("message", function (event) {
   if (event.data === "online") {
     console.log("Window said 'online', flushing queue");
-    flushQueue().then(function () {
-      console.log("Done, queue flushed");
+    flushQueue().then(function (queue_length) {
+      console.log("Done, queue flushed", queue_length);
     });
-  } else if (typeof event.data === "object") {
-    auth = event.data;
   }
 });
-
-var auth;
-
-function checkTicket () {
-  return fetch("is_ticket_valid?ticket=" + auth.ticket)
-    .then(function(response) {
-      return response.json();
-    })
-    .then(function(myJson) {
-      console.log(JSON.stringify(myJson));
-    });
-}
-
 
 // indexedDB for non-GET requests
 var db_name = "veda-sw";

@@ -368,6 +368,9 @@ veda.Module(function (veda) { "use strict";
               {type: "String", data: "Server disconnected. This object is not available now.", lang: "EN"}
             ]
           };
+          veda.one("online", function () {
+            self.reset();
+          });
         } else {
           self.isNew(false);
           self.isSync(false);
@@ -378,7 +381,6 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
           };
         }
-        veda.cache.remove(self.id);
         self.trigger("afterLoad", self);
         return self;
       });
