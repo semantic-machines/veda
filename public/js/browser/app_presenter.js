@@ -274,23 +274,32 @@ veda.Module(function (veda) { "use strict";
     });
 
     // On/off-line handler
-    var lineHandler = function () {
-      try {
-        var offlineNote = document.getElementById("offline-note");
-        if (navigator.onLine) {
-          offlineNote.style.display = "none";
-          navigator.serviceWorker.controller.postMessage("online");
-        } else {
-          offlineNote.style.display = "block";
-          navigator.serviceWorker.controller.postMessage("offline");
-        }
-      } catch (error) {
-        console.log("No SW registered yet");
+    var checkStatus = function (status) {
+      var serverStatus = document.getElementById("server-status");
+      if (navigator.onLine && typeof status === "undefined") {
+        veda.Backend.check().then(function () {
+          serverStatus.classList.add("online");
+          serverStatus.classList.remove("offline");
+          if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
+        }).catch(function () {
+          serverStatus.classList.remove("online");
+          serverStatus.classList.add("offline");
+          if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
+        });
+      } else if (navigator.onLine && status) {
+        serverStatus.classList.add("online");
+        serverStatus.classList.remove("offline");
+        if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
+      } else {
+        serverStatus.classList.remove("online");
+        serverStatus.classList.add("offline");
+        if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
       }
     }
-    window.addEventListener("online", lineHandler);
-    window.addEventListener("offline", lineHandler);
-    lineHandler();
+    window.addEventListener("online", checkStatus);
+    window.addEventListener("offline", checkStatus);
+    veda.on("status", checkStatus);
+    checkStatus();
 
     //~ veda.on("started", function () {
       //~ navigator.serviceWorker.controller.postMessage({
