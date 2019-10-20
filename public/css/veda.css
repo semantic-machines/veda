@@ -1481,3 +1481,13 @@ svg.process-path-highlight path
   text-align: right;
   font-weight: bold;
 }
+#server-status {
+  font-size: 0.7em;
+  margin: 0.7em auto -0.7em;
+}
+#server-status.online > .offline {
+  display: none;
+}
+#server-status.offline > .online {
+  display: none;
+}

@@ -6,22 +6,36 @@ veda.Module(function Backend(veda) { "use strict";
   veda.Backend = {};
 
   // Check server health
+  veda.Backend.check = function check() {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        if (this.status == 200) {
+          resolve(this);
+        } else {
+          reject(this);
+        }
+      };
+      xhr.onerror = reject;
+      xhr.open('GET', 'ping');
+      xhr.send();
+    });
+  };
   var notify = veda.Notify ? new veda.Notify() : function () {};
   var interval;
   function serverWatch() {
     if (interval) { return; }
     var duration = 10000;
-    notify("danger", {name: "Connection error"});
+    veda.trigger("status", false);
     interval = setInterval(function () {
-      veda.Backend.reset_individual(veda.ticket, "cfg:OntoVsn")
-        .then(function () {
-          clearInterval(interval);
-          interval = undefined;
-          notify("success", {name: "Connection restored"});
-        })
-        .catch(function (error) {
-          notify("danger", {name: "Connection error"});
+      if (navigator.onLine) {
+        veda.Backend.check().then(function () {
+          interval = clearInterval(interval);
+          veda.trigger("status", true);
+        }).catch(function () {
+          veda.trigger("status", false);
         });
+      }
     }, duration);
   }
 
@@ -146,6 +160,15 @@ veda.Module(function Backend(veda) { "use strict";
       }
     }
   }
+
+  veda.Backend.ping = function ping() {
+    var params = {
+      method: "GET",
+      url: "ping",
+      async: true
+    };
+    return call_server(params);
+  };
 
   veda.Backend.get_rights = function get_rights(ticket, uri) {
     var arg = arguments[0];
