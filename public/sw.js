@@ -66,8 +66,7 @@ var api_fns = {
   'get_rights':'{"@":"_","rdf:type":[{"data":"v-s:PermissionStatement","type":"Uri"}],"v-s:canCreate":[{"data":true,"type":"Boolean"}],"v-s:canDelete":[{"data":false,"type":"Boolean"}],"v-s:canRead":[{"data":true,"type":"Boolean"}],"v-s:canUpdate":[{"data":true,"type":"Boolean"}]}',
   'get_rights_origin':'',
   'get_membership':'{"@":"_","rdf:type":[{"data":"v-s:Membership","type":"Uri"}],"v-s:memberOf":[{"data":"v-s:AllResourcesGroup","type":"Uri"}]}',
-  'get_individual':'{"@": "$$$","rdf:type":[{"type":"Uri","data": "rdfs:Resource"}],"rdfs:label": [{"type": "String", "data": "Вы работаете офлайн. Этот объект сейчас недоступен.", "lang": "RU"},{"type": "String", "data": "You are offline. This object is not available now.", "lang": "EN"}]}',
-  'reset_individual':'{"@": "$$$","rdf:type":[{"type":"Uri","data": "rdfs:Resource"}],"rdfs:label": [{"type": "String", "data": "Вы работаете офлайн. Этот объект сейчас недоступен.", "lang": "RU"},{"type": "String", "data": "You are offline. This object is not available now.", "lang": "EN"}]}',
+  //'get_individual':'{"@":"_","rdf:type":[{"type":"Uri","data": "rdfs:Resource"}],"rdfs:label": [{"type": "String", "data": "Нет связи с сервером. Этот объект сейчас недоступен.", "lang": "RU"},{"type": "String", "data": "Server disconnected. This object is not available now.", "lang": "EN"}]}',
 
   // POST
   'query':'{"result":[],"count":0,"estimated":0,"processed":0,"cursor":0,"result_code":200}',
@@ -83,20 +82,9 @@ var api_fns = {
 };
 
 function handleAPI(event) {
-  var fn;
-  var url = new URL(event.request.url);
-  fn = url.pathname.split("/")[1];
-
-  var cloneRequest = event.request.method === "GET" ? undefined : event.request.clone();
-  return new Promise(function (resolve, reject) {
-    if (navigator.onLine) {
-      resolve(flushQueue());
-    } else {
-      reject();
-    }
-  })
-  .then(function () {
-    return fetch(event.request).then(function(response) {
+  var cloneRequest = event.request.method !== "GET" && event.request.clone() ;
+  return fetch(event.request)
+    .then(function(response) {
       if (event.request.method === "GET") {
         return caches.open( API ).then(function(cache) {
           cache.put(event.request, response.clone());
@@ -115,36 +103,40 @@ function handleAPI(event) {
       } else {
         return response;
       }
-    });
-  })
-  .catch(function (err) {
-    if (event.request.method === "GET") {
-      return caches.match(event.request).then(function (match) {
-        if (match) {
-          return match;
-        } else {
-          return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
-        }
-      });
-    } else if (event.request.method === "POST") {
-      return serialize(cloneRequest).then(function (request) {
-        request = JSON.stringify(request);
-        var db = new LocalDB();
-        return db.then(function (db) {
-          return db.get(request).then(deserialize);
-        }).catch(function (err) {
+    })
+    .catch(function (error) {
+      var url = new URL(event.request.url);
+      var fn = url.pathname.split("/")[2];
+
+      if (event.request.method === "GET") {
+        return caches.match(event.request).then(function (match) {
+          if (match) {
+            return match;
+          } else if (fn === "get_individual") {
+            return error;
+          } else {
+            return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
+          }
+        });
+      } else if (event.request.method === "POST") {
+        return serialize(cloneRequest).then(function (request) {
+          request = JSON.stringify(request);
+          var db = new LocalDB();
+          return db.then(function (db) {
+            return db.get(request).then(deserialize);
+          }).catch(function (error) {
+            return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
+          });
+        });
+      } else if (event.request.method === "PUT") {
+        return enqueueRequest(cloneRequest).then(function (queue) {
+          console.log("Offline operation added to queue, queue length = ", queue.length);
           return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
         });
-      });
-    } else if (event.request.method === "PUT") {
-      return enqueueRequest(cloneRequest).then(function (queue) {
-        console.log("Offline operation added to queue, queue length = ", queue.length);
-        return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
-      });
-    } else {
-      return err;
-    }
-  });
+      } else {
+        return error;
+      }
+    });
 }
 
 // Offline PUT queue

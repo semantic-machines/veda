@@ -71,24 +71,11 @@ veda.Module(function Backend(veda) { "use strict";
     if (result.status === 470 || result.status === 471) {
       veda.trigger("login:failed");
     }
-    //~ if (result.status === 0) {
-      //~ var xhr = new XMLHttpRequest();
-      //~ xhr.onload = function (event) {
-        //~ document.open();
-        //~ document.write(this.response);
-        //~ document.close();
-      //~ };
-      //~ xhr.open("GET", "./offline.html", true);
-      //~ xhr.timeout = 120000;
-      //~ xhr.send();
-    //~ }
   }
   BackendError.prototype = Object.create(Error.prototype);
   BackendError.prototype.constructor = BackendError;
 
-
   // Common server call function
-
   function call_server(params) {
     var method = params.method,
         url = params.url,
