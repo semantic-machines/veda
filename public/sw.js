@@ -18,8 +18,11 @@ this.addEventListener("activate", function(event) {
 
 this.addEventListener("fetch", function(event) {
   var url = new URL(event.request.url);
-  var type = url.pathname.indexOf("/api") === 0 ? "API" : url.pathname.indexOf("/files") === 0 ? "FILES" : "STATIC";
+  var type = url.pathname.indexOf("/ping") === 0 ? "PING" : url.pathname.indexOf("/api") === 0 ? "API" : url.pathname.indexOf("/files") === 0 ? "FILES" : "STATIC";
   switch (type) {
+    case "PING":
+      event.respondWith(fetch(event.request));
+      break;
     case "STATIC":
       event.respondWith(handleSTATIC(event));
       break;
