@@ -294,6 +294,11 @@ func main() {
         sendToModule(ctx)
       case "/api/get_operation_state":
         getOperationState(ctx)
+      case "/ping":
+        ctx.Response.Header.Set("Content-Type", "text/plain; charset=utf-8")
+        ctx.Response.Header.Set("Cache-Control", "no-store")
+        ctx.Response.SetStatusCode(int(Ok))
+        ctx.WriteString("pong")
       case "/tests":
         ctx.SendFile("public/tests.html")
       case "/ontology.json":
