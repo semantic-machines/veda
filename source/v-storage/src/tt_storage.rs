@@ -50,4 +50,8 @@ impl Storage for TTStorage {
 
         false
     }
+
+    fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
+        false
+    }
 }

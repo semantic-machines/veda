@@ -14,7 +14,7 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
 use v_onto::individual::*;
-use v_storage::storage::VStorage;
+use v_storage::storage::{VStorage, StorageMode};
 
 mod server;
 use crate::server::CMessage;
@@ -175,7 +175,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
     let mut storage = if !tarantool_addr.is_empty() {
         VStorage::new_tt(tarantool_addr, "veda6", "123456")
     } else {
-        VStorage::new_lmdb("./data")
+        VStorage::new_lmdb("./data", StorageMode::ReadOnly)
     };
 
     loop {
