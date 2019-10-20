@@ -26,14 +26,14 @@ veda.Module(function Backend(veda) { "use strict";
   function serverWatch() {
     if (interval) { return; }
     var duration = 10000;
-    veda.trigger("status", false);
+    veda.trigger("offline");
     interval = setInterval(function () {
       if (navigator.onLine) {
         veda.Backend.check().then(function () {
           interval = clearInterval(interval);
-          veda.trigger("status", true);
+          veda.trigger("online");
         }).catch(function () {
-          veda.trigger("status", false);
+          veda.trigger("offline");
         });
       }
     }, duration);

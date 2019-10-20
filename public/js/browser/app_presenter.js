@@ -274,40 +274,32 @@ veda.Module(function (veda) { "use strict";
     });
 
     // On/off-line handler
-    var checkStatus = function (status) {
-      var serverStatus = document.getElementById("server-status");
-      if (navigator.onLine && typeof status === "undefined") {
+    var lineHandler = function (status) {
+      var lineStatus = document.getElementById("line-status");
+      if ( navigator.onLine && (typeof status === "undefined" || status instanceof Event) ) {
         veda.Backend.check().then(function () {
-          serverStatus.classList.add("online");
-          serverStatus.classList.remove("offline");
+          lineStatus.classList.add("online");
+          lineStatus.classList.remove("offline");
           if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
         }).catch(function () {
-          serverStatus.classList.remove("online");
-          serverStatus.classList.add("offline");
+          lineStatus.classList.remove("online");
+          lineStatus.classList.add("offline");
           if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
         });
-      } else if (navigator.onLine && status) {
-        serverStatus.classList.add("online");
-        serverStatus.classList.remove("offline");
+      } else if ( navigator.onLine && status === "online" ) {
+        lineStatus.classList.add("online");
+        lineStatus.classList.remove("offline");
         if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
       } else {
-        serverStatus.classList.remove("online");
-        serverStatus.classList.add("offline");
+        lineStatus.classList.remove("online");
+        lineStatus.classList.add("offline");
         if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
       }
     }
-    window.addEventListener("online", checkStatus);
-    window.addEventListener("offline", checkStatus);
-    veda.on("status", checkStatus);
-    checkStatus();
-
-    //~ veda.on("started", function () {
-      //~ navigator.serviceWorker.controller.postMessage({
-        //~ end_time: localStorage.end_time,
-        //~ ticket: localStorage.ticket,
-        //~ user_uri: localStorage.user_uri
-      //~ });
-    //~ });
+    window.addEventListener("online", lineHandler);
+    window.addEventListener("offline", lineHandler);
+    veda.on("online offline", lineHandler);
+    lineHandler();
 
     // Install application prompt
     var showAddToHomeScreen = function () {
