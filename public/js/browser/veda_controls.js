@@ -100,6 +100,7 @@
     return input;
   };
   veda_literal_input.defaults = {
+    template: $("#string-control-template").html(),
     parser: function (input) {
       return (input || null);
     }
@@ -217,50 +218,48 @@
   // WorkTime control
   $.fn.veda_worktime = function( options ) {
     var opts = $.extend( {}, $.fn.veda_worktime.defaults, options ),
-      control = veda_literal_input.call(this, opts);
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-      if (e.type === "search") {
-        control.isSingle = false;
-      }
-    });
-    var mainInput=$("input.form-control", control);
-    var pseudoInputs=$("div.input-group>input", control).addClass("form-control");
-    var summaryText=$("#worktime-summary-text", control).addClass("form-control");
-    feelPseudoInput(mainInput.val());
-    pseudoInputs.change(feelMainInput);
-    function feelMainInput(){
-      var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
+        mainInput = veda_literal_input.call(this, opts);
+
+    this.append( mainInput.hide() );
+    this.append( $("#worktime-control-template").html() );
+
+    var pseudoInputs = $("div.input-group>input", this);
+    var summaryText = $("#worktime-summary-text", this);
+    fillPseudoInput(mainInput.val());
+    pseudoInputs.change(fillMainInput);
+    function fillMainInput() {
+      var count = pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
       mainInput.val(count);
       summaryText.text(veda.Util.formatValue(count));
       mainInput.change();
     }
-    function feelPseudoInput(summaryTime){
+    function fillPseudoInput(summaryTime) {
       if (summaryTime) {
         summaryText.text(summaryTime);
         summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );
-        var days=0, hours=0, minutes=0;
-        if (summaryTime!=0){
-          days=Math.floor(summaryTime/480);
-          summaryTime=summaryTime-days*480;
-          if (summaryTime!=0){
-            hours=Math.floor(summaryTime/60);
-            summaryTime=summaryTime-hours*60;
-            if (summaryTime!=0){
-              minutes=summaryTime;
+        var days = 0, hours = 0, minutes = 0;
+        if (summaryTime != 0){
+          days = Math.floor(summaryTime/480);
+          summaryTime = summaryTime-days*480;
+          if (summaryTime != 0){
+            hours = Math.floor(summaryTime/60);
+            summaryTime = summaryTime-hours*60;
+            if (summaryTime != 0){
+              minutes = summaryTime;
             }
           }
         }
-        pseudoInputs[0].value=days;
-        pseudoInputs[1].value=hours;
-        pseudoInputs[2].value=minutes;
+        pseudoInputs[0].value = days;
+        pseudoInputs[1].value = hours;
+        pseudoInputs[2].value = minutes;
       }
     }
-    this.append(control);
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
     return this;
   };
   $.fn.veda_worktime.defaults = {
-    template: $("#worktime-control-template").html(),
     parser: function (input) {
       var int = parseInt( input.split(" ").join("").split(",").join("."), 10 );
       return !isNaN(int) ? int : null;
