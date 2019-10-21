@@ -17,6 +17,7 @@ pub enum StorageMode {
 pub enum StorageId {
     Individuals,
     Tickets,
+    Az,
 }
 
 pub(crate) enum EStorage {
