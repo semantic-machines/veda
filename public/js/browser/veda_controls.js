@@ -721,6 +721,278 @@
     template: $("#boolean-control-template").html(),
   };
 
+  // ACTOR CONTROL
+  $.fn.veda_actor = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_actor.defaults, options ),
+      control = $( opts.template ),
+      individual = opts.individual,
+      rel_uri = opts.property_uri,
+      spec = opts.spec,
+      placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
+      template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
+      queryPrefix,
+      sort = this.attr("data-sort") || "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
+      actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
+      deleted,
+      chosenActorType;
+
+    //~ // Disable closing actor type dropdown on click
+    $(".dropdown-menu", control).click(function (e) {
+      e.stopPropagation();
+      //~ setTimeout(function () {
+        //~ $(".input-group", control).removeClass("open");
+        //~ $(".dropdown-toggle", control).attr("aria-expanded", false);
+      //~ }, 100);
+    });
+
+    // Filter allowed actor types, set label & handler
+    $("[name='actor-type']", control).filter(function () {
+      if (actorType.indexOf(this.value) < 0) {
+        $(this).closest(".radio").remove();
+        return false;
+      } else {
+        $(this).parent().append( new veda.IndividualModel(this.value).toString() );
+        return true;
+      }
+    }).change(function () {
+      if ( $(this).is(":checked") ) {
+        chosenActorType = this.value;
+        queryPrefix = ["'rdf:type'==='" + chosenActorType + "'"].join(" && ");
+        var ftValue = $(".fulltext", control).val();
+        if (ftValue) {
+          performSearch(undefined, ftValue);
+        }
+      }
+    }).first().prop("checked", "checked").change();
+
+    // Deleted check label & handler
+    $("[name='actor-deleted']", control).each(function () {
+      $(this).parent().append( new veda.IndividualModel(this.value).toString() );
+    }).change(function () {
+      deleted = $(this).is(":checked") ? true : false;
+      var ftValue = $(".fulltext", control).val();
+      if (ftValue) {
+        performSearch(undefined, ftValue);
+      }
+    });
+
+    // Fulltext search feature
+    var fulltext = $(".fulltext", control);
+    var fulltextMenu = $(".fulltext-menu", control);
+
+    $(".clear", control).click(function () {
+      individual.clearValue(rel_uri);
+      individual.clearValue(rel_uri + ".v-s:employee");
+      individual.clearValue(rel_uri + ".v-s:occupation");
+      $(".fulltext", control).val("");
+    });
+
+    if (placeholder instanceof veda.IndividualModel) {
+      placeholder.load().then(function (placeholder) {
+        fulltext.attr({
+          "placeholder": placeholder.toString(),
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+        });
+      });
+    } else {
+      fulltext.attr({
+        "placeholder": placeholder,
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+      });
+    }
+
+    autosize(fulltext);
+    this.on("edit", function () {
+      autosize.update(fulltext);
+    });
+    this.one("remove", function () {
+      autosize.destroy(fulltext);
+    });
+
+    var keyupHandler = (function () {
+      var timeout;
+      var minLength = 3;
+      return function (e) {
+        if (timeout) { clearTimeout(timeout); }
+        var value = e.target.value;
+        if (value.length >= minLength) {
+          timeout = setTimeout(performSearch, 750, e, value);
+        } else if (!value.length) {
+          suggestions.empty();
+          fulltextMenu.hide();
+        }
+      };
+    }());
+
+    function renderTemplate (individual) {
+      return template.replace(/{\s*.*?\s*}/g, function (match) {
+        try {
+          return eval(match);
+        } catch (error) {
+          console.log(error);
+          return "";
+        }
+      });
+    }
+
+    var evalQueryPrefix = function () {
+      return new Promise(function (resolve, reject) {
+        try {
+          var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
+            return eval(match);
+          });
+          resolve(result);
+        } catch (error) {
+          console.log("Query prefix evaluation error", error);
+          reject(error);
+        }
+      });
+    };
+
+    var performSearch = function (e, value) {
+      evalQueryPrefix().then(function (queryPrefix) {
+        ftQuery(queryPrefix, value, sort, deleted)
+          .then(renderResults)
+          .catch(function (error) {
+            console.log("Fulltext query error", error);
+          });
+      });
+    };
+
+    fulltext
+      .on("keyup", keyupHandler)
+      .on("triggerSearch", performSearch);
+
+    var selected = [];
+
+    var renderResults = function (results) {
+      selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
+      if (results.length) {
+        var rendered = results.map(function (result) {
+          if (result == undefined) return "";
+          var tmpl = $("<div class='suggestion'></div>")
+            .text( renderTemplate(result) )
+            .attr("resource", result.id);
+          if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
+            tmpl.addClass("selected");
+          }
+          if (result.hasValue("v-s:deleted", true)) {
+            tmpl.addClass("deleted");
+          }
+          if (result.hasValue("v-s:valid", false) && !result.hasValue("v-s:deleted", true) ) {
+            tmpl.addClass("invalid");
+          }
+          return tmpl;
+        });
+        suggestions.empty().append(rendered);
+        fulltextMenu.show();
+        $(document).click(clickOutsideMenuHandler);
+      } else {
+        suggestions.empty();
+        fulltextMenu.hide();
+      }
+    };
+
+    var suggestions = $(".suggestions", control);
+    var dblTimeout;
+    suggestions.on("click", ".suggestion", function (e) {
+      if (!e.originalEvent) {
+        clickHandler(e);
+      } else if (dblTimeout) {
+        dblclickHandler(e);
+      } else {
+        clickHandler(e);
+      }
+    });
+
+    var clickHandler = function (e) {
+      var tmpl = $(e.target);
+      var suggestion_uri = tmpl.attr("resource");
+      var suggestion = new veda.IndividualModel(suggestion_uri);
+      tmpl.toggleClass("selected");
+      if ( selected.indexOf(suggestion) >= 0 ) {
+        setValue(suggestion);
+        fulltextMenu.hide();
+      } else {
+        setValue(suggestion);
+        fulltextMenu.hide();
+      }
+      dblTimeout = setTimeout(function () {
+        dblTimeout = undefined;
+      }, 300);
+    };
+
+    var dblclickHandler = function (e) {
+      if ( !$(e.target).hasClass("selected") ) {
+        clickHandler(e);
+      }
+      setValue(selected);
+      dblTimeout = clearTimeout(dblTimeout);
+      fulltextMenu.hide();
+    }
+
+    var clickOutsideMenuHandler = function (event) {
+      if( !$(event.target).closest(fulltextMenu).length ) {
+        if( fulltextMenu.is(":visible") ) {
+          fulltextMenu.hide();
+          removeClickOutsideMenuHandler();
+        }
+      }
+    }
+
+    var removeClickOutsideMenuHandler = function () {
+      if (control.is(":visible") && selected.length) {
+        setValue(selected[0]);
+      }
+      $(document).off("click", clickOutsideMenuHandler);
+    }
+
+    function setValue(value) {
+      var rel;
+      individual.clearValue(rel_uri);
+      individual.clearValue(rel_uri + ".v-s:employee");
+      individual.clearValue(rel_uri + ".v-s:occupation");
+      if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+        rel = rel_uri;
+      } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
+        rel = rel_uri + ".v-s:employee";
+      } else {
+        rel = rel_uri + ".v-s:occupation";
+      }
+      individual.addValue(rel, value);
+    }
+
+    var propertyModifiedHandler = function (rel) {
+      if ( individual.hasValue(rel) ) {
+        individual.get(rel)[0].load().then(function(loaded) {
+          var rendered = renderTemplate( loaded );
+          var value = fulltext.val();
+          if (value != rendered) {
+            fulltext.val(rendered);
+          }
+        });
+      } else {
+        fulltext.val("");
+      }
+    }
+    individual.on( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
+    control.one("remove", function () {
+      individual.off( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
+    });
+    propertyModifiedHandler(rel_uri);
+    propertyModifiedHandler(rel_uri + ".v-s:employee");
+    propertyModifiedHandler(rel_uri + ".v-s:occupation");
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_actor.defaults = {
+    template: $("#actor-control-template").html(),
+  };
+
   // SELECT CONTROL
 
   $.fn.veda_select = function (options) {
@@ -1184,7 +1456,8 @@
     template: $("#radio-control-template").html(),
   };
 
-//new radio control
+  //BOOLEAN RADIO
+
   $.fn.veda_booleanRadio = function (options) {
     var opts = $.extend( {}, $.fn.veda_booleanRadio.defaults, options ),
       that = this,
