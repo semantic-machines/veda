@@ -171,7 +171,7 @@ fn main() -> std::io::Result<()> {
                                         }
                                         let mut linked_doc = Individual::default();
                                         if let Some(p) = module.get_literal_of_link(&mut doc, &predicate, "v-s:parent", &mut linked_doc) {
-                                            if p == doc.obj.uri {
+                                            if p == doc.get_id() {
                                                 if let Err(e) = add_to_queue(queue_out, IndvOp::Put, &mut linked_doc, "?", db_id, &src, 0) {
                                                     error!("fail add to queue, err={:?}", e);
                                                     return None;
@@ -243,7 +243,7 @@ fn main() -> std::io::Result<()> {
                 }
                 let exportable = exportable.unwrap();
 
-                if let Err(e) = add_to_queue(queue_out, cmd, &mut new_state_indv, &msg.obj.uri.clone(), db_id, &exportable, date.unwrap_or_default()) {
+                if let Err(e) = add_to_queue(queue_out, cmd, &mut new_state_indv, &msg.get_id(), db_id, &exportable, date.unwrap_or_default()) {
                     error!("fail prepare message, err={:?}", e);
                     return Err(-1);
                 }
@@ -260,14 +260,14 @@ fn main() -> std::io::Result<()> {
         let mut raw: Vec<u8> = Vec::new();
         if to_msgpack(&new_state_indv, &mut raw).is_ok() {
             let mut new_indv = Individual::default();
-            new_indv.obj.uri = msg_id.to_string();
-            new_indv.obj.add_binary("new_state", raw);
-            new_indv.obj.add_integer("cmd", cmd as i64);
-            new_indv.obj.add_integer("date", date);
-            new_indv.obj.add_string("source_veda", source, Lang::NONE);
-            new_indv.obj.add_string("target_veda", target, Lang::NONE);
+            new_indv.set_id(msg_id);
+            new_indv.add_binary("new_state", raw);
+            new_indv.add_integer("cmd", cmd as i64);
+            new_indv.add_integer("date", date);
+            new_indv.add_string("source_veda", source, Lang::NONE);
+            new_indv.add_string("target_veda", target, Lang::NONE);
 
-            info!("add to export queue: uri={}, source={}, target={}", new_state_indv.obj.uri, &source, &target);
+            info!("add to export queue: uri={}, source={}, target={}", new_state_indv.get_id(), &source, &target);
 
             let mut raw1: Vec<u8> = Vec::new();
             if let Err(e) = to_msgpack(&new_indv, &mut raw1) {

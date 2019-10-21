@@ -170,7 +170,7 @@ fn generate_file(module: &mut Module, query: &str, ontology_file_path: &str) -> 
                 buf.push(',');
             }
 
-            buf.push_str(&el.obj.as_json_str());
+            buf.push_str(&el.get_obj().as_json_str());
         }
         buf.push(']');
 
@@ -195,16 +195,16 @@ fn is_changes(qel: &mut Individual, onto_types: &[&str]) -> bool {
     if parse_raw(qel).is_ok() {
         if let Some(new_state) = qel.get_first_binobj("new_state") {
             let mut indv: Individual = Individual::default();
-            indv.raw = RawObj::new(new_state);
+            indv.set_raw(new_state.as_slice());
 
             if parse_raw(&mut indv).is_ok() {
                 if indv.any_exists("rdf:type", &onto_types) {
-                    info!("found onto changes from storage: uri={}", &indv.obj.uri);
+                    info!("found onto changes from storage: uri={}", indv.get_id());
                     return true;
                 }
             }
         } else {
-            warn!("not found field [new_state], id={}", qel.obj.uri);
+            warn!("not found field [new_state], id={}", qel.get_id());
         }
     }
     false
