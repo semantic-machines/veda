@@ -501,6 +501,26 @@ textarea {
 .padding-xxl {
   padding: 40px;
 }
+.padding-sm-h {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.padding-md-h {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.padding-lg-h {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.padding-xl-h {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+.padding-xxl-h {
+  padding-left: 40px;
+  padding-right: 40px;
+}
 .no-border {
   border: none;
   box-shadow: none;
@@ -784,7 +804,7 @@ fieldset[disabled] .form-control {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1020;
+  z-index: 999;
   min-width: 160px;
   margin: 3px 0;
   background-color: #fff;
