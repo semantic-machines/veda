@@ -241,6 +241,45 @@
       </div>
     </script>
 
+    <!-- Actor control template -->
+    <script type="html/template" id="actor-control-template">
+      <div class="link-control">
+        <div class="input-group">
+          <div class="input-group-addon btn btn-default select-type dropdown-toggle" id="actor-type-menu" data-toggle="dropdown">
+            <i class="glyphicon glyphicon-user"></i><i class="caret"></i>
+          </div>
+          <div class="dropdown-menu actor-type-menu padding-lg-h" aria-labelledby="actor-type-menu">
+            <div class="radio">
+              <label>
+                <input type="radio" name="actor-type" value="v-s:Appointment"/>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="actor-type" value="v-s:Person"/>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="actor-type" value="v-s:Position"/>
+              </label>
+            </div>
+            <hr class="margin-sm">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" name="actor-deleted" value="v-s:deleted"/>
+              </label>
+            </div>
+          </div>
+          <textarea rows="1" class="form-control fulltext"></textarea>
+          <div class="input-group-addon btn btn-default clear">&#10005;</div>
+        </div>
+        <div class="fulltext-menu">
+          <div class="suggestions"></div>
+        </div>
+      </div>
+    </script>
+
     <!-- String control template -->
     <script type="html/template" id="string-control-template">
       <input type="text" class="form-control" autocomplete="on" />
@@ -300,33 +339,30 @@
             <td width="25%">
               <div class="input-group">
                 <span class="input-group-addon">DD</span>
-                <input type="text">
+                <input type="text" class="form-control">
               </div>
             </td>
             <td width="25%">
               <div class="input-group">
                 <span class="input-group-addon">HH</span>
-                <input type="text">
+                <input type="text" class="form-control">
               </div>
             </td>
             <td width="25%">
               <div class="input-group">
                 <span class="input-group-addon">mm</span>
-                <input type="text">
+                <input type="text" class="form-control">
               </div>
             </td>
             <td>
               <div class="input-group" style="width:100%">
                 <span class="input-group-addon">&sum;</span>
-                <span id="worktime-summary-text" class="text-right"></span>
+                <span id="worktime-summary-text" class="text-right form-control"></span>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div>
-        <input type="text" class="form-control" style="display:none"/>
-      </div>
     </script>
 
     <!-- Numeration control template -->

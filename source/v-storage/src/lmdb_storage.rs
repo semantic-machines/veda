@@ -6,49 +6,77 @@ use v_onto::parser::*;
 
 pub(crate) struct LMDBStorage {
     db_path: String,
+
     individuals_db_handle: Result<DbHandle, MdbError>,
     individuals_db_env: Result<Environment, MdbError>,
+
     tickets_db_handle: Result<DbHandle, MdbError>,
     tickets_db_env: Result<Environment, MdbError>,
+
+    az_db_handle: Result<DbHandle, MdbError>,
+    az_db_env: Result<Environment, MdbError>,
+
     mode: StorageMode,
-}
-
-fn open(db_path: &str, mode: StorageMode) -> (Result<DbHandle, MdbError>, Result<Environment, MdbError>) {
-    let db_handle;
-
-    let env_builder = if mode == StorageMode::ReadOnly {
-        EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync)
-    } else {
-        EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateNoMetaSync | EnvCreateNoSync)
-    };
-
-    let db_env = env_builder.open(db_path, 0o644);
-
-    match &db_env {
-        Ok(env) => {
-            db_handle = env.get_default_db(DbFlags::empty());
-        }
-        Err(e) => {
-            error!("ERR! LMDB: fail opening read only environment, err={:?}", e);
-            db_handle = Err(MdbError::Corrupted);
-        }
-    }
-
-    (db_handle, db_env)
 }
 
 impl LMDBStorage {
     pub fn new(db_path: &str, mode: StorageMode) -> LMDBStorage {
-        let individuals_db = open(&(db_path.to_string() + "/lmdb-individuals/"), mode.clone());
-        let tickets_db = open(&(db_path.to_string() + "/lmdb-tickets/"), mode.clone());
-
-        LMDBStorage {
+        let mut storage = LMDBStorage {
             db_path: db_path.to_owned(),
-            individuals_db_handle: individuals_db.0,
-            individuals_db_env: individuals_db.1,
-            tickets_db_handle: tickets_db.0,
-            tickets_db_env: tickets_db.1,
-            mode,
+            individuals_db_handle: Err(MdbError::NotFound),
+            individuals_db_env: Err(MdbError::NotFound),
+            tickets_db_handle: Err(MdbError::NotFound),
+            tickets_db_env: Err(MdbError::NotFound),
+            az_db_handle: Err(MdbError::NotFound),
+            az_db_env: Err(MdbError::NotFound),
+            mode: mode.clone(),
+        };
+
+        storage.open(StorageId::Individuals, mode.clone());
+        storage.open(StorageId::Tickets, mode.clone());
+        storage
+    }
+
+    fn open(&mut self, storage: StorageId, mode: StorageMode) {
+        let db_handle;
+
+        let db_path = if storage == StorageId::Individuals {
+            self.db_path.to_string() + "/lmdb-individuals/"
+        } else if storage == StorageId::Tickets {
+            self.db_path.to_string() + "/lmdb-tickets/"
+        } else if storage == StorageId::Az {
+            self.db_path.to_string() + "/acl-indexes/"
+        } else {
+            String::default()
+        };
+
+        let env_builder = if mode == StorageMode::ReadOnly {
+            EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateReadOnly | EnvCreateNoMetaSync | EnvCreateNoSync)
+        } else {
+            EnvBuilder::new().flags(EnvCreateNoLock | EnvCreateNoMetaSync | EnvCreateNoSync)
+        };
+
+        let db_env = env_builder.open(db_path, 0o644);
+
+        match &db_env {
+            Ok(env) => {
+                db_handle = env.get_default_db(DbFlags::empty());
+            }
+            Err(e) => {
+                error!("ERR! LMDB: fail opening read only environment, err={:?}", e);
+                db_handle = Err(MdbError::Corrupted);
+            }
+        }
+
+        if storage == StorageId::Individuals {
+            self.individuals_db_handle = db_handle;
+            self.individuals_db_env = db_env;
+        } else if storage == StorageId::Tickets {
+            self.tickets_db_handle = db_handle;
+            self.tickets_db_env = db_env;
+        } else if storage == StorageId::Az {
+            self.az_db_handle = db_handle;
+            self.az_db_env = db_env;
         }
     }
 }
@@ -124,15 +152,7 @@ impl Storage for LMDBStorage {
             if is_need_reopen {
                 warn!("db {} reopen", self.db_path);
 
-                if storage == StorageId::Individuals {
-                    let res = open(&(self.db_path.clone() + "/lmdb-individuals/"), self.mode.clone());
-                    self.individuals_db_handle = res.0;
-                    self.individuals_db_env = res.1;
-                } else {
-                    let res = open(&(self.db_path.clone() + "/lmdb-tickets/"), self.mode.clone());
-                    self.tickets_db_handle = res.0;
-                    self.tickets_db_env = res.1;
-                }
+                self.open(storage.clone(), self.mode.clone());
             }
         }
 
