@@ -34,9 +34,9 @@ fn indv_to_json(data: Vec<u8>) -> JSONValue {
     if parse_raw(&mut indv).is_ok() {
         indv.parse_all();
         //        info! ("indv={}", indv);
-        return indv.obj.as_json();
+        return indv.get_obj().as_json();
     } else {
-        error!("indv_to_json: fail parse binobj, len={}", indv.raw.data.len());
+        error!("indv_to_json: fail parse binobj, len={}", indv.get_raw_len());
     }
     return JSONValue::default();
 }

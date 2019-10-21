@@ -34,7 +34,7 @@ impl Default for Module {
         if !tarantool_addr.is_empty() {
             storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
         } else {
-            storage = VStorage::new_lmdb("./data");
+            storage = VStorage::new_lmdb("./data", StorageMode::ReadOnly);
         }
 
         let mut ft_client = FTClient::new(ft_query_service_url);

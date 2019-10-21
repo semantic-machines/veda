@@ -8,18 +8,25 @@ pub enum StorageError {
 }
 
 #[derive(PartialEq, Debug, Clone)]
+pub enum StorageMode {
+    ReadOnly,
+    ReadWrite,
+}
+
+#[derive(PartialEq, Debug, Clone)]
 pub enum StorageId {
     Individuals,
     Tickets,
 }
 
-pub enum EStorage {
+pub(crate) enum EStorage {
     LMDB(LMDBStorage),
     TT(TTStorage),
 }
 
 pub trait Storage {
     fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool;
+    fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool;
 }
 
 pub struct VStorage {
@@ -33,9 +40,9 @@ impl VStorage {
         }
     }
 
-    pub fn new_lmdb(db_path: &str) -> VStorage {
+    pub fn new_lmdb(db_path: &str, mode: StorageMode) -> VStorage {
         VStorage {
-            storage: EStorage::LMDB(LMDBStorage::new(db_path)),
+            storage: EStorage::LMDB(LMDBStorage::new(db_path, mode)),
         }
     }
 

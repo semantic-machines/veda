@@ -11,8 +11,8 @@ pub enum IndividualError {
 }
 
 pub struct IndividualObj {
-    pub uri: String,
-    pub resources: HashMap<String, Vec<Resource>>,
+    pub(crate) uri: String,
+    pub(crate) resources: HashMap<String, Vec<Resource>>,
 }
 
 pub struct RawObj {
@@ -46,8 +46,8 @@ impl RawObj {
 }
 
 pub struct Individual {
-    pub obj: IndividualObj,
-    pub raw: RawObj,
+    pub(crate) obj: IndividualObj,
+    pub(crate) raw: RawObj,
 }
 
 impl Default for Individual {
@@ -65,6 +65,94 @@ impl Individual {
             obj: IndividualObj::default(),
             raw,
         }
+    }
+
+    pub fn get_obj(&self) -> &IndividualObj {
+        &self.obj
+    }
+
+    pub fn remove(&mut self, predicate: &str) -> bool {
+        self.obj.remove(predicate)
+    }
+
+    pub fn clear(&mut self, predicate: &str) {
+        self.obj.clear(predicate);
+    }
+
+    pub fn add_bool(&mut self, predicate: &str, b: bool) {
+        self.obj.add_bool(predicate, b)
+    }
+
+    pub fn set_bool(&mut self, predicate: &str, b: bool) {
+        self.obj.set_bool(predicate, b)
+    }
+
+    pub fn add_datetime(&mut self, predicate: &str, i: i64) {
+        self.obj.add_datetime(predicate, i)
+    }
+
+    pub fn set_datetime(&mut self, predicate: &str, i: i64) {
+        self.obj.set_datetime(predicate, i)
+    }
+
+    pub fn add_binary(&mut self, predicate: &str, v: Vec<u8>) {
+        self.obj.add_binary(predicate, v)
+    }
+
+    pub fn set_binary(&mut self, predicate: &str, v: Vec<u8>) {
+        self.obj.set_binary(predicate, v)
+    }
+
+    pub fn add_integer(&mut self, predicate: &str, i: i64) {
+        self.obj.add_integer(predicate, i)
+    }
+
+    pub fn set_integer(&mut self, predicate: &str, i: i64) {
+        self.obj.set_integer(predicate, i)
+    }
+
+    pub fn add_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64) {
+        self.obj.add_decimal_d(predicate, mantissa, exponent)
+    }
+
+    pub fn set_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64) {
+        self.obj.set_decimal_d(predicate, mantissa, exponent)
+    }
+
+    pub fn add_uri(&mut self, predicate: &str, s: &str) {
+        self.obj.add_uri(predicate, s)
+    }
+
+    pub fn set_uri(&mut self, predicate: &str, s: &str) {
+        self.obj.set_uri(predicate, s)
+    }
+
+    pub fn set_uris(&mut self, predicate: &str, ss: Vec<String>) {
+        self.obj.set_uris(predicate, ss)
+    }
+
+    pub fn add_string(&mut self, predicate: &str, s: &str, lang: Lang) {
+        self.obj.add_string(predicate, s, lang)
+    }
+
+    pub fn set_string(&mut self, predicate: &str, s: &str, lang: Lang) {
+        self.obj.set_string(predicate, s, lang)
+    }
+
+    pub fn set_raw(&mut self, data: &[u8]) {
+        self.raw.data = data.to_vec();
+    }
+
+    pub fn get_raw_len(&self) -> usize {
+        self.raw.data.len()
+    }
+
+    pub fn set_id(&mut self, id: &str) {
+        self.obj.uri = id.to_owned();
+    }
+
+    pub fn get_id(&self) -> &str {
+        &self.obj.uri
     }
 
     pub fn is_exists(&mut self, predicate: &str) -> bool {

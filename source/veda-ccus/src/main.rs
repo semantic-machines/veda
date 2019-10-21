@@ -14,7 +14,7 @@ use std::sync::mpsc::{Receiver, Sender};
 use std::thread;
 use std::time::{Duration, Instant};
 use v_onto::individual::*;
-use v_storage::storage::VStorage;
+use v_storage::storage::{VStorage, StorageMode};
 
 mod server;
 use crate::server::CMessage;
@@ -175,7 +175,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
     let mut storage = if !tarantool_addr.is_empty() {
         VStorage::new_tt(tarantool_addr, "veda6", "123456")
     } else {
-        VStorage::new_lmdb("./data")
+        VStorage::new_lmdb("./data", StorageMode::ReadOnly)
     };
 
     loop {
@@ -187,7 +187,7 @@ fn storage_manager(tarantool_addr: String, rx: Receiver<CMessage>) {
             storage.get_individual(&msg, &mut indv);
             let out_counter = indv.get_first_integer("v-s:updateCounter").unwrap_or_default();
 
-            info!("main: {:?}->{}", indv.obj.uri, out_counter);
+            info!("main: {:?}->{}", indv.get_id(), out_counter);
 
             if let Err(e) = sender.send((out_counter, msg_id)) {
                 error!("NOT SEND RESPONSE, err={}", e);

@@ -16,22 +16,22 @@ pub fn insert_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
         return sync_res;
     }
 
-    indv.obj.set_uri("v-s:lastEditor", "cfg:VedaSystem");
+    indv.set_uri("v-s:lastEditor", "cfg:VedaSystem");
 
     if sync_res == ResultCode::Ok {
-        indv.obj.set_uri("v-s:hasStatus", "v-s:StatusAccepted");
+        indv.set_uri("v-s:hasStatus", "v-s:StatusAccepted");
     } else {
-        indv.obj.set_uri("v-s:hasStatus", "v-s:StatusRejected");
-        indv.obj.add_string("v-s:errorMessage", info, Lang::RU);
+        indv.set_uri("v-s:hasStatus", "v-s:StatusRejected");
+        indv.add_string("v-s:errorMessage", info, Lang::RU);
     }
-    indv.obj.clear("v-s:errorMessage");
+    indv.clear("v-s:errorMessage");
 
-    info!("update from {}, status={:?}, info={}", indv.obj.uri, sync_res, info);
+    info!("update from {}, status={:?}, info={}", indv.get_id(), sync_res, info);
     let res = module.api.update(systicket, IndvOp::Put, indv);
     if res.result != ResultCode::Ok {
-        error!("fail update, uri={}, result_code={:?}", indv.obj.uri, res.result);
+        error!("fail update, uri={}, result_code={:?}", indv.get_id(), res.result);
     } else {
-        info!("success update, uri={}", indv.obj.uri);
+        info!("success update, uri={}", indv.get_id());
     }
     sync_res
 }
@@ -39,7 +39,7 @@ pub fn insert_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
 fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Individual) -> (ResultCode, &'a str) {
     let backward_target = indv.get_first_literal("v-s:backwardTarget");
     if backward_target.is_none() {
-        error!("not found [v-s:backwardTarget] in {}", indv.obj.uri);
+        error!("not found [v-s:backwardTarget] in {}", indv.get_id());
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let backward_target = backward_target.unwrap();
@@ -53,14 +53,14 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let has_kind_for_pass = indv_b.get_literals("mnd-s:hasPassKind");
     if has_kind_for_pass.is_none() {
-        error!("not found [mnd-s:hasKindForPass] in {}", indv_b.obj.uri);
+        error!("not found [mnd-s:hasKindForPass] in {}", indv_b.get_id());
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let has_kind_for_passes = has_kind_for_pass.unwrap();
 
     let wcard_number = indv_b.get_first_literal("mnd-s:cardNumber");
     if wcard_number.is_none() {
-        error!("not found [mnd-s:cardNumber] in {}", indv_b.obj.uri);
+        error!("not found [mnd-s:cardNumber] in {}", indv_b.get_id());
         return (ResultCode::NotFound, "исходные данные некорректны");
     }
     let card_number = wcard_number.unwrap();
