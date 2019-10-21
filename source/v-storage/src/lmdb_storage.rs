@@ -6,10 +6,16 @@ use v_onto::parser::*;
 
 pub(crate) struct LMDBStorage {
     db_path: String,
+
     individuals_db_handle: Result<DbHandle, MdbError>,
     individuals_db_env: Result<Environment, MdbError>,
+
     tickets_db_handle: Result<DbHandle, MdbError>,
     tickets_db_env: Result<Environment, MdbError>,
+
+    az_db_handle: Result<DbHandle, MdbError>,
+    az_db_env: Result<Environment, MdbError>,
+
     mode: StorageMode,
 }
 
@@ -21,6 +27,8 @@ impl LMDBStorage {
             individuals_db_env: Err(MdbError::NotFound),
             tickets_db_handle: Err(MdbError::NotFound),
             tickets_db_env: Err(MdbError::NotFound),
+            az_db_handle: Err(MdbError::NotFound),
+            az_db_env: Err(MdbError::NotFound),
             mode: mode.clone(),
         };
 
@@ -34,8 +42,12 @@ impl LMDBStorage {
 
         let db_path = if storage == StorageId::Individuals {
             self.db_path.to_string() + "/lmdb-individuals/"
-        } else {
+        } else if storage == StorageId::Tickets {
             self.db_path.to_string() + "/lmdb-tickets/"
+        } else if storage == StorageId::Az {
+            self.db_path.to_string() + "/acl-indexes/"
+        } else {
+            String::default()
         };
 
         let env_builder = if mode == StorageMode::ReadOnly {
@@ -59,9 +71,12 @@ impl LMDBStorage {
         if storage == StorageId::Individuals {
             self.individuals_db_handle = db_handle;
             self.individuals_db_env = db_env;
-        } else {
+        } else if storage == StorageId::Tickets {
             self.tickets_db_handle = db_handle;
             self.tickets_db_env = db_env;
+        } else if storage == StorageId::Az {
+            self.az_db_handle = db_handle;
+            self.az_db_env = db_env;
         }
     }
 }
