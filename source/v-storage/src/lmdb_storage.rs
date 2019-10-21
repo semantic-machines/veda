@@ -23,17 +23,17 @@ impl LMDBStorage {
     pub fn new(db_path: &str, mode: StorageMode) -> LMDBStorage {
         let mut storage = LMDBStorage {
             db_path: db_path.to_owned(),
-            individuals_db_handle: Err(MdbError::NotFound),
-            individuals_db_env: Err(MdbError::NotFound),
-            tickets_db_handle: Err(MdbError::NotFound),
-            tickets_db_env: Err(MdbError::NotFound),
-            az_db_handle: Err(MdbError::NotFound),
-            az_db_env: Err(MdbError::NotFound),
+            individuals_db_handle: Err(MdbError::Panic),
+            individuals_db_env: Err(MdbError::Panic),
+            tickets_db_handle: Err(MdbError::Panic),
+            tickets_db_env: Err(MdbError::Panic),
+            az_db_handle: Err(MdbError::Panic),
+            az_db_env: Err(MdbError::Panic),
             mode: mode.clone(),
         };
 
-        storage.open(StorageId::Individuals, mode.clone());
-        storage.open(StorageId::Tickets, mode.clone());
+        //storage.open(StorageId::Individuals, mode.clone());
+        //storage.open(StorageId::Tickets, mode.clone());
         storage
     }
 
@@ -90,9 +90,15 @@ impl Storage for LMDBStorage {
             if storage == StorageId::Individuals {
                 db_env = &self.individuals_db_env;
                 db_handle = &self.individuals_db_handle;
-            } else {
+            } else if storage == StorageId::Tickets  {
                 db_env = &self.tickets_db_env;
                 db_handle = &self.tickets_db_handle;
+            } else if storage == StorageId::Az  {
+                db_env = &self.az_db_env;
+                db_handle = &self.az_db_handle;
+            } else {
+                db_env = &Err(MdbError::Panic);
+                db_handle = &Err(MdbError::Panic);
             }
 
             let mut is_need_reopen = false;
