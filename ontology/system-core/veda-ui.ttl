@@ -1297,9 +1297,10 @@ v-ui:IconModalTemplate
         $(".actions", tmpl).remove();
       }
     });
-    individual.one("beforeReset", function () {
-      modal.modal("hide").remove();
-    });
+    // 21.10.2019 пока временно, если долго не раскоменчено то удалить
+    // individual.one("beforeReset", function () {
+    //   modal.modal("hide").remove();
+    // });
     individual.one("afterSave", function () {
       modal.modal("hide").remove();
     });
@@ -2539,14 +2540,13 @@ v-ui:TreeTemplate
     var parentLvl = parentRow ? parseInt( parentRow.attr("data-level") ) : -1,
         tmpl = $("<tr class='value-row'>").attr("data-level", parentLvl + 1).append(rowTmpl);
     $(".spacer", tmpl).css({"width": 16 * (parentLvl + 1) + "px", "display": "inline-block"});
-
     return Promise.all(values_uris.map(function (valueUri, index) {
       var value = new veda.IndividualModel(valueUri);
       return value.load().then(function (value) {
         if ( !allowedFilterFn.call(value) ) {
           return;
         }
-        return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
+        return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {          
           // Pre-check children
           getChildren([], value, false).then(function (children) {
             if (!children.length) {
@@ -2574,26 +2574,12 @@ v-ui:TreeTemplate
       });
     })).then(function () {
       if ( parentRow ) {
-        var addButton = $("<button class='btn btn-sm btn-primary pull-right'>Добавить</button>");
-        addButton.click(function(){
-          var parentUri = parentRow.attr("resource");
-          var type = $(this).closest("tr").attr("typeof");
-          var newItem = new veda.IndividualModel();
-          newItem["rdf:type"] = [new veda.IndividualModel(type)];
-          newItem["v-s:hasParentLink"] = [new veda.IndividualModel(parentUri)];
-          var modal = veda.Util.showModal(newItem, undefined, "edit");
-          newItem.one("afterReset", function () {
-            modal.modal("hide").remove();
-          });
-          newItem.one("afterSave", function () {
-            setTimeout(function() {
-              redrawBranch(parentRow);  
-            }, 100);
-            modal.modal("hide").remove();
-          });
-        });
-        //cont.append(addButton);
-        parentRow.children().last().append(addButton);
+        // if ($(".modal").length == 0) {
+        //   var addButton = drawAddButton(parentRow);
+        //   parentRow.children().last().append(addButton);
+        // }
+        // var addButton = drawAddButton(parentRow);
+        // parentRow.children().last().append(addButton);
         parentRow.after( cont.children() );
       } else {
         tbody.append( cont.children() );
@@ -2601,7 +2587,7 @@ v-ui:TreeTemplate
       cont.remove();
     });
   }
-
+  var previousSelected;
   if (target && rel_uri) {
 
     template.on("click", "td", function (e) {
@@ -2616,6 +2602,9 @@ v-ui:TreeTemplate
       var row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
+      $("#create-NewItem", template).remove();
+      var addButton = drawAddButton(row);
+      row.children().last().append(addButton);  
       if (isSingle) {
         target.set(rel_uri, [value]);
       } else {
@@ -2772,6 +2761,28 @@ v-ui:TreeTemplate
         return unique;
       }
     });
+  }
+
+  function drawAddButton(currentRow){
+    var addButton = $("<div id='create-NewItem'><button class='btn btn-xs btn-primary margin-sm'>Добавить элемент</button></div>");
+    addButton.click(function(){
+      var currentUri = currentRow.attr("resource");
+      var type = $(this).closest("tr").attr("typeof");
+      var newItem = new veda.IndividualModel();
+      newItem["rdf:type"] = [new veda.IndividualModel(type)];
+      newItem["v-s:hasParentLink"] = [new veda.IndividualModel(currentUri)];
+      var modal = veda.Util.showModal(newItem, undefined, "edit");
+      newItem.one("afterReset", function () {
+        modal.modal("hide").remove();
+      });
+      newItem.one("afterSave", function () {
+        setTimeout(function() {
+          redrawBranch(currentRow);  
+        }, 100);
+        modal.modal("hide").remove();
+      });
+    });
+    return addButton;
   }
 
   if (!this.hasValue("rdf:type", "v-ui:Tree")) {
