@@ -21,7 +21,7 @@ pub(crate) struct LMDBStorage {
 
 impl LMDBStorage {
     pub fn new(db_path: &str, mode: StorageMode) -> LMDBStorage {
-        let mut storage = LMDBStorage {
+        let storage = LMDBStorage {
             db_path: db_path.to_owned(),
             individuals_db_handle: Err(MdbError::Panic),
             individuals_db_env: Err(MdbError::Panic),
@@ -101,13 +101,7 @@ impl Storage for LMDBStorage {
                 db_handle = &Err(MdbError::Panic);
             }
 
-            let mut is_need_reopen = match db_env {
-                Err(e) => match e {
-                    MdbError::Panic => true,
-                    _ => false,
-                },
-                _ => false,
-            };
+            let mut is_need_reopen = false;
 
             match db_env {
                 Ok(env) => match db_handle {
@@ -156,10 +150,15 @@ impl Storage for LMDBStorage {
                         return false;
                     }
                 },
-                Err(e) => {
-                    error!("db environment, err={}", e);
-                    return false;
-                }
+                Err(e) => match e {
+                    MdbError::Panic => {
+                        is_need_reopen = true;
+                    }
+                    _ => {
+                        error!("db environment, err={}", e);
+                        return false;
+                    }
+                },
             }
 
             if is_need_reopen {
@@ -173,6 +172,45 @@ impl Storage for LMDBStorage {
     }
 
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
+        let db_handle;
+        let db_env;
+
+        if storage == StorageId::Individuals {
+            db_env = &self.individuals_db_env;
+            db_handle = &self.individuals_db_handle;
+        } else if storage == StorageId::Tickets {
+            db_env = &self.tickets_db_env;
+            db_handle = &self.tickets_db_handle;
+        } else if storage == StorageId::Az {
+            db_env = &self.az_db_env;
+            db_handle = &self.az_db_handle;
+        } else {
+            db_env = &Err(MdbError::Panic);
+            db_handle = &Err(MdbError::Panic);
+        }
+
+        match db_env {
+            Ok(env) => match env.new_transaction() {
+                Ok(txn) => match db_handle {
+                    Ok(handle) => {
+                        let db = txn.bind(handle);
+                    }
+                    Err(e) => {
+                        error!("db handle, err={}", e);
+                        return false;
+                    }
+                },
+                Err(e) => {
+                    error!("db create transaction, err={}", e);
+                    return false;
+                }
+            },
+            Err(e) => {
+                error!("db environment, err={}", e);
+                return false;
+            }
+        }
+
         /*
             let txn = env.new_transaction().unwrap();
             {
