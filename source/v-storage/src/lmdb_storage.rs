@@ -90,10 +90,10 @@ impl Storage for LMDBStorage {
             if storage == StorageId::Individuals {
                 db_env = &self.individuals_db_env;
                 db_handle = &self.individuals_db_handle;
-            } else if storage == StorageId::Tickets  {
+            } else if storage == StorageId::Tickets {
                 db_env = &self.tickets_db_env;
                 db_handle = &self.tickets_db_handle;
-            } else if storage == StorageId::Az  {
+            } else if storage == StorageId::Az {
                 db_env = &self.az_db_env;
                 db_handle = &self.az_db_handle;
             } else {
@@ -101,7 +101,14 @@ impl Storage for LMDBStorage {
                 db_handle = &Err(MdbError::Panic);
             }
 
-            let mut is_need_reopen = false;
+            let mut is_need_reopen = match db_env {
+                Err(e) => match e {
+                    MdbError::Panic => true,
+                    _ => false,
+                },
+                _ => false,
+            };
+
             match db_env {
                 Ok(env) => match db_handle {
                     Ok(handle) => match env.get_reader() {
