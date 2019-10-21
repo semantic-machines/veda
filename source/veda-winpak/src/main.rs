@@ -195,6 +195,7 @@ fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, m
 
         let mut new_state_indv = Individual::new_raw(RawObj::new(new_state.unwrap_or_default()));
         if parse_raw(&mut new_state_indv).is_ok() {
+            new_state_indv.parse_all();
 
             if let Some(types) = new_state_indv.get_literals("rdf:type") {
                 for itype in types {
