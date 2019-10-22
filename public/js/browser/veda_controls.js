@@ -822,13 +822,13 @@
       };
     }());
 
-    var performSearch = function (e, value) {
+    function performSearch(e, value) {
       ftQuery(queryPrefix, value, sort, deleted)
         .then(renderResults)
         .catch(function (error) {
           console.log("Fulltext query error", error);
         });
-    };
+    }
 
     fulltext
       .on("keyup", keyupHandler)
@@ -836,10 +836,10 @@
 
     var selected = [];
 
-    var renderResults = function (results) {
+    function renderResults(results) {
       selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
       if (results.length) {
-        var renderedPromises = results.map(function (result) {
+        var altResults = results.map(function (result) {
           return Promise.resolve().then(function () {
             if (chosenActorType === "v-s:Appointment") {
               return result;
@@ -848,7 +848,13 @@
             } else {
               return result["v-s:occupation"][0].load();
             }
-          }).then(function (result) {
+          }).catch(function (error) {
+            console.log(error);
+          });
+        });
+        Promise.all(altResults).then(function (results) {
+          results = sortUnique( results.filter(Boolean) );
+          return results.map(function (result) {
             var tmpl = $("<div class='suggestion'></div>")
               .text( result.toString() )
               .attr("resource", result.id);
@@ -859,11 +865,8 @@
               tmpl.addClass("deleted");
             }
             return tmpl;
-          }).catch(function (error) {
-            console.log(error);
           });
-        });
-        Promise.all(renderedPromises).then(function (rendered) {
+        }).then(function (rendered) {
           suggestions.empty().append(rendered);
           fulltextMenu.show();
           $(document).click(clickOutsideMenuHandler);
@@ -872,7 +875,21 @@
         suggestions.empty();
         fulltextMenu.hide();
       }
-    };
+    }
+
+    function sortUnique(arr) {
+      arr.sort(function (a, b) {
+        var aLabel = a.toString();
+        var bLabel = b.toString();
+        return aLabel < bLabel ? -1 : aLabel > bLabel ? 1 : 0;
+      });
+      return arr.reduce(function (acc, item) {
+        if (acc[acc.length - 1] !== item) {
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+    }
 
     var suggestions = $(".suggestions", control);
     var dblTimeout;
@@ -886,7 +903,7 @@
       }
     });
 
-    var clickHandler = function (e) {
+    function clickHandler(e) {
       var tmpl = $(e.target);
       var suggestion_uri = tmpl.attr("resource");
       var suggestion = new veda.IndividualModel(suggestion_uri);
@@ -901,9 +918,9 @@
       dblTimeout = setTimeout(function () {
         dblTimeout = undefined;
       }, 300);
-    };
+    }
 
-    var dblclickHandler = function (e) {
+    function dblclickHandler(e) {
       if ( !$(e.target).hasClass("selected") ) {
         clickHandler(e);
       }
@@ -912,7 +929,7 @@
       fulltextMenu.hide();
     }
 
-    var clickOutsideMenuHandler = function (event) {
+    function clickOutsideMenuHandler(event) {
       if( !$(event.target).closest(fulltextMenu).length ) {
         if( fulltextMenu.is(":visible") ) {
           fulltextMenu.hide();
@@ -921,7 +938,7 @@
       }
     }
 
-    var removeClickOutsideMenuHandler = function () {
+    function removeClickOutsideMenuHandler() {
       if (control.is(":visible") && selected.length) {
         setValue(selected[0]);
       }
@@ -943,7 +960,7 @@
       individual.addValue(rel, value);
     }
 
-    var propertyModifiedHandler = function () {
+    function propertyModifiedHandler() {
       if ( individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation") ) {
         var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation")).filter(Boolean)[0];
         value.load().then(function(value) {
