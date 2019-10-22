@@ -930,7 +930,7 @@
     }
 
     function clickOutsideMenuHandler(event) {
-      if( !$(event.target).closest(fulltextMenu).length ) {
+      if( !$(event.target).closest(fulltextMenu).length && !$(event.target) === fulltext ) {
         if( fulltextMenu.is(":visible") ) {
           fulltextMenu.hide();
           removeClickOutsideMenuHandler();
