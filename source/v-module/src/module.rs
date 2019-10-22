@@ -123,14 +123,14 @@ impl Module {
         &mut self,
         queue_consumer: &mut Consumer,
         module_context: &mut T,
-        before_bath: &mut fn(&mut T),
-        prepare: &mut fn(&mut T, &mut Individual),
-        after_bath: &mut fn(&mut T),
+        before_bath: &mut fn(&mut Module, &mut T),
+        prepare: &mut fn(&mut Module, &mut T, &mut Individual),
+        after_bath: &mut fn(&mut Module, &mut T),
     ) {
         loop {
             let mut size_batch = 0;
 
-            before_bath(module_context);
+            before_bath(self, module_context);
 
             // read queue current part info
             if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
@@ -175,7 +175,7 @@ impl Module {
                     }
                 }
 
-                prepare(module_context, &mut Individual::new_raw(raw));
+                prepare(self, module_context, &mut Individual::new_raw(raw));
 
                 queue_consumer.commit_and_next();
 
@@ -185,20 +185,20 @@ impl Module {
                     info!("get from queue, count: {}", self.queue_prepared_count);
                 }
             }
-            after_bath(module_context);
+            after_bath(self, module_context);
         }
     }
 }
 
-pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, field_name: &str, new_indv: &'a mut Individual) -> Option<&'a mut Individual> {
+pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, field_name: &str, new_indv: &'a mut Individual) -> bool {
     let prev_state = queue_element.get_first_binobj(field_name);
     if prev_state.is_some() {
         new_indv.set_raw(&prev_state.unwrap_or_default());
         if parse_raw(new_indv).is_ok() {
-            return Some(new_indv);
+            return true;
         }
     }
-    None
+    false
 }
 
 pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
