@@ -667,19 +667,11 @@ v-ft:ActorFilterTemplate
         actors_uris.push( appointment["v-s:occupation"][0].data );
       }
     });
-    var activeActor = undefined; 
-    if (individual.hasValue("v-wf:to")) {
-      activeActor = individual["v-wf:to"][0].id;
-    }
+
     actors_uris.map(function (actor_uri) {
-      var activeClass="";
-      if (actor_uri === activeActor) {
-        activeClass = " class='active'";
-        activeActor = undefined;
-      }
       //var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
       var actor_template =
-        "<li" + activeClass + ">" +
+        "<li>" +
           "<a href='#'>" +
             "<span class='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
             //"<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
@@ -688,9 +680,15 @@ v-ft:ActorFilterTemplate
       template.append(actor_template);
     });
 
-    if (activeActor) {
-      template.children().first().addClass("active");
+    if ( !individual.actor ) {
+      individual.actor = "v-ft:MyBundle";
     }
+    if (individual.actor === "v-ft:MyBundle") {
+      individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
+    } else {
+      individual[actor_property] = [ new veda.IndividualModel(individual.actor) ];
+    }
+    template.find("[about='" + individual.actor + "']").closest("li").addClass("active");
 
     template.on("click", "li a", function (e) {
       e.preventDefault();
@@ -706,14 +704,6 @@ v-ft:ActorFilterTemplate
       }
       new veda.IndividualModel(folder).trigger("search");
     });
-
-    if ( !individual.actor || individual.actor === "v-ft:MyBundle" ) {
-      individual.actor = "v-ft:MyBundle";
-      individual[actor_property] = [ veda.user , veda.appointment && veda.appointment.hasValue("v-s:occupation") ? veda.appointment["v-s:occupation"][0] : undefined ];
-    } else {
-      individual[actor_property] = [ new veda.IndividualModel(individual.actor) ];
-    }
-    
   });
 
   // Update counter if counter & results count do not match
