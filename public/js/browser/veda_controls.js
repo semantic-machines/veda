@@ -735,13 +735,18 @@
       deleted,
       chosenActorType;
 
-    //~ // Disable closing actor type dropdown on click
+    // Fulltext search feature
+    var fulltext = $(".fulltext", control);
+    var fulltextMenu = $(".fulltext-menu", control);
+
+    // Disable closing actor type dropdown on click
     $(".dropdown-menu", control).click(function (e) {
       e.stopPropagation();
-      //~ setTimeout(function () {
-        //~ $(".input-group", control).removeClass("open");
-        //~ $(".dropdown-toggle", control).attr("aria-expanded", false);
-      //~ }, 100);
+    });
+
+    // Close actor type dropdown on input click
+    fulltext.click(function () {
+      $(".dropdown-toggle", control).attr("aria-expanded", false).parent().removeClass("open");
     });
 
     // Filter allowed actor types, set label & handler
@@ -773,10 +778,6 @@
         performSearch(undefined, ftValue);
       }
     });
-
-    // Fulltext search feature
-    var fulltext = $(".fulltext", control);
-    var fulltextMenu = $(".fulltext-menu", control);
 
     $(".clear", control).click(function () {
       individual.clearValue(rel_uri);
