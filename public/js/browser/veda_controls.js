@@ -859,6 +859,8 @@
               tmpl.addClass("deleted");
             }
             return tmpl;
+          }).catch(function (error) {
+            console.log(error);
           });
         });
         Promise.all(renderedPromises).then(function (rendered) {
