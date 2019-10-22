@@ -1,8 +1,8 @@
 use ini::Ini;
 use std::{thread, time};
-use v_api::APIClient;
-use v_onto::individual::Individual;
+use v_api::*;
 use v_onto::individual::*;
+use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
@@ -188,4 +188,24 @@ impl Module {
             after_bath(module_context);
         }
     }
+}
+
+pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, field_name: &str, new_indv: &'a mut Individual) -> Option<&'a mut Individual> {
+    let prev_state = queue_element.get_first_binobj(field_name);
+    if prev_state.is_some() {
+        new_indv.set_raw(&prev_state.unwrap_or_default());
+        if parse_raw(new_indv).is_ok() {
+            return Some(new_indv);
+        }
+    }
+    None
+}
+
+pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
+    let wcmd = queue_element.get_first_integer("cmd");
+    if wcmd.is_none() {
+        return None;
+    }
+
+    Some(IndvOp::from_i64(wcmd.unwrap_or_default()))
 }
