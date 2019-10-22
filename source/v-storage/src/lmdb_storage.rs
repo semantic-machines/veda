@@ -172,67 +172,48 @@ impl Storage for LMDBStorage {
     }
 
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
-        let db_handle;
-        let db_env;
-
         if storage == StorageId::Individuals {
-            db_env = &self.individuals_db_env;
-            db_handle = &self.individuals_db_handle;
+            return put_kv_lmdb(&self.individuals_db_env, &self.individuals_db_handle, key, val);
         } else if storage == StorageId::Tickets {
-            db_env = &self.tickets_db_env;
-            db_handle = &self.tickets_db_handle;
+            return put_kv_lmdb(&self.tickets_db_env, &self.tickets_db_handle, key, val);
         } else if storage == StorageId::Az {
-            db_env = &self.az_db_env;
-            db_handle = &self.az_db_handle;
-        } else {
-            db_env = &Err(MdbError::Panic);
-            db_handle = &Err(MdbError::Panic);
+            return put_kv_lmdb(&self.az_db_env, &self.az_db_handle, key, val);
         }
 
-        match db_env {
-            Ok(env) => match env.new_transaction() {
-                Ok(txn) => match db_handle {
-                    Ok(handle) => {
-                        let db = txn.bind(handle);
-                    }
-                    Err(e) => {
-                        error!("db handle, err={}", e);
+        false
+    }
+}
+
+fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str, val: &str) -> bool {
+    match db_env {
+        Ok(env) => match env.new_transaction() {
+            Ok(txn) => match db_handle {
+                Ok(handle) => {
+                    let db = txn.bind(&handle);
+                    if let Err(e) = db.set(&key, &val) {
+                        error!("failed put, err={}", e);
                         return false;
                     }
-                },
+
+                    if let Err(e) = txn.commit() {
+                        error!("failed to commit, err={}", e);
+                        return false;
+                    }
+                    return true;
+                }
                 Err(e) => {
-                    error!("db create transaction, err={}", e);
+                    error!("db handle, err={}", e);
                     return false;
                 }
             },
             Err(e) => {
-                error!("db environment, err={}", e);
+                error!("db create transaction, err={}", e);
                 return false;
             }
+        },
+        Err(e) => {
+            error!("db environment, err={}", e);
+            return false;
         }
-
-        /*
-            let txn = env.new_transaction().unwrap();
-            {
-                let db = txn.bind(&db_handle); // get a database bound to this transaction
-
-                let pairs = vec![("Albert", "Einstein",),
-                                 ("Joe", "Smith",),
-                                 ("Jack", "Daniels")];
-
-                for &(name, surname) in pairs.iter() {
-                    db.set(&surname, &name).unwrap();
-                }
-            }
-
-            // Note: `commit` is choosen to be explicit as
-            // in case of failure it is responsibility of
-            // the client to handle the error
-            match txn.commit() {
-                Err(_) => panic!("failed to commit!"),
-                Ok(_) => ()
-            }
-        */
-        false
     }
 }

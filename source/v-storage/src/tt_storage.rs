@@ -14,6 +14,7 @@ pub struct TTStorage {
 
 const INDIVIDUALS_SPACE_ID: i32 = 512;
 const TICKETS_SPACE_ID: i32 = 513;
+const AZ_SPACE_ID: i32 = 514;
 
 impl TTStorage {
     pub fn new(tt_uri: String, login: &str, pass: &str) -> TTStorage {
@@ -27,14 +28,15 @@ impl TTStorage {
 
 impl Storage for TTStorage {
     fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool {
-        let key = (uri,);
-
-        let space = if storage == StorageId::Individuals {
-            INDIVIDUALS_SPACE_ID
-        } else {
+        let space = if storage == StorageId::Tickets {
             TICKETS_SPACE_ID
+        } else if storage == StorageId::Az {
+            AZ_SPACE_ID
+        } else {
+            INDIVIDUALS_SPACE_ID
         };
 
+        let key = (uri,);
         let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
 
         if let Ok(v) = self.rt.block_on(resp) {
@@ -52,6 +54,21 @@ impl Storage for TTStorage {
     }
 
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
+        let space = if storage == StorageId::Tickets {
+            TICKETS_SPACE_ID
+        } else if storage == StorageId::Az {
+            AZ_SPACE_ID
+        } else {
+            INDIVIDUALS_SPACE_ID
+        };
+
+        let tuple = (key, val);
+        let resp = self.client.replace(space, &tuple).and_then(move |response| Ok(response.data));
+
+        if let Ok(v) = self.rt.block_on(resp) {
+            info!("tt replace res = {:?}", v);
+        }
+
         false
     }
 }
