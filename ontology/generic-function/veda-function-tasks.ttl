@@ -667,11 +667,19 @@ v-ft:ActorFilterTemplate
         actors_uris.push( appointment["v-s:occupation"][0].data );
       }
     });
-
+    var activeActor = undefined; 
+    if (individual.hasValue("v-wf:to")) {
+      activeActor = individual["v-wf:to"][0].id;
+    }
     actors_uris.map(function (actor_uri) {
+      var activeClass="";
+      if (actor_uri === activeActor) {
+        activeClass = " class='active'";
+        activeActor = undefined;
+      }
       //var counter_uri = "d:taskCounter_" + actor_uri.split(":").join("_");
       var actor_template =
-        "<li>" +
+        "<li" + activeClass + ">" +
           "<a href='#'>" +
             "<span class='actor' about='" + actor_uri + "' property='rdfs:label'></span> " +
             //"<span id='counter' about='" + counter_uri + "' class='badge' property='" + counter_prop + "'></span>" +
@@ -679,6 +687,10 @@ v-ft:ActorFilterTemplate
         "</li>";
       template.append(actor_template);
     });
+
+    if (activeActor) {
+      template.children().first().addClass("active");
+    }
 
     template.on("click", "li a", function (e) {
       e.preventDefault();
@@ -701,7 +713,7 @@ v-ft:ActorFilterTemplate
     } else {
       individual[actor_property] = [ new veda.IndividualModel(individual.actor) ];
     }
-    template.children().first().addClass("active");
+    
   });
 
   // Update counter if counter & results count do not match
