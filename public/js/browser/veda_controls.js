@@ -732,6 +732,7 @@
       queryPrefix = "'rdf:type'==='v-s:Appointment'",
       sort = this.attr("data-sort") || "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
+      complex = this.data("complex") || false,
       deleted,
       chosenActorType;
 
@@ -781,8 +782,10 @@
 
     $(".clear", control).click(function () {
       individual.clearValue(rel_uri);
-      individual.clearValue(rel_uri + ".v-s:employee");
-      individual.clearValue(rel_uri + ".v-s:occupation");
+      if ( complex ) {
+        individual.clearValue(rel_uri + ".v-s:employee");
+        individual.clearValue(rel_uri + ".v-s:occupation");
+      }
       $(".fulltext", control).val("");
     });
 
@@ -949,14 +952,18 @@
     function setValue(value) {
       var rel;
       individual.clearValue(rel_uri);
-      individual.clearValue(rel_uri + ".v-s:employee");
-      individual.clearValue(rel_uri + ".v-s:occupation");
-      if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
-        rel = rel_uri;
-      } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
-        rel = rel_uri + ".v-s:employee";
+      if ( complex ) {
+        individual.clearValue(rel_uri + ".v-s:employee");
+        individual.clearValue(rel_uri + ".v-s:occupation");
+        if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+          rel = rel_uri;
+        } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
+          rel = rel_uri + ".v-s:employee";
+        } else {
+          rel = rel_uri + ".v-s:occupation";
+        }
       } else {
-        rel = rel_uri + ".v-s:occupation";
+        rel = rel_uri;
       }
       individual.addValue(rel, value);
     }
