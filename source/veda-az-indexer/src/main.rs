@@ -5,10 +5,9 @@ use chrono::Local;
 use env_logger::Builder;
 use ini::Ini;
 use log::LevelFilter;
-
 use std::io::Write;
 use std::{thread, time};
-use v_module::module::Module;
+use v_module::module::*;
 use v_onto::individual::*;
 use v_queue::consumer::*;
 
@@ -17,7 +16,7 @@ struct Context {
 }
 
 fn main() -> Result<(), i32> {
-    info! ("AZ-INDEXER");
+    info!("AZ-INDEXER");
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
@@ -43,17 +42,38 @@ fn main() -> Result<(), i32> {
     module.listen_queue(
         &mut queue_consumer,
         &mut ctx,
-        &mut (before_bath as fn(&mut Context)),
-        &mut (prepare as fn(&mut Context, &mut Individual)),
-        &mut (after_bath as fn(&mut Context)),
+        &mut (before_bath as fn(&mut Module, &mut Context)),
+        &mut (prepare as fn(&mut Module, &mut Context, &mut Individual)),
+        &mut (after_bath as fn(&mut Module, &mut Context)),
     );
     Ok(())
 }
 
-fn before_bath(ctx: &mut Context) {}
+fn before_bath(module: &mut Module, ctx: &mut Context) {}
 
-fn after_bath(ctx: &mut Context) {
+fn after_bath(module: &mut Module, ctx: &mut Context) {
     thread::sleep(time::Duration::from_millis(3000));
 }
 
-fn prepare(ctx: &mut Context, indv: &mut Individual) {}
+fn prepare(module: &mut Module, ctx: &mut Context, queue_element: &mut Individual) {
+    let mut prev_state = Individual::default();
+    let mut new_state = Individual::default();
+
+    get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+    let cmd = get_cmd(queue_element);
+
+    if cmd.is_none() {
+        return;
+    }
+
+    if new_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) {
+        //prepare_permission_statement(prev_ind, new_ind, op_id, storage);
+    } else if new_state.any_exists("rdf:type", &["v-s:Membership"]) || prev_state.any_exists("rdf:type", &["v-s:Membership"]) {
+        //prepare_membership(prev_ind, new_ind, op_id, storage);
+    } else if new_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) {
+        //prepare_permission_filter(prev_ind, new_ind, op_id, storage);
+    }
+
+    ctx.id += 1;
+}
