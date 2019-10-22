@@ -170,6 +170,38 @@ fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual, p_
     if access == 0 {
         access = default_access;
     }
+
+    let use_filter = new_state.get_first_literal("v-s:use_filter");
+
+    let resource = new_state.get_literals(p_resource).unwrap_or_default();
+    let in_set = new_state.get_literals(p_in_set).unwrap_or_default();
+
+    let prev_resource = prev_state.get_literals(p_resource).unwrap_or_default();
+    let prev_in_set = prev_state.get_literals(p_in_set).unwrap_or_default();
+
+    let removed_resource = get_disappeared(prev_resource, resource);
+    let removed_in_set = get_disappeared(prev_in_set, in_set);
 }
 
-fn update_right_set() {}
+//fn update_right_set() {}
+
+fn get_disappeared(a: Vec<String>, b: Vec<String>) -> Vec<String> {
+    let delta = Vec::new();
+
+    for r_a in a.iter() {
+        let mut delta = Vec::new();
+        let mut is_found = false;
+        for r_b in b.iter() {
+            if r_a == r_b {
+                is_found = true;
+                break;
+            }
+        }
+
+        if is_found == false {
+            delta.push(r_a);
+        }
+    }
+
+    return delta;
+}
