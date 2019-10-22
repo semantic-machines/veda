@@ -7,6 +7,7 @@ use ini::Ini;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
+use v_api::*;
 use v_module::module::*;
 use v_onto::individual::*;
 use v_queue::consumer::*;
@@ -68,12 +69,18 @@ fn prepare(module: &mut Module, ctx: &mut Context, queue_element: &mut Individua
     }
 
     if new_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) {
-        //prepare_permission_statement(prev_ind, new_ind, op_id, storage);
+        prepare_permission_statement(&mut prev_state, &mut new_state, cmd.unwrap(), module);
     } else if new_state.any_exists("rdf:type", &["v-s:Membership"]) || prev_state.any_exists("rdf:type", &["v-s:Membership"]) {
-        //prepare_membership(prev_ind, new_ind, op_id, storage);
+        prepare_membership(&mut prev_state, &mut new_state, cmd.unwrap(), module);
     } else if new_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) {
-        //prepare_permission_filter(prev_ind, new_ind, op_id, storage);
+        prepare_permission_filter(&mut prev_state, &mut new_state, cmd.unwrap(), module);
     }
 
     ctx.id += 1;
 }
+
+fn prepare_permission_statement(new_state: &mut Individual, prev_state: &mut Individual, cmd: IndvOp, module: &mut Module) {}
+
+fn prepare_membership(new_state: &mut Individual, prev_state: &mut Individual, cmd: IndvOp, module: &mut Module) {}
+
+fn prepare_permission_filter(new_state: &mut Individual, prev_state: &mut Individual, cmd: IndvOp, module: &mut Module) {}
