@@ -23,7 +23,7 @@ veda.Module(function Backend(veda) { "use strict";
   };
   var notify = veda.Notify ? new veda.Notify() : function () {};
   var interval;
-  function serverWatch() {
+  veda.Backend.serverWatch = function () {
     if (interval) { return; }
     var duration = 10000;
     veda.trigger("offline");
@@ -80,7 +80,7 @@ veda.Module(function Backend(veda) { "use strict";
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
     if (result.status === 0 || result.status === 503) {
-      serverWatch();
+      veda.Backend.serverWatch();
     }
     if (result.status === 470 || result.status === 471) {
       veda.trigger("login:failed");

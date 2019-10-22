@@ -112,6 +112,7 @@ veda.Module(function (veda) { "use strict";
       reconnectDelay = reconnectDelay < reconnectDelayLimit ? reconnectDelay * reconnectDelayFactor : reconnectDelayLimit ;
       console.log("client: websocket closed", event.target.url, "| re-connect in", reconnectDelay / 1000, "sec");
       setTimeout(initSocket, reconnectDelay);
+      veda.Backend.serverWatch();
     }
 
   };
