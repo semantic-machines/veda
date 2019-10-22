@@ -729,8 +729,7 @@
       rel_uri = opts.property_uri,
       spec = opts.spec,
       placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
-      template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
-      queryPrefix,
+      queryPrefix = "'rdf:type'==='v-s:Appointment'",
       sort = this.attr("data-sort") || "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
       deleted,
@@ -757,7 +756,6 @@
     }).change(function () {
       if ( $(this).is(":checked") ) {
         chosenActorType = this.value;
-        queryPrefix = ["'rdf:type'==='" + chosenActorType + "'"].join(" && ");
         var ftValue = $(".fulltext", control).val();
         if (ftValue) {
           performSearch(undefined, ftValue);
@@ -824,39 +822,12 @@
       };
     }());
 
-    function renderTemplate (individual) {
-      return template.replace(/{\s*.*?\s*}/g, function (match) {
-        try {
-          return eval(match);
-        } catch (error) {
-          console.log(error);
-          return "";
-        }
-      });
-    }
-
-    var evalQueryPrefix = function () {
-      return new Promise(function (resolve, reject) {
-        try {
-          var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
-            return eval(match);
-          });
-          resolve(result);
-        } catch (error) {
-          console.log("Query prefix evaluation error", error);
-          reject(error);
-        }
-      });
-    };
-
     var performSearch = function (e, value) {
-      evalQueryPrefix().then(function (queryPrefix) {
-        ftQuery(queryPrefix, value, sort, deleted)
-          .then(renderResults)
-          .catch(function (error) {
-            console.log("Fulltext query error", error);
-          });
-      });
+      ftQuery(queryPrefix, value, sort, deleted)
+        .then(renderResults)
+        .catch(function (error) {
+          console.log("Fulltext query error", error);
+        });
     };
 
     fulltext
@@ -868,25 +839,33 @@
     var renderResults = function (results) {
       selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
       if (results.length) {
-        var rendered = results.map(function (result) {
-          if (result == undefined) return "";
-          var tmpl = $("<div class='suggestion'></div>")
-            .text( renderTemplate(result) )
-            .attr("resource", result.id);
-          if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
-            tmpl.addClass("selected");
-          }
-          if (result.hasValue("v-s:deleted", true)) {
-            tmpl.addClass("deleted");
-          }
-          if (result.hasValue("v-s:valid", false) && !result.hasValue("v-s:deleted", true) ) {
-            tmpl.addClass("invalid");
-          }
-          return tmpl;
+        var renderedPromises = results.map(function (result) {
+          return Promise.resolve().then(function () {
+            if (chosenActorType === "v-s:Appointment") {
+              return result;
+            } else if (chosenActorType === "v-s:Person") {
+              return result["v-s:employee"][0].load();
+            } else {
+              return result["v-s:occupation"][0].load();
+            }
+          }).then(function (result) {
+            var tmpl = $("<div class='suggestion'></div>")
+              .text( result.toString() )
+              .attr("resource", result.id);
+            if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
+              tmpl.addClass("selected");
+            }
+            if (result.hasValue("v-s:deleted", true)) {
+              tmpl.addClass("deleted");
+            }
+            return tmpl;
+          });
         });
-        suggestions.empty().append(rendered);
-        fulltextMenu.show();
-        $(document).click(clickOutsideMenuHandler);
+        Promise.all(renderedPromises).then(function (rendered) {
+          suggestions.empty().append(rendered);
+          fulltextMenu.show();
+          $(document).click(clickOutsideMenuHandler);
+        });
       } else {
         suggestions.empty();
         fulltextMenu.hide();
@@ -962,13 +941,14 @@
       individual.addValue(rel, value);
     }
 
-    var propertyModifiedHandler = function (rel) {
-      if ( individual.hasValue(rel) ) {
-        individual.get(rel)[0].load().then(function(loaded) {
-          var rendered = renderTemplate( loaded );
-          var value = fulltext.val();
-          if (value != rendered) {
-            fulltext.val(rendered);
+    var propertyModifiedHandler = function () {
+      if ( individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation") ) {
+        var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation")).filter(Boolean)[0];
+        value.load().then(function(value) {
+          var newValueStr = value.toString();
+          var oldValueStr = fulltext.val();
+          if (newValueStr != oldValueStr) {
+            fulltext.val(newValueStr);
           }
         });
       } else {
@@ -979,9 +959,7 @@
     control.one("remove", function () {
       individual.off( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
     });
-    propertyModifiedHandler(rel_uri);
-    propertyModifiedHandler(rel_uri + ".v-s:employee");
-    propertyModifiedHandler(rel_uri + ".v-s:occupation");
+    propertyModifiedHandler();
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
