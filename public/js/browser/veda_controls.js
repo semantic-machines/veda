@@ -824,6 +824,8 @@
         } else if (!value.length) {
           suggestions.empty();
           fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
       };
     }());
@@ -861,7 +863,7 @@
         Promise.all(altResults).then(function (results) {
           results = sortUnique( results.filter(Boolean) );
           var renderedPromises = results.map(function (result) {
-            var cont = $("<div class='suggestion'></div>").attr("resource", result.id);
+            var cont = $("<a href='#' class='suggestion'></a>").attr("resource", result.id);
             if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
               cont.addClass("selected");
             }
@@ -873,12 +875,18 @@
           return Promise.all(renderedPromises);
         }).then(function (rendered) {
           suggestions.empty().append(rendered);
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
-          $(document).click(clickOutsideMenuHandler);
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
+          suggestions.children().first().focus().addClass("active");
         });
       } else {
         suggestions.empty();
         fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
       }
     }
 
@@ -909,6 +917,7 @@
     });
 
     function clickHandler(e) {
+      e.preventDefault();
       var tmpl = $(e.target);
       var suggestion_uri = tmpl.attr("resource");
       var suggestion = new veda.IndividualModel(suggestion_uri);
@@ -916,9 +925,13 @@
       if ( selected.indexOf(suggestion) >= 0 ) {
         setValue(suggestion);
         fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
       } else {
         setValue(suggestion);
         fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
       }
       dblTimeout = setTimeout(function () {
         dblTimeout = undefined;
@@ -932,22 +945,45 @@
       setValue(selected);
       dblTimeout = clearTimeout(dblTimeout);
       fulltextMenu.hide();
+      $(document).off("click", clickOutsideMenuHandler);
+      $(document).off("keydown", arrowHandler);
     }
 
-    function clickOutsideMenuHandler(event) {
-      if( !$(event.target).closest(fulltextMenu).length && !$(event.target) === fulltext ) {
+    function clickOutsideMenuHandler(e) {
+      if( !$(e.target).closest(fulltextMenu).length && e.target !== fulltext[0] ) {
         if( fulltextMenu.is(":visible") ) {
+          if ( selected.length ) {
+            setValue(selected[0]);
+          }
           fulltextMenu.hide();
-          removeClickOutsideMenuHandler();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
       }
     }
 
-    function removeClickOutsideMenuHandler() {
-      if (control.is(":visible") && selected.length) {
-        setValue(selected[0]);
+    function arrowHandler(e) {
+      if ( e.which === 40 ) { // Down
+        e.preventDefault();
+        e.stopPropagation();
+        var active = suggestions.find(".active").removeClass("active");
+        var next = active.next();
+        if ( next.length ) {
+          next.focus().addClass("active");
+        } else {
+          suggestions.children().first().addClass("active").focus();
+        }
+      } else if ( e.which === 38 ) { // Up
+        e.preventDefault();
+        e.stopPropagation();
+        var active = suggestions.find(".active").removeClass("active");
+        var prev = active.prev();
+        if ( prev.length ) {
+          prev.focus().addClass("active");
+        } else {
+          suggestions.children().last().addClass("active").focus();
+        }
       }
-      $(document).off("click", clickOutsideMenuHandler);
     }
 
     function setValue(value) {
@@ -2177,6 +2213,8 @@
         header.find(".close-menu")
           .click(function () {
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
             $(".form-control", control).val("");
             individual.set(rel_uri, selected);
           })
@@ -2205,13 +2243,15 @@
           if (timeout) { clearTimeout(timeout); }
           var value = e.target.value;
           if (value.length >= minLength) {
-            timeout = setTimeout(performSearch, 750, e, value);
+            timeout = setTimeout(performSearch, 750, value);
           } else if (!value.length) {
             if (isSingle) {
               individual.set(rel_uri, []);
             }
             suggestions.empty();
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           }
         };
       }());
@@ -2230,7 +2270,7 @@
         });
       };
 
-      var performSearch = function (e, value) {
+      var performSearch = function (value) {
         evalQueryPrefix().then(function (queryPrefix) {
           ftQuery(queryPrefix, value, sort, withDeleted)
             .then(renderResults)
@@ -2240,9 +2280,7 @@
         });
       };
 
-      fulltext
-        .on("keyup", keyupHandler)
-        .on("triggerSearch", performSearch);
+      fulltext.on("keyup", keyupHandler);
 
       var selected = [];
 
@@ -2251,7 +2289,7 @@
         if (results.length) {
           var rendered = results.map(function (result) {
             if (result == undefined) return "";
-            var tmpl = $("<div class='suggestion'></div>")
+            var tmpl = $("<a href='#' class='suggestion'></a>")
               .text( renderTemplate(result) )
               .attr("resource", result.id);
             if (individual.hasValue(rel_uri, result)) {
@@ -2266,11 +2304,17 @@
             return tmpl;
           });
           suggestions.empty().append(rendered);
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
-          $(document).click(clickOutsideMenuHandler);
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
+          suggestions.children().first().focus().addClass("active");
         } else {
           suggestions.empty();
           fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
       };
 
@@ -2287,6 +2331,7 @@
       });
 
       var clickHandler = function (e) {
+        e.preventDefault();
         var tmpl = $(e.target);
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
@@ -2297,6 +2342,8 @@
               .set(rel_uri, [])
               .set(rel_uri, [suggestion]);
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           } else {
             selected = selected.filter(function (value) {
               return value !== suggestion;
@@ -2306,6 +2353,8 @@
           if (isSingle) {
             individual.set(rel_uri, [suggestion]);
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           } else {
             selected = selected.filter(function (value) {
               return value !== suggestion;
@@ -2324,23 +2373,44 @@
         individual.set(rel_uri, selected);
         dblTimeout = clearTimeout(dblTimeout);
         fulltextMenu.hide();
-      }
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
+      };
 
-      var clickOutsideMenuHandler = function (event) {
-        if( !$(event.target).closest(fulltextMenu).length ) {
+      var clickOutsideMenuHandler = function (e) {
+        if( !$(e.target).closest(fulltextMenu).length ) {
           if( fulltextMenu.is(":visible") ) {
+            individual.set(rel_uri, selected);
             fulltextMenu.hide();
-            removeClickOutsideMenuHandler();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           }
         }
-      }
+      };
 
-      var removeClickOutsideMenuHandler = function () {
-        if (control.is(":visible")) {
-          individual.set(rel_uri, selected);
+      var arrowHandler = function(e) {
+        if ( e.which === 40 ) { // Down
+          e.preventDefault();
+          e.stopPropagation();
+          var active = suggestions.find(".active").removeClass("active");
+          var next = active.next();
+          if ( next.length ) {
+            next.focus().addClass("active");
+          } else {
+            suggestions.children().first().addClass("active").focus();
+          }
+        } else if ( e.which === 38 ) { // Up
+          e.preventDefault();
+          e.stopPropagation();
+          var active = suggestions.find(".active").removeClass("active");
+          var prev = active.prev();
+          if ( prev.length ) {
+            prev.focus().addClass("active");
+          } else {
+            suggestions.children().last().addClass("active").focus();
+          }
         }
-        $(document).off("click", clickOutsideMenuHandler);
-      }
+      };
 
       var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
@@ -2354,7 +2424,7 @@
         } else if ( isSingle ) {
           fulltext.val("");
         }
-      }
+      };
 
       individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
@@ -2373,9 +2443,16 @@
       dropdown.on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
         if ( !fulltextMenu.is(":visible") ) {
-          fulltext.trigger("triggerSearch", [""]);
+          performSearch();
         } else {
           fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        }
+      });
+      fulltext.on("keydown", function (e) {
+        if ( e.which === 40 ) {
+          performSearch();
         }
       });
     } else {
