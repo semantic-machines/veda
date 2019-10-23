@@ -836,16 +836,26 @@ fieldset[disabled] .form-control {
 
 .link-control .suggestion {
   padding: 5px;
+  color: inherit!important;
+  display: block;
+  text-decoration: none;
+}
+
+.link-control .suggestion.active {
+  background-color: #eee;
 }
 
 .link-control .suggestion.selected {
-  color: #ffffff;
+  color: #ffffff!important;
   background-color: #428bca;
-  cursor: pointer;
+}
+.link-control .suggestion.selected.active {
+  color: #ffffff!important;
+  background-color: #3774A8;
 }
 
 .link-control .suggestion.selected:hover {
-  color: #ffffff;
+  color: #ffffff!important;
   background-color: #3b7db5;
   cursor: pointer;
 }
