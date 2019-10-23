@@ -37,6 +37,17 @@ if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
 
 fi
 
+if [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] ; then
+
+    rm ./veda-az-indexer
+
+    cd source/veda-az-indexer
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-az-indexer $PWD
+
+fi
+
 if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
 
     rm ./veda-exim-inquire
