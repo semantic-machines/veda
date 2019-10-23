@@ -11,8 +11,8 @@ pub struct Context {
 pub const PERMISSION_PREFIX: &str = "P";
 pub const MEMBERSHIP_PREFIX: &str = "M";
 pub const FILTER_PREFIX: &str = "F";
-pub const M_IS_EXCLUSIVE: char = 'X';
-pub const M_IGNORE_EXCLUSIVE: char = 'N';
+pub const M_IS_EXCLUSIVE: u8 = b'X';
+pub const M_IGNORE_EXCLUSIVE: u8 = b'N';
 
 /// Битовые поля для прав
 #[repr(u8)]
@@ -111,7 +111,7 @@ pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual
     } else if ignore_exclusive == true {
         M_IGNORE_EXCLUSIVE
     } else {
-        0 as char
+        0
     };
 
     update_right_set(&resource, &in_set, marker, is_deleted, use_filter, prefix, access, ctx);
@@ -120,7 +120,7 @@ pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual
 pub fn update_right_set(
     resources: &Vec<String>,
     in_set: &Vec<String>,
-    marker: char,
+    marker: u8,
     is_deleted: bool,
     use_filter: Option<String>,
     prefix: &str,
@@ -135,6 +135,32 @@ pub fn update_right_set(
         if let Some(prev_data_str) = ctx.storage.get_value(StorageId::Az, &key) {
             let mut new_right_set = RightSet::new();
             rights_from_string(&prev_data_str, &mut new_right_set);
+
+            for mb in in_set.iter() {
+                if let Some(rr) = new_right_set.get_mut(mb) {
+                    rr.is_deleted = is_deleted;
+                    rr.access = rr.access | access;
+                    rr.marker = marker;
+                } else {
+                    new_right_set.insert(
+                        mb.to_string(),
+                        Right {
+                            id: mb.to_string(),
+                            access,
+                            marker,
+                            is_deleted,
+                        },
+                    );
+                }
+            }
+
+            let mut new_record = rights_as_string(new_right_set);
+
+            if new_record.len() == 0 {
+                new_record = "X".to_string();
+            }
+
+            ctx.storage.put_kv(StorageId::Az, &key, &new_record);
         }
     }
 }
@@ -193,4 +219,24 @@ pub fn rights_from_string(src: &str, new_rights: &mut RightSet) -> bool {
     }
 
     true
+}
+
+fn rights_as_string(new_rights: RightSet) -> String {
+    let mut outbuff = String::new();
+
+    for key in new_rights.keys() {
+        if let Some(right) = new_rights.get(key) {
+            if right.is_deleted == false {
+                outbuff.push_str(&right.id);
+                outbuff.push(';');
+                outbuff.push_str(&format!("{:x}", right.access));
+
+                if right.marker > 0 {
+                    outbuff.push(right.marker as char);
+                }
+                outbuff.push(';');
+            }
+        }
+    }
+    outbuff
 }
