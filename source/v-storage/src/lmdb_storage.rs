@@ -182,6 +182,10 @@ impl Storage for LMDBStorage {
 
         false
     }
+
+    fn get_v(&mut self, storage: StorageId, key: &str) -> Option<String> {
+        return None;
+    }
 }
 
 fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str, val: &str) -> bool {
