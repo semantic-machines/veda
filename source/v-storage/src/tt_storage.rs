@@ -75,5 +75,4 @@ impl Storage for TTStorage {
     fn get_v(&mut self, storage: StorageId, key: &str) -> Option<String> {
         return None;
     }
-
 }

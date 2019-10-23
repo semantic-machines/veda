@@ -62,10 +62,17 @@ impl VStorage {
         }
     }
 
-    pub fn get_value (&mut self, storage: StorageId, uri: &str) -> Option<String>{
+    pub fn get_value(&mut self, storage: StorageId, uri: &str) -> Option<String> {
         match &mut self.storage {
             EStorage::TT(s) => s.get_v(storage, uri),
             EStorage::LMDB(s) => s.get_v(storage, uri),
+        }
+    }
+
+    pub fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
+        match &mut self.storage {
+            EStorage::TT(s) => s.put_kv(storage, key, val),
+            EStorage::LMDB(s) => s.put_kv(storage, key, val),
         }
     }
 }
