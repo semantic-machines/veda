@@ -641,8 +641,8 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       }
     }
-    template.on("internal-validate", debounce(validateTemplate, 500));
-    //template.on("internal-validate", validateTemplate);
+    //template.on("internal-validate", debounce(validateTemplate, 500));
+    template.on("internal-validate", validateTemplate);
 
     function triggerValidation() {
       if (mode === "edit") {
