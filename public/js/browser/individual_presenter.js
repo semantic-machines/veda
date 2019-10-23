@@ -540,6 +540,7 @@ veda.Module(function (veda) { "use strict";
             }
             relContainer.children().each(function () {
               var that = $(this);
+              if ( that.hasClass("more") ) { return; }
               var resource = that.attr("resource");
               if (rendered[resource] !== counter) {
                 that.remove();
