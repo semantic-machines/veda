@@ -175,7 +175,10 @@ impl Module {
                     }
                 }
 
-                prepare(self, module_context, &mut Individual::new_raw(raw));
+                let mut queue_element =     Individual::new_raw(raw);
+                if parse_raw(&mut queue_element).is_ok() {
+                    prepare(self, module_context, &mut queue_element);
+                }
 
                 queue_consumer.commit_and_next();
 
@@ -191,9 +194,9 @@ impl Module {
 }
 
 pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, field_name: &str, new_indv: &'a mut Individual) -> bool {
-    let prev_state = queue_element.get_first_binobj(field_name);
-    if prev_state.is_some() {
-        new_indv.set_raw(&prev_state.unwrap_or_default());
+    let binobj = queue_element.get_first_binobj(field_name);
+    if binobj.is_some() {
+        new_indv.set_raw(&binobj.unwrap_or_default());
         if parse_raw(new_indv).is_ok() {
             return true;
         }
