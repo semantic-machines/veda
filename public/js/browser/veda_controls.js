@@ -780,7 +780,8 @@
       }
     });
 
-    $(".clear", control).click(function () {
+    $(".clear", control).on("click keyup", function (e) {
+      if (e.type !== "click" && e.which !== 13) { return; }
       individual.clearValue(rel_uri);
       if ( complex ) {
         individual.clearValue(rel_uri + ".v-s:employee");
@@ -1994,7 +1995,8 @@
     }
 
     if (isSingle) {
-      $(".clear", control).click(function () {
+      $(".clear", control).on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
         individual.clearValue(rel_uri);
         $(".fulltext", control).val("");
       });
@@ -2019,9 +2021,10 @@
       rel_range.rights.then(function (rights) {
         if ( !rights.hasValue("v-s:canCreate", true) ) {
           create.addClass("disabled");
-          create.off("click");
+          create.off("click keyup");
         } else {
-          create.click( function (e) {
+          create.on("click keyup", function (e) {
+            if (e.type !== "click" && e.which !== 13) { return; }
             var newVal = createValue();
             if ( inModal ) {
               var modal = $("#individual-modal-template").html();
@@ -2104,7 +2107,8 @@
 
       var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
       var modal = $("#individual-modal-template").html();
-      tree.click(function () {
+      tree.on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
         var $modal = $(modal);
         var cntr = $(".modal-body", $modal);
         $modal.on('hidden.bs.modal', function (e) {
@@ -2124,7 +2128,7 @@
         spec.present(cntr, treeTmpl, undefined, extra);
       });
     } else {
-      tree.remove();
+      tree.parent().remove();
     }
 
     // Fulltext search feature
@@ -2146,12 +2150,13 @@
         });
       }
 
-      autosize(fulltext);
-      this.on("edit", function () {
-        autosize.update(fulltext);
-      });
-      this.one("remove", function () {
-        autosize.destroy(fulltext);
+      fulltext.on("input keyup focus", function (e) {
+        var value = e.target.value;
+        if (value) {
+          e.target.setAttribute("rows", value.split("\n").length);
+        } else {
+          e.target.setAttribute("rows", 1);
+        }
       });
 
       var header = $(".header", control);
@@ -2365,18 +2370,24 @@
     // Dropdown feature
     var dropdown = $(".dropdown", control);
     if ( (this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full")) ) {
-      dropdown.click(function () {
+      dropdown.on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
         if ( !fulltextMenu.is(":visible") ) {
           fulltext.trigger("triggerSearch", [""]);
+        } else {
+          fulltextMenu.hide();
         }
       });
     } else {
       dropdown.remove();
     }
 
+    var postButtons = $(".post-buttons", control);
+    if ( !postButtons.children().length ) {
+      postButtons.remove();
+    }
     if ( !$(".fulltext", control).length ) {
-      $(".input-group", control).toggleClass("input-group btn-group");
-      $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
+      postButtons.removeClass("input-group-btn").children().first().toggleClass("btn-default btn-primary");
     }
 
     this.on("view edit search", function (e) {
