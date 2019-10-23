@@ -50,7 +50,7 @@ pub struct Right {
 
 pub type RightSet = HashMap<String, Right>;
 
-pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
+pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
     let mut access = 0u8;
 
     let is_deleted = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
@@ -91,7 +91,7 @@ pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual
         access = default_access;
     }
 
-    let use_filter = new_state.get_first_literal("v-s:use_filter").unwrap_or_default();
+    let use_filter = new_state.get_first_literal("v-s:useFilter").unwrap_or_default();
 
     let resource = new_state.get_literals(p_resource).unwrap_or_default();
     let in_set = new_state.get_literals(p_in_set).unwrap_or_default();
@@ -102,8 +102,8 @@ pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual
     let removed_resource = get_disappeared(&prev_resource, &resource);
     let removed_in_set = get_disappeared(&prev_in_set, &in_set);
 
-    let ignore_exclusive = new_state.get_first_bool("v-s:ignore_exclusive").unwrap_or_default();
-    let is_exclusive = new_state.get_first_bool("v-s:is_exclusive").unwrap_or_default();
+    let ignore_exclusive = new_state.get_first_bool("v-s:ignoreExclusive").unwrap_or_default();
+    let is_exclusive = new_state.get_first_bool("v-s:isExclusive").unwrap_or_default();
 
     let marker = if is_exclusive == true {
         M_IS_EXCLUSIVE
@@ -192,23 +192,25 @@ pub fn rights_from_string(src: &str, new_rights: &mut RightSet) -> bool {
     let mut idx = 0;
     while idx < tokens.len() {
         if let Some(key) = tokens.get(idx) {
-            let tmk = tokens.get(idx + 1).unwrap().as_bytes();
-            let mut marker = 0;
-            if tmk.len() > 1 {
-                marker = tmk[0];
-            }
+            if let Some(tmk) = tokens.get(idx + 1) {
+                let mut marker = 0;
+                if tmk.len() > 1 {
+                    marker = tmk.as_bytes()[0];
+                }
 
-            let s_access = tokens.get(idx + 1).unwrap();
-            if let Ok(access) = u8::from_str_radix(&s_access[0..2], 16) {
-                new_rights.insert(
-                    key.to_string(),
-                    Right {
-                        id: key.to_string(),
-                        access,
-                        marker,
-                        is_deleted: false,
-                    },
-                );
+                if let Some(s_access) = tokens.get(idx + 1) {
+                    if let Ok(access) = u8::from_str_radix(&s_access, 16) {
+                        new_rights.insert(
+                            key.to_string(),
+                            Right {
+                                id: key.to_string(),
+                                access,
+                                marker,
+                                is_deleted: false,
+                            },
+                        );
+                    }
+                }
             }
         }
         idx += 2;
@@ -225,7 +227,7 @@ fn rights_as_string(new_rights: RightSet) -> String {
             if right.is_deleted == false {
                 outbuff.push_str(&right.id);
                 outbuff.push(';');
-                outbuff.push_str(&format!("{:x}", right.access));
+                outbuff.push_str(&format!("{:X}", right.access));
 
                 if right.marker > 0 {
                     outbuff.push(right.marker as char);
