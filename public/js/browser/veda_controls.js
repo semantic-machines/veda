@@ -1994,7 +1994,7 @@
       return newVal;
     }
 
-    if (isSingle) {
+    if (isSingle && opts.mode !== "search") {
       $(".clear", control).on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
         individual.clearValue(rel_uri);
@@ -2369,7 +2369,7 @@
 
     // Dropdown feature
     var dropdown = $(".dropdown", control);
-    if ( (this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full")) ) {
+    if ( this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full") ) {
       dropdown.on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
         if ( !fulltextMenu.is(":visible") ) {
@@ -2383,11 +2383,11 @@
     }
 
     var postButtons = $(".post-buttons", control);
-    if ( !postButtons.children().length ) {
-      postButtons.remove();
-    }
     if ( !$(".fulltext", control).length ) {
       postButtons.removeClass("input-group-btn").children().first().toggleClass("btn-default btn-primary");
+    }
+    if ( !postButtons.children().length ) {
+      postButtons.remove();
     }
 
     this.on("view edit search", function (e) {
