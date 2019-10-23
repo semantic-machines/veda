@@ -787,6 +787,7 @@
         individual.clearValue(rel_uri + ".v-s:occupation");
       }
       $(".fulltext", control).val("");
+      $(".fulltext-menu", control).hide();
     });
 
     if (placeholder instanceof veda.IndividualModel) {
@@ -858,18 +859,17 @@
         });
         Promise.all(altResults).then(function (results) {
           results = sortUnique( results.filter(Boolean) );
-          return results.map(function (result) {
-            var tmpl = $("<div class='suggestion'></div>")
-              .text( result.toString() )
-              .attr("resource", result.id);
+          var renderedPromises = results.map(function (result) {
+            var cont = $("<div class='suggestion'></div>").attr("resource", result.id);
             if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
-              tmpl.addClass("selected");
+              cont.addClass("selected");
             }
-            if (result.hasValue("v-s:deleted", true)) {
-              tmpl.addClass("deleted");
-            }
-            return tmpl;
+            return result.present(cont, "v-ui:LabelTemplate")
+              .then(function () {
+                return cont;
+              });
           });
+          return Promise.all(renderedPromises);
         }).then(function (rendered) {
           suggestions.empty().append(rendered);
           fulltextMenu.show();
