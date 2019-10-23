@@ -33,7 +33,7 @@ test('testAttachment', async t => {
 
         //следующие 2 строчки работают с обновлённым контролом
         .typeText('veda-control.fulltext.dropdown', 'Отчет')
-        .click('div.suggestion[about="v-s:Report"]')
+        .click('.suggestion[about="v-s:Report"]')
         .typeText('input.form-control[lang="RU"]', 'Мероприятие')
         //.click('button.btn.btn-link.view.edit.-search.toggle-actions')
         //.click('veda-control[rel="v-s:attachment"]')
