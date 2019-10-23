@@ -8,11 +8,10 @@ use crate::common::*;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
-use v_api::*;
 use v_module::module::*;
 use v_onto::individual::*;
 use v_queue::consumer::*;
-use v_storage::storage::{StorageId, StorageMode, VStorage};
+use v_storage::storage::*;
 
 mod common;
 
@@ -70,21 +69,21 @@ fn prepare(_module: &mut Module, ctx: &mut Context, queue_element: &mut Individu
     }
 
     if new_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) {
-        prepare_permission_statement(&mut prev_state, &mut new_state, cmd.unwrap(), ctx);
+        prepare_permission_statement(&mut prev_state, &mut new_state, ctx);
     } else if new_state.any_exists("rdf:type", &["v-s:Membership"]) || prev_state.any_exists("rdf:type", &["v-s:Membership"]) {
-        prepare_membership(&mut prev_state, &mut new_state, cmd.unwrap(), ctx);
+        prepare_membership(&mut prev_state, &mut new_state, ctx);
     } else if new_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) {
-        prepare_permission_filter(&mut prev_state, &mut new_state, cmd.unwrap(), ctx);
+        prepare_permission_filter(&mut prev_state, &mut new_state, ctx);
     }
 
     ctx.id += 1;
 }
 
-fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, ctx: &mut Context) {
+fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
     prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:permissionSubject", PERMISSION_PREFIX, 0, ctx);
 }
 
-fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, ctx: &mut Context) {
+fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
     prepare_right_set(
         prev_state,
         new_state,
@@ -96,6 +95,6 @@ fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, c
     );
 }
 
-fn prepare_permission_filter(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, ctx: &mut Context) {
+fn prepare_permission_filter(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
     prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:resource", FILTER_PREFIX, 0, ctx);
 }

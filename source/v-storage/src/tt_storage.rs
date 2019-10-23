@@ -73,6 +73,23 @@ impl Storage for TTStorage {
     }
 
     fn get_v(&mut self, storage: StorageId, key: &str) -> Option<String> {
-        return None;
+        let space = if storage == StorageId::Tickets {
+            TICKETS_SPACE_ID
+        } else if storage == StorageId::Az {
+            AZ_SPACE_ID
+        } else {
+            INDIVIDUALS_SPACE_ID
+        };
+
+        let key = (key,);
+        let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
+
+        if let Ok(v) = self.rt.block_on(resp) {
+            if let Ok(s) = std::str::from_utf8(&v[5..]) {
+                return Some(s.to_string());
+            }
+        }
+
+        None
     }
 }

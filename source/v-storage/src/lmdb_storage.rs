@@ -184,7 +184,85 @@ impl Storage for LMDBStorage {
     }
 
     fn get_v(&mut self, storage: StorageId, key: &str) -> Option<String> {
-        return None;
+        for _it in 0..2 {
+            let db_handle;
+            let db_env;
+
+            if storage == StorageId::Individuals {
+                db_env = &self.individuals_db_env;
+                db_handle = &self.individuals_db_handle;
+            } else if storage == StorageId::Tickets {
+                db_env = &self.tickets_db_env;
+                db_handle = &self.tickets_db_handle;
+            } else if storage == StorageId::Az {
+                db_env = &self.az_db_env;
+                db_handle = &self.az_db_handle;
+            } else {
+                db_env = &Err(MdbError::Panic);
+                db_handle = &Err(MdbError::Panic);
+            }
+
+            let mut is_need_reopen = false;
+
+            match db_env {
+                Ok(env) => match db_handle {
+                    Ok(handle) => match env.get_reader() {
+                        Ok(txn) => {
+                            let db = txn.bind(&handle);
+
+                            match db.get::<String>(&key) {
+                                Ok(val) => {
+                                    return Some(val);
+                                }
+                                Err(e) => match e {
+                                    MdbError::NotFound => {
+                                        return None;
+                                    }
+                                    _ => {
+                                        error!("db.get {:?}, {}", e, key);
+                                        return None;
+                                    }
+                                },
+                            }
+                        }
+                        Err(e) => match e {
+                            MdbError::Other(c, _) => {
+                                if c == -30785 {
+                                    is_need_reopen = true;
+                                } else {
+                                    error!("fail crate transaction, err={}", e);
+                                    return None;
+                                }
+                            }
+                            _ => {
+                                error!("fail crate transaction, err={}", e);
+                            }
+                        },
+                    },
+                    Err(e) => {
+                        error!("db handle, err={}", e);
+                        return None;
+                    }
+                },
+                Err(e) => match e {
+                    MdbError::Panic => {
+                        is_need_reopen = true;
+                    }
+                    _ => {
+                        error!("db environment, err={}", e);
+                        return None;
+                    }
+                },
+            }
+
+            if is_need_reopen {
+                warn!("db {} reopen", self.db_path);
+
+                self.open(storage.clone(), self.mode.clone());
+            }
+        }
+
+        None
     }
 }
 

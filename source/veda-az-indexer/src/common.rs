@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use v_module::module::*;
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
 
@@ -92,7 +91,7 @@ pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual
         access = default_access;
     }
 
-    let use_filter = new_state.get_first_literal("v-s:use_filter");
+    let use_filter = new_state.get_first_literal("v-s:use_filter").unwrap_or_default();
 
     let resource = new_state.get_literals(p_resource).unwrap_or_default();
     let in_set = new_state.get_literals(p_in_set).unwrap_or_default();
@@ -114,21 +113,18 @@ pub fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual
         0
     };
 
-    update_right_set(&resource, &in_set, marker, is_deleted, use_filter, prefix, access, ctx);
+    update_right_set(&resource, &in_set, marker, is_deleted, &use_filter, prefix, access, ctx);
+
+    if removed_resource.len() > 0 {
+        update_right_set(&removed_resource, &in_set, marker, true, &use_filter, prefix, access, ctx);
+    }
+
+    if removed_in_set.len() > 0 {
+        update_right_set(&resource, &removed_in_set, marker, true, &use_filter, prefix, access, ctx);
+    }
 }
 
-pub fn update_right_set(
-    resources: &Vec<String>,
-    in_set: &Vec<String>,
-    marker: u8,
-    is_deleted: bool,
-    use_filter: Option<String>,
-    prefix: &str,
-    access: u8,
-    ctx: &mut Context,
-) {
-    let filter = use_filter.unwrap_or_default();
-
+pub fn update_right_set(resources: &Vec<String>, in_set: &Vec<String>, marker: u8, is_deleted: bool, filter: &String, prefix: &str, access: u8, ctx: &mut Context) {
     for rs in resources.iter() {
         let key = prefix.to_owned() + &filter + rs;
 
