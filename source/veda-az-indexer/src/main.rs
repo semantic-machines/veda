@@ -3,7 +3,8 @@ extern crate log;
 
 use chrono::Local;
 use env_logger::Builder;
-use ini::Ini;
+//use ini::Ini;
+use crate::common::*;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
@@ -11,42 +12,9 @@ use v_api::*;
 use v_module::module::*;
 use v_onto::individual::*;
 use v_queue::consumer::*;
+use v_storage::storage::{StorageId, StorageMode, VStorage};
 
-const PERMISSION_PREFIX: &str = "P";
-const MEMBERSHIP_PREFIX: &str = "M";
-const FILTER_PREFIX: &str = "F";
-
-/// Битовые поля для прав
-#[repr(u8)]
-pub enum Access {
-    /// Создание
-    can_create = 1u8,
-
-    /// Чтение
-    can_read = 2u8,
-
-    /// Изменеие
-    can_update = 4u8,
-
-    /// Удаление
-    can_delete = 8u8,
-
-    /// Запрет создания
-    cant_create = 16u8,
-
-    /// Запрет чтения
-    cant_read = 32u8,
-
-    /// Запрет обновления
-    cant_update = 64u8,
-
-    /// Запрет удаления
-    cant_delete = 128u8,
-}
-
-struct Context {
-    id: u32,
-}
+mod common;
 
 fn main() -> Result<(), i32> {
     info!("AZ-INDEXER");
@@ -61,8 +29,8 @@ fn main() -> Result<(), i32> {
         .filter(None, LevelFilter::Info)
         .init();
 
-    let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-    let section = conf.section(None::<String>).expect("fail parse veda.properties");
+    //let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
+    //let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
     let mut module = Module::default();
 
@@ -70,6 +38,7 @@ fn main() -> Result<(), i32> {
 
     let mut ctx = Context {
         id: 0,
+        storage: VStorage::new_lmdb("./data", StorageMode::ReadWrite),
     };
 
     module.listen_queue(
@@ -82,13 +51,13 @@ fn main() -> Result<(), i32> {
     Ok(())
 }
 
-fn before_bath(module: &mut Module, ctx: &mut Context) {}
+fn before_bath(_module: &mut Module, _ctx: &mut Context) {}
 
-fn after_bath(module: &mut Module, ctx: &mut Context) {
+fn after_bath(_module: &mut Module, _ctx: &mut Context) {
     thread::sleep(time::Duration::from_millis(3000));
 }
 
-fn prepare(module: &mut Module, ctx: &mut Context, queue_element: &mut Individual) {
+fn prepare(_module: &mut Module, ctx: &mut Context, queue_element: &mut Individual) {
     let mut prev_state = Individual::default();
     let mut new_state = Individual::default();
 
@@ -101,107 +70,32 @@ fn prepare(module: &mut Module, ctx: &mut Context, queue_element: &mut Individua
     }
 
     if new_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) {
-        prepare_permission_statement(&mut prev_state, &mut new_state, cmd.unwrap(), module);
+        prepare_permission_statement(&mut prev_state, &mut new_state, cmd.unwrap(), ctx);
     } else if new_state.any_exists("rdf:type", &["v-s:Membership"]) || prev_state.any_exists("rdf:type", &["v-s:Membership"]) {
-        prepare_membership(&mut prev_state, &mut new_state, cmd.unwrap(), module);
+        prepare_membership(&mut prev_state, &mut new_state, cmd.unwrap(), ctx);
     } else if new_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) {
-        prepare_permission_filter(&mut prev_state, &mut new_state, cmd.unwrap(), module);
+        prepare_permission_filter(&mut prev_state, &mut new_state, cmd.unwrap(), ctx);
     }
 
     ctx.id += 1;
 }
 
-fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, module: &mut Module) {
-    prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:permissionSubject", PERMISSION_PREFIX, 0);
+fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, ctx: &mut Context) {
+    prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:permissionSubject", PERMISSION_PREFIX, 0, ctx);
 }
 
-fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, module: &mut Module) {
+fn prepare_membership(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, ctx: &mut Context) {
     prepare_right_set(
         prev_state,
         new_state,
         "v-s:resource",
         "v-s:memberOf",
         MEMBERSHIP_PREFIX,
-        Access::can_create as u8 | Access::can_read as u8 | Access::can_update as u8 | Access::can_delete as u8,
+        Access::CanCreate as u8 | Access::CanRead as u8 | Access::CanUpdate as u8 | Access::CanDelete as u8,
+        ctx,
     );
 }
 
-fn prepare_permission_filter(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, module: &mut Module) {
-    prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:resource", FILTER_PREFIX, 0);
-}
-
-fn prepare_right_set(new_state: &mut Individual, prev_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8) {
-    let mut access = 0u8;
-
-    let is_delete = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
-
-    if let Some(v) = new_state.get_first_bool("v-s:canCreate") {
-        if v {
-            access = access | Access::can_create as u8;
-        } else {
-            access = access | Access::cant_create as u8;
-        }
-    }
-
-    if let Some(v) = new_state.get_first_bool("v-s:canRead") {
-        if v {
-            access = access | Access::can_read as u8;
-        } else {
-            access = access | Access::cant_read as u8;
-        }
-    }
-
-    if let Some(v) = new_state.get_first_bool("v-s:canUpdate") {
-        if v {
-            access = access | Access::can_update as u8;
-        } else {
-            access = access | Access::cant_update as u8;
-        }
-    }
-
-    if let Some(v) = new_state.get_first_bool("v-s:canDelete") {
-        if v {
-            access = access | Access::can_delete as u8;
-        } else {
-            access = access | Access::cant_delete as u8;
-        }
-    }
-
-    if access == 0 {
-        access = default_access;
-    }
-
-    let use_filter = new_state.get_first_literal("v-s:use_filter");
-
-    let resource = new_state.get_literals(p_resource).unwrap_or_default();
-    let in_set = new_state.get_literals(p_in_set).unwrap_or_default();
-
-    let prev_resource = prev_state.get_literals(p_resource).unwrap_or_default();
-    let prev_in_set = prev_state.get_literals(p_in_set).unwrap_or_default();
-
-    let removed_resource = get_disappeared(prev_resource, resource);
-    let removed_in_set = get_disappeared(prev_in_set, in_set);
-}
-
-//fn update_right_set() {}
-
-fn get_disappeared(a: Vec<String>, b: Vec<String>) -> Vec<String> {
-    let delta = Vec::new();
-
-    for r_a in a.iter() {
-        let mut delta = Vec::new();
-        let mut is_found = false;
-        for r_b in b.iter() {
-            if r_a == r_b {
-                is_found = true;
-                break;
-            }
-        }
-
-        if is_found == false {
-            delta.push(r_a);
-        }
-    }
-
-    return delta;
+fn prepare_permission_filter(prev_state: &mut Individual, new_state: &mut Individual, cmd: IndvOp, ctx: &mut Context) {
+    prepare_right_set(prev_state, new_state, "v-s:permissionObject", "v-s:resource", FILTER_PREFIX, 0, ctx);
 }
