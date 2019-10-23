@@ -1385,7 +1385,7 @@ svg.process-path-highlight path
   margin-right: 7px;
   margin-bottom: 7px;
 }
-.label-template:only-child {
+.label-template:only-of-type {
   margin-right: 0px;
   margin-bottom: 0px;
 }

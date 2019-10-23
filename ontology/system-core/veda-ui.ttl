@@ -1192,7 +1192,6 @@ v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
-
     var done;
     var initPopoverTimeout;
     var type = individual.hasValue("rdf:type") && individual["rdf:type"][0].id;
@@ -1223,7 +1222,7 @@ v-ui:LabelTemplate
           delay: { "show": 750, "hide": 100 },
           placement: "auto top",
           html: true,
-          container: "body",
+          container: this,
           content: cntr
         }).popover("show");
         cntr.on("click", ".close", function (e) {
