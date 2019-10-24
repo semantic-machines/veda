@@ -51,6 +51,7 @@ pub struct Right {
 pub type RightSet = HashMap<String, Right>;
 
 pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
+
     let mut access = 0u8;
 
     let is_deleted = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
@@ -128,36 +129,36 @@ pub fn update_right_set(resources: &Vec<String>, in_set: &Vec<String>, marker: u
     for rs in resources.iter() {
         let key = prefix.to_owned() + &filter + rs;
 
+        let mut new_right_set = RightSet::new();
         if let Some(prev_data_str) = ctx.storage.get_value(StorageId::Az, &key) {
-            let mut new_right_set = RightSet::new();
             rights_from_string(&prev_data_str, &mut new_right_set);
-
-            for mb in in_set.iter() {
-                if let Some(rr) = new_right_set.get_mut(mb) {
-                    rr.is_deleted = is_deleted;
-                    rr.access = rr.access | access;
-                    rr.marker = marker;
-                } else {
-                    new_right_set.insert(
-                        mb.to_string(),
-                        Right {
-                            id: mb.to_string(),
-                            access,
-                            marker,
-                            is_deleted,
-                        },
-                    );
-                }
-            }
-
-            let mut new_record = rights_as_string(new_right_set);
-
-            if new_record.len() == 0 {
-                new_record = "X".to_string();
-            }
-
-            ctx.storage.put_kv(StorageId::Az, &key, &new_record);
         }
+
+        for mb in in_set.iter() {
+            if let Some(rr) = new_right_set.get_mut(mb) {
+                rr.is_deleted = is_deleted;
+                rr.access = rr.access | access;
+                rr.marker = marker;
+            } else {
+                new_right_set.insert(
+                    mb.to_string(),
+                    Right {
+                        id: mb.to_string(),
+                        access,
+                        marker,
+                        is_deleted,
+                    },
+                );
+            }
+        }
+
+        let mut new_record = rights_as_string(new_right_set);
+
+        if new_record.len() == 0 {
+            new_record = "X".to_string();
+        }
+
+        ctx.storage.put_kv(StorageId::Az, &key, &new_record);
     }
 }
 
