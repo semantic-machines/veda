@@ -7,7 +7,7 @@ module veda.storage.lmdb.lmdb_driver;
 private
 {
     import std.stdio, std.file, std.datetime.stopwatch, std.conv, std.digest.ripemd, std.bigint, std.string, std.uuid, core.memory;
-    import veda.storage.lmdb.lmdb_header, veda.common.type, veda.common.logger, veda.storage.common, veda.core.common.define;
+    import veda.storage.lmdb.lmdb_header, veda.common.type, veda.common.logger, veda.storage.common;
     import veda.onto.individual;
 
     alias core.thread.Thread core_thread;
@@ -49,6 +49,11 @@ public class LmdbDriver : KeyValueDB
 //        reopen_db();
     }
 
+	public DBType get_type ()
+	{
+		return DBType.LMDB;
+	}
+
     @property
     string path()
     {
@@ -63,16 +68,16 @@ public class LmdbDriver : KeyValueDB
         db_is_open[ _path ] = false;
         GC.collect();
 
-//      writeln ("@@@ close_db, thread:", core.thread.Thread.getThis().name);
+        log.trace("close %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
     }
 
     public void reopen()
     {
         if (mode == DBMode.R)
         {
+            log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
             close();
             open();
-            log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
         }
     }
 
@@ -111,22 +116,7 @@ public class LmdbDriver : KeyValueDB
 
             if (rc == 0)
             {
-                string data_str = get_binobj(summ_hash_this_db_id);
-
-                if (data_str !is null && data_str.length > 0)
-                {
-                    string[] dataff = data_str.split(',');
-                    string   hash_str;
-                    if (dataff.length == 2)
-                        hash_str = dataff[ 0 ];
-
-                    if (hash_str is null || hash_str.length < 1)
-                        hash_str = "0";
-
-                    summ_hash_this_db = BigInt("0x" ~ hash_str);
-                }
-
-                log.trace("open LMDB %s data_str=[%s]", _path, data_str);
+                log.trace("open LMDB %s, thread:%s", _path, core_thread.getThis().name);
                 db_is_opened = true;
             }
         }
@@ -159,6 +149,11 @@ public class LmdbDriver : KeyValueDB
             core_thread.sleep(dur!("msecs")(10));
         }
         return rc;
+    }
+
+    public ResultCode store_kv(string in_key, string in_value)
+    {
+	return store (in_key, in_value, -1);
     }
 
     public ResultCode store(string in_key, string in_value, long op_id)
@@ -358,14 +353,6 @@ public class LmdbDriver : KeyValueDB
     }
 
 
-    private string get_new_hash(string content)
-    {
-        ubyte[ 20 ] hash = ripemd160Of(content);
-        BigInt msg_hash = "0x" ~ toHexString(hash);
-        summ_hash_this_db += msg_hash;
-        return toHex(summ_hash_this_db);
-    }
-
     public long count_entries()
     {
         if (db_is_opened == false)
@@ -442,7 +429,6 @@ public class LmdbDriver : KeyValueDB
             individual.setStatus(ResultCode.NotFound);
             return;
         }
-
 
         if (individual_as_binobj !is null && individual_as_binobj.length > 1)
         {

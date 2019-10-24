@@ -1,6 +1,6 @@
 module veda.authorization.cache;
 
-import std.stdio, std.conv, veda.common.type;
+import std.stdio, std.conv, veda.common.type, veda.core.common.type;
 
 class GroupInfo
 {

@@ -1,22 +1,21 @@
 #!/bin/bash
 # скрипт устанавливает среду для последующей компиляции, берет исходники зависимостей из github, но не собирает
 
+./tools/install-repo-libs.sh
+
 DMD_VER=2.080.0
 DUB_VER=1.5.0
-GO_VER=go1.11.1
+GO_VER=go1.12.1
 MSGPUCK_VER=2.0
-TARANTOOL_VER=1.10.2
-NANOMSG_VER=1.1.4
+NANOMSG_VER=1.1.5
+LMDB_VER=0.9.22
+XAPIAND_VER=1.0.0
 
 INSTALL_PATH=$PWD
 
 # Get other dependencies
-LIB_NAME[1]="libevent-pthreads-2.0-5"
-LIB_NAME[3]="libevent-dev"
-LIB_NAME[4]="libssl-dev"
-LIB_NAME[5]="libmysqlclient-dev"
 LIB_NAME[6]="cmake"
-LIB_NAME[7]="libtool"
+LIB_NAME[7]="libtool-bin"
 LIB_NAME[8]="pkg-config"
 LIB_NAME[9]="build-essential"
 LIB_NAME[10]="autoconf"
@@ -32,6 +31,8 @@ for i in "${LIB_NAME[@]}"; do
 
     L1=`dpkg -s $i | grep 'install ok'`
 
+    echo CHECK $i .... $L1
+
     if  [ "$L1" != "$LIB_OK" ]; then
 
       if [ $F_UL == 0 ]; then
@@ -39,6 +40,7 @@ for i in "${LIB_NAME[@]}"; do
           F_UL=1
       fi
 
+		echo INSTALL $i
         sudo apt-get install -y $i
     fi
 
@@ -134,43 +136,14 @@ go get github.com/gorilla/websocket
 go get github.com/divan/expvarmon
 go get -v gopkg.in/vmihailenco/msgpack.v2
 cp -a ./source/golang-third-party/cbor $GOPATH/src
-ls $HOME/go
-
-### TARANTOOL SERVER ###
-
-if [ "$1" = force ] || ! tarantool -V | grep $TARANTOOL_VER ; then
-echo "--- INSTALL TARANTOOL ---"
-curl http://download.tarantool.org/tarantool/1.10/gpgkey | sudo apt-key add -
-release=`lsb_release -c -s`
-
-# install https download transport for APT
-sudo apt-get -y install apt-transport-https
-
-# append two lines to a list of source repositories
-sudo rm -f /etc/apt/sources.list.d/*tarantool*.list
-sudo tee /etc/apt/sources.list.d/tarantool_1_0.list <<- EOF
-deb http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
-deb-src http://download.tarantool.org/tarantool/1.10/ubuntu/ $release main
-EOF
-
-# install
-sudo apt-get update
-sudo apt-get remove tarantool
-sudo apt-get remove tarantool-dev
-sudo apt-get -y install tarantool
-sudo apt-get -y install tarantool-dev
-
-tarantool -V
-
-else
-    echo "--- TARANTOOL INSTALLED ---"
-fi
+ls $HOME/go/src
 
 ### LIB NANOMSG ###
 
-if [ "$1" = force ] || ! ldconfig -p | grep libnanomsg ; then
+if ([ "$1" = force ] ||  [ "$1" = force-nanomsg ]) || ! ldconfig -p | grep libnanomsg ; then
     echo "--- INSTALL NANOMSG ---"
     # make nanomsg dependency
+    TRAVIS_TAG=$NANOMSG_VER
     mkdir tmp
     wget https://github.com/nanomsg/nanomsg/archive/$NANOMSG_VER.tar.gz -P tmp
     cd tmp
@@ -193,40 +166,9 @@ else
     echo "--- NANOMSG INSTALLED ---"
 fi
 
-### LIB RAPTOR ###
-
-sudo apt-get remove -y libraptor2-0
-ldconfig -p | grep libraptor2
-if [ "$1" = force ] || ! ldconfig -p | grep libraptor2 ; then
-    echo "--- INSTALL LIB RAPTOR ---"
-    sudo apt-get install -y gtk-doc-tools
-    sudo apt-get install -y libxml2-dev
-    sudo apt-get install -y flex
-    sudo apt-get install -y bison
-
-    mkdir tmp
-    cd tmp
-
-    wget https://github.com/dajobe/raptor/archive/raptor2_2_0_15.tar.gz -P .
-    tar -xvzf raptor2_2_0_15.tar.gz
-
-    cd raptor-raptor2_2_0_15
-    autoreconf -i
-    ./autogen.sh
-    ./make
-    sudo make install
-    sudo ldconfig
-    cd ..
-    cd ..
-    cd ..
-
-else
-    echo "--- LIB RAPTOR INSTALLED ---"
-fi
-
-if [ "$1" = force ] || ! ldconfig -p | grep libtarantool ; then
+if [ "$1" = force ] || [ "$1" = force-tarantool ] || ! ldconfig -p | grep libtarantool ; then
     echo "--- INSTALL LIBTARANTOOL ---"
-    TTC=213ed9f4ef8cc343ae46744d30ff2a063a8272e5
+    TTC=d93096a9d39e36c456af82e5e53c6ca4f4be608f
 
     mkdir tmp
     cd tmp
@@ -254,10 +196,61 @@ else
     echo "--- LIBTARANTOOL INSTALLED ---"
 fi
 
+    echo "--- MAKE LIBAUTHORIZATION ---"
+
     cd $INSTALL_PATH
-    cd source/authorization
+    cd source/libauthorization
     cargo build --release
     cd ..
     cd ..
     sudo cp ./source/lib64/libauthorization.so /usr/local/lib
     sudo ldconfig
+
+### LIB LMDB ###
+
+    echo "--- INSTALL LIBLMDB ---"
+    # make liblmdb dependency
+    mkdir tmp
+    wget https://github.com/itiu/lmdb/archive/$LMDB_VER.tar.gz -P tmp
+    cd tmp
+    tar -xvzf $LMDB_VER.tar.gz
+    cd lmdb-$LMDB_VER/libraries/liblmdb
+    make
+    cd ..
+    cd ..
+    cd ..
+    cd ..
+    cp ./tmp/lmdb-$LMDB_VER/libraries/liblmdb/liblmdb.a ./source/lib64
+
+
+### libv8d ###
+    cd ./source/lib64/ext-lib-bind-src/v8_d
+    make    
+
+#if [ "$1" = force ] || ! ldconfig -p | grep libxapianm ; then
+#
+#    echo "--- INSTALL XAPIAN ---"
+#
+#    cd source/lib64/libxapianm
+#    sudo libtool   --mode=install /usr/bin/install -c   libxapianm.la '/usr/local/lib'
+#    sudo ldconfig
+#    cd $PWD
+#
+#else
+#
+#    echo "--- XAPIAN INSTALLED ---"
+#
+#fi
+
+### libxapiand ###
+
+    cd $INSTALL_PATH
+    echo "--- INSTALL LIBXAPIAN ---"
+    mkdir tmp
+    wget https://github.com/itiu/xapian-d/archive/v$XAPIAND_VER.tar.gz -P tmp
+    cd tmp
+    tar -xvzf v$XAPIAND_VER.tar.gz
+    cd xapian-d-$XAPIAND_VER
+#    ./make-xapian-d.sh
+    cd $INSTALL_PATH
+    cp ./tmp/xapian-d-$XAPIAND_VER/lib64/libxapiand.a ./source/lib64

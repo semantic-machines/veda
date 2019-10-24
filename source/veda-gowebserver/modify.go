@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/op/go-nanomsg"
 	"github.com/itiu/fasthttp"
+	//"github.com/op/go-nanomsg"
 )
 
 //modifyIndividual sends request to veda server
@@ -35,23 +35,10 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 
 	responseJSON := make(map[string]interface{})
 
-	var mstorage_ch *nanomsg.Socket
-	mstorage_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-	if err != nil {
-		log.Println("ERR! ON CREATING SOCKET to mstorage")
-		return InternalServerError
-	}
-
-	_, err = mstorage_ch.Connect(mainModuleURL)
-	for err != nil {
-		log.Println("ERR! ON CREATING ENDPOINT to mstorage")
-		return InternalServerError
-	}
-
-	NmCSend(mstorage_ch, jsonRequest, 0)
-	responseBuf, err := mstorage_ch.Recv(0)
-
-	mstorage_ch.Close()
+	mstorage_ch_Mutex.Lock()
+	NmCSend(g_mstorage_ch, jsonRequest, 0)
+	responseBuf, _ := g_mstorage_ch.Recv(0)
+	mstorage_ch_Mutex.Unlock()
 
 	if err != nil {
 		log.Printf("ERR! modify individual: recieve, cmd=%v: err=%v, request=%v\n", cmd, err, request)
@@ -64,25 +51,32 @@ func modifyIndividual(cmd string, ticket *ticket, dataKey string, dataJSON inter
 			log.Printf("ERR! modify individual: DECODE JSON RESPONSE, cmd=%v: request=%v, response=%v, err=%v\n", cmd, request, responseBuf, err)
 			ctx.Response.SetStatusCode(int(InternalServerError))
 			trail(ticket.Id, ticket.UserURI, cmd, request, "{}", InternalServerError, timestamp)
-			return InternalServerError
+			return BadRequest
 		}
 
 		//Unmarshal response data and gives response to client
-		data := responseJSON["data"]
+		dataJF := responseJSON["data"]
 
-		if data != nil {
-			responseData := data.([]interface{})[0].(map[string]interface{})
-			ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
-			responseDataJSON, _ := json.Marshal(responseData)
-			//log.Println("@", string(responseDataJSON))
-			ctx.Write(responseDataJSON)
-			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
-				ResultCode(responseData["result"].(float64)), timestamp)
-			return ResultCode(responseData["result"].(float64))
+		if dataJF != nil {
+			dataI := dataJF.([]interface{})
+			if len(dataI) == 1 {
+				responseData := dataI[0].(map[string]interface{})
+				ctx.Response.SetStatusCode(int(responseData["result"].(float64)))
+				responseDataJSON, _ := json.Marshal(responseData)
+				ctx.Write(responseDataJSON)
+				trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
+					ResultCode(responseData["result"].(float64)), timestamp)
+				return ResultCode(responseData["result"].(float64))
+			} else {
+				ctx.Response.SetStatusCode(int(BadRequest))
+				responseDataJSON, _ := json.Marshal(responseJSON)
+				ctx.Write(responseDataJSON)
+				trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON), BadRequest, timestamp)
+				return BadRequest
+			}
 		} else {
 			ctx.Response.SetStatusCode(int(responseJSON["result"].(float64)))
 			responseDataJSON, _ := json.Marshal(responseJSON)
-			//log.Println("@", string(responseDataJSON))
 			ctx.Write(responseDataJSON)
 			trail(ticket.Id, ticket.UserURI, cmd, request, string(responseDataJSON),
 				ResultCode(responseJSON["result"].(float64)), timestamp)

@@ -66,8 +66,8 @@ rdfs:domain a rdf:Property ;
     rdfs:range rdfs:Class .
 
 rdfs:isDefinedBy a rdf:Property ;
-    rdfs:label "определен в"@ru ;
-    rdfs:label "isDefinedBy"@en ;
+    rdfs:label "Определен в"@ru ;
+    rdfs:label "is defined by"@en ;
     rdfs:comment "The defininition of the subject resource." ;
     rdfs:domain rdfs:Resource ;
     rdfs:isDefinedBy rdfs: ;

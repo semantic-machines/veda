@@ -1,0 +1,21 @@
+[package]
+name = "v_exim"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[lib]
+path = "src/exim.rs"
+
+[dependencies]
+env_logger = "0.6"
+log = "0.4"
+enum-primitive-derive = "0.1"
+num-traits = "0.1"
+uuid = { version = "0.7", features = ["serde", "v4"] }
+nng = "0.5.0"
+v_onto = { path = "../v-onto" }
+v_queue = { path = "../v-queue" }
+v_module = { path = "../v-module" }
+v_api = { path = "../v-api" }
+

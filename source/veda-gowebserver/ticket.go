@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
-	//"strings"
 	"github.com/itiu/fasthttp"
 	"time"
 )
@@ -50,7 +49,7 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 		//If common response code is not Ok return fail code
 		if rr.CommonRC != Ok {
 			log.Printf("ERR! GET TICKET, ticket=%s, err=%v\n", ticketKey, rr.CommonRC)
-			return InternalServerError, ticket
+			return rr.CommonRC, ticket
 		}
 
 		//If operation code is not Ok return fail code
@@ -83,12 +82,12 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 			//Check its field v-s:origin
 
 			origin, ok := getFirstString(user, "v-s:origin")
-			if !ok || (ok && origin != "External User") {
+			if !ok || (ok && origin != "ExternalUser") {
 				//If this field not found or it contains false then return error code
 				log.Printf("ERR! user (%s) is not external, user_indv=%v\n", ticket.UserURI, user)
 				ticket.Id = "?"
 				ticket.result = NotAuthorized
-			} else if ok && origin == "External User" {
+			} else if ok && origin == "ExternalUser" {
 				//Else store ticket to cache
 				log.Printf("user is external (%s)\n", ticket.UserURI)
 			}
@@ -107,6 +106,14 @@ func getTicket(ticketKey string) (ResultCode, ticket) {
 
 //isTicketValid handles is_ticket_valid request
 func isTicketValid(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in isTicketValid", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	var ticketKey string
 	//Decode parametrs from requestn context
 	ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
@@ -152,8 +159,11 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 	}
 
 	//Send request to veda server and read response
+	mstorage_ch_Mutex.Lock()
 	NmCSend(g_mstorage_ch, jsonRequest, 0)
 	responseBuf, _ := g_mstorage_ch.Recv(0)
+	mstorage_ch_Mutex.Unlock()
+
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
 	if err != nil {
@@ -178,7 +188,7 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	log.Printf("INFO: get ticket trusted, ticket=%s, login=%s, result=%s", ticketKey, login, string (getTicketResponseBuf))
+	log.Printf("INFO: get ticket trusted, ticket=%s, login=%s, result=%s", ticketKey, login, string(getTicketResponseBuf))
 
 	ctx.SetStatusCode(int(responseJSON["result"].(float64)))
 	ctx.Write(getTicketResponseBuf)

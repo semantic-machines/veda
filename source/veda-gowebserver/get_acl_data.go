@@ -8,6 +8,14 @@ import (
 
 //getAclData performs request GetRightsOrigin of GetMembership, this is set by operation parametr
 func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getAclData", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	var uri string
 	var ticketKey string
 	var ticket ticket
@@ -30,14 +38,8 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
 		return
 	}
 
-	//Trace auth is activated only for GetRightsOrigin requset
-	traceAuth := false
-	if operation == GetRightsOrigin {
-		traceAuth = true
-	}
-
 	//Perform authorize request to tarantool
-	rr := conn.Authorize(true, ticket.UserURI, uri, operation, false, traceAuth)
+	rr := conn.Authorize(true, ticket.UserURI, uri, operation, false)
 
 	//If common response code is not Ok return fail to client
 	if rr.CommonRC != Ok {

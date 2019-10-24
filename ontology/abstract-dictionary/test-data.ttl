@@ -1,5 +1,4 @@
 @prefix d: <http://semantic-machines.com/veda/veda-data/> .
-@prefix : <http://semantic-machines.com/veda/test-data/> .
 @prefix td: <http://semantic-machines.com/veda/test-data/> .
 @prefix v-wf: <http://semantic-machines.com/veda/veda-workflow/> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -11,7 +10,6 @@
 @prefix v-fs: <http://semantic-machines.com/veda/veda-search/> .
 @prefix s-wf: <http://semantic-machines.com/veda/simple-workflow/> .
 @prefix cfg: <http://semantic-machines.com/veda/config/> .
-
 
 <http://semantic-machines.com/veda/test-data>
   rdf:type owl:Ontology ;
@@ -58,6 +56,7 @@ td:khvostiaImage
 td:Analyst1
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:parentOrganization cfg:org_Veda ;
   rdfs:label "Аналитик"@ru ;
   rdfs:label "Analyst"@en ;
 .
@@ -65,6 +64,7 @@ td:Analyst1
 td:Analyst2
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:parentOrganization cfg:org_Veda ;
   rdfs:label "Аналитик"@ru ;
   rdfs:label "Analyst"@en ;
 .
@@ -100,6 +100,7 @@ td:TechnicalDirector
 td:Programmer1
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:parentOrganization cfg:org_Veda ;
   rdfs:label "Программист"@ru ;
   rdfs:label "Programmer"@en ;
 .
@@ -199,27 +200,7 @@ td:Membership_51_su
   rdfs:label "Членство_51"@ru ;
   rdfs:label "Membership_51"@en ;
 .
-td:Membership_52_su
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:SuperUser ;
-  v-s:resource d:mondi_employee_00056698 ;
-  rdfs:label "Членство_52"@ru ;
-  rdfs:label "Membership_52"@en ;
-.
-td:Membership_53_su
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:SuperUser ;
-  v-s:resource d:mondi_employee_00068722 ;
-  rdfs:label "Членство_53"@ru ;
-  rdfs:label "Membership_53"@en ;
-.
-td:Membership_54_su
-  rdf:type v-s:Membership ;
-  v-s:memberOf cfg:SuperUser ;
-  v-s:resource d:mondi_employee_00061407 ;
-  rdfs:label "Членство_54"@ru ;
-  rdfs:label "Membership_54"@en ;
-.
+
 td:Membership_6
   rdf:type v-s:Membership ;
   v-s:memberOf td:ResGroup_1 ;
@@ -343,6 +324,7 @@ td:AndreyBychin
   v-s:hasAppointment td:AndreyBychin-Analyst2 ;
   rdfs:label "Администратор4"@ru ;
   rdfs:label "Administrator4"@en ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner td:AndreyBychin ;
 .
 td:AndreyBychin-Analyst2
@@ -356,6 +338,7 @@ td:AndreyBychin-Analyst2
   rdfs:label "Администратор4 : Аналитик"@ru ;
   rdfs:label "Administrator4 : Analyst"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:parentOrganization cfg:org_Veda ;
   v-s:official "true"^^xsd:boolean ;
   v-s:origin "Internal User" ;
 .
@@ -372,6 +355,7 @@ td:RomanKarpov
   rdfs:label "Administrator2"@en ;
   v-s:hasAppointment td:RomanKarpov-Analyst1 ;
   v-s:hasAspect v-s:PersonalAspectKarpovr ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner td:RomanKarpov ;
 .
 
@@ -384,6 +368,7 @@ td:RomanKarpov-Analyst1
   v-s:published "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:startTime "2014-01-30T15:22:33"^^xsd:dateTime ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:parentOrganization cfg:org_Veda ;
   rdfs:label "Администратор2 : Аналитик"@ru ;
   rdfs:label "Administrator2 : Analyst"@en ;
   v-s:official "true"^^xsd:boolean ;
@@ -431,6 +416,7 @@ td:ValeriyBushenev
   v-ui:hasPreferences td:ValeriyBushenev_pref ;
   rdfs:label "Администратор3"@ru ;
   rdfs:label "Administrator3"@en ;
+  v-s:parentOrganization cfg:org_Veda;
   v-s:owner td:ValeriyBushenev ;
 .
 
@@ -445,6 +431,7 @@ td:ValeriyBushenev-Programmer1
   rdfs:label "Администратор3 : Программист"@ru ;
   rdfs:label "Administrator3 : Programmer"@en ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
+  v-s:parentOrganization cfg:org_Veda ;
   v-s:official "true"^^xsd:boolean ;
   v-s:origin "Internal User" ;
 .
@@ -468,79 +455,82 @@ td:ApplicationDevelopmentGroup
   rdfs:label "Подразделение (Тест)"@ru;
   rdfs:label "Department (Test)"@en;
   v-s:origin "admin"^^xsd:string;
+  v-s:hasChief cfg:AdministratorAppointment;
   v-s:parentUnit cfg:org_Veda;
+  v-s:parentOrganization cfg:org_Veda;
 .
 
 ######################## сеть, пример 1 #######################
 
-:start-form1
+td:start-form1
   a v-wf:StartForm;
   v-wf:hasStatusWorkflow v-wf:DoNotSend;
   rdfs:label "Тест стартовой формы 1"@ru;
-  v-wf:forNet :net1 ;
+  v-wf:forNet td:net1 ;
 .
 
-:net1
-  v-wf:consistsOf :net1-ic, :net1-oc, :net1-fl1;
+td:net1
+  v-wf:consistsOf td:net1-ic, td:net1-oc, td:net1-fl1;
   rdfs:label "Сеть, пример 1"^^xsd:string;
   a v-wf:Net.
 
-:net1-ic
-  v-wf:hasFlow :net1-fl1;
+td:net1-ic
+  v-wf:hasFlow td:net1-fl1;
   v-wf:locationX "0"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:InputCondition;
   rdfs:label "С1"^^xsd:string.
 
-:net1-oc
+td:net1-oc
   v-wf:locationX "376"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:OutputCondition;
   rdfs:label "С2"^^xsd:string.
 
-:net1-fl1
-  v-wf:flowsInto :net1-oc;
+td:net1-fl1
+  v-wf:flowsInto td:net1-oc;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
 ######################## сеть, пример 2 #######################
 
-:start-form2
+td:start-form2
   a v-wf:StartForm;
   v-wf:hasStatusWorkflow v-wf:DoNotSend;
   rdfs:label "Тест стартовой формы 2"@ru;
-  v-wf:forNet :net2 ;
+  v-wf:forNet td:net2 ;
 .
 
-:net2
-  v-wf:consistsOf :net2-ic, :net2-oc, :net2-fl1, :net2-t1, :net2-fl2;
+td:net2
+  v-wf:consistsOf td:net2-ic, td:net2-oc, td:net2-fl1, td:net2-t1, td:net2-fl2;
   rdfs:label "Сеть, пример 2"^^xsd:string;
   a v-wf:Net.
 
-:net2-ic
-  v-wf:hasFlow :net2-fl1;
+td:net2-ic
+  v-wf:hasFlow td:net2-fl1;
   v-wf:locationX "0"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:InputCondition;
   rdfs:label "С1"^^xsd:string.
 
-:net2-fl1
-  v-wf:flowsInto :net2-t1;
+td:net2-fl1
+  v-wf:flowsInto td:net2-t1;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
-:net2-t1
-  v-wf:hasFlow :net2-fl2;
+td:net2-t1
+  v-wf:hasFlow td:net2-fl2;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:Task;
   rdfs:label "Задача 1"^^xsd:string;
   v-wf:locationX "164"^^xsd:integer.
 
-:net2-fl2 v-wf:flowsInto :net2-oc;
+td:net2-fl2
+  v-wf:flowsInto td:net2-oc;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
-:net2-oc
+td:net2-oc
   v-wf:locationX "376"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:OutputCondition;
@@ -548,43 +538,44 @@ td:ApplicationDevelopmentGroup
 
 ######################## сеть, пример 3 #######################
 
-:start-form3
+td:start-form3
   a v-wf:StartForm;
   v-wf:hasStatusWorkflow v-wf:DoNotSend;
   rdfs:label "Тест стартовой формы 3"@ru;
-  v-wf:forNet :net3 ;
+  v-wf:forNet td:net3 ;
 .
 
-:net3
-  v-wf:consistsOf :net3-ic, :net3-oc, :net3-fl1, :net3-t1, :net3-fl2;
+td:net3
+  v-wf:consistsOf td:net3-ic, td:net3-oc, td:net3-fl1, td:net3-t1, td:net3-fl2;
   rdfs:label "Сеть, пример 3"^^xsd:string;
   a v-wf:Net.
 
-:net3-ic
-  v-wf:hasFlow :net3-fl1;
+td:net3-ic
+  v-wf:hasFlow td:net3-fl1;
   v-wf:locationX "0"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:InputCondition;
   rdfs:label "С1"^^xsd:string.
 
-:net3-fl1
-  v-wf:flowsInto :net3-t1;
+td:net3-fl1
+  v-wf:flowsInto td:net3-t1;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
-:net3-t1
-  v-wf:hasFlow :net3-fl2;
+td:net3-t1
+  v-wf:hasFlow td:net3-fl2;
   v-wf:executor td:AndreyBychin-Analyst2;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:Task;
   rdfs:label "Задача 1"^^xsd:string;
   v-wf:locationX "164"^^xsd:integer.
 
-:net3-fl2 v-wf:flowsInto :net3-oc;
+td:net3-fl2
+  v-wf:flowsInto td:net3-oc;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
-:net3-oc
+td:net3-oc
   v-wf:locationX "376"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:OutputCondition;
@@ -592,56 +583,57 @@ td:ApplicationDevelopmentGroup
 
 ######################## сеть, пример 4 #######################
 
-:start-form4
+td:start-form4
   a v-wf:StartForm;
   v-wf:hasStatusWorkflow v-wf:DoNotSend;
   rdfs:label "Тест стартовой формы 4"@ru;
-  v-wf:forNet :net4 ;
+  v-wf:forNet td:net4 ;
 .
 
-:net4
-  v-wf:consistsOf :net4-ic, :net4-oc, :net4-fl1, :net4-t1, :net4-fl2;
+td:net4
+  v-wf:consistsOf td:net4-ic, td:net4-oc, td:net4-fl1, td:net4-t1, td:net4-fl2;
   rdfs:label "Сеть, пример 4"^^xsd:string;
   a v-wf:Net.
 
-:net4-ic
-  v-wf:hasFlow :net4-fl1;
+td:net4-ic
+  v-wf:hasFlow td:net4-fl1;
   v-wf:locationX "0"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:InputCondition;
   rdfs:label "С1"^^xsd:string.
 
-:net4-fl1
-  v-wf:flowsInto :net4-t1;
+td:net4-fl1
+  v-wf:flowsInto td:net4-t1;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
-:net4-t1
-  v-wf:hasFlow :net4-fl2;
+td:net4-t1
+  v-wf:hasFlow td:net4-fl2;
   v-wf:executor td:AndreyBychin-Analyst2;
-  v-wf:startDecisionTransform :net4-tr1;
+  v-wf:startDecisionTransform td:net4-tr1;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:Task;
   rdfs:label "Задача 1"^^xsd:string;
   v-wf:locationX "164"^^xsd:integer.
 
-:net4-fl2 v-wf:flowsInto :net4-oc;
+td:net4-fl2
+  v-wf:flowsInto td:net4-oc;
   a v-wf:Flow;
   rdfs:label ""^^xsd:string.
 
-:net4-oc
+td:net4-oc
   v-wf:locationX "376"^^xsd:integer;
   v-wf:locationY "0"^^xsd:integer;
   a v-wf:OutputCondition;
   rdfs:label "С2"^^xsd:string.
 
-:net4-tr1
+td:net4-tr1
   rdf:type v-wf:Transform ;
   rdfs:label "Создание формы ответа на задачу, net4"^^xsd:string;
-  v-wf:transformRule :net4-tr1-r1 ;
+  v-wf:transformRule td:net4-tr1-r1 ;
 .
 
-:net4-tr1-r1
+td:net4-tr1-r1
   rdf:type v-wf:Rule ;
   v-wf:segregateElement "contentName('@')" ;
   v-wf:aggregate "putUri ('rdf:type', 'v-wf:DecisionForm')";
@@ -713,4 +705,11 @@ d:Membership_71014133_71025564
   rdfs:label "Начальник управления - в группу Начальник службы"@en ;
 .
 
-
+s-wf:RouteTest
+  rdf:type v-wf:StartForm ;
+  rdfs:label "Тестовый шаблон маршрута lowPriority"@ru ;
+  rdfs:label "lowPriority test template"@en ;
+  v-wf:StartForm_canEdit "false"^^xsd:boolean ;
+  v-wf:StartForm_setStatus "false"^^xsd:boolean ;
+  v-s:runAt "V8.LowPriority1"^^xsd:string ;
+.

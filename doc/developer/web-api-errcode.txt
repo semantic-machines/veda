@@ -1,0 +1,34 @@
+Платформа Veda. 
+Коды ошибок возвращаемых HTTP интерфейсом.
+
+    Ok                      = 200
+    Created                 = 201
+    NoContent               = 204
+    BadRequest              = 400
+    Forbidden               = 403
+    NotFound                = 404
+    UnprocessableEntity     = 422
+    TooManyRequests         = 429
+    SecretExpired           = 464
+    EmptyPassword           = 465
+    NewPasswordIsEqualToOld = 466
+    InvalidPassword         = 467
+    InvalidSecret           = 468
+    PasswordExpired         = 469
+    TicketNotFound          = 470
+    TicketExpired           = 471
+    NotAuthorized           = 472
+    AuthenticationFailed    = 473
+    NotReady                = 474
+    FailOpenTransaction     = 475
+    FailCommit              = 476
+    FailStore               = 477
+    InternalServerError     = 500
+    NotImplemented          = 501
+    ServiceUnavailable      = 503
+    InvalidIdentifier       = 904
+    DatabaseModifiedError   = 999
+    DiskFull                = 1021
+    DuplicateKey            = 1022
+    SizeTooLarge            = 1118
+    ConnectError            = 4000

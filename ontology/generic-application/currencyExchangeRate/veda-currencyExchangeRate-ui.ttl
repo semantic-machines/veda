@@ -15,37 +15,71 @@
   v-s:loadPriority 6 ;
 .
 
-# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
-
-v-s:PsHasCurrency_CurrencyExchangeRate
-  rdf:type v-ui:ObjectPropertySpecification ;
+#----------------------------------------------------------------------
+v-s:CurrencyExchangeRateTemplate
+  rdf:type v-ui:ClassTemplate ;
   v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencySource ;
-  v-ui:forProperty v-s:hasCurrencyTarget ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'==='v-s:Currency')"^^xsd:string ;
-  v-ui:placeholder "Выберите валюту"@ru ;
-  v-ui:placeholder "Select currency"@en ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencySource, v-s:hasCurrencyTarget для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencySource, v-s:hasCurrencyTarget property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:rate ;
-  v-ui:forProperty v-s:date ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:rate для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:rate property specification for v-s:CurrencyExchangeRate class"@en ;
-.
-v-s:PsRate_CurrencyExchangeRate
-  rdf:type v-ui:PropertySpecification ;
-  v-ui:forClass v-s:CurrencyExchangeRate ;
-  v-ui:forProperty v-s:hasCurrencyExchangeRatePurpose ;
-  v-ui:maxCardinality 1 ;
-  v-ui:minCardinality 1 ;
-  rdfs:label "Спецификация свойства v-s:hasCurrencyExchangeRatePurpose для класса v-s:CurrencyExchangeRate"@ru ;
-  rdfs:label "v-s:hasCurrencyExchangeRatePurpose property specification for v-s:CurrencyExchangeRate class"@en ;
+  rdfs:label "Шаблон для класса v-s:CurrencyExchangeRate"@ru ;
+  rdfs:label "Template for v-s:CurrencyExchangeRate class"@en ;
+  v-ui:template """
+<div class="container sheet">
+  <h2>
+    <span about="v-s:CurrencyExchangeRate" property="rdfs:label"></span>
+    <small about="@" property="rdfs:label"></small>
+  </h2>
+  <hr class="margin-sm">
+  <div class="row text-center">
+    <div class="col-md-2">
+      <em about="v-s:hasCurrency" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-2">
+      <em about="v-s:hasCurrency" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-2">
+      <em about="v-s:rate" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-2">
+      <em about="v-s:date" property="rdfs:label"></em>
+    </div>
+    <div class="col-md-2">
+      <em about="v-s:hasCurrencyExchangeRatePurpose" property="rdfs:label"></em>
+    </div>
+  </div>
+  <div class="row text-center">
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencySource" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control data-type="select" rel="v-s:hasCurrencySource" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-1">
+      <strong>/</strong>
+    </div>
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencyTarget" data-template="v-ui:LabelTemplate" class="view -edit -search"></div>
+      <veda-control data-type="select" rel="v-s:hasCurrencyTarget" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-1">
+      <strong>=</strong>
+    </div>
+    <div class="col-md-2">
+      <div property="v-s:rate" class="view -edit search"></div>
+      <veda-control data-type="decimal" property="v-s:rate" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <div property="v-s:date" class="view -edit search"></div>
+      <veda-control data-type="date" property="v-s:date" class="-view edit search"></veda-control>
+    </div>
+    <div class="col-md-2">
+      <div rel="v-s:hasCurrencyExchangeRatePurpose" data-template="v-ui:LabelTemplate" class="view -edit search"></div>
+      <veda-control data-type="link" rel="v-s:hasCurrencyExchangeRatePurpose" class="-view edit search fulltext dropdown"></veda-control>
+    </div>
+  </div>
+  <br>
+  <!-- BUTTONS -->
+  <div class="actions view edit -search">
+    <span about="@" data-template="v-ui:StandardButtonsTemplate" data-embedded="true" data-buttons="edit save cancel"></span>
+  </div>
+</div>
+  """ ;
 .

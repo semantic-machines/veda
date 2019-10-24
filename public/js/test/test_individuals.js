@@ -111,6 +111,96 @@ function generate_test_document2(ticket)
     return new_test_doc2;
 }
 
+function generate_test_document3(ticket)
+{
+  var new_test_doc3_uri = genUri();
+  var new_test_doc3 = {
+    '@': new_test_doc3_uri,
+    'rdf:type': newUri('rdfs:Resource1'),
+    'v-s:created': newDate(new Date()),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_doc3;
+}
+
+function create_test_document3(ticket)
+{
+  var new_test_doc3 = generate_test_document3(ticket)
+  var res = Backend.put_individual(ticket.id, new_test_doc3);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_doc3;
+}
+function generate_test_document4(ticket)
+{
+  var new_test_doc4_uri = genUri();
+  var new_test_doc4 = {
+    '@': new_test_doc4_uri,
+    'rdf:type': newUri('rdfs:Resource1'),
+    'v-s:created': newDate(new Date()),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_doc4;
+}
+
+function create_test_document4(ticket)
+{
+  var new_test_doc4 = generate_test_document4(ticket)
+  var res = Backend.put_individual(ticket.id, new_test_doc4);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_doc4;
+}
+
+function generate_test_membership1(ticket, doc_group)
+{
+  var new_test_membership1_uri = genUri();
+  var new_test_membership1 = {
+    '@': new_test_membership1_uri,
+    'rdf:type': newUri('v-s:Membership'),
+    'v-s:isExclusive': newBool(true),
+    'v-s:resource': newUri('td:ValeriyBushenev'),
+    'v-s:memberOf': newUri(doc_group),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_membership1;
+}
+
+function create_test_membership1(ticket, doc_group)
+{
+  var new_test_membership1 = generate_test_membership1(ticket, doc_group)
+  var res = Backend.put_individual(ticket.id, new_test_membership1);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_membership1;
+}
+function generate_test_membership2(ticket, doc_group)
+{
+  var new_test_membership2_uri = genUri();
+  var new_test_membership2 = {
+    '@': new_test_membership2_uri,
+    'rdf:type': newUri('v-s:Membership'),
+    'v-s:ignoreExclusive': newBool(true),
+    'v-s:resource': newUri('td:ValeriyBushenev'),
+    'v-s:memberOf': newUri(doc_group),
+    'rdfs:label': [newStr ("Русский", "RU")[0], newStr ("English", "EN")[0]],
+    'v-s:author': newUri(ticket.user_uri)
+  };
+  return new_test_membership2;
+}
+
+function create_test_membership2(ticket, doc_group)
+{
+  var new_test_membership2 = generate_test_membership2(ticket, doc_group)
+  var res = Backend.put_individual(ticket.id, new_test_membership2);
+  Backend.wait_module(m_acl, res.op_id);
+  Backend.wait_module(m_scripts, res.op_id);
+  return new_test_membership2;
+}
+
 function create_test_document1(ticket, prefix)
 {
     var new_test_doc1 = generate_test_document1(ticket)
@@ -393,10 +483,10 @@ for (i = 0; i < 1; i++)
             res = Backend.put_individual(ticket_user1.id, new_test_doc5, false);
             res = Backend.put_individual(ticket_user1.id, new_test_doc6, false);
 
-//            Backend.flush (m_fulltext_indexer, res.op_id);
-
             Backend.wait_module(m_fulltext_indexer, res.op_id);
             Backend.wait_module(m_subject, res.op_id);
+            Backend.wait_module(m_scripts, res.op_id);
+            Backend.wait_module(m_acl, res.op_id);
 
             var data = Backend.query(ticket_user1.id, "'*' == 'test30.1*' && 'v-s:test_group' === '" + test_group_uid + "'" , undefined, undefined, true).result;
 
@@ -837,8 +927,8 @@ for (i = 0; i < 1; i++)
             //#2
             res = test_fail_read(assert, ticket2, new_test_doc1['@'], new_test_doc1);
 
-            var doc_group = 'g:doc_group_' + guid();
-            var user_group = 'g:user_group_' + guid();
+            var doc_group = 'g:doc_g1roup_' + guid();
+            var user_group = 'g:user_g1roup_' + guid();
 
             res = addToGroup(ticket1, doc_group, new_test_doc1['@']);
             res = addToGroup(ticket1, user_group, ticket2.user_uri);
@@ -1270,7 +1360,7 @@ for (i = 0; i < 1; i++)
             var res;
             var doc1 = create_test_document1(ticket1);
             var doc2 = create_test_document1(ticket1);
-            var doc_group1_uri = 'g:doc_group_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1321,9 +1411,9 @@ for (i = 0; i < 1; i++)
             var doc1 = create_test_document1(ticket1, 'doc1_');
             var doc2 = create_test_document1(ticket1, 'doc2_');
             var doc3 = create_test_document1(ticket1, 'doc3_');
-            var doc_group1_uri = 'g:doc_group1_' + guid();
-            var doc_group2_uri = 'g:doc_group2_' + guid();
-            var doc_group3_uri = 'g:doc_group3_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup1_' + guid();
+            var doc_group2_uri = 'g:doc_g1roup2_' + guid();
+            var doc_group3_uri = 'g:doc_g1roup3_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1404,9 +1494,9 @@ for (i = 0; i < 1; i++)
             var doc1 = create_test_document1(ticket1, 'doc1_');
             var doc2 = create_test_document1(ticket1, 'doc2_');
             var doc3 = create_test_document1(ticket1, 'doc3_');
-            var doc_group1_uri = 'g:doc_group1_' + guid();
-            var doc_group2_uri = 'g:doc_group2_' + guid();
-            var doc_group3_uri = 'g:doc_group3_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup1_' + guid();
+            var doc_group2_uri = 'g:doc_g1roup2_' + guid();
+            var doc_group3_uri = 'g:doc_g1roup3_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1489,9 +1579,9 @@ for (i = 0; i < 1; i++)
             var doc1 = create_test_document1(ticket1, 'doc1_');
             var doc2 = create_test_document1(ticket1, 'doc2_');
             var doc3 = create_test_document1(ticket1, 'doc3_');
-            var doc_group1_uri = 'g:doc_group1_' + guid();
-            var doc_group2_uri = 'g:doc_group2_' + guid();
-            var doc_group3_uri = 'g:doc_group3_' + guid();
+            var doc_group1_uri = 'g:doc_g1roup1_' + guid();
+            var doc_group2_uri = 'g:doc_g1roup2_' + guid();
+            var doc_group3_uri = 'g:doc_g1roup3_' + guid();
 
             //#1
             res = test_success_read(assert, ticket1, doc1['@'], doc1);
@@ -1578,7 +1668,7 @@ for (i = 0; i < 1; i++)
           createMeetings(user, 9, 3);
           var res = createMeetings(admin, 12, 9);
 
-	  Backend.wait_module(m_subject, res.op_id);
+    Backend.wait_module(m_subject, res.op_id);
           Backend.wait_module(m_scripts, res.op_id);
           Backend.wait_module(m_acl, res.op_id);
           Backend.wait_module(m_fulltext_indexer, res.op_id);
@@ -1766,9 +1856,18 @@ for (i = 0; i < 1; i++)
         var found = 0;
         res["v-s:memberOf"].forEach(function(item, i) {
             switch (res["v-s:memberOf"][i]["data"]) {
-                case "td:RomanKarpov_pref":
-                case "v-s:AllResourcesGroup":
-                case "cfg:TTLResourcesGroup":
+		case "v-s:AllResourcesGroup":
+		case "td:RomanKarpov_pref":
+		case "v-ui:Preferences_group":
+		case "v-s:UserThing_group":
+		case "v-s:Exportable_group":
+		case "rdfs:Resource_group":
+		case "v-s:ClassAuthorized_group":
+		case "v-s:Thing_group":
+		case "v-s:GroupAuthorized_group":
+		case "v-s:Embedded_group":
+		case "v-s:Labeled_group":
+		case "cfg:TTLResourcesGroup":
                     found++
                     break;
                 default:
@@ -2149,7 +2248,7 @@ for (i = 0; i < 1; i++)
             test_fail_read(assert, ticket_user1, new_test_doc4['@'], new_test_doc4);
         });
 
-QUnit.test(
+        QUnit.test(
         "#031 1) [A] store user1 and read user2. 2) store right content filter. 3) read A user 1 and dont read [A] user2",
         function(assert)
         {
@@ -2207,21 +2306,111 @@ QUnit.test(
             test_fail_update(assert, ticket_user1, new_test_doc1);
             test_success_update(assert, ticket_user2, new_test_doc1);
 
-      // disable permission with filter
-      new_permission1['v-s:deleted'] = newBool (true);
+			// disable permission with filter
+			new_permission1['v-s:deleted'] = newBool (true);
             res1 = Backend.put_individual(ticket_admin.id, new_permission1);
 
             Backend.wait_module(m_acl, res1.op_id);
             test_fail_update(assert, ticket_user2, new_test_doc1);
 
-      // disable filter
-      new_permission_filter['v-s:deleted'] = newBool (true);
+			// disable filter
+			new_permission_filter['v-s:deleted'] = newBool (true);
             var res2 = Backend.put_individual(ticket_admin.id, new_permission_filter);
             Backend.wait_module(m_acl, res2.op_id);
 
             test_success_update(assert, ticket_user2, new_test_doc1);
         });
 
+        QUnit.test(
+        "#050 Bad requests",
+        function(assert)
+        {
+            var ticket = get_user1_ticket();
+
+			try	{ Backend.query(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.query(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            Backend.query(ticket.id, {});
+            Backend.query(ticket.id, 1);
+            Backend.query(ticket.id, "1");
+            Backend.query(ticket.id, false);
+            Backend.query(ticket.id, []);
+			try	{ Backend.query(ticket, [{}]); } catch (e) { assert.ok(e.message = "400"); }
+
+            try	{ Backend.put_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.put_individual(ticket.id, []); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }
+
+            try	{ Backend.put_individuals(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, {}); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, 1); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, "1"); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, false); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, []); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.put_individuals(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "904"); }
+
+            try	{ Backend.set_in_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.set_in_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.set_in_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.set_in_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.set_in_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.set_in_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+			try	{ Backend.set_in_individual(ticket, []); } catch (e) { assert.ok(e.message = "400"); }            
+            try	{ Backend.set_in_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }            
+
+            try	{ Backend.add_to_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.add_to_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.add_to_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.add_to_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.add_to_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.add_to_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+			try	{ Backend.add_to_individual(ticket, []); } catch (e) { assert.ok(e.message = "400"); }            
+            try	{ Backend.add_to_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }        
+            
+            try	{ Backend.remove_from_individual(); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.remove_from_individual(ticket.id); } catch (e) { assert.ok(e.message = "400"); }
+            try	{ Backend.remove_from_individual(ticket.id, {}); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.remove_from_individual(ticket.id, 1); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.remove_from_individual(ticket.id, "1"); } catch (e) { assert.ok(e.message = "904"); }
+            try	{ Backend.remove_from_individual(ticket.id, false); } catch (e) { assert.ok(e.message = "904"); }
+			try	{ Backend.remove_from_individual(ticket, []); } catch (e) { assert.ok(e.message = "400"); }            
+            try	{ Backend.remove_from_individual(ticket.id, [{}]); } catch (e) { assert.ok(e.message = "400"); }            
+            
+            ticket = get_user1_ticket();
+            assert.ok(ticket.id.length > 0);
+        });
+
+  QUnit.test("#51 Test membership isExclusive & ignoreExclusive",
+  function(assert){
+    var ticket1 = get_user1_ticket();
+    var doc_group = 'g:doc_resource_group';
+    var doc_group_another = 'g:doc_resource_another_group';
+    var new_test_doc3 = create_test_document3(ticket1);
+    // #1
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+    addToGroup(ticket1, doc_group, new_test_doc3['@']);
+    // #2
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+    var new_test_membership1 = create_test_membership1(ticket1, doc_group);
+    // #3
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+    var new_test_doc4 = create_test_document4(ticket1);
+    // #4
+    test_success_read(assert, ticket1, new_test_doc4['@'], new_test_doc4);
+    addToGroup(ticket1, doc_group_another, new_test_doc4['@']);
+    // #5
+    test_fail_read(assert, ticket1, new_test_doc4['@'], new_test_doc4);
+    // #6
+    var new_test_membership2 = create_test_membership2(ticket1, doc_group);
+    test_success_read(assert, ticket1, new_test_doc4['@'], new_test_doc4);
+    // #7
+    test_success_read(assert, ticket1, new_test_doc3['@'], new_test_doc3);
+  });
 /*
     QUnit.test("#040 test create individual with rdf:type rdfs:Resource", function(assert)
     {

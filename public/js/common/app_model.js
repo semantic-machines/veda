@@ -46,6 +46,12 @@
         this.expire[ expire_key ] = this.expire[ expire_key ] || [];
         this.expire[ expire_key ].push(obj);
         this.count++;
+        if (typeof window !== "undefined" && expire_key !== 1) {
+          var updateService = new veda.UpdateService();
+          updateService.then(function (updateService) {
+            updateService.subscribe(obj.id);
+          });
+        }
       },
       remove: function (key) {
         var that = this;
@@ -56,56 +62,61 @@
           delete this.expire[expires];
         }
         this.count--;
+        if (typeof window !== "undefined") {
+          var updateService = new veda.UpdateService();
+          updateService.then(function (updateService) {
+            updateService.unsubscribe(key);
+          });
+        }
         return delete this.storage[key];
       },
       clear: function () {
         this.count = 0;
         this.storage = {};
         this.expire = {};
+        if (typeof window !== "undefined") {
+          var updateService = new veda.UpdateService();
+          updateService.then(function (updateService) {
+            updateService.unsubscribe();
+          });
+        }
       }
     };
 
     // Define Model functions
     self.login = function (username, password, secret) {
-      var res = authenticate(username, password, secret);
-      self.ticket = res.id;
-      if (!self.ticket) return;
-      self.user_uri = res.user_uri;
-      self.end_time = Math.floor((res.end_time - 621355968000000000) / 10000 );
-      return {
-        ticket: self.ticket,
-        user_uri: self.user_uri,
-        end_time: self.end_time
-      };
+      return veda.Backend.authenticate(username, password, secret).then(function (auth) {
+        veda.ticket = auth.id;
+        veda.user_uri = auth.user_uri;
+        veda.end_time = Math.floor((auth.end_time - 621355968000000000) / 10000 );
+        return {
+          ticket: veda.ticket,
+          user_uri: veda.user_uri,
+          end_time: veda.end_time
+        };
+      });
     };
 
     self.logout = function() {
-      self.user_uri = self.ticket = self.end_time = "";
-      self.cache.clear();
-      self.status = "logout";
       self.trigger("logout");
     };
 
     // Load ontology
     self.init = function () {
-      try {
-        self.ontology = new veda.OntologyModel();
-        self.drafts = new veda.DraftsModel();
+      self.ontology = new veda.OntologyModel();
+      return self.ontology.init().then(function () {
         self.user = new veda.UserModel("cfg:Guest");
-      } catch (err) {
-        delete self.ontology;
-      }
+        return self.user._init();
+      });
     };
 
     // Start application
     self.start = function () {
-      if ( !self.ontology ) {
-        self.ontology = new veda.OntologyModel();
-        self.drafts = new veda.DraftsModel();
-      }
+      self.trigger("starting");
       self.user = new veda.UserModel(self.user_uri);
-      self.status = "started";
-      self.trigger("started");
+      return self.user._init().then(function () {
+        self.trigger("started");
+      });
     };
 
     return self;

@@ -103,6 +103,10 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
             {
                 resources ~= Resource(DataType.Uri, str);
             }
+            else if (header.tag == TAG.CBOR_ENCODED)
+            {
+                resources ~= Resource(DataType.Binary, str);
+            }
             else
                 resources ~= Resource(DataType.String, str);
 
@@ -229,6 +233,15 @@ private void write_resources(string uri, ref Resources vv, ref OutBuffer ou)
             //if (svalue !is null && svalue.length > 0)
             {
                 write_type_value(MajorType.TAG, TAG.URI, ou);
+                write_string(svalue, ou);
+            }
+        }
+        else if (value.type == DataType.Binary)
+        {
+            string svalue = value.get!string;
+            //if (svalue !is null && svalue.length > 0)
+            {
+                write_type_value(MajorType.TAG, TAG.CBOR_ENCODED, ou);
                 write_string(svalue, ou);
             }
         }

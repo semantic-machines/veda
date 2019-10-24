@@ -6,9 +6,10 @@ import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runt
 import std.stdio, std.socket, std.conv, std.array, std.outbuffer, std.json;
 import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
-import veda.onto.resource, veda.onto.lang, veda.onto.individual;
+import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.type, veda.core.impl.app_context_creator;
 import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
-import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
+import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_client,
+       veda.authorization.az_lib;
 
 static this()
 {
@@ -67,7 +68,7 @@ private nothrow string req_prepare(string request, Context context)
                     else
                     {
                         Ticket *ticket;
-                        ticket = context.get_storage().get_ticket(_ticket, false);
+                        ticket = context.get_ticket(_ticket, false);
                         if (ticket is null)
                         {
                             context.get_logger.trace("ERR! ticket not fount: ticket_id = %s", _ticket);
@@ -80,6 +81,10 @@ private nothrow string req_prepare(string request, Context context)
                                 user_uri = ticket.user_uri;
                         }
                     }
+                }
+                else
+                {
+                    user_uri = "cfg:Guest";
                 }
 
                 if (user_uri !is null)
@@ -96,7 +101,7 @@ private nothrow string req_prepare(string request, Context context)
                                 long new_onto_vsn = indv.getFirstInteger("v-s:updateCounter");
                                 if (new_onto_vsn != onto_vsn)
                                 {
-                                    context.get_onto.load();
+                                    context.onto_load();
                                     onto_vsn = new_onto_vsn;
                                 }
                             }
@@ -177,7 +182,7 @@ private Authorization get_acl_client(Logger log)
     }
 
     return acl_client;
-}       
+}
 
 
 private long   count;
@@ -227,12 +232,14 @@ void main(string[] args)
         log_sufix = tpcs[ 2 ];
     }
 
+    Thread.sleep(dur!("seconds")(1));
+
     int sock;
     log = new Logger("veda-core-ft-query-" ~ log_sufix, "log", "");
 
-    Context ctx = PThreadContext.create_new("cfg:standart_node", "ft-query", null, log);
+    Context ctx = create_new_ctx("ft-query", log);
     sticket = ctx.sys_ticket();
-    ctx.set_az (get_acl_client(log));
+    ctx.set_az(get_acl_client(log));
     ctx.set_vql(new XapianSearch(ctx));
 
     Individual indv = ctx.get_individual("cfg:OntoVsn");

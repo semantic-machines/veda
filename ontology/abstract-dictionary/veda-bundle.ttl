@@ -3,6 +3,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix v-ui: <http://semantic-machines.com/veda/veda-ui/> .
 
 @prefix v-b: <http://semantic-machines.com/veda/veda-bundle/> .
 <http://semantic-machines.com/veda/veda-bundle>
@@ -13,6 +14,21 @@
   v-s:loadPriority 9 ;
 .
 
+v-s:Bundle
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Текстовая константа"@ru ;
+  rdfs:label "Bundle"@en ;
+  v-ui:hasTemplate v-ui:LabelTemplate ;
+.
+
+#----------------------------
+
+v-s:More
+  rdf:type v-s:Bundle ;
+  rdfs:label "Подробнее..."@ru ;
+  rdfs:label "See more..."@en ;
+.
 v-s:MainProperties
   rdf:type v-s:Bundle ;
   rdfs:label "Основные свойства"@ru ;
@@ -63,11 +79,6 @@ v-s:LeaveComment
   rdfs:label "Комментировать"@ru ;
   rdfs:label "Commment"@en ;
 .
-v-s:Drafts
-  rdf:type v-s:Bundle ;
-  rdfs:label "Черновики"@ru ;
-  rdfs:label "Drafts"@en ;
-.
 v-s:Registries
   rdf:type v-s:Bundle ;
   rdfs:label "Реестры"@ru ;
@@ -113,24 +124,32 @@ v-s:Save
   rdfs:label "Сохранить"@ru ;
   rdfs:label "Save"@en ;
 .
+v-s:SaveSuccess
+  rdf:type v-s:Bundle ;
+  rdfs:label "Успешно сохранено"@ru ;
+  rdfs:label "Successfully saved"@en ;
+.
+v-s:SaveError
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ошибка сохранения"@ru ;
+  rdfs:label "Save error"@en ;
+.
+v-s:SendSuccess
+  rdf:type v-s:Bundle ;
+  rdfs:label "Успешно отправлено"@ru ;
+  rdfs:label "Successfully sent"@en ;
+.
+v-s:SendError
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ошибка отправки"@ru ;
+  rdfs:label "Send error"@en ;
+.
 v-s:Update
   rdf:type v-s:Bundle ;
   rdfs:label "Обновить"@ru ;
   rdfs:label "Update"@en ;
 .
-v-s:Draft
-  rdf:type v-s:Bundle ;
-  rdfs:label "Черновик"@ru ;
-  rdfs:label "Draft"@en ;
-  rdfs:comment "ч"@ru ;
-  rdfs:comment "d"@en ;
-.
-v-s:ToDraft
-  rdf:type v-s:Bundle ;
-  rdfs:label "В черновик"@ru ;
-  rdfs:label "Save to draft"@en ;
-.
-v-s:Find
+v-s:FindBundle
   rdf:type v-s:Bundle ;
   rdfs:label "Найти"@ru ;
   rdfs:label "Find"@en ;
@@ -190,16 +209,6 @@ v-s:InvertSelection
   rdfs:label "Инвертировать"@ru ;
   rdfs:label "Invert"@en ;
 .
-v-s:DeleteDraft
-  rdf:type v-s:Bundle ;
-  rdfs:label "Удалить черновик"@ru ;
-  rdfs:label "Delete draft"@en ;
-.
-v-s:CreateBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Создать"@ru ;
-  rdfs:label "Create"@en ;
-.
 v-s:CreateReport
   rdf:type v-s:Bundle ;
   rdfs:label "Сформировать отчёт"@ru ;
@@ -215,7 +224,7 @@ v-s:CreateReport_ProjectOrder
   rdfs:label "Project Order"@ru ;
   rdfs:label "Project Order"@en ;
 .
-v-s:RightsOrigin
+v-s:Rights
   rdf:type v-s:Bundle ;
   rdfs:label "Права доступа"@ru ;
   rdfs:label "Access rights"@en ;
@@ -333,7 +342,7 @@ v-s:Attention
 .
 v-s:HeadOrganization
   rdf:type v-s:Bundle ;
-  rdfs:label "Головная организация"@ru ;
+  rdfs:label "Входит в объединения"@ru ;
   rdfs:label "Head organization"@en ;
 .
 v-s:StartTypingBundle
@@ -360,4 +369,19 @@ v-s:CoordinationList
   rdf:type v-s:Bundle ;
   rdfs:label "Лист согласования"@ru ;
   rdfs:label "Coordination list"@en ;
+.
+v-s:SuccessBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Успешно"@ru ;
+  rdfs:label "Success"@en ;
+.
+v-s:ErrorBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Ошибка"@ru ;
+  rdfs:label "Error"@en ;
+.
+v-s:CreateBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Создать"@ru ;
+  rdfs:label "Create"@en ;
 .

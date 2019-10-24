@@ -1,0 +1,23 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix v-s: <http://semantic-machines.com/veda/veda-schema/> .
+@prefix d: <http://semantic-machines.com/veda/veda-data/>.
+
+<http://semantic-machines.com/veda/veda-individual-CommunicationMeanTarget>
+  rdf:type owl:Ontology ;
+  v-s:loadPriority 10 ;
+.
+
+
+d:a3nx3vnoo4akfu67c0709dr33j
+  a v-s:CommunicationMeanTarget;
+  rdfs:label "Официальная информация"@ru;
+  rdfs:label "Официальная информация"@en;
+.
+d:a783no0i0upn5ns2w8kaeono4s6
+  a v-s:CommunicationMeanTarget;
+  rdfs:label "Тех поддержка"@ru;
+  rdfs:label "Тех поддержка"@en;
+.

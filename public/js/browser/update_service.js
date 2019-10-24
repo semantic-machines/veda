@@ -12,31 +12,34 @@ veda.Module(function (veda) { "use strict";
     if (veda.UpdateService.prototype._singletonInstance) {
       return veda.UpdateService.prototype._singletonInstance;
     }
-    veda.UpdateService.prototype._singletonInstance = this;
 
     this.list = {};
     var buffer = [];
     var socketDelay = 1000;
     var socketTimeout;
-    var reconnectDelay = 5000 + Math.round(Math.random() * 5000);
+    var reconnectDelayInitial = 2500 + Math.round(Math.random() * 2500); // 2.5 - 5 sec
+    var reconnectDelay = reconnectDelayInitial;
+    var reconnectDelayFactor = 1.1;
+    var reconnectDelayLimit = 5 * 60 * 1000; // 5 min
 
-    initSocket();
+    return veda.UpdateService.prototype._singletonInstance = initSocket();
 
-    return this;
+    function initSocket() {
+      return veda.Backend.get_individual(veda.ticket, "cfg:ClientUpdateServicePort").then(function (ccusPortCfg) {
+        var ccusPort = ccusPortCfg["rdf:value"] && ccusPortCfg["rdf:value"][0].data,
+            protocol = location.protocol === "http:" ? "ws:" : "wss:",
+            port = ccusPort || ( protocol === "ws:" ? 8088 : 443 ),
+            address = protocol + "//" + location.hostname + ":" + port + "/ccus",
+            socket = new WebSocket(address);
 
-    function initSocket(address) {
-      var protocol = location.protocol === "http:" ? "ws:" : "wss:",
-          address0 = protocol + "//" + location.host + "/ccus",
-          address1 = protocol + "//" + location.hostname + ":8088/ccus";
-
-      address = address === address0 ? address1 : address0;
-      var socket = new WebSocket(address);
-      socket.onopen = openedHandler;
-      socket.onclose = closedHandler;
-      socket.onmessage = messageHandler;
-      socket.receiveMessage = receiveMessage;
-      socket.sendMessage = sendMessage;
-      self.socket = socket;
+        socket.onopen = openedHandler;
+        socket.onclose = closedHandler;
+        socket.onmessage = messageHandler;
+        socket.receiveMessage = receiveMessage;
+        socket.sendMessage = sendMessage;
+        self.socket = socket;
+        return self;
+      });
     }
 
     function sendMessage (msg) {
@@ -71,15 +74,22 @@ veda.Module(function (veda) { "use strict";
       uris = uris.split(",");
       for (var i = 0; i < uris.length; i++) {
         try {
-          var tmp = uris[i].split("="),
-              uri = tmp[0],
-              updateCounter = parseInt(tmp[1]),
-              individual = new veda.IndividualModel(uri);
-          if ( individual.hasValue("v-s:updateCounter", updateCounter) || individual.isDraft() ) { continue; }
+          var tmp = uris[i].split("=");
+          var uri = tmp[0];
+          if ( !uri ) {
+            continue;
+          }
+          var updateCounter = parseInt(tmp[1]);
+          var individual = new veda.IndividualModel(uri);
+          if ( individual.hasValue("v-s:updateCounter", updateCounter) ) { continue; }
           if (self.list[uri]) {
             self.list[uri].updateCounter = updateCounter;
           }
-          individual.reset(); // Reset to DB
+          if (self.list[uri].action) {
+            self.list[uri].action.call(individual, updateCounter); // Call action
+          } else if (updateCounter !== 0) {
+            individual.reset(); // Default action
+          }
         } catch (error) {
           console.log("error: individual update service failed", error);
         }
@@ -87,6 +97,7 @@ veda.Module(function (veda) { "use strict";
     }
 
     function openedHandler(event) {
+      reconnectDelay = reconnectDelayInitial;
       console.log("client: websocket opened", event.target.url);
       this.sendMessage("ccus=" + veda.ticket);
       self.restore();
@@ -98,27 +109,32 @@ veda.Module(function (veda) { "use strict";
     }
 
     function closedHandler(event) {
+      reconnectDelay = reconnectDelay < reconnectDelayLimit ? reconnectDelay * reconnectDelayFactor : reconnectDelayLimit ;
       console.log("client: websocket closed", event.target.url, "| re-connect in", reconnectDelay / 1000, "sec");
-      setTimeout(function () {
-        initSocket(event.target.url);
-      }, reconnectDelay);
+      setTimeout(initSocket, reconnectDelay);
     }
 
   };
 
   var proto = veda.UpdateService.prototype;
 
-  proto.subscribe = function (uri) {
+  proto.subscribe = function (uri, action) {
+    var self = this;
     if ( this.list[uri] ) {
       ++this.list[uri].subscribeCounter;
     } else {
       var individual = new veda.IndividualModel(uri);
-      var updateCounter = individual.hasValue("v-s:updateCounter") ? individual.get("v-s:updateCounter")[0] : 0;
-      this.list[uri] = {
-        subscribeCounter: 1,
-        updateCounter: updateCounter
-      };
-      this.socket.sendMessage("+" + uri + "=" + updateCounter);
+      individual.load().then(function (individual) {
+        var updateCounter = individual.hasValue("v-s:updateCounter") ? individual.get("v-s:updateCounter")[0] : 0;
+        self.list[uri] = {
+          subscribeCounter: 1,
+          updateCounter: updateCounter
+        };
+        if (action) {
+          self.list[uri].action = action;
+        }
+        self.socket.sendMessage("+" + uri + "=" + updateCounter);
+      });
     }
   };
 

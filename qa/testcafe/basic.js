@@ -26,7 +26,7 @@ export default class basic {
       .click('veda-control.fulltext.dropdown')
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Персона')
-      .click('div.suggestion[resource="v-s:Person"]')
+      .click('.suggestion[resource="v-s:Person"]')
       .typeText('veda-control.-view.edit.search[property="v-s:lastName"]', last)
       .typeText('veda-control.-view.edit.search.has-error[property="v-s:firstName"]', first)
       .typeText('veda-control.-view.edit.search[property="v-s:middleName"]', middle)
@@ -34,6 +34,7 @@ export default class basic {
       .pressKey('ctrl+a delete')
       .typeText('div.input-group.date input.form-control[name="v_s_person_v_s_birthday"]', birthDate)
       .click('span[data-template="v-ui:StandardButtonsTemplate"] span[typeof="v-s:Person"] button#save')
+      .wait(2000)
   }
 
   async fullTextSearch(query, eql) {
@@ -47,15 +48,15 @@ export default class basic {
   }
 
   async createTestUI(label, timeStamp) {
-    const number = Selector('veda-control[property="v-ui:testInteger"] div select.form-control').find('option').withText('2');
-    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
+    const number = Selector('veda-control[property="v-ui:testInteger"] select.form-control').find('option').withText('2');
+    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
     await t
       .click('#menu')
       .click('li[id="menu"] li[resource="v-s:Create"]')
       .click('veda-control.fulltext.dropdown')
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Класс для тестирования интерфейса')
-      .click('div.suggestion[resource="v-ui:TestUIClass"]')
+      .click('.suggestion[resource="v-ui:TestUIClass"]')
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-left')
       .typeText('veda-control.-view.edit.search[property="rdfs:label"]', label)
       .wait(1000)
@@ -68,19 +69,21 @@ export default class basic {
       .click(number)
       .click(checkbox)
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
+      .wait(2000)
       .click('button#save')
+      .wait(2000)
   }
 
   async createTestUiForAttributiveSearch(label, comment, testString, date) {
-    const number = Selector('veda-control[property="v-ui:testInteger"] div select.form-control').find('option').withText('2');
-    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
+    const number = Selector('veda-control[property="v-ui:testInteger"] select.form-control').find('option').withText('2');
+    const checkbox = Selector('veda-control[rel="v-ui:testLink"] div.checkbox').find('label').withText('Спецификация тестового объектного свойства');
     await t
       .click('#menu')
       .click('li[id="menu"] li[resource="v-s:Create"]')
       .click('veda-control.fulltext.dropdown')
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Класс для тестирования интерфейса')
-      .click('div.suggestion[resource="v-ui:TestUIClass"]')
+      .click('.suggestion[resource="v-ui:TestUIClass"]')
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-left')
       .typeText('veda-control.-view.edit.search[property="rdfs:label"]', label)
       .wait(1000)
@@ -97,6 +100,7 @@ export default class basic {
       .typeText('veda-control[property="v-ui:testDatetime"]#date', date)
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-right')
       .click('button#save')
+      .wait(2000)
   }
 
 }

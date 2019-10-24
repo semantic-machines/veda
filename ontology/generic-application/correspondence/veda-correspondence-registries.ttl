@@ -121,8 +121,9 @@ v-s:LetterRegistryResultTemplate
       <th width="10%" class="orderby" data-orderby="v-s:description"><span about="v-s:description" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="rdfs:comment"><span about="rdfs:comment" property="rdfs:label"></span></th>
       <th width="10%" class="orderby" data-orderby="v-s:attachment"><span about="v-s:attachment" property="rdfs:label"></span></th>
-      <th width="10%" class="orderby" data-orderby="v-s:hasRelatedLetter"><span about="v-s:hasRelatedLetter" property="rdfs:label"></span></th>
+      <!--th width="10%" class="orderby" data-orderby="v-s:hasRelatedLetter"><span about="v-s:hasRelatedLetter" property="rdfs:label"></span></th-->
       <th width="10%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th width="10%" class="orderby" data-orderby="v-s:hasLink"><span about="v-s:hasLink" property="rdfs:label"></span></th>
     </tr>
   </thead>
   <tbody class="result-container">
@@ -165,15 +166,21 @@ v-s:LetterRegistryResultTemplate
       <td rel="v-s:hasDelivery">
         <div>
           <span property="v-s:date"></span>
-          <span property="v-s:deliverBy"></span>
-          <span property="rdfs:comment"></span> ;
+          <span rel="v-s:deliverBy" data-template="v-ui:LabelTemplate"></span>
+          <span property="rdfs:comment"></span>
         </div>
       </td>
       <td property="v-s:description"></td>
       <td property="rdfs:comment"></td>
       <td rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
-      <td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td>
+      <!--td rel="v-s:hasRelatedLetter" data-template="v-ui:LabelTemplate"></td-->
       <td rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td rel="v-s:hasLink">
+         <div>
+          <span property="v-s:from"></span>
+          <span property="v-s:to"></span>
+        </div>
+      </td>
     </tr>
   </tbody>
 </table>

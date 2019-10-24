@@ -11,7 +11,7 @@
   rdfs:label "Онтология индексирования данных системы Веда"@ru ;
   rdfs:label "Veda system data index ontology"@en ;
   owl:versionInfo "3.7" ;
-  v-s:loadPriority 0 ;
+  v-s:loadPriority 1 ;
 .
 vdi:ClassIndex
   rdf:type owl:Class ;
@@ -70,6 +70,14 @@ vdi:indexed_to
 
 #---------------------------------------------
 
+vdi:index_00
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass v-s:Membership ;
+  vdi:forClass v-s:PermissionStatement ;
+  rdfs:label "az indexed" ;
+  vdi:indexed_to "az" ;
+.
+
 vdi:index_01
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:File ;
@@ -86,8 +94,6 @@ vdi:index_02
   vdi:forClass v-wf:WorkOrder ;
   vdi:forClass v-wf:WorkItem ;
   vdi:forClass v-wf:Variable ;
-  vdi:forClass v-s:Membership ;
-  vdi:forClass v-s:PermissionStatement ;
   rdfs:label "not indexed" ;
   vdi:indexed_to "not-indexed" ;
 .

@@ -1,22 +1,19 @@
 // Veda controls implemented as JQuery plugins
 ;(function( $ ) { "use strict";
 
-  var defaultDelay = 750;
-
   // INPUT CONTROLS
 
   // Generic literal input behaviour
   var veda_literal_input = function( options ) {
     var opts = $.extend( {}, veda_literal_input.defaults, options ),
-      control = $(opts.template),
-      input = $(".form-control", control),
+      input = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       property_uri = opts.property_uri,
       individual = opts.individual,
       timeout;
 
-    control.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
+    input.isSingle = typeof opts.isSingle !== "undefined" ? opts.isSingle : (spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true);
 
     input
       .attr({
@@ -25,38 +22,40 @@
       })
       .on("change focusout", changeHandler)
       .keyup( function (e) {
-        if (!control.isSingle) { return; }
+        if (!input.isSingle) { return; }
         if (e.which === 13) { input.change(); }
         if (timeout) { clearTimeout(timeout); }
-        timeout = setTimeout(keyupHandler, defaultDelay, e);
+        timeout = setTimeout(keyupHandler, 50, e);
       });
 
     individual.on(property_uri, propertyModifiedHandler);
-    control.one("remove", function () {
+    input.one("remove", function () {
       individual.off(property_uri, propertyModifiedHandler);
     });
     propertyModifiedHandler();
 
     function propertyModifiedHandler () {
-      if (control.isSingle) {
+      if (input.isSingle) {
         var field = input[0];
         var value = veda.Util.formatValue( individual.get(property_uri)[0] );
         value = typeof value !== "undefined" ? value : "";
-        try {
-          var start_shift = field.selectionStart - field.value.length;
-          var end_shift = field.selectionEnd - field.value.length;
-          field.value = value;
-          field.selectionStart = value.length + start_shift;
-          field.selectionEnd = value.length + end_shift;
-        } catch (ex) {
-          field.value = value;
-          console.log("selectionStart/End error:", property_uri, value, typeof value);
+        if (field.value != value) {
+          try {
+            var start_shift = field.selectionStart - field.value.length;
+            var end_shift = field.selectionEnd - field.value.length;
+            field.value = value;
+            field.selectionStart = value.length + start_shift;
+            field.selectionEnd = value.length + end_shift;
+          } catch (ex) {
+            field.value = value;
+            console.log("selectionStart/End error:", property_uri, value, typeof value);
+          }
         }
       }
     }
     function changeHandler (e) {
       var value = opts.parser(this.value);
-      if (control.isSingle) {
+      if (input.isSingle) {
         individual.set(property_uri, [value]);
       } else {
         individual.set(property_uri, individual.get(property_uri).concat(value));
@@ -74,38 +73,34 @@
         input.data("prev", input.val());
         input.change();
       }
+      if (e.which !== 9) { input.focus(); }
     }
-
     this.on("view edit search", function (e) {
       e.stopPropagation();
     });
-
     this.val = function (value) {
       if (!value) return input.val();
       return input.val( veda.Util.formatValue(value) );
     };
-
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      input.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: "body",
         trigger: "manual",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
-      });
-      input.on("focusin", function () {
-        control.tooltip("show");
+      }).one("remove", function () {
+        input.tooltip("destroy");
+      }).on("focusin", function () {
+        input.tooltip("show");
       }).on("focusout change", function () {
-        control.tooltip("hide");
+        input.tooltip("hide");
       });
     }
-
-    return control;
+    return input;
   };
   veda_literal_input.defaults = {
+    template: $("#string-control-template").html(),
     parser: function (input) {
       return (input || null);
     }
@@ -121,9 +116,10 @@
   };
   $.fn.veda_generic.defaults = {
     template: $("#string-control-template").html(),
-    isSingle: false,
     parser: function (input) {
-      if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
+      if (!input || !input.trim()) {
+        return null;
+      } else if ( moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).isValid() ) {
         return moment(input, ["DD.MM.YYYY HH:mm", "DD.MM.YYYY", "YYYY-MM-DD", "HH:mm"], true).toDate();
       } else if ( !isNaN( input.split(" ").join("").split(",").join(".") ) ) {
         return parseFloat( input.split(" ").join("").split(",").join(".") );
@@ -135,7 +131,7 @@
         var individ = new veda.IndividualModel(input);
         if ( individ.isSync() && !individ.isNew() ) { return individ; }
       }
-      return input || null;
+      return input;
     }
   };
 
@@ -179,14 +175,13 @@
   $.fn.veda_text = function( options ) {
     var opts = $.extend( {}, $.fn.veda_text.defaults, options ),
       control = veda_literal_input.call(this, opts);
-    var ta = $("textarea", control);
-    ta.attr("rows", this.attr("rows"));
-    autosize(ta);
+    control.attr("rows", this.attr("rows"));
+    autosize(control);
     this.on("edit", function () {
-      autosize.update(ta);
+      autosize.update(control);
     });
     this.one("remove", function () {
-      autosize.destroy(ta);
+      autosize.destroy(control);
     });
     this.append(control);
     return this;
@@ -223,50 +218,48 @@
   // WorkTime control
   $.fn.veda_worktime = function( options ) {
     var opts = $.extend( {}, $.fn.veda_worktime.defaults, options ),
-      control = veda_literal_input.call(this, opts);
-    this.on("view edit search", function (e) {
-      e.stopPropagation();
-      if (e.type === "search") {
-        control.isSingle = false;
-      }
-    });
-    var mainInput=$("input.form-control", control);
-    var pseudoInputs=$("div.input-group>input", control).addClass("form-control");
-    var summaryText=$("#worktime-summary-text", control).addClass("form-control");
-    feelPseudoInput(mainInput.val());
-    pseudoInputs.change(feelMainInput);
-    function feelMainInput(){
-      var count=pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
+        mainInput = veda_literal_input.call(this, opts);
+
+    this.append( mainInput.hide() );
+    this.append( $("#worktime-control-template").html() );
+
+    var pseudoInputs = $("div.input-group>input", this);
+    var summaryText = $("#worktime-summary-text", this);
+    fillPseudoInput(mainInput.val());
+    pseudoInputs.change(fillMainInput);
+    function fillMainInput() {
+      var count = pseudoInputs[0].value*480 + pseudoInputs[1].value*60 + pseudoInputs[2].value*1;
       mainInput.val(count);
       summaryText.text(veda.Util.formatValue(count));
       mainInput.change();
     }
-    function feelPseudoInput(summaryTime){
+    function fillPseudoInput(summaryTime) {
       if (summaryTime) {
         summaryText.text(summaryTime);
         summaryTime = parseInt( summaryTime.split(" ").join("").split(",").join("."), 10 );
-        var days=0, hours=0, minutes=0;
-        if (summaryTime!=0){
-          days=Math.floor(summaryTime/480);
-          summaryTime=summaryTime-days*480;
-          if (summaryTime!=0){
-            hours=Math.floor(summaryTime/60);
-            summaryTime=summaryTime-hours*60;
-            if (summaryTime!=0){
-              minutes=summaryTime;
+        var days = 0, hours = 0, minutes = 0;
+        if (summaryTime != 0){
+          days = Math.floor(summaryTime/480);
+          summaryTime = summaryTime-days*480;
+          if (summaryTime != 0){
+            hours = Math.floor(summaryTime/60);
+            summaryTime = summaryTime-hours*60;
+            if (summaryTime != 0){
+              minutes = summaryTime;
             }
           }
         }
-        pseudoInputs[0].value=days;
-        pseudoInputs[1].value=hours;
-        pseudoInputs[2].value=minutes;
+        pseudoInputs[0].value = days;
+        pseudoInputs[1].value = hours;
+        pseudoInputs[2].value = minutes;
       }
     }
-    this.append(control);
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
     return this;
   };
   $.fn.veda_worktime.defaults = {
-    template: $("#worktime-control-template").html(),
     parser: function (input) {
       var int = parseInt( input.split(" ").join("").split(",").join("."), 10 );
       return !isNaN(int) ? int : null;
@@ -357,7 +350,7 @@
     }
 
     control.datetimepicker({
-      locale: Object.keys(veda.user.language).length === 1 ? Object.keys(veda.user.language)[0] : 'EN',
+      locale: Object.keys(veda.user.preferences.language).length === 1 ? Object.keys(veda.user.preferences.language)[0] : 'EN',
       allowInputToggle: true,
       format: format,
       sideBySide: true,
@@ -418,7 +411,13 @@
     parser: function (input) {
       if (input) {
         var timestamp = moment(input, "DD.MM.YYYY").toDate();
-        return new Date(timestamp);
+        var symbolicDate = new Date(timestamp);
+        var d = symbolicDate.getDate();
+        var m = symbolicDate.getMonth();
+        var y = symbolicDate.getFullYear();
+        symbolicDate.setUTCFullYear(y, m ,d);
+        symbolicDate.setUTCHours(0, 0, 0, 0);
+        return symbolicDate;
       }
       return null;
     },
@@ -460,7 +459,9 @@
     parser: function (input) {
       if (input) {
         var timestamp = moment(input, "DD.MM.YYYY HH:mm").toDate();
-        return new Date(timestamp);
+        var absolutDate = new Date(timestamp);
+        absolutDate.setMilliseconds(1);
+        return absolutDate;
       }
       return null;
     },
@@ -473,16 +474,15 @@
   // Generic multilingual input behaviour
   var veda_multilingual = function( options ) {
     var opts = $.extend( {}, veda_multilingual.defaults, options ),
-      control = $(opts.template),
-      inputTemplate = control.children().remove(),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
       timeout;
 
-    Object.keys(veda.user.language).map(function (language_name) {
-      var localedInput = inputTemplate.clone();
+    Object.keys(veda.user.preferences.language).map(function (language_name) {
+      var localedInput = $(opts.template);
 
       localedInput.find(".language-tag").text(language_name);
 
@@ -494,7 +494,7 @@
           "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + property_uri : property_uri).toLowerCase().replace(/[-:]/g, "_")
         })
         .on("change focusout", function () {
-          var values = control.find(".form-control").map(function () {
+          var values = that.find(".form-control").map(function () {
             return opts.parser( this.value, this );
           }).get();
           individual.set(property_uri, values);
@@ -502,7 +502,7 @@
         .keyup( function (e) {
           if (e.which === 13) { formControl.change(); }
           if (timeout) { clearTimeout(timeout); }
-          timeout = setTimeout(keyupHandler, defaultDelay, e);
+          timeout = setTimeout(keyupHandler, 50, e);
         });
 
       individual.get(property_uri).forEach(function (value) {
@@ -511,13 +511,13 @@
         }
       });
 
-      control.append( localedInput );
+      that.append( localedInput );
     });
 
-    var input = control.find(".form-control");
+    var input = that.find(".form-control");
 
     individual.on(property_uri, handler);
-    control.one("remove", function () {
+    that.one("remove", function () {
       individual.off(property_uri, handler);
     });
 
@@ -532,6 +532,7 @@
         input.data("prev", input.val());
         input.change();
       }
+      if (e.which !== 9) { input.focus(); }
     }
 
     function handler (values) {
@@ -539,7 +540,7 @@
         var that = this;
         var lang = this.lang;
         individual.get(property_uri).forEach(function (value) {
-          if ( value.language === lang || !value.language ) {
+          if ( value.language === lang || !value.language && that.value != value) {
             try {
               if (that === document.activeElement) {
                 var start_shift = that.selectionStart - that.value.length;
@@ -559,11 +560,11 @@
       });
     }
 
-    this.on("view edit search", function (e) {
+    that.on("view edit search", function (e) {
       e.stopPropagation();
     });
 
-    this.val = function (value) {
+    that.val = function (value) {
       if (!value) {
         return parser( input.val() );
       }
@@ -575,24 +576,23 @@
     };
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      that.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: "body",
         trigger: "manual",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        that.tooltip("destroy");
       });
       input.on("focusin", function () {
-        control.tooltip("show");
+        that.tooltip("show");
       }).on("focusout change", function () {
-        control.tooltip("hide");
+        that.tooltip("hide");
       });
     }
 
-    return control;
+    return that;
   };
   veda_multilingual.defaults = {
     parser: function (input, el) {
@@ -608,15 +608,15 @@
   // Multilingual string control
   $.fn.veda_multilingualString = function (options) {
     var opts = $.extend( {}, $.fn.veda_multilingualString.defaults, options ),
-        $this = $(this);
+        that = $(this);
     init();
     veda.on("language:changed", init);
-    $this.one("remove", function () {
+    that.one("remove", function () {
       veda.off("language:changed", init);
     });
     function init() {
-      $this.empty();
-      $this.append( veda_multilingual.call($this, opts) );
+      that.empty();
+      veda_multilingual.call(that, opts);
     }
     return this;
   };
@@ -627,25 +627,24 @@
   // Multilingual text control
   $.fn.veda_multilingualText = function (options) {
     var opts = $.extend( {}, $.fn.veda_multilingualText.defaults, options ),
-      $this = $(this);
+      that = $(this);
     init();
     veda.on("language:changed", init);
-    $this.one("remove", function () {
+    that.one("remove", function () {
       veda.off("language:changed", init);
     });
     function init() {
-      $this.empty();
-      var control = veda_multilingual.call($this, opts);
-      var ta = $("textarea", control);
-      ta.attr("rows", $this.attr("rows"));
+      that.empty();
+      veda_multilingual.call(that, opts);
+      var ta = $("textarea", that);
+      ta.attr("rows", that.attr("rows"));
       autosize(ta);
-      $this.on("edit", function () {
+      that.on("edit", function () {
         autosize.update(ta);
       });
-      $this.one("remove", function () {
+      that.one("remove", function () {
         autosize.destroy(ta);
       });
-      $this.append(control);
     }
     return this;
   };
@@ -657,7 +656,6 @@
   $.fn.veda_boolean = function( options ) {
     var opts = $.extend( {}, $.fn.veda_boolean.defaults, options ),
       control = $( opts.template ),
-      input = $("input", control),
       individual = opts.individual,
       property_uri = opts.property_uri,
       spec = opts.spec;
@@ -665,12 +663,12 @@
     function handler (doc_property_uri) {
       if (individual.hasValue(property_uri)) {
         if (individual.get(property_uri)[0] === true) {
-          input.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
+          control.prop("checked", true).prop("readonly", false).prop("indeterminate", false);
         } else {
-          input.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
+          control.prop("checked", false).prop("readonly", false).prop("indeterminate", false);
         }
       } else {
-        input.prop("readonly", true).prop("indeterminate", true);
+        control.prop("readonly", true).prop("indeterminate", true);
       }
     }
     handler();
@@ -680,30 +678,30 @@
       individual.off(property_uri, handler);
     });
 
-    input.click( function () {
-      if ( input.prop("readonly") ) {
+    control.click( function () {
+      if ( control.prop("readonly") ) {
         individual.set(property_uri, [false]);
-      } else if ( !input.prop("checked") ) {
+      } else if ( !control.prop("checked") ) {
         individual.set(property_uri, []);
       } else {
         individual.set(property_uri, [true]);
       }
     });
 
-    if ( input.closest(".checkbox.disabled").length ) {
-      input.attr("disabled", "disabled");
+    if ( control.closest(".checkbox.disabled").length ) {
+      control.attr("disabled", "disabled");
     }
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        input.attr("disabled", "disabled");
+        control.attr("disabled", "disabled");
         control.parents("label").tooltip("destroy");
       } else {
-        if ( input.closest(".checkbox.disabled").length ) {
-          input.attr("disabled", "disabled");
+        if ( control.closest(".checkbox.disabled").length ) {
+          control.attr("disabled", "disabled");
         } else {
-          input.removeAttr("disabled");
+          control.removeAttr("disabled");
         }
         if (spec && spec.hasValue("v-ui:tooltip")) {
           control.parents("label").tooltip({
@@ -723,6 +721,320 @@
     template: $("#boolean-control-template").html(),
   };
 
+  // ACTOR CONTROL
+  $.fn.veda_actor = function( options ) {
+    var opts = $.extend( {}, $.fn.veda_actor.defaults, options ),
+      control = $( opts.template ),
+      individual = opts.individual,
+      rel_uri = opts.property_uri,
+      spec = opts.spec,
+      placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
+      queryPrefix = "'rdf:type'==='v-s:Appointment'",
+      sort = this.attr("data-sort") || "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
+      actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
+      complex = this.data("complex") || false,
+      deleted,
+      chosenActorType;
+
+    // Fulltext search feature
+    var fulltext = $(".fulltext", control);
+    var fulltextMenu = $(".fulltext-menu", control);
+
+    // Disable closing actor type dropdown on click
+    $(".dropdown-menu", control).click(function (e) {
+      e.stopPropagation();
+    });
+
+    // Close actor type dropdown on input click
+    fulltext.click(function () {
+      $(".dropdown-toggle", control).attr("aria-expanded", false).parent().removeClass("open");
+    });
+
+    // Filter allowed actor types, set label & handler
+    $("[name='actor-type']", control).filter(function () {
+      if (actorType.indexOf(this.value) < 0) {
+        $(this).closest(".radio").remove();
+        return false;
+      } else {
+        $(this).parent().append( new veda.IndividualModel(this.value).toString() );
+        return true;
+      }
+    }).change(function () {
+      if ( $(this).is(":checked") ) {
+        chosenActorType = this.value;
+        var ftValue = $(".fulltext", control).val();
+        if (ftValue) {
+          performSearch(undefined, ftValue);
+        }
+      }
+    }).first().prop("checked", "checked").change();
+
+    // Deleted check label & handler
+    $("[name='actor-deleted']", control).each(function () {
+      $(this).parent().append( new veda.IndividualModel(this.value).toString() );
+    }).change(function () {
+      deleted = $(this).is(":checked") ? true : false;
+      var ftValue = $(".fulltext", control).val();
+      if (ftValue) {
+        performSearch(undefined, ftValue);
+      }
+    });
+
+    $(".clear", control).on("click keyup", function (e) {
+      if (e.type !== "click" && e.which !== 13) { return; }
+      individual.clearValue(rel_uri);
+      if ( complex ) {
+        individual.clearValue(rel_uri + ".v-s:employee");
+        individual.clearValue(rel_uri + ".v-s:occupation");
+      }
+      $(".fulltext", control).val("");
+      $(".fulltext-menu", control).hide();
+    });
+
+    if (placeholder instanceof veda.IndividualModel) {
+      placeholder.load().then(function (placeholder) {
+        fulltext.attr({
+          "placeholder": placeholder.toString(),
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+        });
+      });
+    } else {
+      fulltext.attr({
+        "placeholder": placeholder,
+        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+      });
+    }
+
+    autosize(fulltext);
+    this.on("edit", function () {
+      autosize.update(fulltext);
+    });
+    this.one("remove", function () {
+      autosize.destroy(fulltext);
+    });
+
+    var keyupHandler = (function () {
+      var timeout;
+      var minLength = 3;
+      return function (e) {
+        if (timeout) { clearTimeout(timeout); }
+        var value = e.target.value;
+        if (value.length >= minLength) {
+          timeout = setTimeout(performSearch, 750, e, value);
+        } else if (!value.length) {
+          suggestions.empty();
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        }
+      };
+    }());
+
+    function performSearch(e, value) {
+      ftQuery(queryPrefix, value, sort, deleted)
+        .then(renderResults)
+        .catch(function (error) {
+          console.log("Fulltext query error", error);
+        });
+    }
+
+    fulltext
+      .on("keyup", keyupHandler)
+      .on("triggerSearch", performSearch);
+
+    var selected = [];
+
+    function renderResults(results) {
+      selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
+      if (results.length) {
+        var altResults = results.map(function (result) {
+          return Promise.resolve().then(function () {
+            if (chosenActorType === "v-s:Appointment") {
+              return result;
+            } else if (chosenActorType === "v-s:Person") {
+              return result["v-s:employee"][0].load();
+            } else {
+              return result["v-s:occupation"][0].load();
+            }
+          }).catch(function (error) {
+            console.log(error);
+          });
+        });
+        Promise.all(altResults).then(function (results) {
+          results = sortUnique( results.filter(Boolean) );
+          var renderedPromises = results.map(function (result) {
+            var cont = $("<a href='#' class='suggestion'></a>").attr("resource", result.id);
+            if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
+              cont.addClass("selected");
+            }
+            return result.present(cont, "v-ui:LabelTemplate")
+              .then(function () {
+                return cont;
+              });
+          });
+          return Promise.all(renderedPromises);
+        }).then(function (rendered) {
+          suggestions.empty().append(rendered);
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+          fulltextMenu.show();
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
+          //suggestions.children().first().focus().addClass("active");
+        });
+      } else {
+        suggestions.empty();
+        fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
+      }
+    }
+
+    function sortUnique(arr) {
+      arr.sort(function (a, b) {
+        var aLabel = a.toString();
+        var bLabel = b.toString();
+        return aLabel < bLabel ? -1 : aLabel > bLabel ? 1 : 0;
+      });
+      return arr.reduce(function (acc, item) {
+        if (acc[acc.length - 1] !== item) {
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+    }
+
+    var suggestions = $(".suggestions", control);
+    var dblTimeout;
+    suggestions.on("click", ".suggestion", function (e) {
+      if (!e.originalEvent) {
+        clickHandler(e);
+      } else if (dblTimeout) {
+        dblclickHandler(e);
+      } else {
+        clickHandler(e);
+      }
+    });
+
+    function clickHandler(e) {
+      e.preventDefault();
+      var tmpl = $(e.target);
+      var suggestion_uri = tmpl.attr("resource");
+      var suggestion = new veda.IndividualModel(suggestion_uri);
+      tmpl.toggleClass("selected");
+      if ( selected.indexOf(suggestion) >= 0 ) {
+        setValue(suggestion);
+        fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
+      } else {
+        setValue(suggestion);
+        fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
+      }
+      dblTimeout = setTimeout(function () {
+        dblTimeout = undefined;
+      }, 300);
+    }
+
+    function dblclickHandler(e) {
+      if ( !$(e.target).hasClass("selected") ) {
+        clickHandler(e);
+      }
+      setValue(selected);
+      dblTimeout = clearTimeout(dblTimeout);
+      fulltextMenu.hide();
+      $(document).off("click", clickOutsideMenuHandler);
+      $(document).off("keydown", arrowHandler);
+    }
+
+    function clickOutsideMenuHandler(e) {
+      if( !$(e.target).closest(fulltextMenu).length && e.target !== fulltext[0] ) {
+        if( fulltextMenu.is(":visible") ) {
+          if ( selected.length ) {
+            setValue(selected[0]);
+          }
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        }
+      }
+    }
+
+    function arrowHandler(e) {
+      if ( e.which === 40 ) { // Down
+        e.preventDefault();
+        e.stopPropagation();
+        var active = suggestions.find(".active").removeClass("active");
+        var next = active.next();
+        if ( next.length ) {
+          next.focus().addClass("active");
+        } else {
+          suggestions.children().first().addClass("active").focus();
+        }
+      } else if ( e.which === 38 ) { // Up
+        e.preventDefault();
+        e.stopPropagation();
+        var active = suggestions.find(".active").removeClass("active");
+        var prev = active.prev();
+        if ( prev.length ) {
+          prev.focus().addClass("active");
+        } else {
+          suggestions.children().last().addClass("active").focus();
+        }
+      }
+    }
+
+    function setValue(value) {
+      var rel;
+      individual.clearValue(rel_uri);
+      if ( complex ) {
+        individual.clearValue(rel_uri + ".v-s:employee");
+        individual.clearValue(rel_uri + ".v-s:occupation");
+        if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
+          rel = rel_uri;
+        } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
+          rel = rel_uri + ".v-s:employee";
+        } else {
+          rel = rel_uri + ".v-s:occupation";
+        }
+      } else {
+        rel = rel_uri;
+      }
+      individual.addValue(rel, value);
+    }
+
+    function propertyModifiedHandler() {
+      if ( individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation") ) {
+        var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation")).filter(Boolean)[0];
+        value.load().then(function(value) {
+          var newValueStr = value.toString();
+          var oldValueStr = fulltext.val();
+          if (newValueStr != oldValueStr) {
+            fulltext.val(newValueStr);
+          }
+        });
+      } else {
+        fulltext.val("");
+      }
+    }
+    individual.on( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
+    control.one("remove", function () {
+      individual.off( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
+    });
+    propertyModifiedHandler();
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+    });
+    this.append(control);
+    return this;
+  };
+  $.fn.veda_actor.defaults = {
+    template: $("#actor-control-template").html(),
+  };
+
   // SELECT CONTROL
 
   $.fn.veda_select = function (options) {
@@ -731,31 +1043,37 @@
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      select = $("select", control),
       first_opt = $("option", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:SelectValueBundle"))["rdfs:label"].join(" "),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:SelectValueBundle"),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
       isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
       withDeleted = false || this.data("deleted");
 
-    populate();
+    if (placeholder instanceof veda.IndividualModel) {
+      placeholder.load().then(function (placeholderLoaded) {
+        placeholder = placeholderLoaded.toString();
+        populate();
+      });
+    } else {
+      populate();
+    }
 
-    select.focus(function () {
+    control.on("mousedown", function (e) {
       populate();
     });
 
-    select.change(function () {
-      var value = $("option:selected", select).data("value");
+    control.change(function () {
+      var value = $("option:selected", control).data("value");
       if (isSingle) {
         individual.set(property_uri, [value]);
       } else {
         if ( !individual.hasValue(property_uri, value) ) {
-          individual.set(property_uri, individual.get(property_uri).concat( value ));
+          individual.addValue(property_uri, value);
         }
         $(this).children(":first").prop("selected", true);
       }
@@ -771,52 +1089,81 @@
     }
 
     function renderValue (value) {
-      if (template) {
-        var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+      if (value instanceof veda.IndividualModel) {
+        return value.load().then(function (individual) {
+          if (template) {
+            return interpolate(template);
+          } else {
+            return individual.toString();
+          }
+        });
       } else {
-        return veda.Util.formatValue(value);
+        return Promise.resolve(veda.Util.formatValue(value));
+      }
+    }
+
+    function interpolate (str) {
+      try {
+        var result = str.replace(/{\s*.*?\s*}/g, function (match) {
+          return eval(match);
+        });
+        return Promise.resolve(result);
+      } catch (error) {
+        console.log("Interpolation error", str);
+        return Promise.reject(error);
       }
     }
 
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
+        return renderOptions(options);
       } else if (source) {
-        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return ( options = eval(match) );
-        });
+        return Promise.resolve(eval(source))
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Source error", source);
+          });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        return;
+        return interpolate(queryPrefix)
+          .then(function (queryPrefix) {
+            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+          })
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Query prefix error", queryPrefix);
+          });
       }
-      renderOptions(options);
     }
 
     function renderOptions(options) {
-      select.empty();
-      first_opt.text(placeholder).data("value", null).appendTo(select);
-      options.map(function (value, index) {
+      control.empty();
+      first_opt.text(placeholder).data("value", null).appendTo(control);
+      var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
-        var opt = first_opt.clone().appendTo(select);
-        opt.text( renderValue(value) ).data("value", value);
-        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
-          opt.addClass("deleted");
-        }
-        if ( isSingle && individual.hasValue(property_uri, value) ) {
-          opt.prop("selected", true);
-        }
+        var opt = first_opt.clone().appendTo(control);
+        return renderValue(value).then(function (rendered) {
+          opt.text(rendered).data("value", value);
+          if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+            opt.addClass("deleted");
+          }
+          if ( isSingle && individual.hasValue(property_uri, value) ) {
+            opt.prop("selected", true);
+          }
+          return rendered;
+        });
       });
+      return Promise.all(optionsPromises);
     }
 
     function handler() {
       if (isSingle) {
-        populate();
-        $("option", control).each(function () {
-          var value = $(this).data("value");
-          var hasValue = !!value && individual.hasValue(property_uri, value);
-          $(this).prop("selected", hasValue);
+        populate().then(function () {
+          $("option", control).each(function () {
+            var value = $(this).data("value");
+            var hasValue = !!value && individual.hasValue(property_uri, value);
+            $(this).prop("selected", hasValue);
+          });
         });
       }
     }
@@ -841,14 +1188,10 @@
         withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
-    this.val = function (value) {
-      if (!value) return $("select", this).val();
-      return $("select", this).val( renderValue(value) );
-    };
-    this.populate = function () {
+    this.on("update", function (e) {
+      e.stopPropagation();
       populate();
-      return this;
-    };
+    });
     this.append(control);
     return this;
   };
@@ -860,15 +1203,14 @@
 
   $.fn.veda_checkbox = function (options) {
     var opts = $.extend( {}, $.fn.veda_checkbox.defaults, options ),
-      control = $(opts.template),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      holder = $(".checkbox", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -885,54 +1227,85 @@
       this.removeAttr("data-template");
     }
 
+    function interpolate (str) {
+      try {
+        var result = str.replace(/{\s*.*?\s*}/g, function (match) {
+          return eval(match);
+        });
+        return Promise.resolve(result);
+      } catch (error) {
+        console.log("Interpolation error", str);
+        return Promise.reject(error);
+      }
+    }
+
     function renderValue (value) {
-      if (template) {
-        var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+      if (value instanceof veda.IndividualModel) {
+        return value.load().then(function (individual) {
+          if (template) {
+            return interpolate(template);
+          } else {
+            return individual.toString();
+          }
+        });
       } else {
-        return veda.Util.formatValue(value);
+        return Promise.resolve(veda.Util.formatValue(value));
       }
     }
 
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
+        return renderOptions(options);
       } else if (source) {
-        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return ( options = eval(match) );
-        });
+        return Promise.resolve(eval(source))
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Source error", source);
+          });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        return;
+        return interpolate(queryPrefix)
+          .then(function (queryPrefix) {
+            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+          })
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Query prefix error", queryPrefix);
+          });
       }
-      renderOptions(options);
     }
 
     function renderOptions(options) {
-      control.empty();
-      options.map(function (value, index) {
+      that.empty();
+      var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
-        var hld = holder.clone().appendTo(control);
-        var lbl = $("label", hld).append( renderValue(value) );
-        var chk = $("input", lbl).data("value", value);
-        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
-          hld.addClass("deleted");
-        }
-        var hasValue = individual.hasValue(property_uri, value);
-        chk.prop("checked", hasValue);
-        chk.change(function () {
-          if ( chk.is(":checked") ) {
-            individual.addValue(property_uri, value);
-          } else {
-            individual.removeValue(property_uri, value);
+        var hld = $(opts.template).appendTo(that);
+        return renderValue(value).then(function (rendered) {
+          var lbl = $("label", hld).append( rendered );
+          var chk = $("input", lbl).data("value", value);
+          if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+            hld.addClass("deleted");
+          }
+          var hasValue = individual.hasValue(property_uri, value);
+          chk.prop("checked", hasValue);
+          chk.change(function () {
+            if ( chk.is(":checked") ) {
+              individual.addValue(property_uri, value);
+            } else {
+              individual.removeValue(property_uri, value);
+            }
+          });
+          if (opts.mode === "view") {
+            hld.addClass("disabled");
+            chk.attr("disabled", "disabled");
           }
         });
       });
+      return Promise.all(optionsPromises);
     }
 
     function handler(doc_property_uri) {
-      $("input", control).each(function () {
+      $("input", that).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);
         $(this).prop("checked", hasValue);
@@ -940,42 +1313,36 @@
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "left",
         container: "body",
         trigger: "hover",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
     }
+
+    this.on("update", function (e) {
+      e.stopPropagation();
+      populate();
+    });
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.checkbox", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
+        $(this).children().addClass("disabled");
+        $("input", this).attr("disabled", "true");
       } else {
-        $("div.checkbox", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
+        $(this).children().removeClass("disabled");
+        $("input", this).removeAttr("disabled");
       }
       if (e.type === "search") {
         var dataDeleted = $(this).data("deleted");
         withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value; });
-      populate();
-      return this;
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
-    this.append(control);
     return this;
   };
   $.fn.veda_checkbox.defaults = {
@@ -986,15 +1353,14 @@
 
   $.fn.veda_radio = function (options) {
     var opts = $.extend( {}, $.fn.veda_radio.defaults, options ),
-      control = $(opts.template),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       parser = opts.parser,
       spec = opts.spec,
-      holder = $(".radio", control),
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
       range = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(property_uri))["rdfs:range"],
-      queryPrefix = spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" && "),
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0] : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
       source = this.attr("data-source") || undefined,
       template = this.attr("data-template") || undefined,
       options = [],
@@ -1011,56 +1377,84 @@
       this.removeAttr("data-template");
     }
 
+    function interpolate (str) {
+      try {
+        var result = str.replace(/{\s*.*?\s*}/g, function (match) {
+          return eval(match);
+        });
+        return Promise.resolve(result);
+      } catch (error) {
+        console.log("Interpolation error", str);
+        return Promise.reject(error);
+      }
+    }
+
     function renderValue (value) {
-      if (template) {
-        var individual = value;
-        return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
+      if (value instanceof veda.IndividualModel) {
+        return value.load().then(function (individual) {
+          if (template) {
+            return interpolate(template);
+          } else {
+            return individual.toString();
+          }
+        });
       } else {
-        return veda.Util.formatValue(value);
+        return Promise.resolve(veda.Util.formatValue(value));
       }
     }
 
     function populate() {
       if (spec && spec.hasValue("v-ui:optionValue")) {
         options = spec["v-ui:optionValue"];
+        return renderOptions(options);
       } else if (source) {
-        source.replace(/{\s*([^{}]+)\s*}/g, function (match) {
-          return ( options = eval(match) );
-        });
+        return Promise.resolve(eval(source))
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Source error", source);
+          });
       } else if (queryPrefix) {
-        queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-        ftQuery(queryPrefix, undefined, undefined, withDeleted).then(renderOptions);
-        return;
+        return interpolate(queryPrefix)
+          .then(function (queryPrefix) {
+            return ftQuery(queryPrefix, undefined, undefined, withDeleted);
+          })
+          .then(renderOptions)
+          .catch(function (error) {
+            console.log("Query prefix error", queryPrefix);
+          });
       }
-      renderOptions(options);
     }
 
     function renderOptions(options) {
-      control.empty();
-      options.map(function (value, index) {
+      that.empty();
+      var optionsPromises = options.map(function (value, index) {
         if (index >= 100) { return; }
-        var hld = holder.clone().appendTo(control);
-        var lbl = $("label", hld).append( renderValue(value) );
-        var rad = $("input", lbl).data("value", value);
-        if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
-          hld.addClass("deleted");
-        }
-        var hasValue = individual.hasValue(property_uri, value);
-        rad.prop("checked", hasValue);
-        rad.change(function () {
-          if ( rad.is(":checked") ) {
-            individual.set(property_uri, [rad.data("value")]);
-          } else {
-            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
-              return i.valueOf() !== rad.data("value").valueOf();
-            }));
+        var hld = $(opts.template).appendTo(that);
+        return renderValue(value).then(function (rendered) {
+          var lbl = $("label", hld).append( rendered );
+          var rad = $("input", lbl).data("value", value);
+          if (value instanceof veda.IndividualModel && value.hasValue("v-s:deleted", true)) {
+            hld.addClass("deleted");
+          }
+          var hasValue = individual.hasValue(property_uri, value);
+          rad.prop("checked", hasValue);
+          rad.change(function () {
+            if ( rad.is(":checked") ) {
+              individual.set(property_uri, [value]);
+            } else {
+              individual.removeValue(property_uri, value);
+            }
+          });
+          if (opts.mode === "view") {
+            hld.addClass("disabled");
+            rad.attr("disabled", "disabled");
           }
         });
       });
     }
 
     function changeHandler() {
-      $("input", control).each(function () {
+      $("input", that).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);
         $(this).prop("checked", hasValue);
@@ -1068,134 +1462,133 @@
     }
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "left",
         container: "body",
         trigger: "hover",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
     }
+
+    this.on("update", function (e) {
+      e.stopPropagation();
+      populate();
+    });
 
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.radio", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
+        $("div.radio", this).addClass("disabled");
+        $("input", this).attr("disabled", "true");
       } else {
-        $("div.radio", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
+        $("div.radio", this).removeClass("disabled");
+        $("input", this).removeAttr("disabled");
       }
       if (e.type === "search") {
         var dataDeleted = $(this).data("deleted");
         withDeleted = typeof dataDeleted === "boolean" ? dataDeleted : true;
       }
     });
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value; });
-      populate();
-      return this;
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
-    this.append(control);
     return this;
   };
   $.fn.veda_radio.defaults = {
     template: $("#radio-control-template").html(),
   };
 
-//new radio control
+  //BOOLEAN RADIO
+
   $.fn.veda_booleanRadio = function (options) {
     var opts = $.extend( {}, $.fn.veda_booleanRadio.defaults, options ),
-      control = $(opts.template),
+      that = this,
       individual = opts.individual,
       property_uri = opts.property_uri || opts.rel_uri,
       spec = opts.spec,
-      holder = $(".radio", control),
-      trueOption = { 
-        label: spec && spec.hasValue("v-ui:trueLabel") ? spec.get("v-ui:trueLabel").join(" ") : new veda.IndividualModel("v-s:YesBundle").get("rdfs:label").join(" "),
+      trueOption = {
+        label: spec && spec.hasValue("v-ui:trueLabel") ?
+          Promise.resolve(spec.get("v-ui:trueLabel").join(" ")) :
+          (new veda.IndividualModel("v-s:YesBundle")).load().then(function(loaded) {
+            return loaded.get("rdfs:label").join(" ");
+          }),
         value: true
       },
       falseOption = {
-        label: spec && spec.hasValue("v-ui:falseLabel") ? spec.get("v-ui:falseLabel").join(" ") : new veda.IndividualModel("v-s:NoBundle").get("rdfs:label").join(" "),
+        label: spec && spec.hasValue("v-ui:falseLabel") ?
+          Promise.resolve(spec.get("v-ui:falseLabel").join(" ")) :
+          (new veda.IndividualModel("v-s:NoBundle")).load().then(function(loaded) {
+            return loaded.get("rdfs:label").join(" ");
+          }),
         value: false
       },
       options = [trueOption, falseOption];
-    
+
     renderOptions();
 
     individual.on(property_uri, changeHandler);
     this.one("remove", function () {
       individual.off(property_uri, changeHandler);
     });
-    
+
     function renderOptions() {
-      control.empty();
+      that.empty();
       options.map(function (option) {
-        var hld = holder.clone().appendTo(control);
-        var lbl = $("label", hld).append( option.label );
-        var rad = $("input", lbl).data("value", option.value);
-        var hasValue = individual.hasValue(property_uri, option.value);
-        rad.prop("checked", hasValue);
-        rad.change(function () {
-          if ( rad.is(":checked") ) {
-            individual.set(property_uri, [rad.data("value")]);
-          } else {
-            individual.set(property_uri, individual.get(property_uri).filter( function (i) {
-              return i.valueOf() !== rad.data("value").valueOf();
-            }));
-          }
+        var hld = $(opts.template).appendTo(that);
+        option.label.then(function(label) {
+          var lbl = $("label", hld).append( label );
+          var rad = $("input", lbl).data("value", option.value);
+          var hasValue = individual.hasValue(property_uri, option.value);
+          rad.prop("checked", hasValue);
+          rad.change(function () {
+            if ( rad.is(":checked") ) {
+              individual.set(property_uri, [rad.data("value")]);
+            } else {
+              individual.set(property_uri, individual.get(property_uri).filter( function (i) {
+                return i.valueOf() !== rad.data("value").valueOf();
+              }));
+            }
+          });
         });
       });
     }
 
     function changeHandler() {
-      $("input", control).each(function () {
+      $("input", that).each(function () {
         var value = $(this).data("value");
         var hasValue = individual.hasValue(property_uri, value);
         $(this).prop("checked", hasValue);
       });
     }
-    
+
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "left",
         container: "body",
         trigger: "hover",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
     }
-    
+
+    this.on("update", function (e) {
+      e.stopPropagation();
+      renderOptions();
+    });
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "view") {
-        $("div.radio", control).addClass("disabled");
-        $("input", control).attr("disabled", "true");
+        $("div.radio", this).addClass("disabled");
+        $("input", this).attr("disabled", "true");
+        $(this).removeClass("has-error");
       } else {
-        $("div.radio", control).removeClass("disabled");
-        $("input", control).removeAttr("disabled");
+        $("div.radio", this).removeClass("disabled");
+        $("input", this).removeAttr("disabled");
       }
     });
-    this.val = function (value) {
-      if (!value) return $("input", this).map(function () { return this.value; });
-      populate();
-      return this;
-    };
-    this.populate = function () {
-      populate();
-      return this;
-    };
-    this.append(control);
     return this;
   };
   $.fn.veda_booleanRadio.defaults = {
@@ -1205,6 +1598,7 @@
   // Numeration control
   $.fn.veda_numeration = function( options ) {
     var opts = $.extend( {}, $.fn.veda_numeration.defaults, options ),
+      that = this,
       control = $(opts.template),
       spec = opts.spec,
       placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
@@ -1229,25 +1623,24 @@
 
     input.val(individual.get(property_uri)[0]);
     individual.on(property_uri, singleValueHandler);
-    control.one("remove", function () {
+    this.one("remove", function () {
       individual.off(property_uri, singleValueHandler);
     });
 
     if (spec && spec.hasValue("v-ui:tooltip")) {
-      control.tooltip({
+      this.tooltip({
         title: spec["v-ui:tooltip"].join(", "),
         placement: "bottom",
         container: "body",
         trigger: "manual",
         animation: false
-      });
-      control.one("remove", function () {
-        control.tooltip("destroy");
+      }).one("remove", function () {
+        $(this).tooltip("destroy");
       });
       input.on("focusin", function () {
-        control.tooltip("show");
+        that.tooltip("show");
       }).on("focusout change", function () {
-        control.tooltip("hide");
+        that.tooltip("hide");
       });
     }
 
@@ -1369,7 +1762,6 @@
     mode: "javascript",
     parser: function (input) {
       return (input || null);
-      //return new String(input);
     }
   };
 
@@ -1485,17 +1877,17 @@
   $.fn.veda_file = function( options ) {
     var opts = $.extend( {}, $.fn.veda_file.defaults, options ),
         control = $(opts.template),
+        browseButton = $(control[0]),
+        fileInput = $(control[1]),
+        indicatorPercentage = $(".indicator-percentage", browseButton),
+        indicatorSpinner = $(".indicator-spinner", browseButton),
         spec = opts.spec,
         individual = opts.individual,
-        rel_uri = opts.rel_uri,
+        rel_uri = opts.property_uri,
         rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
         range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
         isSingle = spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true,
-        accept = this.attr("accept"),
-        fileInput = $("[type='file']", control),
-        browseButton = $(".browse", control),
-        indicatorPercentage = $(".indicator-percentage", control),
-        indicatorSpinner = $(".indicator-spinner", control);
+        accept = this.attr("accept");
 
     if (!isSingle) { fileInput.attr("multiple", "multiple"); }
     if (accept) { fileInput.attr("accept", accept); }
@@ -1598,27 +1990,25 @@
       template = this.attr("data-template") || "{individual['rdfs:label'].join(' ')}",
       individual = opts.individual,
       spec = opts.spec,
-      placeholder = this.data("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : (new veda.IndividualModel("v-s:StartTypingBundle"))["rdfs:label"].join(" ") ),
-      queryPrefix = this.data("query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : undefined ),
-      sort = this.data("sort") || spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' desc , 'rdfs:label_en' desc , 'rdfs:label' desc",
+      placeholder = this.attr("placeholder") || ( spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : new veda.IndividualModel("v-s:StartTypingBundle") ),
+      rel_uri = opts.property_uri,
       rangeRestriction = spec && spec.hasValue("v-ui:rangeRestriction") ? spec["v-ui:rangeRestriction"][0] : undefined,
-      rel_uri = opts.rel_uri,
+      range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
+      queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
+      sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
-      withDeleted = false || this.data("deleted");
+      withDeleted = false || this.attr("data-deleted");
 
     this.removeAttr("data-template");
     function renderTemplate (individual) {
-      return template.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-    }
-
-    if (queryPrefix) {
-      queryPrefix = queryPrefix.replace(/{\s*([^{}]+)\s*}/g, function (match) { return eval(match); });
-    } else {
-      var relRange = rangeRestriction ? [ rangeRestriction ] : (new veda.IndividualModel(rel_uri))["rdfs:range"];
-      if ( relRange && relRange.length && (relRange.length > 1 || relRange[0].id !== "rdfs:Resource") ) {
-        var types = relRange.map(function (i) { return "'rdf:type' == '" + i.id + "'"; });
-        queryPrefix = "(" + types.join(" || ") + ")";
-      }
+      return template.replace(/{\s*.*?\s*}/g, function (match) {
+        try {
+          return eval(match);
+        } catch (error) {
+          console.log(error);
+          return "";
+        }
+      });
     }
 
     // Select value
@@ -1640,58 +2030,92 @@
       return newVal;
     }
 
+    if (isSingle && opts.mode !== "search") {
+      $(".clear", control).on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
+        individual.clearValue(rel_uri);
+        $(".fulltext", control).val("");
+      });
+      this.on("view edit search", function (e) {
+        e.stopPropagation();
+        if (e.type === "search") {
+          var isSingle = false || $(this).data("single");
+          if (!isSingle) {
+            $(".clear", control).remove();
+          }
+        }
+      });
+    } else {
+      $(".clear", control).remove();
+    }
+
     // Create feature
     var create = $(".create", control);
     if ( this.hasClass("create") || this.hasClass("full") ) {
       var inModal = this.hasClass("create-modal");
       var rel_range = rangeRestriction ? rangeRestriction : (new veda.IndividualModel(rel_uri))["rdfs:range"][0];
-      if ( !rel_range.rights.hasValue("v-s:canCreate", true) ) {
-        create.addClass("disabled");
-        create.off("click");
-      } else {
-        create.click( function (e) {
-          var newVal = createValue();
-          if ( inModal ) {
-            var modal = $("#individual-modal-template").html();
-            modal = $(modal).modal({"show": false});
-            $("body").append(modal);
-            modal.modal("show");
-            create.one("remove", function () {
-              modal.modal("hide").remove();
-              $(document).off("keyup", escHandler);
-            });
-            var ok = $("#ok", modal).click(function (e) {
+      rel_range.rights.then(function (rights) {
+        if ( !rights.hasValue("v-s:canCreate", true) ) {
+          create.addClass("disabled");
+          create.off("click keyup");
+        } else {
+          create.on("click keyup", function (e) {
+            if (e.type !== "click" && e.which !== 13) { return; }
+            var newVal = createValue();
+            if ( inModal ) {
+              var modal = $("#individual-modal-template").html();
+              modal = $(modal).modal({"show": false});
+              $("body").append(modal);
+              modal.modal("show");
+              create.one("remove", function () {
+                modal.modal("hide").remove();
+                $(document).off("keyup", escHandler);
+              });
+              var ok = $("#ok", modal).click(function (e) {
+                select(newVal);
+                $(document).off("keyup", escHandler);
+              });
+              var close = $(".close", modal).click(function (e) {
+                newVal.delete();
+                $(document).off("keyup", escHandler);
+              });
+              var escHandler = function (e) {
+                if (e.keyCode === 27) {
+                  close.click();
+                }
+              };
+              $(document).on("keyup", escHandler);
+              var cntr = $(".modal-body", modal);
+              newVal.one("beforeReset", function () {
+                modal.modal("hide").remove();
+              });
+              newVal.one("afterSave", function () {
+                select(newVal);
+                modal.modal("hide").remove();
+              });
+              newVal.present(cntr, undefined, "edit").then(function (tmpl) {
+                $(".action", tmpl).remove();
+                var validation = tmpl.data("validation");
+                if ( validation && validation.state ) {
+                  ok.removeAttr("disabled");
+                } else {
+                  ok.attr("disabled", "disabled");
+                }
+                tmpl.on("internal-validated", function (e, validation) {
+                  if (validation.state) {
+                    ok.removeAttr("disabled")
+                  } else {
+                    ok.attr("disabled", "disabled");
+                  }
+                });
+              });
+            } else {
               select(newVal);
-              $(document).off("keyup", escHandler);
-            });
-            var close = $(".close", modal).click(function (e) {
-              newVal.delete();
-              $(document).off("keyup", escHandler);
-            });
-            var escHandler = function (e) {
-              if (e.keyCode === 27) {
-                close.click();
-              }
-            };
-            $(document).on("keyup", escHandler);
-            var cntr = $(".modal-body", modal);
-            newVal.one("beforeReset", function () {
-              modal.modal("hide").remove();
-            });
-            newVal.one("afterSave", function () {
-              select(newVal);
-              modal.modal("hide").remove();
-            });
-            var template = newVal.present(cntr, undefined, "edit");
-            $(".action", template).remove();
-            template.on("internal-validated", function (e, validation) {
-              validation.state ? ok.removeAttr("disabled") : ok.attr("disabled", "disabled");
-            });
-          } else {
-            select(newVal);
-          }
-        });
-      }
+            }
+          });
+        }
+      });
+
 
       // Hide create button for single value relations if value exists
       if (isSingle) {
@@ -1716,48 +2140,31 @@
     // Tree feature
     var tree = $(".tree", control);
     if ( this.hasClass("tree") || this.hasClass("full") ) {
-      var root = spec && spec.hasValue("v-ui:treeRoot") ? spec["v-ui:treeRoot"] : undefined,
-          inProperty = spec && spec.hasValue("v-ui:treeInProperty") ? spec["v-ui:treeInProperty"] : undefined,
-          outProperty = spec && spec.hasValue("v-ui:treeOutProperty") ? spec["v-ui:treeOutProperty"] : undefined,
-          allowedClass = spec && spec.hasValue("v-ui:treeAllowedClass") ? spec["v-ui:treeAllowedClass"] : undefined,
-          allowedFilter = spec && spec.hasValue("v-ui:treeAllowedFilter") ? spec["v-ui:treeAllowedFilter"] : undefined,
-          selectableClass = spec && spec.hasValue("v-ui:treeSelectableClass") ? spec["v-ui:treeSelectableClass"] : undefined,
-          selectableFilter = spec && spec.hasValue("v-ui:treeSelectableFilter") ? spec["v-ui:treeSelectableFilter"] : undefined,
-          displayedProperty = spec && spec.hasValue("v-ui:treeDisplayedProperty") ? spec["v-ui:treeDisplayedProperty"] : [ new veda.IndividualModel("rdfs:label") ];
 
-      if (root && (inProperty || outProperty)) {
-        var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
-        var modal = $("#individual-modal-template").html();
-        tree.click(function () {
-          individual.treeConfig = {
-            root: root,
-            inProperty: inProperty,
-            outProperty: outProperty,
-            sort: sort,
-            allowedClass: allowedClass,
-            allowedFilter: allowedFilter,
-            selectableClass: selectableClass,
-            selectableFilter: selectableFilter,
-            displayedProperty: displayedProperty,
-            targetRel_uri: rel_uri,
-            isSingle: isSingle,
-            withDeleted: withDeleted
-          };
-          var $modal = $(modal);
-          var cntr = $(".modal-body", $modal);
-          $modal.on('hidden.bs.modal', function (e) {
-            $modal.remove();
-            delete individual.treeConfig;
-          });
-          $modal.modal();
-          $("body").append($modal);
-          individual.present(cntr, treeTmpl);
+      var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
+      var modal = $("#individual-modal-template").html();
+      tree.on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
+        var $modal = $(modal);
+        var cntr = $(".modal-body", $modal);
+        $modal.on('hidden.bs.modal', function (e) {
+          $modal.remove();
+          delete individual.treeConfig;
         });
-      } else {
-        tree.remove();
-      }
+        $modal.modal();
+        $("body").append($modal);
+
+        var extra = {
+          target: individual,
+          target_rel_uri: rel_uri,
+          isSingle: isSingle,
+          withDeleted: withDeleted,
+          sort: sort
+        };
+        spec.present(cntr, treeTmpl, undefined, extra);
+      });
     } else {
-      tree.remove();
+      tree.parent().remove();
     }
 
     // Fulltext search feature
@@ -1765,37 +2172,54 @@
     var fulltextMenu = $(".fulltext-menu", control);
     if ( this.hasClass("fulltext") || this.hasClass("full") ) {
 
-      fulltext.attr({
-        "placeholder": placeholder,
-        "name": (individual.hasValue("rdf:type") ? individual["rdf:type"].pop().id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
-      });
+      if (placeholder instanceof veda.IndividualModel) {
+        placeholder.load().then(function (placeholder) {
+          fulltext.attr({
+            "placeholder": placeholder.toString(),
+            "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+          });
+        });
+      } else {
+        fulltext.attr({
+          "placeholder": placeholder,
+          "name": (individual.hasValue("rdf:type") ? individual["rdf:type"][0].id + "_" + rel_uri : rel_uri).toLowerCase().replace(/[-:]/g, "_")
+        });
+      }
 
-      autosize(fulltext);
-      this.on("edit", function () {
-        autosize.update(fulltext);
-      });
-      this.one("remove", function () {
-        autosize.destroy(fulltext);
+      fulltext.on("input keyup focus", function (e) {
+        var value = e.target.value;
+        if (value) {
+          e.target.setAttribute("rows", value.split("\n").length);
+        } else {
+          e.target.setAttribute("rows", 1);
+        }
       });
 
       var header = $(".header", control);
-      header.find(".select-all")
-        .click(function () { suggestions.children(":not(.selected)").click(); })
-        .text( new veda.IndividualModel("v-s:SelectAll").toString() );
-      header.find(".cancel-selection")
-        .click(function () { suggestions.children(".selected").click(); })
-        .text( new veda.IndividualModel("v-s:CancelSelection").toString() );
-      header.find(".invert-selection")
-        .click(function () { suggestions.children().click(); })
-        .text( new veda.IndividualModel("v-s:InvertSelection").toString() );
-      header.find(".close-menu")
-        .click(function () {
-          fulltextMenu.hide();
-          $(".form-control", control).val("");
-          individual.set(rel_uri, selected);
-
-        })
-        .text("Ok");
+      Promise.all([
+        new veda.IndividualModel("v-s:SelectAll").load(),
+        new veda.IndividualModel("v-s:CancelSelection").load(),
+        new veda.IndividualModel("v-s:InvertSelection").load()
+      ]).then(function (actions) {
+        header.find(".select-all")
+          .click(function () { suggestions.children(":not(.selected)").click(); })
+          .text( actions[0] );
+        header.find(".cancel-selection")
+          .click(function () { suggestions.children(".selected").click(); })
+          .text( actions[1] );
+        header.find(".invert-selection")
+          .click(function () { suggestions.children().click(); })
+          .text( actions[2] );
+        header.find(".close-menu")
+          .click(function () {
+            fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
+            $(".form-control", control).val("");
+            individual.set(rel_uri, selected);
+          })
+          .text( "Ok" );
+      });
       if (isSingle) {
         header.hide();
       }
@@ -1819,28 +2243,44 @@
           if (timeout) { clearTimeout(timeout); }
           var value = e.target.value;
           if (value.length >= minLength) {
-            timeout = setTimeout(performSearch, defaultDelay, e, value);
-          } else if (!value.length)  {
+            timeout = setTimeout(performSearch, 750, value);
+          } else if (!value.length) {
             if (isSingle) {
               individual.set(rel_uri, []);
             }
             suggestions.empty();
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           }
         };
       }());
 
-      var performSearch = function (e, value) {
-        ftQuery(queryPrefix, value, sort, withDeleted)
-          .then(renderResults)
-          .catch(function (error) {
-            console.log("Fulltext query error", error);
-          });
-      }
+      var evalQueryPrefix = function () {
+        return new Promise(function (resolve, reject) {
+          try {
+            var result = queryPrefix.replace(/{\s*.*?\s*}/g, function (match) {
+              return eval(match);
+            });
+            resolve(result);
+          } catch (error) {
+            console.log("Query prefix evaluation error", error);
+            reject(error);
+          }
+        });
+      };
 
-      fulltext
-        .on("keyup", keyupHandler)
-        .on("triggerSearch", performSearch);
+      var performSearch = function (value) {
+        evalQueryPrefix().then(function (queryPrefix) {
+          ftQuery(queryPrefix, value, sort, withDeleted)
+            .then(renderResults)
+            .catch(function (error) {
+              console.log("Fulltext query error", error);
+            });
+        });
+      };
+
+      fulltext.on("keyup", keyupHandler);
 
       var selected = [];
 
@@ -1848,7 +2288,8 @@
         selected = individual.get(rel_uri);
         if (results.length) {
           var rendered = results.map(function (result) {
-            var tmpl = $("<div class='suggestion'></div>")
+            if (result == undefined) return "";
+            var tmpl = $("<a href='#' class='suggestion'></a>")
               .text( renderTemplate(result) )
               .attr("resource", result.id);
             if (individual.hasValue(rel_uri, result)) {
@@ -1857,20 +2298,41 @@
             if (result.hasValue("v-s:deleted", true)) {
               tmpl.addClass("deleted");
             }
+            if (result.hasValue("v-s:valid", false) && !result.hasValue("v-s:deleted", true) ) {
+              tmpl.addClass("invalid");
+            }
             return tmpl;
           });
           suggestions.empty().append(rendered);
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
-          $(document).click(clickOutsideMenuHandler);
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
+          //suggestions.children().first().focus().addClass("active");
         } else {
           suggestions.empty();
           fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
-      }
+      };
 
       var suggestions = $(".suggestions", control);
+      var dblTimeout;
       suggestions.on("click", ".suggestion", function (e) {
-        var tmpl = $(this);
+        if (!e.originalEvent) {
+          clickHandler(e);
+        } else if (dblTimeout) {
+          dblclickHandler(e);
+        } else {
+          clickHandler(e);
+        }
+      });
+
+      var clickHandler = function (e) {
+        e.preventDefault();
+        var tmpl = $(e.target);
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
         tmpl.toggleClass("selected");
@@ -1880,6 +2342,8 @@
               .set(rel_uri, [])
               .set(rel_uri, [suggestion]);
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           } else {
             selected = selected.filter(function (value) {
               return value !== suggestion;
@@ -1889,37 +2353,78 @@
           if (isSingle) {
             individual.set(rel_uri, [suggestion]);
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           } else {
             selected = selected.filter(function (value) {
               return value !== suggestion;
             }).concat(suggestion);
           }
         }
-      });
+        dblTimeout = setTimeout(function () {
+          dblTimeout = undefined;
+        }, 300);
+      };
 
-      var clickOutsideMenuHandler = function (event) {
-        if( !$(event.target).closest(fulltextMenu).length ) {
+      var dblclickHandler = function (e) {
+        if ( !$(e.target).hasClass("selected") ) {
+          clickHandler(e);
+        }
+        individual.set(rel_uri, selected);
+        dblTimeout = clearTimeout(dblTimeout);
+        fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
+      };
+
+      var clickOutsideMenuHandler = function (e) {
+        if( !$(e.target).closest(fulltextMenu).length ) {
           if( fulltextMenu.is(":visible") ) {
+            individual.set(rel_uri, selected);
             fulltextMenu.hide();
-            removeClickOutsideMenuHandler();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           }
         }
-      }
+      };
 
-      var removeClickOutsideMenuHandler = function () {
-        if (control.is(":visible")) {
-          individual.set(rel_uri, selected);
+      var arrowHandler = function(e) {
+        if ( e.which === 40 ) { // Down
+          e.preventDefault();
+          e.stopPropagation();
+          var active = suggestions.find(".active").removeClass("active");
+          var next = active.next();
+          if ( next.length ) {
+            next.focus().addClass("active");
+          } else {
+            suggestions.children().first().addClass("active").focus();
+          }
+        } else if ( e.which === 38 ) { // Up
+          e.preventDefault();
+          e.stopPropagation();
+          var active = suggestions.find(".active").removeClass("active");
+          var prev = active.prev();
+          if ( prev.length ) {
+            prev.focus().addClass("active");
+          } else {
+            suggestions.children().last().addClass("active").focus();
+          }
         }
-        $(document).off("click", clickOutsideMenuHandler);
-      }
+      };
 
       var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
-          fulltext.val( renderTemplate( individual.get(rel_uri)[0]) );
+          individual.get(rel_uri)[0].load().then(function(loaded) {
+            var rendered = renderTemplate( loaded );
+            var value = fulltext.val();
+            if (value != rendered) {
+              fulltext.val(rendered);
+            }
+          });
         } else if ( isSingle ) {
           fulltext.val("");
         }
-      }
+      };
 
       individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
@@ -1934,19 +2439,32 @@
 
     // Dropdown feature
     var dropdown = $(".dropdown", control);
-    if ( (this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full")) && queryPrefix ) {
-      dropdown.click(function () {
+    if ( this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full") ) {
+      dropdown.on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
         if ( !fulltextMenu.is(":visible") ) {
-          fulltext.trigger("triggerSearch", [""]);
+          performSearch();
+        } else {
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        }
+      });
+      fulltext.on("keydown", function (e) {
+        if ( e.which === 40 ) {
+          performSearch();
         }
       });
     } else {
       dropdown.remove();
     }
 
+    var postButtons = $(".post-buttons", control);
     if ( !$(".fulltext", control).length ) {
-      $(".input-group", control).toggleClass("input-group btn-group");
-      $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
+      postButtons.removeClass("input-group-btn").children().first().toggleClass("btn-default btn-primary");
+    }
+    if ( !postButtons.children().length ) {
+      postButtons.remove();
     }
 
     this.on("view edit search", function (e) {
@@ -1969,7 +2487,7 @@
       control.one("remove", function () {
         control.tooltip("destroy");
       });
-      $("input", control).on("focusin", function () {
+      $("textarea", control).on("focusin", function () {
         control.tooltip("show");
       }).on("focusout change", function () {
         control.tooltip("hide");
@@ -2012,40 +2530,40 @@
     })
     .then(function (results) {
       results = veda.Util.unique( results );
-      var getList = results.filter( function (uri, index) {
-        if ( veda.cache.get(uri) ) {
-          result.push(veda.cache.get(uri));
+      var getList = results.filter( function (uri, i) {
+        var cached = veda.cache.get(uri);
+        if ( cached ) {
+          result[i] = cached.load();
           return false;
         } else {
           return true;
         }
       });
       if (getList.length) {
-        return get_individuals({
+        return veda.Backend.get_individuals({
           ticket: veda.ticket,
-          uris: getList,
-          async: true
+          uris: getList
         });
       } else {
         return [];
       }
     })
     .then(function (individuals) {
-      individuals.map( function (json) {
-        result.push( new veda.IndividualModel(json) );
-      });
-      return result;
+      for (var i = 0, j = 0, length = individuals.length; i < length; i++) {
+        while(result[j++]); // Fast forward to empty element
+        result[j-1] = new veda.IndividualModel(individuals[i]).init();
+      }
+      return Promise.all(result);
     });
 
     function incrementalSearch(cursor, limit, results) {
-      return query({
+      return veda.Backend.query({
         ticket: veda.ticket,
         query: queryString,
         sort: sort ? sort : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
         from: cursor,
         top: 10,
-        limit: 1000,
-        async: true
+        limit: 1000
       }).then(function (queryResult) {
         results = results.concat(queryResult.result);
         var cursor = queryResult.cursor;

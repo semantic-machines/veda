@@ -17,7 +17,7 @@
 v-s:Thing
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
-  rdfs:label "Любая сущность"@ru ;
+  rdfs:label "Сущность"@ru ;
   rdfs:label "Thing"@en ;
 .
 v-s:updateCounter
@@ -70,18 +70,20 @@ v-s:creator
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Thing ;
 .
+v-s:Pscreator
+  rdf:type v-ui:PropertySpecification ;
+  v-ui:forClass v-s:Thing ;
+  v-ui:forProperty v-s:creator;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:official'=='true')"^^xsd:string ;
+  rdfs:label "Спецификация к свойству v-s:creator для класса v-s:Thing"@ru ;
+  rdfs:label "Spec for property v-s:creator for class v-s:Thing"@en ;
+.
+
 v-s:lastEditor
   rdf:type owl:ObjectProperty ;
   rdfs:label "Последний редактор"@ru ;
   rdfs:label "Last editor"@en ;
   rdfs:range v-s:Appointment ;
-  rdfs:domain v-s:Thing ;
-.
-v-s:isDraft
-  rdf:type owl:ObjectProperty ;
-  rdfs:label "Является черновиком"@ru ;
-  rdfs:label "Is draft of"@en ;
-  rdfs:range xsd:boolean ;
   rdfs:domain v-s:Thing ;
 .
 v-s:created
@@ -323,7 +325,7 @@ v-s:hasDocumentKind
 v-s:valid
   rdf:type owl:DatatypeProperty ;
   rdfs:domain v-s:Thing ;
-  rdfs:label "Действительно"@ru ;
+  rdfs:label "Действующий"@ru ;
   rdfs:label "Valid"@en ;
   rdfs:range xsd:boolean ;
 .
@@ -339,6 +341,7 @@ v-s:UserThing
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Thing ;
   rdfs:subClassOf v-s:Exportable ;
+  rdfs:subClassOf v-s:GroupAuthorized ;
   rdfs:subClassOf v-s:ClassAuthorized ;
   rdfs:label "Пользовательская сущность"@ru ;
   rdfs:label "User thing"@en ;
@@ -449,7 +452,7 @@ v-s:dateOfReceiving
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Дата получения"@ru ;
   rdfs:label "Date of receiving"@en ;
-  rdfs:range xsd:date ;
+  rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Temporal ;
 .
 v-s:year
@@ -522,6 +525,28 @@ v-s:placeDescription
   rdfs:range xsd:string ;
   rdfs:domain v-s:Spatial ;
 .
+v-s:hasBuildingKind
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Вид сооружения"@ru ;
+  rdfs:label "Building Kind"@en ;
+  rdfs:range v-s:BuildingKind ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:longitude
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Долгота"@ru ;
+  rdfs:label "Longitude"@en ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Spatial ;
+.
+v-s:latitude
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Широта"@ru ;
+  rdfs:label "Latitude"@en ;
+  rdfs:range xsd:decimal ;
+  rdfs:domain v-s:Spatial ;
+.
+
 ### -------------------------------------------------------
 v-s:Contractual
   rdf:type owl:Class ;
@@ -555,6 +580,22 @@ v-s:stakeholder
   rdf:type owl:ObjectProperty ;
   rdfs:label "Заинтересованная сторона"@ru ;
   rdfs:label "Stakeholder"@en ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:operator
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Эксплуатант"@ru ;
+  rdfs:label "Operator"@en ;
+  rdfs:range v-s:OrganizationUnit ;
+  rdfs:range v-s:Appointment ;
+  rdfs:domain v-s:Contractual ;
+.
+v-s:proprietor
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Собственник"@ru ;
+  rdfs:label "Proprietor"@en ;
   rdfs:range v-s:OrganizationUnit ;
   rdfs:range v-s:Appointment ;
   rdfs:domain v-s:Contractual ;
@@ -733,49 +774,7 @@ v-s:hasContractScale
   rdfs:range v-s:ContractScale ;
   rdfs:domain v-s:Contractual ;
 .
-# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
-v-s:PsHasRoleInContract_ContractParticipantCustomer
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:ContractParticipantCustomer ;
-  v-ui:forProperty v-s:hasRoleInContract ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'@' == 'd:dsxyd1uxsxuui6f1t3s4ki3rdp' || '@' == 'd:a14fhdnimgodskj2jlmzwausubs' || '@' == 'd:a1nzzs06xqqx3fvud0bsjq78cdq' || '@' == 'd:wh0t3y7ou4k9o0ec5vw4j5df5c' || '@' == 'd:a1268rvzfsml3g4j0wcjxf2skc9'" ;
-.
-v-s:PsHasRoleInContract_ContractParticipantSupplier
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:ContractParticipantSupplier ;
-  v-ui:forProperty v-s:hasRoleInContract ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'@' == 'd:wws2oz313z6xpl1hd4u3laxzfg' || '@' == 'd:jslj1t0dm3o6sg8jas931um4kw' || '@' == 'd:ji9b5cqs5ucr1uy8ou7s78989x' || '@' == 'd:xxsa1kfknh7anmo6688y026udp' || '@' == 'd:p7xxv9vvwex8f1jfs2lhqjl85v'" ;
-.
-v-s:PsHasRoleInContract_ContractParticipantStakeholder
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:ContractParticipantStakeholder ;
-  v-ui:forProperty v-s:hasRoleInContract ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "'@' == 'd:dm44s17tayal8frdutpnb2matk' || '@' == 'd:rdvfeae7ylufawj02z492cxmto' || '@' == 'd:tv2r6lzebfk6p3298jsnwokgxk'" ;
-.
 
-v-s:PsHasContractParticipant_Contract
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:Contract ;
-  v-ui:forProperty v-s:hasContractParticipantCustomer ;
-  v-ui:forProperty v-s:hasContractParticipantSupplier ;
-  v-ui:forProperty v-s:hasContractParticipantStakeholder ;
-  v-ui:minCardinality 1 ;
-  v-ui:maxCardinality 1 ;
-.
-v-s:Ps_ContractParticipant
-  rdf:type v-ui:ObjectPropertySpecification ;
-  v-ui:forClass v-s:ContractParticipant ;
-  v-ui:forProperty v-s:hasContractor ;
-  v-ui:forProperty v-s:hasOrganization ;
-  v-ui:minCardinality 0 ;
-  v-ui:maxCardinality 1 ;
-.
 ### -------------------------------------------------------
 v-s:Controlled
   rdf:type owl:Class ;
@@ -1004,6 +1003,12 @@ v-s:Measurable
   rdfs:label "Измеряемая сущность"@ru ;
   rdfs:label "Measurable thing"@en ;
 .
+v-s:UnitOfMeasure
+  rdf:type owl:Class ;
+  rdfs:subClassOf rdfs:Resource ;
+  rdfs:label "Единица измерения"@ru ;
+  rdfs:label "Unit of measure"@en ;
+.
 v-s:hasLevel
   rdf:type owl:ObjectProperty ;
   rdfs:label "Уровень"@ru ;
@@ -1127,6 +1132,13 @@ v-s:hasClassifierMarkOfWorkingDrawingsSet
   rdfs:range v-s:ClassifierMarkOfWorkingDrawingsSet ;
   rdfs:domain v-s:ClassifiedRus ;
 .
+v-s:itemNumber
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Номер пункта"@ru ;
+  rdfs:label "Item number"@en ;
+  rdfs:range xsd:integer ;
+  rdfs:domain v-s:ClassifiedRus ;
+.
 ### ------------------------------------------------------------
 v-s:Maintained
   rdf:type owl:Class ;
@@ -1140,45 +1152,6 @@ v-s:hasMaintainedObject
   rdfs:label "Object TORO"@en ;
   rdfs:range v-s:MaintainedObject ;
   rdfs:domain v-s:Maintained ;
-.
-#--------------Template--------------------------------
-
-v-s:hasMaintainedObjectTemplate
-  rdf:type v-ui:ClassTemplate ;
-  rdfs:label "Шаблон объектов ТОРО"@ru ;
-  rdfs:label "Шаблон объектов ТОРО"@en ;
-  rdfs:comment "Объекты ТОРО"@ru ;
-  rdfs:comment "Объекты ТОРО"@en ;
-  v-ui:template """
-<div>
-  <em about="v-s:hasMaintainedObject" property="rdfs:label"></em>
-  <table class="table table-condensed table-bordered">
-    <thead>
-      <tr class="active">
-        <th about="rdfs:label" property="rdfs:label"></th>
-        <th></th>
-        <th about="v-s:hasParentLinkBundle" property="rdfs:label"></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody rel="v-s:hasMaintainedObject">
-      <tr>
-        <td property="rdfs:label" class="view edit search"></td>
-        <td property="v-s:shortLabel" class="view edit search"></td>
-        <td property="v-s:hasParentLink" class="view edit search"></td>
-        <td>
-          <div about="@" rel="v-s:hasParentLink" class="view edit search">
-            <div property="v-s:shortLabel" class="view edit search"></div>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-    <tfoot class="-view edit search"><tr><td colspan="5">
-      <veda-control data-type="link" rel="v-s:hasMaintainedObject" class="-view edit search fulltext tree"></veda-control>
-    </tfoot>
-  </table>
-</div>
-""" ;
 .
 
 #------------------------------------------------------
@@ -1272,6 +1245,7 @@ v-s:transactionDate
 v-s:Projectable
   rdf:type owl:Class ;
   rdfs:subClassOf rdfs:Resource ;
+  rdfs:subClassOf v-s:Document;
   rdfs:label "Проектная сущность"@ru ;
   rdfs:label "Projectable thing"@en ;
 .
@@ -1407,6 +1381,13 @@ v-s:dueDate
   rdfs:range xsd:dateTime ;
   rdfs:domain v-s:Deliverable2 ;
 .
+v-s:transportOrganization
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Транспортная организация"@ru ;
+  rdfs:label "Transport organization"@en ;
+  rdfs:range v-s:Organization ;
+  rdfs:domain v-s:Deliverable2 ;
+.
 #------------------------------------------------------
 v-s:Document
   rdf:type owl:Class ;
@@ -1414,6 +1395,15 @@ v-s:Document
   rdfs:label "Документ"@ru ;
   rdfs:label "Document"@en ;
 .
+#------------------------------------------------------
+v-s:Dictionary
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Справочник"@ru ;
+  rdfs:label "Dictionary"@en ;
+.
+
+
 ### ------------------------------------------------------------
 v-s:Hierarchical
   rdf:type owl:Class ;
@@ -1434,4 +1424,87 @@ v-s:parentUnit
   rdfs:label "Родительская единица"@ru ;
   rdfs:label "Parent unit"@en ;
   owl:inverseOf v-s:childUnit ;
+.
+#--------------Template--------------------------------
+
+v-s:hasMaintainedObjectTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон объектов ТОРО"@ru ;
+  rdfs:label "Шаблон объектов ТОРО"@en ;
+  rdfs:comment "Объекты ТОРО"@ru ;
+  rdfs:comment "Объекты ТОРО"@en ;
+  v-ui:template """
+<div>
+  <em about="v-s:hasMaintainedObject" property="rdfs:label"></em>
+  <table class="table table-condensed table-bordered">
+    <thead>
+      <tr class="active">
+        <th about="rdfs:label" property="rdfs:label"></th>
+        <th></th>
+        <th about="v-s:hasParentLinkBundle" property="rdfs:label"></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody rel="v-s:hasMaintainedObject">
+      <tr>
+        <td property="rdfs:label" class="view edit search"></td>
+        <td property="v-s:shortLabel" class="view edit search"></td>
+        <td rel="v-s:hasParentLink" data-template="v-ui:LabelTemplate" class="view edit search"></td>
+        <td>
+          <div about="@" rel="v-s:hasParentLink" class="view edit search">
+            <div property="v-s:shortLabel" class="view edit search"></div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot class="-view edit search"><tr><td colspan="5">
+      <veda-control data-type="link" rel="v-s:hasMaintainedObject" class="-view edit search fulltext tree"></veda-control>
+    </tfoot>
+  </table>
+</div>
+""" ;
+.
+
+# ------------------------------------------------------------ СПЕЦИФИКАЦИИ --
+v-s:PsHasRoleInContract_ContractParticipantCustomer
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipantCustomer ;
+  v-ui:forProperty v-s:hasRoleInContract ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'@' == 'd:dsxyd1uxsxuui6f1t3s4ki3rdp' || '@' == 'd:a14fhdnimgodskj2jlmzwausubs' || '@' == 'd:a1nzzs06xqqx3fvud0bsjq78cdq' || '@' == 'd:wh0t3y7ou4k9o0ec5vw4j5df5c' || '@' == 'd:a1268rvzfsml3g4j0wcjxf2skc9'" ;
+.
+v-s:PsHasRoleInContract_ContractParticipantSupplier
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipantSupplier ;
+  v-ui:forProperty v-s:hasRoleInContract ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'@' == 'd:wws2oz313z6xpl1hd4u3laxzfg' || '@' == 'd:jslj1t0dm3o6sg8jas931um4kw' || '@' == 'd:ji9b5cqs5ucr1uy8ou7s78989x' || '@' == 'd:xxsa1kfknh7anmo6688y026udp' || '@' == 'd:p7xxv9vvwex8f1jfs2lhqjl85v'" ;
+.
+v-s:PsHasRoleInContract_ContractParticipantStakeholder
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipantStakeholder ;
+  v-ui:forProperty v-s:hasRoleInContract ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "'@' == 'd:dm44s17tayal8frdutpnb2matk' || '@' == 'd:rdvfeae7ylufawj02z492cxmto' || '@' == 'd:tv2r6lzebfk6p3298jsnwokgxk'" ;
+.
+
+v-s:PsHasContractParticipant_Contract
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Contract ;
+  v-ui:forProperty v-s:hasContractParticipantCustomer ;
+  v-ui:forProperty v-s:hasContractParticipantSupplier ;
+  v-ui:forProperty v-s:hasContractParticipantStakeholder ;
+  v-ui:minCardinality 1 ;
+  v-ui:maxCardinality 1 ;
+.
+v-s:Ps_ContractParticipant
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:ContractParticipant ;
+  v-ui:forProperty v-s:hasContractor ;
+  v-ui:forProperty v-s:hasOrganization ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
 .

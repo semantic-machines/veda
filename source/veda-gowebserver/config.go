@@ -34,8 +34,8 @@ func configWebServer() {
 				continue
 			}
 
-			paramName := splitted[0]
-			paramVal := splitted[1]
+			paramName := strings.TrimSpace(splitted[0])
+			paramVal := strings.TrimSpace(splitted[1])
 			switch paramName {
 			case "notify_channel_url":
 				notifyChannelURL = paramVal
@@ -54,8 +54,8 @@ func configWebServer() {
 				webserverPort = paramVal
 			case "https_port":
 				webserverHTTPSPort = paramVal
-			case "lmdb_service_url":
-				lmdbServiceURL = paramVal
+			case "ro_storage_url":
+				roStorageURL = paramVal
 			case "ft_query_service_url":
 				queryServiceURL = paramVal
 			case "webserver_trace":

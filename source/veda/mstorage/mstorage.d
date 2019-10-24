@@ -8,9 +8,10 @@ private
     import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime;
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid, std.random;
-    import veda.util.properd;
-    import veda.core.common.context, veda.core.common.know_predicates, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
-    import veda.core.common.define, veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.bj8individual.individual8json;
+    import veda.util.properd, veda.core.impl.app_context_creator;
+    import veda.core.common.context, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
+    import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource,
+           veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
@@ -140,7 +141,7 @@ void init(string node_id)
     {
         Individual node;
 
-        core_context = PThreadContext.create_new(node_id, "core_context-mstorage", null, log);
+        core_context = create_new_ctx("core_context-mstorage", log);
         core_context.set_az(get_acl_client(log));
         core_context.set_vql(new XapianSearch(core_context));
 
@@ -154,7 +155,7 @@ void init(string node_id)
         log.trace("init core");
 
         sticket = sys_ticket(core_context, true);
-        Ticket *guest_ticket = core_context.get_storage.get_ticket("guest", false);
+        Ticket *guest_ticket = core_context.get_ticket("guest", false);
 
         if (guest_ticket is null || guest_ticket.result == ResultCode.TicketNotFound)
         {
@@ -282,9 +283,9 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
 
     ticket.result = ResultCode.FailStore;
 
-    Resources type = [ Resource(ticket__Ticket) ];
+    Resources type = [ Resource("ticket:ticket") ];
 
-    new_ticket.resources[ rdf__type ] = type;
+    new_ticket.resources[ "rdf:type" ] = type;
 
     if (ticket_id !is null && ticket_id.length > 0)
         new_ticket.uri = ticket_id;
@@ -294,10 +295,10 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
         new_ticket.uri = new_id.toString();
     }
 
-    new_ticket.resources[ ticket__login ] ~= Resource(user_login);
-    new_ticket.resources[ ticket__accessor ] ~= Resource(user_id);
-    new_ticket.resources[ ticket__when ] ~= Resource(getNowAsString());
-    new_ticket.resources[ ticket__duration ] ~= Resource(duration);
+    new_ticket.resources[ "ticket:login" ] ~= Resource(user_login);
+    new_ticket.resources[ "ticket:accessor" ] ~= Resource(user_id);
+    new_ticket.resources[ "ticket:when" ] ~= Resource(getNowAsString());
+    new_ticket.resources[ "ticket:duration" ] ~= Resource(duration);
 
     // store ticket
     string     ss_as_binobj = new_ticket.serialize();
@@ -317,7 +318,8 @@ private Ticket create_new_ticket(string user_login, string user_id, string durat
     }
 
     log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
-                                                                                                                                  UTC()).toISOExtString(),
+                                                                                                                                  UTC()).
+              toISOExtString(),
               SysTime(ticket.end_time, UTC()).toISOExtString());
 
     return ticket;
@@ -327,14 +329,32 @@ auto         rnd               = Random(42);
 const string empty_Sha256_hash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 public long  PASSWORD_LIFETIME;
 
+private struct LoginStatus
+{
+    long count_errors;
+    long time_of_last_err;
+}
+
+private void update_login_err(string login)
+{
+    long        now   = Clock.currTime().toUnixTime();
+    LoginStatus lstat = login_errors.get(login, LoginStatus.init);
+
+    if (lstat != LoginStatus.init) 
+    {
+	lstat.count_errors++;
+        lstat.time_of_last_err = now;
+	login_errors[ login ]  = lstat;
+    }
+}
+
+private LoginStatus[ string ] login_errors;
+
 private Ticket authenticate(Context ctx, string login, string password, string secret)
 {
-    //StopWatch sw; sw.start;
-
     Ticket ticket;
     Ticket sticket = ctx.sys_ticket(true);
 
-    //if (trace_msg[ T_API_70 ] == 1)
     log.trace("authenticate, login=[%s] password=[%s], secret=[%s]", login, password, secret);
 
     ticket.result = ResultCode.AuthenticationFailed;
@@ -360,10 +380,33 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         return ticket;
     }
 
-    Individual[] candidate_users;
-    string       query = "'" ~ veda_schema__login ~ "' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
+    long         now = Clock.currTime().toUnixTime();
 
-    ctx.get_vql().query(sticket.user_uri, query, null, null, 10, 10000, candidate_users, OptAuthorize.NO, false);
+    Individual[] candidate_users;
+    string       query = "'v-s:login' == '" ~ replaceAll(login, regex(r"[-]", "g"), " +") ~ "'";
+
+    ctx.get_vql().query(sticket.user_uri, query, null, null, 10, 10000, OptAuthorize.NO, false, candidate_users);
+
+    LoginStatus lstat = login_errors.get(login, LoginStatus.init);
+    
+    log.trace ("LOGIN INFO  %s %s", login, lstat);
+
+    if (candidate_users.length == 0)
+    {
+        update_login_err(login);
+        ticket.result = ResultCode.AuthenticationFailed;
+        return ticket;
+    }
+    else
+    {
+        if (lstat.count_errors > 3 && (now - lstat.time_of_last_err) < 3 * 60)
+        {
+            update_login_err(login);
+            ticket.result = ResultCode.TooManyRequests;
+            return ticket;
+        }
+    }
+
     auto storage = ctx.get_storage();
     if (storage is null)
     {
@@ -449,7 +492,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
         string origin     = iuser.getFirstLiteral("v-s:origin");
         string old_secret = i_usesCredential.getFirstLiteral("v-s:secret");
 
-        //if (origin !is null && origin == "External User")
+        //if (origin !is null && origin == "ExternalUser")
         if (secret !is null && secret.length > 5)
         {
             if (old_secret is null)
@@ -457,6 +500,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:update password: secret not found, user=[%s]", iuser.uri);
                 ticket.result = ResultCode.InvalidSecret;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
@@ -465,11 +509,11 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:request for update password: send secret not equal request secret [%s], user=[%s]", secret, iuser.uri);
                 ticket.result = ResultCode.InvalidSecret;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
 
-            long now              = Clock.currTime().toUnixTime();
             long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
             if (now - prev_secret_date > 12 * 60 * 60)
             {
@@ -485,6 +529,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:update password: now password equal previous password, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.NewPasswordIsEqualToOld;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
@@ -493,6 +538,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 log.trace("ERR! authenticate:update password: now password is empty, reject. user=[%s]", iuser.uri);
                 ticket.result = ResultCode.EmptyPassword;
                 remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                update_login_err(login);
                 return ticket;
             }
 
@@ -513,6 +559,8 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (op_res.result == ResultCode.Ok)
             {
                 ticket = create_new_ticket(login, user_id);
+                login_errors.remove(login);
+
                 log.trace("INFO! authenticate:update password [%s] for user, user=[%s]", password, iuser.uri);
             }
             else
@@ -529,7 +577,6 @@ private Ticket authenticate(Context ctx, string login, string password, string s
 
             if (PASSWORD_LIFETIME > 0)
             {
-                long now = Clock.currTime().toUnixTime();
                 if (now - edited > PASSWORD_LIFETIME)
                 {
                     log.trace("ERR! authenticate:password is old, lifetime > %d days, user=%s", PASSWORD_LIFETIME / 60 / 60 / 24, user.uri);
@@ -552,7 +599,6 @@ private Ticket authenticate(Context ctx, string login, string password, string s
                 auto rnd      = Random(unpredictableSeed);
                 auto n_secret = to!string(uniform(100000, 999999, rnd));
 
-                long now = Clock.currTime().toUnixTime();
                 if (old_secret !is null)
                 {
                     long prev_secret_date = i_usesCredential.getFirstDatetime("v-s:SecretDateFrom");
@@ -622,10 +668,13 @@ private Ticket authenticate(Context ctx, string login, string password, string s
             if (exist_password !is null && password !is null && password.length > 63 && exist_password == password)
             {
                 ticket = create_new_ticket(login, user_id);
+                login_errors.remove(login);
+
                 return ticket;
             }
             else
             {
+                update_login_err(login);
                 log.trace("WARN! request passw not equal with exist", user.uri);
             }
         }
@@ -634,6 +683,7 @@ private Ticket authenticate(Context ctx, string login, string password, string s
     }
 
     log.trace("ERR! authenticate:fail authenticate, login=[%s] password=[%s], candidate users =%s", login, password, candidate_users);
+    update_login_err(login);
     ticket.result = ResultCode.AuthenticationFailed;
     return ticket;
 }
@@ -738,7 +788,7 @@ public string execute_json(string in_msg, Context ctx)
 
             long   transaction_id = 0;
 
-            Ticket *ticket = ctx.get_storage().get_ticket(_ticket.str, false);
+            Ticket *ticket = ctx.get_ticket(_ticket.str, false);
 
             if (sfn == "put")
             {
@@ -1031,7 +1081,8 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
                 {
                     log.trace("commit: item.rc=%s", item.rc);
                     if (item.rc == ResultCode.Ok)
-                        rc = prepare_event(rdfType, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto, item.op_id);
+                        rc = prepare_event(rdfType, item.assigned_subsystems, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto,
+                                           item.op_id);
                 }
                 rcs ~= OpResult(rc, op_id);
             }
@@ -1041,6 +1092,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
     return rcs;
 }
 
+public string[]   owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty", "owl:Class", "rdfs:Class" ];
 
 static const byte NEW_TYPE    = 0;
 static const byte EXISTS_TYPE = 1;
@@ -1058,7 +1110,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         opt_request = OptAuthorize.NO;
     }
 
-    //log.trace("add_to_transaction: %s %s", text(cmd), *indv);
+    //log.trace("@add_to_transaction: target=%s op=%s indv=%s", subsystem_byte_to_string(cast(ubyte)assigned_subsystems), text(cmd), *indv);
 
     OpResult res = OpResult(ResultCode.FailStore, -1);
 
@@ -1195,24 +1247,40 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         if (rdfType.anyExists(owl_tags) == true)
             is_onto = true;
 
-        if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
-            rdfType.anyExists(veda_schema__PermissionFilter) == true)
+        if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
+            rdfType.anyExists("v-s:PermissionFilter") == true)
             is_acl_element = true;
 
         if (cmd == INDV_OP.REMOVE)
         {
-            prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
-
-            new_state = prev_indv.serialize();
-            if (new_state.length > max_size_of_individual)
+            if (prev_state !is null)
             {
-                res.result = ResultCode.SizeTooLarge;
-                return res;
-            }
+                prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
-            immutable TransactionItem ti =
-                immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto, assigned_subsystems);
+                new_state = prev_indv.serialize();
+                if (new_state.length > max_size_of_individual)
+                {
+                    res.result = ResultCode.SizeTooLarge;
+                    return res;
+                }
+
+                immutable TransactionItem ti =
+                    immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
+                                              event_id, is_acl_element, is_onto, assigned_subsystems);
+
+
+                if (tnx.is_autocommit)
+                {
+                    res.result =
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                                                 res.op_id);
+                }
+                else
+                    tnx.add_immutable(ti);
+            }
+            else
+                res.result = ResultCode.Ok;
+
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
@@ -1220,10 +1288,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             if (tnx.is_autocommit)
             {
-                res.result =
-                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
-                                             res.op_id);
-
                 if (res.result == ResultCode.Ok)
                 {
                     res.result =
@@ -1233,7 +1297,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             }
             else
             {
-                tnx.add_immutable(ti);
                 tnx.add_immutable(ti1);
             }
         }
@@ -1273,7 +1336,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.Ok)
-            res.result = prepare_event(rdfType, prev_state, new_state, is_acl_element, is_onto, res.op_id);
+            res.result = prepare_event(rdfType, assigned_subsystems, prev_state, new_state, is_acl_element, is_onto, res.op_id);
 
         return res;
     }
@@ -1289,15 +1352,20 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     }
 }
 
-private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, string new_binobj, bool is_acl_element, bool is_onto,
+private ResultCode prepare_event(ref MapResource rdfType, long assigned_subsystems, string prev_binobj, string new_binobj, bool is_acl_element,
+                                 bool is_onto,
                                  long op_id)
 {
     ResultCode res;
-
     Tid        tid_acl;
 
-    if (rdfType.anyExists(veda_schema__PermissionStatement) == true || rdfType.anyExists(veda_schema__Membership) == true ||
-        rdfType.anyExists(veda_schema__PermissionFilter) == true)
+    //log.trace("@prepare_event assigned_subsystems=%s", subsystem_byte_to_string(assigned_subsystems));
+
+    if (assigned_subsystems != ALL_MODULES && (assigned_subsystems & SUBSYSTEM.ACL) != SUBSYSTEM.ACL)
+        return ResultCode.Ok;
+
+    if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
+        rdfType.anyExists("v-s:PermissionFilter") == true)
     {
         tid_acl = getTid(P_MODULE.acl_preparer);
         if (tid_acl != Tid.init)
@@ -1306,9 +1374,7 @@ private ResultCode prepare_event(ref MapResource rdfType, string prev_binobj, st
         }
     }
 
-    res = ResultCode.Ok;
-
-    return res;
+    return ResultCode.Ok;
 }
 
 private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
@@ -1318,7 +1384,7 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
     if (indv is null)
         return _types;
 
-    _types = indv.resources.get(rdf__type, Resources.init);
+    _types = indv.resources.get("rdf:type", Resources.init);
 
     foreach (idx, rs; _types)
         _types[ idx ].info = NEW_TYPE;
@@ -1393,7 +1459,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
         return ticket;
     }
 
-    Ticket *tr_ticket = ctx.get_storage().get_ticket(tr_ticket_id, false);
+    Ticket *tr_ticket = ctx.get_ticket(tr_ticket_id, false);
     if (tr_ticket.result == ResultCode.Ok)
     {
         bool      is_allow_trusted = false;
@@ -1424,7 +1490,7 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
 
             Ticket       sticket = sys_ticket(ctx);
 
-            string       query = "'" ~ veda_schema__login ~ "' == '" ~ login ~ "'";
+            string       query = "'v-s:login' == '" ~ login ~ "'";
 
             Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, query, OptAuthorize.NO);
 
