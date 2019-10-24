@@ -914,6 +914,8 @@
       } else {
         clickHandler(e);
       }
+    }).on("dblclick", ".suggestion", function (e) {
+      e.preventDefault();
     });
 
     function clickHandler(e) {
@@ -2328,6 +2330,8 @@
         } else {
           clickHandler(e);
         }
+      }).on("dblclick", ".suggestion", function (e) {
+        e.preventDefault();
       });
 
       var clickHandler = function (e) {
@@ -2367,6 +2371,7 @@
       };
 
       var dblclickHandler = function (e) {
+        e.preventDefault();
         if ( !$(e.target).hasClass("selected") ) {
           clickHandler(e);
         }
