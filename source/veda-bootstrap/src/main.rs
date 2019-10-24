@@ -116,7 +116,7 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                 }
             }
         }
-        thread::sleep(time::Duration::from_millis(1000));
+        thread::sleep(time::Duration::from_millis(10000));
     }
 }
 
