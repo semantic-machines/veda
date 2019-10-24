@@ -2,11 +2,6 @@ use std::collections::HashMap;
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
 
-pub struct Context {
-    pub id: u32,
-    pub storage: VStorage,
-}
-
 pub const PERMISSION_PREFIX: &str = "P";
 pub const MEMBERSHIP_PREFIX: &str = "M";
 pub const FILTER_PREFIX: &str = "F";
@@ -50,8 +45,13 @@ pub struct Right {
 
 pub type RightSet = HashMap<String, Right>;
 
-pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
+pub struct Context {
+    pub permission_statement_counter: u32,
+    pub membership_counter: u32,
+    pub storage: VStorage,
+}
 
+pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual, p_resource: &str, p_in_set: &str, prefix: &str, default_access: u8, ctx: &mut Context) {
     let mut access = 0u8;
 
     let is_deleted = new_state.get_first_bool("v-s:deleted").unwrap_or_default();
