@@ -527,11 +527,11 @@ textarea {
 }
 .deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover) {
   text-decoration: none!important;
-  color: #aaa;
+  color: #aaa!important;
 }
-A.invalid, TR.invalid, SPAN.invalid, DIV.suggestion.invalid {
+.invalid {
   text-decoration: none!important;
-  color: #a94442;
+  color: #a94442!important;
 }
 dl {
   margin-top: 0;
@@ -836,7 +836,7 @@ fieldset[disabled] .form-control {
 
 .link-control .suggestion {
   padding: 5px;
-  color: inherit!important;
+  color: inherit;
   display: block;
   text-decoration: none;
 }
