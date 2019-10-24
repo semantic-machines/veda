@@ -178,14 +178,6 @@ v-s:variableValue
 .
 
 # ------------------------------------------------------------
-v-s:Bundle
-  rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
-  rdfs:label "Текстовая константа"@ru ;
-  rdfs:label "Bundle"@en ;
-.
-
-# ------------------------------------------------------------
 
 v-s:Account
   rdf:type owl:Class ;
@@ -218,6 +210,14 @@ v-s:password
   rdfs:domain v-s:Account, v-s:Credential;
   rdfs:label "Пароль"@ru ;
   rdfs:label "Password"@en ;
+  rdfs:range xsd:string ;
+.
+
+v-s:authType
+  rdf:type owl:DatatypeProperty ;
+  rdfs:domain v-s:Account, v-s:Credential;
+  rdfs:label "Тип авторизации"@ru ;
+  rdfs:label "Auth type"@en ;
   rdfs:range xsd:string ;
 .
 
@@ -305,7 +305,7 @@ v-s:disabled
 .
 v-s:runAt
   rdf:type owl:DatatypeProperty ;
-  rdfs:domain v-s:Event, v-s:UserScript ;
+  rdfs:domain v-s:Event ;
   rdfs:label "Исполнять в"@ru ;
   rdfs:label "Run at"@en ;
   rdfs:range xsd:string ;

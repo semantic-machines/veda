@@ -16,7 +16,7 @@ veda.Module(function (veda) { "use strict";
     var any = !!(individual && individual[property] && individual[property].length);
     if (!value) return any;
     return !!(any && individual[property].filter( function(i) {
-        return (i.type === value.type && i.data === value.data);
+      return (i.type === value.type && i.data.valueOf() === value.data.valueOf());
     }).length);
   };
 
@@ -79,14 +79,13 @@ veda.Module(function (veda) { "use strict";
 
     function fetchResult(cursor) {
       var from = cursor || 0;
-      query({
+      veda.Backend.query({
         ticket: veda.ticket,
         query: q,
         sort: sort || "'v-s:created' desc",
         from: from,
         top: delta,
-        limit: limit,
-        async: true
+        limit: limit
       }).then(function (query_result) {
         var cursor = query_result.cursor;
         var estimated = query_result.estimated;
@@ -119,17 +118,25 @@ veda.Module(function (veda) { "use strict";
 
     function processPortion() {
       var portion = result.splice(0, delta);
-      portion.forEach( fn );
-      if ( (total - result.length) / total - processingProgress >= 0.05 ) {
-        processingProgress = (total - result.length) / total;
-        console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
-      }
-      if ( result.length ) {
-        setTimeout ? setTimeout(processPortion, pause) : processPortion();
-      } else {
-        console.log("Processing done:", total);
-        console.timeEnd("Processing total");
-      }
+      portion.reduce(function (prom, item) {
+        return prom.then(function () {
+          return fn(item);
+        }).catch(function (error) {
+          console.log("Error processing item:", item);
+          console.log(error, error.stack);
+        });
+      }, Promise.resolve()).then(function () {
+        if ( (total - result.length) / total - processingProgress >= 0.05 ) {
+          processingProgress = (total - result.length) / total;
+          console.log("Processing progress:", Math.floor(processingProgress * 100) + "%", "(" + (total - result.length), "of", total + ")");
+        }
+        if ( result.length ) {
+          setTimeout ? setTimeout(processPortion, pause) : processPortion();
+        } else {
+          console.log("Processing done:", total);
+          console.timeEnd("Processing total");
+        }
+      });
     }
   };
 
@@ -176,23 +183,28 @@ veda.Module(function (veda) { "use strict";
       hours = date.getHours(),
       mins = date.getMinutes(),
       secs = date.getSeconds(),
+
+      UTCday = date.getUTCDate(),
+      UTCmonth = date.getUTCMonth() + 1,
+      UTCyear = date.getUTCFullYear(),
+      UTChours = date.getUTCHours(),
+      UTCmins = date.getUTCMinutes(),
+      UTCsecs = date.getUTCSeconds(),
+      UTCmillis = date.getUTCMilliseconds(),
       fdate, ftime;
-    month = zeroPref(month); day = zeroPref(day);
-    hours = zeroPref(hours); mins = zeroPref(mins); secs = zeroPref(secs);
-    fdate = [day, month, year].join(".");
-    ftime = [hours, mins, secs].join(":");
-    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === "00" ? ftime.substr(0, 5) : ftime) );
+    if ( (UTChours + UTCmins + UTCsecs + UTCmillis) === 0 ) {
+      return [zeroPref(day), zeroPref(month), year].join(".");
+    }
+    fdate = [zeroPref(day), zeroPref(month), year].join(".");
+    ftime = [zeroPref(hours), zeroPref(mins), zeroPref(secs)].join(":");
+    return (fdate === "01.01.1970" ? "" : fdate) + (ftime === "00:00:00" ? "" : " " + ( secs === 0 ? ftime.substr(0, 5) : ftime) );
   };
   function formatNumber (n) {
     return (n+"").replace(/.(?=(?:[0-9]{3})+\b)/g, '$& ');
   };
 
-  veda.Util.applyTransform = function (individualList, transform) {
-    return veda.Util.transformation(veda.ticket, individualList, transform, null, null);
-  };
-
   veda.Util.forSubIndividual = function (net, property, id, func) {
-    if (net[property]===undefined) return;
+    if (net[property] === undefined) { return; }
     net[property].forEach(function(el) {
       if (el.id == id) {
         func(el);
@@ -201,7 +213,7 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.removeSubIndividual = function (net, property, id) {
-    if (net[property]===undefined) return undefined;
+    if (net[property] === undefined) { return; }
     return net[property].filter( function (item) {
       return item.id !== id;
     });
@@ -288,15 +300,18 @@ veda.Module(function (veda) { "use strict";
             oneProp = values
               .filter(function(item){return !!item && !!item.valueOf();})
               .map( function (value) {
-                //return "'" + property_uri + "'=='" + value.data + "*'";
                 var q = value.data;
                 if ( !q.match(/[\+\-\*]/) ) {
-                  q = q.split(" ")
-                       .filter(function (token) { return token.length > 0; })
-                       .map(function (token) { return "+" + token + "*"; })
-                       .join(" ");
+                  var lines = q.trim().split("\n");
+                  var lineQueries = lines.map(function (line) {
+                    var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
+                    line = words.map(function (word) { return "+" + word + "*"; }).join(" ");
+                    return "'" + property_uri + "'=='" + line + "'";
+                  });
+                  return lineQueries.join(" || ");
+                } else {
+                  return "'" + property_uri + "'=='" + q + "'";
                 }
-                return "'" + property_uri + "'=='" + q + "'";
               })
               .join(" || ");
             break;
@@ -355,671 +370,6 @@ veda.Module(function (veda) { "use strict";
   }
 
   /**
-   * @returns veda.IndividualModel - start form
-   */
-  veda.Util.buildStartFormByTransformation = function (individual, transform) {
-    var transfromResult = veda.Util.applyTransform(individual.properties, transform.properties);
-    var startForm = new veda.IndividualModel(transfromResult[0]);
-    startForm.isNew(true);
-    startForm.isSync(false);
-    return startForm;
-  };
-
-  /**
-   * Трансформировать указанные индивидуалы по заданным правилам
-   *
-   * @param ticket сессионный билет
-   * @param individuals один или несколько IndividualModel или их идентификаторов
-   * @param transform применяемая трансформация
-   * @param executor контекст исполнителя
-   * @param work_order контекст рабочего задания
-   * @returns {Array}
-   */
-  veda.Util.transformation = function (ticket, individuals, transform, executor, work_order, process)
-  {
-    try
-    {
-      var out_data0 = {};
-
-      if (Array.isArray(individuals) !== true)
-      {
-        individuals = [individuals];
-      }
-
-      var rules = transform['v-wf:transformRule'];
-
-      if (!rules || !rules.length)
-        return;
-
-      //print ("@B start transform");
-      var tmp_rules = [];
-      //print ("rules_in=", veda.Util.toJson (rules));
-      //print ("individuals=", veda.Util.toJson (individuals));
-      for (var i in rules)
-      {
-        var rul = get_individual(ticket, rules[i].data);
-        if (!rul)
-        {
-          print("not read rule [", veda.Util.toJson(rul), "]");
-          continue;
-        }
-        else
-          tmp_rules.push(rul);
-      }
-      rules = tmp_rules;
-
-      var out_data0_el = {};
-
-      /* PUT functions [BEGIN] */
-      var putFieldOfIndividFromElement = (function()
-      {
-        return function(name, field)
-        {
-          var rr = get_individual(ticket, veda.Util.getUri(element));
-          if (!rr)
-            return;
-
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(rr[field]);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putFieldOfObject = (function()
-      {
-        return function(name, field)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-              out_data0_el_arr = [];
-
-          out_data0_el_arr.push(individual[field]);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putUri = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Uri"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var setUri = function(name, value)
-      {
-        out_data0_el[name] = [
-        {
-          data: value,
-          type: "Uri"
-        }];
-      };
-
-      var putString = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "String"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var setString = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "String"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var setDatetime = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Datetime"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putDatetime = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Datetime"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putBoolean = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Boolean"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var setBoolean = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Boolean"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-
-      var putInteger = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Integer"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var setInteger = (function()
-      {
-        return function(name, value)
-        {
-          var out_data0_el_arr;
-
-          out_data0_el_arr = [];
-
-          out_data0_el_arr.push(
-          {
-            data: value,
-            type: "Integer"
-          });
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putExecutor = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(executor) === true)
-          {
-            for (var key3 in executor)
-            {
-              out_data0_el_arr.push(executor[key3]);
-            }
-          }
-          else
-            out_data0_el_arr.push(executor);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putWorkOrder = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(work_order) === true)
-          {
-            for (var key3 in work_order)
-            {
-              out_data0_el_arr.push(work_order[key3]);
-            }
-          }
-          else
-            out_data0_el_arr.push(work_order);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var putThisProcess = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(process) === true)
-          {
-            for (var key3 in process)
-            {
-              out_data0_el_arr.push(process[key3]);
-            }
-          }
-          else
-            out_data0_el_arr.push(process);
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      var removeThisProcess = (function()
-      {
-        return function(name)
-        {
-          var out_data0_el_arr = out_data0_el[name];
-
-          if (!out_data0_el_arr)
-            out_data0_el_arr = [];
-
-          if (Array.isArray(process) === true)
-          {
-            for (var key3 in process)
-            {
-              out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process[key3];});
-            }
-          }
-          else
-          {
-            out_data0_el_arr = out_data0_el_arr.filter(function (value) {return value.data !== process;});
-          }
-
-          out_data0_el[name] = out_data0_el_arr;
-        };
-      })();
-
-      /* PUT functions [END] */
-
-      for (var key in individuals)
-      {
-        //print("#1 key=", key);
-        var individual = individuals[key];
-
-        //print("#1.1 key=", key);
-        var objectContentStrValue = (function()
-        {
-          return function(name, value)
-          {
-            if (individual[name])
-            {
-              var result = false;
-              for (var i in individual[name])
-              {
-                if (value === individual[name][i].data)
-                {
-                  result = true;
-                }
-              }
-              return result;
-            }
-          };
-        })();
-
-        var iteratedObject = Object.keys(individual);
-
-        for (var key2 = 0; key2 < iteratedObject.length; key2++)
-        {
-          var element = individual[iteratedObject[key2]];
-
-          var putValue = (function()
-          {
-            return function(name)
-            {
-              var out_data0_el_arr = out_data0_el[name];
-
-              if (!out_data0_el_arr)
-                out_data0_el_arr = [];
-
-              if (iteratedObject[key2] == '@')
-              {
-                out_data0_el_arr.push(
-                {
-                  data: element,
-                  type: "Uri"
-                });
-              }
-              else
-              {
-                if (Array.isArray(element) === true)
-                {
-                  for (var key3 in element)
-                  {
-                    out_data0_el_arr.push(element[key3]);
-                  }
-                }
-                else
-                  out_data0_el_arr.push(element);
-              }
-
-              out_data0_el[name] = out_data0_el_arr;
-            };
-          })();
-
-          var putValueFrom = (function()
-          {
-            return function(name, path, transform)
-            {
-              var out_data0_el_arr = out_data0_el[name];
-              if (!out_data0_el_arr)
-                out_data0_el_arr = [];
-
-              var element_uri;
-
-              if (Array.isArray(element) === true)
-                element_uri = veda.Util.getUri (element);
-              else
-                element_uri = element.data ? element.data : element;
-
-              var curelem;
-
-              curelem = get_individual(ticket, element_uri);
-
-              for (var i = 0; i < path.length - 1; i++)
-              {
-                if (!curelem || !curelem[path[i]]) return;
-                var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
-                curelem = get_individual(ticket, uri);
-              }
-              if (!curelem || !curelem[path[path.length - 1]]) return;
-
-              out_data0_el_arr = out_data0_el_arr.concat(curelem[path[path.length - 1]]);
-
-              out_data0_el[name] = out_data0_el_arr;
-            };
-          })();
-
-          var putFrontValue = (function()
-          {
-            return function(name)
-            {
-              var out_data0_el_arr = out_data0_el[name];
-
-              if (!out_data0_el_arr)
-                out_data0_el_arr = [];
-              if (iteratedObject[key2] == '@')
-              {
-                out_data0_el_arr.unshift(
-                {
-                  data: element,
-                  type: "Uri"
-                });
-              }
-              else
-              {
-                if (Array.isArray(element) === true)
-                {
-                  for (var key3 in element)
-                  {
-                    out_data0_el_arr.unshift(element[key3]);
-                  }
-                }
-                else
-                  out_data0_el_arr.unshift(element);
-              }
-
-              out_data0_el[name] = out_data0_el_arr;
-            };
-          })();
-
-          var putElement = (function()
-          {
-            return function()
-            {
-              var name = iteratedObject[key2];
-              if (name == '@')
-                return;
-
-              var out_data0_el_arr = [];
-              out_data0_el_arr = out_data0_el[name];
-
-              if (!out_data0_el_arr)
-                out_data0_el_arr = [];
-
-              if (Array.isArray(element) === true)
-              {
-                for (var key3 in element)
-                {
-                  out_data0_el_arr.push(element[key3]);
-                }
-              }
-              else
-                out_data0_el_arr.push(element);
-
-              out_data0_el[name] = out_data0_el_arr;
-            };
-          })();
-
-          /* Segregate functions [BEGIN] */
-          var contentName = (function()
-          {
-            return function(name)
-            {
-              return iteratedObject[key2] == name;
-            };
-          })();
-
-          var elementContentStrValue = (function()
-          {
-            return function(name, value)
-            {
-              if (iteratedObject[key2] !== name)
-                return false;
-              var str = element[0].data;
-              if (str == value)
-                return true;
-              else
-                return false;
-            };
-          })();
-          /* Segregate functions [END] */
-
-          var getElement = (function()
-          {
-            return function()
-            {
-              return element;
-            };
-          })();
-
-
-          // выполняем все rules
-          for (var key3 in rules)
-          {
-            var rule = rules[key3];
-            // 1. v-wf:segregateObject
-            var segregateObject = rule['v-wf:segregateObject'];
-
-            // 2. v-wf:segregateElement
-            var segregateElement = rule['v-wf:segregateElement'];
-            var grouping = rule['v-wf:grouping'];
-
-            var res = undefined;
-
-            if (segregateObject)
-            {
-              res = eval(segregateObject[0].data);
-              if (res == false)
-                continue;
-            }
-
-            if (segregateElement)
-            {
-              res = eval(segregateElement[0].data);
-              if (res == false)
-                continue;
-            }
-
-            // 3. v-wf:aggregate
-            var group_key;
-            if (!grouping)
-            {
-              out_data0_el = {};
-              out_data0_el['@'] = veda.Util.genUri() + "-tr";
-            }
-            else
-            {
-              var useExistsUid = false;
-              for (var i in grouping)
-              {
-                var gk = grouping[i].data;
-                if (gk == '@')
-                  useExistsUid = true;
-                else
-                  group_key = gk;
-              }
-
-              out_data0_el = out_data0[group_key];
-              if (!out_data0_el)
-              {
-                out_data0_el = {};
-                if (useExistsUid)
-                  out_data0_el['@'] = individual['@'];
-                else
-                  out_data0_el['@'] = veda.Util.genUri() + "-tr";
-              }
-            }
-
-            var agregate = rule['v-wf:aggregate'];
-            for (var i2 = 0; i2 < agregate.length; i2++)
-            {
-              eval(agregate[i2].data);
-            }
-
-            if (!grouping)
-            {
-              out_data0[out_data0_el['@']] = out_data0_el;
-            }
-            else
-            {
-              out_data0[group_key] = out_data0_el;
-            }
-          }
-        }
-      }
-
-      var out_data = [];
-      for (var key in out_data0)
-      {
-        out_data.push(out_data0[key]);
-      }
-
-      return out_data;
-    }
-    catch (e)
-    {
-      if (typeof window === "undefined")
-      {
-        print(e.stack);
-      }
-      else
-      {
-        console.log(e.stack);
-      }
-    }
-  };
-
-
-  /**
    * Сформировать составное наименование объекта
    *
    * @param individual индивид
@@ -1034,7 +384,6 @@ veda.Module(function (veda) { "use strict";
     function get (uri) {
       return cache[uri] ? cache[uri] : cache[uri] = get_individual(veda.ticket, uri);
     }
-
     try {
 
       var availableLanguages = get("v-ui:AvailableLanguage");
@@ -1043,7 +392,6 @@ veda.Module(function (veda) { "use strict";
         var language = get(languageUri);
         return language["rdf:value"][0].data;
       });
-
       return individual["rdf:type"].reduce(function (acc, typeValue) {
         var typeUri = typeValue.data;
         var type = get(typeUri);
@@ -1051,16 +399,23 @@ veda.Module(function (veda) { "use strict";
         var pattern = type["v-s:labelPattern"][0].data;
         languages.forEach(function (language) {
           var replaced = pattern.replace(/{(\s*([^{}]+)\s*)}/g, function (match, group) {
+            var indexes = null;
+            if (group.indexOf(' ') != -1) {
+              var temp = group.split(' ');
+              group = temp[0];
+              indexes = temp[1].substring(1, temp[1].length-1).split(',');
+            }
             var chain = group.split(".");
             if (chain[0] === "@") {
               chain[0] = individual["@"];
             }
-            return get_localized_chain.apply({}, [language].concat(chain));
+            var localedChain = get_localized_chain.apply({}, [language].concat(chain));
+            return indexes == null? localedChain : localedChain.substring(+indexes[0], +indexes[1]);
           });
           var result = {
             data: replaced,
-            type: "String",
-            lang: language
+            lang: language,
+            type: "String"
           };
           acc.push(result);
         });
@@ -1073,28 +428,42 @@ veda.Module(function (veda) { "use strict";
 
     function get_localized_chain(language, uri) {
       var properties = [].slice.call(arguments, 2);
-      var intermediate = get(uri);
-      if (!intermediate) { return ""; }
+      var startPoint = get(uri);
+      if (!startPoint) { return ""; }
+      var intermediates = [startPoint];
       for (var i = 0, property; (property = properties[i]); i++) {
         var length = properties.length;
         if (i === length - 1) {
-          if (!intermediate[property] || !intermediate[property].length) return "";
-          return intermediate[property].reduce(function (acc, value) {
-            if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
-              var data = value.data;
-              if (data instanceof Date) {
-                data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
-              }
-              return acc += data;
-            } else {
-              return acc;
+          var parts = [];
+          intermediates.forEach(function(item) {
+            if (item[property]) {
+              var part = item[property].reduce(function (acc, value) {
+                if ( !value.lang || value.lang === "NONE" || value.lang.toLowerCase() === language.toLowerCase() ) {
+                  var data = value.data;
+                  if (data instanceof Date) {
+                    data = new Date(data.getTime() - (data.getTimezoneOffset() * 60000)).toISOString().substr(0, 10);
+                  }
+                  return acc += data;
+                } else {
+                  return acc;
+                }
+              }, "");
+              parts.push(part);
             }
-          }, "");
+
+          })
+          return parts.join(", ");
         }
-        if ( veda.Util.hasValue(intermediate, property) ) {
-          var intermediateUri = intermediate[property][0].data;
-          intermediate = get(intermediateUri);
-          if (!intermediate) { return ""; }
+        var temp = [];
+        intermediates.forEach(function(item) {
+          if (veda.Util.hasValue(item, property)) {
+            item[property].forEach(function(propertyItem) {
+              temp.push(get(propertyItem.data));
+            });
+          }
+        });
+        if (temp.length) {
+          intermediates = temp;
         } else {
           return "";
         }
@@ -1230,6 +599,13 @@ veda.Module(function (veda) { "use strict";
     return [ value ];
   };
 
+  veda.Util.newStrFromBundle = function (_bundle1, _bundle2, _sep) {
+    if (!_sep)
+      _sep = ' ' ;
+    var str = _bundle1['rdfs:label'][0] + _sep + _bundle2['rdfs:label'][0] ;
+    return str ;
+  };
+
   veda.Util.newBool = function (_data) {
     return [{
       data: _data,
@@ -1270,7 +646,7 @@ veda.Module(function (veda) { "use strict";
     return _data;
   };
 
-  veda.Util.getStrings = function (property_value) {
+  veda.Util.getValues = function (property_value) {
     var res = [];
     if (property_value) {
       for (var i in property_value) {
@@ -1281,6 +657,16 @@ veda.Module(function (veda) { "use strict";
   };
 
   veda.Util.getUris = function (property_value) {
+    var res = [];
+    if (property_value) {
+      for (var i in property_value) {
+        res.push(property_value[i].data);
+      }
+    }
+    return res;
+  };
+
+  veda.Util.getStrings = function (property_value) {
     var res = [];
     if (property_value) {
       for (var i in property_value) {
@@ -1318,6 +704,48 @@ veda.Module(function (veda) { "use strict";
 
   veda.Util.mlstring = function (ruString, enString) {
     return [{type: "String", data: ruString, lang: "RU"}, {type: "String", data: enString, lang: "EN"}];
+  };
+
+  // Returns literal value or resource id for given property chain
+  veda.Util.getPropertyChain = function () {
+    var value = arguments[0];
+    var argsLength = arguments.length;
+    if (typeof value === "string") {
+      value = get_individual(veda.ticket, value);
+    }
+    var i, property_uri, type;
+    for (i = 1; i < argsLength; i++) {
+      property_uri = arguments[i];
+      if ( veda.Util.hasValue(value, property_uri) ) {
+        type = value[property_uri][0].type;
+        value = value[property_uri][0].data;
+        if (i === (argsLength - 1) ) {
+          return value;
+        } else if (type === "Uri") {
+          value = get_individual(veda.ticket, value);
+          continue;
+        }
+      }
+      return;
+    }
+    return value;
+  };
+
+  veda.Util.areEqual = function (x, y) {
+    if ( x === y ) return true;
+    if ( ! ( x instanceof Object ) || ! ( y instanceof Object ) ) return false;
+    if ( x.constructor !== y.constructor ) return false;
+    for ( var p in x ) {
+      if ( ! x.hasOwnProperty( p ) ) continue;
+      if ( ! y.hasOwnProperty( p ) ) return false;
+      if ( x[ p ] === y[ p ] ) continue;
+      if ( typeof( x[ p ] ) !== "object" ) return false;
+      if ( ! veda.Util.areEqual( x[ p ],  y[ p ] ) ) return false;
+    }
+    for ( p in y ) {
+      if ( y.hasOwnProperty( p ) && ! x.hasOwnProperty( p ) ) return false;
+    }
+    return true;
   };
 
 });

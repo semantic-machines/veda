@@ -51,6 +51,9 @@ v-s:LinksTree
   rdf:type owl:Class ;
   rdfs:label "Настройки ссылок для класса"@ru ;
   rdfs:label "Class links setting"@en ;
+  rdfs:comment "Дерево документов"@ru ;
+  rdfs:comment "Documents tree"@en ;
+  v-ui:hasTemplate v-s:StandaloneLinksTreeTemplate ;
 .
 
 v-s:hasLinksTree
@@ -59,6 +62,14 @@ v-s:hasLinksTree
   rdfs:label "Class links tree"@en ;
   rdfs:domain rdfs:Class ;
   rdfs:range v-s:LinksTree ;
+.
+
+v-s:hasRoot
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Корень"@ru ;
+  rdfs:label "Root"@en ;
+  rdfs:domain v-s:LinksTree ;
+  rdfs:range rdfs:Resource ;
 .
 
 v-s:inProperty
@@ -85,7 +96,6 @@ v-s:allowedType
   rdfs:range rdfs:Class ;
 .
 
-
 # ---------------- Link template -----------------
 
 v-s:PSHasLinkThing
@@ -105,7 +115,7 @@ v-s:PSFromToForLink
   v-ui:forProperty v-s:from, v-s:to ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:UserThing')"^^xsd:string ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Document')"^^xsd:string ;
 .
 
 v-s:LinkTemplate
@@ -211,18 +221,17 @@ v-s:LinksListTemplate
     if (isMutual) {
       Link["v-s:mutualMembership"] = [ true ];
     }
-    var newRow = Link.present(cntr, rowTmpl, "edit");
-    Link.one("beforeReset", function () {
-      newRow.remove();
-    });
-    Link.one("afterSave", function () {
-      newRow.remove();
-    });
-    setTimeout(function () {
+    Link.present(cntr, rowTmpl, "edit").then(function (newRow) {
+      Link.one("beforeReset", function () {
+        newRow.remove();
+      });
+      Link.one("afterSave", function () {
+        newRow.remove();
+      });
       if ( individual.isNew() ) {
         newRow.find(".action#save").hide();
       }
-    }, 10);
+    });
   });
 
   individual.on("afterSave", saveHandler);
@@ -230,7 +239,14 @@ v-s:LinksListTemplate
     individual.off("afterSave", saveHandler);
   });
   function saveHandler() {
-    $("[rel='v-s:hasLink']", template).children().trigger("save");
+    var children = $("[rel='v-s:hasLink']", template).children();
+    children.each(function () {
+      var link_template = $(this);
+      var link_uri = link_template.attr("resource");
+      var link = new veda.IndividualModel(link_uri);
+      link.save();
+      link_template.trigger("view");
+    });
   }
 
   individual.on("v-s:hasLink", linksHandler);
@@ -286,7 +302,7 @@ v-s:LinksListTemplate
           </div>
         </td>
         <td>
-          <i><small about="@" property="v-s:creator"></small> <small about="@" property="v-s:created"></small></i>
+          <i><small about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></small> <small about="@" property="v-s:created"></small></i>
         </td>
         <td><div class="pull-right" about="@" data-template="v-ui:IconButtonsTemplate" data-embedded="true"></div></td>
       </tr>
@@ -297,7 +313,7 @@ v-s:LinksListTemplate
 """ ;
 .
 
-v-s:LinksTreeTemplate
+v-s:StandaloneLinksTreeTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
   rdfs:label "Template to view document links tree"@en ;
@@ -305,8 +321,34 @@ v-s:LinksTreeTemplate
   rdfs:label "Tree"@en ;
   v-ui:template """
 <script>
-//# sourceURL=v-s:LinksTreeTemplate_pre
+  if ( individual.hasValue("v-s:hasRoot") ) {
+    $(".self-roots", template).remove();
+  } else {
+    $(".roots", template).remove();
+  }
+  if ( individual.hasValue("rdf:type", "v-s:LinksTree") && individual.hasValue("rdfs:label") ) {
+    $(".tree-label", template).remove();
+  } else {
+    $(".self-label", template).remove();
+  }
 </script>
+<div class="container sheet">
+  <h2 class="self-label" about="@" property="rdfs:label"></h2>
+  <h2 class="tree-label" about="v-s:LinksTree" property="rdfs:comment"></h2>
+  <hr>
+  <div class="roots" about="@" rel="v-s:hasRoot" data-template="v-s:LinksTreeTemplate"></div>
+  <div class="self-root" about="@" data-template="v-s:LinksTreeTemplate"></div>
+</div>
+  """ ;
+.
+
+v-s:LinksTreeTemplate
+  rdf:type v-ui:ClassTemplate ;
+  rdfs:label "Шаблон для отображения дерева связей документа"@ru ;
+  rdfs:label "Template to view document links tree"@en ;
+  rdfs:comment "Дерево"@ru ;
+  rdfs:label "Tree"@en ;
+  v-ui:template """
 <div>
   <style>
     .links-tree ul {
@@ -315,6 +357,9 @@ v-s:LinksTreeTemplate
     }
     .links-tree ul li {
       margin: 10px 0;
+    }
+    .links-tree .expand, .links-tree .expand-type {
+      text-decoration: none;
     }
   </style>
   <div class="links-tree" about="@" data-template="v-s:LinksTreeRecursiveTemplate"></div>
@@ -340,109 +385,131 @@ v-s:LinksTreeRecursiveTemplate
   } else {
     linksTree = type["v-s:hasLinksTree"][0];
   }
-  var inPropertiesUris = linksTree["v-s:inProperty"].map(function (property) {
-    return property.id;
-  });
-  var outPropertiesUris = linksTree["v-s:outProperty"].map(function (property) {
-    return property.id;
-  });
-  if ( outPropertiesUris.indexOf("v-s:hasLink") < 0 ) {
-    outPropertiesUris.push("v-s:hasLink");
-  }
-  var allowedTypesUris = linksTree["v-s:allowedType"].map(function (allowedType) {
-    return allowedType.id;
-  });
-  if ( allowedTypesUris.indexOf("v-s:Link") < 0 ) {
-    allowedTypesUris.push("v-s:Link");
-  }
 
-  var allowedTypesContainer = $(".allowed-types", template);
-  var allowedTypesTemplate = allowedTypesContainer.html();
-  allowedTypesContainer.empty();
-  allowedTypesUris.forEach(function (allowedTypeUri) {
-    var allowedType = new veda.IndividualModel(allowedTypeUri);
-    allowedType.present(allowedTypesContainer, allowedTypesTemplate);
-  });
-  $(".glyphicon.expand", template).click(function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var $this = $(this);
-
-    if ( $this.hasClass("glyphicon-chevron-right") ) {
-      $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
-      allowedTypesContainer.removeClass("hidden");
-    } else if ( $this.hasClass("glyphicon-chevron-down") ) {
-      $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
-      allowedTypesContainer.addClass("hidden");
+  return linksTree.load().then(function (linksTree) {
+    var inPropertiesUris = linksTree["v-s:inProperty"].map(function (property) {
+      return property.id;
+    });
+    var outPropertiesUris = linksTree["v-s:outProperty"].map(function (property) {
+      return property.id;
+    });
+    if ( outPropertiesUris.indexOf("v-s:hasLink") < 0 ) {
+      outPropertiesUris.push("v-s:hasLink");
     }
-  });
+    var allowedTypesUris = linksTree["v-s:allowedType"].map(function (allowedType) {
+      return allowedType.id;
+    });
+    if ( allowedTypesUris.indexOf("v-s:Link") < 0 ) {
+      allowedTypesUris.push("v-s:Link");
+    }
 
-  $(".glyphicon.expand-type", template).click(function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    var $this = $(this);
-    var typeLinksContainer = $this.siblings(".type-links");
-    if ( $this.hasClass("glyphicon-chevron-right") ) {
-      $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
-      typeLinksContainer.removeClass("hidden");
-      $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
-      if ( !typeLinksContainer.children().length ) {
-        var allowedTypeUri = $this.parent().attr("resource");
-        var outLinks = getOutTypeLinks(allowedTypeUri);
-        outLinks.forEach(function (link) {
-          presentTypeLink(link, typeLinksContainer);
-        });
-        getInTypeLinks(allowedTypeUri).then(function (inLinks) {
-          inLinks.forEach(function (link) {
-            presentTypeLink(link, typeLinksContainer);
-          });
-        }).then(function () {
-          $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
-        }).then(function () {
+    var allowedTypesContainer = $(".allowed-types", template);
+    var allowedTypesTemplate = allowedTypesContainer.html();
+    allowedTypesContainer.empty();
+    var allowedTypesPromises = allowedTypesUris.map(function (allowedTypeUri) {
+      var allowedType = new veda.IndividualModel(allowedTypeUri);
+      return allowedType.present(allowedTypesContainer, allowedTypesTemplate);
+    });
+
+    return Promise.all(allowedTypesPromises).then(function () {
+      $(".glyphicon.expand", template).click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $this = $(this);
+
+        if ( $this.hasClass("glyphicon-chevron-right") ) {
+          $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+          allowedTypesContainer.removeClass("hidden");
+        } else if ( $this.hasClass("glyphicon-chevron-down") ) {
+          $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+          allowedTypesContainer.addClass("hidden");
+        }
+      });
+
+      $(".glyphicon.expand-type", template).click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $this = $(this);
+        var typeLinksContainer = $this.siblings(".type-links");
+        if ( $this.hasClass("glyphicon-chevron-right") ) {
+          $this.addClass("glyphicon-chevron-down").removeClass("glyphicon-chevron-right");
+          typeLinksContainer.removeClass("hidden");
+          $this.addClass("fa fa-spinner fa-pulse fa-lg fa-fw");
           if ( !typeLinksContainer.children().length ) {
-            $this.parent().hide(350, function () { $(this).remove() });
+            var allowedTypeUri = $this.parent().attr("resource");
+            getOutTypeLinks(allowedTypeUri, outPropertiesUris)
+            .then(function (outLinks) {
+              return Promise.all(outLinks.map(function (link) {
+                return presentTypeLink(link, typeLinksContainer);
+              }));
+            })
+            .then(function () {
+              return getInTypeLinks(allowedTypeUri, inPropertiesUris);
+            })
+            .then(function (inLinks) {
+              var inLinksPromises = inLinks.map(function (link) {
+                return presentTypeLink(link, typeLinksContainer);
+              });
+              return Promise.all(inLinksPromises);
+            })
+            .then(function () {
+              $this.removeClass("fa fa-spinner fa-pulse fa-lg fa-fw");
+              if ( !typeLinksContainer.children().length ) {
+                $this.parent().hide(350, function () { $(this).remove() });
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+          } else {
+            $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
           }
-        });
-      } else {
-        $this.toggleClass("fa fa-spinner fa-pulse fa-lg fa-fw");
-      }
-    } else if ( $this.hasClass("glyphicon-chevron-down") ) {
-      $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
-      typeLinksContainer.addClass("hidden");
-    }
+        } else if ( $this.hasClass("glyphicon-chevron-down") ) {
+          $this.addClass("glyphicon-chevron-right").removeClass("glyphicon-chevron-down");
+          typeLinksContainer.addClass("hidden");
+        }
+      });
+    });
   });
+
   function presentTypeLink(link, typeLinksContainer) {
-    if ( link.is("v-s:Link") ) {
-      if ( link.hasValue("v-s:from", individual) && link.hasValue("v-s:to") ) {
-        link = link["v-s:to"][0];
-      } else if ( link.hasValue("v-s:to", individual) && link.hasValue("v-s:from") ) {
-        link = link["v-s:from"][0];
+    return link.load().then(function (link) {
+      if ( link.hasValue("rdf:type", "v-s:Link") ) {
+        if ( link.hasValue("v-s:from", individual) && link.hasValue("v-s:to") ) {
+          link = link["v-s:to"][0];
+        } else if ( link.hasValue("v-s:to", individual) && link.hasValue("v-s:from") ) {
+          link = link["v-s:from"][0];
+        }
       }
-    }
-    if ( !template.closest(".link-node[resource='" + veda.Util.escape4$(link.id) + "']").length ) {
-      link.present(typeLinksContainer, "v-s:LinksTreeRecursiveTemplate");
-    }
+      if ( !template.closest(".link-node[resource='" + veda.Util.escape4$(link.id) + "']").length ) {
+        return link.present(typeLinksContainer, "v-s:LinksTreeRecursiveTemplate");
+      }
+    });
   }
 
-  function getOutTypeLinks(allowedTypeUri) {
+  function getOutTypeLinks(allowedTypeUri, outPropertiesUris) {
     var links = [];
     outPropertiesUris.forEach(function (outPropertyUri) {
       links = links.concat( individual[outPropertyUri] );
     });
-    links = links.filter(function (link) {
-      var linkTypeUri = link["rdf:type"][0].id;
-      return linkTypeUri === allowedTypeUri ;
+    var linksPromises = links.map(function (link) {
+      return link.load();
     });
-    return links;
+    return Promise.all(linksPromises).then(function (loadedLinks) {
+      return loadedLinks.filter(function (link) {
+        var linkTypeUri = link["rdf:type"][0].id;
+        return linkTypeUri === allowedTypeUri ;
+      });
+    });
   }
 
-  function getInTypeLinks(allowedTypeUri) {
+  function getInTypeLinks(allowedTypeUri, inPropertiesUris) {
     var allowedTypeUriQuery = "'rdf:type'==='" + allowedTypeUri +"'";
     var inPropertiesUrisQuery = inPropertiesUris.map(function (inPropertyUri) {
       return "'" + inPropertyUri + "'==='" + individual.id + "'";
     }).join("||");
     var q = allowedTypeUriQuery + " && (" + inPropertiesUrisQuery + ")";
-    return !inPropertiesUrisQuery || allowedTypeUri === "v-s:Link" ? Promise.resolve([]) : query({
+    return !inPropertiesUrisQuery || allowedTypeUri === "v-s:Link" ? Promise.resolve([]) : veda.Backend.query({
       ticket: veda.ticket,
       query: q,
       limit: 500,
@@ -460,7 +527,6 @@ v-s:LinksTreeRecursiveTemplate
 <ul class="link-node">
   <li>
     <a href="#" class="glyphicon glyphicon-chevron-right expand"></a> <span about="@" data-template="v-s:TrimmedLinkTemplate"></span>
-    <hr class="margin-sm">
     <ul class="allowed-types hidden">
       <li>
         <a href="#" class="glyphicon glyphicon-chevron-right expand-type"></a> <span class="fa fa-folder-open-o"></span> <strong about="@" property="rdfs:label"></strong>
@@ -469,9 +535,6 @@ v-s:LinksTreeRecursiveTemplate
     </ul>
   </li>
 </ul>
-<script>
-//# sourceURL=v-s:LinksTreeRecursiveTemplate_post
-</script>
 """ ;
 .
 
@@ -480,22 +543,22 @@ v-s:TrimmedLinkTemplate
   rdfs:label "Шаблон с именем класса и меткой"@ru ;
   rdfs:label "Template with class name and label"@en ;
   v-ui:template """
-  <a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
-  <script>
-    var re = new RegExp(".*?:");
-    var label = template.text();
-    template.attr("title", label);
-    if (label.length > 70) {
-      label = label.replace(re, function (typeName) {
-        return typeName.split(" ").reduce(function (abbr, word) {
-          return abbr += word.charAt(0);
-        }, "").toUpperCase() + ":";
-      });
-      label = label.substring(0, 70) + "...";
-      template.text(label);
-    }
-    //# sourceURL=v-s:TrimmedLinkTemplate_post
-  </script>
+<a href="#/@"><span about="@" rel="rdf:type"><span about="@" property="rdfs:label"></span></span>: <span about="@" property="rdfs:label"></span></a>
+<script>
+  var re = new RegExp(".*?:");
+  var label = template.text();
+  template.attr("title", label);
+  if (label.length > 70) {
+    label = label.replace(re, function (typeName) {
+      return typeName.split(" ").reduce(function (abbr, word) {
+        return abbr += word.charAt(0);
+      }, "").toUpperCase() + ":";
+    });
+    label = label.substring(0, 70) + "...";
+    template.text(label);
+  }
+  //# sourceURL=v-s:TrimmedLinkTemplate_post
+</script>
   """ ;
 .
 
@@ -506,10 +569,14 @@ v-s:LinksGraphTemplate
   rdfs:comment "Граф"@ru ;
   rdfs:label "Graph"@en ;
   v-ui:template """
-<script>
-
-//# sourceURL=v-s:LinksGraphTemplate_pre
-</script>
 <div about="@" data-template="v-ui:Graph"></div>
 """ ;
 .
+
+# ======================== TEST ========================
+
+# v-s:TestDocTree
+#  rdf:type v-s:LinksTree ;
+#  v-s:hasRoot ... ;
+#  v-s:hasRoot ... ;
+# .

@@ -92,8 +92,8 @@ v-s:InternalDocumentTemplate
   rdfs:label "Template for v-s:InternalDocument class"@en ;
   v-ui:template """
 <script>
-  if (mode == "edit" && individual.isNew()) {
-    if (!individual.hasValue("v-s:initiator")){
+  if ( mode == "edit" && individual.isNew() ) {
+    if ( !individual.hasValue("v-s:initiator") ) {
      individual["v-s:initiator"] = [ veda.appointment["v-s:parentUnit"][0] ] ;
     }
   }
@@ -112,8 +112,7 @@ v-s:InternalDocumentTemplate
         <div class="panel panel-default">
           <div class="panel-body bg-default">
             <em about="v-s:registrationNumber" property="rdfs:label"></em>
-            <div about="@" property="v-s:registrationNumber" class="-view edit -search"></div>
-            <div property="v-s:registrationNumber" class="view -edit search"></div>
+            <div property="v-s:registrationNumber" class="view -edit -search"></div>
             <veda-control data-type="text" property="v-s:registrationNumber" class="-view -edit search"></veda-control>
             <em about="v-s:hasDocumentKind" property="rdfs:label"></em>
             <div rel="v-s:hasDocumentKind" class="view -edit search" data-template="v-ui:LabelTemplate"></div>
@@ -156,15 +155,12 @@ v-s:InternalDocumentTemplate
       <button type="button" class="action btn btn-info view -edit -search" id="print-blank" about="v-s:InternalDocument_printBlank" property="rdfs:label"></button>
     </div>
   </div>
-  <br>
   <div about="@" class="container sheet view edit -search" data-template="v-s:LinksTemplate" data-embedded="true"></div>
-  <br>
   <div about="@" class="container sheet view -edit -search" data-template="v-s:CommentsTemplate"></div>
 </div>
 <script>
   $("#make-copy", template).click(function () {
-    var cntr = $("<div></div>"),
-        _class = new veda.IndividualModel("v-s:InternalDocument"),
+    var _class = new veda.IndividualModel("v-s:InternalDocument"),
         InternalDocument = new veda.IndividualModel(),
         tmpl = "v-s:InternalDocumentTemplate" ;
     InternalDocument["rdf:type"] = [_class] ;
@@ -180,29 +176,24 @@ v-s:InternalDocumentTemplate
   });
 
   $("#print-blank", template).click(function () {
-    veda.Util.createReport(individual, 'v-s:InternalDocument_printBlank');
+    veda.Util.createReport('v-s:InternalDocument_printBlank', individual);
   });
 
   function processHandler() {
-    if (individual.hasValue("v-wf:isProcess")
-      && individual["v-wf:isProcess"][0].hasValue("v-wf:instanceOf")
-      && individual["v-wf:isProcess"][0]["v-wf:instanceOf"][0].id === "s-wf:net_complex_route"
-    ) {
-      $('#send.action', template).remove();
-      // $('#save.action', template).remove();
-      // $('#edit.action', template).remove();
-      $('#delete.action', template).remove();
-    } else if (individual.isNew() || individual.rights['v-s:canUpdate'][0] === true) {
-      $('#send.action', template).off("click");
-      $('#send.action', template).on('click', function () {
-        veda.Util.send(individual, template, 's-wf:complexRouteTransform', undefined, 'v-s:InternalDocument_ComplexRouteStartForm_Template');
-      });
-    } else {
-      $('#send.action', template).remove();
-      // $('#save.action', template).remove();
-      // $('#edit.action', template).remove();
-      $('#delete.action', template).remove();
-    }
+    individual.canUpdate().then(function (canUpdate) {
+      if ( individual.hasValue("v-wf:isProcess") ) {
+        $('#send.action', template).remove();
+        $('#delete.action', template).remove();
+      } else if ( individual.isNew() || canUpdate ) {
+        $('#send.action', template).off("click");
+        $('#send.action', template).on('click', function () {
+          veda.Util.send(individual, template, 's-wf:complexRouteTransform', undefined, 'v-s:InternalDocument_ComplexRouteStartForm_Template');
+        });
+      } else {
+        $('#send.action', template).remove();
+        $('#delete.action', template).remove();
+      }
+    });
   }
   processHandler();
 
@@ -211,7 +202,7 @@ v-s:InternalDocumentTemplate
     individual.off("afterReset", processHandler);
   });
 
-  //# sourceURL=v-s:InternalDocumentTemplate
+//# sourceURL=v-s:InternalDocumentTemplate
 </script>
   """
 .

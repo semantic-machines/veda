@@ -23,6 +23,7 @@ v-s:OrganizationUnit
   rdfs:subClassOf v-s:Spatial ;
   rdfs:subClassOf v-s:Registered ;
   rdfs:subClassOf v-s:Hierarchical ;
+  rdfs:subClassOf v-s:GroupAuthorized ;
   rdfs:comment "Организационная единица (организация, подразделение, штатная должность)"@ru ;
   rdfs:comment "An organization unit (organization, department, business unit etc.)"@en ;
   rdfs:label "Организационная единица"@ru ;
@@ -43,7 +44,13 @@ v-s:hasFunctionalChief
   rdfs:domain v-s:OrganizationUnit ;
   rdfs:range v-s:Appointment ;
 .
-
+v-s:hasFieldChief
+  rdf:type owl:ObjectProperty ;
+  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:label "Руководитель по направлению"@ru ;
+  rdfs:label "Field chief"@en ;
+  rdfs:range v-s:Appointment ;
+.
 # ------------------------------------------------------------
 v-s:Organization
   rdf:type owl:Class ;
@@ -70,6 +77,7 @@ v-s:taxRegistrationCause
   rdfs:label "Tax registration cause classifier"@en ;
   rdfs:range xsd:string ;
   rdfs:domain v-s:Organization ;
+  rdfs:domain v-s:Contractor ;
 .
 v-s:taxRegistrationNumber
   rdf:type owl:DatatypeProperty ;
@@ -92,7 +100,23 @@ v-s:isOwnOrganization
   rdfs:range xsd:boolean ;
   rdfs:domain v-s:Organization ;
 .
-
+v-s:hasCommunicationMean
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Средства связи"@ru ;
+  rdfs:label "Communication Mean"@en ;
+  rdfs:range v-s:CommunicationMean ;
+  rdfs:domain v-s:OrganizationUnit ;
+.
+v-s:PS_parentUnit_Organization
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Organization ;
+  v-ui:forProperty v-s:parentUnit ;
+  v-ui:minCardinality 0 ;
+  v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix " 'rdf:type' == 'v-s:Organization' ";
+  rdfs:label "Спецификация свойства v-s:parentUnit для класса v-s:Organization"@ru ;
+  rdfs:label "v-s:parentUnit property specification for v-s:Organization class"@en ;
+.
 # Перенести в управление контрагентами
 
 v-s:hasContractorProfile
@@ -124,7 +148,18 @@ v-s:parentOrganization
   rdfs:label "Основная организация"@ru ;
   rdfs:label "Parent organization"@en ;
   rdfs:range v-s:Organization ;
-  rdfs:domain v-s:OrganizationUnit ;
+  rdfs:domain v-s:Department ;
+.
+
+v-s:subjectCode
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "Код субъекта"@ru ;
+  rdfs:comment "Subject code"@en ;
+  rdfs:domain v-s:Position ;
+  rdfs:domain v-s:Department ;
+  rdfs:label "Код субъекта"@ru ;
+  rdfs:label "Subject code"@en ;
+  rdfs:range xsd:string ;
 .
 # ------------------------------------------------------------
 v-s:Subsidiary
@@ -155,7 +190,7 @@ v-s:Position
   rdfs:label "Position"@en ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
 .
-
+#v-s:subjectCode
 # ------------------------------------------------------------
 v-s:HRRecord
   rdf:type owl:Class ;
@@ -187,8 +222,11 @@ v-s:Appointment
   rdfs:label "Назначение"@ru ;
   rdfs:label "Appointment"@en ;
   rdfs:subClassOf v-s:HRRecord ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:OrganizationUnit ;
   v-ui:hasModel v-s:OrganizationUnitModel ;
+  v-ui:hasTemplate v-s:AppointmentTemplate ;
+  v-s:labelPattern "{@.v-s:employee.rdfs:label} {@.v-s:occupation.rdfs:label}" ;
 .
 v-s:official
   rdf:type owl:DatatypeProperty ;
@@ -210,7 +248,7 @@ v-s:Person
   rdfs:label "Персона"@ru ;
   rdfs:label "Person"@en ;
   v-ui:hasTemplate v-s:PersonalInfoTemplate ;
-  v-s:labelPattern "{@.v-s:firstName} {@.v-s:lastName}" ;
+  v-s:labelPattern "{@.v-s:lastName} {@.v-s:firstName} {@.v-s:middleName [0,1]}." ;
 .
 v-s:tabNumber
   rdf:type owl:DatatypeProperty ;

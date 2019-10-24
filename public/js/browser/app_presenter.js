@@ -1,9 +1,12 @@
-// Veda application Presenter
+// Veda application presenter
 
 veda.Module(function (veda) { "use strict";
 
-  // Route to resource ttl view on Ctrl + Alt + Click
-  $("body").on("click", "[resource][typeof], [about]", function (e) {
+  // View resource using special templates:
+  // "v-ui:ttl" on Ctrl + Alt + Click
+  // "v-ui:json" on Alt + Shift + Click
+  // "v-ui:generic" on Ctrl + Alt + Shift + Click
+  $("body").on("click", "[resource], [about]", function (e) {
     var uri = $(this).attr("resource") || $(this).attr("about");
     var hash = "#/" + uri;
     if (e.altKey && e.ctrlKey && e.shiftKey) {
@@ -26,6 +29,31 @@ veda.Module(function (veda) { "use strict";
       });
     }
   });
+  // Outline resource containers to switch view to special templates
+  var outlined = [];
+  $(document)
+    .on("keydown", function (e) {
+      if (e.altKey && e.shiftKey || e.altKey && e.ctrlKey || e.altKey && e.ctrlKey && e.shiftKey) {
+        $("body").on("mouseover", "[resource], [about]", outline);
+      }
+    })
+    .on("keyup", removeOutline);
+  function outline(e) {
+    if (e.altKey && e.shiftKey || e.altKey && e.ctrlKey || e.altKey && e.ctrlKey && e.shiftKey) {
+      e.stopPropagation();
+      outlined.forEach(function (item) { item.removeAttr("title").removeClass("gray-outline") });
+      var $this = $(this);
+      $this.addClass("gray-outline").attr("title", $this.attr("resource") || $this.attr("about"));
+      outlined = [ $this ];
+    } else {
+      removeOutline(e);
+    }
+  }
+  function removeOutline(e) {
+    $("body").off("mouseover", outline);
+    outlined.forEach(function (item) { item.removeAttr("title").removeClass("gray-outline") });
+    outlined = [];
+  }
 
   // Localize resources on language change
   veda.on("language:changed", function () {
@@ -59,56 +87,105 @@ veda.Module(function (veda) { "use strict";
     return ( hash === location.hash ? false : riot.route(hash) );
   });
 
-  // App loading indicator
-  var appLoadIndicator = $("#app-load-indicator");
-  veda.on("init:progress", function (progress) {
-    if (progress !== 100) {
-      appLoadIndicator.removeClass("hidden");
-    } else {
-      appLoadIndicator.addClass("hidden");
+  // Triggered in veda.start()
+  veda.on("language:changed", function () {
+    var uris = [];
+    $("#app [resource], #app [about]").each(function () {
+      var $this = $(this);
+      var uri = $this.attr("resource") || $this.attr("about");
+      uris.push(uri);
+    });
+    var unique = veda.Util.unique(uris);
+    unique.forEach(localize);
+
+    function localize (uri) {
+      var individual = new veda.IndividualModel(uri);
+      for (var property_uri in individual.properties) {
+        if (property_uri === "@") { continue; }
+        if ( individual.hasValue(property_uri) && individual.properties[property_uri][0].type === "String" ) {
+          individual.trigger("propertyModified", property_uri, individual.get(property_uri));
+          individual.trigger(property_uri, individual.get(property_uri));
+        }
+      }
     }
   });
 
+  // App loading indicator
+  var loadIndicator = $("#load-indicator");
+  veda.on("starting", function () {
+    loadIndicator.show();
+  }).on("started", function () {
+    loadIndicator.hide();
+  });
+
   // Triggered in veda.start()
-  veda.one("started", function () {
-    var welcome;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
-      welcome = (new veda.IndividualModel("cfg:WelcomeExternal"))["rdf:value"][0];
-    } else {
-      welcome = (new veda.IndividualModel("cfg:Welcome"))["rdf:value"][0];
-    }
-    // Router function
-    riot.route( function (hash) {
-      if ( !hash ) {
-        return riot.route("#/" + welcome.id);
-      }
-      if ( hash.indexOf("#/") < 0 ) { return; }
-      var tokens = decodeURI(hash).slice(2).split("/"),
-          uri = tokens[0],
-          container = tokens[1],
-          template = tokens[2],
-          mode = tokens[3],
-          extra = tokens[4];
-      if (extra) {
-        extra = extra.split("&").reduce(function (acc, pair) {
-          var split = pair.split("="),
-              name  = split[0] || "",
-              value = split[1] || "";
-          acc[name] = acc[name] || [];
-          acc[name].push( parse(value) );
-          return acc;
-        }, {});
-      }
-      if (uri === "drafts") {
-        return veda.trigger("load:drafts");
-      }
-      if (uri) {
-        var individual = new veda.IndividualModel(uri);
-        individual.present(container, template, mode, extra);
-      } else {
-        riot.route("#/" + welcome.id);
-      }
+  veda.on("started", function () {
+    var layout_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:LayoutExternal" : "cfg:Layout" ;
+    var layout_param = new veda.IndividualModel( layout_param_uri );
+    var welcome_param_uri = veda.user.hasValue("v-s:origin", "ExternalUser") ? "cfg:MainExternal" : "cfg:Main" ;
+    var welcome_param = new veda.IndividualModel( welcome_param_uri );
+
+    layout_param.load()
+
+    .then(function (layout_param) {
+      return layout_param["rdf:value"][0].load();
+    })
+
+    .then(function (layout) {
+      return layout.present("#app");
+    })
+
+    .then(function () {
+      return welcome_param.load();
+    })
+
+    .then(function (welcome_param) {
+      return welcome_param["rdf:value"][0].load();
+    })
+
+    .then(function (welcome) {
+      // Router function
+      riot.route( function (hash) {
+        if ( !hash ) { return welcome.present("#main"); }
+        if ( hash.indexOf("#/") < 0 ) { return; }
+        var tokens = decodeURI(hash).slice(2).split("/"),
+            uri = tokens[0],
+            container = tokens[1] || "#main",
+            template = tokens[2],
+            mode = tokens[3],
+            extra = tokens[4];
+        if (extra) {
+          extra = extra.split("&").reduce(function (acc, pair) {
+            var split = pair.split("="),
+                name  = split[0] || "",
+                value = split[1] || "";
+            acc[name] = acc[name] || [];
+            acc[name].push( parse(value) );
+            return acc;
+          }, {});
+        }
+
+        if (uri) {
+          loadIndicator.show();
+          var individual = new veda.IndividualModel(uri);
+          individual.present(container, template, mode, extra).then(function () {
+            loadIndicator.hide();
+            if ( !individual.scroll ) {
+              window.scrollTo(0, 0);
+            }
+          });
+        } else {
+          riot.route("#/" + welcome.id);
+        }
+      });
+      riot.route(location.hash);
+    })
+
+    .catch( function (err) {
+      var notify = new veda.Notify();
+      notify("danger", err);
     });
+
   });
   function parse (value) {
     if ( !isNaN( value.split(" ").join("").split(",").join(".") ) ) {
@@ -126,18 +203,62 @@ veda.Module(function (veda) { "use strict";
     return value || null;
   }
 
+  // Listen to client notifications
   veda.on("started", function () {
-    var layout;
-    if (veda.user.hasValue("v-s:origin", "External User")) {
-      layout = (new veda.IndividualModel("cfg:LayoutExternal"))["rdf:value"][0];
-    } else {
-      layout = (new veda.IndividualModel("cfg:Layout"))["rdf:value"][0];
+    var clientNotification = new veda.IndividualModel("cfg:ClientNotification");
+    clientNotification.load().then(function (clientNotification) {
+      clientNotification.on("afterReset", checkNotification);
+      checkNotification.call(clientNotification);
+    });
+    function checkNotification() {
+      var clientNotification = this;
+      var browserNotificationList;
+      try {
+        browserNotificationList = JSON.parse(localStorage.clientNotification);
+      } catch (error) {
+        browserNotificationList = [];
+      }
+      var serverNotificationList = clientNotification.get("rdf:value").map(function (item) { return item.id; });
+      if ( !veda.Util.areEqual(browserNotificationList, serverNotificationList) && serverNotificationList.length ) {
+        serverNotificationList.reduce(function (p, notification_uri, i) {
+          return p.then(function () {
+            if (browserNotificationList.indexOf(notification_uri) >= 0) { return; }
+            var notification = new veda.IndividualModel(notification_uri);
+            return notification.load().then(function (notification) {
+              return notification.get("v-s:newsAudience").map(function (audience) {
+                return audience.id;
+              });
+            }).then(function (audience) {
+              audience = audience.sort();
+              return veda.user.memberOf().then(function (memberOf) {
+                memberOf = memberOf.sort();
+                var i = 0, j = 0, audience_uri, memberOf_uri;
+                while( (audience_uri = audience[i]) && (memberOf_uri = memberOf[j]) ) {
+                  if (memberOf_uri < audience_uri) {
+                    j++;
+                  } else if (memberOf_uri > audience_uri) {
+                    i++;
+                  } else {
+                    return veda.Util.confirm(notification).then(function (confirmed) {
+                      if ( confirmed ) {
+                        localStorage.clientNotification = JSON.stringify(serverNotificationList);
+                        if (notification.hasValue("v-s:script")) {
+                          var script = notification.get("v-s:script")[0].toString();
+                          eval(script);
+                        }
+                      }
+                    });
+                  }
+                }
+              });
+            });
+          });
+        }, Promise.resolve());
+      } else {
+        localStorage.clientNotification = JSON.stringify(serverNotificationList);
+      }
     }
-    layout.present("#app");
-    riot.route(location.hash);
-  });
 
-  // Load ontology
-  veda.init();
+  });
 
 });

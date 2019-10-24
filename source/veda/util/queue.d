@@ -1,6 +1,6 @@
 module veda.util.queue;
 
-import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format;
+import std.conv, std.stdio, std.file, std.array, std.digest.crc, std.format, std.ascii, std.uuid, std.outbuffer;
 import veda.common.logger;
 
 enum QMessageType
@@ -19,7 +19,8 @@ enum Mode
 struct Header
 {
     ulong        start_pos;
-    ulong        msg_length;
+    uint         msg_length;
+    uint         magic_marker;
     uint         count_pushed;
     ubyte[ 4 ] crc;
     QMessageType type;
@@ -32,8 +33,13 @@ struct Header
 
         ulong_to_buff(buff, pos, start_pos);
         pos += ulong.sizeof;
-        ulong_to_buff(buff, pos, msg_length);
-        pos += ulong.sizeof;
+        uint_to_buff(buff, pos, msg_length);
+        pos            += uint.sizeof;
+        buff[ pos + 0 ] = 0xEE;
+        buff[ pos + 1 ] = 0xFE;
+        buff[ pos + 2 ] = 0xEF;
+        buff[ pos + 3 ] = 0xEE;
+        pos            += uint.sizeof;
         uint_to_buff(buff, pos, count_pushed);
         pos            += uint.sizeof;
         buff[ pos ]     = type;
@@ -50,10 +56,12 @@ struct Header
     {
         int pos = 0;
 
-        start_pos    = ulong_from_buff(buff, pos);
-        pos         += ulong.sizeof;
-        msg_length   = ulong_from_buff(buff, pos);
-        pos         += ulong.sizeof;
+        start_pos  = ulong_from_buff(buff, pos);
+        pos       += ulong.sizeof;
+        msg_length = uint_from_buff(buff, pos);
+        pos       += uint.sizeof;
+        // this magic_marker
+        pos         += uint.sizeof;
         count_pushed = uint_from_buff(buff, pos);
         pos         += uint.sizeof;
         type         = cast(QMessageType)buff[ pos ];
@@ -82,35 +90,43 @@ struct Header
     }
 }
 
+enum QueueCode : int
+{
+    OK                 = 200,
+    ConsumerIdNotEqual = 701
+}
 
 class Consumer
 {
-    ubyte[] buff;
-    ubyte[] header_buff;
-    ubyte[ 1 ] buff1;
-    ubyte[ 4 ] buff4;
-    ubyte[ 8 ] buff8;
-    ubyte[ 4 ] crc;
+    public bool      is_ready;
+    public QueueCode status;
+    public string    name;
+    public uint      count_popped;
 
-    Logger  log;
-    bool    isReady;
-    Queue   queue;
-    string  name;
-    string  path;
-    ulong   first_element;
-    uint    count_popped;
-    ubyte[] last_read_msg;
-    Mode    mode;
-    int     chunk;
+    private ubyte[]  buff;
+    private ubyte[]  header_buff;
+    private ubyte[ 1 ] buff1;
+    private ubyte[ 4 ] buff4;
+    private ubyte[ 8 ] buff8;
+    private ubyte[ 4 ] crc;
 
-    File    *ff_info_pop_w = null;
-    File    *ff_info_pop_r = null;
+    private Logger  log;
 
-    string  file_name_info_pop;
+    private Queue   queue;
+    private uint    id;
+    private string  path;
+    private ulong   start_pos_record;
+    private ubyte[] last_read_msg;
+    private Mode    mode;
+
+    private File    *ff_info_pop_w = null;
+    private File    *ff_info_pop_r = null;
+
+    private string  file_name_info_pop;
 
     // tmp
-    Header header;
-    CRC32  hash;
+    private Header header;
+    private CRC32  hash;
 
     this(Queue _queue, string _path, string _name, Mode _mode, Logger _log)
     {
@@ -124,14 +140,24 @@ class Consumer
         header_buff = new ubyte[ header.length() ];
     }
 
+    public uint get_id()
+    {
+        return id;
+    }
+
+    public string get_name()
+    {
+        return name;
+    }
+
     public bool open(bool open_only_if_exists = false, Mode _mode = Mode.DEFAULT)
     {
         if (_mode != Mode.DEFAULT)
             mode = _mode;
 
-        if (!queue.isReady)
+        if (!queue.is_ready)
         {
-            isReady = false;
+            is_ready = false;
             return false;
         }
 
@@ -152,9 +178,9 @@ class Consumer
 
         ff_info_pop_r = new File(file_name_info_pop, "r");
 
-        isReady = get_info();
+        is_ready = get_info();
 
-        return isReady;
+        return is_ready;
     }
 
     public void close()
@@ -163,10 +189,15 @@ class Consumer
         {
             ff_info_pop_w.flush();
             ff_info_pop_w.close();
+            ff_info_pop_w = null;
         }
 
         if (ff_info_pop_r !is null)
+        {
             ff_info_pop_r.close();
+            ff_info_pop_r = null;
+        }
+        is_ready = false;
     }
 
     public void reopen()
@@ -184,20 +215,22 @@ class Consumer
 
     private bool put_info(bool is_sync_data)
     {
-        if (!queue.isReady || !isReady || mode == Mode.R)
+        if (!queue.is_ready || !is_ready || mode == Mode.R)
             return false;
+
+        id = queue.get_id();
 
         try
         {
             ff_info_pop_w.seek(0);
-            ff_info_pop_w.writefln("%s;%d;%s;%d;%d", queue.name, queue.chunk, name, first_element, count_popped);
+            ff_info_pop_w.writefln("%s;%s;%d;%d;%d", queue.name, name, start_pos_record, count_popped, id);
 
             if (is_sync_data)
                 ff_info_pop_w.flush();
         }
         catch (Throwable tr)
         {
-            log.trace("consumer:put_info [%s;%d;%s;%d;%d] %s", queue.name, queue.chunk, name, first_element, count_popped, tr.msg);
+            log.trace("consumer:put_info [%s;%s;%d;%d;%d] %s", queue.name, name, start_pos_record, count_popped, id, tr.msg);
             return false;
         }
         return true;
@@ -205,24 +238,24 @@ class Consumer
 
     public bool get_info()
     {
-        if (!queue.isReady)
+        if (!queue.is_ready)
             return false;
 
         if (ff_info_pop_r is null)
             return false;
 
         ff_info_pop_r.seek(0);
-//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
 
         string str = ff_info_pop_r.readln();
-        //writeln("@3 str=[", str, "]");
-        if (str !is null)
+        if (str !is null && str.length > 1)
         {
-            string[] ch = str[ 0..$ - 1 ].split(';');
-            //writeln("@ queue.get_info ch=", ch);
-            if (ch.length != 5)
+            if (isDigit(str[ $ - 1 ]) == false)
+                str = str[ 0..$ - 1 ];
+
+            string[] ch = str.split(';');
+            if (ch.length != 5 && ch.length != 6)
             {
-                isReady = false;
+                is_ready = false;
                 return false;
             }
 
@@ -230,29 +263,33 @@ class Consumer
             if (_name != queue.name)
             {
                 log.trace("consumer:get_info:queue name from info [%s] != consumer.queue.name[%s]", _name, queue.name);
-                isReady = false;
+                is_ready = false;
                 return false;
             }
 
-            int _chunk = to!int (ch[ 1 ]);
-            if (_chunk != queue.chunk)
-            {
-                log.trace("consumer:get_info:queue chunk from info [%d] != consumer.queue.chunk[%d]", _chunk, queue.chunk);
-                isReady = false;
-                return false;
-            }
-            chunk = _chunk;
-
-            _name = ch[ 2 ];
+            _name = ch[ 1 ];
             if (_name != name)
             {
                 log.trace("consumer:get_info:consumer name from info[%s] != consumer.name[%s]", _name, name);
-                isReady = false;
+                is_ready = false;
                 return false;
             }
 
-            first_element = to!ulong (ch[ 3 ]);
-            count_popped  = to!uint (ch[ 4 ]);
+            start_pos_record = to!ulong (ch[ 2 ]);
+            count_popped     = to!uint (ch[ 3 ]);
+
+            if (ch.length == 5 && ch[ 4 ].length > 0)
+            {
+                id = to!uint (ch[ 4 ]);
+
+                //if (id != queue.id)
+                //{
+                //    log.trace("consumer:get_info:consumer.id [%d] != queue.id [%d]", id, queue.id);
+                //    is_ready = false;
+                //    status  = QueueCode.ConsumerIdNotEqual;
+                //    return false;
+                //}
+            }
         }
 
         //log.trace("get_info:%s", text(this));
@@ -262,30 +299,77 @@ class Consumer
 
     public string pop()
     {
-        if (!queue.isReady || !isReady || mode == Mode.R)
+        if (!queue.is_ready)
+        {
+            log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
             return null;
+        }
 
-        queue.get_info(chunk);
+        if (!is_ready)
+        {
+            log.trace("ERR! queue:consumer:pop, consumer %s not ready", name);
+            return null;
+        }
+
+        if (mode == Mode.R)
+        {
+            log.trace("ERR! queue:consumer:pop, consumer %s reads only", name);
+            return null;
+        }
 
         if (count_popped >= queue.count_pushed)
+        {
+            if (queue.get_info_push(id) == false)
+            {
+                log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
+                return null;
+            }
+        }
+
+        if (count_popped >= queue.count_pushed)
+        {
+            if (queue.id == id)
+                queue.get_info_queue(true);
+
+            if (queue.id > id)
+            {
+                log.trace("INFO: queue:consumer(%s):pop, queue.id=%d, consumer.id=%d, set reader on next part %d", name, queue.id, id, id + 1);
+                id       = id + 1;
+                queue.id = id;
+                if (queue.get_info_push(id) == false)
+                {
+                    log.trace("ERR! queue:consumer(%s):pop, queue %s not ready", name, queue.name);
+                    return null;
+                }
+                remove();
+
+                count_popped     = 0;
+                start_pos_record = 0;
+
+                open();
+                put_info(true);
+            }
+
             return null;
+        }
 
-        File *ff_queue_r = queue.get_chunk_file(chunk);
-
-        ff_queue_r.seek(first_element);
+        File *ff_queue_r = queue.get_r_queue_file(id);
+        ff_queue_r.seek(start_pos_record);
 
         ff_queue_r.rawRead(header_buff);
         header.from_buff(header_buff);
 
-        if (header.start_pos != first_element)
+        if (header.start_pos != start_pos_record)
         {
-            log.trace("pop:invalid msg: header.start_pos[%d] != first_element[%d] : %s", header.start_pos, first_element, text(header));
+            log.trace(
+                      "ERR! queue:consumer(%s):pop, queue.id: %d, invalid msg: header.start_pos[%d] != start_pos_record[%d] : %s, count_popped : %d, queue.count_pushed : %d",
+                      name, queue.id, header.start_pos, start_pos_record, text(header), count_popped, queue.count_pushed);
             return null;
         }
 
         if (header.msg_length >= buff.length)
         {
-            log.trace("pop:inc buff size %d -> %d", buff.length, header.msg_length);
+            log.trace("INFO: queue:consumer(%s):pop, inc buff size %d -> %d", name, buff.length, header.msg_length);
             buff = new ubyte[ header.msg_length + 1 ];
         }
 
@@ -294,13 +378,13 @@ class Consumer
             last_read_msg = ff_queue_r.rawRead(buff[ 0..header.msg_length ]).dup;
             if (last_read_msg.length < header.msg_length)
             {
-                log.trace("pop:invalid msg: msg.length < header.msg_length : %s", text(header));
+                log.trace("ERR! queue:consumer(%s):pop, invalid msg: msg.length < header.msg_length : %s", name, text(header));
                 return null;
             }
         }
         else
         {
-            log.trace("pop:invalid msg: header.msg_length[%d] < buff.length[%d] : %s", header.msg_length, buff.length, text(header));
+            log.trace("ERR! queue:consumer(%s):pop, invalid msg: header.msg_length[%d] < buff.length[%d] : %s", name, header.msg_length, buff.length, text(header));
             return null;
         }
 
@@ -314,13 +398,13 @@ class Consumer
 
     public bool commit_and_next(bool is_sync_data)
     {
-        if (!queue.isReady || !isReady || mode == Mode.R)
+        if (!queue.is_ready || !is_ready || mode == Mode.R)
         {
-            log.trace("ERR! queue:commit_and_next:!queue.isReady || !isReady");
+            log.trace("ERR! queue:commit_and_next:!queue.is_ready || !is_ready");
             return false;
         }
 
-        queue.get_info(chunk);
+        queue.get_info_push(id);
 
         if (count_popped >= queue.count_pushed)
         {
@@ -341,16 +425,16 @@ class Consumer
 
         if (header.crc[ 0 ] != crc[ 0 ] || header.crc[ 1 ] != crc[ 1 ] || header.crc[ 2 ] != crc[ 2 ] || header.crc[ 3 ] != crc[ 3 ])
         {
-            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid last_read_msg[%s]: fail crc[%s] : %s", queue.name, name, last_read_msg, text(
-                                                                                                                                               crc),
+            log.trace("ERR! queue[%s][%s]:commit_and_next:invalid msg, fail crc[%s] : %s", queue.name, name, text(crc),
                       text(header));
-            log.trace(text(last_read_msg.length));
-            log.trace(cast(string)last_read_msg);
+            OutBuffer ob = new OutBuffer();
+            hexdump(ob, last_read_msg);
+            log.trace("%d\n%s", last_read_msg.length, ob);
             return false;
         }
 
         count_popped++;
-        first_element += header.length + header.msg_length;
+        start_pos_record += header.length + header.msg_length;
 
         return put_info(is_sync_data);
     }
@@ -359,14 +443,15 @@ class Consumer
     {
         sink("consumer:" ~ name);
         sink(", queue:" ~ queue.name);
-        sink(", first_element=" ~ text(first_element));
+        sink(", start_pos_record=" ~ text(start_pos_record));
         sink(", count_popped=" ~ text(count_popped));
     }
 }
 
 class Queue
 {
-    bool            isReady;
+    bool            is_ready;
+    uint            count_pushed;
 
     private ubyte[] buff;
     private ubyte[] header_buff;
@@ -377,24 +462,27 @@ class Queue
 
     private Logger log;
     private string name;
+
+    private uint   id;
+
     private string path;
-    int            chunk;
     private ulong  right_edge;
-    uint           count_pushed;
     private Mode   mode;
 
-    // Write (current chunk)
-    private File *ff_info_push_w = null;
-    private File *ff_queue_w     = null;
+    private File   *ff_queue_w      = null;
+    private File   *ff_info_push_w  = null;
+    private File   *ff_info_queue_w = null;
 
-    // Read (request chunk)
-    private File   *ff_queue_chunk_r     = null;
-    private File   *ff_info_push_chunk_r = null;
+    // Read (request)
+    private File   *ff_queue_r      = null;
+    private File   *ff_info_push_r  = null;
+    private File   *ff_info_queue_r = null;
 
-    private string file_name_current_chunk;
-    private string file_name_info_push;
+    private File   *ff_lock_w = null;
+
     private string file_name_queue;
-    private string file_name_lock;
+    private string file_name_info_push;
+    private string file_name_info_queue;
 
     // tmp
     private Header header;
@@ -402,23 +490,14 @@ class Queue
 
     this(string _path, string _name, Mode _mode, Logger _log)
     {
-        log         = _log;
-        mode        = _mode;
-        path        = _path;
-        name        = _name;
-        isReady     = false;
-        buff        = new ubyte[ 4096 * 100 ];
-        header_buff = new ubyte[ header.length() ];
-
-        set_filenames();
-    }
-
-    void set_filenames()
-    {
-        file_name_current_chunk = path ~ "/" ~ name ~ "_current_chunk";
-        file_name_queue         = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-        file_name_info_push     = path ~ "/" ~ name ~ "_info_push_" ~ text(chunk);
-        file_name_lock          = path ~ "/" ~ name ~ "_queue.lock";
+        log                  = _log;
+        mode                 = _mode;
+        path                 = _path;
+        name                 = _name;
+        is_ready              = false;
+        buff                 = new ubyte[ 4096 * 100 ];
+        header_buff          = new ubyte[ header.length() ];
+        file_name_info_queue = path ~ "/" ~ name ~ "_info_queue";
     }
 
     ~this()
@@ -429,10 +508,20 @@ class Queue
     void toString(scope void delegate(const(char)[]) sink) const
     {
         sink("queue:" ~ name);
-//      sink (", first_element=" ~ text(first_element));
+//      sink (", start_pos_record=" ~ text(start_pos_record));
         sink(", right_edge=" ~ text(right_edge));
         sink(", count_pushed=" ~ text(count_pushed));
 //      sink (", count_popped=" ~ text(count_popped));
+    }
+
+    public string get_name()
+    {
+        return name;
+    }
+
+    public uint get_id()
+    {
+        return id;
     }
 
     public static bool is_lock(string path, string _queue_name)
@@ -451,33 +540,72 @@ class Queue
     {
         try
         {
-            if (isReady == false)
+            if (is_ready == false)
             {
                 if (_mode != Mode.DEFAULT)
                     mode = _mode;
 
                 //writeln("open ", text (mode));
+                string part_name;
 
                 if (mode == Mode.RW)
                 {
-                    if (exists(file_name_lock))
+                    string file_name_lock = path ~ "/" ~ name ~ "_queue.lock";
+                    if (exists(file_name_lock) == false)
                     {
-                        log.trace("Queue [%s] already open, or not deleted lock file", name);
-                        return false;
+                        ff_lock_w = new File(file_name_lock, "w");
+                        ff_lock_w.write(text(id));
+                    }
+                    else
+                    {
+                        ff_lock_w = new File(file_name_lock, "r+");
                     }
 
+                    if (ff_lock_w.tryLock(LockType.readWrite) == false)
+                    {
+                        is_ready = false;
+                        log.trace("ERR! queue %s already open", name);
+                        return is_ready;
+                    }
+                    ff_lock_w.flush();
+
+                    if (exists(file_name_info_queue) == false)
+                    {
+                        ff_info_queue_w = new File(file_name_info_queue, "w");
+                        put_info_queue(false);
+                        ff_info_queue_w.flush();
+                    }
+                    else
+                    {
+                        ff_info_queue_w = new File(file_name_info_queue, "r+");
+                        if (get_info_queue(false) == false)
+                        {
+                            log.trace("Queue [%s] fail read info queue", name);
+                            return false;
+                        }
+                        log.trace("Queue [%s] current id = %d", name, id);
+
+                        id           = id + 1;
+                        count_pushed = 0;
+                        right_edge   = 0;
+
+                        put_info_queue(false);
+                    }
+
+                    part_name = name ~ "-" ~ text(id);
                     try
                     {
-                        string s_chunk = readText(file_name_current_chunk);
-                        chunk = to!int (s_chunk);
-                        log.trace("queue %s, current chunk=%d", name, chunk);
+                        mkdir(path ~ "/" ~ part_name);
                     }
-                    catch (Throwable tr)
+                    catch (Exception ex)
                     {
-                        std.file.write(file_name_current_chunk, text(chunk));
                     }
 
-                    std.file.write(file_name_lock, text(chunk));
+                    if (file_name_queue is null)
+                    {
+                        file_name_queue     = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+                        file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
+                    }
 
                     if (exists(file_name_info_push) == false)
                         ff_info_push_w = new File(file_name_info_push, "w");
@@ -489,13 +617,17 @@ class Queue
                     else
                         ff_queue_w = new File(file_name_queue, "ab+");
 
-                    get_info(chunk, false);
+                    get_info_push(false);
                 }
 
-                if (mode == Mode.RW && ff_info_push_w !is null && ff_queue_w !is null || mode == Mode.R)
+                if (mode == Mode.RW && ff_info_push_w !is null && ff_info_queue_w !is null && ff_queue_w !is null)
+                    is_ready = true;
+
+                if (mode == Mode.R)
                 {
-                    isReady = true;
-                    //put_info();
+//                        get_info_queue();
+
+                    is_ready = true;
                 }
             }
         }
@@ -503,74 +635,143 @@ class Queue
         {
             log.trace("ERR! queue, not open: ex: %s", ex.msg);
         }
-        return isReady;
+
+        if (is_ready == false)
+            log.trace("ERR! queue %s, not open", name);
+
+        return is_ready;
     }
 
-    File *get_chunk_file(int chunk)
+    private File *get_r_queue_file(int part_id)
     {
-        if (ff_queue_chunk_r is null)
+        if (id != part_id || ff_queue_r is null)
         {
-            file_name_queue  = path ~ "/" ~ name ~ "_queue_" ~ text(chunk);
-            ff_queue_chunk_r = new File(file_name_queue, "r");
+            id = part_id;
+            string part_name = name ~ "-" ~ text(id);
+            file_name_queue = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+
+            ff_queue_r = new File(file_name_queue, "r");
         }
 
-        return ff_queue_chunk_r;
-    }
-
-    private void remove_lock()
-    {
-        if (mode == Mode.R)
-            return;
-
-        try
-        {
-            std.file.remove(file_name_lock);
-            log.trace("queue:remove lock file %s", file_name_lock);
-        }
-        catch (Throwable tr)
-        {
-            log.trace("queue:fail remove %s", tr.msg);
-        }
+        return ff_queue_r;
     }
 
     public void close()
     {
-        if (isReady == true)
+        if (is_ready == true)
         {
             //writeln("queue_close:", file_name_queue);
 
-            if (ff_info_push_chunk_r !is null)
+            if (ff_info_push_r !is null)
             {
-                ff_info_push_chunk_r.close();
-                ff_info_push_chunk_r = null;
+                ff_info_push_r.close();
+                ff_info_push_r = null;
             }
 
-            if (ff_queue_chunk_r !is null)
+            if (ff_info_queue_r !is null)
             {
-                ff_queue_chunk_r.close();
-                ff_queue_chunk_r = null;
+                ff_info_queue_r.close();
+                ff_info_queue_r = null;
+            }
+
+            if (ff_queue_r !is null)
+            {
+                ff_queue_r.close();
+                ff_queue_r = null;
             }
 
             if (mode == Mode.RW)
             {
                 flush();
+
                 ff_info_push_w.close();
+                ff_info_push_w = null;
+
+                ff_info_queue_w.close();
+                ff_info_queue_w = null;
+
                 ff_queue_w.close();
-                remove_lock();
+                ff_queue_w = null;
             }
-            isReady = false;
+            is_ready = false;
         }
     }
 
-    private void put_info(bool is_check_ready = true)
+    private void put_info_queue(bool is_check_ready = true)
     {
-        if ((is_check_ready && !isReady) || mode == Mode.R)
+        if ((is_check_ready && !is_ready) || mode == Mode.R)
+            return;
+
+        ff_info_queue_w.seek(0);
+
+        auto writer = appender!string();
+        formattedWrite(writer, "%s;%d;", name, id);
+
+        hash.start();
+        hash.put(cast(ubyte[])writer.data);
+        string hash_hex = crcHexString(hash.finish());
+
+        ff_info_queue_w.write(writer.data);
+        ff_info_queue_w.writeln(hash_hex);
+        ff_info_queue_w.flush();
+    }
+
+    public bool get_info_queue(bool is_check_ready = true)
+    {
+        if (is_check_ready && !is_ready)
+            return false;
+
+        if (ff_info_queue_r is null)
+        {
+            try
+            {
+                ff_info_queue_r = new File(file_name_info_queue, "r");
+            }
+            catch (Throwable tr)
+            {
+                is_ready = false;
+                log.trace("ERR! queue:get_info: fail open file %s", path ~ "/" ~ name ~ "_info_queue");
+                return false;
+            }
+        }
+
+        ff_info_queue_r.seek(0);
+        string str = ff_info_queue_r.readln();
+        string hash_hex;
+
+        if (str !is null)
+        {
+            string[] ch = str[ 0..$ - 1 ].split(';');
+            if (ch.length != 3)
+            {
+                is_ready = false;
+                log.trace("ERR! queue:get_info_queue: invalid info record %s", str);
+                return false;
+            }
+
+            if (ch[ 0 ] != name)
+            {
+                is_ready = false;
+                log.trace("ERR! queue:get_info_queue: request queue name %s not equal exist name %s", name, ch[ 0 ]);
+                return false;
+            }
+
+            id = to!uint (ch[ 1 ]);
+            string hash = ch[ 2 ];
+        }
+
+        return true;
+    }
+
+    private void put_info_push(bool is_check_ready = true)
+    {
+        if ((is_check_ready && !is_ready) || mode == Mode.R)
             return;
 
         ff_info_push_w.seek(0);
 
         auto writer = appender!string();
-        formattedWrite(writer, "%s;%d;%d;%d;", name, chunk, right_edge, count_pushed);
+        formattedWrite(writer, "%s;%d;%d;", name, right_edge, count_pushed);
 
         hash.start();
         hash.put(cast(ubyte[])writer.data);
@@ -580,28 +781,38 @@ class Queue
         ff_info_push_w.writeln(hash_hex);
     }
 
-    public bool get_info(int r_chunk, bool is_check_ready = true)
+    public bool get_info_push(int part_id, bool is_check_ready = true)
     {
-        if (is_check_ready && !isReady)
+        if (is_check_ready && !is_ready)
             return false;
 
-        if (ff_info_push_chunk_r is null)
+        if (id != part_id || ff_info_push_r is null)
         {
-            ff_info_push_chunk_r = new File(path ~ "/" ~ name ~ "_info_push_" ~ text(r_chunk), "r");
+            try
+            {
+                string part_name = name ~ "-" ~ text(part_id);
+                file_name_info_push = path ~ "/" ~ part_name ~ "/" ~ name ~ "_info_push";
+                ff_info_push_r      = new File(file_name_info_push, "r");
+            }
+            catch (Throwable tr)
+            {
+                is_ready = false;
+                log.trace("ERR! queue:get_info: fail open file %s", file_name_info_push);
+                return false;
+            }
         }
 
-        ff_info_push_chunk_r.seek(0);
-//        writeln("@2 ff_info_push_r.size=", ff_info_push_r.size);
+        ff_info_push_r.seek(0);
+        string str = ff_info_push_r.readln();
+        string hash_hex;
 
-        string str = ff_info_push_chunk_r.readln();
-        //writeln("@3 str=[", str, "]");
         if (str !is null)
         {
             string[] ch = str[ 0..$ - 1 ].split(';');
-            //writeln("@ queue.get_info ch=", ch);
-            if (ch.length != 5)
+            if (ch.length != 4)
             {
-                isReady = false;
+                is_ready = false;
+                log.trace("ERR! queue:get_info: invalid info record %s", str);
                 return false;
             }
 
@@ -609,17 +820,15 @@ class Queue
 
             if (ch[ 0 ] != name)
             {
-                isReady = false;
+                is_ready = false;
+                log.trace("ERR! queue:get_info: %s not equal %s", ch[ 0 ], name);
                 return false;
             }
             name         = ch[ 0 ];
-            chunk        = to!int (ch[ 1 ]);
-            right_edge   = to!ulong (ch[ 2 ]);
-            count_pushed = to!uint (ch[ 3 ]);
-            string hash_hex = ch[ 4 ];
+            right_edge   = to!ulong (ch[ 1 ]);
+            count_pushed = to!uint (ch[ 2 ]);
+            hash_hex     = ch[ 3 ];
         }
-
-        //writeln(this);
 
         return true;
     }
@@ -641,10 +850,16 @@ class Queue
         if (mode == Mode.R)
             return;
 
-        ubyte[] _buff2 = cast(ubyte[])msg;
+        if (msg.length == 0)
+            return;
+
+        if (msg.length > uint.max / 2)
+            return;
+
+        ubyte[] _buff2 = cast(ubyte[])msg.dup;
 
         header.start_pos    = right_edge;
-        header.msg_length   = _buff2.length;
+        header.msg_length   = cast(uint)_buff2.length;
         header.count_pushed = count_pushed;
         header.type         = type;
 
@@ -663,6 +878,8 @@ class Queue
         ff_queue_w.rawWrite(header_buff);
         ff_queue_w.rawWrite(_buff2);
 
+        //log.trace("@ %s %s, crc=%s", name, header, crc);
+
         right_edge += header_buff.length + _buff2.length;
     }
 
@@ -670,80 +887,19 @@ class Queue
 
     public void push(string msg, bool is_flush = true, QMessageType type = QMessageType.STRING)
     {
-        if (!isReady || mode == Mode.R)
+        if (!is_ready || mode == Mode.R)
         {
-            log.trace("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text(isReady), text(mode));
+            log.trace("ERR! queue, no push into [%s], ready=%s, mode=%s", name, text(is_ready), text(mode));
             return;
         }
 
         count_pushed++;
         put_msg(msg, type);
-        put_info();
+        put_info_push();
 
         if (is_flush)
             flush();
     }
-}
-
-unittest
-{
-    import std.datetime, std.uuid;
-    import veda.util.tests_tools;
-    import veda.onto.individual, veda.onto.resource;
-
-    Logger log = new Logger("test", "log", "QUEUE");
-
-    Queue  queue = new Queue("queue1" ~ randomUUID().toString(), Mode.RW, log);
-    queue.open(Mode.RW);
-    assert(queue.isReady);
-
-    Consumer cs = new Consumer(queue, "consumer1", log);
-    cs.open();
-
-    assert(cs.isReady);
-
-    Individual new_indv_A1 = generate_new_test_individual();
-    string     binobj      = new_indv_A1.serialize();
-    queue.push(binobj);
-
-    Individual new_indv_A = generate_new_test_individual();
-    binobj = new_indv_A.serialize();
-
-    queue.push(binobj);
-    queue.push(binobj);
-    queue.push(binobj);
-
-    string val = cs.pop();
-    val = cs.pop();
-    val = cs.pop();
-
-    Individual indv_B;
-    indv_B.deserialize(val);
-
-    bool compare_res = new_indv_A.compare(indv_B);
-    if (compare_res == false)
-        writefln("new_indv_A [%s] != indv_B [%s]", new_indv_A, indv_B);
-
-    assert(compare_res);
-
-    val = cs.pop();
-
-    Individual indv_B1;
-    indv_B1.deserialize(val);
-
-    compare_res = new_indv_A1.compare(indv_B1);
-    if (compare_res == false)
-        writefln("new_indv_A1 [%s] != indv_B [%s]", new_indv_A1, indv_B1);
-
-    assert(compare_res);
-
-    //queue.close();
-    //cs.close();
-
-    queue.remove();
-    cs.remove();
-
-    writeln("unittest [Queue] Ok");
 }
 
 private ushort ushort_from_buff(ubyte[] buff, int pos)
@@ -785,4 +941,33 @@ private void ulong_to_buff(ubyte[] _buff, int pos, ulong data)
     _buff[ pos + 5 ] = (data & 0x0000FF0000000000) >> 40;
     _buff[ pos + 6 ] = (data & 0x00FF000000000000) >> 48;
     _buff[ pos + 7 ] = (data & 0xFF00000000000000) >> 56;
+}
+
+void hexdump(T) (OutBuffer ob, T[] s)
+{
+    byte *b = cast(byte *)s.ptr;
+    int  N  = cast(int)(s.length * T.sizeof);
+
+    for (int i = 0; i < N; i++)
+    {
+        ob.writef("%2.2x ", b[ i ]);
+
+        if ((i & 7) == 7)
+            ob.writef(" ");
+
+        if ((i & 31) == 31)
+        {
+            ob.writef("    ");
+            for (int j = i - 31; j <= i; j++)
+            {
+                if (b[ j ] != 0)
+                    ob.writef("%s", cast(char)b[ j ]);
+                else
+                    ob.write(".");
+            }
+
+            ob.writef("\n");
+        }
+    }
+    ob.writefln("\n");
 }

@@ -9,7 +9,7 @@ import dt                                                                       
 import veda.bind.xapian_d_header;
 import veda.core.util.utils, veda.onto.onto, veda.common.logger;
 import veda.search.common.isearch, veda.search.common.vel;
-import veda.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
+import veda.common.type, veda.core.common.type, veda.core.common.context, veda.core.common.define, veda.core.common.log_msg;
 
 
 class XapianVQL
@@ -599,7 +599,10 @@ class XapianVQL
                         query_r = null;
                     }
                     else
-                        query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                    {
+                        if (query_r !is null)
+                            query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                    }
 
                     if (query is null)
                         throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
@@ -623,7 +626,10 @@ class XapianVQL
                             query_r = null;
                         }
                         else
-                            query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                        {
+                            if (query_r !is null)
+                                query = query_l.add_right_query(xapian_op.OP_AND, query_r, &err);
+                        }
 
                         if (query is null)
                             throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
@@ -662,7 +668,10 @@ class XapianVQL
                     _transform_vql_to_xapian(ctx, tta.L, tta.op, dummy, dummy, query_l, key2slot, ld, level + 1, qp, trace);
 
                 if (query_l !is null)
-                    query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
+                {
+                    if (query_r !is null)
+                        query = query_l.add_right_query(xapian_op.OP_OR, query_r, &err);
+                }
 
                 if (query is null)
                     throw new XapianError(err, "parse_query '" ~ tta.toString() ~ "'");
@@ -760,7 +769,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     if (err == -1)
-                        sr.result_code = ResultCode.DatabaseModifiedError;
+                        break;
                     else
                         sr.result_code = ResultCode.InternalServerError;
 
@@ -781,7 +790,7 @@ class XapianVQL
                 if (err < 0)
                 {
                     if (err == -1)
-                        sr.result_code = ResultCode.DatabaseModifiedError;
+                        break;
                     else
                         sr.result_code = ResultCode.InternalServerError;
 
@@ -828,6 +837,14 @@ class XapianVQL
                 }
 
                 acl_db_reopen = false;
+
+                auto authorize_time = sw_az.peek.total !"msecs";
+
+                if (authorize_time > 5000)
+                {
+                    log.trace("WARN! authorization time > 5 s, break iterator loop, user_uri=[%s]", user_uri);
+                    break;
+                }
 
                 it.next(&err);
             }

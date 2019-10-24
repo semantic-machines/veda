@@ -1,0 +1,39 @@
+ro-storage
+
+mstorage
+
+ft-indexer
+
+ft-query
+
+#fanout-email
+
+#fanout-sql-lp
+
+#fanout-sql-np
+
+#ltr-scripts
+    module = scripts
+    args = ltr
+
+scripts-lp
+    module = scripts
+    args = lp
+
+scripts-lp1
+    module = scripts
+    args = lp1
+
+scripts-main
+    module = scripts
+    args = main
+
+ontologist
+
+ccus
+
+gowebserver
+
+input-onto
+
+#az-indexer

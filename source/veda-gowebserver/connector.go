@@ -1,7 +1,7 @@
 package main
 
 /*
- #cgo CFLAGS: -I../authorization
+ #cgo CFLAGS: -I../libauthorization
  #cgo LDFLAGS: -L../lib64 -lauthorization
  #include <authorization.h>
 */
@@ -22,8 +22,6 @@ type Connector struct {
 	//Address of tarantool database
 	tt_addr   string
 	tt_client *tarantool.Connection
-
-	//	lmdb_client *nanomsg.Socket
 
 	db_is_open bool
 }
@@ -179,15 +177,13 @@ const (
 
 func (conn *Connector) open_dbs() {
 	if conn.tt_client != nil {
-		resp, err := conn.tt_client.Ping()
+		_, err := conn.tt_client.Ping()
 
 		if err != nil {
 			conn.db_is_open = false
 			log.Fatal("ERR! open_dbs", err)
 		} else {
 			conn.db_is_open = true
-			log.Println("@ resp.Code=", resp.Code)
-			log.Println("@ resp.Data=", resp.Data)
 		}
 
 	} else {
@@ -196,7 +192,6 @@ func (conn *Connector) open_dbs() {
 }
 
 func (conn *Connector) reopen_individual_db() {
-	//var err error
 	if conn.tt_client != nil {
 
 	} else {
@@ -205,8 +200,6 @@ func (conn *Connector) reopen_individual_db() {
 }
 
 func (conn *Connector) reopen_ticket_db() {
-	//var err error
-
 	if conn.tt_client != nil {
 
 	} else {
@@ -233,28 +226,6 @@ func (conn *Connector) Connect(tt_addr string) {
 		log.Println("INFO! tarantool connect is ok")
 		conn.tt_client = tt_client
 	}
-	//	 else {
-	//		log.Println("INFO! Connect to lmdb service, start")
-	//		conn.lmdb_client, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
-	//		if err != nil {
-	//			conn.db_is_open = false
-	//			log.Fatal("ERR! open_dbs: nanomsg.NewSocket")
-	//
-	//		} else {
-	//			conn.db_is_open = true
-	//		}
-
-	//log.Println("use lmdb service url: ", lmdbServiceURL)
-	//		_, err = conn.lmdb_client.Connect(lmdbServiceURL)
-	//		for err != nil {
-	//			log.Println("ERR! Creating lmdb service connection: err=", err)
-	//			log.Println("INFO! sleep")
-	//			time.Sleep(3000 * time.Millisecond)
-	//			log.Println("INFO! retry connect")
-	//			_, err = conn.lmdb_client.Connect(queryServiceURL)
-	//		}
-	//		log.Println("INFO! Connect to lmdb service, socket=", conn.lmdb_client)
-	//	}
 }
 
 //Get sends get request to tarantool, individuals uris passed as data here
@@ -282,7 +253,6 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 
 	rr.OpRC = make([]ResultCode, 0, len(uris))
 	rr.SetUris(uris)
-	//rr.Indv = make([]Individual, 0, len(uris))
 
 	if conn.tt_client != nil {
 
@@ -337,9 +307,9 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				return rr
 
 			}
-			_, err = lmdb_client.Connect(lmdbServiceURL)
+			_, err = lmdb_client.Connect(roStorageURL)
 			if err != nil {
-				log.Printf("ERR! Get: fail connect to lmdb service %s, err=%s\n", lmdbServiceURL, err)
+				log.Printf("ERR! Get: fail connect to lmdb service, uri=[%s], err=%s\n", roStorageURL, err)
 				rr.CommonRC = InternalServerError
 				return rr
 			}
@@ -366,7 +336,7 @@ func (conn *Connector) Get(needAuth bool, userUri string, uris []string, trace b
 				continue
 			}
 
-		if strings.Index(val, "{ERR:") == 0 {
+			if strings.Index(val, "{ERR:") == 0 {
 				rr.CommonRC = InternalServerError
 				return rr
 			}
@@ -424,8 +394,7 @@ func trace_acl(str *C.char) {
 
 //Authorize sends authorize, get membership or get rights origin request,
 //it depends on parametr operation. Individuals uris passed as data here
-func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, operation uint,
-	trace, traceAuth bool) RequestResponse {
+func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, operation uint, trace bool) RequestResponse {
 	var rr RequestResponse
 
 	//If userUri is too short return NotAuthorized to client
@@ -445,7 +414,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		log.Printf("@CONNECTOR AUTHORIZE: PACK AUTHORIZE REQUEST need_auth=%v, user_uri=%v, uri=%v \n",
 			needAuth, userUri, uri)
 	}
-
 	if operation == Authorize {
 
 		rr.Rights = make([]uint8, 1)
@@ -463,9 +431,7 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
-	}
-
-	if operation == GetRightsOrigin {
+	} else if operation == GetRightsOrigin {
 
 		curi := C.CString(uri)
 		defer C.free(unsafe.Pointer(curi))
@@ -474,13 +440,13 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		defer C.free(unsafe.Pointer(cuser_uri))
 
 		rights_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_ACL, true))
-		//defer C.free(unsafe.Pointer(right))
+
+		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_INFO, true))
 
 		rr.Rights = make([]uint8, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		statements := strings.Split(rights_str, "\n")
-		//rr.Indv = make([]Individual, 0)
 
 		for j := 0; j < len(statements)-1; j++ {
 
@@ -501,30 +467,27 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 				},
 			}
 			rr.AddIndv(statementIndiv)
-			//rr.Indv = append(rr.Indv, statementIndiv)
 		}
 
-		//			commentIndiv := map[string]interface{}{
-		//				"@": "_",
-		//				"rdf:type": []interface{}{
-		//					map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
-		//				},
-		//				"v-s:permissionSubject": []interface{}{
-		//					map[string]interface{}{"type": "Uri", "data": "?"},
-		//				},
+		commentIndiv := map[string]interface{}{
+			"@": "_",
+			"rdf:type": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": "v-s:PermissionStatement"},
+			},
+			"v-s:permissionSubject": []interface{}{
+				map[string]interface{}{"type": "Uri", "data": "?"},
+			},
 
-		//				"rdfs:comment": []interface{}{
-		//					map[string]interface{}{"type": "String", "lang": "NONE", "data": rights[i+2]},
-		//				},
-		//			}
-		//			data = append(data, commentIndiv)
+			"rdfs:comment": []interface{}{
+				map[string]interface{}{"type": "String", "lang": "NONE", "data": info_str},
+			},
+		}
+		rr.AddIndv(commentIndiv)
 
 		rr.OpRC[0] = Ok
 
 		rr.CommonRC = Ok
-	}
-
-	if operation == GetMembership {
+	} else if operation == GetMembership {
 
 		curi := C.CString(uri)
 		defer C.free(unsafe.Pointer(curi))
@@ -535,7 +498,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 		info_str := C.GoString(C.get_trace(curi, cuser_uri, 15, C.TRACE_GROUP, true))
 
 		rr.Rights = make([]uint8, 1)
-		//rr.Indv = make([]Individual, 1)
 		rr.OpRC = make([]ResultCode, 1)
 
 		parts := strings.Split(info_str, "\n")
@@ -556,7 +518,6 @@ func (conn *Connector) Authorize(needAuth bool, userUri string, uri string, oper
 			"v-s:memberOf": memberOf,
 		}
 
-		//rr.Indv[0] = membershipIndividual
 		rr.AddIndv(membershipIndividual)
 		rr.OpRC[0] = Ok
 
@@ -581,7 +542,6 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 	}
 
 	rr.OpRC = make([]ResultCode, 0, len(ticketIDs))
-	//rr.Indv = make([]Individual, 0, len(ticketIDs))
 	rr.SetUris(ticketIDs)
 
 	if conn.tt_client != nil {
@@ -594,7 +554,7 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 		}
 		if len(resp.Data) == 0 {
 			log.Println("ERR! webserver.GetTicket: Empty body of Insert")
-			rr.CommonRC = InternalServerError
+			rr.CommonRC = TicketNotFound
 		} else if tpl, ok := resp.Data[0].([]interface{}); !ok {
 			log.Println("ERR! webserver.GetTicket: Unexpected body of Insert")
 			rr.CommonRC = InternalServerError
@@ -615,9 +575,9 @@ func (conn *Connector) GetTicket(ticketIDs []string, trace bool) RequestResponse
 			return rr
 
 		}
-		_, err = lmdb_client.Connect(lmdbServiceURL)
+		_, err = lmdb_client.Connect(roStorageURL)
 		if err != nil {
-			log.Printf("ERR! GetTicket: fail connect to lmdb service %s, err=%s\n", lmdbServiceURL, err)
+			log.Printf("ERR! GetTicket: fail connect to lmdb service %s, err=%s\n", roStorageURL, err)
 			rr.CommonRC = InternalServerError
 			return rr
 		}
@@ -680,4 +640,25 @@ func NmSend(s *nanomsg.Socket, data []byte, flags int) (int, error) {
 	}()
 
 	return s.Send(data, flags)
+}
+
+func getUint64FromJson(jsonData map[string]interface{}, field string) (ResultCode, uint64) {
+	var res uint64
+	iij := jsonData[field]
+	if iij != nil {
+		switch iij.(type) {
+		case json.Number:
+			r1, _ := iij.(json.Number).Int64()
+			res = uint64(r1)
+		case float64:
+			res = uint64(iij.(float64))
+		case int64:
+			res = uint64(iij.(int64))
+		case uint64:
+			res = iij.(uint64)
+		default:
+			return BadRequest, 0
+		}
+	}
+	return Ok, res
 }

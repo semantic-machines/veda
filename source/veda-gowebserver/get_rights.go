@@ -30,6 +30,14 @@ const (
 
 //getRights is handler for get_rigths request
 func getRights(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getRights", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	var uri string
 	var ticketKey string
 	var ticket ticket
@@ -53,7 +61,7 @@ func getRights(ctx *fasthttp.RequestCtx) {
 	}
 
 	//Send authorize request to tarantool
-	rr := conn.Authorize(true, ticket.UserURI, uri, Authorize, false, false)
+	rr := conn.Authorize(true, ticket.UserURI, uri, Authorize, false)
 
 	//If common response code is not Ok return fail to client
 	if rr.CommonRC != Ok {

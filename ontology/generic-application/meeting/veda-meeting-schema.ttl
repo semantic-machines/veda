@@ -17,10 +17,14 @@
 v-s:Meeting
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:Enumerated ;
+  rdfs:subClassOf v-s:Labeled ;
   rdfs:subClassOf v-s:Activity ;
   rdfs:subClassOf v-s:Deliverable2 ;
+  rdfs:subClassOf v-s:Controlled ;
   rdfs:label "Встреча"@ru ;
   rdfs:label "Meeting"@en ;
+  v-s:labelPattern "{@.v-s:registrationNumber} - {@.v-s:dateFrom} - {@.v-s:theme}" ;
+  v-s:hasNumeration v-s:RegistrationNumberYearNumeration2_6 ;
 .
 v-s:agenda
   rdf:type owl:DatatypeProperty ;

@@ -2,16 +2,15 @@
 
 TIMESTAMP=`date +%Y-%m-%d_%H_%M`
 
-mkdir ./logs/$TIMESTAMP
-cp ./logs/*-stderr.log ./logs/$TIMESTAMP
+#mkdir ./logs/$TIMESTAMP
+#cp ./logs/*-stderr.log ./logs/$TIMESTAMP
 
-#tarantoolctl stop init_tarantool.lua
-#pkill tarantool
-
-start-stop-daemon -Kp $PWD/.pids/veda-pid $PWD/veda
-start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
+start-stop-daemon -Kp $PWD/.pids/veda-pid
 
 target=".pids/"
+
+if [ -e $target ] ; then
+
 let count=0
 for f in "$target"/*
 do
@@ -24,12 +23,17 @@ echo ""
 echo "Count: $count"
 
 rm -f -r .pids
-rm -f data/module-info/*.lock
-rm -f data/queue/*.lock
-rm -f data/uris/*.lock
+
+fi
+
+if [ -z $1 ] ; then
+
+    echo "STOP VEDA MODULES"
+
+else
 
 if [ $1 == "all" ] ; then
-    echo STOP ALL VEDA MODULES
+    echo "STOP ALL VEDA MODULES"
 
     start-stop-daemon -Kp $PWD/veda-pid $PWD/veda
     killall -9 veda
@@ -44,11 +48,24 @@ if [ $1 == "all" ] ; then
     killall -9 veda-server
     killall -9 veda-ttlreader
     killall -9 veda-webserver
+    killall -9 veda-input-queue
     killall -9 veda-gowebserver
     killall -9 veda-ft-query
     killall -9 veda-lmdb-srv
+    killall -9 veda-ro-storage
+    killall -9 veda-ontologist
+    killall -9 veda-geo-indexer
+    killall -9 veda-extractor
+    killall -9 veda-exim-inquire
+    killall -9 veda-exim-respond
+    killall -9 veda-winpak
+    killall -9 veda-input-onto
+
+    #tarantoolctl stop init_tarantool.lua
+    pkill tarantool
 
 fi
 
+fi
 
 exit 0

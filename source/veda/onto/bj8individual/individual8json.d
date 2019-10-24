@@ -22,6 +22,7 @@ static this() {
         "Datetime":DataType.Datetime,
         "Decimal":DataType.Decimal,
         "Boolean":DataType.Boolean,
+        "Binary":DataType.Binary,
     ];
 }
 
@@ -65,23 +66,46 @@ public float getFloat(ref JSONValue src, string key)
     return 0;
 }
 
-JSONValue individual_to_json(Individual individual)
+JSONValue individual_to_json(Individual individual, string[] filters = [])
 {
 //    writeln ("\nINDIVIDUAL->:", individual);
     JSONValue json;
 
     json[ "@" ] = individual.uri;
-    foreach (property_name, property_values; individual.resources)
+
+    if (filters.length > 0)
     {
-        JSONValue[] jsonVals;
+        foreach (property_name; filters)
+        {
+            auto property_values = individual.resources.get(property_name, Resources.init);
+            if (property_values != Resources.init)
+            {
+                JSONValue[] jsonVals;
 
-        foreach (property_value; property_values)
-            jsonVals ~= resource_to_json(cast(Resource)property_value);
+                foreach (property_value; property_values)
+                    jsonVals ~= resource_to_json(cast(Resource)property_value);
 
-        JSONValue resources_json;
-        resources_json.array = jsonVals;
+                JSONValue resources_json;
+                resources_json.array = jsonVals;
 
-        json[ property_name ] = resources_json;
+                json[ property_name ] = resources_json;
+            }
+        }
+    }
+    else
+    {
+        foreach (property_name, property_values; individual.resources)
+        {
+            JSONValue[] jsonVals;
+
+            foreach (property_value; property_values)
+                jsonVals ~= resource_to_json(cast(Resource)property_value);
+
+            JSONValue resources_json;
+            resources_json.array = jsonVals;
+
+            json[ property_name ] = resources_json;
+        }
     }
 //    writeln ("->JSON:", json);
     return json;
@@ -156,6 +180,10 @@ JSONValue resource_to_json(Resource resource)
     resource_json[ "type" ] = text(resource.type);
 
     if (resource.type == DataType.Uri)
+    {
+        resource_json[ "data" ] = data;
+    }
+    else if (resource.type == DataType.Binary)
     {
         resource_json[ "data" ] = data;
     }
@@ -242,6 +270,10 @@ Resource json_to_resource(JSONValue resource_json)
         {
             resource.data = resource_json.getString("data");
         }
+        else if (type == DataType.Binary)
+        {
+            resource.data = resource_json.getString("data");
+        }
         else if (type == DataType.Decimal)
         {
             if (data_type == JSON_TYPE.FLOAT)
@@ -263,16 +295,22 @@ Resource json_to_resource(JSONValue resource_json)
         }
         else if (type == DataType.Datetime)
         {
-            string val = resource_json.getString("data");
+            if (data_type == JSON_TYPE.INTEGER)
+            {
+                resource = resource_json.getLong("data");
+            }
+            else if (data_type == JSON_TYPE.STRING)
+            {
+                string val = resource_json.getString("data");
 
-            long   tm;
+                long   tm;
 
-            if (val.indexOf('-') >= 1)
-                tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
-            else
-                tm = to!long (val);
-
-            resource = tm;
+                if (val.indexOf('-') >= 1)
+                    tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
+                else
+                    tm = to!long (val);
+                resource = tm;
+            }
         }
 
         resource.type = type;

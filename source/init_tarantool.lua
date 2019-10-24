@@ -4,6 +4,7 @@ log = require('log')
 memtx = false
 
 if box.space.INDIVIDUALS == nil then
+
     if memtx then
         space = box.schema.space.create('INDIVIDUALS')
     else
@@ -16,12 +17,13 @@ if box.space.INDIVIDUALS == nil then
     box.schema.user.grant('guest', 'read,write', 'space', 'INDIVIDUALS')
     box.schema.user.grant('guest', 'read,write', 'universe')
 
-    box.schema.user.create('veda6', {password = '8b8nfeAj'}, {if_not_exists = false})
-	box.schema.user.grant('veda6', 'read,write,execute', 'universe')
+    box.schema.user.create('veda6', {password = '123456'}, {if_not_exists = false})
+    box.schema.user.grant('veda6', 'read,write,execute', 'universe')
 
 end
 
 if box.space.TICKETS == nil then
+
     if memtx then
         space = box.schema.space.create('TICKETS')
     else

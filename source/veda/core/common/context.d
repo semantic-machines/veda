@@ -9,7 +9,7 @@
 module veda.core.common.context;
 
 private import std.concurrency, std.datetime, std.outbuffer;
-private import veda.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container;
+private import veda.common.type, veda.core.common.type, veda.onto.onto, veda.onto.individual, veda.onto.resource, veda.core.common.define;
 private import veda.common.logger, veda.core.common.transaction;
 private import veda.search.common.isearch, veda.util.module_info, veda.storage.common, veda.storage.storage, veda.authorization.authorization;
 
@@ -18,11 +18,15 @@ const ALL_MODULES  = 0;
 
 interface Context
 {
+	public MInfo get_info(MODULE module_id);
+    public Ticket *get_ticket(string ticket_id, bool is_trace, bool is_systicket = false);
+
     Storage get_storage();
 
     string get_name();
 
     Onto get_onto();
+    public void onto_load();
 
     public long get_operation_state(MODULE module_id, long wait_op_id);
 

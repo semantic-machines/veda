@@ -1,0 +1,18 @@
+[package]
+name = "v_onto"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[lib]
+path = "src/onto/lib.rs"
+
+[dependencies]
+byteorder = ">= 0.5.0"
+cbor-codec = { git = "https://github.com/itiu/cbor-codec.git", rev="8830b95e8060972786537911f03d4e823182a1ed" }
+rmp = "^0.8"
+rmp-serialize = "0.8.0"
+serde = "1.0"
+serde_json = "1.0"
+log = "0.4"
+rust_decimal = "1.0.3"

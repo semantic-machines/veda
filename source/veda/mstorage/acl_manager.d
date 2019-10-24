@@ -6,9 +6,9 @@ module veda.mstorage.acl_manager;
 
 import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.array, std.outbuffer, std.string;
 import veda.util.properd;
-import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define,
-       veda.core.common.know_predicates;
-import veda.core.common.log_msg, veda.storage.common, veda.core.util.utils, veda.common.logger, veda.util.module_info, veda.core.impl.thread_context;
+import veda.common.type, veda.onto.individual, veda.onto.resource, veda.core.common.context, veda.core.common.define;
+import veda.core.common.log_msg, veda.storage.common, veda.core.common.type, veda.core.util.utils, veda.common.logger, veda.util.module_info,
+       veda.core.impl.thread_context;
 import veda.storage.common, veda.authorization.right_set;
 import veda.storage.lmdb.lmdb_driver;
 import veda.storage.tarantool.tarantool_driver;
@@ -139,17 +139,17 @@ void acl_manager(string thread_name)
                                     return;
                                 }
 
-                                Resources rdfType = new_ind.resources[ rdf__type ];
+                                Resources rdfType = new_ind.getResources("rdf:type");
 
-                                if (rdfType.anyExists(veda_schema__PermissionStatement) == true)
+                                if (rdfType.anyExists("v-s:PermissionStatement") == true)
                                 {
                                     prepare_permission_statement(prev_ind, new_ind, op_id, storage);
                                 }
-                                else if (rdfType.anyExists(veda_schema__Membership) == true)
+                                else if (rdfType.anyExists("v-s:Membership") == true)
                                 {
                                     prepare_membership(prev_ind, new_ind, op_id, storage);
                                 }
-                                else if (rdfType.anyExists(veda_schema__PermissionFilter) == true)
+                                else if (rdfType.anyExists("v-s:PermissionFilter") == true)
                                 {
                                     prepare_permission_filter(prev_ind, new_ind, op_id, storage);
                                 }
@@ -170,8 +170,6 @@ void acl_manager(string thread_name)
                             writefln("[%s] recieve signal EXIT", "acl_manager");
                             send(tid_response_reciever, true);
                         }
-                        else if (cmd == CMD_NOP)
-                            send(tid_response_reciever, true);
                         else
                             send(tid_response_reciever, false);
                     },
@@ -254,22 +252,31 @@ void prepare_right_set(ref Individual prev_ind, ref Individual new_ind, string p
     Resources removed_resource = get_disappeared(prev_resource, resource);
     Resources removed_in_set   = get_disappeared(prev_in_set, in_set);
 
-    update_right_set(resource, in_set, is_deleted, useFilter, prefix, access, op_id, storage);
+    bool      ignoreExclusive = new_ind.getFirstBoolean("v-s:ignoreExclusive");
+    bool      isExclusive = new_ind.getFirstBoolean("v-s:isExclusive");
+    char      marker      = 0;
+
+    if (isExclusive == true)
+        marker = M_IS_EXCLUSIVE;
+    else if (ignoreExclusive == true)
+        marker = M_IGNORE_EXCLUSIVE;
+
+    update_right_set(resource, in_set, marker, is_deleted, useFilter, prefix, access, op_id, storage);
 
     if (removed_resource.length > 0)
     {
         log.trace("- removed_resource=%s", removed_resource);
-        update_right_set(removed_resource, in_set, true, useFilter, prefix, access, op_id, storage);
+        update_right_set(removed_resource, in_set, marker, true, useFilter, prefix, access, op_id, storage);
     }
 
     if (removed_in_set.length > 0)
     {
         log.trace("- removed_in_set=%s", removed_in_set);
-        update_right_set(resource, removed_in_set, true, useFilter, prefix, access, op_id, storage);
+        update_right_set(resource, removed_in_set, marker, true, useFilter, prefix, access, op_id, storage);
     }
 }
 
-private void update_right_set(ref Resources resources, ref Resources in_set, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
+private void update_right_set(ref Resources resources, ref Resources in_set, char marker, bool is_deleted, ref Resource useFilter, string prefix, ubyte access,
                               long op_id,
                               KeyValueDB storage)
 {
@@ -300,14 +307,15 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
             {
                 rr.is_deleted                = is_deleted;
                 rr.access                    = rr.access | access;
+                rr.marker                    = marker;
                 new_right_set.data[ mb.uri ] = rr;
-                //log.trace(" UPDATE [%s]", mb.uri);
+                log.trace(" UPDATE [%s]", mb.uri);
             }
             else
             {
-                Right *nrr = new Right(mb.uri, access, is_deleted);
+                Right *nrr = new Right(mb.uri, access, marker, is_deleted);
                 new_right_set.data[ mb.uri ] = nrr;
-                //log.trace(" NEW [%s]", mb.uri);
+                log.trace(" NEW [%s]", mb.uri);
             }
         }
 
@@ -318,7 +326,7 @@ private void update_right_set(ref Resources resources, ref Resources in_set, boo
 
         ResultCode res = storage.store(key, new_record, op_id);
 
-        //log.trace("[acl index] (%s) new right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
+        log.trace("[acl index] (%s) update right set: %s, K:[%s] V:[%s]", text(res), rs.uri, key, new_record);
     }
 }
 
@@ -327,7 +335,7 @@ void prepare_membership(ref Individual prev_ind, ref Individual new_ind, long op
     if (trace_msg[ 114 ] == 1)
         log.trace("store Membership: [%s] op_id=%d", new_ind.uri, op_id);
 
-    prepare_right_set(prev_ind, new_ind, veda_schema__resource, veda_schema__memberOf, membership_prefix,
+    prepare_right_set(prev_ind, new_ind, "v-s:resource", "v-s:memberOf", membership_prefix,
                       Access.can_create | Access.can_read | Access.can_update | Access.can_delete, op_id, storage);
 }
 
@@ -336,7 +344,7 @@ void prepare_permission_filter(ref Individual prev_ind, ref Individual new_ind, 
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionFilter: [%s] op_id=%d", new_ind, op_id);
 
-    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__resource, filter_prefix, 0, op_id, storage);
+    prepare_right_set(prev_ind, new_ind, "v-s:permissionObject", "v-s:resource", filter_prefix, 0, op_id, storage);
 }
 
 void prepare_permission_statement(ref Individual prev_ind, ref Individual new_ind, long op_id, KeyValueDB storage)
@@ -344,6 +352,6 @@ void prepare_permission_statement(ref Individual prev_ind, ref Individual new_in
     if (trace_msg[ 114 ] == 1)
         log.trace("store PermissionStatement: [%s] op_id=%d", new_ind, op_id);
 
-    prepare_right_set(prev_ind, new_ind, veda_schema__permissionObject, veda_schema__permissionSubject, permission_prefix, 0, op_id, storage);
+    prepare_right_set(prev_ind, new_ind, "v-s:permissionObject", "v-s:permissionSubject", permission_prefix, 0, op_id, storage);
 }
 

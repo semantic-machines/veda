@@ -13,6 +13,13 @@ const queueStatePrefix = "srv:queue-state-"
 
 func getIndividual(ctx *fasthttp.RequestCtx) {
 
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getIndividual", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 	timestamp := time.Now()
 	var uri string
@@ -53,15 +60,13 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		var main_cs *Consumer
 
 		main_queue_name := "individuals-flow"
-		main_queue = NewQueue(main_queue_name, R)
+		main_queue = NewQueue(main_queue_name, R, "")
 		if !main_queue.open(CURRENT) {
 			log.Println("ERR! OPENING QUEUE: ", queueName)
 			ctx.Response.SetStatusCode(int(InvalidIdentifier))
 			trail(ticket.Id, ticket.UserURI, "get_individual", make(map[string]interface{}), "{}", InvalidIdentifier, timestamp)
 			return
 		}
-
-		// main_queue.open(CURRENT)
 
 		main_cs = NewConsumer(main_queue, queueName, R)
 		if !main_cs.open() {
@@ -100,24 +105,6 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	/*
-		individual, ok := ontologyCache[uri]
-		if ok {
-			log.Println("@get from cache, ", uri);
-			individualJSON, err := json.Marshal(individual)
-			if err != nil {
-				log.Println("ERR! GET_INDIVIDUAL: #2 ENCODING INDIVIDUAL TO JSON ", err)
-				ctx.Response.SetStatusCode(int(InternalServerError))
-				return
-			}
-
-			jsonArgs := map[string]interface{}{"uri": uri}
-			trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, string(individualJSON), Ok, timestamp)
-			ctx.Write(individualJSON)
-			ctx.Response.SetStatusCode(int(Ok))
-			return
-		}
-	*/
 	uris := make([]string, 1)
 	uris[0] = uri
 	jsonArgs := map[string]interface{}{"uri": uri}
@@ -132,13 +119,17 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 		ctx.Response.SetStatusCode(int(rr.CommonRC))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.CommonRC, timestamp)
 		return
+	} else if len(rr.OpRC) == 0 {
+		log.Println("ERR! get_individual: DECODING INDIVIDUAL")
+		ctx.Response.SetStatusCode(int(InternalServerError))
+		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", InternalServerError, timestamp)
+		return
 	} else if rr.OpRC[0] != Ok {
 		ctx.Write(codeToJsonException(rr.OpRC[0]))
 		ctx.Response.SetStatusCode(int(rr.OpRC[0]))
 		trail(ticket.Id, ticket.UserURI, "get_individual", jsonArgs, "{}", rr.OpRC[0], timestamp)
 		return
 	} else {
-
 		if rr.GetCount() == 0 {
 			log.Println("ERR! get_individual: DECODING INDIVIDUAL")
 			ctx.Response.SetStatusCode(int(InternalServerError))
@@ -161,6 +152,13 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
 
 func getIndividuals(ctx *fasthttp.RequestCtx) {
 
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in getIndividuals", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
 
 	timestamp := time.Now()
@@ -181,7 +179,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 	jsonArgs := map[string]interface{}{"uris": jsonData["uris"]}
 
 	if jsonData["ticket"] != nil {
-	    ticketKey = jsonData["ticket"].(string)
+		ticketKey = jsonData["ticket"].(string)
 	}
 
 	rc, ticket := getTicket(ticketKey)
@@ -206,27 +204,7 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 
 	}
 
-	//if len(uris) == 0 {
-	//	log.Println("ERR! GET_INDIVIDUALS: ZERO LENGTH TICKET OR URI")
-	//	log.Println("\t@REQUEST BODY ", string(ctx.Request.Body()))
-	//	ctx.Response.SetStatusCode(int(BadRequest))
-	//	trail(ticket.Id, ticket.UserURI, "get_individuals", jsonArgs, "{}", BadRequest, timestamp)
-	//	return
-	//}
-
 	individuals := make([]map[string]interface{}, 0, len(uris))
-
-	/*
-		urisToGet := make([]string, 0, len(uris))
-		for i := 0; i < len(uris); i++ {
-			individual, ok := ontologyCache[uris[i]]
-			if ok {
-				individuals = append(individuals, individual)
-			} else {
-				urisToGet = append(urisToGet, uris[i])
-			}
-		}
-	*/
 
 	urisToGet := uris
 

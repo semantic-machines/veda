@@ -9,7 +9,7 @@ private
     import core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency, std.digest.crc;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.util.container, veda.core.common.know_predicates;
+    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.core.common.type, veda.util.container;
     import veda.common.type;
 }
 
@@ -27,10 +27,10 @@ int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
 {
     if (key.length < 1)
     {
-    	if (log_if_err !is null)
-			log_if_err.trace("ERR! key2slot, key is empty");    		
+        if (log_if_err !is null)
+            log_if_err.trace("ERR! key2slot, key is empty");
         return -1;
-    }    
+    }
 
     if (key[ 0 ] == '#')
     {
@@ -41,22 +41,22 @@ int get_slot(ref int[ string ] key2slot, string key, Logger log_if_err = null)
         }
         catch (Throwable tr)
         {
-	    	if (log_if_err !is null)
-				log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);    		
+            if (log_if_err !is null)
+                log_if_err.trace("ERR! key2slot, slot not found, invalid key=%s", key);
 
             return -1;
         }
     }
 
-	int slot = key2slot.get(key, -1);
-	
-	if (slot < 0)
-	{
-    	if (log_if_err !is null)
-			log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);    		
-	}
-	
-	return slot;
+    int slot = key2slot.get(key, -1);
+
+    if (slot < 0)
+    {
+        if (log_if_err !is null)
+            log_if_err.trace("ERR! key2slot, slot not found, key=%s", key);
+    }
+
+    return slot;
 }
 
 public void subject2Ticket(ref Individual ticket, Ticket *tt)
@@ -64,11 +64,11 @@ public void subject2Ticket(ref Individual ticket, Ticket *tt)
     string when;
     long   duration;
 
-    tt.id       = ticket.uri;
-    tt.user_login = ticket.getFirstLiteral(ticket__login);
-    tt.user_uri = ticket.getFirstLiteral(ticket__accessor);
-    when        = ticket.getFirstLiteral(ticket__when);
-    string dd = ticket.getFirstLiteral(ticket__duration);
+    tt.id         = ticket.uri;
+    tt.user_login = ticket.getFirstLiteral("ticket:login");
+    tt.user_uri   = ticket.getFirstLiteral("ticket:accessor");
+    when          = ticket.getFirstLiteral("ticket:when");
+    string dd = ticket.getFirstLiteral("ticket:duration");
 
     try
     {
@@ -110,7 +110,7 @@ public Individual *indv_apply_cmd(INDV_OP cmd, Individual *prev_indv, Individual
 {
     if (prev_indv !is null)
     {
-        if (prev_indv.resources.get(rdf__type, Resources.init).length == 0)
+        if (prev_indv.resources.get("rdf:type", Resources.init).length == 0)
         {
             log.trace("WARN! stores individual does not contain any type: arg:[%s] prev_indv:[%s]", text(*indv), text(*prev_indv));
         }
@@ -187,9 +187,10 @@ bool wait_starting_module(P_MODULE tid_idx, Tid tid)
             {
                 res = isReady;
                 //if (trace_msg[ 50 ] == 1)
-                log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
                 if (res == false)
                     log.trace("FAIL START THREAD: %s", text(tid_idx));
+                else
+                    log.trace("START THREAD IS SUCCESS: %s", text(tid_idx));
             });
     return res;
 }
@@ -241,9 +242,9 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
     int[ string ] key2slot;
     rc = ResultCode.InternalServerError;
 
+    int idx = 0;
     try
     {
-        int idx = 0;
         foreach (record; csvReader!(Tuple!(string, int))(data))
         {
             if (record.length != 2)
@@ -262,18 +263,11 @@ public int[ string ] deserialize_key2slot(string data, out ResultCode rc)
     }
     catch (Throwable tr)
     {
-        stderr.writeln("ERR! key2slot err=", tr.msg);
+        stderr.writeln("ERR! key2slot, row=%d, err=", idx, tr.msg);
         rc = ResultCode.UnprocessableEntity;
     }
 
     return key2slot;
-}
-
-string getNowAsString()
-{
-    SysTime sysTime = Clock.currTime();
-
-    return sysTime.toISOExtString();
 }
 
 string timeToString(long tm)

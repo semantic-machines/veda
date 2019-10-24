@@ -9,6 +9,14 @@ import (
 
 //authenticate checks validity of login and password and gives user new ticket
 func authenticate(ctx *fasthttp.RequestCtx) {
+
+  defer func() {
+    if r := recover(); r != nil {
+      log.Println("Recovered in authenticate", r)
+      ctx.Response.SetStatusCode(int(InternalServerError))
+    }
+  }()
+
 	request := make(map[string]interface{})
 
 	//fill request to veda-server
@@ -43,8 +51,12 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 	}
 
 	//send request via nanomsg socket and reading response
+
+	mstorage_ch_Mutex.Lock()
 	NmCSend(g_mstorage_ch, jsonRequest, 0)
 	responseBuf, _ := g_mstorage_ch.Recv(0)
+	mstorage_ch_Mutex.Unlock()
+
 	//decoding authenticate response json
 	responseJSON := make(map[string]interface{})
 	err = json.Unmarshal(responseBuf, &responseJSON)
@@ -89,7 +101,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 		user := rr.GetIndv(0)
 		origin, ok := getFirstString(user, "v-s:origin")
 
-		if !ok || (ok && origin != "External User") {
+		if !ok || (ok && origin != "ExternalUser") {
 			//if v-s:origin not found or value is false than return NotAuthorized
 			log.Printf("ERR! login (%v) is not external, user_indv=%v\n", request["login"], user)
 			authResponse["end_time"] = 0
@@ -97,7 +109,7 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 			authResponse["user_uri"] = ""
 			authResponse["result"] = NotAuthorized
 			ctx.SetStatusCode(int(NotAuthorized))
-		} else if ok && origin == "External User" {
+		} else if ok && origin == "ExternalUser" {
 			//else set externals users ticket id to true valuse
 			//			externalUsersTicketId[authResponse["user_uri"].(string)] = true
 			ctx.SetStatusCode(int(Ok))

@@ -6,7 +6,7 @@ module veda.search.common.indexer_property;
 
 private import std.conv, std.stdio;
 private import veda.core.common.context, veda.core.common.log_msg;
-private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type;
+private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type, veda.core.common.type;
 private import veda.common.logger, veda.onto.onto;
 
 class IndexerProperty
@@ -114,7 +114,11 @@ class IndexerProperty
     {
         if (class_property__2__indiviual.length == 0 || force)
         {
-            log.trace("load indexes:start");
+            if (force)
+                log.trace("force reload schema");
+            else
+                log.trace("reload schema");
+
             context.reopen_ro_individuals_storage_db();
             context.reopen_ro_fulltext_indexer_db();
 
@@ -132,7 +136,7 @@ class IndexerProperty
             database__2__true[ "base" ] = true;
 
             if (l_individuals.length > 0)
-                log.trace("load indexes: class_property__2__indiviual=%s", class_property__2__indiviual);
+                log.trace("load indexes: class_property__2__indiviual.length=%d", class_property__2__indiviual.length);
         }
     }
 

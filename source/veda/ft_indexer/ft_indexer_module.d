@@ -4,12 +4,11 @@
 module veda.ft_indexer.ft_indexer_module;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, core.sys.posix.signal, core.sys.posix.unistd, core.thread;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue,
-               veda.util.properd;
+private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.util.properd, veda.core.common.type;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
-private import veda.bind.xapian_d_header;
-private import veda.core.common.context, veda.ft_indexer.xapian_indexer;
-private import veda.vmodule.vmodule;
+private import veda.bind.xapian_d_header, veda.ft_indexer.xapian_indexer;
+private import veda.core.common.context, veda.vmodule.vmodule;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -87,7 +86,7 @@ class FTIndexerProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
                                 string new_bin, ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
         ictx.index_msg(new_indv, prev_indv, cmd, op_id, context);
 
@@ -131,7 +130,6 @@ class FTIndexerProcess : VedaModule
     override bool open()
     {
         context.set_vql(new XapianSearch(context));
-        //context.set_vql(new FTQueryClient(context));
 
         ictx.thread_name = process_name;
         ictx.init(&sticket, use_db, context);

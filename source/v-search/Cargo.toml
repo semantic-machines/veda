@@ -1,0 +1,13 @@
+[package]
+name = "v_search"
+version = "0.1.0"
+authors = ["itiu <ValeriyBushenev@gmail.com>"]
+edition = "2018"
+
+[lib]
+path = "src/search.rs"
+
+[dependencies]
+serde_json = "1.0"
+nng = "0.5.0"
+log = "0.4"

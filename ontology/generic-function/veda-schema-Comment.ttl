@@ -33,6 +33,7 @@ v-s:PsLinkedObjectForComment
   v-ui:forProperty v-s:linkedObject ;
   v-ui:minCardinality 0 ;
   v-ui:maxCardinality 100 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Document')"^^xsd:string ;
   rdfs:label "Спецификация свойства v-s:linkedObject для класса v-s:Comment"@ru ;
   rdfs:label "v-s:linkedObject property specification for v-s:Comment class"@en ;
 .
@@ -50,6 +51,7 @@ v-s:Comment_BaseUser
 #  v-s:permissionSubject v-s:Comment_BaseUser ;
 #  v-s:canRead "true"^^xsd:boolean ;
 #  rdfs:label "R. Все пользователи. Индивиды Comment" ;
+#  v-s:deleted "true"^^xsd:boolean ;
 #.
 
 v-s:Comment_permission2
@@ -224,14 +226,21 @@ v-s:RecursiveCommentTemplate
   v-ui:template """
 <script>
   var actions = $("#edit-comment, #delete", template);
-  if (!individual.rights.hasValue("v-s:canUpdate", true)) {
-    actions.remove();
-  }
+  individual.rights.then(function (rights) {
+    if ( !rights.hasValue("v-s:canUpdate", true) ) {
+      actions.remove();
+    }
+  });
+
   $(".action", template).click(function (e) {
     e.preventDefault();
-    var warning = new veda.IndividualModel("v-s:AreYouSure")["rdfs:label"].join(" ");
-    if ( this.id === "delete" && !confirm(warning) ) { return; }
-    template.trigger(this.id);
+    var actionId = this.id;
+    var warning = new veda.IndividualModel("v-s:AreYouSure");
+    warning.load().then(function (warning) {
+      warning = warning["rdfs:label"].join(" ");
+      if ( actionId === "delete" && !confirm(warning) ) { return; }
+      template.trigger(actionId);
+    });
   });
 
   individual.on("v-s:hasComment", commentHandler);
@@ -274,7 +283,7 @@ v-s:RecursiveCommentTemplate
         </span>
         <small>
           <span>&bullet;&nbsp;&nbsp;</span>
-          <span property="v-s:created" data-template="v-ui:LabelTemplate"></span>
+          <span property="v-s:created"></span>
         </small>
         <br>
         <span property="rdfs:label"></span>

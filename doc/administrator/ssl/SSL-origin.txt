@@ -1,0 +1,182 @@
+https://serversforhackers.com/c/letsencrypt-with-haproxy
+
+LetsEncrypt with HAProxy
+This is a video from the Scaling Laravel course's Load Balancing module.
+
+Part of what I wanted to cover was how to use SSL certificates with a HAProxy load balancer. LetsEncrypt (certbot) is great for this, since we can get a free and trusted SSL certificate. Since we're using LetsEncrypt on a load balancer (HAProxy) which cannot serve the authorization HTTP requests that LetsEncrypt makes, we have some unique issues to get around. Let's see how!
+
+Install LetsEncrypt
+Let's get some boilerplate out of the way. Here's how I install LetsEncrypt (Certbot) on Ubuntu 16.04:
+
+sudo add-apt-repository -y ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install -y certbot
+As the video shows, this installer creates a CRON task (/etc/cron.d/certbot) to request a renewal twice a day. The certificate only gets renewed if it's under 30 days from expiration. Checking twice a day is a relatively safe way to check and get around potential timing bugs. This default is very handy for a typical installation.
+
+However, since we have some unique needs with HAProxy, we'll use a slightly different CRON task for this use case.
+
+The Problems
+The first hurdle to get around arises because LetsEncrypt authorizes a certificate for a server by requesting a file via an HTTP(S) request. However, HAProxy is not a web server. It won't serve files by itself - it will only redirect a request to another location. Our application servers won't be able to handle this authorization request.
+
+Since we want our SSL certificate on the load balancer (SSL Termination), our goal is to find a way to have HAProxy recognize a request from LetsEncrypt and route it to a web service that will respond with the response LetsEncrypt needs to authorize the certificate.
+
+LetsEncrypt comes with it's own built-in web server listener for just such a use case, so we can accomplish this!
+
+The second hurdle is that HAProxy expects an SSL certificate to all be in one file which includes the certificate chain, the root certificate, and the private key. HAProxy has the private key in a separate file, so our last step is to combine the files into something HAProxy can read.
+
+Finally we'll also solve the issue of automating renewals given the above constraints.
+
+The Workflow
+There are two actions we ask of LetsEncrypt:
+
+Request a new certificate
+Renew an existing certificate
+After each step above, we also need to combine the resulting certificate files into the format HAProxy wants.
+
+Let's see those two scenarios, and then see how to combine the certificate into one file.
+
+HAProxy Setup
+When we request a new certificate, LetsEncrypt will request the authorization file (a URI like /.well-known/acme-challenge/random-hash-here). This request will happen over port 80, since there's presumably no certificate setup yet.
+
+Interestingly, if HAProxy is listening on port 443, LetsEncrypt may attempt to authorize over it. So, when we create a new certificate, we need HAProxy to only be listening on port 80.
+
+Another issue: HAProxy is listening on port 80. However, we need LetsEncrypt to setup it's stand-alone server to listen for authorization requests. It will default to port 80 as well, causing a conflict as only one process can listen on a port at a time. So we need to tell LetsEncrypt to listen on another port!
+
+Within HAProxy, we can ask if the incoming HTTP request contains the string /.well-known/acme-challenge. In the coniguration below, if HAProxy sees that the request does include that URI, it will route the request to LetsEncrypt. Otherwise, it will route the request to any servers in the load balancer rotation as normal.
+
+# The frontend only listens on port 80
+# If it detects a LetsEncrypt request, is uses the LE backend
+# Else it goes to the default backend for the web servers
+frontend fe-scalinglaravel
+    bind *:80
+
+    # Test URI to see if its a letsencrypt request
+    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
+
+    default_backend be-scalinglaravel
+
+# LE Backend
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:8888
+
+# Normal (default) Backend
+# for web app servers
+backend be-scalinglaravel
+    # Config omitted here
+Once that's setup within HAProxy, we can reload it (sudo service haproxy reload) and then move on to running LetsEncrypt.
+
+New Certificates
+The command to get a new certificate from LetsEncrypt that we will use is this:
+
+sudo certbot certonly --standalone -d demo.scalinglaravel.com \
+    --non-interactive --agree-tos --email admin@example.com \
+    --http-01-port=8888
+Lets roll through what this does:
+
+--standalone - Create a stand-alone web server to listen for the cert authorization HTTP request
+-d demo.scalinglaravel.com - The domain we're creating a cert for. You can use multiple -d flags for multiple domains for a single certificate. The domain(s) must route to the server we're creating a cert for (DNS must be setup for the domain).
+--non-interactive --agree-tos --email admin@example.com - Make this non-interactive by saying as much, agreeing to the TOS, and informing LetsEncrypt of the email to use to send "YOUR CERT IS EXPIRING" notifications.
+--http-01-port=8888 - The Magic™. This tells the stand-alone server to listen on port 8888. Note that LetsEncrypt will still send the authorization HTTP request over port 80. However the listener is expecting a proxy (such as our HAProxy server) to route the request to it over port 8888. The flag is http-01 because it expects an HTTP request, NOT an HTTPS request.
+Renewing Certificates
+If we are renewing a certificate, that likely means that there's a valid HTTPS certificate in use. We just need LetsEncrypt to do the same process as above to renew it. However, there's a few key differences:
+
+HAProxy is presumably listening on port 443 for SSL connections, and LetsEncrypt is going to send an authorization request over HTTPS instead of HTTP.
+The stand-alone server will expect an HTTPS (TLS, technically) request into it instead of a plain HTTP request.
+So, the HAProxy setup will be almost the same, except this time it will be listening on port 443.
+
+We'll cover setting up the HAProxy configuration for SSL in a bit.
+
+frontend fe-scalinglaravel
+    bind *:80
+
+    # This is our new config that listens on port 443 for SSL connections
+    bind *:443 ssl crt /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem
+
+    # New line to test URI to see if its a letsencrypt request
+    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
+
+    default_backend be-scalinglaravel
+
+# LE Backend
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:8888
+
+# Normal (default) Backend
+# for web app servers
+backend be-scalinglaravel
+    # Config omitted here
+Note that LetsEncrypt's stand-alone server is still listening on port 8888, even though it's expecting a TLS connection. That's fine, the port number doesn't actually matter. The only change here is that HAProxy is listening for SSL connections as well.
+
+Here's how to renew a certificate with LetsEncrypt:
+
+sudo certbot renew --tls-sni-01-port=8888
+That's it! We use renew, but this time we tell it to expect a tls connection and to contune listening for in on port 8888 (again).
+
+SSL Certificates and HAProxy
+HAProxy needs an ssl-certificate to be one file, in a certain format. To do that, we create a new directory where the SSL certificate that HAProxy reads will live. Then we output the "live" (latest) certificates from LetsEncrypt and dump that output into the certificate file for HAProxy to use:
+
+sudo mkdir -p /etc/ssl/demo.scalinglaravel.com
+
+sudo cat /etc/letsencrypt/live/demo.scalinglaravel.com/fullchain.pem \
+    /etc/letsencrypt/live/demo.scalinglaravel.com/privkey.pem \
+    | sudo tee /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem
+The /etc/letsencrypt/live/your-domain-here.tld directory will contain symlinks to your current, most up-to-date certificate.
+
+So, we make sure a directory exists for our certificate, and then we concatenate the contents of the fullchain.pem file (certificate and certificate chain) and the private key privkey.pem file. We put the outputs into the file demo.scalinglaravel.com.pem. The order we concatenate the files matter (fullchain followed by private key).
+
+The HAProxy configuration, as we saw, uses that new file:
+
+frontend fe-scalinglaravel
+    bind *:80
+
+    # This is our new config that listens on port 443 for SSL connections
+    bind *:443 ssl crt /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem
+
+    # omitting the rest of the config...
+Automating Renewal
+To automate renewal of our certificate, we need to repeat the above steps:
+
+Get a new certificate
+Create the new certificate file for HAProxy to use
+By default, LetsEncrypt creates a CRON entry at /etc/cron.d/certbot. The entry runs twice a day (by default, LetsEncrypt will only renew the certificate if its expiring within 30 days).
+
+What I like to do is to run a bash script that's run monthly, and to force a renewal of the certificate every time.
+
+We can start by editing the CRON file to run a script monthly:
+
+0 0 1 * * root bash /opt/update-certs.sh
+That runs on the zeroth minute of the zeroth hour (midnight on whatever timezone your server is set to, likely UTC) on the first day of every month.
+
+The bash file referenced in the CRON task (/opt/update-certs.sh) looks like this:
+
+#!/usr/bin/env bash
+
+# Renew the certificate
+certbot renew --force-renewal --tls-sni-01-port=8888
+
+# Concatenate new cert files, with less output (avoiding the use tee and its output to stdout)
+bash -c "cat /etc/letsencrypt/live/demo.scalinglaravel.com/fullchain.pem /etc/letsencrypt/live/demo.scalinglaravel.com/privkey.pem > /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem"
+
+# Reload  HAProxy
+service haproxy reload
+This does all the steps we ran before. The only difference is that I use --force-renewal to have LetsEncrypt renew the certificate monthly. This way is a bit simpler to reason about and won't fall victim to potential timing bugs that running twice per day attempted to get around.
+
+Enforcing HTTPS
+This is not related to LetsEncrypt, but rather to your SSL implementation.
+
+If you want to enforce SSL usage in HAProxy, you can also do that without affecing LetsEncrypt's ability to renew certificate:
+
+frontend fe-scalinglaravel
+    bind *:80
+    bind *:443 ssl crt /etc/ssl/demo.scalinglaravel.com/demo.scalinglaravel.com.pem
+
+    # Redirect if HTTPS is *not* used
+    redirect scheme https code 301 if !{ ssl_fc }
+
+    acl letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
+
+    default_backend be-scalinglaravel
+This states that if the frontend connection was not using SSL, then return a 301 redirect to the same URI, but with "https".

@@ -5,7 +5,8 @@ module veda.fanout.fanout_email;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.array, std.socket, core.thread;
 private import smtp.client, smtp.mailsender, smtp.message, smtp.attachment, smtp.reply;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual,
+               veda.util.queue;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.ft_query.ft_query_client;
 private import veda.core.common.context;
 private import veda.vmodule.vmodule;
@@ -34,9 +35,15 @@ class FanoutProcess : VedaModule
         super(_subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin, ref Individual new_indv,
-                                string event_id, long transaction_id, long op_id, long count_pushed, long count_popped)
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin,
+                                ref Individual new_indv,
+                                string event_id, long transaction_id, long op_id, long count_pushed,
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         //log.trace("[%s]: start prepare", new_indv.uri);
 
         //scope (exit)
@@ -104,7 +111,6 @@ class FanoutProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql (new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
 
         connect_to_smtp(context);
@@ -139,24 +145,47 @@ class FanoutProcess : VedaModule
             return null;
 
         Individual prs = context.get_individual(p_uri);
-        if (prs.getStatus() != ResultCode.Ok)
+        if (prs.getStatus() != ResultCode.Ok || prs.isExists("v-s:deleted", true) == true)
             return null;
 
-        string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
-        if (preference_uri !is null)
+        if (hasMessageType != null)
         {
-            Individual preference = context.get_individual(preference_uri);
-            if (preference.getStatus() == ResultCode.Ok)
+            string preference_uri = prs.getFirstLiteral("v-ui:hasPreferences");
+            if (preference_uri !is null)
             {
-                string receiveMessageType = prs.getFirstLiteral("v-ui:receiveMessageType");
+                Individual preference = context.get_individual(preference_uri);
 
-                if (receiveMessageType !is null)
+                if (preference.getStatus() == ResultCode.Ok)
                 {
-                    if ((hasMessageType !is null && receiveMessageType == hasMessageType) == false)
-                        return null;
+                    log.trace("DEBUG! for [%s] found preferences, has message type [%s]", p_uri, hasMessageType);
 
-                    if ((hasMessageType is null && receiveMessageType == "v-s:OtherNotification") == false)
+                    Resources receiveMessageTypes = preference.getResources("v-ui:rejectMessageType");
+
+                    bool      need_send = true;
+                    foreach (r_receiveMessageType; receiveMessageTypes)
+                    {
+                        string receiveMessageType = r_receiveMessageType.uri;
+                        log.trace("DEBUG! check preference %s", receiveMessageType);
+
+                        if ((hasMessageType !is null && receiveMessageType == hasMessageType) == true)
+                        {
+                            need_send = false;
+                            break;
+                        }
+
+                        if ((hasMessageType is null && receiveMessageType == "v-s:OtherNotification") == true)
+                        {
+                            need_send = false;
+                            break;
+                        }
+                    }
+
+                    if (need_send == false)
+                    {
+                        log.trace("DEBUG! decine send message");
+
                         return null;
+                    }
                 }
             }
         }
@@ -166,7 +195,7 @@ class FanoutProcess : VedaModule
             return null;
 
         Individual ac = context.get_individual(ac_uri);
-        if (ac.getStatus() != ResultCode.Ok)
+        if (ac.getStatus() != ResultCode.Ok || ac.isExists("v-s:deleted", true) == true)
             return null;
 
         return ac.getResources("v-s:mailbox");
@@ -199,10 +228,33 @@ class FanoutProcess : VedaModule
 
             foreach (individual; l_individuals)
             {
-                Resources tmp_res = get_email_from_appointment(sticket, hasMessageType, individual);
+                if (individual.isExists("v-s:deleted", true) == false)
+                {
+                    Resources tmp_res = get_email_from_appointment(sticket, hasMessageType, individual);
+
+                    foreach (rr; tmp_res)
+                        res ~= rr;
+                }
+            }
+        }
+        else if (indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:Person")))
+        {
+            foreach (Resource elt; indv.getResources("v-s:hasAccount"))
+            {
+                string ac_uri = elt.uri;
+                if (ac_uri is null)
+                    return null;
+
+                Individual ac = context.get_individual(ac_uri);
+                if (ac.getStatus() != ResultCode.Ok || ac.isExists("v-s:deleted", true) == true)
+                    return null;
+
+                Resources tmp_res = ac.getResources("v-s:mailbox");
 
                 foreach (rr; tmp_res)
+                {
                     res ~= rr;
+                }
             }
         }
         else
@@ -325,21 +377,29 @@ class FanoutProcess : VedaModule
                 Resources recipientMailbox = new_indv.getResources("v-s:recipientMailbox");
                 Resources attachments      = new_indv.getResources("v-s:attachment");
 
+                log.trace("always_use_mail_sender: [%s]", always_use_mail_sender);
+                log.trace("default mail sender: [%s]", default_mail_sender);
+
+                if (from is null && senderMailbox is null && default_mail_sender !is null)
+                    from = default_mail_sender;
+
                 if ((from !is null || senderMailbox !is null || default_mail_sender !is null) && (to !is null || recipientMailbox !is null))
                 {
                     string from_label;
                     string email_from;
 
-                    if (always_use_mail_sender == true && senderMailbox !is null && senderMailbox.length > 5)
+                    if (always_use_mail_sender == true && default_mail_sender !is null && default_mail_sender.length > 5)
                     {
-                        email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+                        log.trace("use default mail sender: [%s]", default_mail_sender);
+                        email_from = default_mail_sender;
                     }
                     else
                     {
-                        email_from = extract_email(sticket, hasMessageType, from, from_label).getFirstString();
+                        log.trace("extract [from], [%s]", from);
+                        email_from = extract_email(sticket, null, from, from_label).getFirstString();
 
                         if ((email_from is null || email_from.length < 5) && default_mail_sender !is null)
-                            email_from = extract_email(sticket, hasMessageType, default_mail_sender, from_label).getFirstString();
+                            email_from = extract_email(sticket, null, default_mail_sender, from_label).getFirstString();
 
                         if ((email_from is null || email_from.length < 5) && senderMailbox !is null)
                             email_from = senderMailbox;
@@ -350,15 +410,19 @@ class FanoutProcess : VedaModule
 
                     string      label;
                     Recipient[] rr_email_to;
+                    Recipient[ string ] rr_email_to_hash;
 
                     foreach (Resource elt; to)
                     {
                         foreach (Resource el; extract_email(sticket, hasMessageType, elt.uri(), label))
-                            rr_email_to ~= Recipient(el.data(), label);
+                            rr_email_to_hash[ el.data() ] = Recipient(el.data(), label);
                     }
 
                     foreach (Resource el; recipientMailbox)
-                        rr_email_to ~= Recipient(el.data(), "");
+                        rr_email_to_hash[ el.data() ] = Recipient(el.data(), "");
+
+                    foreach (el; rr_email_to_hash)
+                        rr_email_to ~= el;
 
                     string str_email_reply_to = "";
                     foreach (Resource elt; reply_to)
@@ -372,10 +436,15 @@ class FanoutProcess : VedaModule
                         string[] attachment_ids;
                         message_body = extract_cids(message_body, attachment_ids);
 
+                        string header = "\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=\"utf-8\"";
+
+                        if (message_body.toLower().indexOf("<html>") >= 0)
+                            header = "\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"";
+
                         message = SmtpMessage(
                                               Recipient(email_from, from_label),
                                               rr_email_to,
-                                              subject,
+                                              subject ~ header,
                                               message_body,
                                               str_email_reply_to
                                               );
@@ -551,13 +620,27 @@ class FanoutProcess : VedaModule
                                 string pass  = connection.getFirstLiteral("v-s:password");
 
                                 if (login !is null && login.length > 0)
-                                    smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
-
-                                if (!result.success)
                                 {
-                                    log.trace("ERR! fail authenticate to smtp [%s] %s:%d", connection.uri, host, port);
-                                    smtp_conn = null;
-                                    continue;
+                                    string auth_type = connection.getFirstLiteral("v-s:authType");
+
+                                    if (auth_type is null || (auth_type != "LOGIN" && auth_type != "PLAIN"))
+                                        auth_type = "PLAIN";
+
+                                    log.trace("INFO! authenticate: [%s] [%s] [%s]", login, pass, auth_type);
+
+                                    result.success = false;
+
+                                    if (auth_type == "PLAIN")
+                                        result = smtp_conn.authenticate(SmtpAuthType.PLAIN, login, pass);
+                                    else if (auth_type == "LOGIN")
+                                        result = smtp_conn.authenticate(SmtpAuthType.LOGIN, login, pass);
+
+                                    if (!result.success)
+                                    {
+                                        log.trace("ERR! fail authenticate to smtp [%s] %s:%d, %s", connection.uri, host, port, result);
+                                        smtp_conn = null;
+                                        continue;
+                                    }
                                 }
 
                                 default_mail_sender    = connection.getFirstLiteral("v-s:mailSender");
@@ -589,5 +672,3 @@ class FanoutProcess : VedaModule
             log.trace("WARN! not found configuration for connection to smtp server");
     }
 }
-
-

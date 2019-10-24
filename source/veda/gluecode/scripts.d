@@ -5,18 +5,18 @@ module veda.gluecode.scripts;
 
 private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.container.array, std.algorithm, std.range, core.thread, std.uuid;
 private import std.concurrency;
-private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
-private import veda.common.logger, veda.core.impl.thread_context;
-private import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
+private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
+private import veda.common.logger, veda.core.impl.thread_context, veda.util.queue;
+private import veda.core.common.context, veda.core.common.log_msg, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-private import veda.gluecode.script, veda.gluecode.v8d_header, veda.gluecode.ltr_scripts;
+private import veda.gluecode.script, veda.gluecode.v8d_bind, veda.gluecode.ltr_scripts;
 
 int main(string[] args)
 {
     writeln("args = ", args);
-    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "ltr"))
+    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "lp1" && args[ 1 ] != "ltr"))
     {
-        writefln("use %s [main/lp/ltr]", args[ 0 ]);
+        writefln("use %s [main/lp/lp1/ltr]", args[ 0 ]);
         return -1;
     }
 
@@ -42,6 +42,13 @@ int main(string[] args)
         ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp, log);
         p_script.run();
     }
+    else if (vm_id == "lp1")
+    {
+        Thread.getThis().priority(Thread.PRIORITY_MIN);
+
+        ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority1", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp1, log);
+        p_script.run();
+    }
     else if (vm_id == "ltr")
     {
         core.thread.Thread.sleep(dur!("seconds")(2));
@@ -49,7 +56,7 @@ int main(string[] args)
         ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, log);
         //log = p_script.log();
 
-        tid_ltr_scripts = spawn(&ltrs_thread, p_script.main_module_url);
+        tid_ltr_scripts = spawn(&ltrs_thread);
 
         p_script.run();
 
@@ -62,19 +69,24 @@ int main(string[] args)
 class ScriptProcessLowPriority : ScriptProcess
 {
     Consumer main_cs_r;
-    string   main_queue_cs = "scripts_main0";   // TODO переделать
+    string   main_queue_cs = "scripts_main0";
 
     this(string _vm_id, SUBSYSTEM _subsystem_id, MODULE _module_id, Logger log)
     {
         super(_vm_id, _subsystem_id, _module_id, log);
     }
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start,
+                                long count_from_start, uint cs_id)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         if (main_cs_r is null)
         {
             log.trace("INFO: open %s, %s, %s", main_queue, my_consumer_path, main_queue_cs);
@@ -87,16 +99,20 @@ class ScriptProcessLowPriority : ScriptProcess
         }
 
         main_cs_r.reopen();
-        while (main_cs_r.count_popped < count_popped)
+        while (main_cs_r.get_id() == cs_id && main_cs_r.count_popped < count_popped)
         {
             log.tracec("INFO: sleep, scripts_main=%d, my=%d", main_cs_r.count_popped, count_popped);
             core.thread.Thread.sleep(dur!("seconds")(1));
             main_cs_r.reopen();
         }
 
-        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed, count_popped);
+        return super.prepare(queue_name, src, cmd, user_uri, prev_bin, prev_indv, new_bin, new_indv, event_id, transaction_id, op_id, count_pushed,
+                             count_popped, op_id_on_start,
+                             count_from_start, cs_id);
     }
 }
+
+int MAX_COUNT_LOOPS = 100;
 
 class ScriptProcess : VedaModule
 {
@@ -138,12 +154,17 @@ class ScriptProcess : VedaModule
     }
 
 
-    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
+    override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv,
+                                string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id,
                                 long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start,
+                                long count_from_start, uint cs_id)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         if (script_vm is null)
             return ResultCode.NotReady;
 
@@ -160,17 +181,19 @@ class ScriptProcess : VedaModule
 
         bool      prepare_if_is_script = false;
 
-        Resources types      = new_indv.resources.get(rdf__type, Resources.init);
+        Resources types  = new_indv.resources.get("rdf:type", Resources.init);
+        string    run_at = new_indv.getFirstLiteral("v-s:runAt");
+
         string[]  indv_types = types.getAsArrayStrings();
         foreach (itype; indv_types)
         {
-            if (itype == veda_schema__PermissionStatement || itype == veda_schema__Membership)
+            if (itype == "v-s:PermissionStatement" || itype == "v-s:Membership")
             {
                 committed_op_id = op_id;
                 return ResultCode.Ok;
             }
 
-            if (itype == veda_schema__Event)
+            if (itype == "v-s:Event")
                 prepare_if_is_script = true;
         }
 
@@ -212,24 +235,33 @@ class ScriptProcess : VedaModule
         //log.trace("indv=%s, indv_types=%s, event_scripts_order.length=%d", individual_id, indv_types, wpl.scripts_order.length);
         //log.trace ("queue of scripts:%s", event_scripts_order.array());
 
+        string   last_part_event_id;
+        string[] full_path_els;
+        if (event_id != null && event_id.length > 0)
+        {
+            full_path_els = event_id.split(";");
+            if (full_path_els.length > 0)
+                last_part_event_id = full_path_els[ 0 ];
+        }
+
         foreach (_script_id; wpl.scripts_order)
         {
-            script_id  = _script_id;
-            g_event_id = new_indv.uri ~ '+' ~ script_id;
+            script_id = _script_id;
+            string     run_script_id = individual_id ~ '+' ~ script_id;
 
             ScriptInfo script = wpl.scripts[ script_id ];
 
             if (script.compiled_script !is null)
             {
-                if (src == "?" && script.run_at != vm_id)
-                    continue;
-
-                //log.trace("look script:%s", script_id);
-                if (script.unsafe == false && (event_id !is null && event_id.length > 1 && (event_id == (individual_id ~ '+' ~ script_id) || event_id == "IGNORE")))
+                if (src == "?")
                 {
-                    //writeln("skip script [", script_id, "], type:", type, ", indiv.:[", individual_id, "]");
-                    continue;
+                    if (run_at !is null && run_at != vm_id)
+                        continue;
+                    else if (run_at is null && script.run_at != vm_id)
+                        continue;
                 }
+
+                g_event_id = run_script_id ~ ";" ~ event_id;
 
                 //log.trace("first check pass script:%s, filters=%s", script_id, script.filters);
 
@@ -243,12 +275,44 @@ class ScriptProcess : VedaModule
                     log.trace("WARN! this script is UNSAFE!, %s", script_id);
 
                 //log.trace("filter pass script:%s", script_id);
+                //log.trace("look script:%s", script_id);
+
+                log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id,
+                          event_id);
+
+                if (script.unsafe == false)
+                {
+                    if (event_id !is null && event_id.length > 1)
+                    {
+                        //log.trace("@ last_part_event_id=%s", last_part_event_id);
+
+                        if ((last_part_event_id == run_script_id) || last_part_event_id == "IGNORE")
+                        {
+                            log.trace("ERR! skip script, found looped sequence, path: [%s]", last_part_event_id);
+                            continue;
+                        }
+
+                        int count_loops;
+                        foreach (el; full_path_els)
+                        {
+                            if (el == run_script_id)
+                                count_loops++;
+                        }
+
+                        if (count_loops > MAX_COUNT_LOOPS)
+                        {
+                            log.trace("ERR! skip script, counted (%d) loops in sequencee > %d, path: [%s]", count_loops, MAX_COUNT_LOOPS, event_id);
+                            continue;
+                        }
+
+                        if (count_loops > 1)
+                            log.trace("WARN! found %d loops in sequence, path: [%s]", count_loops, event_id);
+                    }
+                }
 
                 try
                 {
                     tnx.reset();
-
-                    log.trace("start: %s, %s, src=%s, op_id=%d, tnx_id=%d, event_id=%s", script_id, individual_id, src, op_id, transaction_id, event_id);
 
                     //count++;
                     script.compiled_script.run();
@@ -293,7 +357,6 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql(new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
 
         vql       = context.get_vql();
@@ -354,14 +417,12 @@ class ScriptProcess : VedaModule
         g_ticket.data   = cast(char *)sticket.id;
         g_ticket.length = cast(int)sticket.id.length;
 
-        Individual[] res;
+        auto si = context.get_info(MODULE.subject_manager);
 
-        auto         si = context.get_storage().get_info(MODULE.subject_manager);
-
-        bool         is_ft_busy = true;
+        bool is_ft_busy = true;
         while (is_ft_busy)
         {
-            auto mi = context.get_storage().get_info(MODULE.fulltext_indexer);
+            auto mi = context.get_info(MODULE.fulltext_indexer);
 
             log.trace("wait for the ft-index to finish storage.op_id=%d ft.committed_op_id=%d ...", si.op_id, mi.committed_op_id);
 
@@ -371,10 +432,11 @@ class ScriptProcess : VedaModule
             core.thread.Thread.sleep(dur!("msecs")(1000));
         }
 
+        Individual[] script_indvs;
         vql.reopen_db();
-        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, res, OptAuthorize.NO, false);
+        vql.query(sticket.user_uri, "'rdf:type' === 'v-s:Event'", null, null, 10000, 10000, OptAuthorize.NO, false, script_indvs);
 
-        foreach (ss; res)
+        foreach (ss; script_indvs)
             prepare_script(wpl, ss, script_vm, "", before_vars, vars_for_event_script, after_vars, false);
 
         string scripts_ordered_list;
@@ -387,19 +449,24 @@ class ScriptProcess : VedaModule
 
     private void set_g_parent_script_id_etc(string event_id)
     {
-        //writeln ("@d event_id=", event_id);
         string[] aa;
 
         if (event_id !is null)
         {
+            aa = event_id.split(";");
+            if (aa.length > 0)
+                event_id = aa[ 0 ];
+
             aa = event_id.split("+");
 
-            if (aa.length == 2)
+            if (aa.length >= 2)
             {
                 g_parent_script_id.data     = cast(char *)aa[ 1 ];
                 g_parent_script_id.length   = cast(int)aa[ 1 ].length;
                 g_parent_document_id.data   = cast(char *)aa[ 0 ];
                 g_parent_document_id.length = cast(int)aa[ 0 ].length;
+
+                //log.trace ("DEBUG! parent_script_id=%s, parent_document_id=%s", aa[ 1 ], aa[ 0 ]);
             }
             else
             {

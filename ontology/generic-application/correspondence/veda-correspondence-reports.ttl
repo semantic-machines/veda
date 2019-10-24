@@ -46,11 +46,11 @@ v-s:IncomingLetterPrintBlank
 
 # REPORTS --------------------------------------------------------------
 
-v-s:blankCreateCountOfUsersTasks_report
+v-s:blankCreateCountOfUsersTasks_Report
   a v-fc:Blank;
   rdfs:label "Количество задач"@ru ;
   rdfs:label "Number of tasks"@en ;
-  v-fc:targetType v-s:CountOfUsersTasks_report_Parameters ;
+  v-fc:targetType v-s:CountOfUsersTasks_Report_Parameters ;
 .
 
 v-s:blankCreateCompletedTasksCount_Report
@@ -62,26 +62,28 @@ v-s:blankCreateCompletedTasksCount_Report
 
 v-s:CountOfUsersTasks_Report
   rdf:type v-s:Report ;
-  v-s:reportPath "/reports/Documents/CountOfUsersTasks_Report" ;
-  v-s:reportFormat "pdf";
   rdfs:label "Количество задач"@ru ;
   rdfs:label "Number of tasks"@en ;
+  v-s:reportPath "/reports/Documents/CountOfUsersTasks_Report" ;
+  v-s:reportFormat "pdf" ;
+  v-s:reportBlank v-s:blankCreateCountOfUsersTasks_Report ;
 .
 
 v-s:CompletedTasksCount_Report
   rdf:type v-s:Report ;
-  v-s:reportPath "/reports/Documents/CompletedTasksCount_Report" ;
-  v-s:reportFormat "pdf";
   rdfs:label "Количество выполненных задач"@ru ;
   rdfs:label "Number of competed tasks"@en ;
+  v-s:reportPath "/reports/Documents/CompletedTasksCount_Report" ;
+  v-s:reportFormat "pdf";
+  v-s:reportBlank v-s:blankCreateCompletedTasksCount_Report ;
 .
 
-v-s:CountOfUsersTasks_report_Parameters
+v-s:CountOfUsersTasks_Report_Parameters
   rdf:type owl:Class ;
   rdfs:subClassOf v-s:SystemThing ;
   rdfs:label "Параметры отчета по количеству задач "@ru ;
   rdfs:label "Parameters for number of tasks report"@en ;
-  v-ui:hasTemplate v-s:CountOfUsersTasks_report_ParametersTemplate ;
+  v-ui:hasTemplate v-s:CountOfUsersTasks_Report_ParametersTemplate ;
 .
 
 v-s:CompletedTasksCount_Report_Parameters
@@ -94,15 +96,15 @@ v-s:CompletedTasksCount_Report_Parameters
 
 # TEMPLATES ------------------------------------------------------------
 
-v-s:CountOfUsersTasks_report_ParametersTemplate
+v-s:CountOfUsersTasks_Report_ParametersTemplate
   rdf:type v-ui:ClassTemplate ;
   rdfs:label "Шаблон Параметров отчета по количеству задач"@ru ;
   rdfs:label "NumberOfTasks_ReportParameters template"@en ;
-  v-ui:forClass v-s:CountOfUsersTasks_report_Parameters ;
+  v-ui:forClass v-s:CountOfUsersTasks_Report_Parameters ;
   v-ui:template
   """
 <div class="container sheet">
-  <h3 about="v-s:CountOfUsersTasks_report_Parameters" property="rdfs:label"></h3>
+  <h3 about="v-s:CountOfUsersTasks_Report_Parameters" property="rdfs:label"></h3>
   <div class="row">
     <div class="col-md-3">
       <em about="v-s:dateFrom" property="rdfs:label"></em>
@@ -129,9 +131,9 @@ v-s:CountOfUsersTasks_report_ParametersTemplate
 </div>
 <script>
   $('#createReport', template).on('click', function () {
-    veda.Util.createReport(individual, 'v-s:CountOfUsersTasks_Report');
+    veda.Util.createReport('v-s:CountOfUsersTasks_Report', individual);
   });
-  //# sourceURL=v-s:CountOfUsersTasks_report_ParametersTemplate
+  //# sourceURL=v-s:CountOfUsersTasks_Report_ParametersTemplate
 </script>
 """ ;
 .
@@ -171,7 +173,7 @@ v-s:CompletedTasksCount_Report_ParametersTemplate
 </div>
 <script>
   $('#createReport', template).on('click', function () {
-    veda.Util.createReport(individual, 'v-s:CompletedTasksCount_Report');
+    veda.Util.createReport('v-s:CompletedTasksCount_Report', individual);
   });
   //# sourceURL=v-s:CompletedTasksCount_Report_ParametersTemplate
 </script>
@@ -180,9 +182,9 @@ v-s:CompletedTasksCount_Report_ParametersTemplate
 
 # RIGHTS ---------------------------------------------------------------
 
-v-s:CountOfUsersTasks_report_Parameters_permission1
+v-s:CountOfUsersTasks_Report_Parameters_permission1
   rdf:type v-s:PermissionStatement ;
-  v-s:permissionObject v-s:CountOfUsersTasks_report_Parameters ;
+  v-s:permissionObject v-s:CountOfUsersTasks_Report_Parameters ;
   v-s:permissionSubject cfg:AllUsersGroup ;
   v-s:canCreate "true"^^xsd:boolean ;
   v-s:canRead "true"^^xsd:boolean ;

@@ -28,6 +28,14 @@ v-s:UserScript
   v-ui:hasTemplate v-s:UserScriptTemplate ;
 .
 
+v-s:executeAt
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Исполнять в"@ru ;
+  rdfs:label "Execute at"@en ;
+  rdfs:domain v-s:UserScript ;
+  rdfs:range xsd:string ;
+.
+
 v-s:output
   rdf:type owl:DatatypeProperty ;
   rdfs:label "Вывод"@ru ;
@@ -54,12 +62,12 @@ v-s:lastRun
   rdfs:range xsd:dateTime ;
 .
 
-v-s:PsRunAtUserScript
+v-s:PsExecuteAtUserScript
   rdf:type v-ui:DatatypePropertySpecification ;
-  rdfs:label "Спецификация свойства v-s:runAt для класса v-s:UserScript"@ru ;
-  rdfs:label "v-s:runAt property specification for v-s:UserScript class"@en ;
+  rdfs:label "Спецификация свойства v-s:executeAt для класса v-s:UserScript"@ru ;
+  rdfs:label "v-s:executeAt property specification for v-s:UserScript class"@en ;
   v-ui:forClass v-s:UserScript ;
-  v-ui:forProperty v-s:runAt ;
+  v-ui:forProperty v-s:executeAt ;
   v-ui:minCardinality 1 ;
   v-ui:maxCardinality 1 ;
   v-ui:defaultValue "Browser" ;
@@ -83,10 +91,10 @@ v-s:UserScriptEvent
  * super_classes = super classes of the document.
  */
 var toBeRun = document["v-s:toBeRun"] && document["v-s:toBeRun"][0] && document["v-s:toBeRun"][0].data ;
-var runAt = document["v-s:runAt"] && document["v-s:runAt"][0] && document["v-s:runAt"][0].data ;
+var executeAt = document["v-s:executeAt"] && document["v-s:executeAt"][0] && document["v-s:executeAt"][0].data ;
 var script = document["v-s:script"] && document["v-s:script"][0] && document["v-s:script"][0].data;
 
-if (!script || !toBeRun || runAt !== "Server") { return; }
+if (!script || !toBeRun || executeAt !== "Server") { return; }
 
 // preserve global print & console
 var nativePrint = this.print;
@@ -193,9 +201,9 @@ v-s:UserScriptTemplate
       </div>
     </div>
     <div class="col-md-2 view edit -search">
-      <em about="v-s:runAt" property="rdfs:label"></em>
-      <div property="v-s:runAt" class="view -edit -search"></div>
-      <veda-control property="v-s:runAt" data-type="radio" class="-view edit search"></veda-control>
+      <em about="v-s:executeAt" property="rdfs:label"></em>
+      <div property="v-s:executeAt" class="view -edit -search"></div>
+      <veda-control property="v-s:executeAt" data-type="radio" class="-view edit search"></veda-control>
     </div>
   </div>
   <hr>
@@ -269,7 +277,7 @@ v-s:UserScriptTemplate
   });
 
   $(".action#run", template).click(function () {
-    if ( individual.hasValue("v-s:runAt", "Server") ) {
+    if ( individual.hasValue("v-s:executeAt", "Server") ) {
       individual["v-s:toBeRun"] = [ true ];
       individual.save();
     } else {
@@ -296,7 +304,7 @@ v-s:UserScriptTemplate
 
 v-s:Operation
   rdf:type owl:Class ;
-  rdfs:subClassOf v-s:UserThing ;
+  rdfs:subClassOf v-s:SystemThing ;
   rdfs:subClassOf v-s:Temporal ;
   rdfs:label "Операция"@ru ;
   rdfs:label "Operation"@en ;
@@ -368,6 +376,26 @@ this.fn = function (individual_uri) {
     "@": individual_uri,
     "v-s:deleted": veda.Util.newBool(true)
   });
+};
+  """ ;
+.
+
+v-s:OperationRemove
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:GenericOperation ;
+  rdfs:label "Уничтожить"@ru ;
+  rdfs:label "Remove"@en ;
+  v-ui:hasModel v-s:OperationRemoveModel ;
+  v-ui:hasTemplate v-s:OperationTemplate ;
+.
+
+v-s:OperationRemoveModel
+  rdf:type v-ui:ClassModel ;
+  rdfs:label "Модель операции уничтожения"@ru ;
+  rdfs:label "Remove operation model"@en ;
+  v-s:script """
+this.fn = function (individual_uri) {
+  remove_individual(veda.ticket, individual_uri);
 };
   """ ;
 .
@@ -447,7 +475,7 @@ v-s:OperationHeaderTemplate
   </div>
   <hr class="margin-md" />
   <div class="row margin-md">
-    <div class="col-sm-6" style="border-right: 1px solid #eee;">
+    <div class="col-sm-6" style="border-right: 1px solid #ddd;">
       <!--em about="v-s:dataQuery" property="rdfs:label"></em>
       <div style="overflow:auto;" about="@" property="v-s:dataQuery"></div-->
       <em about="v-s:dateFrom" property="rdfs:label"></em>
@@ -459,7 +487,7 @@ v-s:OperationHeaderTemplate
       <em about="v-s:creator" property="rdfs:label"></em>
       <span about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></span>
     </div>
-    <div class="col-sm-6" style="border-left: 1px solid #eee; margin-left: -1px;">
+    <div class="col-sm-6" style="border-left: 1px solid #ddd; margin-left: -1px;">
       <em about="v-s:data" property="rdfs:label"></em>
       <ul rel="v-s:data" class="view edit search" data-limit="5" data-more="true">
         <li about="@" data-template="v-ui:LabelTemplate"></li>
@@ -482,7 +510,7 @@ v-s:OperationFooterTemplate
     individual.save();
   });
   $(".action#stop", template).click(function () {
-    set_in_individual(veda.ticket, {
+    veda.Backend.set_in_individual(veda.ticket, {
       "@": individual.id,
       "v-s:hasStatus": [{
         type: "Uri",
@@ -553,7 +581,7 @@ v-s:OperationStatusTemplate
     individual.save();
   });
   $(".action#stop", template).click(function () {
-    set_in_individual(veda.ticket, {
+    veda.Backend.set_in_individual(veda.ticket, {
       "@": individual.id,
       "v-s:hasStatus": [{
         type: "Uri",
@@ -850,3 +878,19 @@ this.console = nativeConsole;
 """
 .
 
+# --------------------------Cron scripts-----------------------------
+
+v-s:CronScriptsInfo
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:SystemThing ;
+  rdfs:label "Информация о периодических скриптах"@ru ;
+  rdfs:label "Cron scripts info"@en ;
+.
+
+v-s:lastDateOfExecuting
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "Дата последнего выполнения"@ru ;
+  rdfs:label "Date of last executing"@en ;
+  rdfs:domain v-s:CronScriptsInfo ;
+  rdfs:range xsd:dateTime ;
+.

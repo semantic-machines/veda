@@ -1,19 +1,14 @@
-/**
- * ltr_scripts module
- * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/scripts.d
- * https://github.com/semantic-machines/veda/blob/f9fd83a84aea0f9721299dff6d673dd967202ce2/source/veda/core/glue_code/ltrs.d
- */
 module veda.gluecode.ltr_scripts;
 
 private
 {
     import core.thread, core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, std.container.array;
     import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.uuid, std.concurrency, std.algorithm, std.uuid;
-    import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
+    import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
     import veda.common.logger, veda.core.impl.thread_context, veda.vmodule.vmodule, veda.core.common.transaction;
-    import veda.core.common.context, veda.core.common.log_msg, veda.core.common.know_predicates, veda.onto.onto;
-    import veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-    import veda.gluecode.script, veda.gluecode.v8d_header;
+    import veda.core.common.context, veda.core.common.log_msg, veda.onto.onto;
+    import veda.search.common.isearch, veda.search.ft_query.ft_query_client, veda.core.impl.app_context_creator;
+    import veda.gluecode.script, veda.gluecode.v8d_bind;
 }
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -70,7 +65,7 @@ ScriptVM         script_vm;
 Tasks *[ int ] tasks_2_priority;
 Task *task;
 
-public void ltrs_thread(string parent_url)
+public void ltrs_thread()
 {
     _wpl         = new ScriptsWorkPlace();
     process_name = "ltr_scripts";
@@ -84,10 +79,9 @@ public void ltrs_thread(string parent_url)
 
 //    core.thread.Thread.getThis().name = thread_name;
 
-    context = PThreadContext.create_new("cfg:standart_node", "ltr_scripts", parent_url, log);
+    context = create_new_ctx("ltr_scripts", log);
 
     context.set_vql(new FTQueryClient(context));
-    //context.set_vql(new XapianSearch(context));
 
     vql = context.get_vql();
 
@@ -324,8 +318,11 @@ class ScriptProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped)
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
     {
+        if (cmd == INDV_OP.REMOVE)
+            return ResultCode.Ok;
+
         committed_op_id = op_id;
 
         if (new_indv.isExists("rdf:type", Resource(DataType.Uri, "v-s:ExecuteScript")) == false)
@@ -357,7 +354,6 @@ class ScriptProcess : VedaModule
 
     override bool open()
     {
-        //context.set_vql(new XapianSearch(context));
         context.set_vql(new FTQueryClient(context));
 
         return true;
