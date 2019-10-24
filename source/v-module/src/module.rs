@@ -1,5 +1,8 @@
 use crate::info::ModuleInfo;
 use ini::Ini;
+use nng::options::protocol::pubsub::Subscribe;
+use nng::options::Options;
+use nng::{Protocol, Socket};
 use std::{thread, time};
 use v_api::*;
 use v_onto::individual::*;
@@ -13,6 +16,7 @@ pub struct Module {
     pub fts: FTClient,
     pub api: APIClient,
     queue_prepared_count: i64,
+    notify_channel_url: String,
 }
 
 impl Default for Module {
@@ -29,7 +33,15 @@ impl Default for Module {
             "".to_owned()
         };
 
-        info!("tarantool addr={:?}", &tarantool_addr);
+        if !tarantool_addr.is_empty() {
+            info!("tarantool addr={}", &tarantool_addr);
+        }
+
+        let notify_channel_url = if let Some(s) = section.get("notify_channel_url") {
+            s.to_owned()
+        } else {
+            String::default()
+        };
 
         let storage: VStorage;
         if !tarantool_addr.is_empty() {
@@ -57,6 +69,7 @@ impl Default for Module {
             fts: ft_client,
             api,
             queue_prepared_count: 0,
+            notify_channel_url,
         }
     }
 }
@@ -129,6 +142,19 @@ impl Module {
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual),
         after_bath: &mut fn(&mut Module, &mut T),
     ) {
+        let soc = Socket::new(Protocol::Sub0).unwrap();
+
+        if !self.notify_channel_url.is_empty() {
+            if let Err(e) = soc.dial(&self.notify_channel_url) {
+                error!("fail connect to, {} err={}", self.notify_channel_url, e);
+            }
+
+            let all_topics = vec![];
+            if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+            }
+        }
+
         loop {
             let mut size_batch = 0;
 
@@ -191,6 +217,11 @@ impl Module {
                 }
             }
             after_bath(self, module_context);
+
+            let wmsg = soc.recv();
+            if let Err(e) = wmsg {
+                error!("fail recv from slave node, err={:?}", e);
+            }
         }
     }
 }
