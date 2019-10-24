@@ -890,7 +890,6 @@
           fulltextMenu.show();
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
-          //suggestions.children().first().focus().addClass("active");
         }).catch(console.log);
       } else {
         suggestions.empty();
@@ -2320,7 +2319,6 @@
           fulltextMenu.show();
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
-          //suggestions.children().first().focus().addClass("active");
         } else {
           suggestions.empty();
           fulltextMenu.hide();
@@ -2464,11 +2462,11 @@
           $(document).off("keydown", arrowHandler);
         }
       });
-      fulltext.on("keydown", function (e) {
-        if ( e.which === 40 ) {
-          performSearch();
-        }
-      });
+      //fulltext.on("keydown", function (e) {
+      //  if ( e.which === 40 && !e.target.value) {
+      //    dropdown.click();
+      //  }
+      //});
     } else {
       dropdown.remove();
     }
