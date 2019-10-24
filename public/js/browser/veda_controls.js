@@ -848,7 +848,7 @@
 
     function performSearch(e, value) {
       if ( fullName ) {
-        var fullNameProps = ["v-s:lastName", "v-s:firstName",  "v-s:middleName"];
+        var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
         var fullNameInput = value.trim().replace(/\s+/g, " ").split(" ");
         var fullNameQuery = fullNameInput.map(function (token, i) {
           if (i < 3) {
