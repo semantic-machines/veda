@@ -117,20 +117,9 @@ vdi:index_appointment_employee
 vdi:index_person
   rdf:type vdi:ClassIndex ;
   vdi:forClass v-s:Person ;
-  vdi:indexed_field rdfs:label ;
+  vdi:indexed_field v-s:firstName ;
+  vdi:indexed_field v-s:lastName ;
+  vdi:indexed_field v-s:middleName ;
   vdi:indexed_field v-s:tabNumber ;
-.
-
-#---------------------------------------------
-
-vdi:index_appointment_occupation
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Appointment ;
-  vdi:forProperty v-s:occupation ;
-  vdi:inherited_index vdi:index_position ;
-.
-vdi:index_position
-  rdf:type vdi:ClassIndex ;
-  vdi:forClass v-s:Position ;
-  vdi:indexed_field rdfs:label ;
+  vdi:indexed_field v-s:hasAccount ;
 .
