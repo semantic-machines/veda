@@ -1,3 +1,4 @@
+use crate::info::ModuleInfo;
 use ini::Ini;
 use std::{thread, time};
 use v_api::*;
@@ -122,9 +123,10 @@ impl Module {
     pub fn listen_queue<T>(
         &mut self,
         queue_consumer: &mut Consumer,
+        module_info: &mut ModuleInfo,
         module_context: &mut T,
         before_bath: &mut fn(&mut Module, &mut T),
-        prepare: &mut fn(&mut Module, &mut T, &mut Individual),
+        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual),
         after_bath: &mut fn(&mut Module, &mut T),
     ) {
         loop {
@@ -175,9 +177,9 @@ impl Module {
                     }
                 }
 
-                let mut queue_element =     Individual::new_raw(raw);
+                let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
-                    prepare(self, module_context, &mut queue_element);
+                    prepare(self, module_info, module_context, &mut queue_element);
                 }
 
                 queue_consumer.commit_and_next();
