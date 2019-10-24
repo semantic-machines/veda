@@ -2,6 +2,8 @@ ro-storage
 
 mstorage
 
+#az-indexer
+
 ft-indexer
 
 ft-query
@@ -35,5 +37,3 @@ ccus
 gowebserver
 
 input-onto
-
-#az-indexer

@@ -9,6 +9,7 @@ chrono = "0.4"
 env_logger = "0.6"
 log = "0.4"
 rust-ini = "0.13"
+nng = "0.5.0"
 v_queue = { path = "../v-queue" }
 v_onto = { path = "../v-onto" }
 v_storage = { path = "../v-storage" }
