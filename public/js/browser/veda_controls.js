@@ -734,7 +734,8 @@
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
       complex = this.data("complex") || false,
       deleted,
-      chosenActorType;
+      chosenActorType,
+      fullName;
 
     // Fulltext search feature
     var fulltext = $(".fulltext", control);
@@ -774,6 +775,21 @@
       $(this).parent().append( new veda.IndividualModel(this.value).toString() );
     }).change(function () {
       deleted = $(this).is(":checked") ? true : false;
+      var ftValue = $(".fulltext", control).val();
+      if (ftValue) {
+        performSearch(undefined, ftValue);
+      }
+    });
+
+    // Full name check label & handler
+    $("[name='full-name']", control).each(function () {
+      var label = new veda.IndividualModel(this.value);
+      var that = this;
+      label.load().then(function (label) {
+        $(that).parent().append( new veda.IndividualModel(that.value).toString() );
+      });
+    }).change(function () {
+      fullName = $(this).is(":checked") ? true : false;
       var ftValue = $(".fulltext", control).val();
       if (ftValue) {
         performSearch(undefined, ftValue);
@@ -831,6 +847,16 @@
     }());
 
     function performSearch(e, value) {
+      if ( fullName ) {
+        var fullNameProps = ["v-s:lastName", "v-s:firstName",  "v-s:middleName"];
+        var fullNameInput = value.trim().replace(/\s+/g, " ").split(" ");
+        var fullNameQuery = fullNameInput.map(function (token, i) {
+          if (i < 3) {
+            return "'" + fullNameProps[i] + "'=='" + token + "*'";
+          }
+        }).filter(Boolean).join(" && ");
+        value = fullNameQuery;
+      }
       ftQuery(queryPrefix, value, sort, deleted)
         .then(renderResults)
         .catch(function (error) {
@@ -847,33 +873,17 @@
     function renderResults(results) {
       selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
       if (results.length) {
-        var altResults = results.map(function (result) {
-          return Promise.resolve().then(function () {
-            if (chosenActorType === "v-s:Appointment") {
-              return result;
-            } else if (chosenActorType === "v-s:Person") {
-              return result["v-s:employee"][0].load();
-            } else {
-              return result["v-s:occupation"][0].load();
-            }
-          }).catch(function (error) {
-            console.log(error);
-          });
+        var renderedPromises = results.map(function (result) {
+          var cont = $("<a href='#' class='suggestion'></a>").attr("resource", result.id);
+          if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
+            cont.addClass("selected");
+          }
+          return result.present(cont, "v-ui:LabelTemplate")
+            .then(function () {
+              return cont;
+            });
         });
-        Promise.all(altResults).then(function (results) {
-          results = sortUnique( results.filter(Boolean) );
-          var renderedPromises = results.map(function (result) {
-            var cont = $("<a href='#' class='suggestion'></a>").attr("resource", result.id);
-            if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
-              cont.addClass("selected");
-            }
-            return result.present(cont, "v-ui:LabelTemplate")
-              .then(function () {
-                return cont;
-              });
-          });
-          return Promise.all(renderedPromises);
-        }).then(function (rendered) {
+        Promise.all(renderedPromises).then(function (rendered) {
           suggestions.empty().append(rendered);
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
@@ -881,27 +891,13 @@
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
           //suggestions.children().first().focus().addClass("active");
-        });
+        }).catch(console.log);
       } else {
         suggestions.empty();
         fulltextMenu.hide();
         $(document).off("click", clickOutsideMenuHandler);
         $(document).off("keydown", arrowHandler);
       }
-    }
-
-    function sortUnique(arr) {
-      arr.sort(function (a, b) {
-        var aLabel = a.toString();
-        var bLabel = b.toString();
-        return aLabel < bLabel ? -1 : aLabel > bLabel ? 1 : 0;
-      });
-      return arr.reduce(function (acc, item) {
-        if (acc[acc.length - 1] !== item) {
-          acc.push(item);
-        }
-        return acc;
-      }, []);
     }
 
     var suggestions = $(".suggestions", control);
@@ -989,22 +985,35 @@
     }
 
     function setValue(value) {
-      var rel;
-      individual.clearValue(rel_uri);
       if ( complex ) {
+        individual.clearValue(rel_uri);
         individual.clearValue(rel_uri + ".v-s:employee");
         individual.clearValue(rel_uri + ".v-s:occupation");
-        if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
-          rel = rel_uri;
-        } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
-          rel = rel_uri + ".v-s:employee";
+        if (chosenActorType === "v-s:Appointment") {
+          individual.addValue(rel_uri, value);
+        } else if (chosenActorType === "v-s:Person") {
+          value["v-s:employee"][0].load().then(function (person) {
+            individual.addValue(rel_uri + ".v-s:employee", person);
+          });
         } else {
-          rel = rel_uri + ".v-s:occupation";
+          value["v-s:occupation"][0].load().then(function (position) {
+            individual.addValue(rel_uri + ".v-s:occupation", position);
+          });
         }
       } else {
-        rel = rel_uri;
+        individual.clearValue(rel_uri);
+        if (chosenActorType === "v-s:Appointment") {
+          individual.addValue(rel_uri, value);
+        } else if (chosenActorType === "v-s:Person") {
+          value["v-s:employee"][0].load().then(function (person) {
+            individual.addValue(rel_uri, person);
+          });
+        } else {
+          value["v-s:occupation"][0].load().then(function (position) {
+            individual.addValue(rel_uri, position);
+          });
+        }
       }
-      individual.addValue(rel, value);
     }
 
     function propertyModifiedHandler() {
@@ -2510,13 +2519,16 @@
 
   function ftQuery(prefix, input, sort, withDeleted) {
     var queryString = "";
-    if ( input ) {
+    var special = input && input.indexOf("==") > 0 ? input : false;
+    if ( input && !special ) {
       var lines = input.split("\n");
       var lineQueries = lines.map(function (line) {
         var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
         return words.map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
       });
       queryString = lineQueries.join(" || ");
+    } else if (special) {
+      queryString = special;
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;
