@@ -1,13 +1,11 @@
 #[macro_use]
 extern crate log;
 
+use crate::common::*;
 use chrono::Local;
 use env_logger::Builder;
-//use ini::Ini;
-use crate::common::*;
 use log::LevelFilter;
 use std::io::Write;
-use std::{thread, time};
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_onto::individual::*;
@@ -37,7 +35,8 @@ fn main() -> Result<(), i32> {
     let mut queue_consumer = Consumer::new("./data/queue", "az-indexer", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
     let mut ctx = Context {
-        id: 0,
+        permission_statement_counter: 0,
+        membership_counter: 0,
         storage: VStorage::new_lmdb("./data", StorageMode::ReadWrite),
     };
 
@@ -60,8 +59,10 @@ fn main() -> Result<(), i32> {
 
 fn before_bath(_module: &mut Module, _ctx: &mut Context) {}
 
-fn after_bath(_module: &mut Module, _ctx: &mut Context) {
-    thread::sleep(time::Duration::from_millis(1));
+fn after_bath(_module: &mut Module, ctx: &mut Context) {
+    if (ctx.permission_statement_counter + ctx.membership_counter) % 100 == 0 {
+        info!("count prepared: permissions={}, memberships={}", ctx.permission_statement_counter, ctx.membership_counter);
+    }
 }
 
 fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) {
@@ -81,13 +82,13 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
 
     if new_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) {
         prepare_permission_statement(&mut prev_state, &mut new_state, ctx);
+        ctx.permission_statement_counter += 1;
     } else if new_state.any_exists("rdf:type", &["v-s:Membership"]) || prev_state.any_exists("rdf:type", &["v-s:Membership"]) {
         prepare_membership(&mut prev_state, &mut new_state, ctx);
+        ctx.membership_counter += 1;
     } else if new_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionFilter"]) {
         prepare_permission_filter(&mut prev_state, &mut new_state, ctx);
     }
-
-    ctx.id += 1;
 
     if let Err(e) = module_info.put_info(op_id, op_id) {
         error!("fail write module_info, op_id={}, err={:?}", op_id, e)
