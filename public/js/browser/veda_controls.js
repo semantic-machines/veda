@@ -880,7 +880,7 @@
           fulltextMenu.show();
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
-          suggestions.children().first().focus().addClass("active");
+          //suggestions.children().first().focus().addClass("active");
         });
       } else {
         suggestions.empty();
@@ -2309,7 +2309,7 @@
           fulltextMenu.show();
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
-          suggestions.children().first().focus().addClass("active");
+          //suggestions.children().first().focus().addClass("active");
         } else {
           suggestions.empty();
           fulltextMenu.hide();
