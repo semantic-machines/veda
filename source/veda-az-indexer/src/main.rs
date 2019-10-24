@@ -8,6 +8,7 @@ use crate::common::*;
 use log::LevelFilter;
 use std::io::Write;
 use std::{thread, time};
+use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_onto::individual::*;
 use v_queue::consumer::*;
@@ -40,11 +41,18 @@ fn main() -> Result<(), i32> {
         storage: VStorage::new_lmdb("./data", StorageMode::ReadWrite),
     };
 
+    let module_info = ModuleInfo::new("./data", "acl_preparer", true);
+    if module_info.is_err() {
+        error!("{:?}", module_info.err());
+        return Err(-1);
+    }
+
     module.listen_queue(
         &mut queue_consumer,
+        &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_bath as fn(&mut Module, &mut Context)),
-        &mut (prepare as fn(&mut Module, &mut Context, &mut Individual)),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual)),
         &mut (after_bath as fn(&mut Module, &mut Context)),
     );
     Ok(())
@@ -53,20 +61,23 @@ fn main() -> Result<(), i32> {
 fn before_bath(_module: &mut Module, _ctx: &mut Context) {}
 
 fn after_bath(_module: &mut Module, _ctx: &mut Context) {
-    thread::sleep(time::Duration::from_millis(3000));
+    thread::sleep(time::Duration::from_millis(1));
 }
 
-fn prepare(_module: &mut Module, ctx: &mut Context, queue_element: &mut Individual) {
-    let mut prev_state = Individual::default();
-    let mut new_state = Individual::default();
-
-    get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
-    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) {
     let cmd = get_cmd(queue_element);
-
     if cmd.is_none() {
+        error!("cmd is none");
         return;
     }
+
+    let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+
+    let mut prev_state = Individual::default();
+    get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+
+    let mut new_state = Individual::default();
+    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
     if new_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) || prev_state.any_exists("rdf:type", &["v-s:PermissionStatement"]) {
         prepare_permission_statement(&mut prev_state, &mut new_state, ctx);
@@ -77,6 +88,10 @@ fn prepare(_module: &mut Module, ctx: &mut Context, queue_element: &mut Individu
     }
 
     ctx.id += 1;
+
+    if let Err(e) = module_info.put_info(op_id, op_id) {
+        error!("fail write module_info, op_id={}, err={:?}", op_id, e)
+    }
 }
 
 fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {
