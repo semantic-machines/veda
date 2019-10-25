@@ -2251,6 +2251,7 @@
         var minLength = 3;
         return function (e) {
           if (timeout) { clearTimeout(timeout); }
+          if (e.which === 40 || e.which === 9 || e.which === 16) { return; }
           var value = e.target.value;
           if (value.length >= minLength) {
             timeout = setTimeout(performSearch, 750, value);
@@ -2347,6 +2348,7 @@
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
         tmpl.toggleClass("selected");
+        if (isSingle) { tmpl.siblings().removeClass("selected"); }
         if ( selected.indexOf(suggestion) >= 0 ) {
           if (isSingle) {
             individual
@@ -2362,7 +2364,9 @@
           }
         } else {
           if (isSingle) {
-            individual.set(rel_uri, [suggestion]);
+
+            selected = [suggestion];
+            individual.set(rel_uri, selected);
             fulltextMenu.hide();
             $(document).off("click", clickOutsideMenuHandler);
             $(document).off("keydown", arrowHandler);
@@ -2454,19 +2458,28 @@
     if ( this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full") ) {
       dropdown.on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
-        if ( !fulltextMenu.is(":visible") ) {
+        e.stopPropagation();
+        if ( suggestions.is(":empty") ) {
           performSearch();
-        } else {
+        } else if ( fulltextMenu.is(":visible") ) {
           fulltextMenu.hide();
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
+        } else {
+          fulltextMenu.show();
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
         }
       });
-      //fulltext.on("keydown", function (e) {
-      //  if ( e.which === 40 && !e.target.value) {
-      //    dropdown.click();
-      //  }
-      //});
+      var downHandler = function (e) {
+        if ( e.which === 40) {
+          e.stopPropagation();
+          dropdown.focus().click();
+        }
+      }
+      fulltext.on("focus", function (e) {
+        fulltext.off("keydown").one("keydown", downHandler);
+      });
     } else {
       dropdown.remove();
     }
