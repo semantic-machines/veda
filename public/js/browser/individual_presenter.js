@@ -231,7 +231,7 @@ veda.Module(function (veda) { "use strict";
           var successMsg = new veda.IndividualModel("v-s:SuccessBundle").load();
           successMsg.then(function (successMsg) {
             var notify = veda.Notify ? new veda.Notify() : function () {};
-            notify("success", {name: successMsg});
+            notify("success", {name: successMsg.toString()});
           });
         } else {
           var parentIndividual = new veda.IndividualModel(parent);
@@ -242,7 +242,7 @@ veda.Module(function (veda) { "use strict";
         var errorMsg = new veda.IndividualModel("v-s:ErrorBundle").load();
         errorMsg.then(function (errorMsg) {
           var notify = veda.Notify ? new veda.Notify() : function () {};
-          notify("danger", {name: errorMsg});
+          notify("danger", {name: errorMsg.toString()});
         });
       });
     };
