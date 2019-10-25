@@ -29,8 +29,6 @@
     	    "../../veda/storage/storage.d",
     	    "../../veda/authorization/authorization.d", 
             "../../veda/authorization/az_lib.d",
-    	    "../../veda/authorization/cache.d",
-    	    "../../veda/authorization/right_set.d",
  	],
 	"sourcePaths":[
 	    "../../veda/mstorage",
