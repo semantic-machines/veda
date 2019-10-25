@@ -238,7 +238,6 @@ veda.Module(function (veda) { "use strict";
           parentIndividual.isSync(false);
         }
       }).catch(function (error) {
-        console.log(error);
         var errorMsg = new veda.IndividualModel("v-s:ErrorBundle").load();
         errorMsg.then(function (errorMsg) {
           var notify = veda.Notify ? new veda.Notify() : function () {};
