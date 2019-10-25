@@ -3,7 +3,7 @@ module veda.authorization.az_lib;
 import std.conv, std.datetime, std.uuid, std.outbuffer, std.string, std.stdio;
 import veda.common.logger, veda.core.common.define, veda.core.common.type, veda.common.type;
 import veda.util.module_info;
-import veda.authorization.authorization, veda.authorization.right_set, veda.authorization.cache;
+import veda.authorization.authorization;
 
 extern (C) ubyte authorize_r(immutable(char) *_uri, immutable(char) *_user_uri, ubyte _request_access, bool _is_check_for_reload);
 extern (C) char *get_trace(immutable(char) * _uri, immutable(char) * _user_uri, ubyte _request_access, ubyte trace_mode, bool _is_check_for_reload);
