@@ -58,33 +58,33 @@ pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual
 
     if let Some(v) = new_state.get_first_bool("v-s:canCreate") {
         if v {
-            access = access | Access::CanCreate as u8;
+            access |= Access::CanCreate as u8;
         } else {
-            access = access | Access::CantCreate as u8;
+            access |= Access::CantCreate as u8;
         }
     }
 
     if let Some(v) = new_state.get_first_bool("v-s:canRead") {
         if v {
-            access = access | Access::CanRead as u8;
+            access |= Access::CanRead as u8;
         } else {
-            access = access | Access::CantRead as u8;
+            access |= Access::CantRead as u8;
         }
     }
 
     if let Some(v) = new_state.get_first_bool("v-s:canUpdate") {
         if v {
-            access = access | Access::CanUpdate as u8;
+            access |= Access::CanUpdate as u8;
         } else {
-            access = access | Access::CantUpdate as u8;
+            access |= Access::CantUpdate as u8;
         }
     }
 
     if let Some(v) = new_state.get_first_bool("v-s:canDelete") {
         if v {
-            access = access | Access::CanDelete as u8;
+            access |= Access::CanDelete as u8;
         } else {
-            access = access | Access::CantDelete as u8;
+            access |= Access::CantDelete as u8;
         }
     }
 
@@ -106,9 +106,9 @@ pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual
     let ignore_exclusive = new_state.get_first_bool("v-s:ignoreExclusive").unwrap_or_default();
     let is_exclusive = new_state.get_first_bool("v-s:isExclusive").unwrap_or_default();
 
-    let marker = if is_exclusive == true {
+    let marker = if is_exclusive {
         M_IS_EXCLUSIVE
-    } else if ignore_exclusive == true {
+    } else if ignore_exclusive {
         M_IGNORE_EXCLUSIVE
     } else {
         0
@@ -116,16 +116,16 @@ pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual
 
     update_right_set(&resource, &in_set, marker, is_deleted, &use_filter, prefix, access, ctx);
 
-    if removed_resource.len() > 0 {
+    if !removed_resource.is_empty() {
         update_right_set(&removed_resource, &in_set, marker, true, &use_filter, prefix, access, ctx);
     }
 
-    if removed_in_set.len() > 0 {
+    if !removed_in_set.is_empty() {
         update_right_set(&resource, &removed_in_set, marker, true, &use_filter, prefix, access, ctx);
     }
 }
 
-pub fn update_right_set(resources: &Vec<String>, in_set: &Vec<String>, marker: u8, is_deleted: bool, filter: &String, prefix: &str, access: u8, ctx: &mut Context) {
+pub fn update_right_set(resources: &[String], in_set: &[String], marker: u8, is_deleted: bool, filter: &str, prefix: &str, access: u8, ctx: &mut Context) {
     for rs in resources.iter() {
         let key = prefix.to_owned() + &filter + rs;
 
@@ -137,7 +137,7 @@ pub fn update_right_set(resources: &Vec<String>, in_set: &Vec<String>, marker: u
         for mb in in_set.iter() {
             if let Some(rr) = new_right_set.get_mut(mb) {
                 rr.is_deleted = is_deleted;
-                rr.access = rr.access | access;
+                rr.access |= access;
                 rr.marker = marker;
             } else {
                 new_right_set.insert(
@@ -154,7 +154,7 @@ pub fn update_right_set(resources: &Vec<String>, in_set: &Vec<String>, marker: u
 
         let mut new_record = rights_as_string(new_right_set);
 
-        if new_record.len() == 0 {
+        if new_record.is_empty() {
             new_record = "X".to_string();
         }
 
@@ -162,7 +162,7 @@ pub fn update_right_set(resources: &Vec<String>, in_set: &Vec<String>, marker: u
     }
 }
 
-pub fn get_disappeared(a: &Vec<String>, b: &Vec<String>) -> Vec<String> {
+pub fn get_disappeared(a: &[String], b: &[String]) -> Vec<String> {
     let delta = Vec::new();
 
     for r_a in a.iter() {
@@ -175,16 +175,16 @@ pub fn get_disappeared(a: &Vec<String>, b: &Vec<String>) -> Vec<String> {
             }
         }
 
-        if is_found == false {
+        if !is_found {
             delta.push(r_a);
         }
     }
 
-    return delta;
+    delta
 }
 
 pub fn rights_from_string(src: &str, new_rights: &mut RightSet) -> bool {
-    let tokens: Vec<&str> = src.split(";").collect();
+    let tokens: Vec<&str> = src.split(';').collect();
 
     if tokens.len() <= 2 {
         return false;
@@ -194,10 +194,11 @@ pub fn rights_from_string(src: &str, new_rights: &mut RightSet) -> bool {
     while idx < tokens.len() {
         if let Some(key) = tokens.get(idx) {
             if let Some(tmk) = tokens.get(idx + 1) {
-                let mut marker = 0;
-                if tmk.len() > 1 {
-                    marker = tmk.as_bytes()[0];
-                }
+                let marker = if tmk.len() > 1 {
+                    tmk.as_bytes()[0]
+                } else {
+                    0
+                };
 
                 if let Some(s_access) = tokens.get(idx + 1) {
                     if let Ok(access) = u8::from_str_radix(&s_access, 16) {
@@ -225,7 +226,7 @@ fn rights_as_string(new_rights: RightSet) -> String {
 
     for key in new_rights.keys() {
         if let Some(right) = new_rights.get(key) {
-            if right.is_deleted == false {
+            if !right.is_deleted {
                 outbuff.push_str(&right.id);
                 outbuff.push(';');
                 outbuff.push_str(&format!("{:X}", right.access));

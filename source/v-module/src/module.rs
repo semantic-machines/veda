@@ -239,9 +239,7 @@ pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, fie
 
 pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
     let wcmd = queue_element.get_first_integer("cmd");
-    if wcmd.is_none() {
-        return None;
-    }
+    wcmd?;
 
     Some(IndvOp::from_i64(wcmd.unwrap_or_default()))
 }
