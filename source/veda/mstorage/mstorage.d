@@ -73,8 +73,8 @@ void main(char[][] args)
     tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, node_id);
     wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-//    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer));
-//    wait_starting_thread(P_MODULE.acl_preparer, tids);
+    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer));
+    wait_starting_thread(P_MODULE.acl_preparer, tids);
 
     tids[ P_MODULE.commiter ] =
         spawn(&commiter, text(P_MODULE.commiter));
@@ -94,7 +94,7 @@ void main(char[][] args)
     writefln("send signals EXIT to threads");
 
     exit(P_MODULE.commiter);
-//    exit(P_MODULE.acl_preparer);
+    exit(P_MODULE.acl_preparer);
     exit(P_MODULE.subject_manager);
     exit(P_MODULE.ticket_manager);
 
