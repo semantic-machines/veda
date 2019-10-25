@@ -2213,13 +2213,13 @@
       ]).then(function (actions) {
         header.find(".select-all")
           .click(function () { suggestions.children(":not(.selected)").click(); })
-          .text( actions[0] );
+          .text( actions[0].toString() );
         header.find(".cancel-selection")
           .click(function () { suggestions.children(".selected").click(); })
-          .text( actions[1] );
+          .text( actions[1].toString() );
         header.find(".invert-selection")
           .click(function () { suggestions.children().click(); })
-          .text( actions[2] );
+          .text( actions[2].toString() );
         header.find(".close-menu")
           .click(function () {
             fulltextMenu.hide();
