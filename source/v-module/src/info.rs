@@ -24,13 +24,13 @@ impl ModuleInfo {
 
         match OpenOptions::new().read(true).write(is_writer).create(true).open(file_name_info) {
             Ok(ff) => {
-                return Ok(ModuleInfo {
+                Ok(ModuleInfo {
                     _base_path: base_path.to_owned(),
                     name: info_name.to_owned(),
                     ff_info: ff,
                     is_ready: true,
-                    is_writer: is_writer,
-                });
+                    is_writer,
+                })
             }
             Err(e) => Err(e),
         }

@@ -21,7 +21,7 @@ pub(crate) struct LMDBStorage {
 
 impl LMDBStorage {
     pub fn new(db_path: &str, mode: StorageMode) -> LMDBStorage {
-        let storage = LMDBStorage {
+        LMDBStorage {
             db_path: db_path.to_owned(),
             individuals_db_handle: Err(MdbError::Panic),
             individuals_db_env: Err(MdbError::Panic),
@@ -30,11 +30,7 @@ impl LMDBStorage {
             az_db_handle: Err(MdbError::Panic),
             az_db_env: Err(MdbError::Panic),
             mode: mode.clone(),
-        };
-
-        //storage.open(StorageId::Individuals, mode.clone());
-        //storage.open(StorageId::Tickets, mode.clone());
-        storage
+        }
     }
 
     fn open(&mut self, storage: StorageId, mode: StorageMode) {
@@ -285,17 +281,17 @@ fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHand
                 }
                 Err(e) => {
                     error!("db handle, err={}", e);
-                    return false;
+                    false
                 }
             },
             Err(e) => {
                 error!("db create transaction, err={}", e);
-                return false;
+                false
             }
         },
         Err(e) => {
             error!("db environment, err={}", e);
-            return false;
+            false
         }
     }
 }
