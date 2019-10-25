@@ -526,25 +526,29 @@ v-ft:TaskBlankTemplate
     </div>
   </div>
   <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
-  <div class="advanced-search row hidden">
-    <div class="col-md-4">
-      <em about="v-s:description" property="rdfs:label"></em>
-      <veda-control property="rdfs:label" data-type="string"></veda-control>
+  <div class="advanced-search hidden">
+    <div class="row">
+      <div class="col-md-4">
+        <em about="v-s:description" property="rdfs:label"></em>
+        <veda-control property="rdfs:label" data-type="string"></veda-control>
+      </div>
+      <div class="col-md-4">
+        <em about="v-s:created" property="rdfs:label"></em>
+        <veda-control property="v-s:created" data-type="date"></veda-control>
+        <div property="v-s:created"></div>
+      </div>
+      <div class="col-md-4">
+        <em about="v-wf:dateGiven" property="rdfs:label"></em>
+        <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
+        <div property="v-wf:dateGiven"></div>
+      </div>  
     </div>
-    <div class="col-md-4">
-      <em about="v-s:created" property="rdfs:label"></em>
-      <veda-control property="v-s:created" data-type="date"></veda-control>
-      <div property="v-s:created"></div>
-    </div>
-    <div class="col-md-4">
-      <em about="v-wf:dateGiven" property="rdfs:label"></em>
-      <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
-      <div property="v-wf:dateGiven"></div>
-    </div>
-    <div class="col-md-4">
-      <em about="v-ft:DecisionDateBundle" property="rdfs:label"></em>
-      <veda-control property="v-wf:takenDecision.v-s:created" data-type="date"></veda-control>
-      <div property="v-wf:takenDecision.v-s:created"></div>
+    <div class="row">
+      <div class="col-md-4">
+        <em about="v-ft:DecisionDateBundle" property="rdfs:label"></em>
+        <veda-control property="v-wf:takenDecision.v-s:created" data-type="date"></veda-control>
+        <div property="v-wf:takenDecision.v-s:created"></div>
+      </div>
     </div>
   </div>
 </div>
