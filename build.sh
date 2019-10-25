@@ -37,7 +37,7 @@ if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
 
 fi
 
-if [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] ; then
+if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] ; then
 
     rm ./veda-az-indexer
 
