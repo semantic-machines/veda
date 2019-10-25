@@ -541,6 +541,11 @@ v-ft:TaskBlankTemplate
       <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
       <div property="v-wf:dateGiven"></div>
     </div>
+    <div class="col-md-4">
+      <em about="v-ft:DecisionDateBundle" property="rdfs:label"></em>
+      <veda-control property="v-wf:takenDecision.v-s:created" data-type="date"></veda-control>
+      <div property="v-wf:takenDecision.v-s:created"></div>
+    </div>
   </div>
 </div>
 <script>
