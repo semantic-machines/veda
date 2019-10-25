@@ -13,14 +13,13 @@ private
     import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource,
            veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
-    import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
+    import veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
     import veda.onto.individual;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
 alias veda.mstorage.storage_manager indv_storage_thread;
-alias veda.mstorage.acl_manager     acl_module;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -73,9 +72,6 @@ void main(char[][] args)
     tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, node_id);
     wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer));
-    wait_starting_thread(P_MODULE.acl_preparer, tids);
-
     tids[ P_MODULE.commiter ] =
         spawn(&commiter, text(P_MODULE.commiter));
     wait_starting_thread(P_MODULE.commiter, tids);
@@ -94,7 +90,6 @@ void main(char[][] args)
     writefln("send signals EXIT to threads");
 
     exit(P_MODULE.commiter);
-    exit(P_MODULE.acl_preparer);
     exit(P_MODULE.subject_manager);
     exit(P_MODULE.ticket_manager);
 
@@ -243,7 +238,6 @@ void commiter(string thread_name)
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
         veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-        veda.mstorage.acl_manager.flush(false);
         veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }
@@ -930,8 +924,6 @@ public string execute_json(string in_msg, Context ctx)
 
             if (f_module_id == P_MODULE.subject_manager)
                 rc = flush_storage();
-            else if (f_module_id == P_MODULE.acl_preparer)
-                rc = acl_module.flush(false);
             else if (f_module_id == cast(P_MODULE)MODULE.fulltext_indexer)
                 flush_ext_module(f_module_id, wait_op_id);
 
