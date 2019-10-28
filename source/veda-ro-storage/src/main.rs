@@ -82,25 +82,18 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
                 None
             };
 
+            let db_id = match rel[0] {
+                "T" | "t" => StorageId::Tickets,
+                "I" | "i" => StorageId::Individuals,
+                _ => StorageId::Individuals,
+            };
+
             match rel[0] {
-                "T" => {
+                "T" | "I" => {
                     let mut indv = Individual::default();
-                    if storage.get_individual_from_db(StorageId::Tickets, rel[1], &mut indv) {
+                    if storage.get_individual_from_db(db_id, rel[1], &mut indv) {
                         indv.parse_all();
-                        if let Some(s) = indv.get_obj().as_json().as_str() {
-                            return Message::from(s.as_bytes());
-                        }
-                    } else {
-                        return Message::from("[]".as_bytes());
-                    }
-                }
-                "I" => {
-                    let mut indv = Individual::default();
-                    if storage.get_individual_from_db(StorageId::Individuals, rel[1], &mut indv) {
-                        indv.parse_all();
-                        if let Some(s) = indv.get_obj().as_json().as_str() {
-                            return Message::from(s.as_bytes());
-                        }
+                        return Message::from(indv.get_obj().as_json().to_string().as_bytes());
                     } else {
                         return Message::from("[]".as_bytes());
                     }
@@ -113,22 +106,13 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
                                 indv.get_literals(f);
                             }
                         }
-                        if let Some(s) = indv.get_obj().as_json().as_str() {
-                            return Message::from(s.as_bytes());
-                        }
+                        return Message::from(indv.get_obj().as_json().to_string().as_bytes());
                     } else {
                         return Message::from("[]".as_bytes());
                     }
                 }
-                "t" => {
-                    let binobj = storage.get_raw_value(StorageId::Tickets, rel[1]);
-                    if binobj.is_empty() {
-                        return Message::from("[]".as_bytes());
-                    }
-                    return Message::from(binobj.as_slice());
-                }
-                "i" => {
-                    let binobj = storage.get_raw_value(StorageId::Individuals, rel[1]);
+                "t" | "i" => {
+                    let binobj = storage.get_raw_value(db_id, rel[1]);
                     if binobj.is_empty() {
                         return Message::from("[]".as_bytes());
                     }

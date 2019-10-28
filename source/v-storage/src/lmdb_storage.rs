@@ -158,7 +158,7 @@ impl Storage for LMDBStorage {
             }
 
             if is_need_reopen {
-                warn!("db {} reopen", self.db_path);
+                warn!("db {} reopen {:?}", self.db_path, storage);
 
                 self.open(storage.clone(), self.mode.clone());
             }

@@ -163,8 +163,13 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
 fi
 
 if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] ; then
-    rm ./veda-lmdb-srv
     ./tools/build-component.sh veda-ro-storage ro-storage
+
+#    cd source/veda-ro-storage
+#    cargo build --release
+#    cd $BUILD_PATH
+#    cp $CARGO_TARGET_DIR/release/veda-ro-storage $PWD
+
 fi
 
 if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
