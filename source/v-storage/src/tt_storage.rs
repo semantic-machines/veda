@@ -92,4 +92,23 @@ impl Storage for TTStorage {
 
         None
     }
+
+    fn get_raw(&mut self, storage: StorageId, key: &str) -> Vec<u8> {
+        let space = if storage == StorageId::Tickets {
+            TICKETS_SPACE_ID
+        } else if storage == StorageId::Az {
+            AZ_SPACE_ID
+        } else {
+            INDIVIDUALS_SPACE_ID
+        };
+
+        let key = (key,);
+        let resp = self.client.select(space, 0, &key, 0, 100, 0).and_then(move |response| Ok(response.data));
+
+        if let Ok(v) = self.rt.block_on(resp) {
+            return v[5..].to_vec();
+        }
+
+        Vec::default()
+    }
 }
