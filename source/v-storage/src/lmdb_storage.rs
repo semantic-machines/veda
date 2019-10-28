@@ -260,6 +260,88 @@ impl Storage for LMDBStorage {
 
         None
     }
+
+    fn get_raw(&mut self, storage: StorageId, key: &str) -> Vec<u8> {
+        for _it in 0..2 {
+            let db_handle;
+            let db_env;
+
+            if storage == StorageId::Individuals {
+                db_env = &self.individuals_db_env;
+                db_handle = &self.individuals_db_handle;
+            } else if storage == StorageId::Tickets {
+                db_env = &self.tickets_db_env;
+                db_handle = &self.tickets_db_handle;
+            } else if storage == StorageId::Az {
+                db_env = &self.az_db_env;
+                db_handle = &self.az_db_handle;
+            } else {
+                db_env = &Err(MdbError::Panic);
+                db_handle = &Err(MdbError::Panic);
+            }
+
+            let mut is_need_reopen = false;
+
+            match db_env {
+                Ok(env) => match db_handle {
+                    Ok(handle) => match env.get_reader() {
+                        Ok(txn) => {
+                            let db = txn.bind(&handle);
+
+                            match db.get::<Vec<u8>>(&key) {
+                                Ok(val) => {
+                                    return val;
+                                }
+                                Err(e) => match e {
+                                    MdbError::NotFound => {
+                                        return Vec::default();
+                                    }
+                                    _ => {
+                                        error!("db.get {:?}, {}", e, key);
+                                        return Vec::default();
+                                    }
+                                },
+                            }
+                        }
+                        Err(e) => match e {
+                            MdbError::Other(c, _) => {
+                                if c == -30785 {
+                                    is_need_reopen = true;
+                                } else {
+                                    error!("fail crate transaction, err={}", e);
+                                    return Vec::default();
+                                }
+                            }
+                            _ => {
+                                error!("fail crate transaction, err={}", e);
+                            }
+                        },
+                    },
+                    Err(e) => {
+                        error!("db handle, err={}", e);
+                        return Vec::default();
+                    }
+                },
+                Err(e) => match e {
+                    MdbError::Panic => {
+                        is_need_reopen = true;
+                    }
+                    _ => {
+                        error!("db environment, err={}", e);
+                        return Vec::default();
+                    }
+                },
+            }
+
+            if is_need_reopen {
+                warn!("db {} reopen", self.db_path);
+
+                self.open(storage.clone(), self.mode.clone());
+            }
+        }
+
+        Vec::default()
+    }
 }
 
 fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str, val: &str) -> bool {
