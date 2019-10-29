@@ -14,9 +14,9 @@ private import veda.gluecode.script, veda.gluecode.v8d_bind;
 int main(string[] args)
 {
     writeln("args = ", args);
-    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "lp1" && args[ 1 ] != "ltr"))
+    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "lp1"))
     {
-        writefln("use %s [main/lp/lp1/ltr]", args[ 0 ]);
+        writefln("use %s [main/lp/lp1]", args[ 0 ]);
         return -1;
     }
 
