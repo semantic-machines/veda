@@ -1067,16 +1067,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
             if (rc == ResultCode.Ok)
             {
-                MapResource rdfType;
-
-                foreach (item; items)
-                {
-                    log.trace("commit: item.rc=%s", item.rc);
-                    if (item.rc == ResultCode.Ok)
-                        rc = prepare_event(rdfType, item.assigned_subsystems, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto,
-                                           item.op_id);
-                }
-                rcs ~= OpResult(rc, op_id);
+                rcs ~= OpResult(ResultCode.Ok, op_id);
             }
         }
     }
@@ -1328,7 +1319,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.Ok)
-            res.result = prepare_event(rdfType, assigned_subsystems, prev_state, new_state, is_acl_element, is_onto, res.op_id);
+            res.result = ResultCode.Ok;
 
         return res;
     }
@@ -1342,31 +1333,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         if (opt_trace == OptTrace.TRACE)
             log.trace("add_to_transaction [%s] = %s", indv.uri, res);
     }
-}
-
-private ResultCode prepare_event(ref MapResource rdfType, long assigned_subsystems, string prev_binobj, string new_binobj, bool is_acl_element,
-                                 bool is_onto,
-                                 long op_id)
-{
-    ResultCode res;
-    Tid        tid_acl;
-
-    //log.trace("@prepare_event assigned_subsystems=%s", subsystem_byte_to_string(assigned_subsystems));
-
-    if (assigned_subsystems != ALL_MODULES && (assigned_subsystems & SUBSYSTEM.ACL) != SUBSYSTEM.ACL)
-        return ResultCode.Ok;
-
-    if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
-        rdfType.anyExists("v-s:PermissionFilter") == true)
-    {
-        tid_acl = getTid(P_MODULE.acl_preparer);
-        if (tid_acl != Tid.init)
-        {
-            send(tid_acl, CMD_PUT, prev_binobj, new_binobj, op_id);
-        }
-    }
-
-    return ResultCode.Ok;
 }
 
 private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
