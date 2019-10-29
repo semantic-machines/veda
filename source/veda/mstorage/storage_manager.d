@@ -7,7 +7,7 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string, std.digest.ripemd, std.bigint;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
-    import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
+    import veda.core.common.context, veda.core.common.define, veda.onto.individual, veda.onto.resource;
     import veda.util.module_info, veda.util.properd;
     import veda.common.type, veda.core.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
@@ -474,8 +474,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         },
                         (byte cmd, int arg, bool arg2)
                         {
-                            if (cmd == CMD_SET_TRACE)
-                                set_trace(arg, arg2);
                         },
                         (OwnerTerminated ot)
                         {

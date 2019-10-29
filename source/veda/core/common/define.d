@@ -249,9 +249,6 @@ byte CMD_COMMIT    = 16;
 
 byte CMD_MSG       = 17;
 
-/// Включить/выключить отладочные сообщения
-byte CMD_SET_TRACE = 33;
-
 /// Остановить прием команд на изменение
 byte CMD_FREEZE    = 42;
 

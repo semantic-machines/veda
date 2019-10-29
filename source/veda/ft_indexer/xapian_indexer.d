@@ -10,7 +10,7 @@ private import veda.common.type;
 private import veda.bind.xapian_d_header;
 private import veda.core.util.utils, veda.common.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual;
-private import veda.core.common.define, veda.core.common.type, veda.core.common.context, veda.core.common.log_msg, veda.core.impl.thread_context;
+private import veda.core.common.define, veda.core.common.type, veda.core.common.context, veda.core.impl.thread_context;
 private import veda.search.common.vel, veda.search.xapian.xapian_vql, veda.search.common.indexer_property;
 
 // ////// Logger ///////////////////////////////////////////
@@ -213,8 +213,7 @@ public class IndexerContext
                     return;
                 }
 
-                if (trace_msg[ 220 ] == 1)
-                    log.trace("index document:[%s]", indv.uri);
+//                    log.trace("index document:[%s]", indv.uri);
 
                 Resources types = indv.getResources("rdf:type");
 
@@ -299,9 +298,7 @@ public class IndexerContext
                         prefix = "X" ~ text(slot_L1) ~ "D";
                         indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index [DataType.Double] :[%s], prefix=%s[%s]", text(l_data), prefix,
-                                      predicate);
+//                      log.trace("index [DataType.Double] :[%s], prefix=%s[%s]", text(l_data), prefix, predicate);
                     }
 
                     void index_boolean(string predicate, Resource oo)
@@ -318,9 +315,7 @@ public class IndexerContext
                         indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
                         doc.add_value(slot_L1, data.ptr, data.length, &err);
 
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index [DataType.Boolean] :[%s], prefix=%s[%s]", data, prefix,
-                                      predicate);
+//                      log.trace("index [DataType.Boolean] :[%s], prefix=%s[%s]", data, prefix,  predicate);
                     }
 
                     void index_integer(string predicate, Resource oo)
@@ -334,9 +329,7 @@ public class IndexerContext
                         prefix = "X" ~ text(slot_L1) ~ "D";
                         indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index [DataType.Integer] :[%s], prefix=%s[%s]", text(l_data), prefix,
-                                      predicate);
+//                      log.trace("index [DataType.Integer] :[%s], prefix=%s[%s]", text(l_data), prefix, predicate);
                     }
 
                     void index_date(string predicate, Resource oo)
@@ -355,9 +348,7 @@ public class IndexerContext
                         prefix = "X" ~ text(slot_L1) ~ "D";
                         indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix,
-                                      predicate);
+//                      log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix, predicate);
                     }
 
                     void index_uri(string predicate, Resource oo)
@@ -369,8 +360,7 @@ public class IndexerContext
 
                             string data = to_lower_and_replace_delimeters(oo.literal);
 
-                            if (trace_msg[ 220 ] == 1)
-                                log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
+//                          log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
                             indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 
                             //doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
@@ -399,9 +389,7 @@ public class IndexerContext
                         int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
                         prefix = "X" ~ text(slot_L1) ~ "X";
 
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix,
-                                      predicate);
+//                      log.trace("index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix, predicate);
 
                         indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
                         doc_add_text_value(slot_L1, oo.literal, &err);
@@ -422,9 +410,7 @@ public class IndexerContext
                         int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "#F", key2slot);
                         prefix = "X" ~ text(slot_L1) ~ "X";
 
-                        if (trace_msg[ 220 ] == 1)
-                            log.trace("revers index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix,
-                                      predicate);
+//                      log.trace("revers index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix, predicate);
 
                         indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 //                                        doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
@@ -472,9 +458,7 @@ public class IndexerContext
                                             // ссылка на наследуемый индекс, переходим вниз
                                             Individual inhr_idx = iproperty.get_index(value.uri);
 
-                                            if (trace_msg[ 220 ] == 1)
-                                                log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value,
-                                                          inhr_idx);
+//                                          log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value, inhr_idx);
 
                                             if (inhr_idx != Individual.init)
                                             {
@@ -487,8 +471,7 @@ public class IndexerContext
                                                         Resources links =
                                                             inner_indv.getResources(forProperty.uri);
 
-                                                        if (trace_msg[ 220 ] == 1)
-                                                            log.trace("forProperty=[%s], links=[%s]", forProperty, links);
+//                                                        log.trace("forProperty=[%s], links=[%s]", forProperty, links);
 
                                                         foreach (link; links)
                                                         {
@@ -512,9 +495,7 @@ public class IndexerContext
                                                                 inner_indv.getResources(indexed_field.uri);
                                                             foreach (rc; rrc)
                                                             {
-                                                                if (trace_msg[ 213 ] == 1)
-                                                                    log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri,
-                                                                              rc);
+//                                                              log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri, rc);
 
                                                                 if (rc.type == DataType.Uri)
                                                                 {
@@ -631,8 +612,7 @@ public class IndexerContext
 
                             indexer.index_text(p_text_ru.ptr, p_text_ru.length, prefix.ptr, prefix.length, &err);
 
-                            if (trace_msg[ 220 ] == 1)
-                                log.trace("index as ru text:[%s]", p_text_ru);
+//                          log.trace("index as ru text:[%s]", p_text_ru);
 
                             doc_add_text_value(slot_L1, p_text_ru, &err);
                             //writeln ("slot:", slot_L1, ", value:", p_text_ru);
@@ -645,8 +625,7 @@ public class IndexerContext
 
                             indexer.index_text(p_text_en.ptr, p_text_en.length, prefix.ptr, prefix.length, &err);
 
-                            if (trace_msg[ 220 ] == 1)
-                                log.trace("index as en text:[%s]", p_text_en);
+//                          log.trace("index as en text:[%s]", p_text_en);
 
                             doc_add_text_value(slot_L1, p_text_en, &err);
                             //writeln ("slot:", slot_L1, ", value:", p_text_en);
@@ -673,8 +652,7 @@ public class IndexerContext
                                 doc_add_text_value(slot_L1, oo.literal, &err);
                                 indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
 
-                                if (trace_msg[ 220 ] == 1)
-                                    log.trace("index as (ru or none) xsd:string [%s]", oo.literal);
+//                              log.trace("index as (ru or none) xsd:string [%s]", oo.literal);
 
                                 all_text.write(oo.literal);
                                 all_text.write('|');
@@ -699,8 +677,7 @@ public class IndexerContext
                                 doc_add_text_value(slot_L1, oo.literal, &err);
                                 indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
 
-                                if (trace_msg[ 220 ] == 1)
-                                    log.trace("index as (en) xsd:string [%s]", oo.literal);
+//                              log.trace("index as (en) xsd:string [%s]", oo.literal);
 
                                 all_text.write(oo.literal);
                                 all_text.write('|');
@@ -754,8 +731,7 @@ public class IndexerContext
                 //writeln("@index = ", data);
 
                 indexer.index_text(data.ptr, data.length, &err);
-                if (trace_msg[ 221 ] == 1)
-                    log.trace("index all text [%s]", data);
+//              log.trace("index all text [%s]", data);
 
                 doc.add_boolean_term(uuid.ptr, uuid.length, &err);
                 doc.set_data(indv.uri.ptr, indv.uri.length, &err);
@@ -794,8 +770,7 @@ public class IndexerContext
         {
             sw.stop();
 
-            if (trace_msg[ 221 ] == 1)
-                log.trace("FT: end");
+//          log.trace("FT: end");
             //log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
             counter = op_id;
         }

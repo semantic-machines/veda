@@ -1,7 +1,7 @@
 module veda.gluecode.script;
 
 import std.stdio, std.path, std.container.array, std.algorithm, std.conv, std.range;
-import veda.gluecode.v8d_bind, veda.core.common.context, veda.onto.individual, veda.core.common.log_msg, veda.onto.resource;
+import veda.gluecode.v8d_bind, veda.core.common.context, veda.onto.individual, veda.onto.resource;
 
 interface ScriptVM
 {
