@@ -6,7 +6,6 @@ module veda.gluecode.v8d_bind;
 import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json, std.string;
 import veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction, veda.search.common.isearch;
-import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -40,7 +39,6 @@ long    g_count_popped;
 //_Buff      g_script_out;
 
 ResultCode g_last_result;
-Cache!(string, string) g_cache_of_indv;
 
 private string empty_uid;
 
@@ -536,14 +534,6 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
             if (g_context !is null)
             {
                 string icb;
-
-                if (g_cache_of_indv !is null)
-                {
-                    icb = g_cache_of_indv.get(uri);
-
-//                    if (icb !is null)
-//                        writefln("@v8 success get from cache, uri=%s", uri);
-                }
 
                 if (icb is null)
                     icb = g_context.get_storage().get_binobj_from_individual_storage(uri);
