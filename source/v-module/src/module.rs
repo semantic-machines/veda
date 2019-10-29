@@ -1,3 +1,4 @@
+use env_logger::Builder;
 use crate::info::ModuleInfo;
 use ini::Ini;
 use nng::options::protocol::pubsub::Subscribe;
@@ -10,6 +11,9 @@ use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
+use chrono::Local;
+use log::LevelFilter;
+use std::io::Write;
 
 pub struct Module {
     pub storage: VStorage,
@@ -242,4 +246,17 @@ pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
     wcmd?;
 
     Some(IndvOp::from_i64(wcmd.unwrap_or_default()))
+}
+
+pub fn init_log () {
+    let env_var = "RUST_LOG";
+    match std::env::var_os(env_var) {
+        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
+        None => std::env::set_var(env_var, "info"),
+    }
+
+    Builder::new()
+        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
+        .filter(None, LevelFilter::Info)
+        .init();
 }
