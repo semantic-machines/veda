@@ -163,7 +163,6 @@ if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
 fi
 
 if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] ; then
-#    ./tools/build-component.sh veda-ro-storage ro-storage
 
     cd source/veda-ro-storage
     cargo build --release
