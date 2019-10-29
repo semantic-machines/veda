@@ -195,9 +195,6 @@ public enum COMPONENT : ubyte
     /// исполнение скриптов, low priority1
     scripts_lp1      = 50,
 
-    //// long time run scripts
-    ltr_scripts      = 34,
-
     ///////////////////////////////////////
 
     /// Сохранение накопленных в памяти данных
@@ -231,7 +228,6 @@ public enum MODULE : ubyte
     scripts_lp1       = COMPONENT.scripts_lp1,
     fanout_email      = COMPONENT.fanout_email,
     user_modules_tool = COMPONENT.user_modules_tool,
-    ltr_scripts       = COMPONENT.ltr_scripts,
     fanout_sql_np     = COMPONENT.fanout_sql_np,
     fanout_sql_lp     = COMPONENT.fanout_sql_lp,
     input_queue       = COMPONENT.input_queue
@@ -249,19 +245,10 @@ byte CMD_COMMIT    = 16;
 
 byte CMD_MSG       = 17;
 
-/// Остановить прием команд на изменение
-byte CMD_FREEZE    = 42;
-
-/// Возобновить прием команд на изменение
-byte CMD_UNFREEZE  = 43;
-
 byte CMD_EXIT      = 49;
 
 /// Установить
 byte CMD_SET       = 50;
-
-/// Убрать
-byte CMD_START     = 52;
 
 public string subsystem_byte_to_string(long src)
 {

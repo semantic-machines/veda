@@ -26,29 +26,6 @@ Logger log()
     return _log;
 }
 
-public void freeze(P_MODULE storage_id)
-{
-    writeln("FREEZE");
-    Tid tid_subject_manager = getTid(storage_id);
-
-    if (tid_subject_manager != Tid.init)
-    {
-        send(tid_subject_manager, CMD_FREEZE, thisTid);
-        receive((bool _res) {});
-    }
-}
-
-public void unfreeze(P_MODULE storage_id)
-{
-    writeln("UNFREEZE");
-    Tid tid_subject_manager = getTid(storage_id);
-
-    if (tid_subject_manager != Tid.init)
-    {
-        send(tid_subject_manager, CMD_UNFREEZE);
-    }
-}
-
 public string find(P_MODULE storage_id, string uri)
 {
     string res;
@@ -315,11 +292,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 }
                                 //log.trace ("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
-                            else if (cmd == CMD_UNFREEZE)
-                            {
-                                log.trace("UNFREEZE");
-                                is_freeze = false;
-                            }
                         },
                         (byte cmd, Tid tid_response_reciever)
                         {
@@ -342,12 +314,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 send(tid_response_reciever, true);
                                 module_info.put_info(op_id, committed_op_id);
                                 log.trace("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
-                            }
-                            else if (cmd == CMD_FREEZE)
-                            {
-                                log.trace("FREEZE");
-                                is_freeze = true;
-                                send(tid_response_reciever, true);
                             }
                             else if (cmd == CMD_EXIT)
                             {
