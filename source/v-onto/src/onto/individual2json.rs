@@ -1,6 +1,7 @@
 use crate::datatype::{DataType, Lang};
 use crate::individual::*;
 use crate::resource::{Resource, Value};
+use chrono::{TimeZone, Utc};
 use rust_decimal::Decimal;
 use serde::ser::{Serialize, SerializeMap, SerializeStruct, Serializer};
 use serde_json::json;
@@ -11,7 +12,6 @@ impl IndividualObj {
         if let Ok(b) = serde_json::to_value(&self) {
             return b.to_string();
         }
-
         "".to_owned()
     }
 
@@ -54,7 +54,8 @@ impl Serialize for Resource {
                 tup.serialize_field("data", &*i)?;
             }
             Value::Datetime(i) => {
-                tup.serialize_field("data", &*i)?;
+                let dt = *i;
+                tup.serialize_field("data", &format!("{:?}", &Utc.timestamp(dt, 0)))?;
             }
             Value::Bool(b) => {
                 tup.serialize_field("data", &*b)?;
