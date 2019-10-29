@@ -9,7 +9,7 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid, std.random;
     import veda.util.properd, veda.core.impl.app_context_creator;
-    import veda.core.common.context, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
+    import veda.core.common.context, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
     import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource,
            veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
@@ -1406,7 +1406,6 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
 {
     Ticket ticket;
 
-    //if (trace_msg[ T_API_60 ] == 1)
     log.trace("INFO: request trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
     ticket.result = ResultCode.AuthenticationFailed;

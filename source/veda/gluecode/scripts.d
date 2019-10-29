@@ -7,7 +7,7 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import std.concurrency;
 private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 private import veda.common.logger, veda.core.impl.thread_context, veda.util.queue;
-private import veda.core.common.context, veda.core.common.log_msg, veda.onto.onto;
+private import veda.core.common.context, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
 private import veda.gluecode.script, veda.gluecode.v8d_bind, veda.gluecode.ltr_scripts;
 
@@ -410,7 +410,6 @@ class ScriptProcess : VedaModule
         if (script_vm is null)
             return;
 
-        //if (trace_msg[ 301 ] == 1)
         log.trace("start load db scripts");
 
         Ticket sticket = context.sys_ticket();
@@ -443,7 +442,6 @@ class ScriptProcess : VedaModule
         foreach (_script_id; wpl.scripts_order)
             scripts_ordered_list ~= "," ~ _script_id;
 
-//        if (trace_msg[ 300 ] == 1)
         log.trace("load db scripts, count=%d, scripts_uris=[%s] ", wpl.scripts_order.length, scripts_ordered_list);
     }
 
