@@ -944,20 +944,6 @@ public string execute_json(string in_msg, Context ctx)
             res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
         }
-        else if (sfn == "freeze")
-        {
-            ctx.freeze();
-            res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.Ok;
-            res[ "op_id" ]  = -1;
-        }
-        else if (sfn == "unfreeze")
-        {
-            ctx.unfreeze();
-            res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.Ok;
-            res[ "op_id" ]  = -1;
-        }
         else
         {
             res[ "type" ]   = "OpResult";
@@ -976,16 +962,6 @@ public string execute_json(string in_msg, Context ctx)
 
         return res.toString();
     }
-}
-
-private void freeze()
-{
-    indv_storage_thread.freeze(P_MODULE.subject_manager);
-}
-
-private void unfreeze()
-{
-    indv_storage_thread.unfreeze(P_MODULE.subject_manager);
 }
 
 private Ticket *[ string ] user_of_ticket;

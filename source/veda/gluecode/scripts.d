@@ -9,7 +9,7 @@ private import veda.common.type, veda.core.common.type, veda.core.common.define,
 private import veda.common.logger, veda.core.impl.thread_context, veda.util.queue;
 private import veda.core.common.context, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-private import veda.gluecode.script, veda.gluecode.v8d_bind, veda.gluecode.ltr_scripts;
+private import veda.gluecode.script, veda.gluecode.v8d_bind;
 
 int main(string[] args)
 {
@@ -48,19 +48,6 @@ int main(string[] args)
 
         ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority1", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp1, log);
         p_script.run();
-    }
-    else if (vm_id == "ltr")
-    {
-        core.thread.Thread.sleep(dur!("seconds")(2));
-
-        ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, log);
-        //log = p_script.log();
-
-        tid_ltr_scripts = spawn(&ltrs_thread);
-
-        p_script.run();
-
-        shutdown_ltr_scripts();
     }
 
     return 0;
