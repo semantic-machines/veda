@@ -2,10 +2,6 @@
 extern crate log;
 
 use crate::common::*;
-use chrono::Local;
-use env_logger::Builder;
-use log::LevelFilter;
-use std::io::Write;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_onto::individual::*;
@@ -15,20 +11,8 @@ use v_storage::storage::*;
 mod common;
 
 fn main() -> Result<(), i32> {
-    info!("AZ-INDEXER");
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info"),
-    }
 
-    Builder::new()
-        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
-        .init();
-
-    //let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-    //let section = conf.section(None::<String>).expect("fail parse veda.properties");
+    init_log ();
 
     let mut module = Module::default();
 

@@ -1,15 +1,12 @@
 #[macro_use]
 extern crate log;
 
-use chrono::Local;
-use env_logger::Builder;
 use ini::Ini;
-use log::LevelFilter;
 use nng::{Message, Protocol, Socket};
-use std::io::Write;
 use std::str;
 use v_onto::individual::Individual;
 use v_storage::storage::*;
+use v_module::module::init_log;
 
 /**
  * storage service
@@ -21,16 +18,8 @@ use v_storage::storage::*;
  */
 
 fn main() -> std::io::Result<()> {
-    let env_var = "RUST_LOG";
-    match std::env::var_os(env_var) {
-        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
-        None => std::env::set_var(env_var, "info"),
-    }
 
-    Builder::new()
-        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
-        .filter(None, LevelFilter::Info)
-        .init();
+    init_log ();
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
