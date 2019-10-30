@@ -141,11 +141,14 @@ var conn Connector
 
 //socket is nanomsg socket connected to server
 var g_mstorage_ch *nanomsg.Socket
+var g_auth_ch *nanomsg.Socket
 
 var mstorage_ch_Mutex = sync.RWMutex{}
+var auth_ch_Mutex = sync.RWMutex{}
 
 //mainModuleURL is tcp address of veda server
 var mainModuleURL = ""
+var authModuleURL = ""
 var notifyChannelURL = ""
 var queryServiceURL = ""
 var roStorageURL = ""

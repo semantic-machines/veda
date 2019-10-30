@@ -212,14 +212,14 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     if old_secret.is_empty() {
                         error!("update password: secret not found, user={}", person.get_id());
                         ticket.result = ResultCode::InvalidSecret;
-                        //remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
                     if secret != old_secret {
                         error!("request for update password: send secret not equal request secret {}, user={}", secret, person.get_id());
                         ticket.result = ResultCode::InvalidSecret;
-                        //remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
@@ -233,14 +233,14 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     if exist_password == password {
                         error!("update password: now password equal previous password, reject. user={}", person.get_id());
                         ticket.result = ResultCode::NewPasswordIsEqualToOld;
-                        //remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
                     if password == EMPTY_SHA256_HASH {
                         error!("update password: now password is empty, reject. user={}", person.get_id());
                         ticket.result = ResultCode::EmptyPassword;
-                        //remove_secret(ctx, i_usesCredential, iuser.uri, storage, &sticket);
+                        remove_secret(&mut uses_credential, person.get_id(), module, systicket);
                         return ticket;
                     }
 
@@ -341,10 +341,12 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
     ticket
 }
 
-pub fn get_password_lifetime(module: &mut Module) -> Option<i64> {
+fn get_password_lifetime(module: &mut Module) -> Option<i64> {
     let mut node = Individual::default();
     if module.storage.get_individual("cfg:standart_node", &mut node) {
         return node.get_first_integer("cfg:user_password_lifetime");
     }
     None
 }
+
+fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut Module, sticket: &str) {}
