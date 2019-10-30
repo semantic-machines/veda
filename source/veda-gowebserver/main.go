@@ -435,10 +435,19 @@ func main() {
   if err != nil {
     log.Fatal("ERR! ON CREATING SOCKET")
   }
-
   _, err = g_mstorage_ch.Connect(mainModuleURL)
   for err != nil {
     _, err = g_mstorage_ch.Connect(mainModuleURL)
+    time.Sleep(3000 * time.Millisecond)
+  }
+
+  g_auth_ch, err = nanomsg.NewSocket(nanomsg.AF_SP, nanomsg.REQ)
+  if err != nil {
+    log.Fatal("ERR! ON CREATING SOCKET")
+  }
+  _, err = g_auth_ch.Connect(authModuleURL)
+  for err != nil {
+    _, err = g_auth_ch.Connect(authModuleURL)
     time.Sleep(3000 * time.Millisecond)
   }
 
