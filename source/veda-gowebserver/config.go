@@ -41,6 +41,8 @@ func configWebServer() {
 				notifyChannelURL = paramVal
 			case "main_module_url":
 				mainModuleURL = paramVal
+			case "auth_module_url":
+				authModuleURL = paramVal
 			case "tarantool_url":
 				tarantoolURL = paramVal
 			case "use_https":
