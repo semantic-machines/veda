@@ -254,7 +254,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
-                        //ticket = create_new_ticket(login, user_id);
+                        create_new_ticket(login, &user_id, &mut ticket, module, systicket);
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
                     return ticket;
@@ -323,7 +323,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     }
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
-                        //ticket = create_new_ticket(login, user_id);
+                        create_new_ticket(login, &user_id, &mut ticket, module, systicket);
                         return ticket;
                     } else {
                         warn!("request passw not equal with exist, user={}", account.get_id());
@@ -350,3 +350,5 @@ fn get_password_lifetime(module: &mut Module) -> Option<i64> {
 }
 
 fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut Module, sticket: &str) {}
+
+fn create_new_ticket(login: &str, user_id: &str, ticket: &mut Ticket, module: &mut Module, sticket: &str) {}
