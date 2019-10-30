@@ -52,10 +52,10 @@ func authenticate(ctx *fasthttp.RequestCtx) {
 
 	//send request via nanomsg socket and reading response
 
-	mstorage_ch_Mutex.Lock()
+	auth_ch_Mutex.Lock()
 	NmCSend(g_auth_ch, jsonRequest, 0)
 	responseBuf, _ := g_auth_ch.Recv(0)
-	mstorage_ch_Mutex.Unlock()
+	auth_ch_Mutex.Unlock()
 
 	//decoding authenticate response json
 	responseJSON := make(map[string]interface{})
