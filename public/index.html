@@ -213,17 +213,21 @@
     <script type="html/template" id="link-control-template">
       <div class="link-control">
         <div class="input-group">
-          <div class="input-group-addon btn btn-default tree">
-            <i class="fa fa-sitemap"></i>
-          </div>
+          <span class="input-group-btn">
+            <button class="btn btn-default tree">
+              <i class="fa fa-sitemap"></i>
+            </button>
+          </span>
           <textarea rows="1" class="form-control fulltext"></textarea>
-          <div class="input-group-addon btn btn-default clear">&#10005;</div>
-          <div class="input-group-addon btn btn-default dropdown">
-            <i class="caret"></i>
-          </div>
-          <div class="input-group-addon btn btn-default create">
-            <i class="glyphicon glyphicon-plus"></i>
-          </div>
+          <span class="input-group-btn post-buttons">
+            <button class="btn btn-default clear">&#10005;</button>
+            <button class="btn btn-default dropdown">
+              <i class="caret"></i>
+            </button>
+            <button class="btn btn-default create">
+              <i class="glyphicon glyphicon-plus"></i>
+            </button>
+          </span>
         </div>
         <div class="fulltext-menu">
           <div class="header clearfix">
@@ -245,34 +249,43 @@
     <script type="html/template" id="actor-control-template">
       <div class="link-control">
         <div class="input-group">
-          <div class="input-group-addon btn btn-default select-type dropdown-toggle" id="actor-type-menu" data-toggle="dropdown">
-            <i class="glyphicon glyphicon-user"></i><i class="caret"></i>
+          <div class="input-group-btn">
+            <button class="btn btn-default select-type dropdown-toggle" id="actor-type-menu" data-toggle="dropdown">
+              <i class="glyphicon glyphicon-user"></i><i class="caret"></i>
+            </button>
+            <div class="dropdown-menu actor-type-menu padding-lg-h" aria-labelledby="actor-type-menu">
+              <div class="radio">
+                <label>
+                  <input type="radio" name="actor-type" value="v-s:Appointment"/>
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="actor-type" value="v-s:Person"/>
+                </label>
+              </div>
+              <div class="radio">
+                <label>
+                  <input type="radio" name="actor-type" value="v-s:Position"/>
+                </label>
+              </div>
+              <hr class="margin-sm">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="full-name" value="v-s:FullNameBundle"/>
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" name="actor-deleted" value="v-s:deleted"/>
+                </label>
+              </div>
+            </div>
           </div>
-          <div class="dropdown-menu actor-type-menu padding-lg-h" aria-labelledby="actor-type-menu">
-            <div class="radio">
-              <label>
-                <input type="radio" name="actor-type" value="v-s:Appointment"/>
-              </label>
-            </div>
-            <div class="radio">
-              <label>
-                <input type="radio" name="actor-type" value="v-s:Person"/>
-              </label>
-            </div>
-            <div class="radio">
-              <label>
-                <input type="radio" name="actor-type" value="v-s:Position"/>
-              </label>
-            </div>
-            <hr class="margin-sm">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" name="actor-deleted" value="v-s:deleted"/>
-              </label>
-            </div>
-          </div>
-          <textarea rows="1" class="form-control fulltext"></textarea>
-          <div class="input-group-addon btn btn-default clear">&#10005;</div>
+          <input type="text" class="form-control fulltext" autocomplete="off"/>
+          <span class="input-group-btn">
+            <button class="btn btn-default clear">&#10005;</button>
+          </span>
         </div>
         <div class="fulltext-menu">
           <div class="suggestions"></div>
@@ -319,9 +332,9 @@
     <!-- Datetime control template -->
     <script type="html/template" id="datetime-control-template">
       <div class="input-group date">
-        <div class="input-group-addon btn btn-default">
+        <span class="input-group-addon">
           <span class="glyphicon glyphicon-time"></span>
-        </div>
+        </span>
         <input type="text" class="form-control" />
       </div>
     </script>

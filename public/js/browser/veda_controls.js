@@ -732,16 +732,23 @@
       queryPrefix = "'rdf:type'==='v-s:Appointment'",
       sort = this.attr("data-sort") || "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc",
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
+      complex = this.data("complex") || false,
       deleted,
-      chosenActorType;
+      chosenActorType,
+      fullName;
 
-    //~ // Disable closing actor type dropdown on click
+    // Fulltext search feature
+    var fulltext = $(".fulltext", control);
+    var fulltextMenu = $(".fulltext-menu", control);
+
+    // Disable closing actor type dropdown on click
     $(".dropdown-menu", control).click(function (e) {
       e.stopPropagation();
-      //~ setTimeout(function () {
-        //~ $(".input-group", control).removeClass("open");
-        //~ $(".dropdown-toggle", control).attr("aria-expanded", false);
-      //~ }, 100);
+    });
+
+    // Close actor type dropdown on input click
+    fulltext.click(function () {
+      $(".dropdown-toggle", control).attr("aria-expanded", false).parent().removeClass("open");
     });
 
     // Filter allowed actor types, set label & handler
@@ -774,15 +781,30 @@
       }
     });
 
-    // Fulltext search feature
-    var fulltext = $(".fulltext", control);
-    var fulltextMenu = $(".fulltext-menu", control);
+    // Full name check label & handler
+    $("[name='full-name']", control).each(function () {
+      var label = new veda.IndividualModel(this.value);
+      var that = this;
+      label.load().then(function (label) {
+        $(that).parent().append( new veda.IndividualModel(that.value).toString() );
+      });
+    }).change(function () {
+      fullName = $(this).is(":checked") ? true : false;
+      var ftValue = $(".fulltext", control).val();
+      if (ftValue) {
+        performSearch(undefined, ftValue);
+      }
+    });
 
-    $(".clear", control).click(function () {
+    $(".clear", control).on("click keyup", function (e) {
+      if (e.type !== "click" && e.which !== 13) { return; }
       individual.clearValue(rel_uri);
-      individual.clearValue(rel_uri + ".v-s:employee");
-      individual.clearValue(rel_uri + ".v-s:occupation");
+      if ( complex ) {
+        individual.clearValue(rel_uri + ".v-s:employee");
+        individual.clearValue(rel_uri + ".v-s:occupation");
+      }
       $(".fulltext", control).val("");
+      $(".fulltext-menu", control).hide();
     });
 
     if (placeholder instanceof veda.IndividualModel) {
@@ -818,17 +840,29 @@
         } else if (!value.length) {
           suggestions.empty();
           fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
       };
     }());
 
-    var performSearch = function (e, value) {
+    function performSearch(e, value) {
+      if ( fullName ) {
+        var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
+        var fullNameInput = value.trim().replace(/\s+/g, " ").split(" ");
+        var fullNameQuery = fullNameInput.map(function (token, i) {
+          if (i < 3) {
+            return "'" + fullNameProps[i] + "'=='" + token + "*'";
+          }
+        }).filter(Boolean).join(" && ");
+        value = fullNameQuery;
+      }
       ftQuery(queryPrefix, value, sort, deleted)
         .then(renderResults)
         .catch(function (error) {
           console.log("Fulltext query error", error);
         });
-    };
+    }
 
     fulltext
       .on("keyup", keyupHandler)
@@ -836,41 +870,34 @@
 
     var selected = [];
 
-    var renderResults = function (results) {
+    function renderResults(results) {
       selected = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation"));
       if (results.length) {
         var renderedPromises = results.map(function (result) {
-          return Promise.resolve().then(function () {
-            if (chosenActorType === "v-s:Appointment") {
-              return result;
-            } else if (chosenActorType === "v-s:Person") {
-              return result["v-s:employee"][0].load();
-            } else {
-              return result["v-s:occupation"][0].load();
-            }
-          }).then(function (result) {
-            var tmpl = $("<div class='suggestion'></div>")
-              .text( result.toString() )
-              .attr("resource", result.id);
-            if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
-              tmpl.addClass("selected");
-            }
-            if (result.hasValue("v-s:deleted", true)) {
-              tmpl.addClass("deleted");
-            }
-            return tmpl;
-          });
+          var cont = $("<a href='#' class='suggestion'></a>").attr("resource", result.id);
+          if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
+            cont.addClass("selected");
+          }
+          return result.present(cont, "v-ui:LabelTemplate")
+            .then(function () {
+              return cont;
+            });
         });
         Promise.all(renderedPromises).then(function (rendered) {
           suggestions.empty().append(rendered);
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
-          $(document).click(clickOutsideMenuHandler);
-        });
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
+        }).catch(console.log);
       } else {
         suggestions.empty();
         fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
       }
-    };
+    }
 
     var suggestions = $(".suggestions", control);
     var dblTimeout;
@@ -882,9 +909,12 @@
       } else {
         clickHandler(e);
       }
+    }).on("dblclick", ".suggestion", function (e) {
+      e.preventDefault();
     });
 
-    var clickHandler = function (e) {
+    function clickHandler(e) {
+      e.preventDefault();
       var tmpl = $(e.target);
       var suggestion_uri = tmpl.attr("resource");
       var suggestion = new veda.IndividualModel(suggestion_uri);
@@ -892,56 +922,100 @@
       if ( selected.indexOf(suggestion) >= 0 ) {
         setValue(suggestion);
         fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
       } else {
         setValue(suggestion);
         fulltextMenu.hide();
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
       }
       dblTimeout = setTimeout(function () {
         dblTimeout = undefined;
       }, 300);
-    };
+    }
 
-    var dblclickHandler = function (e) {
+    function dblclickHandler(e) {
       if ( !$(e.target).hasClass("selected") ) {
         clickHandler(e);
       }
       setValue(selected);
       dblTimeout = clearTimeout(dblTimeout);
       fulltextMenu.hide();
+      $(document).off("click", clickOutsideMenuHandler);
+      $(document).off("keydown", arrowHandler);
     }
 
-    var clickOutsideMenuHandler = function (event) {
-      if( !$(event.target).closest(fulltextMenu).length ) {
+    function clickOutsideMenuHandler(e) {
+      if( !$(e.target).closest(fulltextMenu).length && e.target !== fulltext[0] ) {
         if( fulltextMenu.is(":visible") ) {
+          if ( selected.length ) {
+            setValue(selected[0]);
+          }
           fulltextMenu.hide();
-          removeClickOutsideMenuHandler();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
       }
     }
 
-    var removeClickOutsideMenuHandler = function () {
-      if (control.is(":visible") && selected.length) {
-        setValue(selected[0]);
+    function arrowHandler(e) {
+      if ( e.which === 40 ) { // Down
+        e.preventDefault();
+        e.stopPropagation();
+        var active = suggestions.find(".active").removeClass("active");
+        var next = active.next();
+        if ( next.length ) {
+          next.focus().addClass("active");
+        } else {
+          suggestions.children().first().addClass("active").focus();
+        }
+      } else if ( e.which === 38 ) { // Up
+        e.preventDefault();
+        e.stopPropagation();
+        var active = suggestions.find(".active").removeClass("active");
+        var prev = active.prev();
+        if ( prev.length ) {
+          prev.focus().addClass("active");
+        } else {
+          suggestions.children().last().addClass("active").focus();
+        }
       }
-      $(document).off("click", clickOutsideMenuHandler);
     }
 
     function setValue(value) {
-      var rel;
-      individual.clearValue(rel_uri);
-      individual.clearValue(rel_uri + ".v-s:employee");
-      individual.clearValue(rel_uri + ".v-s:occupation");
-      if ( value.hasValue("rdf:type", "v-s:Appointment") ) {
-        rel = rel_uri;
-      } else if ( value.hasValue("rdf:type", "v-s:Person") ) {
-        rel = rel_uri + ".v-s:employee";
+      if ( complex ) {
+        individual.clearValue(rel_uri);
+        individual.clearValue(rel_uri + ".v-s:employee");
+        individual.clearValue(rel_uri + ".v-s:occupation");
+        if (chosenActorType === "v-s:Appointment") {
+          individual.addValue(rel_uri, value);
+        } else if (chosenActorType === "v-s:Person") {
+          value["v-s:employee"][0].load().then(function (person) {
+            individual.addValue(rel_uri + ".v-s:employee", person);
+          });
+        } else {
+          value["v-s:occupation"][0].load().then(function (position) {
+            individual.addValue(rel_uri + ".v-s:occupation", position);
+          });
+        }
       } else {
-        rel = rel_uri + ".v-s:occupation";
+        individual.clearValue(rel_uri);
+        if (chosenActorType === "v-s:Appointment") {
+          individual.addValue(rel_uri, value);
+        } else if (chosenActorType === "v-s:Person") {
+          value["v-s:employee"][0].load().then(function (person) {
+            individual.addValue(rel_uri, person);
+          });
+        } else {
+          value["v-s:occupation"][0].load().then(function (position) {
+            individual.addValue(rel_uri, position);
+          });
+        }
       }
-      individual.addValue(rel, value);
     }
 
-    var propertyModifiedHandler = function () {
+    function propertyModifiedHandler() {
       if ( individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation") ) {
         var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation")).filter(Boolean)[0];
         value.load().then(function(value) {
@@ -1966,8 +2040,9 @@
       return newVal;
     }
 
-    if (isSingle) {
-      $(".clear", control).click(function () {
+    if (isSingle && opts.mode !== "search" && ( this.hasClass("fulltext") || this.hasClass("full") ) ) {
+      $(".clear", control).on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
         individual.clearValue(rel_uri);
         $(".fulltext", control).val("");
       });
@@ -1992,9 +2067,10 @@
       rel_range.rights.then(function (rights) {
         if ( !rights.hasValue("v-s:canCreate", true) ) {
           create.addClass("disabled");
-          create.off("click");
+          create.off("click keyup");
         } else {
-          create.click( function (e) {
+          create.on("click keyup", function (e) {
+            if (e.type !== "click" && e.which !== 13) { return; }
             var newVal = createValue();
             if ( inModal ) {
               var modal = $("#individual-modal-template").html();
@@ -2077,7 +2153,8 @@
 
       var treeTmpl = new veda.IndividualModel("v-ui:TreeTemplate");
       var modal = $("#individual-modal-template").html();
-      tree.click(function () {
+      tree.on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
         var $modal = $(modal);
         var cntr = $(".modal-body", $modal);
         $modal.on('hidden.bs.modal', function (e) {
@@ -2097,7 +2174,7 @@
         spec.present(cntr, treeTmpl, undefined, extra);
       });
     } else {
-      tree.remove();
+      tree.parent().remove();
     }
 
     // Fulltext search feature
@@ -2119,12 +2196,13 @@
         });
       }
 
-      autosize(fulltext);
-      this.on("edit", function () {
-        autosize.update(fulltext);
-      });
-      this.one("remove", function () {
-        autosize.destroy(fulltext);
+      fulltext.on("input keyup focus", function (e) {
+        var value = e.target.value;
+        if (value) {
+          e.target.setAttribute("rows", value.split("\n").length);
+        } else {
+          e.target.setAttribute("rows", 1);
+        }
       });
 
       var header = $(".header", control);
@@ -2135,16 +2213,18 @@
       ]).then(function (actions) {
         header.find(".select-all")
           .click(function () { suggestions.children(":not(.selected)").click(); })
-          .text( actions[0] );
+          .text( actions[0].toString() );
         header.find(".cancel-selection")
           .click(function () { suggestions.children(".selected").click(); })
-          .text( actions[1] );
+          .text( actions[1].toString() );
         header.find(".invert-selection")
           .click(function () { suggestions.children().click(); })
-          .text( actions[2] );
+          .text( actions[2].toString() );
         header.find(".close-menu")
           .click(function () {
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
             $(".form-control", control).val("");
             individual.set(rel_uri, selected);
           })
@@ -2171,15 +2251,18 @@
         var minLength = 3;
         return function (e) {
           if (timeout) { clearTimeout(timeout); }
+          if (e.which === 40 || e.which === 9 || e.which === 16) { return; }
           var value = e.target.value;
           if (value.length >= minLength) {
-            timeout = setTimeout(performSearch, 750, e, value);
+            timeout = setTimeout(performSearch, 750, value);
           } else if (!value.length) {
             if (isSingle) {
               individual.set(rel_uri, []);
             }
             suggestions.empty();
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           }
         };
       }());
@@ -2198,7 +2281,7 @@
         });
       };
 
-      var performSearch = function (e, value) {
+      var performSearch = function (value) {
         evalQueryPrefix().then(function (queryPrefix) {
           ftQuery(queryPrefix, value, sort, withDeleted)
             .then(renderResults)
@@ -2208,9 +2291,7 @@
         });
       };
 
-      fulltext
-        .on("keyup", keyupHandler)
-        .on("triggerSearch", performSearch);
+      fulltext.on("keyup", keyupHandler);
 
       var selected = [];
 
@@ -2219,7 +2300,7 @@
         if (results.length) {
           var rendered = results.map(function (result) {
             if (result == undefined) return "";
-            var tmpl = $("<div class='suggestion'></div>")
+            var tmpl = $("<a href='#' class='suggestion'></a>")
               .text( renderTemplate(result) )
               .attr("resource", result.id);
             if (individual.hasValue(rel_uri, result)) {
@@ -2234,11 +2315,16 @@
             return tmpl;
           });
           suggestions.empty().append(rendered);
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
-          $(document).click(clickOutsideMenuHandler);
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
         } else {
           suggestions.empty();
           fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
         }
       };
 
@@ -2252,19 +2338,25 @@
         } else {
           clickHandler(e);
         }
+      }).on("dblclick", ".suggestion", function (e) {
+        e.preventDefault();
       });
 
       var clickHandler = function (e) {
+        e.preventDefault();
         var tmpl = $(e.target);
         var suggestion_uri = tmpl.attr("resource");
         var suggestion = new veda.IndividualModel(suggestion_uri);
         tmpl.toggleClass("selected");
+        if (isSingle) { tmpl.siblings().removeClass("selected"); }
         if ( selected.indexOf(suggestion) >= 0 ) {
           if (isSingle) {
             individual
               .set(rel_uri, [])
               .set(rel_uri, [suggestion]);
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           } else {
             selected = selected.filter(function (value) {
               return value !== suggestion;
@@ -2272,8 +2364,12 @@
           }
         } else {
           if (isSingle) {
-            individual.set(rel_uri, [suggestion]);
+
+            selected = [suggestion];
+            individual.set(rel_uri, selected);
             fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           } else {
             selected = selected.filter(function (value) {
               return value !== suggestion;
@@ -2286,29 +2382,51 @@
       };
 
       var dblclickHandler = function (e) {
+        e.preventDefault();
         if ( !$(e.target).hasClass("selected") ) {
           clickHandler(e);
         }
         individual.set(rel_uri, selected);
         dblTimeout = clearTimeout(dblTimeout);
         fulltextMenu.hide();
-      }
+        $(document).off("click", clickOutsideMenuHandler);
+        $(document).off("keydown", arrowHandler);
+      };
 
-      var clickOutsideMenuHandler = function (event) {
-        if( !$(event.target).closest(fulltextMenu).length ) {
+      var clickOutsideMenuHandler = function (e) {
+        if( !$(e.target).closest(fulltextMenu).length ) {
           if( fulltextMenu.is(":visible") ) {
+            individual.set(rel_uri, selected);
             fulltextMenu.hide();
-            removeClickOutsideMenuHandler();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
           }
         }
-      }
+      };
 
-      var removeClickOutsideMenuHandler = function () {
-        if (control.is(":visible")) {
-          individual.set(rel_uri, selected);
+      var arrowHandler = function(e) {
+        if ( e.which === 40 ) { // Down
+          e.preventDefault();
+          e.stopPropagation();
+          var active = suggestions.find(".active").removeClass("active");
+          var next = active.next();
+          if ( next.length ) {
+            next.focus().addClass("active");
+          } else {
+            suggestions.children().first().addClass("active").focus();
+          }
+        } else if ( e.which === 38 ) { // Up
+          e.preventDefault();
+          e.stopPropagation();
+          var active = suggestions.find(".active").removeClass("active");
+          var prev = active.prev();
+          if ( prev.length ) {
+            prev.focus().addClass("active");
+          } else {
+            suggestions.children().last().addClass("active").focus();
+          }
         }
-        $(document).off("click", clickOutsideMenuHandler);
-      }
+      };
 
       var propertyModifiedHandler = function () {
         if ( isSingle && individual.hasValue(rel_uri) ) {
@@ -2322,7 +2440,7 @@
         } else if ( isSingle ) {
           fulltext.val("");
         }
-      }
+      };
 
       individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
@@ -2337,19 +2455,41 @@
 
     // Dropdown feature
     var dropdown = $(".dropdown", control);
-    if ( (this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full")) ) {
-      dropdown.click(function () {
-        if ( !fulltextMenu.is(":visible") ) {
-          fulltext.trigger("triggerSearch", [""]);
+    if ( this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full") ) {
+      dropdown.on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
+        e.stopPropagation();
+        if ( suggestions.is(":empty") ) {
+          performSearch();
+        } else if ( fulltextMenu.is(":visible") ) {
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        } else {
+          fulltextMenu.show();
+          $(document).on("click", clickOutsideMenuHandler);
+          $(document).on("keydown", arrowHandler);
         }
+      });
+      var downHandler = function (e) {
+        if ( e.which === 40) {
+          e.stopPropagation();
+          dropdown.focus().click();
+        }
+      }
+      fulltext.on("focus", function (e) {
+        fulltext.off("keydown").one("keydown", downHandler);
       });
     } else {
       dropdown.remove();
     }
 
+    var postButtons = $(".post-buttons", control);
     if ( !$(".fulltext", control).length ) {
-      $(".input-group", control).toggleClass("input-group btn-group");
-      $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
+      postButtons.removeClass("input-group-btn").children().first().toggleClass("btn-default btn-primary");
+    }
+    if ( !postButtons.children().length ) {
+      postButtons.remove();
     }
 
     this.on("view edit search", function (e) {
@@ -2390,13 +2530,16 @@
 
   function ftQuery(prefix, input, sort, withDeleted) {
     var queryString = "";
-    if ( input ) {
+    var special = input && input.indexOf("==") > 0 ? input : false;
+    if ( input && !special ) {
       var lines = input.split("\n");
       var lineQueries = lines.map(function (line) {
         var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
         return words.map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
       });
       queryString = lineQueries.join(" || ");
+    } else if (special) {
+      queryString = special;
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;

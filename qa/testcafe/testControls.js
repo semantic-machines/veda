@@ -14,7 +14,7 @@ import { Selector, t } from 'testcafe';
       .click('veda-control.fulltext.dropdown')
       .pressKey('ctrl+a delete')
       .typeText('veda-control.fulltext.dropdown', 'Класс для тестирования интерфейса')
-      .click('div.suggestion[resource="v-ui:TestUIClass"]')
+      .click('.suggestion[resource="v-ui:TestUIClass"]')
       .click('div.actions.actions-fixed button[type="button"] span.glyphicon.glyphicon-chevron-left')
       .typeText('veda-control.-view.edit.search[property="rdfs:label"]', 'Тест контролов')
       .wait(1000)

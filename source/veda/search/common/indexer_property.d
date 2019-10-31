@@ -5,7 +5,7 @@
 module veda.search.common.indexer_property;
 
 private import std.conv, std.stdio;
-private import veda.core.common.context, veda.core.common.log_msg;
+private import veda.core.common.context;
 private import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.define, veda.common.type, veda.core.common.type;
 private import veda.common.logger, veda.onto.onto;
 
@@ -94,8 +94,7 @@ class IndexerProperty
                     string key = sc ~ forProperty.uri;
                     class_property__2__indiviual[ key ] = indv;
 
-                    if (trace_msg[ 214 ] == 1)
-                        log.trace("SET search indexes, key=%s, uri=%s", key, indv.uri);
+//                        log.trace("SET search indexes, key=%s, uri=%s", key, indv.uri);
                 }
             }
 
@@ -104,8 +103,7 @@ class IndexerProperty
                 string key = forClass.uri ~ forProperty.uri;
                 class_property__2__indiviual[ key ] = indv;
 
-                if (trace_msg[ 214 ] == 1)
-                    log.trace("search indexes, key=%s, uri=%s", key, indv.uri);
+//                    log.trace("search indexes, key=%s, uri=%s", key, indv.uri);
             }
         }
     }

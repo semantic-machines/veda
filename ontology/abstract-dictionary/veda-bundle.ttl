@@ -204,6 +204,11 @@ v-s:Close
   rdfs:label "Закрыть"@ru ;
   rdfs:label "Close"@en ;
 .
+v-s:FullNameBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Фамилия Имя Отчество"@ru ;
+  rdfs:label "Surname Name Patronymic"@en ;
+.
 v-s:InvertSelection
   rdf:type v-s:Bundle ;
   rdfs:label "Инвертировать"@ru ;

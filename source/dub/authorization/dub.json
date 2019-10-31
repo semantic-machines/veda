@@ -18,7 +18,6 @@
 	    "../../lib64/liblmdb.a",
 	    "../../veda/util/commando.d",
 	    "../../veda/bind/nano.d",
-	    "../../veda/util/container.d",
             "../../veda/util/queue.d",
 	    "../../veda/util/module_info.d",
 	    "../../veda/common/logger.d",

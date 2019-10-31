@@ -30,12 +30,20 @@ fn main() {
         None => std::env::set_var(env_var, "info"),
     }
 
+    let app_dir = if let Ok(s) = std::env::var("APPDIR") {
+        s.as_str().to_string() + "/"
+    } else {
+        "./".to_string()
+    };
+
     Builder::new()
         .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
         .filter(None, LevelFilter::Info)
         .init();
 
-    let modules = get_modules_info();
+    info!("app dir={}", app_dir);
+
+    let modules = get_modules_info(&app_dir);
     if modules.is_err() {
         error!("fail read modules info, err={:?}", modules.err());
         return;
@@ -108,7 +116,7 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                 }
             }
         }
-        thread::sleep(time::Duration::from_millis(1000));
+        thread::sleep(time::Duration::from_millis(10000));
     }
 }
 
@@ -180,9 +188,8 @@ fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, Child)>> {
     Ok(started_processes)
 }
 
-fn get_modules_info() -> io::Result<HashMap<String, Module>> {
+fn get_modules_info(path: &str) -> io::Result<HashMap<String, Module>> {
     let mut modules: HashMap<String, Module> = HashMap::new();
-    let path = "./";
 
     let f = File::open("veda.modules")?;
     let file = &mut BufReader::new(&f);
@@ -232,11 +239,12 @@ fn get_modules_info() -> io::Result<HashMap<String, Module>> {
                 "veda-".to_string() + line.trim()
             };
 
-            if Path::new(&module_name).exists() {
-                module.exec_name = path.to_string() + &module_name;
+            let module_path = path.to_string() + &module_name;
+            if Path::new(&module_path).exists() {
+                module.exec_name = module_path;
                 modules.insert(line, module);
             } else {
-                return Err(Error::new(ErrorKind::Other, format!("not found module [{:?}]", module_name)));
+                return Err(Error::new(ErrorKind::Other, format!("not found module [{:?}]", &module_path)));
             }
         }
     }

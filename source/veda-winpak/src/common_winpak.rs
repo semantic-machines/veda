@@ -86,13 +86,15 @@ pub fn insert_card<I: BoxableIo + 'static>(
 const INSERT_VEHICLE_HOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
 (AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32,Note24)
-VALUES(1,@P1,0,0,0,0,@P2,'183','ТРАНСПОРТ',@P3,@P4,'0',@P5,@P6,@P7,@P8,@P9,@P10)";
+VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,'0',@P7,@P8,@P9,@P10,@P11,@P12)";
 
 const INSERT_HUMAN_CARDHOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
 (AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
 Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note24)
-VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,'0',null,@P8,@P9,'0',@P10,@P11,@P12,@P13,@P14,@P15,@P16)";
+VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,'0',@P12,@P13,@P14,@P15,@P16,@P17,@P18)";
+// note1 = P4, .. note8 = P4
+
 
 pub fn insert_card_holder<I: BoxableIo + 'static>(
     id: &str,
@@ -121,7 +123,9 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                     &[
                         &now,
                         &label.as_str(),
-                        &module.get_literal_of_link(indv, "v-s:supplier", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &"ТРАНСПОРТ",
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &label.as_str(),
                         &label.as_str(),
@@ -169,9 +173,11 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &now,
                         &first_name.as_str(),
                         &last_name.as_str(),
-                        &middle_name.as_str(),
-                        &tab_number.as_str(),
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &middle_name.as_str(), // note1
+                        &tab_number.as_str(), // note2
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(), // note4
+                        &0, // note5
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str(),
                         &occupation.as_str(),

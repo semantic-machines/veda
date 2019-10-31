@@ -233,18 +233,17 @@ veda.Module(function (veda) { "use strict";
           var successMsg = new veda.IndividualModel("v-s:SuccessBundle").load();
           successMsg.then(function (successMsg) {
             var notify = veda.Notify ? new veda.Notify() : function () {};
-            notify("success", {name: successMsg});
+            notify("success", {name: successMsg.toString()});
           });
         } else {
           var parentIndividual = new veda.IndividualModel(parent);
           parentIndividual.isSync(false);
         }
       }).catch(function (error) {
-        console.log(error);
         var errorMsg = new veda.IndividualModel("v-s:ErrorBundle").load();
         errorMsg.then(function (errorMsg) {
           var notify = veda.Notify ? new veda.Notify() : function () {};
-          notify("danger", {name: errorMsg});
+          notify("danger", {name: errorMsg.toString()});
         });
       });
     };
@@ -542,6 +541,7 @@ veda.Module(function (veda) { "use strict";
             }
             relContainer.children().each(function () {
               var that = $(this);
+              if ( that.hasClass("more") ) { return; }
               var resource = that.attr("resource");
               if (rendered[resource] !== counter) {
                 that.remove();
@@ -643,8 +643,8 @@ veda.Module(function (veda) { "use strict";
         e.stopPropagation();
       }
     }
-    template.on("internal-validate", debounce(validateTemplate, 500));
-    //template.on("internal-validate", validateTemplate);
+    //template.on("internal-validate", debounce(validateTemplate, 500));
+    template.on("internal-validate", validateTemplate);
 
     function triggerValidation() {
       if (mode === "edit") {

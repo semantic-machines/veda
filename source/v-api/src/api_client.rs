@@ -209,6 +209,7 @@ impl ResultCode {
     }
 }
 
+#[derive(Debug)]
 pub struct OpResult {
     pub result: ResultCode,
     pub op_id: i64,

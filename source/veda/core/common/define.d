@@ -61,8 +61,6 @@ enum EVENT : byte
 
 const string acl_indexes_db_path   = "./data/acl-indexes";
 const string attachments_db_path   = "./data/files";
-const string docs_onto_path        = "./public/docs/onto";
-const string dbs_backup            = "./backup";
 const string dbs_data              = "./data";
 const string uris_db_path          = "./data/uris";
 const string tmp_path              = "./data/tmp";
@@ -80,7 +78,7 @@ const string ft_indexer_queue_name = "fulltext_indexer0";
 
 string[]     paths_list            =
 [
-    tmp_path, logs_path, attachments_db_path, docs_onto_path, dbs_backup, dbs_data, uris_db_path, queue_db_path,
+    tmp_path, logs_path, attachments_db_path, dbs_data, uris_db_path, queue_db_path,
     xapian_info_path, module_info_path, trails_path, acl_indexes_db_path, individuals_db_path0, tickets_db_path0
 ];
 
@@ -127,7 +125,6 @@ public enum SUBSYSTEM : ubyte
 {
     NONE              = 0,
     STORAGE           = 1,
-    ACL               = 2,
     FULL_TEXT_INDEXER = 4,
     FANOUT_EMAIL      = 8,
     SCRIPTS           = 16,
@@ -142,7 +139,6 @@ public SUBSYSTEM get_subsystem_id_of_name(string name)
 {
     if (ns.length == 0)
     {
-        ns[ "ACL" ]               = SUBSYSTEM.ACL;
         ns[ "FANOUT_EMAIL" ]      = SUBSYSTEM.FANOUT_EMAIL;
         ns[ "FANOUT_SQL" ]        = SUBSYSTEM.FANOUT_SQL;
         ns[ "FULL_TEXT_INDEXER" ] = SUBSYSTEM.FULL_TEXT_INDEXER;
@@ -158,7 +154,6 @@ public string get_name_of_subsystem_id(SUBSYSTEM id)
 {
     if (sn.length == 0)
     {
-        sn[ SUBSYSTEM.ACL ]               = "ACL";
         sn[ SUBSYSTEM.FANOUT_EMAIL ]      = "FANOUT_EMAIL";
         sn[ SUBSYSTEM.FANOUT_SQL ]        = "FANOUT_SQL";
         sn[ SUBSYSTEM.FULL_TEXT_INDEXER ] = "FULL_TEXT_INDEXER";
@@ -175,9 +170,6 @@ public enum COMPONENT : ubyte
 {
     /// сохранение индивидуалов
     subject_manager  = 1,
-
-    /// Индексирование прав
-    acl_preparer     = 2,
 
     /// Полнотекстовое индексирование
     fulltext_indexer = 4,
@@ -203,24 +195,12 @@ public enum COMPONENT : ubyte
     /// исполнение скриптов, low priority1
     scripts_lp1      = 50,
 
-    //// long time run scripts
-    ltr_scripts      = 34,
-
     ///////////////////////////////////////
-
-    /// Сбор статистики
-    statistic_data_accumulator = 35,
 
     /// Сохранение накопленных в памяти данных
     commiter                   = 36,
 
-    /// Вывод статистики
-    print_statistic            = 37,
-
     n_channel                  = 38,
-
-    /// Загрузка из файлов
-    file_reader                = 40,
 
     input_queue                = 41,
 
@@ -233,11 +213,7 @@ public enum P_MODULE : ubyte
 {
     ticket_manager             = COMPONENT.ticket_manager,
     subject_manager            = COMPONENT.subject_manager,
-    acl_preparer               = COMPONENT.acl_preparer,
-    statistic_data_accumulator = COMPONENT.statistic_data_accumulator,
     commiter                   = COMPONENT.commiter,
-    print_statistic            = COMPONENT.print_statistic,
-    file_reader                = COMPONENT.file_reader,
     n_channel                  = COMPONENT.n_channel,
 }
 
@@ -246,14 +222,12 @@ public enum MODULE : ubyte
 {
     ticket_manager    = COMPONENT.ticket_manager,
     subject_manager   = COMPONENT.subject_manager,
-    acl_preparer      = COMPONENT.acl_preparer,
     fulltext_indexer  = COMPONENT.fulltext_indexer,
     scripts_main      = COMPONENT.scripts_main,
     scripts_lp        = COMPONENT.scripts_lp,
     scripts_lp1       = COMPONENT.scripts_lp1,
     fanout_email      = COMPONENT.fanout_email,
     user_modules_tool = COMPONENT.user_modules_tool,
-    ltr_scripts       = COMPONENT.ltr_scripts,
     fanout_sql_np     = COMPONENT.fanout_sql_np,
     fanout_sql_lp     = COMPONENT.fanout_sql_lp,
     input_queue       = COMPONENT.input_queue
@@ -271,30 +245,15 @@ byte CMD_COMMIT    = 16;
 
 byte CMD_MSG       = 17;
 
-/// Включить/выключить отладочные сообщения
-byte CMD_SET_TRACE = 33;
-
-/// Остановить прием команд на изменение
-byte CMD_FREEZE    = 42;
-
-/// Возобновить прием команд на изменение
-byte CMD_UNFREEZE  = 43;
-
 byte CMD_EXIT      = 49;
 
 /// Установить
 byte CMD_SET       = 50;
 
-/// Убрать
-byte CMD_START     = 52;
-
 public string subsystem_byte_to_string(long src)
 {
     string res = "";
-
-    foreach (el;
-             [ SUBSYSTEM.ACL, SUBSYSTEM.FANOUT_EMAIL, SUBSYSTEM.FANOUT_SQL, SUBSYSTEM.FULL_TEXT_INDEXER, SUBSYSTEM.SCRIPTS, SUBSYSTEM.STORAGE,
-               SUBSYSTEM.USER_MODULES_TOOL ])
+    foreach (el; [ SUBSYSTEM.FANOUT_EMAIL, SUBSYSTEM.FANOUT_SQL, SUBSYSTEM.FULL_TEXT_INDEXER, SUBSYSTEM.SCRIPTS, SUBSYSTEM.STORAGE, SUBSYSTEM.USER_MODULES_TOOL ])
     {
         if ((src & el) == el)
         {

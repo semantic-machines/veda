@@ -1,8 +1,16 @@
+use crate::info::ModuleInfo;
+use chrono::Local;
+use env_logger::Builder;
 use ini::Ini;
+use log::LevelFilter;
+use nng::options::protocol::pubsub::Subscribe;
+use nng::options::Options;
+use nng::{Protocol, Socket};
+use std::io::Write;
 use std::{thread, time};
-use v_api::APIClient;
-use v_onto::individual::Individual;
+use v_api::*;
 use v_onto::individual::*;
+use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
@@ -12,10 +20,17 @@ pub struct Module {
     pub fts: FTClient,
     pub api: APIClient,
     queue_prepared_count: i64,
+    notify_channel_url: String,
 }
 
 impl Default for Module {
     fn default() -> Self {
+        Module::new(StorageMode::ReadOnly)
+    }
+}
+
+impl Module {
+    pub fn new(storage_mode: StorageMode) -> Self {
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
@@ -28,13 +43,21 @@ impl Default for Module {
             "".to_owned()
         };
 
-        info!("tarantool addr={:?}", &tarantool_addr);
+        if !tarantool_addr.is_empty() {
+            info!("tarantool addr={}", &tarantool_addr);
+        }
+
+        let notify_channel_url = if let Some(s) = section.get("notify_channel_url") {
+            s.to_owned()
+        } else {
+            String::default()
+        };
 
         let storage: VStorage;
         if !tarantool_addr.is_empty() {
             storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
         } else {
-            storage = VStorage::new_lmdb("./data", StorageMode::ReadOnly);
+            storage = VStorage::new_lmdb("./data", storage_mode);
         }
 
         let mut ft_client = FTClient::new(ft_query_service_url);
@@ -56,6 +79,7 @@ impl Default for Module {
             fts: ft_client,
             api,
             queue_prepared_count: 0,
+            notify_channel_url,
         }
     }
 }
@@ -122,15 +146,29 @@ impl Module {
     pub fn listen_queue<T>(
         &mut self,
         queue_consumer: &mut Consumer,
+        module_info: &mut ModuleInfo,
         module_context: &mut T,
-        before_bath: &mut fn(&mut T),
-        prepare: &mut fn(&mut T, &mut Individual),
-        after_bath: &mut fn(&mut T),
+        before_bath: &mut fn(&mut Module, &mut T),
+        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual),
+        after_bath: &mut fn(&mut Module, &mut T),
     ) {
+        let soc = Socket::new(Protocol::Sub0).unwrap();
+
+        if !self.notify_channel_url.is_empty() {
+            if let Err(e) = soc.dial(&self.notify_channel_url) {
+                error!("fail connect to, {} err={}", self.notify_channel_url, e);
+            }
+
+            let all_topics = vec![];
+            if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+            }
+        }
+
         loop {
             let mut size_batch = 0;
 
-            before_bath(module_context);
+            before_bath(self, module_context);
 
             // read queue current part info
             if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
@@ -175,7 +213,10 @@ impl Module {
                     }
                 }
 
-                prepare(module_context, &mut Individual::new_raw(raw));
+                let mut queue_element = Individual::new_raw(raw);
+                if parse_raw(&mut queue_element).is_ok() {
+                    prepare(self, module_info, module_context, &mut queue_element);
+                }
 
                 queue_consumer.commit_and_next();
 
@@ -185,7 +226,43 @@ impl Module {
                     info!("get from queue, count: {}", self.queue_prepared_count);
                 }
             }
-            after_bath(module_context);
+            after_bath(self, module_context);
+
+            let wmsg = soc.recv();
+            if let Err(e) = wmsg {
+                error!("fail recv from slave node, err={:?}", e);
+            }
         }
     }
+}
+
+pub fn get_inner_binobj_as_individual<'a>(queue_element: &'a mut Individual, field_name: &str, new_indv: &'a mut Individual) -> bool {
+    let binobj = queue_element.get_first_binobj(field_name);
+    if binobj.is_some() {
+        new_indv.set_raw(&binobj.unwrap_or_default());
+        if parse_raw(new_indv).is_ok() {
+            return true;
+        }
+    }
+    false
+}
+
+pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
+    let wcmd = queue_element.get_first_integer("cmd");
+    wcmd?;
+
+    Some(IndvOp::from_i64(wcmd.unwrap_or_default()))
+}
+
+pub fn init_log() {
+    let env_var = "RUST_LOG";
+    match std::env::var_os(env_var) {
+        Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
+        None => std::env::set_var(env_var, "info"),
+    }
+
+    Builder::new()
+        .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
+        .filter(None, LevelFilter::Info)
+        .init();
 }

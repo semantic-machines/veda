@@ -6,7 +6,6 @@ module veda.gluecode.v8d_bind;
 import std.stdio, std.conv, std.file, std.path, std.uuid, std.algorithm, std.array, std.json, std.string;
 import veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto, veda.gluecode.script;
 import veda.core.common.context, veda.core.common.define, veda.core.util.utils, veda.util.queue, veda.core.common.transaction, veda.search.common.isearch;
-import veda.util.container;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -40,7 +39,6 @@ long    g_count_popped;
 //_Buff      g_script_out;
 
 ResultCode g_last_result;
-Cache!(string, string) g_cache_of_indv;
 
 private string empty_uid;
 
@@ -210,93 +208,6 @@ extern (C++) void log_trace(const char *str, int str_length)
 }
 
 //////////////////
-
-extern (C++)_Buff * get_from_ght(const char *name, int name_length)
-{
-    string pn  = cast(string)name[ 0..name_length ];
-    string res = g_ht.get(pn, null);
-
-    if (res !is null)
-    {
-        tmp.data   = cast(char *)res;
-        tmp.length = cast(int)res.length;
-    }
-    else
-    {
-        tmp.data   = cast(char *)empty_uid;
-        tmp.length = cast(int)empty_uid.length;
-    }
-
-    return &tmp;
-}
-
-extern (C++) void put_to_ght(const char *name, int name_length, const char *value, int value_length)
-{
-    string pn = cast(string)name[ 0..name_length ].dup;
-    string vn = cast(string)value[ 0..value_length ].dup;
-
-    g_ht[ pn ] = vn;
-}
-
-///////////////////
-Consumer[ string ] id2consumer;
-
-extern (C++)_Buff * new_uris_consumer()
-{
-    uint  id    = -1;
-    Queue queue = new Queue(uris_db_path, "uris-db", Mode.R, log);
-
-    tmp.data   = cast(char *)empty_uid;
-    tmp.length = cast(int)empty_uid.length;
-
-    if (queue.open())
-    {
-        UUID     new_id      = randomUUID();
-        string   consumer_id = "consumer-uris-" ~ new_id.toString();
-
-        Consumer cs = new Consumer(queue, tmp_path, consumer_id, Mode.RW, log);
-
-        if (cs.open())
-        {
-            id2consumer[ consumer_id ] = cs;
-            tmp.data                   = cast(char *)consumer_id;
-            tmp.length                 = cast(int)consumer_id.length;
-        }
-    }
-
-    return &tmp;
-}
-
-extern (C++)_Buff * uris_pop(const char *_consumer_id, int _consumer_id_length)
-{
-    string   consumer_id = cast(string)_consumer_id[ 0.._consumer_id_length ].dup;
-    Consumer cs          = id2consumer.get(consumer_id, null);
-
-    if (cs !is null)
-    {
-        string data = cs.pop();
-        tmp.data   = cast(char *)data;
-        tmp.length = cast(int)data.length;
-    }
-    else
-    {
-        tmp.data   = cast(char *)empty_uid;
-        tmp.length = cast(int)empty_uid.length;
-    }
-    return &tmp;
-}
-
-extern (C++) bool uris_commit_and_next(const char *_consumer_id, int _consumer_id_length, bool is_sync_data)
-{
-    string   consumer_id = cast(string)_consumer_id[ 0.._consumer_id_length ].dup;
-    Consumer cs          = id2consumer.get(consumer_id, null);
-
-    if (cs !is null)
-        return cs.commit_and_next(is_sync_data);
-
-    return false;
-}
-//////////////////////
 
 //чтение неправильное после операции add set
 extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
@@ -536,14 +447,6 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
             if (g_context !is null)
             {
                 string icb;
-
-                if (g_cache_of_indv !is null)
-                {
-                    icb = g_cache_of_indv.get(uri);
-
-//                    if (icb !is null)
-//                        writefln("@v8 success get from cache, uri=%s", uri);
-                }
 
                 if (icb is null)
                     icb = g_context.get_storage().get_binobj_from_individual_storage(uri);

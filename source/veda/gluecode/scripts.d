@@ -7,16 +7,16 @@ private import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime,
 private import std.concurrency;
 private import veda.common.type, veda.core.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual;
 private import veda.common.logger, veda.core.impl.thread_context, veda.util.queue;
-private import veda.core.common.context, veda.core.common.log_msg, veda.onto.onto;
+private import veda.core.common.context, veda.onto.onto;
 private import veda.vmodule.vmodule, veda.search.common.isearch, veda.search.ft_query.ft_query_client;
-private import veda.gluecode.script, veda.gluecode.v8d_bind, veda.gluecode.ltr_scripts;
+private import veda.gluecode.script, veda.gluecode.v8d_bind;
 
 int main(string[] args)
 {
     writeln("args = ", args);
-    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "lp1" && args[ 1 ] != "ltr"))
+    if (args.length < 1 || (args[ 1 ] != "main" && args[ 1 ] != "lp" && args[ 1 ] != "lp1"))
     {
-        writefln("use %s [main/lp/lp1/ltr]", args[ 0 ]);
+        writefln("use %s [main/lp/lp1]", args[ 0 ]);
         return -1;
     }
 
@@ -48,19 +48,6 @@ int main(string[] args)
 
         ScriptProcess p_script = new ScriptProcessLowPriority("V8.LowPriority1", SUBSYSTEM.SCRIPTS, MODULE.scripts_lp1, log);
         p_script.run();
-    }
-    else if (vm_id == "ltr")
-    {
-        core.thread.Thread.sleep(dur!("seconds")(2));
-
-        ScriptProcess p_script = new ScriptProcess(vm_id, SUBSYSTEM.SCRIPTS, MODULE.ltr_scripts, log);
-        //log = p_script.log();
-
-        tid_ltr_scripts = spawn(&ltrs_thread);
-
-        p_script.run();
-
-        shutdown_ltr_scripts();
     }
 
     return 0;
@@ -410,7 +397,6 @@ class ScriptProcess : VedaModule
         if (script_vm is null)
             return;
 
-        //if (trace_msg[ 301 ] == 1)
         log.trace("start load db scripts");
 
         Ticket sticket = context.sys_ticket();
@@ -443,7 +429,6 @@ class ScriptProcess : VedaModule
         foreach (_script_id; wpl.scripts_order)
             scripts_ordered_list ~= "," ~ _script_id;
 
-//        if (trace_msg[ 300 ] == 1)
         log.trace("load db scripts, count=%d, scripts_uris=[%s] ", wpl.scripts_order.length, scripts_ordered_list);
     }
 

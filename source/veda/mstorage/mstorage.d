@@ -9,18 +9,17 @@ private
     import core.thread, std.stdio, std.string, core.stdc.string, std.outbuffer, std.datetime, std.conv, std.concurrency, std.process, std.json,
            std.regex, std.uuid, std.random;
     import veda.util.properd, veda.core.impl.app_context_creator;
-    import veda.core.common.context, veda.core.common.log_msg, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
+    import veda.core.common.context, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
     import veda.core.common.define, veda.core.common.type, veda.common.type, veda.onto.individual, veda.onto.resource,
            veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
-    import veda.mstorage.acl_manager, veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
+    import veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
     import veda.storage.common, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
     import veda.onto.individual;
 }
 
 alias veda.mstorage.storage_manager ticket_storage_module;
 alias veda.mstorage.storage_manager indv_storage_thread;
-alias veda.mstorage.acl_manager     acl_module;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
@@ -73,9 +72,6 @@ void main(char[][] args)
     tids[ P_MODULE.ticket_manager ] = spawn(&individuals_manager, P_MODULE.ticket_manager, node_id);
     wait_starting_thread(P_MODULE.ticket_manager, tids);
 
-    tids[ P_MODULE.acl_preparer ] = spawn(&acl_manager, text(P_MODULE.acl_preparer));
-    wait_starting_thread(P_MODULE.acl_preparer, tids);
-
     tids[ P_MODULE.commiter ] =
         spawn(&commiter, text(P_MODULE.commiter));
     wait_starting_thread(P_MODULE.commiter, tids);
@@ -94,7 +90,6 @@ void main(char[][] args)
     writefln("send signals EXIT to threads");
 
     exit(P_MODULE.commiter);
-    exit(P_MODULE.acl_preparer);
     exit(P_MODULE.subject_manager);
     exit(P_MODULE.ticket_manager);
 
@@ -243,7 +238,6 @@ void commiter(string thread_name)
                        (Variant v) { writeln(thread_name, "::commiter::Received some other type.", v); });
 
         veda.mstorage.storage_manager.flush_int_module(P_MODULE.subject_manager, false);
-        veda.mstorage.acl_manager.flush(false);
         veda.mstorage.storage_manager.flush_int_module(P_MODULE.ticket_manager, false);
     }
 }
@@ -930,8 +924,6 @@ public string execute_json(string in_msg, Context ctx)
 
             if (f_module_id == P_MODULE.subject_manager)
                 rc = flush_storage();
-            else if (f_module_id == P_MODULE.acl_preparer)
-                rc = acl_module.flush(false);
             else if (f_module_id == cast(P_MODULE)MODULE.fulltext_indexer)
                 flush_ext_module(f_module_id, wait_op_id);
 
@@ -948,20 +940,6 @@ public string execute_json(string in_msg, Context ctx)
 
             msg_to_module(f_module_id, msg, false);
 
-            res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.Ok;
-            res[ "op_id" ]  = -1;
-        }
-        else if (sfn == "freeze")
-        {
-            ctx.freeze();
-            res[ "type" ]   = "OpResult";
-            res[ "result" ] = ResultCode.Ok;
-            res[ "op_id" ]  = -1;
-        }
-        else if (sfn == "unfreeze")
-        {
-            ctx.unfreeze();
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
@@ -984,16 +962,6 @@ public string execute_json(string in_msg, Context ctx)
 
         return res.toString();
     }
-}
-
-private void freeze()
-{
-    indv_storage_thread.freeze(P_MODULE.subject_manager);
-}
-
-private void unfreeze()
-{
-    indv_storage_thread.unfreeze(P_MODULE.subject_manager);
 }
 
 private Ticket *[ string ] user_of_ticket;
@@ -1075,16 +1043,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
             if (rc == ResultCode.Ok)
             {
-                MapResource rdfType;
-
-                foreach (item; items)
-                {
-                    log.trace("commit: item.rc=%s", item.rc);
-                    if (item.rc == ResultCode.Ok)
-                        rc = prepare_event(rdfType, item.assigned_subsystems, item.prev_binobj, item.new_binobj, item.is_acl_element, item.is_onto,
-                                           item.op_id);
-                }
-                rcs ~= OpResult(rc, op_id);
+                rcs ~= OpResult(ResultCode.Ok, op_id);
             }
         }
     }
@@ -1336,7 +1295,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         }
 
         if (tnx.is_autocommit && res.result == ResultCode.Ok)
-            res.result = prepare_event(rdfType, assigned_subsystems, prev_state, new_state, is_acl_element, is_onto, res.op_id);
+            res.result = ResultCode.Ok;
 
         return res;
     }
@@ -1350,31 +1309,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         if (opt_trace == OptTrace.TRACE)
             log.trace("add_to_transaction [%s] = %s", indv.uri, res);
     }
-}
-
-private ResultCode prepare_event(ref MapResource rdfType, long assigned_subsystems, string prev_binobj, string new_binobj, bool is_acl_element,
-                                 bool is_onto,
-                                 long op_id)
-{
-    ResultCode res;
-    Tid        tid_acl;
-
-    //log.trace("@prepare_event assigned_subsystems=%s", subsystem_byte_to_string(assigned_subsystems));
-
-    if (assigned_subsystems != ALL_MODULES && (assigned_subsystems & SUBSYSTEM.ACL) != SUBSYSTEM.ACL)
-        return ResultCode.Ok;
-
-    if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
-        rdfType.anyExists("v-s:PermissionFilter") == true)
-    {
-        tid_acl = getTid(P_MODULE.acl_preparer);
-        if (tid_acl != Tid.init)
-        {
-            send(tid_acl, CMD_PUT, prev_binobj, new_binobj, op_id);
-        }
-    }
-
-    return ResultCode.Ok;
 }
 
 private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
@@ -1448,7 +1382,6 @@ private Ticket get_ticket_trusted(Context ctx, string tr_ticket_id, string login
 {
     Ticket ticket;
 
-    //if (trace_msg[ T_API_60 ] == 1)
     log.trace("INFO: request trusted authenticate, ticket=[%s] login=[%s]", tr_ticket_id, login);
 
     ticket.result = ResultCode.AuthenticationFailed;

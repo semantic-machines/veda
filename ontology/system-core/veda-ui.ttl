@@ -1022,6 +1022,13 @@ v-ui:AppointmentPopoverTemplate
   rdfs:label "Шаблон назначения с фотографией"@ru ;
   rdfs:label "Appointment template with photo"@en ;
   v-ui:template """
+<script>
+  return individual.getChainValue("v-s:employee", "v-s:hasImage").then(function (image) {
+    if (!image.length) {
+      $(".media-left", template).remove();
+    }
+  });
+</script>
 <div class="media" style="margin-top:0px;">
   <span class="close">&nbsp;&times;</span>
   <div class="media-left" about="@" rel="v-s:employee" style="width:96px">
@@ -1059,6 +1066,11 @@ v-ui:PersonPopoverTemplate
   rdfs:label "Шаблон персоны с фотографией"@ru ;
   rdfs:label "Person template with photo"@en ;
   v-ui:template """
+<script>
+  if (!individual.hasValue("v-s:hasImage")) {
+    $(".media-left", template).remove();
+  }
+</script>
 <div class="media" style="margin-top:0px;">
   <span class="close">&nbsp;&times;</span>
   <div class="media-left" style="width:96px">
@@ -1108,7 +1120,6 @@ v-ui:PositionPopoverTemplate
     <strong class="media-heading" about="@" property="rdfs:label"></strong>
     <hr class="no-margin">
     <small about="@" rel="v-s:parentUnit" data-template="v-ui:LabelTemplate"></small>
-
   </div>
 </div>
   """ ;
@@ -1181,7 +1192,6 @@ v-ui:LabelTemplate
     if (!individual.hasValue("rdfs:label")) {
       template.text(individual.id);
     }
-
     var done;
     var initPopoverTimeout;
     var type = individual.hasValue("rdf:type") && individual["rdf:type"][0].id;
@@ -1212,7 +1222,7 @@ v-ui:LabelTemplate
           delay: { "show": 750, "hide": 100 },
           placement: "auto top",
           html: true,
-          container: "body",
+          container: this,
           content: cntr
         }).popover("show");
         cntr.on("click", ".close", function (e) {
@@ -2546,7 +2556,7 @@ v-ui:TreeTemplate
         if ( !allowedFilterFn.call(value) ) {
           return;
         }
-        return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {          
+        return value.present(cont, tmpl[0].outerHTML).then(function (tmpl) {
           // Pre-check children
           getChildren([], value, false).then(function (children) {
             if (!children.length) {
@@ -2604,7 +2614,7 @@ v-ui:TreeTemplate
           value = new veda.IndividualModel(uri);
       $("#create-NewItem", template).remove();
       var addButton = drawAddButton(row);
-      row.children().last().append(addButton);  
+      row.children().last().append(addButton);
       if (isSingle) {
         target.set(rel_uri, [value]);
       } else {
@@ -2777,7 +2787,7 @@ v-ui:TreeTemplate
       });
       newItem.one("afterSave", function () {
         setTimeout(function() {
-          redrawBranch(currentRow);  
+          redrawBranch(currentRow);
         }, 100);
         modal.modal("hide").remove();
       });

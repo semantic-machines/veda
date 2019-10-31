@@ -11,7 +11,7 @@ import { Selector, t } from 'testcafe';
       .click('#menu')
       .click('li[id="menu"] li[resource="v-s:Create"]')
       .typeText('veda-control.fulltext.dropdown', 'Сеть')
-      .click('div.suggestion[resource="v-wf:Net"]')
+      .click('.suggestion[resource="v-wf:Net"]')
       .click('.create-task')
       .click('.state-task')
       .click('.copy-net-element')
