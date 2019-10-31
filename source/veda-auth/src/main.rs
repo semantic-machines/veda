@@ -3,13 +3,14 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
-use chrono::Utc;
+use chrono::{NaiveDateTime, Utc};
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use rand::{thread_rng, Rng};
 use regex::Regex;
 use serde_json::json;
 use serde_json::value::Value as JSONValue;
+use std::str::FromStr;
 use uuid::*;
 use v_api::{IndvOp, ResultCode};
 use v_module::module::{init_log, Module};
@@ -33,8 +34,38 @@ struct Ticket {
     end_time: i64,
 }
 
+impl Ticket {
+    fn from_individual(&mut self, src: &mut Individual) {
+        let when = src.get_first_literal("ticket:when");
+        let duration = src.get_first_literal("ticket:duration").unwrap_or_default().parse::<i32>().unwrap_or_default();
+
+        self.id = src.get_id().to_owned();
+        self.user_uri = src.get_first_literal("ticket:accessor").unwrap_or_default();
+        self.user_login = src.get_first_literal("ticket:login").unwrap_or_default();
+
+        if self.user_uri.is_empty() {
+            error!("found a session ticket is not complete, the user can not be found.");
+        }
+
+        if !self.user_uri.is_empty() && (when.is_none() || duration < 10) {
+            error!("found a session ticket is not complete, we believe that the user has not been found.");
+            self.user_uri = String::default();
+        }
+
+        if let Some(w) = when {
+            if let Ok(start_time) = NaiveDateTime::from_str(&w) {
+                self.start_time = start_time.timestamp();
+                self.end_time = self.start_time + (duration * 10_000_000) as i64;
+            } else {
+                error!("invalid format datetime {} in field {}", w, "ticket:when");
+            }
+        }
+    }
+}
+
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const DEFAULT_DURATION: i32 = 4000;
+const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -92,11 +123,117 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
 
             return Message::from(res.to_string().as_bytes());
         }
-        "get_ticket_trusted" => {}
+        "get_ticket_trusted" => {
+            let ticket = get_ticket_trusted(v["ticket"].as_str(), v["login"].as_str(), systicket, module);
+
+            let mut res = JSONValue::default();
+            res["type"] = json!("ticket");
+            res["id"] = json!(ticket.id);
+            res["user_uri"] = json!(ticket.user_uri);
+            res["user_login"] = json!(ticket.user_login);
+            res["result"] = json!(ticket.result as i64);
+            res["end_time"] = json!(ticket.end_time);
+
+            return Message::from(res.to_string().as_bytes());
+        }
         _ => {}
     }
 
     Message::default()
+}
+
+fn update_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
+    let mut indv = Individual::default();
+    if module.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
+        dest.from_individual(&mut indv);
+        dest.result = ResultCode::Ok;
+    }
+}
+
+fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket: &str, module: &mut Module) -> Ticket {
+    let mut tr_ticket = Ticket {
+        id: String::default(),
+        user_uri: String::default(),
+        user_login: String::default(),
+        result: ResultCode::AuthenticationFailed,
+        start_time: 0,
+        end_time: 0,
+    };
+
+    let login = login.unwrap_or_default();
+    let tr_ticket_id = tr_ticket_id.unwrap_or_default();
+
+    info!("get_ticket_trusted, login={} ticket={}", login, tr_ticket_id);
+
+    if login.is_empty() || login.len() < 1 || tr_ticket_id.len() < 6 {
+        warn!("trusted authenticate: invalid login {} or ticket {}", login, tr_ticket_id);
+        return tr_ticket;
+    }
+
+    update_ticket_from_db(&tr_ticket_id, &mut tr_ticket, module);
+
+    if tr_ticket.result == ResultCode::Ok {
+        let mut is_allow_trusted = false;
+    /*
+    OutBuffer trace_acl = new OutBuffer();
+    ctx.get_az().get_rights_origin_from_acl(tr_ticket, tr_ticket.user_uri, trace_acl, null);
+    foreach (rr; trace_acl.toString().split('\n'))
+    {
+        string[] cc = rr.split(";");
+
+        if (cc.length == 3)
+        {
+            string resource_group = cc[ 0 ];
+            string subject_group  = cc[ 1 ];
+            string right          = cc[ 2 ];
+
+            if (subject_group == allow_trusted_group)
+            {
+                is_allow_trusted = true;
+                break;
+            }
+        }
+    }
+
+    if (is_allow_trusted)
+    {
+        login = replaceAll(login, regex(r"[-]", "g"), " +");
+
+        Ticket       sticket = sys_ticket(ctx);
+
+        string       query = "'v-s:login' == '" ~ login ~ "'";
+
+        Individual[] candidate_users = ctx.get_individuals_via_query(sticket.user_uri, query, OptAuthorize.NO);
+
+        if (candidate_users.length == 0)
+        log.trace("ERR! trusted authenticate: not found candidate users, query=%s", query);
+
+        foreach (user; candidate_users)
+        {
+            string user_id = user.getFirstResource("v-s:owner").uri;
+            string f_login = user.getFirstResource("v-s:login").data;
+            if (user_id is null)
+            continue;
+
+            ticket = create_new_ticket(f_login, user_id);
+
+            log.trace("INFO! trusted authenticate, result ticket=[%s]", ticket);
+            return ticket;
+        }
+    }
+    else
+    {
+        log.trace("ERR! trusted authenticate: User [%s] must be a member of group [%s]", *tr_ticket, allow_trusted_group);
+    }
+    */
+    } else {
+        warn!("trusted authenticate: problem ticket {}", tr_ticket_id);
+    }
+
+    tr_ticket.result = ResultCode::AuthenticationFailed;
+    error!("failed trusted authenticate, ticket={} login={}", tr_ticket_id, login);
+
+    tr_ticket
 }
 
 fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str>, systicket: &str, module: &mut Module, pass_lifetime: i64) -> Ticket {
@@ -109,11 +246,11 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
         end_time: 0,
     };
 
-    info!("authenticate, login={:?} password={:?}, secret={:?}", login, password, secret);
-
     let login = login.unwrap_or_default();
     let password = password.unwrap_or_default();
     let secret = secret.unwrap_or_default();
+
+    info!("authenticate, login={:?} password={:?}, secret={:?}", login, password, secret);
 
     if login.is_empty() || login.len() < 3 {
         return ticket;
@@ -174,7 +311,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
 
                 match account.get_first_literal("v-s:usesCredential") {
                     Some(uses_credential_uri) => {
-                        if let Some(uses_credential) = module.get_individual(&user_id, &mut uses_credential) {
+                        if let Some(uses_credential) = module.get_individual(&uses_credential_uri, &mut uses_credential) {
                             exist_password = uses_credential.get_first_literal("v-s:password").unwrap_or_default();
                             edited = uses_credential.get_first_datetime("v-s:dateFrom").unwrap_or_default();
                         }
@@ -208,7 +345,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     }
                 }
 
-                let origin = person.get_first_literal("v-s:origin");
+                //let origin = person.get_first_literal("v-s:origin");
                 let old_secret = uses_credential.get_first_literal("v-s:secret").unwrap_or_default();
 
                 if !secret.is_empty() && secret.len() > 5 {
@@ -257,7 +394,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module, systicket);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module);
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
                     return ticket;
@@ -275,7 +412,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                         is_request_new_password = true;
                     }
 
-                    if (is_request_new_password == true) {
+                    if is_request_new_password == true {
                         error!("request new password, login={} password={} secret={}", login, password, secret);
                         ticket.result = ResultCode::PasswordExpired;
 
@@ -326,7 +463,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     }
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module, systicket);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module);
                         return ticket;
                     } else {
                         warn!("request passw not equal with exist, user={}", account.get_id());
@@ -352,9 +489,18 @@ fn get_password_lifetime(module: &mut Module) -> Option<i64> {
     None
 }
 
-fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut Module, sticket: &str) {}
+fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut Module, systicket: &str) {
+    if let Some(old_secret) = uses_credential.get_first_literal("v-s:secret") {
+        uses_credential.remove("v-s:secret");
 
-fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, module: &mut Module, sticket: &str) {
+        let res = module.api.update(systicket, IndvOp::Remove, uses_credential);
+        if res.result != ResultCode::Ok {
+            error!("fail remove secret code for user, user={}", person_id);
+        }
+    }
+}
+
+fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, module: &mut Module) {
     let mut new_ticket = Individual::default();
 
     ticket.result = ResultCode::FailStore;
@@ -375,20 +521,11 @@ fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Tic
 
     let mut raw1: Vec<u8> = Vec::new();
     if to_msgpack(&new_ticket, &mut raw1).is_ok() {
-        module.storage.put_kv_raw(StorageId::Tickets, new_ticket.get_id(), raw1.as_slice());
-    }
-    /*
-        if (rc == ResultCode.Ok)
-        {
-            subject2Ticket(new_ticket, &ticket);
-            user_of_ticket[ ticket.id ] = new Ticket(ticket);
+        if module.storage.put_kv_raw(StorageId::Tickets, new_ticket.get_id(), raw1.as_slice()) {
+            ticket.from_individual(&mut new_ticket);
+            //            user_of_ticket[ ticket.id ] = new Ticket(ticket);
+
+            info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, ticket.start_time, ticket.end_time);
         }
-
-        log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
-                                                                                                                                      UTC()).
-            toISOExtString(),
-                  SysTime(ticket.end_time, UTC()).toISOExtString());
-
-        return ticket;
-    */
+    }
 }
