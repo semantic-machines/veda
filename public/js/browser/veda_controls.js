@@ -2040,7 +2040,7 @@
       return newVal;
     }
 
-    if (isSingle && opts.mode !== "search") {
+    if (isSingle && opts.mode !== "search" && ( this.hasClass("fulltext") || this.hasClass("full") ) ) {
       $(".clear", control).on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
         individual.clearValue(rel_uri);
