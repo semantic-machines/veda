@@ -9,7 +9,7 @@ private
     import core.stdc.string, core.sys.posix.time;
     import std.file, std.datetime, std.json, std.format, std.stdio, std.conv, std.string, std.concurrency, std.digest.crc;
     import std.ascii, std.csv, std.typecons, std.outbuffer;
-    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.core.common.type, veda.util.container;
+    import veda.onto.individual, veda.onto.resource, veda.core.common.define, veda.core.common.type;
     import veda.common.type;
 }
 
@@ -81,23 +81,17 @@ public void subject2Ticket(ref Individual ticket, Ticket *tt)
 
     if (tt.user_uri is null)
     {
-        //if (trace_msg[ T_API_10 ] == 1)
         log.trace("found a session ticket is not complete, the user can not be found.");
     }
 
     if (tt.user_uri !is null && (when is null || duration < 10))
     {
-        //if (trace_msg[ T_API_20 ] == 1)
         log.trace("found a session ticket is not complete, we believe that the user has not been found.");
         tt.user_uri = null;
     }
 
     if (when !is null)
     {
-        //if (trace_msg[ T_API_30 ] == 1)
-        //    log.trace("session ticket %s Ok, user=%s, when=%s, duration=%d", tt.id, tt.user_uri, when,
-        //              duration);
-
         long start_time = stringToTime(when);
 
         tt.start_time = start_time;
@@ -186,7 +180,6 @@ bool wait_starting_module(P_MODULE tid_idx, Tid tid)
     receive((bool isReady)
             {
                 res = isReady;
-                //if (trace_msg[ 50 ] == 1)
                 if (res == false)
                     log.trace("FAIL START THREAD: %s", text(tid_idx));
                 else

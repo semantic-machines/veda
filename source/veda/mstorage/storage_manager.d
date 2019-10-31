@@ -7,7 +7,7 @@ private
 {
     import core.thread, std.stdio, std.conv, std.concurrency, std.file, std.datetime, std.outbuffer, std.string, std.digest.ripemd, std.bigint;
     import veda.common.logger, veda.core.util.utils, veda.util.queue;
-    import veda.core.common.context, veda.core.common.define, veda.core.common.log_msg, veda.onto.individual, veda.onto.resource;
+    import veda.core.common.context, veda.core.common.define, veda.onto.individual, veda.onto.resource;
     import veda.util.module_info, veda.util.properd;
     import veda.common.type, veda.core.common.type, veda.core.common.transaction, veda.storage.common;
     import kaleidic.nanomsg.nano, veda.util.properd;
@@ -24,29 +24,6 @@ Logger log()
     if (_log is null)
         _log = new Logger("veda-core-mstorage", "log", "STORAGE-MANAGER");
     return _log;
-}
-
-public void freeze(P_MODULE storage_id)
-{
-    writeln("FREEZE");
-    Tid tid_subject_manager = getTid(storage_id);
-
-    if (tid_subject_manager != Tid.init)
-    {
-        send(tid_subject_manager, CMD_FREEZE, thisTid);
-        receive((bool _res) {});
-    }
-}
-
-public void unfreeze(P_MODULE storage_id)
-{
-    writeln("UNFREEZE");
-    Tid tid_subject_manager = getTid(storage_id);
-
-    if (tid_subject_manager != Tid.init)
-    {
-        send(tid_subject_manager, CMD_UNFREEZE);
-    }
 }
 
 public string find(P_MODULE storage_id, string uri)
@@ -315,11 +292,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 }
                                 //log.trace ("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
                             }
-                            else if (cmd == CMD_UNFREEZE)
-                            {
-                                log.trace("UNFREEZE");
-                                is_freeze = false;
-                            }
                         },
                         (byte cmd, Tid tid_response_reciever)
                         {
@@ -342,12 +314,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 send(tid_response_reciever, true);
                                 module_info.put_info(op_id, committed_op_id);
                                 log.trace("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
-                            }
-                            else if (cmd == CMD_FREEZE)
-                            {
-                                log.trace("FREEZE");
-                                is_freeze = true;
-                                send(tid_response_reciever, true);
                             }
                             else if (cmd == CMD_EXIT)
                             {
@@ -474,8 +440,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         },
                         (byte cmd, int arg, bool arg2)
                         {
-                            if (cmd == CMD_SET_TRACE)
-                                set_trace(arg, arg2);
                         },
                         (OwnerTerminated ot)
                         {

@@ -527,11 +527,11 @@ textarea {
 }
 .deleted, .deleted *:not(#deleted-alert-msg):not(#deleted-alert-recover) {
   text-decoration: none!important;
-  color: #aaa;
+  color: #aaa!important;
 }
-A.invalid, TR.invalid, SPAN.invalid, DIV.suggestion.invalid {
+.invalid {
   text-decoration: none!important;
-  color: #a94442;
+  color: #a94442!important;
 }
 dl {
   margin-top: 0;
@@ -836,16 +836,26 @@ fieldset[disabled] .form-control {
 
 .link-control .suggestion {
   padding: 5px;
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
+.link-control .suggestion.active {
+  background-color: #eee;
 }
 
 .link-control .suggestion.selected {
-  color: #ffffff;
+  color: #ffffff!important;
   background-color: #428bca;
-  cursor: pointer;
+}
+.link-control .suggestion.selected.active {
+  color: #ffffff!important;
+  background-color: #3774A8;
 }
 
 .link-control .suggestion.selected:hover {
-  color: #ffffff;
+  color: #ffffff!important;
   background-color: #3b7db5;
   cursor: pointer;
 }
@@ -1385,7 +1395,7 @@ svg.process-path-highlight path
   margin-right: 7px;
   margin-bottom: 7px;
 }
-.label-template:only-child {
+.label-template:only-of-type {
   margin-right: 0px;
   margin-bottom: 0px;
 }

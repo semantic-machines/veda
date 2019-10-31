@@ -60,6 +60,7 @@ if [ $1 == "all" ] ; then
     killall -9 veda-exim-respond
     killall -9 veda-winpak
     killall -9 veda-input-onto
+    killall -9 veda-az-indexer
 
     #tarantoolctl stop init_tarantool.lua
     pkill tarantool

@@ -5,11 +5,7 @@ module veda.search.common.vel;
 
 // VEDA EXPRESSION LANG
 
-private
-{
-    import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string;
-    import /*veda.core.util.utils, */veda.util.container;
-}
+private import std.string, std.array, std.stdio, std.conv, std.datetime, std.json, std.outbuffer, core.stdc.string;
 
 //  expression
 //  "==", "!="
@@ -251,4 +247,42 @@ public TTA parse_expr(string s)
         process_op(st, op.popBack());
 
     return st.back();
+}
+
+public class stack(T)
+{
+    T[] data;
+    int pos;
+
+    this()
+    {
+        data = new T[ 100 ];
+        pos  = 0;
+    }
+
+    T back()
+    {
+        return data[ pos ];
+    }
+
+    T popBack()
+    {
+        if (pos > 0)
+        {
+            pos--;
+            return data[ pos + 1 ];
+        }
+        return data[ pos ];
+    }
+
+    void pushBack(T val)
+    {
+        pos++;
+        data[ pos ] = val;
+    }
+
+    bool empty()
+    {
+        return pos == 0;
+    }
 }
