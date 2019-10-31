@@ -139,7 +139,9 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
 
             return Message::from(res.to_string().as_bytes());
         }
-        _ => {}
+        _ => {
+            error!("unknown command {:?}", v["function"].as_str());
+        }
     }
 
     Message::default()
@@ -530,7 +532,7 @@ fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Tic
     let mut raw1: Vec<u8> = Vec::new();
     if to_msgpack(&new_ticket, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, new_ticket.get_id(), raw1.as_slice()) {
         ticket.update_from_individual(&mut new_ticket);
-
+        ticket.result = ResultCode::Ok;
         info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, ticket.start_time, ticket.end_time);
     }
 }
