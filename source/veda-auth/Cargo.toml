@@ -19,3 +19,5 @@ v_storage = { path = "../v-storage" }
 v_onto = { path = "../v-onto" }
 v_module = { path = "../v-module" }
 v_api = { path = "../v-api" }
+v_authorization = { path = "../v-authorization" }
+v_az_lmdb = { path = "../v-az-lmdb" }
