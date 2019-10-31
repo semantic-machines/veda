@@ -168,6 +168,10 @@ impl Storage for LMDBStorage {
     }
 
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
+        self.put_kv_raw(storage, key, val.as_bytes())
+    }
+
+    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: &[u8]) -> bool {
         if storage == StorageId::Individuals {
             return put_kv_lmdb(&self.individuals_db_env, &self.individuals_db_handle, key, val);
         } else if storage == StorageId::Tickets {
@@ -344,7 +348,7 @@ impl Storage for LMDBStorage {
     }
 }
 
-fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str, val: &str) -> bool {
+fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str, val: &[u8]) -> bool {
     match db_env {
         Ok(env) => match env.new_transaction() {
             Ok(txn) => match db_handle {
