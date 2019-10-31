@@ -23,15 +23,13 @@ impl ModuleInfo {
         let file_name_info = base_path.to_owned() + "/module-info/" + info_name + "_info";
 
         match OpenOptions::new().read(true).write(is_writer).create(true).open(file_name_info) {
-            Ok(ff) => {
-                Ok(ModuleInfo {
-                    _base_path: base_path.to_owned(),
-                    name: info_name.to_owned(),
-                    ff_info: ff,
-                    is_ready: true,
-                    is_writer,
-                })
-            }
+            Ok(ff) => Ok(ModuleInfo {
+                _base_path: base_path.to_owned(),
+                name: info_name.to_owned(),
+                ff_info: ff,
+                is_ready: true,
+                is_writer,
+            }),
             Err(e) => Err(e),
         }
     }

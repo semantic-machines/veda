@@ -1,9 +1,12 @@
-use env_logger::Builder;
 use crate::info::ModuleInfo;
+use chrono::Local;
+use env_logger::Builder;
 use ini::Ini;
+use log::LevelFilter;
 use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
 use nng::{Protocol, Socket};
+use std::io::Write;
 use std::{thread, time};
 use v_api::*;
 use v_onto::individual::*;
@@ -11,9 +14,6 @@ use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
-use chrono::Local;
-use log::LevelFilter;
-use std::io::Write;
 
 pub struct Module {
     pub storage: VStorage,
@@ -25,6 +25,12 @@ pub struct Module {
 
 impl Default for Module {
     fn default() -> Self {
+        Module::new(StorageMode::ReadOnly)
+    }
+}
+
+impl Module {
+    pub fn new(storage_mode: StorageMode) -> Self {
         let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
 
         let section = conf.section(None::<String>).expect("fail parse veda.properties");
@@ -51,7 +57,7 @@ impl Default for Module {
         if !tarantool_addr.is_empty() {
             storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
         } else {
-            storage = VStorage::new_lmdb("./data", StorageMode::ReadOnly);
+            storage = VStorage::new_lmdb("./data", storage_mode);
         }
 
         let mut ft_client = FTClient::new(ft_query_service_url);
@@ -248,7 +254,7 @@ pub fn get_cmd(queue_element: &mut Individual) -> Option<IndvOp> {
     Some(IndvOp::from_i64(wcmd.unwrap_or_default()))
 }
 
-pub fn init_log () {
+pub fn init_log() {
     let env_var = "RUST_LOG";
     match std::env::var_os(env_var) {
         Some(val) => println!("use env var: {}: {:?}", env_var, val.to_str()),
