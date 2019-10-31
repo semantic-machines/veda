@@ -20,7 +20,7 @@ use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 use v_onto::individual2msgpack::to_msgpack;
 use v_search::{FTQuery, FTResult};
-use v_storage::storage::StorageId;
+use v_storage::storage::{StorageId, StorageMode};
 
 #[derive(Debug)]
 struct Ticket {
@@ -58,7 +58,7 @@ impl Ticket {
         if let Some(w) = when {
             if let Ok(start_time) = NaiveDateTime::from_str(&w) {
                 self.start_time = start_time.timestamp();
-                self.end_time = self.start_time + i64::from(duration * 10_000_000);
+                self.end_time = self.start_time + i64::from(duration * 10);
             } else {
                 error!("invalid format datetime {} in field {}", w, "ticket:when");
             }
@@ -84,7 +84,7 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    let mut module = Module::default();
+    let mut module = Module::new(StorageMode::ReadWrite);
 
     let systicket = if let Ok(t) = module.get_sys_ticket_id() {
         t
