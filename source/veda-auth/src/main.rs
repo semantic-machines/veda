@@ -15,7 +15,9 @@ use v_api::{IndvOp, ResultCode};
 use v_module::module::{init_log, Module};
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
+use v_onto::individual2msgpack::to_msgpack;
 use v_search::FTQuery;
+use v_storage::storage::StorageId;
 
 struct Ticket {
     id: String,
@@ -32,6 +34,7 @@ struct Ticket {
 }
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+const DEFAULT_DURATION: i32 = 4000;
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -254,7 +257,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
-                        create_new_ticket(login, &user_id, &mut ticket, module, systicket);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module, systicket);
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
                     return ticket;
@@ -301,7 +304,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                         if !mailbox.is_empty() && mailbox.len() > 3 {
                             let mut mail_with_secret = Individual::default();
 
-                            let uuid1 = "d:mail_".to_owned() + &Uuid::new_v4().to_hyphenated().to_string();
+                            let uuid1 = "d:mail_".to_owned() + &Uuid::new_v4().to_string();
                             mail_with_secret.set_id(&uuid1);
                             mail_with_secret.add_uri("rdf:type", "v-s:Email");
                             mail_with_secret.add_string("v-s:recipientMailbox", &mailbox, Lang::NONE);
@@ -323,7 +326,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     }
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
-                        create_new_ticket(login, &user_id, &mut ticket, module, systicket);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module, systicket);
                         return ticket;
                     } else {
                         warn!("request passw not equal with exist, user={}", account.get_id());
@@ -351,4 +354,41 @@ fn get_password_lifetime(module: &mut Module) -> Option<i64> {
 
 fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut Module, sticket: &str) {}
 
-fn create_new_ticket(login: &str, user_id: &str, ticket: &mut Ticket, module: &mut Module, sticket: &str) {}
+fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, module: &mut Module, sticket: &str) {
+    let mut new_ticket = Individual::default();
+
+    ticket.result = ResultCode::FailStore;
+
+    new_ticket.add_uri("rdf:type", "ticket:ticket");
+
+    if !ticket.id.is_empty() && ticket.id.len() > 0 {
+        new_ticket.set_id(&ticket.id);
+    } else {
+        new_ticket.set_id(&Uuid::new_v4().to_hyphenated().to_string());
+    }
+
+    new_ticket.add_uri("ticket:login", login);
+    new_ticket.add_string("ticket:accessor", user_id, Lang::NONE);
+
+    new_ticket.add_string("ticket:when", &format!("{:?}", Utc::now().naive_utc()), Lang::NONE);
+    new_ticket.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
+
+    let mut raw1: Vec<u8> = Vec::new();
+    if to_msgpack(&new_ticket, &mut raw1).is_ok() {
+        module.storage.put_kv_raw(StorageId::Tickets, new_ticket.get_id(), raw1.as_slice());
+    }
+    /*
+        if (rc == ResultCode.Ok)
+        {
+            subject2Ticket(new_ticket, &ticket);
+            user_of_ticket[ ticket.id ] = new Ticket(ticket);
+        }
+
+        log.trace("create new ticket %s, login=%s, user=%s, start=%s, end=%s", ticket.id, ticket.user_login, ticket.user_uri, SysTime(ticket.start_time,
+                                                                                                                                      UTC()).
+            toISOExtString(),
+                  SysTime(ticket.end_time, UTC()).toISOExtString());
+
+        return ticket;
+    */
+}

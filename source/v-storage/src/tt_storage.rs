@@ -72,6 +72,25 @@ impl Storage for TTStorage {
         false
     }
 
+    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: &[u8]) -> bool {
+        let space = if storage == StorageId::Tickets {
+            TICKETS_SPACE_ID
+        } else if storage == StorageId::Az {
+            AZ_SPACE_ID
+        } else {
+            INDIVIDUALS_SPACE_ID
+        };
+
+        let tuple = (key, val);
+        let resp = self.client.replace(space, &tuple).and_then(move |response| Ok(response.data));
+
+        if let Ok(v) = self.rt.block_on(resp) {
+            info!("tt replace res = {:?}", v);
+        }
+
+        false
+    }
+
     fn get_v(&mut self, storage: StorageId, key: &str) -> Option<String> {
         let space = if storage == StorageId::Tickets {
             TICKETS_SPACE_ID
