@@ -25,17 +25,15 @@ veda.Module(function Backend(veda) { "use strict";
   var interval;
   veda.Backend.serverWatch = function () {
     if (interval) { return; }
-    var duration = 10000;
+    var duration = 5000;
     veda.trigger("offline");
     interval = setInterval(function () {
-      if (navigator.onLine) {
-        veda.Backend.check().then(function () {
-          interval = clearInterval(interval);
-          veda.trigger("online");
-        }).catch(function () {
-          veda.trigger("offline");
-        });
-      }
+      veda.Backend.check().then(function () {
+        interval = clearInterval(interval);
+        veda.trigger("online");
+      }).catch(function () {
+        veda.trigger("offline");
+      });
     }, duration);
   }
 
