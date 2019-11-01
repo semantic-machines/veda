@@ -1513,7 +1513,7 @@ svg.process-path-highlight path
 }
 #line-status {
   font-size: 0.7em;
-  margin: 0.7em auto -0.7em;
+  margin: 0.7em 0 -2em;
 }
 #line-status.online > .offline {
   display: none;
