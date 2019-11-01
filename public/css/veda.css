@@ -388,6 +388,7 @@ footer {
   border-bottom: 1px solid #ddd;*/
 }
 #copyright {
+  padding: 0 0.5em;
   font-size: 0.8em;
   background-color: #fff;
   border-top: 1px solid #ddd!important;
