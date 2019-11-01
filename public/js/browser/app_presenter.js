@@ -268,7 +268,6 @@ veda.Module(function (veda) { "use strict";
 
     // Install SW
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(function(worker) {
-    //~ navigator.serviceWorker.register("/sw-simple-offline.js", { scope: "/" }).then(function(worker) {
       console.log("Service worker registered:", worker.scope);
     }).catch(function(error) {
       console.log("Registration failed with " + error);
@@ -277,21 +276,20 @@ veda.Module(function (veda) { "use strict";
     // On/off-line handler
     var lineHandler = function (status) {
       var lineStatus = document.getElementById("line-status");
+      lineStatus.style.display = "block";
       if ( typeof status === "undefined" || status instanceof Event ) {
-        veda.Backend.check().then(function () {
-          lineStatus.classList.add("online");
-          lineStatus.classList.remove("offline");
-          if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
-        }).catch(function () {
-          lineStatus.classList.remove("online");
-          lineStatus.classList.add("offline");
-          if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
-        });
+        veda.Backend.check().then(setOnline).catch(setOffline);
       } else if ( status === "online" ) {
+        setOnline();
+      } else {
+        setOffline();
+      }
+      function setOnline () {
         lineStatus.classList.add("online");
         lineStatus.classList.remove("offline");
         if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
-      } else {
+      }
+      function setOffline () {
         lineStatus.classList.remove("online");
         lineStatus.classList.add("offline");
         if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
