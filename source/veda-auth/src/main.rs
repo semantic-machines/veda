@@ -36,6 +36,19 @@ struct Ticket {
     end_time: i64,
 }
 
+impl Default for Ticket {
+    fn default() -> Self {
+        Ticket {
+            id: String::default(),
+            user_uri: String::default(),
+            user_login: String::default(),
+            result: ResultCode::AuthenticationFailed,
+            start_time: 0,
+            end_time: 0,
+        }
+    }
+}
+
 impl Ticket {
     fn update_from_individual(&mut self, src: &mut Individual) {
         let when = src.get_first_literal("ticket:when");
@@ -80,8 +93,9 @@ fn main() -> std::io::Result<()> {
     let systicket = if let Ok(t) = module.get_sys_ticket_id() {
         t
     } else {
-        error!("fail get systicket");
-        return Ok(());
+        error!("fail get systicket, create new");
+
+        create_sys_ticket(&mut module)
     };
 
     let pass_lifetime = get_password_lifetime(&mut module);
@@ -147,14 +161,7 @@ fn update_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
 }
 
 fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket: &str, module: &mut Module) -> Ticket {
-    let mut tr_ticket = Ticket {
-        id: String::default(),
-        user_uri: String::default(),
-        user_login: String::default(),
-        result: ResultCode::AuthenticationFailed,
-        start_time: 0,
-        end_time: 0,
-    };
+    let mut tr_ticket = Ticket::default();
 
     let login = login.unwrap_or_default();
     let tr_ticket_id = tr_ticket_id.unwrap_or_default();
@@ -305,7 +312,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     continue;
                 }
 
-                let now = Utc::now().naive_utc().timestamp_nanos();
+                let now = Utc::now().naive_utc().timestamp();
                 let mut exist_password = String::default();
                 let mut edited = now;
                 let mut uses_credential = Individual::default();
@@ -531,9 +538,31 @@ fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Tic
         ticket.update_from_individual(&mut ticket_indv);
         ticket.result = ResultCode::Ok;
         ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
-        ticket.end_time = ticket.start_time + (duration as i64 * 10000000);
+        ticket.end_time = ticket.start_time + duration as i64 * 10000000;
 
         let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10000 - TICKS_TO_UNIX_EPOCH) / 1000, 0));
         info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, start_time_str, end_time_str);
+    } else {
+        error!("fail store ticket {:?}", ticket)
     }
+}
+
+fn create_sys_ticket(module: &mut Module) -> String {
+    let mut ticket = Ticket::default();
+    create_new_ticket("veda", "cfg:VedaSystem", 90000000, &mut ticket, module);
+
+    if ticket.result == ResultCode::Ok {
+        let mut sys_ticket_link = Individual::default();
+        sys_ticket_link.set_id("systicket");
+        sys_ticket_link.add_uri("rdf:type", "rdfs:Resource");
+        sys_ticket_link.add_uri("v-s:resource", &ticket.id);
+        let mut raw1: Vec<u8> = Vec::new();
+        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1.as_slice()) {
+            return ticket.id;
+        } else {
+            error!("fail store system ticket link")
+        }
+    }
+
+    String::default()
 }
