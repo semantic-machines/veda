@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4"
+time = "0.1.42"
 log = "0.4"
 rust-ini = "0.13"
 nng = "0.5.0"

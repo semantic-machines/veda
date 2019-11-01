@@ -10,7 +10,6 @@ use rand::{thread_rng, Rng};
 use regex::Regex;
 use serde_json::json;
 use serde_json::value::Value as JSONValue;
-use std::str::FromStr;
 use uuid::*;
 use v_api::{IndvOp, ResultCode};
 use v_authorization::Trace;
@@ -54,21 +53,13 @@ impl Ticket {
             error!("found a session ticket is not complete, we believe that the user has not been found.");
             self.user_uri = String::default();
         }
-
-        if let Some(w) = when {
-            if let Ok(start_time) = NaiveDateTime::from_str(&w) {
-                self.start_time = start_time.timestamp();
-                self.end_time = self.start_time + i64::from(duration * 10);
-            } else {
-                error!("invalid format datetime {} in field {}", w, "ticket:when");
-            }
-        }
     }
 }
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-const DEFAULT_DURATION: i32 = 4000;
+const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
+const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -122,7 +113,7 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
             res["user_uri"] = json!(ticket.user_uri);
             res["user_login"] = json!(ticket.user_login);
             res["result"] = json!(ticket.result as i64);
-            res["end_time"] = json!(ticket.end_time);
+            res["end_time"] = json!(ticket.end_time.to_string());
 
             return Message::from(res.to_string().as_bytes());
         }
@@ -314,7 +305,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     continue;
                 }
 
-                let now = Utc::now().naive_utc().timestamp();
+                let now = Utc::now().naive_utc().timestamp_nanos();
                 let mut exist_password = String::default();
                 let mut edited = now;
                 let mut uses_credential = Individual::default();
@@ -409,7 +400,6 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                     }
                     return ticket;
                 } else {
-
                     let mut is_request_new_password = if pass_lifetime > 0 && now - edited > pass_lifetime {
                         error!("password is old, lifetime > {} days, user={}", pass_lifetime / 60 / 60 / 24, account.get_id());
                         true
@@ -511,28 +501,39 @@ fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut
 }
 
 fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, module: &mut Module) {
-    let mut new_ticket = Individual::default();
+    let mut ticket_indv = Individual::default();
 
     ticket.result = ResultCode::FailStore;
-
-    new_ticket.add_uri("rdf:type", "ticket:ticket");
+    ticket_indv.add_string("rdf:type", "ticket:ticket", Lang::NONE);
 
     if !ticket.id.is_empty() && !ticket.id.is_empty() {
-        new_ticket.set_id(&ticket.id);
+        ticket_indv.set_id(&ticket.id);
     } else {
-        new_ticket.set_id(&Uuid::new_v4().to_hyphenated().to_string());
+        ticket_indv.set_id(&Uuid::new_v4().to_hyphenated().to_string());
     }
 
-    new_ticket.add_uri("ticket:login", login);
-    new_ticket.add_string("ticket:accessor", user_id, Lang::NONE);
+    ticket_indv.add_string("ticket:login", login, Lang::NONE);
+    ticket_indv.add_string("ticket:accessor", user_id, Lang::NONE);
 
-    new_ticket.add_string("ticket:when", &format!("{:?}", Utc::now().naive_utc()), Lang::NONE);
-    new_ticket.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
+    let now = Utc::now();
+    let start_time_str = format!("{:?}", now.naive_utc());
+
+    if start_time_str.len() > 28 {
+        ticket_indv.add_string("ticket:when", &start_time_str[0..28], Lang::NONE);
+    } else {
+        ticket_indv.add_string("ticket:when", &start_time_str, Lang::NONE);
+    }
+
+    ticket_indv.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
 
     let mut raw1: Vec<u8> = Vec::new();
-    if to_msgpack(&new_ticket, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, new_ticket.get_id(), raw1.as_slice()) {
-        ticket.update_from_individual(&mut new_ticket);
+    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1.as_slice()) {
+        ticket.update_from_individual(&mut ticket_indv);
         ticket.result = ResultCode::Ok;
-        info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, ticket.start_time, ticket.end_time);
+        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
+        ticket.end_time = ticket.start_time + (duration as i64 * 10000000);
+
+        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10000 - TICKS_TO_UNIX_EPOCH) / 1000, 0));
+        info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, start_time_str, end_time_str);
     }
 }
