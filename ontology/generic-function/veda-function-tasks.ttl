@@ -348,8 +348,8 @@ v-ft:PSfrom_to_DecisionForm
   v-ui:forClass v-wf:DecisionForm ;
   v-ui:forProperty v-wf:to ;
   v-ui:forProperty v-wf:from ;
-  v-ui:rangeRestriction v-s:Position ;
   v-ui:maxCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:employee.v-s:hasAccount.isExists'=='true' && 'v-s:official'=='true') || ('rdf:type'=='v-s:Position' && 'v-s:origin'=='Role')" ;
 .
 
 v-ft:Inbox
@@ -541,7 +541,7 @@ v-ft:TaskBlankTemplate
         <em about="v-wf:dateGiven" property="rdfs:label"></em>
         <veda-control property="v-wf:dateGiven" data-type="date"></veda-control>
         <div property="v-wf:dateGiven"></div>
-      </div>  
+      </div>
     </div>
     <div class="row">
       <div class="col-md-4">
