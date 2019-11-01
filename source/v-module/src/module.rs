@@ -62,10 +62,6 @@ impl Module {
 
         let mut ft_client = FTClient::new(ft_query_service_url);
 
-        while !ft_client.connect() {
-            thread::sleep(time::Duration::from_millis(3000));
-        }
-
         let param_name = "main_module_url";
         let api = if let Some(url) = Module::get_property(param_name) {
             APIClient::new(url)
