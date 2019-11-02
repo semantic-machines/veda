@@ -37,6 +37,17 @@ if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
 
 fi
 
+if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] ; then
+
+    rm ./veda-auth
+
+    cd source/veda-auth
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-auth $PWD
+
+fi
+
 if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] ; then
 
     rm ./veda-az-indexer
