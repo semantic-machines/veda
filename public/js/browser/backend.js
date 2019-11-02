@@ -1,7 +1,7 @@
 // HTTP server functions
 veda.Module(function Backend(veda) { "use strict";
 
-  var localDB = new veda.LocalDB();
+  //~ var localDB = new veda.LocalDB();
 
   veda.Backend = {};
 
@@ -340,16 +340,17 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    return localDB.then(function (db) {
-      return db.get(params.data.uri);
-    }).catch(function (err) {
-      return call_server(params).then(function (individual) {
-        localDB.then(function (db) {
-          db.put(individual);
-        }).catch(console.log);
-        return individual;
-      });
-    });
+    return call_server(params);
+    //~ return localDB.then(function (db) {
+      //~ return db.get(params.data.uri);
+    //~ }).catch(function (err) {
+      //~ return call_server(params).then(function (individual) {
+        //~ localDB.then(function (db) {
+          //~ db.put(individual);
+        //~ }).catch(console.log);
+        //~ return individual;
+      //~ });
+    //~ });
   };
 
   veda.Backend.reset_individual = function reset_individual(ticket, uri, reopen) {
@@ -357,7 +358,7 @@ veda.Module(function Backend(veda) { "use strict";
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_individual",
+      url: "api/reset_individual",
       async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
@@ -365,17 +366,18 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    return call_server(params).then(function (individual) {
-      localDB.then(function (db) {
-        db.put(individual);
-      }).catch(console.log);
-      return individual;
-    }).catch(function (error) {
-      localDB.then(function (db) {
-        db.remove(params.data.uri);
-      });
-      throw error;
-    });
+    return call_server(params);
+    //~ return call_server(params).then(function (individual) {
+      //~ localDB.then(function (db) {
+        //~ db.put(individual);
+      //~ }).catch(console.log);
+      //~ return individual;
+    //~ }).catch(function (error) {
+      //~ localDB.then(function (db) {
+        //~ db.remove(params.data.uri);
+      //~ });
+      //~ throw error;
+    //~ });
   };
 
   veda.Backend.get_individuals = function get_individuals(ticket, uris) {
@@ -390,38 +392,39 @@ veda.Module(function Backend(veda) { "use strict";
         "uris": isObj ? arg.uris : uris
       }
     };
-    return localDB.then(function (db) {
-      var results = [];
-      var get_from_server = [];
-      return params.data.uris.reduce(function (p, uri, i) {
-        return p.then(function() {
-          return db.get(uri).then(function (result) {
-            results[i] = result;
-            return results;
-          }).catch(function () {
-            get_from_server.push(uri);
-            return results;
-          });
-        });
-      }, Promise.resolve(results))
-      .then(function (results) {
-        if (get_from_server.length) {
-          params.data.uris = get_from_server;
-          return call_server(params);
-        } else {
-          return [];
-        }
-      })
-      .then(function (results_from_server) {
-        for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
-          while(results[j++]); // Fast forward to empty element
-          results[j-1] = results_from_server[i];
-          db.put(results_from_server[i]);
-        }
-        return results;
-      })
-      .catch(console.log);
-    });
+    return call_server(params);
+    //~ return localDB.then(function (db) {
+      //~ var results = [];
+      //~ var get_from_server = [];
+      //~ return params.data.uris.reduce(function (p, uri, i) {
+        //~ return p.then(function() {
+          //~ return db.get(uri).then(function (result) {
+            //~ results[i] = result;
+            //~ return results;
+          //~ }).catch(function () {
+            //~ get_from_server.push(uri);
+            //~ return results;
+          //~ });
+        //~ });
+      //~ }, Promise.resolve(results))
+      //~ .then(function (results) {
+        //~ if (get_from_server.length) {
+          //~ params.data.uris = get_from_server;
+          //~ return call_server(params);
+        //~ } else {
+          //~ return [];
+        //~ }
+      //~ })
+      //~ .then(function (results_from_server) {
+        //~ for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
+          //~ while(results[j++]); // Fast forward to empty element
+          //~ results[j-1] = results_from_server[i];
+          //~ db.put(results_from_server[i]);
+        //~ }
+        //~ return results;
+      //~ })
+      //~ .catch(console.log);
+    //~ });
   };
 
 //////////////////////////
