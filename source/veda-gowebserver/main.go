@@ -274,6 +274,8 @@ func main() {
     switch string(ctx.Path()[:]) {
       case "/api/get_individual":
         getIndividual(ctx)
+      case "/api/reset_individual":
+        getIndividual(ctx)
       case "/api/get_individuals":
         getIndividuals(ctx)
       case "/api/put_individual":
