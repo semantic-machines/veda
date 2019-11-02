@@ -2,6 +2,8 @@ ro-storage
 
 mstorage
 
+#auth
+
 az-indexer
 
 ft-indexer

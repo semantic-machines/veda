@@ -1388,6 +1388,78 @@ v-s:transportOrganization
   rdfs:range v-s:Organization ;
   rdfs:domain v-s:Deliverable2 ;
 .
+
+### ------------------------------------------------------------
+v-s:containingChemicalElement
+  rdf:type owl:Class ;
+  rdfs:subClassOf v-s:UserThing ;
+  rdfs:label "Содержание химического элемента"@ru ;
+  rdfs:label "Containing chemical element"@en ;
+.
+
+ v-s:containsAurum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание золота(грамм)"@ru ;
+  rdfs:label "Contains Aurum"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsArgentum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание серебра(грамм)"@ru ;
+  rdfs:label "Contains Argentum"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsPalladium
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание палладия(грамм)"@ru ;
+  rdfs:label "Contains Palladium"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsPlatinum
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание платины(грамм)"@ru ;
+  rdfs:label "Contains Platinum"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsIridium
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание иридия(грамм)"@ru ;
+  rdfs:label "Contains Iridium"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsRadium
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание радия(грамм)"@ru ;
+  rdfs:label "Contains Radium"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsRuthenium
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание рутения(грамм)"@ru ;
+  rdfs:label "Contains Ruthenium"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
+
+ v-s:containsOsmium
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "Содержание осмия(грамм)"@ru ;
+  rdfs:label "Contains Osmium"@en ;
+  rdfs:domain v-s:containingChemicalElement ;
+  rdfs:range xsd:string ;
+.
 #------------------------------------------------------
 v-s:Document
   rdf:type owl:Class ;
