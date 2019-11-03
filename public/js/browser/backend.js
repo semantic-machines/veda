@@ -92,45 +92,19 @@ veda.Module(function Backend(veda) { "use strict";
     var method = params.method,
         url = params.url,
         data = params.data,
-        async = typeof params.async !== "undefined" ? params.async : true,
         salt = "";//Date.now();
-    if (async) {
-      return new Promise( function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          if (this.status == 200) {
-            resolve( JSON.parse(this.response, veda.Util.decimalDatetimeReviver) );
-          } else {
-            reject( new BackendError(this) );
-          }
-        };
-        xhr.onerror = function () {
-          reject( new BackendError(this) );
-        };
-        if (method === "GET") {
-          var params = [];
-          for (var name in data) {
-            if (typeof data[name] !== "undefined") {
-              params.push(name + "=" + encodeURIComponent(data[name]));
-            }
-          }
-          params.push(salt);
-          params = params.join("&");
-          xhr.open(method, url + "?" + params, async);
-          xhr.timeout = 120000;
-          xhr.send();
-        } else {
-          xhr.open(method, url + "?" + salt, async);
-          xhr.timeout = 120000;
-          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          var payload = JSON.stringify(data, function (key, value) {
-            return key === "data" && this.type === "Decimal" ? value.toString() : value;
-          });
-          xhr.send(payload);
-        }
-      });
-    } else {
+    return new Promise( function (resolve, reject) {
       var xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        if (this.status == 200) {
+          resolve( JSON.parse(this.response, veda.Util.decimalDatetimeReviver) );
+        } else {
+          reject( new BackendError(this) );
+        }
+      };
+      xhr.onerror = function () {
+        reject( new BackendError(this) );
+      };
       if (method === "GET") {
         var params = [];
         for (var name in data) {
@@ -140,30 +114,25 @@ veda.Module(function Backend(veda) { "use strict";
         }
         params.push(salt);
         params = params.join("&");
-        xhr.open(method, url + "?" + params, async);
+        xhr.open(method, url + "?" + params, true);
+        xhr.timeout = 120000;
         xhr.send();
       } else {
-        xhr.open(method, url + "?" + salt, async);
+        xhr.open(method, url + "?" + salt, true);
+        xhr.timeout = 120000;
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         var payload = JSON.stringify(data, function (key, value) {
           return key === "data" && this.type === "Decimal" ? value.toString() : value;
         });
         xhr.send(payload);
       }
-      if (xhr.status === 200) {
-        // Parse with date & decimal reviver
-        return JSON.parse(xhr.responseText, veda.Util.decimalDatetimeReviver);
-      } else {
-        throw new BackendError(xhr);
-      }
-    }
+    });
   }
 
   veda.Backend.ping = function ping() {
     var params = {
       method: "GET",
       url: "ping",
-      async: true
     };
     return call_server(params);
   };
@@ -174,7 +143,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/get_rights",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
@@ -189,7 +157,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/get_rights_origin",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
@@ -204,7 +171,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/get_membership",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
@@ -221,7 +187,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/authenticate",
-      async: isObj ? arg.async : true,
       data: {
         "login": isObj ? arg.login : login,
         "password": isObj ? arg.password : password,
@@ -237,7 +202,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/get_ticket_trusted",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "login": isObj ? arg.login : login
@@ -252,7 +216,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/is_ticket_valid",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket
       }
@@ -266,7 +229,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/get_operation_state",
-      async: isObj ? arg.async : true,
       data: {
         "module_id": isObj ? arg.module_id : module_id,
         "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
@@ -293,7 +255,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "POST",
       url: "api/query",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : queryStr,
@@ -305,27 +266,14 @@ veda.Module(function Backend(veda) { "use strict";
         "from"  : isObj ? arg.from : from
       }
     };
-    if (typeof params.async !== "undefined" ? params.async : true) {
-      return call_server(params).catch(function (backendError) {
-        if (backendError.code === 999) {
-          return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
-        } else {
-          throw backendError;
-        }
-      });
-    } else {
-      try {
-        var result = call_server(params);
-        return result;
-      } catch (backendError) {
-        if (backendError.code === 999) {
-          return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
-        } else {
-          throw backendError;
-        }
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 999) {
+        return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
+      } else {
+        throw backendError;
       }
-    }
-  }
+    });
+  };
 
   veda.Backend.get_individual = function get_individual(ticket, uri, reopen) {
     var arg = arguments[0];
@@ -333,7 +281,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/get_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
@@ -359,7 +306,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "GET",
       url: "api/reset_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
@@ -386,7 +332,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "POST",
       url: "api/get_individuals",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uris": isObj ? arg.uris : uris
@@ -435,7 +380,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "PUT",
       url: "api/remove_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
@@ -454,7 +398,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "PUT",
       url: "api/put_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -473,7 +416,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "PUT",
       url: "api/add_to_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -492,7 +434,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "PUT",
       url: "api/set_in_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -511,7 +452,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "PUT",
       url: "api/remove_from_individual",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
@@ -530,7 +470,6 @@ veda.Module(function Backend(veda) { "use strict";
     var params = {
       method: "PUT",
       url: "api/put_individuals",
-      async: isObj ? arg.async : true,
       data: {
         "ticket": isObj ? arg.ticket : ticket,
         "individuals": isObj ? arg.individuals : individuals,
