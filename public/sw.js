@@ -23,18 +23,18 @@ this.addEventListener("fetch", function(event) {
     case "PING":
       event.respondWith(fetch(event.request));
       break;
-    case "STATIC":
-      if (event.request.method === "GET") {
-        event.respondWith(handleSTATIC(event));
-      }
+    case "API":
+      event.respondWith(handleAPI(event));
       break;
     case "FILES":
       if (event.request.method === "GET") {
         event.respondWith(handleFILES(event));
       }
       break;
-    case "API":
-      event.respondWith(handleAPI(event));
+    case "STATIC":
+      if (event.request.method === "GET") {
+        event.respondWith(handleSTATIC(event));
+      }
       break;
   }
 });
