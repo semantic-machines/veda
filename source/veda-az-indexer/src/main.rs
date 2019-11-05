@@ -11,8 +11,7 @@ use v_storage::storage::*;
 mod common;
 
 fn main() -> Result<(), i32> {
-
-    init_log ();
+    init_log();
 
     let mut module = Module::default();
 
@@ -23,6 +22,10 @@ fn main() -> Result<(), i32> {
         membership_counter: 0,
         storage: VStorage::new_lmdb("./data", StorageMode::ReadWrite),
     };
+
+    if ctx.storage.get_value(StorageId::Az, "empty").is_none() {
+        ctx.storage.put_kv(StorageId::Az, "empty", "0;0;0");
+    }
 
     let module_info = ModuleInfo::new("./data", "acl_preparer", true);
     if module_info.is_err() {
