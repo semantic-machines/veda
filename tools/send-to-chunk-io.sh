@@ -6,6 +6,7 @@ zip -v -r ./chunk-io/logs.zip screens
 zip -v -r ./chunk-io/logs.zip qa
 zip -v ./chunk-io/logs.zip core
 zip -v ./chunk-io/logs.zip install.log
+zip -v ./chunk-io/logs.zip public/ontology.json
 
 cd chunk-io
 
