@@ -3,6 +3,7 @@ extern crate log;
 
 use nng::{Message, Protocol, Socket};
 use serde_json::Value;
+use std::{thread, time};
 
 pub struct FTQuery {
     ticket: String,
@@ -127,7 +128,9 @@ impl FTClient {
         let mut res = FTResult::default();
 
         if !self.is_ready {
-            self.connect();
+            while !self.connect() {
+                thread::sleep(time::Duration::from_millis(3000));
+            }
         }
 
         if !self.is_ready {

@@ -7,7 +7,6 @@ use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
 use nng::{Protocol, Socket};
 use std::io::Write;
-use std::{thread, time};
 use v_api::*;
 use v_onto::individual::*;
 use v_onto::parser::*;
@@ -60,7 +59,7 @@ impl Module {
             storage = VStorage::new_lmdb("./data", storage_mode);
         }
 
-        let mut ft_client = FTClient::new(ft_query_service_url);
+        let ft_client = FTClient::new(ft_query_service_url);
 
         let param_name = "main_module_url";
         let api = if let Some(url) = Module::get_property(param_name) {
