@@ -23,8 +23,16 @@ fn main() -> Result<(), i32> {
         storage: VStorage::new_lmdb("./data", StorageMode::ReadWrite),
     };
 
-    if ctx.storage.get_value(StorageId::Az, "empty").is_none() {
-        ctx.storage.put_kv(StorageId::Az, "empty", "0;0;0");
+    if ctx.storage.get_value(StorageId::Az, "Pcfg:VedaSystem").is_none() {
+        info!("create permission for system account");
+        let mut sys_permission = Individual::default();
+        sys_permission.set_id("cfg:VedaSystemPermission");
+        sys_permission.add_uri("rdf:type", "v-s:PermissionStatement");
+        sys_permission.add_bool("v-s:canCreate", true);
+        sys_permission.add_uri("v-s:permissionSubject", "cfg:VedaSystem");
+        sys_permission.add_uri("v-s:permissionObject", "v-s:AllResourcesGroup");
+
+        prepare_permission_statement(&mut Individual::default(), &mut sys_permission, &mut ctx);
     }
 
     let module_info = ModuleInfo::new("./data", "acl_preparer", true);
