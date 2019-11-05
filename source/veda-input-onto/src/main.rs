@@ -44,14 +44,6 @@ fn main() -> NotifyResult<()> {
 
     let mut module = Module::default();
 
-    let systicket;
-    if let Ok(t) = module.get_sys_ticket_id() {
-        systicket = t;
-    } else {
-        error!("fail get systicket");
-        return Ok(());
-    }
-
     let mut list_candidate_files: Vec<PathBuf> = Vec::new();
 
     let onto_path = "ontology".to_owned();
@@ -66,6 +58,14 @@ fn main() -> NotifyResult<()> {
     }
 
     info!("start prepare files");
+
+    let systicket;
+    if let Ok(t) = module.get_sys_ticket_id() {
+        systicket = t;
+    } else {
+        error!("fail get systicket");
+        return Ok(());
+    }
 
     if !list_candidate_files.is_empty() {
         processing_files(list_candidate_files, &mut module, &systicket);

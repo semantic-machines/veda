@@ -562,6 +562,8 @@ fn create_sys_ticket(module: &mut Module) -> String {
         } else {
             error!("fail store system ticket link")
         }
+    } else {
+        error!("fail create sys ticket")
     }
 
     String::default()
