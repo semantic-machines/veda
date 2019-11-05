@@ -95,7 +95,6 @@ Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note24)
 VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,'0',@P12,@P13,@P14,@P15,@P16,@P17,@P18)";
 // note1 = P4, .. note8 = P4
 
-
 pub fn insert_card_holder<I: BoxableIo + 'static>(
     id: &str,
     now: NaiveDateTime,
@@ -174,10 +173,10 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &first_name.as_str(),
                         &last_name.as_str(),
                         &middle_name.as_str(), // note1
-                        &tab_number.as_str(), // note2
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(), // note4
-                        &0, // note5
+                        &tab_number.as_str(),  // note2
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &0,                    // note5
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str(),
                         &occupation.as_str(),
@@ -237,8 +236,16 @@ FROM [WIN-PAK PRO].[dbo].[CardAccessLevels] t1
     JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[RecordID]=[t1].[CardID]
 WHERE LTRIM([t2].[CardNumber])=@P1 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
-pub fn clear_access_level<I: BoxableIo + 'static>(card_number: String, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
+pub fn clear_access_level<I: BoxableIo + 'static>(
+    is_execute: bool,
+    card_number: String,
+    transaction: Transaction<I>,
+) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
+    if is_execute {
+        Box::new(transaction.exec(CLEAR_ACCESS_LEVEL, &[&card_number.as_str()]).and_then(|(_result, trans)| Ok(trans)))
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
 }
 
 // INSERT ACCESS LEVEL
@@ -250,18 +257,19 @@ VALUES (0,@P1,0,0,0,0,
     @P3,0,0,0,0,0,0,0,0)";
 
 pub fn update_access_level<I: BoxableIo + 'static>(
+    is_execute: bool,
     now: NaiveDateTime,
     idx: usize,
-    levels: Vec<String>,
+    levels: Vec<i64>,
     card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    if idx < levels.len() {
+    if idx < levels.len() && is_execute {
         Box::new(
             transaction
-                .exec(INSERT_ACCESS_LEVEL, &[&now, &card_number.as_str(), &levels.get(idx).unwrap().as_str()])
+                .exec(INSERT_ACCESS_LEVEL, &[&now, &card_number.as_str(), levels.get(idx).unwrap()])
                 .and_then(|(_result, trans)| Ok(trans))
-                .and_then(move |trans| update_access_level(now, idx + 1, levels, card_number, trans)),
+                .and_then(move |trans| update_access_level(is_execute, now, idx + 1, levels, card_number, trans)),
         )
     } else {
         Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
@@ -358,11 +366,13 @@ pub fn split_str_for_winpak_db_columns(src: &str, len: usize, res: &mut Vec<Stri
     }
 }
 
-pub fn get_access_level(indv: &mut Individual, access_levels: &mut Vec<String>) {
+pub fn get_access_level(indv: &mut Individual, access_levels: &mut Vec<i64>) {
     if let Some(access_levels_uris) = indv.get_literals("mnd-s:hasAccessLevel") {
         for l in access_levels_uris {
             if let Some(nl) = l.rsplit("_").next() {
-                access_levels.push(nl.to_string());
+                if let Ok(n) = &nl.parse::<i64>() {
+                    access_levels.push(*n);
+                }
             }
         }
     }
