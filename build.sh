@@ -13,7 +13,7 @@ fi
 
 export CARGO_TARGET_DIR=$HOME/tmp
 
-if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] ; then
+if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ]; then
 
     cd source/libauthorization
     cargo build --release
@@ -169,7 +169,7 @@ if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] ; then
+if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "dmd" ]; then
     ./tools/build-component.sh veda-mstorage mstorage
 fi
 
@@ -186,27 +186,27 @@ if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./tools/build-component.sh veda-authorization authorization
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] ; then
+if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "dmd" ] ; then
     ./tools/build-component.sh veda-fanout-email fanout-email
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] ; then
+if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] || [ $1 == "dmd" ]; then
     ./tools/build-component.sh veda-fanout-sql-np fanout-sql-np
     ./tools/build-component.sh veda-fanout-sql-lp fanout-sql-lp
 fi
 
-if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] ; then
+if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "dmd" ]; then
     rm ./veda-scripts-main
     rm ./veda-scripts-lp
     rm ./veda-ltr-scripts
     ./tools/build-component.sh veda-scripts scripts
 fi
 
-if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] ; then
+if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "dmd" ]; then
     ./tools/build-component.sh veda-ft-indexer ft-indexer
 fi
 
-if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] ; then
+if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "dmd" ]; then
     ./tools/build-component.sh veda-ft-query ft-query
 fi
 
