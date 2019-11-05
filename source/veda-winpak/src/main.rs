@@ -180,7 +180,6 @@ pub fn get_conn_string(module: &mut Module) -> Result<String, String> {
 
 fn prepare_queue_element(module: &mut Module, systicket: &str, conn_str: &str, msg: &mut Individual) -> Result<(), ResultCode> {
     if parse_raw(msg).is_ok() {
-
         let wcmd = msg.get_first_integer("cmd");
         if wcmd.is_none() {
             return Err(ResultCode::UnprocessableEntity);

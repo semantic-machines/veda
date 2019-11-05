@@ -69,22 +69,24 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut equipment_list = Vec::new();
     let mut date_from = None;
     let mut date_to = None;
-    let mut access_levels: Vec<String> = Vec::new();
+    let mut access_levels: Vec<i64> = Vec::new();
+    let mut is_update_access_levels = false;
 
     if btype == "mnd-s:Pass" {
         get_equipment_list(&mut indv_b, &mut equipment_list);
-        date_from = indv_b.get_first_datetime("v-s:dateFrom");
-        date_to = indv_b.get_first_datetime("v-s:dateTo");
-        get_access_level(&mut indv_b, &mut access_levels);
+        date_from = indv_b.get_first_datetime("v-s:dateFromFact");
+        date_to = indv_b.get_first_datetime("v-s:dateToFact");
+    //get_access_level(&mut indv_b, &mut access_levels);
     } else {
         for has_change_kind_for_pass in has_change_kind_for_passes {
             if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
                 get_equipment_list(&mut indv_b, &mut equipment_list);
             } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
-                date_from = indv_b.get_first_datetime("v-s:dateFrom");
-                date_to = indv_b.get_first_datetime("v-s:dateTo");
+                date_from = indv_b.get_first_datetime("v-s:dateFromFact");
+                date_to = indv_b.get_first_datetime("v-s:dateToFact");
             } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
                 get_access_level(&mut indv_b, &mut access_levels);
+                is_update_access_levels = true;
             }
         }
     }
@@ -95,8 +97,8 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         .and_then(|conn| conn.transaction())
         .and_then(|trans| update_equipment(equipment_list, card_number.to_string(), trans))
         .and_then(|trans| update_card_date(date_from, date_to, card_number.to_string(), trans))
-        .and_then(|trans| clear_access_level(card_number.to_string(), trans))
-        .and_then(|trans| update_access_level(now, 0, access_levels, card_number.to_string(), trans))
+        .and_then(|trans| clear_access_level(is_update_access_levels, card_number.to_string(), trans))
+        .and_then(|trans| update_access_level(is_update_access_levels, now, 0, access_levels, card_number.to_string(), trans))
         .and_then(|trans| trans.commit());
     match current_thread::block_on_all(future) {
         Ok(_) => {

@@ -87,10 +87,10 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         }
     }
 
-    let date_from = indv.get_first_datetime("v-s:dateFrom");
-    let date_to = indv.get_first_datetime("v-s:dateTo");
+    let date_from = indv.get_first_datetime("v-s:dateFromFact");
+    let date_to = indv.get_first_datetime("v-s:dateToFact");
 
-    let mut access_levels: Vec<String> = Vec::new();
+    let mut access_levels: Vec<i64> = Vec::new();
     get_access_level(&mut indv_b, &mut access_levels);
 
     let now = Utc::now().naive_utc();
@@ -138,8 +138,8 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             .and_then(|trans| update_equipment_where_id(equipment_list, cardholder_id.get(), trans))
             .and_then(|trans| clear_card(card_number.to_string(), trans))
             .and_then(|trans| insert_card(now, card_number.to_string(), date_from, date_to, cardholder_id.get(), trans))
-            .and_then(|trans| clear_access_level(card_number.to_string(), trans))
-            .and_then(|trans| update_access_level(now, 0, access_levels, card_number.to_string(), trans))
+            .and_then(|trans| clear_access_level(true, card_number.to_string(), trans))
+            .and_then(|trans| update_access_level(true, now, 0, access_levels, card_number.to_string(), trans))
             .and_then(|trans| trans.commit());
         match current_thread::block_on_all(ftran) {
             Ok(_) => {
