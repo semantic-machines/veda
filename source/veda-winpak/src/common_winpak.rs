@@ -174,9 +174,9 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &last_name.as_str(),
                         &middle_name.as_str(), // note1
                         &tab_number.as_str(),  // note2
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(), // note4
-                        &0,                    // note5
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &0,                    // note5
                         &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
                         &module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str(),
                         &occupation.as_str(),

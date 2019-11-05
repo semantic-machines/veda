@@ -87,8 +87,8 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         }
     }
 
-    let date_from = indv.get_first_datetime("v-s:dateFromFact");
-    let date_to = indv.get_first_datetime("v-s:dateToFact");
+    let date_from = indv_b.get_first_datetime("v-s:dateFromFact");
+    let date_to = indv_b.get_first_datetime("v-s:dateToFact");
 
     let mut access_levels: Vec<i64> = Vec::new();
     get_access_level(&mut indv_b, &mut access_levels);

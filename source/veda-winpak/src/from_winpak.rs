@@ -85,11 +85,11 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         indv.clear("v-s:errorMessage");
 
         if let Some(v) = card_data.1 {
-            indv.set_datetime("v-s:dateFromFact", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+            indv.set_datetime("v-s:dateFrom", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
         }
 
         if let Some(v) = card_data.2 {
-            indv.set_datetime("v-s:dateToFact", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
+            indv.set_datetime("v-s:dateTo", v.sub(Duration::hours(WINPAK_TIMEZONE)).timestamp());
         }
 
         if let Some(v) = card_data.3 {
@@ -131,8 +131,8 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
     } else {
         error!("card [{}] not found in winpak database", param1);
 
-        indv.clear("v-s:dateFromFact");
-        indv.clear("v-s:dateToFact");
+        indv.clear("v-s:dateFrom");
+        indv.clear("v-s:dateTo");
         indv.clear("mnd-s:winpakCardRecordId");
         indv.clear("v-s:description");
         indv.clear("v-s:tabNumber");
