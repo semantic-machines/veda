@@ -28,7 +28,7 @@ pub(crate) enum EStorage {
 pub trait Storage {
     fn get_individual_from_db(&mut self, storage: StorageId, uri: &str, iraw: &mut Individual) -> bool;
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool;
-    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: &[u8]) -> bool;
+    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: Vec<u8>) -> bool;
     fn get_v(&mut self, storage: StorageId, key: &str) -> Option<String>;
     fn get_raw(&mut self, storage: StorageId, key: &str) -> Vec<u8>;
 }
@@ -85,7 +85,7 @@ impl VStorage {
         }
     }
 
-    pub fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: &[u8]) -> bool {
+    pub fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: Vec<u8>) -> bool {
         match &mut self.storage {
             EStorage::TT(s) => s.put_kv_raw(storage, key, val),
             EStorage::LMDB(s) => s.put_kv_raw(storage, key, val),

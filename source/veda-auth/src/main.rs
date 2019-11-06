@@ -534,7 +534,7 @@ fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Tic
     ticket_indv.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
 
     let mut raw1: Vec<u8> = Vec::new();
-    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1.as_slice()) {
+    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1) {
         ticket.update_from_individual(&mut ticket_indv);
         ticket.result = ResultCode::Ok;
         ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
@@ -557,7 +557,7 @@ fn create_sys_ticket(module: &mut Module) -> String {
         sys_ticket_link.add_uri("rdf:type", "rdfs:Resource");
         sys_ticket_link.add_uri("v-s:resource", &ticket.id);
         let mut raw1: Vec<u8> = Vec::new();
-        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1.as_slice()) {
+        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1) {
             return ticket.id;
         } else {
             error!("fail store system ticket link")
