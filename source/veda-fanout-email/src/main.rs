@@ -4,10 +4,14 @@ extern crate log;
 use lettre::{EmailAddress, Envelope, SendableEmail, SmtpClient, Transport};
 use v_module::info::ModuleInfo;
 use v_module::module::*;
+use v_module::onto::load_onto;
 use v_onto::individual::*;
+use v_onto::onto::Onto;
 use v_queue::consumer::*;
 
-pub struct Context {}
+pub struct Context {
+    onto: Onto,
+}
 
 fn main() -> Result<(), i32> {
     init_log();
@@ -22,7 +26,13 @@ fn main() -> Result<(), i32> {
         return Err(-1);
     }
 
-    let mut ctx = Context {};
+    let mut ctx = Context {
+        onto: Onto::default(),
+    };
+
+    info!("load onto start");
+    load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+    info!("load onto end");
 
     module.listen_queue(
         &mut queue_consumer,
@@ -37,7 +47,7 @@ fn main() -> Result<(), i32> {
 
 fn before_bath(_module: &mut Module, _ctx: &mut Context) {}
 
-fn after_bath(_module: &mut Module, ctx: &mut Context) {}
+fn after_bath(_module: &mut Module, _ctx: &mut Context) {}
 
 fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) {
     let cmd = get_cmd(queue_element);
@@ -57,4 +67,15 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
     if let Err(e) = module_info.put_info(op_id, op_id) {
         error!("fail write module_info, op_id={}, err={:?}", op_id, e)
     }
+
+    if let Some(types) = new_state.get_literals("rdf:type") {
+        for itype in types {
+            if ctx.onto.is_some_entered(&itype, &["v-s:Deliverable"]) {
+                prepare_deliverable();
+                break;
+            }
+        }
+    }
 }
+
+fn prepare_deliverable() {}
