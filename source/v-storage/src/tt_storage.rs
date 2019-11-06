@@ -73,7 +73,7 @@ impl Storage for TTStorage {
         }
     }
 
-    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: Vec<u8>) -> bool {
+    fn put_kv_raw(&mut self, storage: StorageId, _key: &str, val: Vec<u8>) -> bool {
         let space = if storage == StorageId::Tickets {
             TICKETS_SPACE_ID
         } else if storage == StorageId::Az {
