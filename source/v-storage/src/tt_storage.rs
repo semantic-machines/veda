@@ -73,7 +73,7 @@ impl Storage for TTStorage {
         }
     }
 
-    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: &[u8]) -> bool {
+    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: Vec<u8>) -> bool {
         let space = if storage == StorageId::Tickets {
             TICKETS_SPACE_ID
         } else if storage == StorageId::Az {
@@ -82,8 +82,7 @@ impl Storage for TTStorage {
             INDIVIDUALS_SPACE_ID
         };
 
-        let tuple = val;
-        let resp = self.client.replace(space, &tuple).and_then(move |response| Ok(response.data));
+        let resp = self.client.replace_raw(space, val).and_then(move |response| Ok(response.data));
 
         if let Err(e) = self.rt.block_on(resp) {
             error!("fail replace, tarantool db [{:?}], err = {:?}", storage, e);

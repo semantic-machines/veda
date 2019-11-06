@@ -168,16 +168,24 @@ impl Storage for LMDBStorage {
     }
 
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
-        self.put_kv_raw(storage, key, val.as_bytes())
+        if storage == StorageId::Individuals {
+            return put_kv_lmdb(&self.individuals_db_env, &self.individuals_db_handle, key, val.as_bytes());
+        } else if storage == StorageId::Tickets {
+            return put_kv_lmdb(&self.tickets_db_env, &self.tickets_db_handle, key, val.as_bytes());
+        } else if storage == StorageId::Az {
+            return put_kv_lmdb(&self.az_db_env, &self.az_db_handle, key, val.as_bytes());
+        }
+
+        false
     }
 
-    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: &[u8]) -> bool {
+    fn put_kv_raw(&mut self, storage: StorageId, key: &str, val: Vec<u8>) -> bool {
         if storage == StorageId::Individuals {
-            return put_kv_lmdb(&self.individuals_db_env, &self.individuals_db_handle, key, val);
+            return put_kv_lmdb(&self.individuals_db_env, &self.individuals_db_handle, key, val.as_slice());
         } else if storage == StorageId::Tickets {
-            return put_kv_lmdb(&self.tickets_db_env, &self.tickets_db_handle, key, val);
+            return put_kv_lmdb(&self.tickets_db_env, &self.tickets_db_handle, key, val.as_slice());
         } else if storage == StorageId::Az {
-            return put_kv_lmdb(&self.az_db_env, &self.az_db_handle, key, val);
+            return put_kv_lmdb(&self.az_db_env, &self.az_db_handle, key, val.as_slice());
         }
 
         false
