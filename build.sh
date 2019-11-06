@@ -13,7 +13,7 @@ fi
 
 export CARGO_TARGET_DIR=$HOME/tmp
 
-if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ]; then
+if [ -z $1 ] || [ $1 == "az" ] || [ $1 == "veda-az" ] || [ $1 == "mv2" ]; then
 
     cd source/libauthorization
     cargo build --release
@@ -37,7 +37,7 @@ if [ $1 == "winpak" ] || [ $1 == "veda-winpak" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] ; then
+if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] || [ $1 == "mv2" ]; then
 
     rm ./veda-auth
 
@@ -48,7 +48,7 @@ if [ -z $1 ] || [ $1 == "auth" ] || [ $1 == "veda-auth" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] ; then
+if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] || [ $1 == "mv2" ]; then
 
     rm ./veda-az-indexer
 
@@ -94,7 +94,7 @@ if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
     echo end make VEDA-EXTRACTOR
 fi
 
-if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] ; then
+if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] || [ $1 == "mv2" ]; then
 
     rm ./veda-input-onto
 
@@ -105,7 +105,7 @@ if [ -z $1 ] || [ $1 == "input-onto" ] || [ $1 == "veda-input-onto" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
+if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] || [ $1 == "mv2" ]; then
 
     echo start make VEDA-CCUS
     rm ./veda-ccus
@@ -118,7 +118,7 @@ if [ -z $1 ] || [ $1 == "ccus" ] || [ $1 == "veda-ccus" ] ; then
     echo end make VEDA-CCUS
 fi
 
-if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] ; then
+if [ -z $1 ] || [ $1 == "ontologist" ] || [ $1 == "veda-ontologist" ] || [ $1 == "mv2" ]; then
 
     echo start make VEDA-ONTOLOGIST
     rm ./veda-ontologist
@@ -157,7 +157,7 @@ if [ $1 == "webserver" ] || [ $1 == "veda-webserver" ] ; then
     echo end make VEDA-WEBSERVER
 fi
 
-if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] ; then
+if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ]; then
 
     cd source/veda-bootstrap
     cargo build --release
@@ -169,11 +169,11 @@ if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] ; then
 
 fi
 
-if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "dmd" ]; then
+if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-mstorage mstorage
 fi
 
-if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] ; then
+if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] || [ $1 == "mv2" ] ; then
 
     cd source/veda-ro-storage
     cargo build --release
@@ -186,27 +186,27 @@ if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./tools/build-component.sh veda-authorization authorization
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "dmd" ] ; then
+if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-fanout-email fanout-email
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] || [ $1 == "dmd" ]; then
+if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-fanout-sql-np fanout-sql-np
     ./tools/build-component.sh veda-fanout-sql-lp fanout-sql-lp
 fi
 
-if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "dmd" ]; then
+if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
     rm ./veda-scripts-main
     rm ./veda-scripts-lp
     rm ./veda-ltr-scripts
     ./tools/build-component.sh veda-scripts scripts
 fi
 
-if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "dmd" ]; then
+if [ -z $1 ] || [ $1 == "ft-indexer" ] || [ $1 == "veda-ft-indexer" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-ft-indexer ft-indexer
 fi
 
-if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "dmd" ]; then
+if [ -z $1 ] || [ $1 == "ft-query" ] || [ $1 == "veda-ft-query" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-ft-query ft-query
 fi
 
@@ -214,7 +214,7 @@ if [ $1 == "input-queue" ] || [ $1 == "veda-input-queue" ] ; then
     ./tools/build-component.sh veda-input-queue input-queue
 fi
 
-if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ]; then
+if [ -z $1 ] || [ $1 == "gowebserver" ] || [ $1 == "veda-gowebserver" ] || [ $1 == "mv1" ]; then
 
     if [ -z $GOROOT ]; then
 	export GOROOT=/usr/local/go
