@@ -76,8 +76,14 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
         get_equipment_list(&mut indv_b, &mut equipment_list);
         date_from = indv_b.get_first_datetime("v-s:dateFromFact");
         date_to = indv_b.get_first_datetime("v-s:dateToFact");
+
+        is_update_access_levels = true;
     //get_access_level(&mut indv_b, &mut access_levels);
     } else {
+        if has_change_kind_for_passes.is_empty() {
+            is_update_access_levels = true;
+        }
+
         for has_change_kind_for_pass in has_change_kind_for_passes {
             if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
                 get_equipment_list(&mut indv_b, &mut equipment_list);
@@ -85,10 +91,13 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
                 date_from = indv_b.get_first_datetime("v-s:dateFromFact");
                 date_to = indv_b.get_first_datetime("v-s:dateToFact");
             } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
-                get_access_level(&mut indv_b, &mut access_levels);
                 is_update_access_levels = true;
             }
         }
+    }
+
+    if is_update_access_levels {
+        get_access_level(&mut indv_b, &mut access_levels);
     }
 
     let now = Utc::now().naive_utc();
