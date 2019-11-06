@@ -122,13 +122,24 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                     &[
                         &now,
                         &label.as_str(),
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &chop::substring(
+                            &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default(),
+                            0,
+                            63,
+                        )
+                        .as_str(),
+                        &chop::substring(
+                            &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(),
+                            0,
+                            64,
+                        )
+                        .as_str(),
                         &"ТРАНСПОРТ",
-                        &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &chop::substring(&module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(), 0, 63)
+                            .as_str(),
                         &label.as_str(),
                         &label.as_str(),
-                        &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
+                        &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(), 0, 63).as_str(),
                         &regdate.as_str(),
                         &card_number.as_str(),
                         &id,
@@ -170,20 +181,27 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                     INSERT_HUMAN_CARDHOLDER,
                     &[
                         &now,
-                        &first_name.as_str(),
-                        &last_name.as_str(),
-                        &middle_name.as_str(), // note1
-                        &tab_number.as_str(),  // note2
+                        &chop::substring(&first_name, 0, 63).as_str(),
+                        &chop::substring(&last_name, 0, 63).as_str(),
+                        &chop::substring(&middle_name, 0, 63).as_str(),
+                        &tab_number.as_str(), // note2
                         &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
-                        &0,                    // note5
-                        &module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default().as_str(),
-                        &module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default().as_str(),
-                        &occupation.as_str(),
-                        &last_name.as_str(),
-                        &first_name.as_str(),
+                        &chop::substring(
+                            &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(),
+                            0,
+                            63,
+                        )
+                        .as_str(),
+                        &0, // note5
+                        &chop::substring(&module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(), 0, 63)
+                            .as_str(),
+                        &chop::substring(&module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default(), 0, 63)
+                            .as_str(),
+                        &chop::substring(&occupation, 0, 63).as_str(),
+                        &chop::substring(&last_name, 0, 63).as_str(),
+                        &chop::substring(&first_name, 0, 63).as_str(),
                         &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%d.%m.%Y").to_string().as_str(),
-                        &indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(),
+                        &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default(), 0, 63).as_str(),
                         &regdate.as_str(),
                         &card_number.as_str(),
                         &id,
