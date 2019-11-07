@@ -4,64 +4,58 @@
 
 veda.Module(function (veda) { "use strict";
 
-  var db_name = "veda";
-  var store_name = "individuals";
-
   var fallback = {
-    get: function (uri) {
-      if (typeof this[uri] !== "undefined") {
-        return Promise.resolve(this[uri]);
-      } else {
-        return Promise.reject();
-      }
+    get: function (key) {
+      return Promise.resolve(this[key]);
     },
-    put: function (json) {
-      var id = json["@"];
-      this[id] = json;
-      return Promise.resolve(json);
+    put: function (key, value) {
+      this[key] = value;
+      return Promise.resolve(value);
     },
-    remove: function (uri) {
-      var result = delete this[uri];
+    remove: function (key) {
+      var result = delete this[key];
       return Promise.resolve(result);
     }
   };
 
-  veda.LocalDB = function () {
-
+  veda.LocalDB = function (db_name, store_name) {
     var self = this;
+    this.db_name = db_name;
+    this.store_name = store_name;
+    this.name = db_name + "." + store_name;
 
     // Singleton pattern
-    if (veda.LocalDB.prototype._singletonInstance) {
-      return Promise.resolve(veda.LocalDB.prototype._singletonInstance);
+    if (veda.LocalDB.prototype[this.name]) {
+      return Promise.resolve(veda.LocalDB.prototype[this.name]);
     }
 
-    return veda.LocalDB.prototype._singletonInstance = initDB();
+    return veda.LocalDB.prototype[this.name] = initDB();
 
     function initDB() {
 
       return new Promise(function (resolve, reject) {
 
-        var openReq = window.indexedDB.open(db_name, 1);
+        var openReq = window.indexedDB.open(self.db_name, 1);
 
         openReq.onsuccess = function (event) {
           var db = event.target.result;
           self.db = db;
-          console.log("DB open success");
+          console.log(self.name, "DB open success");
           resolve(self);
         };
 
         openReq.onerror = function errorHandler(error) {
-          console.log("DB open error", error);
+          console.log(self.name, "DB open error", error);
           reject(error);
         };
 
         openReq.onupgradeneeded = function (event) {
           var db = event.target.result;
-          db.createObjectStore(store_name);
-          console.log("DB create success");
+          db.createObjectStore(self.store_name);
+          console.log(self.name, "DB create success");
         };
       }).catch(function (error) {
-        console.log("IndexedDB error, using in-memory fallback.\n", error);
+        console.log(self.name, "IndexedDB error, using in-memory fallback.\n", error);
         return fallback;
       });
     }
@@ -69,46 +63,41 @@ veda.Module(function (veda) { "use strict";
 
   var proto = veda.LocalDB.prototype;
 
-  proto.get = function (uri) {
+  proto.get = function (key) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction([store_name], "readonly").objectStore(store_name).get(uri);
+      var request = self.db.transaction([self.store_name], "readonly").objectStore(self.store_name).get(key);
       request.onerror = function(error) {
         reject(error);
       };
       request.onsuccess = function(event) {
-        var json = request.result;
-        if (typeof json !== "undefined") {
-          resolve(json);
-        } else {
-          reject();
-        }
+        resolve(event.target.result);
       };
     });
   };
 
-  proto.put = function (json) {
+  proto.put = function (key, value) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).put(json, json["@"]);
+      var request = self.db.transaction([self.store_name], "readwrite").objectStore(self.store_name).put(value, key);
       request.onerror = function(error) {
         reject(error);
       };
       request.onsuccess = function(event) {
-        resolve(json);
+        resolve(value);
       };
     });
   };
 
-  proto.remove = function (uri) {
+  proto.remove = function (key) {
     var self = this;
     return new Promise(function (resolve, reject) {
-      var request = self.db.transaction([store_name], "readwrite").objectStore(store_name).delete(uri);
+      var request = self.db.transaction([self.store_name], "readwrite").objectStore(self.store_name).delete(key);
       request.onerror = function(error) {
         reject(error);
       };
       request.onsuccess = function(event) {
-        resolve(request.result);
+        resolve(event.target.result);
       };
     });
   };

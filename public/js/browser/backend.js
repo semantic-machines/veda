@@ -1,7 +1,7 @@
 // HTTP server functions
 veda.Module(function Backend(veda) { "use strict";
 
-  //~ var localDB = new veda.LocalDB();
+  var localDB = new veda.LocalDB("veda", "store");
 
   veda.Backend = {};
 
@@ -77,7 +77,7 @@ veda.Module(function Backend(veda) { "use strict";
     this.status = result.status;
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
-    if (result.status === 0 || result.status === 503) {
+    if (result.status === 0 || result.status === 503 || result.status === 4000) {
       veda.Backend.serverWatch();
     }
     if (result.status === 470 || result.status === 471) {
@@ -148,7 +148,13 @@ veda.Module(function Backend(veda) { "use strict";
         "uri": isObj ? arg.uri : uri
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return { "@":"_","rdf:type":[{"data":"v-s:PermissionStatement","type":"Uri"}],"v-s:canCreate":[{"data":true,"type":"Boolean"}],"v-s:canDelete":[{"data":false,"type":"Boolean"}],"v-s:canRead":[{"data":true,"type":"Boolean"}],"v-s:canUpdate":[{"data":true,"type":"Boolean"}] };
+      } else {
+        throw backendError;
+      }
+    });
   };
 
   veda.Backend.get_rights_origin = function get_rights_origin(ticket, uri) {
@@ -162,7 +168,13 @@ veda.Module(function Backend(veda) { "use strict";
         "uri": isObj ? arg.uri : uri
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return [];
+      } else {
+        throw backendError;
+      }
+    });
   };
 
   veda.Backend.get_membership = function get_membership(ticket, uri) {
@@ -176,8 +188,15 @@ veda.Module(function Backend(veda) { "use strict";
         "uri": isObj ? arg.uri : uri
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return { "@":"_","rdf:type":[{"data":"v-s:Membership","type":"Uri"}],"v-s:memberOf":[{"data":"v-s:AllResourcesGroup","type":"Uri"}],"v-s:resource":[{"data":"cfg:Administrator","type":"Uri"}] };
+      } else {
+        throw backendError;
+      }
+    });
   };
+
 
   veda.Backend.authenticate = function authenticate(login, password, secret) {
     if (login == "VedaNTLMFilter")
@@ -193,7 +212,13 @@ veda.Module(function Backend(veda) { "use strict";
         "secret": isObj ? arg.secret : secret
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return { "end_time":' + (Date.now() + 12 * 3600 * 1000) + ',"id":"","result":200,"user_uri":"" };
+      } else {
+        throw backendError;
+      }
+    });
   };
 
   veda.Backend.get_ticket_trusted = function get_ticket_trusted(ticket, login) {
@@ -220,7 +245,13 @@ veda.Module(function Backend(veda) { "use strict";
         "ticket": isObj ? arg.ticket : ticket
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return true;
+      } else {
+        throw backendError;
+      }
+    });
   };
 
   veda.Backend.get_operation_state = function get_operation_state(module_id, wait_op_id) {
@@ -269,9 +300,22 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params).catch(function (backendError) {
       if (backendError.code === 999) {
         return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
+      } else if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return localDB.then(function (db) {
+          return db.get(JSON.stringify(params));
+        });
       } else {
         throw backendError;
       }
+    }).then(function (result) {
+      if (result) {
+        localDB.then(function (db) {
+          db.put(JSON.stringify(params), result);
+        });
+      } else {
+        result = { "result":[],"count":0,"estimated":0,"processed":0,"cursor":0,"result_code":200 };
+      }
+      return result;
     });
   };
 
@@ -287,17 +331,18 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    return call_server(params);
-    //~ return localDB.then(function (db) {
-      //~ return db.get(params.data.uri);
-    //~ }).catch(function (err) {
-      //~ return call_server(params).then(function (individual) {
-        //~ localDB.then(function (db) {
-          //~ db.put(individual);
-        //~ }).catch(console.log);
-        //~ return individual;
-      //~ });
-    //~ });
+    // Cache first
+    return localDB.then(function (db) {
+      return db.get(params.data.uri);
+    }).then(function (result) {
+      return result || call_server(params)
+        .then(function (individual) {
+          localDB.then(function (db) {
+            db.put(individual["@"], individual);
+          }).catch(console.log);
+          return individual;
+        });
+    });
   };
 
   veda.Backend.reset_individual = function reset_individual(ticket, uri, reopen) {
@@ -312,18 +357,18 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    return call_server(params);
-    //~ return call_server(params).then(function (individual) {
-      //~ localDB.then(function (db) {
-        //~ db.put(individual);
-      //~ }).catch(console.log);
-      //~ return individual;
-    //~ }).catch(function (error) {
-      //~ localDB.then(function (db) {
-        //~ db.remove(params.data.uri);
-      //~ });
-      //~ throw error;
-    //~ });
+    // Fetch first
+    return call_server(params).then(function (individual) {
+      localDB.then(function (db) {
+        db.put(individual["@"], individual);
+      });
+      return individual;
+    }).catch(function (error) {
+      localDB.then(function (db) {
+        db.remove(params.data.uri);
+      });
+      throw error;
+    });
   };
 
   veda.Backend.get_individuals = function get_individuals(ticket, uris) {
@@ -337,42 +382,58 @@ veda.Module(function Backend(veda) { "use strict";
         "uris": isObj ? arg.uris : uris
       }
     };
-    return call_server(params);
-    //~ return localDB.then(function (db) {
-      //~ var results = [];
-      //~ var get_from_server = [];
-      //~ return params.data.uris.reduce(function (p, uri, i) {
-        //~ return p.then(function() {
-          //~ return db.get(uri).then(function (result) {
-            //~ results[i] = result;
-            //~ return results;
-          //~ }).catch(function () {
-            //~ get_from_server.push(uri);
-            //~ return results;
-          //~ });
-        //~ });
-      //~ }, Promise.resolve(results))
-      //~ .then(function (results) {
-        //~ if (get_from_server.length) {
-          //~ params.data.uris = get_from_server;
-          //~ return call_server(params);
-        //~ } else {
-          //~ return [];
-        //~ }
-      //~ })
-      //~ .then(function (results_from_server) {
-        //~ for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
-          //~ while(results[j++]); // Fast forward to empty element
-          //~ results[j-1] = results_from_server[i];
-          //~ db.put(results_from_server[i]);
-        //~ }
-        //~ return results;
-      //~ })
-      //~ .catch(console.log);
-    //~ });
+    return localDB.then(function (db) {
+      var results = [];
+      var get_from_server = [];
+      return params.data.uris.reduce(function (p, uri, i) {
+        return p.then(function() {
+          return db.get(uri).then(function (result) {
+            if (typeof result !== "undefined") {
+              results[i] = result;
+            } else {
+              get_from_server.push(uri);
+            }
+            return results;
+          }).catch(function () {
+            get_from_server.push(uri);
+            return results;
+          });
+        });
+      }, Promise.resolve(results))
+      .then(function (results) {
+        if (get_from_server.length) {
+          params.data.uris = get_from_server;
+          return call_server(params);
+        } else {
+          return [];
+        }
+      })
+      .then(function (results_from_server) {
+        for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
+          while(results[j++]); // Fast forward to empty element
+          results[j-1] = results_from_server[i];
+          db.put(results_from_server[i]["@"], results_from_server[i]);
+        }
+        return results;
+      })
+      .catch(console.log);
+    });
   };
 
 //////////////////////////
+
+  function call_server_put(params) {
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return enqueueCall(params).then(function (queue) {
+          console.log("Offline operation added to queue, queue length = ", queue.length);
+          return { "op_id":0,"result":200 };
+        });
+      } else {
+        throw backendError;
+      }
+    });
+  }
 
   veda.Backend.remove_individual = function remove_individual(ticket, uri, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
@@ -389,7 +450,7 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
   veda.Backend.put_individual = function put_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
@@ -407,7 +468,7 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
   veda.Backend.add_to_individual = function add_to_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
@@ -425,7 +486,7 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
   veda.Backend.set_in_individual = function set_in_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
@@ -443,7 +504,7 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
   veda.Backend.remove_from_individual = function remove_from_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
@@ -461,7 +522,7 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
   veda.Backend.put_individuals = function put_individuals(ticket, individuals, assigned_subsystems, event_id, transaction_id) {
@@ -479,7 +540,42 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
+
+  // Offline PUT queue
+  function enqueueCall(params) {
+    return localDB.then(function (db) {
+      return db.get("offline-queue").then(function(queue) {
+        queue = queue || [];
+        queue.push( JSON.stringify(params) );
+        return db.put("offline-queue", queue);
+      });
+    });
+  }
+  function flushQueue() {
+    return localDB.then(function (db) {
+      return db.get("offline-queue").then(function(queue) {
+        if (queue && queue.length) {
+          return queue.reduce(function (prom, params) {
+            return prom.then(function () {
+              return call_server(JSON.parse(params));
+            });
+          }, Promise.resolve()).then(function () {
+            db.remove("offline-queue");
+            return queue.length;
+          });
+        } else {
+          return Promise.resolve(0);
+        }
+      });
+    });
+  }
+  veda.on("online", function () {
+    console.log("Veda 'online', flushing queue");
+    flushQueue().then(function (queue_length) {
+      console.log("Done, queue flushed", queue_length);
+    });
+  });
 
 });
