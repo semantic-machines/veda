@@ -80,10 +80,10 @@ fn main() -> std::io::Result<()> {
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
-    let ro_storage_url = section.get("auth_url").expect("param [auth_url] not found in veda.properties");
+    let auth_url = section.get("auth_url").expect("param [auth_url] not found in veda.properties");
 
     let server = Socket::new(Protocol::Rep0)?;
-    if let Err(e) = server.listen(&ro_storage_url) {
+    if let Err(e) = server.listen(&auth_url) {
         error!("fail listen, {:?}", e);
         return Ok(());
     }
@@ -127,7 +127,7 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
             res["user_uri"] = json!(ticket.user_uri);
             res["user_login"] = json!(ticket.user_login);
             res["result"] = json!(ticket.result as i64);
-            res["end_time"] = json!(ticket.end_time.to_string());
+            res["end_time"] = json!(ticket.end_time);
 
             return Message::from(res.to_string().as_bytes());
         }
@@ -191,9 +191,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
         match _authorize(&tr_ticket.user_uri, &tr_ticket.user_uri, 15, true, &mut trace) {
             Ok(_res) => {
                 for gr in trace.group.split('\n') {
-                    let cc: Vec<&str> = gr.split(';').collect();
-
-                    if cc.len() == 3 && cc[1] == ALLOW_TRUSTED_GROUP {
+                    if gr == ALLOW_TRUSTED_GROUP {
                         is_allow_trusted = true;
                         break;
                     }
@@ -338,7 +336,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                             error!("fail update, uri={}, result_code={:?}", uses_credential.get_id(), res.result);
                             continue;
                         } else {
-                            info!("create v-s:Credential{}, res={:?}", uses_credential.get_id(), res);
+                            info!("create v-s:Credential {}, res={:?}", uses_credential.get_id(), res);
 
                             account.remove("v-s:password");
                             account.set_uri("v-s:usesCredential", uses_credential.get_id());
