@@ -8,7 +8,7 @@ edition = "2018"
 path = "src/az-lmdb.rs"
 
 [dependencies]
-lazy_static = "1.0"
+lazy_static = "1.4"
 lmdb-rs-m = "0.7.7"
 v_authorization = { path = "../v-authorization" }
 
