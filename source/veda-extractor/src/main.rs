@@ -135,7 +135,7 @@ fn main() -> std::io::Result<()> {
         if let Some(types) = new_state_indv.get_literals("rdf:type") {
             for itype in types {
                 // для всех потребителей выгружаем элемент орг струкутры не имеющий поля [sys:source]
-                if onto.is_some_entered(&itype, &["v-s:OrganizationUnit".to_owned()]) {
+                if onto.is_some_entered(&itype, &["v-s:OrganizationUnit"]) {
                     return Some("*".to_owned());
                 }
 
@@ -193,7 +193,7 @@ fn main() -> std::io::Result<()> {
                 }
 
                 // выгрузка принятого решения у которого в поле [v-s:lastEditor] находится индивид из другой системы
-                if onto.is_some_entered(&itype, &["v-wf:Decision".to_owned()]) {
+                if onto.is_some_entered(&itype, &["v-wf:Decision"]) {
                     if let Some(src) = module.get_literal_of_link(new_state_indv, "v-s:backwardTarget", "sys:source", &mut Individual::default()) {
                         return Some(src);
                     }

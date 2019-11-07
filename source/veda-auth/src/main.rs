@@ -10,6 +10,7 @@ use rand::{thread_rng, Rng};
 use regex::Regex;
 use serde_json::json;
 use serde_json::value::Value as JSONValue;
+use std::collections::HashMap;
 use uuid::*;
 use v_api::{IndvOp, ResultCode};
 use v_authorization::Trace;
@@ -73,6 +74,8 @@ const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934
 const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
+const MAX_COUNT_FAILED_ATTEMPTS: i32 = 5;
+const BLOCKING_PERIOD: i64 = 60 * 25;
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -80,10 +83,10 @@ fn main() -> std::io::Result<()> {
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
-    let ro_storage_url = section.get("auth_url").expect("param [auth_url] not found in veda.properties");
+    let auth_url = section.get("auth_url").expect("param [auth_url] not found in veda.properties");
 
     let server = Socket::new(Protocol::Rep0)?;
-    if let Err(e) = server.listen(&ro_storage_url) {
+    if let Err(e) = server.listen(&auth_url) {
         error!("fail listen, {:?}", e);
         return Ok(());
     }
@@ -100,9 +103,11 @@ fn main() -> std::io::Result<()> {
 
     let pass_lifetime = get_password_lifetime(&mut module);
 
+    let mut suspicious: HashMap<String, (i32, i64)> = HashMap::new();
+
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = req_prepare(&recv_msg, &systicket, &mut module, pass_lifetime);
+            let res = req_prepare(&recv_msg, &systicket, &mut module, pass_lifetime, &mut suspicious);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -110,7 +115,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>) -> Message {
+fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>, suspicious: &mut HashMap<String, (i32, i64)>) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -119,7 +124,8 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
 
     match v["function"].as_str().unwrap_or_default() {
         "authenticate" => {
-            let ticket = authenticate(v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default());
+            let ticket =
+                authenticate(v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default(), suspicious);
 
             let mut res = JSONValue::default();
             res["type"] = json!("ticket");
@@ -127,7 +133,7 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
             res["user_uri"] = json!(ticket.user_uri);
             res["user_login"] = json!(ticket.user_login);
             res["result"] = json!(ticket.result as i64);
-            res["end_time"] = json!(ticket.end_time.to_string());
+            res["end_time"] = json!(ticket.end_time);
 
             return Message::from(res.to_string().as_bytes());
         }
@@ -191,9 +197,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
         match _authorize(&tr_ticket.user_uri, &tr_ticket.user_uri, 15, true, &mut trace) {
             Ok(_res) => {
                 for gr in trace.group.split('\n') {
-                    let cc: Vec<&str> = gr.split(';').collect();
-
-                    if cc.len() == 3 && cc[1] == ALLOW_TRUSTED_GROUP {
+                    if gr == ALLOW_TRUSTED_GROUP {
                         is_allow_trusted = true;
                         break;
                     }
@@ -250,7 +254,15 @@ fn get_candidate_users_of_login(login: &str, module: &mut Module, systicket: &st
     module.fts.query(FTQuery::new_with_ticket(systicket, &query))
 }
 
-fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str>, systicket: &str, module: &mut Module, pass_lifetime: i64) -> Ticket {
+fn authenticate(
+    login: Option<&str>,
+    password: Option<&str>,
+    secret: Option<&str>,
+    systicket: &str,
+    module: &mut Module,
+    pass_lifetime: i64,
+    suspicious: &mut HashMap<String, (i32, i64)>,
+) -> Ticket {
     let mut ticket = Ticket {
         id: String::default(),
         user_uri: String::default(),
@@ -283,6 +295,18 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
     if !secret.is_empty() && secret != "?" && secret.len() < 6 {
         ticket.result = ResultCode::InvalidSecret;
         return ticket;
+    }
+
+    if let Some((wrong_count, time)) = suspicious.get_mut(login) {
+        if *wrong_count > MAX_COUNT_FAILED_ATTEMPTS {
+            if Utc::now().timestamp() - *time < BLOCKING_PERIOD {
+                ticket.result = ResultCode::TooManyRequests;
+                return ticket;
+            } else {
+                *wrong_count = 0;
+                *time = Utc::now().timestamp();
+            }
+        }
     }
 
     let candidate_account_ids = get_candidate_users_of_login(login, module, systicket);
@@ -338,7 +362,7 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
                             error!("fail update, uri={}, result_code={:?}", uses_credential.get_id(), res.result);
                             continue;
                         } else {
-                            info!("create v-s:Credential{}, res={:?}", uses_credential.get_id(), res);
+                            info!("create v-s:Credential {}, res={:?}", uses_credential.get_id(), res);
 
                             account.remove("v-s:password");
                             account.set_uri("v-s:usesCredential", uses_credential.get_id());
@@ -471,8 +495,15 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
                         create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module);
+                        suspicious.remove(login);
                         return ticket;
                     } else {
+                        if let Some((wrong_count, time)) = suspicious.get_mut(login) {
+                            *wrong_count += 1;
+                            *time = Utc::now().timestamp();
+                        } else {
+                            suspicious.insert(login.to_string(), (0, Utc::now().timestamp()));
+                        }
                         warn!("request passw not equal with exist, user={}", account.get_id());
                     }
                 }
@@ -534,7 +565,7 @@ fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Tic
     ticket_indv.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
 
     let mut raw1: Vec<u8> = Vec::new();
-    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1.as_slice()) {
+    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1) {
         ticket.update_from_individual(&mut ticket_indv);
         ticket.result = ResultCode::Ok;
         ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
@@ -557,11 +588,13 @@ fn create_sys_ticket(module: &mut Module) -> String {
         sys_ticket_link.add_uri("rdf:type", "rdfs:Resource");
         sys_ticket_link.add_uri("v-s:resource", &ticket.id);
         let mut raw1: Vec<u8> = Vec::new();
-        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1.as_slice()) {
+        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1) {
             return ticket.id;
         } else {
             error!("fail store system ticket link")
         }
+    } else {
+        error!("fail create sys ticket")
     }
 
     String::default()
