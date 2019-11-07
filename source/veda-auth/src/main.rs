@@ -10,6 +10,7 @@ use rand::{thread_rng, Rng};
 use regex::Regex;
 use serde_json::json;
 use serde_json::value::Value as JSONValue;
+use std::collections::HashMap;
 use uuid::*;
 use v_api::{IndvOp, ResultCode};
 use v_authorization::Trace;
@@ -73,6 +74,8 @@ const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934
 const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
 const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
+const MAX_COUNT_FAILED_ATTEMPTS: i32 = 5;
+const BLOCKING_PERIOD: i64 = 60 * 25;
 
 fn main() -> std::io::Result<()> {
     init_log();
@@ -100,9 +103,11 @@ fn main() -> std::io::Result<()> {
 
     let pass_lifetime = get_password_lifetime(&mut module);
 
+    let mut suspicious: HashMap<String, (i32, i64)> = HashMap::new();
+
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = req_prepare(&recv_msg, &systicket, &mut module, pass_lifetime);
+            let res = req_prepare(&recv_msg, &systicket, &mut module, pass_lifetime, &mut suspicious);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -110,7 +115,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>) -> Message {
+fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lifetime: Option<i64>, suspicious: &mut HashMap<String, (i32, i64)>) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -119,7 +124,8 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
 
     match v["function"].as_str().unwrap_or_default() {
         "authenticate" => {
-            let ticket = authenticate(v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default());
+            let ticket =
+                authenticate(v["login"].as_str(), v["password"].as_str(), v["secret"].as_str(), systicket, module, pass_lifetime.unwrap_or_default(), suspicious);
 
             let mut res = JSONValue::default();
             res["type"] = json!("ticket");
@@ -248,7 +254,15 @@ fn get_candidate_users_of_login(login: &str, module: &mut Module, systicket: &st
     module.fts.query(FTQuery::new_with_ticket(systicket, &query))
 }
 
-fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str>, systicket: &str, module: &mut Module, pass_lifetime: i64) -> Ticket {
+fn authenticate(
+    login: Option<&str>,
+    password: Option<&str>,
+    secret: Option<&str>,
+    systicket: &str,
+    module: &mut Module,
+    pass_lifetime: i64,
+    suspicious: &mut HashMap<String, (i32, i64)>,
+) -> Ticket {
     let mut ticket = Ticket {
         id: String::default(),
         user_uri: String::default(),
@@ -281,6 +295,18 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
     if !secret.is_empty() && secret != "?" && secret.len() < 6 {
         ticket.result = ResultCode::InvalidSecret;
         return ticket;
+    }
+
+    if let Some((wrong_count, time)) = suspicious.get_mut(login) {
+        if *wrong_count > MAX_COUNT_FAILED_ATTEMPTS {
+            if Utc::now().timestamp() - *time < BLOCKING_PERIOD {
+                ticket.result = ResultCode::TooManyRequests;
+                return ticket;
+            } else {
+                *wrong_count = 0;
+                *time = Utc::now().timestamp();
+            }
+        }
     }
 
     let candidate_account_ids = get_candidate_users_of_login(login, module, systicket);
@@ -469,8 +495,15 @@ fn authenticate(login: Option<&str>, password: Option<&str>, secret: Option<&str
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
                         create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module);
+                        suspicious.remove(login);
                         return ticket;
                     } else {
+                        if let Some((wrong_count, time)) = suspicious.get_mut(login) {
+                            *wrong_count += 1;
+                            *time = Utc::now().timestamp();
+                        } else {
+                            suspicious.insert(login.to_string(), (0, Utc::now().timestamp()));
+                        }
                         warn!("request passw not equal with exist, user={}", account.get_id());
                     }
                 }
