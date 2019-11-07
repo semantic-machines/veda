@@ -267,7 +267,7 @@ veda.Module(function (veda) { "use strict";
   if ("serviceWorker" in navigator) {
 
     // Install SW
-    navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(function(worker) {
+    navigator.serviceWorker.register("/sw-simple.js", { scope: "/" }).then(function(worker) {
       console.log("Service worker registered:", worker.scope);
     }).catch(function(error) {
       console.log("Registration failed with " + error);
@@ -287,12 +287,10 @@ veda.Module(function (veda) { "use strict";
       function setOnline () {
         lineStatus.classList.add("online");
         lineStatus.classList.remove("offline");
-        if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("online"); }
       }
       function setOffline () {
         lineStatus.classList.remove("online");
         lineStatus.classList.add("offline");
-        if (navigator.serviceWorker.controller) { navigator.serviceWorker.controller.postMessage("offline"); }
       }
     }
     window.addEventListener("online", lineHandler);
