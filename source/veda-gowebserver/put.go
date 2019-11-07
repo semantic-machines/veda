@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"github.com/itiu/fasthttp"
-	"log"
-	"time"
+  "bytes"
+  "encoding/json"
+  "github.com/itiu/fasthttp"
+  "log"
+  "time"
 )
 
 //putIndividual handles put_individual request
@@ -20,122 +20,118 @@ func putIndividual(ctx *fasthttp.RequestCtx) {
     }
   }()
 
-	timestamp := time.Now()
-	var ticketKey, eventID string
+  timestamp := time.Now()
+  var ticketKey, eventID string
 
-	//Decoding request paramets
-	jsd := json.NewDecoder(bytes.NewReader(ctx.Request.Body()))
-	jsd.UseNumber()
-	var jsonData map[string]interface{}
+  //Decoding request paramets
+  jsd := json.NewDecoder(bytes.NewReader(ctx.Request.Body()))
+  jsd.UseNumber()
+  var jsonData map[string]interface{}
 
-	if err := jsd.Decode(&jsonData); err != nil {
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
-		return
-	}
+  if err := jsd.Decode(&jsonData); err != nil {
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    rc := BadRequest
+    ctx.Response.SetStatusCode(int(rc))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+    return
+  }
 
-	if jsonData["ticket"] != nil {
-		ticketKey = jsonData["ticket"].(string)
-	}
-	
-	rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
-	if rc1 != Ok {
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		ctx.Response.SetStatusCode(int(rc1))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc1, timestamp)
-		return
-	}
+  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
 
-	eventID = jsonData["event_id"].(string)
+  rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
+  if rc1 != Ok {
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    ctx.Response.SetStatusCode(int(rc1))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc1, timestamp)
+    return
+  }
 
-	indv := jsonData["individual"]
-	if indv == nil {
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
-		return
-	}
-	switch indv.(type) {
-	case map[string]interface{}:
-	default:
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
-		return
-	}
+  eventID = jsonData["event_id"].(string)
 
-	//Check if ticket is valid, if it's not valid then return fail code to client
-	rc, ticket := getTicket(ticketKey)
-	if rc != Ok {
-		ctx.Response.SetStatusCode(int(rc))
-		trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
-		return
-	}
+  indv := jsonData["individual"]
+  if indv == nil {
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    rc := BadRequest
+    ctx.Response.SetStatusCode(int(rc))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+    return
+  }
+  switch indv.(type) {
+  case map[string]interface{}:
+  default:
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    rc := BadRequest
+    ctx.Response.SetStatusCode(int(rc))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+    return
+  }
 
-	//Send modify request to veda-server
-	rc = modifyIndividual("put", &ticket, "individuals", []map[string]interface{}{indv.(map[string]interface{})},
-		assignedSubsystems, eventID, time.Now().Unix(), ctx)
+  //Check if ticket is valid, if it's not valid then return fail code to client
+  rc, ticket := getTicket(ticketKey)
+  if rc != Ok {
+    ctx.Response.SetStatusCode(int(rc))
+    trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
+    return
+  }
+
+  //Send modify request to veda-server
+  rc = modifyIndividual("put", &ticket, "individuals", []map[string]interface{}{indv.(map[string]interface{})},
+    assignedSubsystems, eventID, time.Now().Unix(), ctx)
 }
 
 //putIndividuals same to put individual but this function store array of individuals from client
 func putIndividuals(ctx *fasthttp.RequestCtx) {
 
-	timestamp := time.Now()
-	var ticketKey, eventID string
-	// var ticket ticket
+  timestamp := time.Now()
+  var ticketKey, eventID string
+  // var ticket ticket
 
-	var jsonData map[string]interface{}
-	err := json.Unmarshal(ctx.Request.Body(), &jsonData)
-	if err != nil {
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
-		return
-	}
+  var jsonData map[string]interface{}
+  err := json.Unmarshal(ctx.Request.Body(), &jsonData)
+  if err != nil {
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    rc := BadRequest
+    ctx.Response.SetStatusCode(int(rc))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+    return
+  }
 
-	if jsonData["ticket"] != nil {
-		ticketKey = jsonData["ticket"].(string)
-	}
+  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
 
-	rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
-	if rc1 != Ok {
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		ctx.Response.SetStatusCode(int(rc1))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc1, timestamp)
-		return
-	}
+  rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
+  if rc1 != Ok {
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    ctx.Response.SetStatusCode(int(rc1))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc1, timestamp)
+    return
+  }
 
-	eventID = jsonData["event_id"].(string)
+  eventID = jsonData["event_id"].(string)
 
-	rc, ticket := getTicket(ticketKey)
-	if rc != Ok {
-		ctx.Response.SetStatusCode(int(rc))
-		trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
-		return
-	}
+  rc, ticket := getTicket(ticketKey)
+  if rc != Ok {
+    ctx.Response.SetStatusCode(int(rc))
+    trail(ticket.Id, ticket.UserURI, "put", jsonData, "", rc, timestamp)
+    return
+  }
 
-	individualsIJ := jsonData["individuals"]
-	switch individualsIJ.(type) {
-	case []interface{}:
-	default:
-		log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
-		rc := BadRequest
-		ctx.Response.SetStatusCode(int(rc))
-		trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
-		return
-	}
+  individualsIJ := jsonData["individuals"]
+  switch individualsIJ.(type) {
+  case []interface{}:
+  default:
+    log.Printf("ERR! bad request=%v\n", string(ctx.Request.Body()))
+    rc := BadRequest
+    ctx.Response.SetStatusCode(int(rc))
+    trail1(ticketKey, "", "put", string(ctx.Request.Body()), "", rc, timestamp)
+    return
+  }
 
-	individualsI := individualsIJ.([]interface{})
-	individuals := make([]map[string]interface{}, len(individualsI))
-	for i := 0; i < len(individualsI); i++ {
-		individuals[i] = individualsI[i].(map[string]interface{})
-	}
+  individualsI := individualsIJ.([]interface{})
+  individuals := make([]map[string]interface{}, len(individualsI))
+  for i := 0; i < len(individualsI); i++ {
+    individuals[i] = individualsI[i].(map[string]interface{})
+  }
 
-	rc = modifyIndividual("put", &ticket, "individuals", individuals,
-		assignedSubsystems, eventID, time.Now().Unix(), ctx)
+  rc = modifyIndividual("put", &ticket, "individuals", individuals,
+    assignedSubsystems, eventID, time.Now().Unix(), ctx)
 }
