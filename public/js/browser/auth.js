@@ -224,7 +224,7 @@ veda.Module(function (veda) { "use strict";
     veda.user_uri = storage.user_uri = authResult.user_uri;
     veda.ticket = storage.ticket = authResult.ticket;
     veda.end_time = storage.end_time = authResult.end_time;
-    veda.Util.setCookie("ticket", authResult.ticket, { path:"/files" });
+    veda.Util.setCookie("ticket", authResult.ticket);
     // Re-login on ticket expiration
     if( veda.end_time ) {
       var ticketDelay = parseInt(veda.end_time) - Date.now();
