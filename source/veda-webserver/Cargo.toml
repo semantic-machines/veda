@@ -10,8 +10,8 @@ path = "src/lib.rs"
 
 [dependencies]
 actix = "0.8.3"
-actix-rt = "0.2.4"
-actix-web = "1.0.7"
+actix-rt = "0.2.5"
+actix-web = "1.0.8"
 actix-web-actors = "1.0.2"
 actix-redis = "0.6.1"
 futures = "0.1.23"
