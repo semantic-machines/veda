@@ -263,6 +263,26 @@ veda.Module(function (veda) { "use strict";
 
   });
 
+  // On/off-line status indicator
+  var lineHandler = function (status) {
+    var lineStatus = document.getElementById("line-status");
+    lineStatus.style.display = "block";
+    if ( status === "online" ) {
+      setOnline();
+    } else {
+      setOffline();
+    }
+    function setOnline () {
+      lineStatus.classList.add("online");
+      lineStatus.classList.remove("offline");
+    }
+    function setOffline () {
+      lineStatus.classList.remove("online");
+      lineStatus.classList.add("offline");
+    }
+  }
+  veda.on("online offline", lineHandler);
+
   // Service worker
   if ("serviceWorker" in navigator) {
 
@@ -272,31 +292,6 @@ veda.Module(function (veda) { "use strict";
     }).catch(function(error) {
       console.log("Registration failed with " + error);
     });
-
-    // On/off-line handler
-    var lineHandler = function (status) {
-      var lineStatus = document.getElementById("line-status");
-      lineStatus.style.display = "block";
-      if ( typeof status === "undefined" || status instanceof Event ) {
-        veda.Backend.check().then(setOnline).catch(setOffline);
-      } else if ( status === "online" ) {
-        setOnline();
-      } else {
-        setOffline();
-      }
-      function setOnline () {
-        lineStatus.classList.add("online");
-        lineStatus.classList.remove("offline");
-      }
-      function setOffline () {
-        lineStatus.classList.remove("online");
-        lineStatus.classList.add("offline");
-      }
-    }
-    window.addEventListener("online", lineHandler);
-    window.addEventListener("offline", lineHandler);
-    veda.on("online offline", lineHandler);
-    lineHandler();
 
     // Install application prompt
     var showAddToHomeScreen = function () {
