@@ -91,65 +91,6 @@ function handleError(response) {
   return response;
 }
 
-//~ function handleAPI(event) {
-  //~ var cloneRequest = event.request.method !== "GET" && event.request.clone() ;
-  //~ return fetch(event.request)
-    //~ .then(handleError)
-    //~ .then(function(response) {
-      //~ if (event.request.method === "GET") {
-        //~ return caches.open( API ).then(function(cache) {
-          //~ cache.put(event.request, response.clone());
-          //~ return response;
-        //~ });
-      //~ } else if (event.request.method === "POST") {
-        //~ var db = new LocalDB();
-        //~ return db.then(function (db) {
-          //~ Promise.all([serialize(cloneRequest), serialize(response)]).then(function (req_res) {
-            //~ var request = JSON.stringify(req_res[0]);
-            //~ var response = req_res[1];
-            //~ db.put(request, response);
-          //~ });
-          //~ return response;
-        //~ });
-      //~ } else {
-        //~ return response;
-      //~ }
-    //~ })
-    //~ .catch(function (error) {
-      //~ var url = new URL(event.request.url);
-      //~ var fn = url.pathname.split("/")[2];
-
-      //~ if (event.request.method === "GET") {
-        //~ return caches.match(event.request).then(function (match) {
-          //~ if (match) {
-            //~ return match;
-          //~ } else if (fn === "get_individual") {
-            //~ return error;
-          //~ } else {
-            //~ return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
-          //~ }
-        //~ });
-      //~ } else if (event.request.method === "POST") {
-        //~ return serialize(cloneRequest).then(function (request) {
-          //~ request = JSON.stringify(request);
-          //~ var db = new LocalDB();
-          //~ return db.then(function (db) {
-            //~ return db.get(request).then(deserialize);
-          //~ }).catch(function (error) {
-            //~ return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
-          //~ });
-        //~ });
-      //~ } else if (event.request.method === "PUT") {
-        //~ return enqueueRequest(cloneRequest).then(function (queue) {
-          //~ console.log("Offline operation added to queue, queue length = ", queue.length);
-          //~ return new Response(api_fns[fn], { headers: { "Content-Type": "application/json" } });
-        //~ });
-      //~ } else {
-        //~ return error;
-      //~ }
-    //~ });
-//~ }
-
 function handleAPI(event) {
   var cloneRequest = event.request.method !== "GET" && event.request.clone() ;
   var url = new URL(event.request.url);
