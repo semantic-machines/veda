@@ -42,7 +42,7 @@
 
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="Cache-Control" content="no-cache, must-revalidate, private" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; frame-src https://www.google.com:443 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src https://www.google.com:443 https://www.gstatic.com:443 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' ws: wss:;" />
   </head>
   <body>
     <div class="container-fluid text-right online" id="line-status" style="display:none;">
@@ -76,9 +76,15 @@
           <p><strong>Ошибка!</strong> Новый пароль не принят. Введите другой пароль.</p>
           <p><strong>Error!</strong> New password was not accepted. Enter another password.</p>
         </div>
-        <div id="too-many-fails-error" style="display:none;" class="alert alert-danger">
-          <p><strong>Ошибка!</strong> Много неудачных попыток. Вы сможете повторить через 10 минут.</p>
-          <p><strong>Error!</strong> Too many fails. You can try again in 10 minutes.</p>
+        <div id="locked-error" style="display:none;" class="alert alert-danger">
+          <p><strong>Ошибка!</strong> Слишком много неудачных попыток. Учетная запись заблокирована на 30 минут.</p>
+          <p><strong>Error!</strong> Too many fails. Account is blocked for 30 minutes.</p>
+        </div>
+        <div id="too-many-fails-error" style="display:none;" class="alert alert-warning">
+          <p><strong>Ошибка!</strong> Много неудачных попыток. Подтвердите, что вы не робот.</p>
+          <p><strong>Error!</strong> Too many fails. Confirm you are not a robot.</p>
+          <br>
+          <div id="recaptcha"></div>
         </div>
         <div id="secret-request-info" style="display:none;" class="alert alert-info">
           <p><strong>Инфо!</strong> Вам выслан новый код для смены пароля.</p>
