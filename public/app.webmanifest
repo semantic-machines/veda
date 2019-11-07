@@ -6,7 +6,7 @@
   "background_color": "#fff",
   "theme_color": "white",
   "description": "Veda - business process automation platform.",
-  "serviceworker": {"src": "./sw.js" },
+  "serviceworker": {"src": "./sw-simple.js" },
   "icons": [{
     "src": "img/veda-192.png",
     "sizes": "192x192",
