@@ -368,6 +368,16 @@ fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHand
                     }
 
                     if let Err(e) = txn.commit() {
+                        match e {
+                            MdbError::Other(c, _) => {
+                                if c == -30792 {
+                                    if grow_db(db_env) {
+                                        return put_kv_lmdb(db_env, db_handle, key, val);
+                                    }
+                                }
+                            }
+                            _ => {}
+                        }
                         error!("failed to commit, err={}", e);
                         return false;
                     }
@@ -388,4 +398,22 @@ fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHand
             false
         }
     }
+}
+
+fn grow_db(db_env: &Result<Environment, MdbError>) -> bool {
+    match db_env {
+        Ok(env) => {
+            if let Ok(stat) = env.info() {
+                let new_size = stat.me_mapsize + 100 * 10_048_576;
+                if env.set_mapsize(new_size).is_ok() {
+                    info! ("success grow db, new size = {}", new_size);
+                    return true;
+                }
+            }
+        }
+        Err(e) => {
+            error!("db environment, err={}", e);
+        }
+    }
+    false
 }
