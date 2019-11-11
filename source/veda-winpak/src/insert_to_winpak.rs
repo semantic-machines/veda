@@ -110,7 +110,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let ftran = SqlConnection::connect(conn_str).and_then(|conn| conn.transaction());
     let ftran = ftran.and_then(|conn| {
-        conn.query("SELECT [RecordID] FROM [WIN-PAK PRO].[dbo].[CardHolder] WHERE [Note32]=@P1 and [Note24]=@P2", &[&card_number.as_str(), &id.as_str()]).for_each(
+        conn.query("SELECT [RecordID] FROM [WIN-PAK PRO].[dbo].[CardHolder] WHERE [Note32]=@P1 and [Note20]=@P2", &[&card_number.as_str(), &id.as_str()]).for_each(
             |row| {
                 if cardholder_id.get() == 0 {
                     cardholder_id.set(row.get::<_, i32>(0).to_owned());
