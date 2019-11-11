@@ -116,7 +116,10 @@ func isTicketValid(ctx *fasthttp.RequestCtx) {
 
   var ticketKey string
   //Decode parametrs from requestn context
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
   //Get ticket with the given id from tarantool
   rc, _ := getTicket(ticketKey)
   //If errored but NotTicketExpired return error to client
@@ -141,7 +144,10 @@ func getTicketTrusted(ctx *fasthttp.RequestCtx) {
   var ticketKey, login string
 
   //Read params from request context
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
   login = string(ctx.QueryArgs().Peek("login")[:])
 
   //Prepare request to veda server with function get_ticket_trusted

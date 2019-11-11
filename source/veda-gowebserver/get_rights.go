@@ -43,7 +43,10 @@ func getRights(ctx *fasthttp.RequestCtx) {
   var ticket ticket
 
   //Get parametrs from request context
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
   uri = string(ctx.QueryArgs().Peek("uri")[:])
 
   //If no uri passed then return BadRequest

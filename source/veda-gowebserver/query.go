@@ -31,7 +31,10 @@ func query(ctx *fasthttp.RequestCtx) {
   var from int
   var limit int
 
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
 
   if ctx.IsGet() == true {
     query = string(ctx.QueryArgs().Peek("query")[:])
