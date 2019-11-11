@@ -66,7 +66,7 @@ pub struct CCUSServer {
     subscribe_manager_sender: Sender<CMessage>,
     my_sender: Sender<RData>,
     my_receiver: Receiver<RData>,
-    msg_counter: u64,
+    msg_id: u64,
 }
 
 impl CCUSServer {
@@ -87,24 +87,32 @@ impl CCUSServer {
             subscribe_manager_sender: tx,
             my_sender: ch.0,
             my_receiver: ch.1,
-            msg_counter: 0,
+            msg_id: 0,
         }
     }
 
     fn subscribe(&mut self, uri: &str, counter: u64, session_id: usize) -> u64 {
         let mut storage_counter = 0;
-        self.msg_counter += 1;
-        if !self.uri2sessions.contains_key(&uri.to_owned()) && self.subscribe_manager_sender.send((uri.to_string(), self.msg_counter, self.my_sender.clone())).is_ok() {
-            if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
-                if self.msg_counter != msg.1 {
-                    error!("{}, received someone else's message, ignore it", self.msg_counter);
-                } else if msg.0 >= 0 {
-                    info!("{}, from storage: {}, {}", self.msg_counter, uri, msg.0);
-                    storage_counter = msg.0 as u64;
+        // generate new id for sending message
+        let msg_id = self.msg_id + 1;
+        if !self.uri2sessions.contains_key(&uri.to_owned()) && self.subscribe_manager_sender.send((uri.to_string(), msg_id, self.my_sender.clone())).is_ok() {
+            loop {
+                if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
+                    // success receive, now store id of this message, for next id generate
+                    if msg_id > msg.1 {
+                        error!("received someone else's message, ignore it. expected={}, recv={}", msg_id, msg.1);
+                    } else {
+                        if msg.0 >= 0 {
+                            info!("{}, from storage: {}, {}", self.msg_id, uri, msg.0);
+                            storage_counter = msg.0 as u64;
+                        }
+                        break;
+                    }
+                } else {
+                    error!("{}, timeout of read {} from storage", self.msg_id, uri);
                 }
-            } else {
-                error!("{}, timeout of read {} from storage", self.msg_counter, uri);
             }
+            self.msg_id = msg_id;
         }
 
         let el = self.uri2sessions.entry(uri.to_owned()).or_default();
@@ -340,7 +348,7 @@ fn prepare_queue_el(
             debug!("FOUND CHANGES: uri={}, sessions={:?}", uri_from_queue, el.sessions);
 
             // берем u_counter
-            let counter_from_queue= msg.get_first_integer("u_count").unwrap_or_default() as u64;
+            let counter_from_queue = msg.get_first_integer("u_count").unwrap_or_default() as u64;
             debug!("uri={}, {}", uri_from_queue, counter_from_queue);
 
             el.counter = counter_from_queue;
