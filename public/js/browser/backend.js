@@ -6,7 +6,7 @@ veda.Module(function Backend(veda) { "use strict";
   veda.Backend = {};
 
   // Check server health
-  veda.Backend.check = function () {
+  veda.Backend.ping = function () {
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.onload = function () {
@@ -17,19 +17,19 @@ veda.Module(function Backend(veda) { "use strict";
         }
       };
       xhr.onerror = reject;
-      xhr.open('GET', 'ping');
+      xhr.open("GET", "ping");
       xhr.send();
     });
   };
 
   var interval;
   var duration = 5000;
-  veda.Backend.serverWatch = function () {
+  veda.Backend.check = function () {
     if (interval) { return; }
     interval = setInterval(check, duration);
     if (!arguments.length) { check(); }
     function check() {
-      veda.Backend.check().then(function () {
+      veda.Backend.ping().then(function () {
         interval = clearInterval(interval);
         veda.trigger("online");
       }).catch(function () {
@@ -37,9 +37,9 @@ veda.Module(function Backend(veda) { "use strict";
       });
     }
   };
-  window.addEventListener("online", veda.Backend.serverWatch);
-  window.addEventListener("offline", veda.Backend.serverWatch);
-  veda.Backend.serverWatch();
+  window.addEventListener("online", veda.Backend.check);
+  window.addEventListener("offline", veda.Backend.check);
+  veda.Backend.check();
 
   // Server errors
   function BackendError (result) {
@@ -82,7 +82,7 @@ veda.Module(function Backend(veda) { "use strict";
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
     if (result.status === 0 || result.status === 503 || result.status === 4000) {
-      veda.Backend.serverWatch();
+      veda.Backend.check();
     }
     if (result.status === 470 || result.status === 471) {
       veda.trigger("login:failed");
@@ -131,14 +131,6 @@ veda.Module(function Backend(veda) { "use strict";
       xhr.send(payload);
     });
   }
-
-  veda.Backend.ping = function () {
-    var params = {
-      method: "GET",
-      url: "ping",
-    };
-    return call_server(params);
-  };
 
   veda.Backend.get_rights = function (ticket, uri) {
     var arg = arguments[0];
