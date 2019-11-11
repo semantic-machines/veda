@@ -20,9 +20,7 @@ self.addEventListener("fetch", function (event) {
   var url = new URL(event.request.url);
   var type = url.pathname.indexOf("/ping") === 0 ? "PING" : url.pathname.indexOf("/api") === 0 ? "API" : url.pathname.indexOf("/files") === 0 ? "FILES" : "STATIC";
   if (event.request.method === "GET") {
-    if (type === "PING") {
-      event.respondWith(fetch(event.request));
-    } else if (type === "STATIC") {
+    if (type === "STATIC") {
       event.respondWith(handleFetch(event, STATIC));
     } else if (type === "FILES") {
       event.respondWith(handleFetch(event, FILES));

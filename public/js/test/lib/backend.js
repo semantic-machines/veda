@@ -10,26 +10,29 @@ function Backend () {
   function call_server(params) {
     var method = params.method,
         url = params.url,
+        ticket = params.ticket,
         data = params.data,
-        xhr = new XMLHttpRequest();
+        xhr = new XMLHttpRequest(),
+        queryParams = [],
+        payload = null;
+
+    if (ticket) { queryParams.push("ticket=" + ticket); }
     if (method === "GET") {
-      var params = [];
       for (var name in data) {
         if (typeof data[name] !== "undefined") {
-          params.push(name + "=" + encodeURIComponent(data[name]));
+          queryParams.push(name + "=" + encodeURIComponent(data[name]));
         }
       }
-      params = params.join("&");
-      xhr.open(method, url + "?" + params, false);
-      xhr.send(null);
-    } else {
-      xhr.open(method, url, false);
+      queryParams = queryParams.join("&");
+    }
+    xhr.open(method, url + "?" + queryParams, false);
+    if (method !== "GET") {
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      var payload = JSON.stringify(data, function (key, value) {
+      payload = JSON.stringify(data, function (key, value) {
         return key === "data" && (this.type === "Decimal") ? value.toString() : value;
       });
-      xhr.send(payload);
     }
+    xhr.send(payload);
     if (xhr.status === 200) {
       return JSON.parse(
         xhr.responseText,
@@ -49,8 +52,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/get_rights",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
       }
     };
@@ -63,8 +66,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/get_rights_origin",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
       }
     };
@@ -77,8 +80,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/get_membership",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
       }
     };
@@ -107,8 +110,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/get_ticket_trusted",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "login": isObj ? arg.login : login
       }
     };
@@ -121,9 +124,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/is_ticket_valid",
-      data: {
-        "ticket": isObj ? arg.ticket : ticket
-      }
+      ticket: isObj ? arg.ticket : ticket,
+      data: {}
     };
     return call_server(params);
   }
@@ -160,8 +162,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/query",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : query,
         "sort": isObj ? arg.sort : sort,
         "databases" : isObj ? arg.databases : databases,
@@ -180,8 +182,8 @@ function Backend () {
     var params = {
       method: "GET",
       url: "api/get_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
@@ -195,8 +197,8 @@ function Backend () {
     var params = {
       method: "POST",
       url: "api/get_individuals",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uris": isObj ? arg.uris : uris
       }
     };
@@ -211,8 +213,8 @@ function Backend () {
     var params = {
       method: "PUT",
       url: "api/remove_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -229,8 +231,8 @@ function Backend () {
     var params = {
       method: "PUT",
       url: "api/put_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -247,8 +249,8 @@ function Backend () {
     var params = {
       method: "PUT",
       url: "api/add_to_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -265,8 +267,8 @@ function Backend () {
     var params = {
       method: "PUT",
       url: "api/set_in_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -283,8 +285,8 @@ function Backend () {
     var params = {
       method: "PUT",
       url: "api/remove_from_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -301,8 +303,8 @@ function Backend () {
     var params = {
       method: "PUT",
       url: "api/put_individuals",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individuals": isObj ? arg.individuals : individuals,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,

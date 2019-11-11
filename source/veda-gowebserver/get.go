@@ -27,7 +27,12 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
   var ticket ticket
   var reopen bool
 
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  log.Println("ticket from query", ticketKey)
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+    log.Println("ticket from cookie", ticketKey)
+  }
   uri = string(ctx.QueryArgs().Peek("uri")[:])
 
   if string(ctx.QueryArgs().Peek("reopen")[:]) == "true" {
@@ -178,7 +183,10 @@ func getIndividuals(ctx *fasthttp.RequestCtx) {
 
   jsonArgs := map[string]interface{}{"uris": jsonData["uris"]}
 
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
 
   rc, ticket := getTicket(ticketKey)
   if rc != Ok {

@@ -21,7 +21,10 @@ func getAclData(ctx *fasthttp.RequestCtx, operation uint) {
   var ticket ticket
 
   //Readin ticket and resource uri from request context
-  ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
   uri = string(ctx.QueryArgs().Peek("uri")[:])
 
   //If no uris passed than return BadRequest to client

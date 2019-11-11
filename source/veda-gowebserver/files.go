@@ -122,7 +122,10 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
   }()
 
   //Reqding client ticket key from request
-  ticketKey := string(ctx.Request.Header.Cookie("ticket"))
+  ticketKey := string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
   timestamp := time.Now()
 
   uri := ""
