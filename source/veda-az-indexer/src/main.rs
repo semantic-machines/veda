@@ -15,8 +15,6 @@ fn main() -> Result<(), i32> {
 
     let mut module = Module::default();
 
-    let mut queue_consumer = Consumer::new("./data/queue", "az-indexer", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-
     let mut ctx = Context {
         permission_statement_counter: 0,
         membership_counter: 0,
@@ -40,6 +38,8 @@ fn main() -> Result<(), i32> {
         error!("{:?}", module_info.err());
         return Err(-1);
     }
+
+    let mut queue_consumer = Consumer::new("./data/queue", "az-indexer", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
     module.listen_queue(
         &mut queue_consumer,
