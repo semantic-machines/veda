@@ -575,22 +575,28 @@ veda.Module(function Backend(veda) { "use strict";
     });
   }
   function flushQueue() {
-    return localDB.then(function (db) {
-      return db.get("offline-queue").then(function(queue) {
-        if (queue && queue.length) {
-          return queue.reduce(function (prom, params) {
-            return prom.then(function () {
-              return call_server(JSON.parse(params));
-            });
-          }, Promise.resolve()).then(function () {
-            db.remove("offline-queue");
-            return queue.length;
+    return veda.Backend.is_ticket_valid(veda.ticket)
+      .then(function (valid) {
+        if (!valid) { return 0; }
+        return localDB.then(function (db) {
+          return db.get("offline-queue").then(function(queue) {
+            if (queue && queue.length) {
+              return queue.reduce(function (prom, params) {
+                return prom.then(function () {
+                  params = JSON.parse(params);
+                  params.ticket = veda.ticket;
+                  return call_server(params);
+                });
+              }, Promise.resolve()).then(function () {
+                db.remove("offline-queue");
+                return queue.length;
+              });
+            } else {
+              return 0;
+            }
           });
-        } else {
-          return Promise.resolve(0);
-        }
+        });
       });
-    });
   }
   veda.on("online", function () {
     console.log("Veda 'online', flushing queue");
