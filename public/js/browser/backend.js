@@ -145,7 +145,14 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params).catch(function (backendError) {
       if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
-        return { "@":"_","rdf:type":[{"data":"v-s:PermissionStatement","type":"Uri"}],"v-s:canCreate":[{"data":true,"type":"Boolean"}],"v-s:canDelete":[{"data":false,"type":"Boolean"}],"v-s:canRead":[{"data":true,"type":"Boolean"}],"v-s:canUpdate":[{"data":true,"type":"Boolean"}] };
+        return {
+          "@":"_",
+          "rdf:type":[{"data":"v-s:PermissionStatement", "type":"Uri"}],
+          "v-s:canCreate":[{"data":true, "type":"Boolean"}],
+          "v-s:canDelete":[{"data":false, "type":"Boolean"}],
+          "v-s:canRead":[{"data":true, "type":"Boolean"}],
+          "v-s:canUpdate":[{"data":true, "type":"Boolean"}]
+        };
       } else {
         throw backendError;
       }
@@ -185,7 +192,12 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params).catch(function (backendError) {
       if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
-        return { "@":"_","rdf:type":[{"data":"v-s:Membership","type":"Uri"}],"v-s:memberOf":[{"data":"v-s:AllResourcesGroup","type":"Uri"}],"v-s:resource":[{"data":"cfg:Administrator","type":"Uri"}] };
+        return {
+          "@":"_",
+          "rdf:type":[{"data":"v-s:Membership", "type":"Uri"}],
+          "v-s:memberOf":[{"data":"v-s:AllResourcesGroup", "type":"Uri"}],
+          "v-s:resource":[{"data": isObj ? arg.uri : uri, "type":"Uri"}]
+        };
       } else {
         throw backendError;
       }
@@ -209,7 +221,12 @@ veda.Module(function Backend(veda) { "use strict";
     };
     return call_server(params).catch(function (backendError) {
       if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
-        return { "end_time":' + (Date.now() + 12 * 3600 * 1000) + ',"id":"","result":200,"user_uri":"" };
+        return {
+          "end_time":Date.now() + 12 * 3600 * 1000,
+          "id":"",
+          "result":200,
+          "user_uri":""
+        };
       } else {
         throw backendError;
       }
@@ -307,7 +324,14 @@ veda.Module(function Backend(veda) { "use strict";
           db.put(JSON.stringify(params), result);
         });
       } else {
-        result = { "result":[],"count":0,"estimated":0,"processed":0,"cursor":0,"result_code":200 };
+        result = {
+          "result":[],
+          "count":0,
+          "estimated":0,
+          "processed":0,
+          "cursor":0,
+          "result_code":200
+        };
       }
       return result;
     });
@@ -421,7 +445,10 @@ veda.Module(function Backend(veda) { "use strict";
       if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
         return enqueueCall(params).then(function (queue) {
           console.log("Offline operation added to queue, queue length = ", queue.length);
-          return { "op_id":0,"result":200 };
+          return {
+            "op_id":0,
+            "result":200
+          };
         });
       } else {
         throw backendError;
