@@ -105,7 +105,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     let mut note24 = String::new();
-    for el in module.get_literals_of_link(indv, "mnd-s:hasAccessLevel", "mnd-s:accessLevelCheckpoints", &mut Individual::default()) {
+    for el in module.get_literals_of_link(indv, "mnd-s:hasAccessLevel", "mnd-s:accessLevelCheckpoints") {
         note24.push_str(&el);
         note24.push(' ');
     }

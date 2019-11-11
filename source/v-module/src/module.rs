@@ -112,10 +112,11 @@ impl Module {
         None
     }
 
-    pub fn get_literals_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Vec<String> {
+    pub fn get_literals_of_link(&mut self, indv: &mut Individual, link: &str, field: &str) -> Vec<String> {
         let mut res = Vec::new();
         if let Some(v) = indv.get_literals(link) {
             for el in v {
+                let to = &mut Individual::default();
                 if self.storage.get_individual(&el, to) {
                     if let Some(s) = to.get_first_literal(field) {
                         res.push(s);
