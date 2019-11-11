@@ -99,7 +99,9 @@ impl CCUSServer {
             loop {
                 if let Ok(msg) = self.my_receiver.recv_timeout(Duration::from_millis(1000)) {
                     // success receive, now store id of this message, for next id generate
-                    if msg_id > msg.1 {
+                    if msg_id < msg.1 {
+                        panic!("received someone else's message, ignore it. expected={}, recv={}", msg_id, msg.1);
+                    } else if msg_id > msg.1 {
                         error!("received someone else's message, ignore it. expected={}, recv={}", msg_id, msg.1);
                     } else {
                         if msg.0 >= 0 {
