@@ -1,4 +1,4 @@
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Utc};
 use futures::Future;
 use std::ops::Add;
 use tiberius::{BoxableIo, Error, Transaction};
@@ -85,15 +85,14 @@ pub fn insert_card<I: BoxableIo + 'static>(
 // INSERT CARD HOLDER
 const INSERT_VEHICLE_HOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
-(AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32,Note24)
-VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,'0',@P7,@P8,@P9,@P10,@P11,@P12)";
+(Note20,AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32,Note13,Note14,Note24,Note31)
+VALUES(@P1,1,@P2,0,0,0,0,@P3,@P4,@P5,@P6,@P7,'0',@P8,@P9,@P10,@P11,@P12,@P13,@P14,@P15,@P16,@P17)";
 
 const INSERT_HUMAN_CARDHOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
-(AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
-Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note24)
-VALUES(1,@P1,0,0,0,0,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,'0',@P12,@P13,@P14,@P15,@P16,@P17,@P18)";
-// note1 = P4, .. note8 = P4
+(Note20,AccountID,TimeStamp,UserId,NodeId,Deleted,UserPriority,FirstName,LastName,Note1,Note2,Note3,Note4,Note5,Note6,
+Note7,Note8,Note11,Note15,Note16,Note17,Note19,Note22,Note32,Note13,Note14,Note24,Note31)
+VALUES(@P1,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,@P12,@P13,@P14,@P15,@P16,@P17,@P18,@P19,@P20,@P21,@P22,@P23,@P24,@P25,@P26,@P27,@P28)";
 
 pub fn insert_card_holder<I: BoxableIo + 'static>(
     id: &str,
@@ -105,10 +104,16 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
     indv: &mut Individual,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    let regdate =
-        NaiveDateTime::from_timestamp(module.get_datetime_of_link(indv, "v-s:parent", "v-s:registrationDate", &mut Individual::default()).unwrap_or_default(), 0)
-            .format("%d.%m.%Y")
-            .to_string();
+    let mut note24 = String::new();
+    for el in module.get_literals_of_link(indv, "mnd-s:hasAccessLevel", "mnd-s:accessLevelCheckpoints", &mut Individual::default()) {
+        note24.push_str(&el);
+        note24.push(' ');
+    }
+
+    let note13 = module.get_literal_of_link(indv, "mnd-s:hasPassKind", "rdfs:label", &mut Individual::default()).unwrap_or_default();
+    let note14 = NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:dateToFact").unwrap_or_default(), 0).format("%d.%m.%Y").to_string();
+    let note31 = NaiveDateTime::from_timestamp(indv.get_first_datetime("v-s:dateFromFact").unwrap_or_default(), 0).format("%d.%m.%Y").to_string();
+    let note22 = Utc::now().naive_utc().format("%d.%m.%Y").to_string();
 
     if is_vehicle {
         let label = indv.get_first_literal("mnd-s:passVehicleRegistrationNumber").unwrap_or_default()
@@ -120,6 +125,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                 .exec(
                     INSERT_VEHICLE_HOLDER,
                     &[
+                        &id,
                         &now,
                         &label.as_str(),
                         &chop::substring(
@@ -140,9 +146,8 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                         &label.as_str(),
                         &label.as_str(),
                         &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(), 0, 63).as_str(),
-                        &regdate.as_str(),
-                        &card_number.as_str(),
-                        &id,
+                        &note24.as_str(),
+                        &note31.as_str(),
                     ],
                 )
                 .and_then(|(_result, trans)| Ok(trans)),
@@ -180,31 +185,41 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                 .exec(
                     INSERT_HUMAN_CARDHOLDER,
                     &[
-                        &now,
-                        &chop::substring(&first_name, 0, 63).as_str(),
-                        &chop::substring(&last_name, 0, 63).as_str(),
-                        &chop::substring(&middle_name, 0, 63).as_str(),
-                        &tab_number.as_str(), // note2
-                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(),
+                        &id,                                                                                                                                      // @P1
+                        &1,                                                                                                                                       // @P2
+                        &now,                                                                                                                                     // @P3
+                        &0,                                                                                                                                       // @P4
+                        &0,                                                                                                                                       // @P5
+                        &0,                                                                                                                                       // @P6
+                        &0,                                                                                                                                       // @P7
+                        &chop::substring(&first_name, 0, 63).as_str(),                                                                                            // @P8
+                        &chop::substring(&last_name, 0, 63).as_str(),                                                                                             // @P9
+                        &chop::substring(&middle_name, 0, 63).as_str(),                                                                                           // @P10
+                        &tab_number.as_str(), // note2 // @P11
+                        &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default().as_str(), // @P12
                         &chop::substring(
                             &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(),
                             0,
                             63,
                         )
-                        .as_str(),
-                        &0, // note5
+                        .as_str(), // @P13
+                        &0,                   // note5 // @P14
                         &chop::substring(&module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(), 0, 63)
-                            .as_str(),
+                            .as_str(), // @P15
                         &chop::substring(&module.get_literal_of_link(&mut icp, "v-s:parentUnit", "rdfs:label", &mut Individual::default()).unwrap_or_default(), 0, 63)
-                            .as_str(),
-                        &chop::substring(&occupation, 0, 63).as_str(),
-                        &chop::substring(&last_name, 0, 63).as_str(),
-                        &chop::substring(&first_name, 0, 63).as_str(),
-                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%d.%m.%Y").to_string().as_str(),
-                        &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default(), 0, 63).as_str(),
-                        &regdate.as_str(),
-                        &card_number.as_str(),
-                        &id,
+                            .as_str(), // @P16
+                        &chop::substring(&occupation, 0, 63).as_str(), // @P17
+                        &"0",                 // @P18
+                        &chop::substring(&last_name, 0, 63).as_str(), // @P19
+                        &chop::substring(&first_name, 0, 63).as_str(), // @P20
+                        &NaiveDateTime::from_timestamp(birthday, 0).add(Duration::hours(WINPAK_TIMEZONE)).format("%d.%m.%Y").to_string().as_str(), // @P21
+                        &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default(), 0, 63).as_str(), // @P22
+                        &note22.as_str(),     // @P23
+                        &card_number.as_str(), // @P24
+                        &chop::substring(&note13, 0, 63).as_str(), // @P25
+                        &note14.as_str(),     // @P26
+                        &note24.as_str(),     // @P27
+                        &note31.as_str(),     // @P28
                     ],
                 )
                 .and_then(|(_result, trans)| Ok(trans)),
@@ -218,7 +233,7 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
 
 pub const UPDATE_CARD_DATE: &str = "\
 UPDATE [WIN-PAK PRO].[dbo].[Card]
-    SET [ActivationDate]=@P1, [ExpirationDate]=@P2
+    SET [ActivationDate]=@P1, [ExpirationDate]=@P2, [CardStatus]=1
     WHERE LTRIM([CardNumber])=@P3 and [deleted]=0";
 
 pub fn update_card_date<I: BoxableIo + 'static>(
@@ -355,7 +370,7 @@ pub fn update_equipment_where_id<I: BoxableIo + 'static>(
 
 pub fn clear_temp_field_of_cardholder<I: BoxableIo + 'static>(id: i32, transaction: Transaction<I>) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
     Box::new(
-        transaction.exec("UPDATE t1 SET [t1].[Note24] = '' FROM [WIN-PAK PRO].[dbo].[CardHolder] t1 WHERE [RecordID]=@P1", &[&id]).and_then(|(_result, trans)| Ok(trans)),
+        transaction.exec("UPDATE t1 SET [t1].[Note20] = '' FROM [WIN-PAK PRO].[dbo].[CardHolder] t1 WHERE [RecordID]=@P1", &[&id]).and_then(|(_result, trans)| Ok(trans)),
     )
 }
 
