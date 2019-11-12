@@ -127,7 +127,7 @@ pub fn prepare_right_set(prev_state: &mut Individual, new_state: &mut Individual
 
 pub fn update_right_set(resources: &[String], in_set: &[String], marker: u8, is_deleted: bool, filter: &str, prefix: &str, access: u8, ctx: &mut Context) {
     for rs in resources.iter() {
-        let key = prefix.to_owned() + &filter + rs;
+        let key = prefix.to_owned() + filter + rs;
 
         let mut new_right_set = RightSet::new();
         if let Some(prev_data_str) = ctx.storage.get_value(StorageId::Az, &key) {
