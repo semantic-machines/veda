@@ -29,7 +29,6 @@ veda.Module(function Backend(veda) { "use strict";
     } else {
       line = "offline";
     }
-    console.log("Backend status =", line);
   };
   veda.on("online offline", setLine);
 
@@ -40,7 +39,6 @@ veda.Module(function Backend(veda) { "use strict";
     } else {
       ccus = "offline";
     }
-    console.log("CCUS status =", ccus);
   };
   veda.on("ccus-online ccus-offline", setCCUS);
 
