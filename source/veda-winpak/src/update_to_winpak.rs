@@ -71,6 +71,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut date_to = None;
     let mut access_levels: Vec<i64> = Vec::new();
     let mut is_update_access_levels = false;
+    let mut is_update_equipment = false;
 
     if btype == "mnd-s:Pass" {
         get_equipment_list(&mut indv_b, &mut equipment_list);
@@ -86,6 +87,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
         for has_change_kind_for_pass in has_change_kind_for_passes {
             if has_change_kind_for_pass == "d:lt6pdbhy2qvwquzgnp22jj2r2w" {
+                is_update_equipment = true;
                 get_equipment_list(&mut indv_b, &mut equipment_list);
             } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
                 date_from = indv_b.get_first_datetime("v-s:dateFromFact");
@@ -104,7 +106,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
 
     let future = SqlConnection::connect(conn_str)
         .and_then(|conn| conn.transaction())
-        .and_then(|trans| update_equipment(equipment_list, card_number.to_string(), trans))
+        .and_then(|trans| update_equipment(is_update_equipment, equipment_list, card_number.to_string(), trans))
         .and_then(|trans| update_card_date(date_from, date_to, card_number.to_string(), trans))
         .and_then(|trans| clear_access_level(is_update_access_levels, card_number.to_string(), trans))
         .and_then(|trans| update_access_level(is_update_access_levels, now, 0, access_levels, card_number.to_string(), trans))
