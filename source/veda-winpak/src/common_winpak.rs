@@ -320,24 +320,29 @@ JOIN [WIN-PAK PRO].[dbo].[Card] t2 ON [t2].[CardHolderID]=[t1].[RecordId]
 WHERE LTRIM([t2].[CardNumber])=@P11 and [t2].[CardHolderID]<>0 and [t1].[deleted]=0 and [t2].[deleted]=0";
 
 pub fn update_equipment<I: BoxableIo + 'static>(
+    is_update_equipment: bool,
     values: Vec<String>,
     card_number: String,
     transaction: Transaction<I>,
 ) -> Box<dyn Future<Item = Transaction<I>, Error = Error>> {
-    let mut tv: Vec<&str> = Vec::new();
-    for idx in 0..10 {
-        if let Some(s) = values.get(idx) {
-            tv.push(s.as_str());
-        } else {
-            tv.push("");
+    if is_update_equipment {
+        let mut tv: Vec<&str> = Vec::new();
+        for idx in 0..10 {
+            if let Some(s) = values.get(idx) {
+                tv.push(s.as_str());
+            } else {
+                tv.push("");
+            }
         }
-    }
 
-    Box::new(
-        transaction
-            .exec(UPDATE_EQUIPMENT, &[&tv[0], &tv[1], &tv[2], &tv[3], &tv[4], &tv[5], &tv[6], &tv[7], &tv[8], &tv[9], &card_number.as_str()])
-            .and_then(|(_result, trans)| Ok(trans)),
-    )
+        Box::new(
+            transaction
+                .exec(UPDATE_EQUIPMENT, &[&tv[0], &tv[1], &tv[2], &tv[3], &tv[4], &tv[5], &tv[6], &tv[7], &tv[8], &tv[9], &card_number.as_str()])
+                .and_then(|(_result, trans)| Ok(trans)),
+        )
+    } else {
+        Box::new(transaction.simple_exec("").and_then(|(_, trans)| Ok(trans)))
+    }
 }
 
 pub const UPDATE_EQUIPMENT_WHERE_ID: &str = "\
