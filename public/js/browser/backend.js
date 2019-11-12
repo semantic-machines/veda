@@ -22,6 +22,41 @@ veda.Module(function Backend(veda) { "use strict";
     });
   };
 
+  var line = "offline";
+  function setLine(status) {
+    if (status === "online") {
+      line = "online";
+    } else {
+      line = "offline";
+    }
+    console.log("Backend status =", line);
+  };
+  veda.on("online offline", setLine);
+
+  var ccus = "offline";
+  function setCCUS(status) {
+    if (status === "ccus-online") {
+      ccus = "online";
+    } else {
+      ccus = "offline";
+    }
+    console.log("CCUS status =", ccus);
+  };
+  veda.on("ccus-online ccus-offline", setCCUS);
+
+  var policy = "fetch";
+  function setPolicy() {
+    if (line === "online" && ccus === "online") {
+      policy = "cache";
+    } else if (line === "online") {
+      policy = "fetch";
+    } else {
+      policy = "cache";
+    }
+    console.log("Backend policy =", policy);
+  };
+  veda.on("online offline ccus-online ccus-offline", setPolicy);
+
   var interval;
   var duration = 5000;
   veda.Backend.check = function () {
@@ -39,7 +74,8 @@ veda.Module(function Backend(veda) { "use strict";
   };
   window.addEventListener("online", veda.Backend.check);
   window.addEventListener("offline", veda.Backend.check);
-  veda.Backend.check();
+  veda.on("ccus-online", veda.Backend.check);
+  veda.on("ccus-offline", veda.Backend.check);
 
   // Server errors
   function BackendError (result) {
@@ -349,18 +385,23 @@ veda.Module(function Backend(veda) { "use strict";
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
-    // Cache first
-    return localDB.then(function (db) {
-      return db.get(params.data.uri);
-    }).then(function (result) {
-      return result || call_server(params)
-        .then(function (individual) {
-          localDB.then(function (db) {
-            db.put(individual["@"], individual);
-          }).catch(console.log);
-          return individual;
-        });
-    });
+    if (policy === "cache") {
+      // Cache first
+      return localDB.then(function (db) {
+        return db.get(params.data.uri);
+      }).then(function (result) {
+        return result || call_server(params)
+          .then(function (individual) {
+            localDB.then(function (db) {
+              db.put(individual["@"], individual);
+            }).catch(console.log);
+            return individual;
+          });
+      });
+    } else {
+      // Fetch second
+      return veda.Backend.reset_individual(ticket, uri, reopen);
+    }
   };
 
   veda.Backend.reset_individual = function (ticket, uri, reopen) {
@@ -381,11 +422,21 @@ veda.Module(function Backend(veda) { "use strict";
         db.put(individual["@"], individual);
       });
       return individual;
-    }).catch(function (error) {
-      localDB.then(function (db) {
-        db.remove(params.data.uri);
-      });
-      throw error;
+    }).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        // Cache second
+        return localDB.then(function (db) {
+          return db.get(params.data.uri);
+        }).then(function (result) {
+          if (result) {
+            return result;
+          } else {
+            throw backendError;
+          }
+        });
+      } else {
+        throw backendError;
+      }
     });
   };
 
@@ -400,42 +451,71 @@ veda.Module(function Backend(veda) { "use strict";
         "uris": isObj ? arg.uris : uris
       }
     };
-    return localDB.then(function (db) {
-      var results = [];
-      var get_from_server = [];
-      return params.data.uris.reduce(function (p, uri, i) {
-        return p.then(function() {
-          return db.get(uri).then(function (result) {
-            if (typeof result !== "undefined") {
-              results[i] = result;
-            } else {
+    if (policy === "cache") {
+      // Cache first
+      return localDB.then(function (db) {
+        var results = [];
+        var get_from_server = [];
+        return params.data.uris.reduce(function (p, uri, i) {
+          return p.then(function() {
+            return db.get(uri).then(function (result) {
+              if (typeof result !== "undefined") {
+                results[i] = result;
+              } else {
+                get_from_server.push(uri);
+              }
+              return results;
+            }).catch(function () {
               get_from_server.push(uri);
-            }
-            return results;
-          }).catch(function () {
-            get_from_server.push(uri);
-            return results;
+              return results;
+            });
           });
+        }, Promise.resolve(results))
+        .then(function (results) {
+          if (get_from_server.length) {
+            params.data.uris = get_from_server;
+            return call_server(params);
+          } else {
+            return [];
+          }
+        })
+        .then(function (results_from_server) {
+          for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
+            while(results[j++]); // Fast forward to empty element
+            results[j-1] = results_from_server[i];
+            db.put(results_from_server[i]["@"], results_from_server[i]);
+          }
+          return results;
+        })
+        .catch(console.log);
+      });
+    } else {
+      // Fetch second
+      return call_server(params).then(function (results) {
+        localDB.then(function (db) {
+          results.reduce(function (p, result) {
+            p.then(function () {
+              return db.put(result["@"], result);
+            });
+          }, Promise.resolve());
         });
-      }, Promise.resolve(results))
-      .then(function (results) {
-        if (get_from_server.length) {
-          params.data.uris = get_from_server;
-          return call_server(params);
-        } else {
-          return [];
-        }
-      })
-      .then(function (results_from_server) {
-        for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
-          while(results[j++]); // Fast forward to empty element
-          results[j-1] = results_from_server[i];
-          db.put(results_from_server[i]["@"], results_from_server[i]);
-        }
         return results;
-      })
-      .catch(console.log);
-    });
+      }).catch(function (backendError) {
+        if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+          // Cache fallback
+          return localDB.then(function (db) {
+            var promises = params.data.uris.map(function (uri) {
+              return db.get(uri);
+            });
+            return Promise.all(promises).then(function (fulfilled) {
+              return fulfilled.filter(Boolean);
+            });
+          });
+        } else {
+          throw backendError;
+        }
+      });
+    }
   };
 
 //////////////////////////
