@@ -28,10 +28,8 @@ func getIndividual(ctx *fasthttp.RequestCtx) {
   var reopen bool
 
   ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
-  log.Println("ticket from query", ticketKey)
   if len(ticketKey) == 0 {
     ticketKey = string(ctx.Request.Header.Cookie("ticket"))
-    log.Println("ticket from cookie", ticketKey)
   }
   uri = string(ctx.QueryArgs().Peek("uri")[:])
 
