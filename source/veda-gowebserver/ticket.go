@@ -122,20 +122,12 @@ func isTicketValid(ctx *fasthttp.RequestCtx) {
   }
   //Get ticket with the given id from tarantool
   rc, _ := getTicket(ticketKey)
-  //If errored but NotTicketExpired return error to client
-  if rc != Ok && rc != TicketExpired {
-    ctx.Write(codeToJsonException(rc))
-    ctx.Response.SetStatusCode(int(rc))
-    return
-  } else if rc == TicketExpired {
-    //If TicketExpired then return false
+  //If errored or TicketExpired return false to client
+  if rc != Ok {
     ctx.Write([]byte("false"))
-    ctx.Response.SetStatusCode(int(rc))
-    return
+  } else {
+    ctx.Write([]byte("true"))
   }
-
-  //If ticket with Ok rc, return true
-  ctx.Write([]byte("true"))
   ctx.Response.SetStatusCode(int(Ok))
 }
 
