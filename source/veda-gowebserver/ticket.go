@@ -114,26 +114,21 @@ func isTicketValid(ctx *fasthttp.RequestCtx) {
     }
   }()
 
-	var ticketKey string
-	//Decode parametrs from requestn context
-	ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
-	//Get ticket with the given id from tarantool
-	rc, _ := getTicket(ticketKey)
-	//If errored but NotTicketExpired return error to client
-	if rc != Ok && rc != TicketExpired {
-		ctx.Write(codeToJsonException(rc))
-		ctx.Response.SetStatusCode(int(rc))
-		return
-	} else if rc == TicketExpired {
-		//If TicketExpired then return false
-		ctx.Write([]byte("false"))
-		ctx.Response.SetStatusCode(int(rc))
-		return
-	}
-
-	//If ticket with Ok rc, return true
-	ctx.Write([]byte("true"))
-	ctx.Response.SetStatusCode(int(Ok))
+  var ticketKey string
+  //Decode parametrs from requestn context
+  ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
+  if len(ticketKey) == 0 {
+    ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
+  //Get ticket with the given id from tarantool
+  rc, _ := getTicket(ticketKey)
+  //If errored or TicketExpired return false to client
+  if rc != Ok {
+    ctx.Write([]byte("false"))
+  } else {
+    ctx.Write([]byte("true"))
+  }
+  ctx.Response.SetStatusCode(int(Ok))
 }
 
 //getTicketTrusted handles get_ticket_trusted request
