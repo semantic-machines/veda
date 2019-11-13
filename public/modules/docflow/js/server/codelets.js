@@ -163,7 +163,7 @@ veda.Module(function (veda) { "use strict";
   { 
       //status: InProcess, InReworking
       var doc_id = process.getInputVariable('docId');
-      print('$$$$ doc:', veda.Util.toJson(doc_id));
+      //print('$$$$ doc:', veda.Util.toJson(doc_id));
       if (doc_id) {
           var set_in_document = {
               '@': veda.Util.getUri(doc_id)
