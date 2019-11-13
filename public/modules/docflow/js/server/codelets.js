@@ -159,6 +159,22 @@ veda.Module(function (veda) { "use strict";
       }
   };
 
+  veda.Codelet.change_document_workflow_status = function (process, status)
+  { 
+      //status: InProcess, InReworking
+      var doc_id = process.getInputVariable('docId');
+      print('$$$$ doc:', veda.Util.toJson(doc_id));
+      if (doc_id) {
+          var set_in_document = {
+              '@': veda.Util.getUri(doc_id)
+          };
+          set_in_document['v-wf:hasStatusWorkflow'] = veda.Util.newUri(status);
+          
+          set_in_individual(process.ticket, set_in_document, _event_id);
+      };
+      return [veda.Workflow.get_new_variable('workflowStatus', veda.Util.newStr(status))];
+  };
+
   veda.Codelet.change_document_status = function (process, status)
   {
 
@@ -180,7 +196,7 @@ veda.Module(function (veda) { "use strict";
               };
           }
       };
-      return [veda.Workflow.get_new_variable('status', veda.Util.newStr(status))];
+      //return [veda.Workflow.get_new_variable('status', veda.Util.newStr(status))];
   };
 
   veda.Codelet.is_exists_net_executor = function (process)

@@ -2797,6 +2797,20 @@ v-wf:Completed
   v-s:tag "success";
 .
 
+v-wf:InReworking
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "На доработке"@ru ;
+  rdfs:label "In reworking"@en ;
+  v-s:tag "warning";
+.
+
+v-wf:InProcess
+  rdf:type v-wf:StatusWorkflow ;
+  rdfs:label "В процессе"@ru ;
+  rdfs:label "In process"@en ;
+  v-s:tag "info";
+.
+
 v-wf:DoNotSend
   rdf:type v-wf:StatusWorkflow ;
   rdfs:label "Не отправлять"@ru ;
