@@ -812,6 +812,7 @@ veda.Module(function (veda) { "use strict";
 
         btnRemove.click(function (e) {
           e.preventDefault();
+          e.stopPropagation();
           about.removeValue( rel_uri, value );
           if ( value.is("v-s:Embedded") && value.hasValue("v-s:parent", about) ) {
             value.delete();
