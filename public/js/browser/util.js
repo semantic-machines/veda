@@ -398,6 +398,20 @@ veda.Module(function (veda) { "use strict";
   };
 
   /**
+   * Sync get individual
+   */
+  function getSync(ticket, uri) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "api/get_individual?uri=" + uri + "&ticket=" + ticket, false);
+    xhr.send();
+    if (xhr.status === 200) {
+      return JSON.parse(xhr.responseText, veda.Util.decimalDatetimeReviver);
+    } else {
+      throw new BackendError(xhr);
+    }
+  }
+
+  /**
    * Трансформировать указанные индивидуалы по заданным правилам
    *
    * @param ticket сессионный билет
@@ -711,21 +725,13 @@ veda.Module(function (veda) { "use strict";
 
               var curelem;
 
-              curelem = veda.Backend.get_individual({
-                ticket: veda.ticket,
-                uri: element_uri,
-                async: false
-              });
+              curelem = getSync(veda.ticket, element_uri);
 
               for (var i = 0; i < path.length - 1; i++)
               {
                 if (!curelem || !curelem[path[i]]) return;
                 var uri = Array.isArray(curelem[path[i]]) && curelem[path[i]][0].data ? curelem[path[i]][0].data : curelem[path[i]];
-                curelem = veda.Backend.get_individual({
-                  ticket: veda.ticket,
-                  uri: uri,
-                  async: false
-                });
+                curelem = getSync(veda.ticket, uri);
               }
               if (!curelem || !curelem[path[path.length - 1]]) return;
 

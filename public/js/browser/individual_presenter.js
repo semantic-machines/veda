@@ -22,6 +22,8 @@ veda.Module(function (veda) { "use strict";
 
     return this.load().then(function (individual) {
 
+      var offlineTemplate = "<h5 class='container sheet text-center text-muted'>Нет связи с сервером. Этот объект сейчас недоступен / Server disconnected. This object is not available now</h5>";
+
       if (template) {
         if (template instanceof veda.IndividualModel) {
         // if template is uri
@@ -40,7 +42,7 @@ veda.Module(function (veda) { "use strict";
           }, 1);
         }
         return template.load().then(function (template) {
-          template = template["v-ui:template"][0].toString();
+          template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
           return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
         });
       } else {
@@ -49,7 +51,7 @@ veda.Module(function (veda) { "use strict";
         if ( individual.hasValue("v-ui:hasTemplate") && !isClass ) {
           template = individual["v-ui:hasTemplate"][0];
           templatePromise = template.load().then(function (template) {
-            template = template["v-ui:template"][0].toString();
+            template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
             return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
           });
         } else {
@@ -57,7 +59,7 @@ veda.Module(function (veda) { "use strict";
           var defaultTemplateUri = ontology.getClassTemplate(individual["rdf:type"][0].id);
           if (defaultTemplateUri) {
             templatePromise = new veda.IndividualModel(defaultTemplateUri).load().then(function (template) {
-              template = template["v-ui:template"][0].toString();
+              template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
               return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
             });
           } else {
@@ -71,7 +73,7 @@ veda.Module(function (veda) { "use strict";
               return Promise.all(templatesPromises);
             }).then(function (templates) {
               var renderedTemplatesPromises = templates.map( function (template) {
-                template = template["v-ui:template"][0].toString();
+                template = template.hasValue("v-ui:template") ? template["v-ui:template"][0].toString() : offlineTemplate;
                 return renderTemplate(individual, container, template, mode, extra, toEmpty, toAppend);
               });
               return Promise.all(renderedTemplatesPromises);

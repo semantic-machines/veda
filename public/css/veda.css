@@ -1512,3 +1512,13 @@ svg.process-path-highlight path
   text-align: right;
   font-weight: bold;
 }
+#line-status {
+  font-size: 0.7em;
+  margin: 0.7em 0 -2em;
+}
+#line-status.online > .offline {
+  display: none;
+}
+#line-status.offline > .online {
+  display: none;
+}
