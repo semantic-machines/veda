@@ -2,6 +2,26 @@
 
 var FILES = "files-0";
 var STATIC = "static-0";
+var API = [
+  "/ping",
+  "/get_rights",
+  "/get_rights_origin",
+  "/get_membership",
+  "/authenticate",
+  "/get_ticket_trusted",
+  "/is_ticket_valid",
+  "/get_operation_state",
+  "/wait_module",
+  "/query",
+  "/get_individual",
+  "/get_individuals",
+  "/remove_individual",
+  "/put_individual",
+  "/add_to_individual",
+  "/set_in_individual",
+  "/remove_from_individual",
+  "/put_individuals"
+];
 
 this.addEventListener("activate", function(event) {
   var cacheWhitelist = [ FILES, STATIC ];
@@ -18,11 +38,14 @@ this.addEventListener("activate", function(event) {
 
 self.addEventListener("fetch", function (event) {
   var url = new URL(event.request.url);
-  var type = url.pathname.indexOf("/ping") === 0 ? "PING" : url.pathname.indexOf("/api") === 0 ? "API" : url.pathname.indexOf("/files") === 0 ? "FILES" : "STATIC";
+  var pathname = url.pathname;
+  var isAPI = API.indexOf(pathname) >= 0;
+  var isFILES = pathname.indexOf("/files") === 0;
+  var isSTATIC = !isAPI && !isFILES;
   if (event.request.method === "GET") {
-    if (type === "STATIC") {
+    if (isSTATIC) {
       event.respondWith(handleFetch(event, STATIC));
-    } else if (type === "FILES") {
+    } else if (isFILES) {
       event.respondWith(handleFetch(event, FILES));
     }
   }
