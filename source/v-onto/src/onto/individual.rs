@@ -209,6 +209,36 @@ impl Individual {
         false
     }
 
+    pub fn is_exists_bool(&mut self, predicate: &str, value: bool) -> bool {
+        for _ in 0..2 {
+            match self.obj.resources.get(predicate) {
+                Some(v) => {
+                    for el in v {
+                        match &el.value {
+                            Value::Bool(v) => {
+                                if bool::eq(&value, v) {
+                                    return true;
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+                None => {
+                    if self.raw.cur < self.raw.data.len() as u64 {
+                        // next parse
+                        if !parse_to_predicate(predicate, self) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        false
+    }
+
     /*
         pub fn get_resources(&mut self, predicate: &str) -> Result<Vec<Resource>, IndividualError> {
             for _ in 0..2 {
