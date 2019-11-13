@@ -530,7 +530,7 @@ textarea {
   text-decoration: none!important;
   color: #aaa!important;
 }
-.invalid {
+a.invalid, span.invalid, tr.invalid {
   text-decoration: none!important;
   color: #a94442!important;
 }
