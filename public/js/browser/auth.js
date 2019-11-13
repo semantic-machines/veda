@@ -126,7 +126,7 @@ veda.Module(function (veda) { "use strict";
             "theme": "light",
             "callback": onSuccess,
             "expired-callback": onExpired,
-            "error-callback": onError || onExpired,
+            "error-callback": onError,
           });
           captchaRendered = true;
         };
@@ -178,14 +178,16 @@ veda.Module(function (veda) { "use strict";
       case 473: // Authentication failed
       default:
         loginFailedError.show();
-        reCAPTCHA(function () {
-          loginFailedError.hide();
-          enterLoginPassword.show();
-        }, function () {
-          loginFailedError.show();
-          enterLoginPassword.hide();
-        });
+        reCAPTCHA(onSuccess, onExpired, onSuccess);
         break;
+    }
+    function onSuccess() {
+      loginFailedError.hide();
+      enterLoginPassword.show();
+    }
+    function onExpired() {
+      loginFailedError.show();
+      enterLoginPassword.hide();
     }
   }
 
