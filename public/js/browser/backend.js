@@ -1,29 +1,79 @@
 // HTTP server functions
 veda.Module(function Backend(veda) { "use strict";
 
-  var localDB = new veda.LocalDB();
+  var localDB = new veda.LocalDB("veda", "store");
 
   veda.Backend = {};
 
   // Check server health
-  var notify = veda.Notify ? new veda.Notify() : function () {};
+  veda.Backend.ping = function () {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        if (this.status == 200) {
+          resolve(this);
+        } else {
+          reject(this);
+        }
+      };
+      xhr.onerror = reject;
+      xhr.open("GET", "ping");
+      xhr.send();
+    });
+  };
+
+  var line = "offline";
+  function setLine(status) {
+    if (status === "online") {
+      line = "online";
+    } else {
+      line = "offline";
+    }
+  };
+  veda.on("online offline", setLine);
+
+  var ccus = "offline";
+  function setCCUS(status) {
+    if (status === "ccus-online") {
+      ccus = "online";
+    } else {
+      ccus = "offline";
+    }
+  };
+  veda.on("ccus-online ccus-offline", setCCUS);
+
+  var policy = "fetch";
+  function setPolicy() {
+    if (line === "online" && ccus === "online") {
+      policy = "cache";
+    } else if (line === "online") {
+      policy = "fetch";
+    } else {
+      policy = "cache";
+    }
+    console.log("Backend policy =", policy);
+  };
+  veda.on("online offline ccus-online ccus-offline", setPolicy);
+
   var interval;
-  function serverWatch() {
+  var duration = 5000;
+  veda.Backend.check = function () {
     if (interval) { return; }
-    var duration = 10000;
-    notify("danger", {name: "Connection error"});
-    interval = setInterval(function () {
-      veda.Backend.reset_individual(veda.ticket, "cfg:OntoVsn")
-        .then(function () {
-          clearInterval(interval);
-          interval = undefined;
-          notify("success", {name: "Connection restored"});
-        })
-        .catch(function (error) {
-          notify("danger", {name: "Connection error"});
-        });
-    }, duration);
-  }
+    interval = setInterval(check, duration);
+    if (!arguments.length) { check(); }
+    function check() {
+      veda.Backend.ping().then(function () {
+        interval = clearInterval(interval);
+        veda.trigger("online");
+      }).catch(function () {
+        veda.trigger("offline");
+      });
+    }
+  };
+  window.addEventListener("online", veda.Backend.check);
+  window.addEventListener("offline", veda.Backend.check);
+  veda.on("ccus-online", veda.Backend.check);
+  veda.on("ccus-offline", veda.Backend.check);
 
   // Server errors
   function BackendError (result) {
@@ -65,8 +115,8 @@ veda.Module(function Backend(veda) { "use strict";
     this.status = result.status;
     this.message = errorCodes[this.code];
     this.stack = (new Error()).stack;
-    if (result.status === 0 || result.status === 503) {
-      serverWatch();
+    if (result.status === 0 || result.status === 503 || result.status === 4000) {
+      veda.Backend.check();
     }
     if (result.status === 470 || result.status === 471) {
       veda.trigger("login:failed");
@@ -75,194 +125,186 @@ veda.Module(function Backend(veda) { "use strict";
   BackendError.prototype = Object.create(Error.prototype);
   BackendError.prototype.constructor = BackendError;
 
-
   // Common server call function
-
   function call_server(params) {
     var method = params.method,
         url = params.url,
         data = params.data,
-        async = typeof params.async !== "undefined" ? params.async : true,
-        salt = Date.now();
-    if (async) {
-      return new Promise( function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          if (this.status == 200) {
-            resolve( JSON.parse(this.response, veda.Util.decimalDatetimeReviver) );
-          } else {
-            reject( new BackendError(this) );
-          }
-        };
-        xhr.onerror = function () {
-          reject( new BackendError(this) );
-        };
-        if (method === "GET") {
-          var params = [];
-          for (var name in data) {
-            if (typeof data[name] !== "undefined") {
-              params.push(name + "=" + encodeURIComponent(data[name]));
-            }
-          }
-          params.push(salt);
-          params = params.join("&");
-          xhr.open(method, url + "?" + params, async);
-          xhr.timeout = 120000;
-          xhr.send();
-        } else {
-          xhr.open(method, url + "?" + salt, async);
-          xhr.timeout = 120000;
-          xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          var payload = JSON.stringify(data, function (key, value) {
-            return key === "data" && this.type === "Decimal" ? value.toString() : value;
-          });
-          xhr.send(payload);
-        }
-      });
-    } else {
+        ticket = params.ticket,
+        queryParams = [],
+        payload = null;
+    return new Promise( function (resolve, reject) {
       var xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        if (this.status == 200) {
+          resolve( JSON.parse(this.response, veda.Util.decimalDatetimeReviver) );
+        } else {
+          reject( new BackendError(this) );
+        }
+      };
+      xhr.onerror = function () {
+        reject( new BackendError(this) );
+      };
+      if (ticket) { queryParams.push("ticket=" + ticket); }
       if (method === "GET") {
-        var params = [];
         for (var name in data) {
           if (typeof data[name] !== "undefined") {
-            params.push(name + "=" + encodeURIComponent(data[name]));
+            queryParams.push(name + "=" + encodeURIComponent(data[name]));
           }
         }
-        params.push(salt);
-        params = params.join("&");
-        xhr.open(method, url + "?" + params, async);
-        xhr.send();
-      } else {
-        xhr.open(method, url + "?" + salt, async);
+        queryParams = queryParams.join("&");
+      }
+      xhr.open(method, url + "?" + queryParams, true);
+      xhr.timeout = 120000;
+      if (method !== "GET") {
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        var payload = JSON.stringify(data, function (key, value) {
+        payload = JSON.stringify(data, function (key, value) {
           return key === "data" && this.type === "Decimal" ? value.toString() : value;
         });
-        xhr.send(payload);
       }
-      if (xhr.status === 200) {
-        // Parse with date & decimal reviver
-        return JSON.parse(xhr.responseText, veda.Util.decimalDatetimeReviver);
-      } else {
-        throw new BackendError(xhr);
-      }
-    }
+      xhr.send(payload);
+    });
   }
 
-  veda.Backend.flush = function flush(module_id, wait_op_id) {
+  veda.Backend.get_rights = function (ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "flush",
-      async: isObj ? arg.async : true,
+      url: "api/get_rights",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "module_id": isObj ? arg.module_id : module_id,
-        "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
-      }
-    };
-    return call_server(params);
-  };
-
-  veda.Backend.get_rights = function get_rights(ticket, uri) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "get_rights",
-      async: isObj ? arg.async : true,
-      data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return {
+          "@":"_",
+          "rdf:type":[{"data":"v-s:PermissionStatement", "type":"Uri"}],
+          "v-s:canCreate":[{"data":true, "type":"Boolean"}],
+          "v-s:canDelete":[{"data":false, "type":"Boolean"}],
+          "v-s:canRead":[{"data":true, "type":"Boolean"}],
+          "v-s:canUpdate":[{"data":true, "type":"Boolean"}]
+        };
+      } else {
+        throw backendError;
+      }
+    });
   };
 
-  veda.Backend.get_rights_origin = function get_rights_origin(ticket, uri) {
+  veda.Backend.get_rights_origin = function (ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_rights_origin",
-      async: isObj ? arg.async : true,
+      url: "api/get_rights_origin",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return [];
+      } else {
+        throw backendError;
+      }
+    });
   };
 
-  veda.Backend.get_membership = function get_membership(ticket, uri) {
+  veda.Backend.get_membership = function (ticket, uri) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_membership",
-      async: isObj ? arg.async : true,
+      url: "api/get_membership",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return {
+          "@":"_",
+          "rdf:type":[{"data":"v-s:Membership", "type":"Uri"}],
+          "v-s:memberOf":[{"data":"v-s:AllResourcesGroup", "type":"Uri"}],
+          "v-s:resource":[{"data": isObj ? arg.uri : uri, "type":"Uri"}]
+        };
+      } else {
+        throw backendError;
+      }
+    });
   };
 
-  veda.Backend.authenticate = function authenticate(login, password, secret) {
+
+  veda.Backend.authenticate = function (login, password, secret) {
     if (login == "VedaNTLMFilter")
         login = "cfg:Guest";
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "authenticate",
-      async: isObj ? arg.async : true,
+      url: "api/authenticate",
       data: {
         "login": isObj ? arg.login : login,
         "password": isObj ? arg.password : password,
         "secret": isObj ? arg.secret : secret
       }
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return {
+          "end_time": (Date.now() + 12 * 3600 * 1000) * 10000 + 621355968000000000,
+          "id":"",
+          "result":200,
+          "user_uri":"cfg:Guest"
+        };
+      } else {
+        throw backendError;
+      }
+    });
   };
 
-  veda.Backend.get_ticket_trusted = function get_ticket_trusted(ticket, login) {
+  veda.Backend.get_ticket_trusted = function (ticket, login) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_ticket_trusted",
-      async: isObj ? arg.async : true,
+      url: "api/get_ticket_trusted",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "login": isObj ? arg.login : login
       }
     };
     return call_server(params);
   };
 
-  veda.Backend.is_ticket_valid = function is_ticket_valid(ticket) {
+  veda.Backend.is_ticket_valid = function (ticket) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "is_ticket_valid",
-      async: isObj ? arg.async : true,
-      data: {
-        "ticket": isObj ? arg.ticket : ticket
-      }
+      url: "api/is_ticket_valid",
+      ticket: isObj ? arg.ticket : ticket,
+      data: {}
     };
-    return call_server(params);
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return true;
+      } else {
+        throw backendError;
+      }
+    });
   };
 
-  veda.Backend.get_operation_state = function get_operation_state(module_id, wait_op_id) {
+  veda.Backend.get_operation_state = function (module_id, wait_op_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_operation_state",
-      async: isObj ? arg.async : true,
+      url: "api/get_operation_state",
       data: {
         "module_id": isObj ? arg.module_id : module_id,
         "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
@@ -271,11 +313,11 @@ veda.Module(function Backend(veda) { "use strict";
     return call_server(params);
   };
 
-  veda.Backend.wait_module = function wait_module(module_id, in_op_id) {
+  veda.Backend.wait_module = function (module_id, in_op_id) {
     var timeout = 1;
     var op_id_from_module;
     for (var i = 0; i < 100; i++) {
-      op_id_from_module = get_operation_state (module_id, in_op_id);
+      op_id_from_module = veda.Backend.get_operation_state (module_id, in_op_id);
       if (op_id_from_module >= in_op_id) { break; }
       var endtime = new Date().getTime() + timeout;
       while (new Date().getTime() < endtime);
@@ -283,70 +325,14 @@ veda.Module(function Backend(veda) { "use strict";
     }
   };
 
-  veda.Backend.restart = function restart(ticket) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "restart",
-      async: isObj ? arg.async : true,
-      data: {
-        "ticket": isObj ? arg.ticket : ticket
-      }
-    };
-    return call_server(params);
-  };
-
-  veda.Backend.backup = function backup(to_binlog) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "backup",
-      async: isObj ? arg.async : true,
-      data: {
-        "to_binlog": isObj ? arg.to_binlog : to_binlog
-      }
-    };
-    return call_server(params);
-  };
-
-  veda.Backend.count_individuals = function count_individuals() {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "count_individuals",
-      async: isObj ? arg.async : true,
-      data: {}
-    };
-    return call_server(params);
-  };
-
-  veda.Backend.set_trace = function set_trace(idx, state) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "set_trace",
-      async: isObj ? arg.async : true,
-      data: {
-        "idx": isObj ? arg.idx : idx,
-        "state" : isObj ? arg.state : state
-      }
-    };
-    return call_server(params);
-  };
-
-  veda.Backend.query = function query(ticket, queryStr, sort, databases, reopen, top, limit, from) {
+  veda.Backend.query = function (ticket, queryStr, sort, databases, reopen, top, limit, from) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "POST",
-      url: "query",
-      async: isObj ? arg.async : true,
+      url: "api/query",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "query": isObj ? arg.query : queryStr,
         "sort": isObj ? arg.sort : sort,
         "databases" : isObj ? arg.databases : databases,
@@ -356,136 +342,206 @@ veda.Module(function Backend(veda) { "use strict";
         "from"  : isObj ? arg.from : from
       }
     };
-    if (typeof params.async !== "undefined" ? params.async : true) {
-      return call_server(params).catch(function (backendError) {
-        if (backendError.code === 999) {
-          return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
-        } else {
-          throw backendError;
-        }
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 999) {
+        return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
+      } else if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return localDB.then(function (db) {
+          return db.get(JSON.stringify(params));
+        });
+      } else {
+        throw backendError;
+      }
+    }).then(function (result) {
+      if (result) {
+        localDB.then(function (db) {
+          db.put(JSON.stringify(params), result);
+        });
+      } else {
+        result = {
+          "result":[],
+          "count":0,
+          "estimated":0,
+          "processed":0,
+          "cursor":0,
+          "result_code":200
+        };
+      }
+      return result;
+    });
+  };
+
+  veda.Backend.get_individual = function (ticket, uri, reopen) {
+    var arg = arguments[0];
+    var isObj = typeof arg === "object";
+    var params = {
+      method: "GET",
+      url: "api/get_individual",
+      ticket: isObj ? arg.ticket : ticket,
+      data: {
+        "uri": isObj ? arg.uri : uri,
+        "reopen" : (isObj ? arg.reopen : reopen) || false
+      }
+    };
+    if (policy === "cache") {
+      // Cache first
+      return localDB.then(function (db) {
+        return db.get(params.data.uri);
+      }).then(function (result) {
+        return result || call_server(params)
+          .then(function (individual) {
+            localDB.then(function (db) {
+              db.put(individual["@"], individual);
+            }).catch(console.log);
+            return individual;
+          });
       });
     } else {
-      try {
-        var result = call_server(params);
-        return result;
-      } catch (backendError) {
-        if (backendError.code === 999) {
-          return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
-        } else {
-          throw backendError;
-        }
-      }
+      // Fetch second
+      return veda.Backend.reset_individual(ticket, uri, reopen);
     }
-  }
-
-  veda.Backend.get_individual = function get_individual(ticket, uri, reopen) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "get_individual",
-      async: isObj ? arg.async : true,
-      data: {
-        "ticket": isObj ? arg.ticket : ticket,
-        "uri": isObj ? arg.uri : uri,
-        "reopen" : (isObj ? arg.reopen : reopen) || false
-      }
-    };
-    return localDB.then(function (db) {
-      return db.get(params.data.uri);
-    }).catch(function (err) {
-      return call_server(params).then(function (individual) {
-        localDB.then(function (db) {
-          db.put(individual);
-        }).catch(console.log);
-        return individual;
-      });
-    });
   };
 
-  veda.Backend.reset_individual = function reset_individual(ticket, uri, reopen) {
+  veda.Backend.reset_individual = function (ticket, uri, reopen) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "get_individual",
-      async: isObj ? arg.async : true,
+      url: "api/reset_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
         "reopen" : (isObj ? arg.reopen : reopen) || false
       }
     };
+    // Fetch first
     return call_server(params).then(function (individual) {
       localDB.then(function (db) {
-        db.put(individual);
-      }).catch(console.log);
-      return individual;
-    }).catch(function (error) {
-      localDB.then(function (db) {
-        db.remove(params.data.uri);
+        db.put(individual["@"], individual);
       });
-      throw error;
+      return individual;
+    }).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        // Cache second
+        return localDB.then(function (db) {
+          return db.get(params.data.uri);
+        }).then(function (result) {
+          if (result) {
+            return result;
+          } else {
+            throw backendError;
+          }
+        });
+      } else {
+        throw backendError;
+      }
     });
   };
 
-  veda.Backend.get_individuals = function get_individuals(ticket, uris) {
+  veda.Backend.get_individuals = function (ticket, uris) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "POST",
-      url: "get_individuals",
-      async: isObj ? arg.async : true,
+      url: "api/get_individuals",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uris": isObj ? arg.uris : uris
       }
     };
-    return localDB.then(function (db) {
-      var results = [];
-      var get_from_server = [];
-      return params.data.uris.reduce(function (p, uri, i) {
-        return p.then(function() {
-          return db.get(uri).then(function (result) {
-            results[i] = result;
-            return results;
-          }).catch(function () {
-            get_from_server.push(uri);
-            return results;
+    if (policy === "cache") {
+      // Cache first
+      return localDB.then(function (db) {
+        var results = [];
+        var get_from_server = [];
+        return params.data.uris.reduce(function (p, uri, i) {
+          return p.then(function() {
+            return db.get(uri).then(function (result) {
+              if (typeof result !== "undefined") {
+                results[i] = result;
+              } else {
+                get_from_server.push(uri);
+              }
+              return results;
+            }).catch(function () {
+              get_from_server.push(uri);
+              return results;
+            });
           });
+        }, Promise.resolve(results))
+        .then(function (results) {
+          if (get_from_server.length) {
+            params.data.uris = get_from_server;
+            return call_server(params);
+          } else {
+            return [];
+          }
+        })
+        .then(function (results_from_server) {
+          for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
+            while(results[j++]); // Fast forward to empty element
+            results[j-1] = results_from_server[i];
+            db.put(results_from_server[i]["@"], results_from_server[i]);
+          }
+          return results;
+        })
+        .catch(console.log);
+      });
+    } else {
+      // Fetch second
+      return call_server(params).then(function (results) {
+        localDB.then(function (db) {
+          results.reduce(function (p, result) {
+            p.then(function () {
+              return db.put(result["@"], result);
+            });
+          }, Promise.resolve());
         });
-      }, Promise.resolve(results))
-      .then(function (results) {
-        if (get_from_server.length) {
-          params.data.uris = get_from_server;
-          return call_server(params);
-        } else {
-          return [];
-        }
-      })
-      .then(function (results_from_server) {
-        for (var i = 0, j = 0, length = results_from_server.length; i < length; i++) {
-          while(results[j++]); // Fast forward to empty element
-          results[j-1] = results_from_server[i];
-          db.put(results_from_server[i]);
-        }
         return results;
-      })
-      .catch(console.log);
-    });
+      }).catch(function (backendError) {
+        if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+          // Cache fallback
+          return localDB.then(function (db) {
+            var promises = params.data.uris.map(function (uri) {
+              return db.get(uri);
+            });
+            return Promise.all(promises).then(function (fulfilled) {
+              return fulfilled.filter(Boolean);
+            });
+          });
+        } else {
+          throw backendError;
+        }
+      });
+    }
   };
 
 //////////////////////////
 
-  veda.Backend.remove_individual = function remove_individual(ticket, uri, assigned_subsystems, event_id, transaction_id) {
+  function call_server_put(params) {
+    return call_server(params).catch(function (backendError) {
+      if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        return enqueueCall(params).then(function (queue) {
+          console.log("Offline operation added to queue, queue length = ", queue.length);
+          return {
+            "op_id":0,
+            "result":200
+          };
+        });
+      } else {
+        throw backendError;
+      }
+    });
+  }
+
+  veda.Backend.remove_individual = function (ticket, uri, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "remove_individual",
-      async: isObj ? arg.async : true,
+      url: "api/remove_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "uri": isObj ? arg.uri : uri,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -493,18 +549,17 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
-  veda.Backend.put_individual = function put_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.put_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "put_individual",
-      async: isObj ? arg.async : true,
+      url: "api/put_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -512,18 +567,17 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
-  veda.Backend.add_to_individual = function add_to_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.add_to_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "add_to_individual",
-      async: isObj ? arg.async : true,
+      url: "api/add_to_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems": (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -531,18 +585,17 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id": (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
-  veda.Backend.set_in_individual = function set_in_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.set_in_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "set_in_individual",
-      async: isObj ? arg.async : true,
+      url: "api/set_in_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -550,18 +603,17 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
-  veda.Backend.remove_from_individual = function remove_from_individual(ticket, individual, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.remove_from_individual = function (ticket, individual, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "remove_from_individual",
-      async: isObj ? arg.async : true,
+      url: "api/remove_from_individual",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individual": isObj ? arg.individual : individual,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -569,18 +621,17 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
-  veda.Backend.put_individuals = function put_individuals(ticket, individuals, assigned_subsystems, event_id, transaction_id) {
+  veda.Backend.put_individuals = function (ticket, individuals, assigned_subsystems, event_id, transaction_id) {
     var arg = arguments[0];
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "put_individuals",
-      async: isObj ? arg.async : true,
+      url: "api/put_individuals",
+      ticket: isObj ? arg.ticket : ticket,
       data: {
-        "ticket": isObj ? arg.ticket : ticket,
         "individuals": isObj ? arg.individuals : individuals,
         "assigned_subsystems" : (isObj ? arg.assigned_subsystems : assigned_subsystems) || 0,
         "prepare_events": true,
@@ -588,39 +639,44 @@ veda.Module(function Backend(veda) { "use strict";
         "transaction_id" : (isObj ? arg.transaction_id : transaction_id) || ""
       }
     };
-    return call_server(params);
+    return call_server_put(params);
   };
 
-/////////////////////////////////////////
-
-  veda.Backend.get_property_value = function get_property_value(ticket, uri, property_uri) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "GET",
-      url: "get_property_value",
-      async: isObj ? arg.async : true,
-      data: {
-        "ticket": isObj ? arg.ticket : ticket,
-        "uri": isObj ? arg.uri : uri,
-        "property_uri": isObj ? arg.property_uri : property_uri
-      }
-    };
-    return call_server(params);
-  };
-
-  veda.Backend.execute_script = function execute_script(script) {
-    var arg = arguments[0];
-    var isObj = typeof arg === "object";
-    var params = {
-      method: "POST",
-      url: "execute_script",
-      async: isObj ? arg.async : true,
-      data: {
-        "script": isObj ? arg.script : script
-      }
-    };
-    return call_server(params);
-  };
+  // Offline PUT queue
+  function enqueueCall(params) {
+    return localDB.then(function (db) {
+      return db.get("offline-queue").then(function(queue) {
+        queue = queue || [];
+        queue.push( JSON.stringify(params) );
+        return db.put("offline-queue", queue);
+      });
+    });
+  }
+  function flushQueue() {
+    return localDB.then(function (db) {
+      return db.get("offline-queue").then(function(queue) {
+        if (queue && queue.length) {
+          return queue.reduce(function (prom, params) {
+            return prom.then(function () {
+              params = JSON.parse(params);
+              params.ticket = veda.ticket;
+              return call_server(params);
+            });
+          }, Promise.resolve()).then(function () {
+            db.remove("offline-queue");
+            return queue.length;
+          });
+        } else {
+          return 0;
+        }
+      });
+    });
+  }
+  veda.on("online", function () {
+    console.log("Veda 'online', flushing queue");
+    flushQueue().then(function (queue_length) {
+      console.log("Done, queue flushed", queue_length);
+    });
+  });
 
 });

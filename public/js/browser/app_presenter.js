@@ -158,9 +158,11 @@ veda.Module(function (veda) { "use strict";
           extra = extra.split("&").reduce(function (acc, pair) {
             var split = pair.split("="),
                 name  = split[0] || "",
-                value = split[1] || "";
+                values = split[1].split("|") || "";
             acc[name] = acc[name] || [];
-            acc[name].push( parse(value) );
+            values.forEach(function (value) {
+              acc[name].push( parse(value) );
+            });
             return acc;
           }, {});
         }
@@ -181,9 +183,9 @@ veda.Module(function (veda) { "use strict";
       riot.route(location.hash);
     })
 
-    .catch( function (err) {
+    .catch( function (error) {
       var notify = new veda.Notify();
-      notify("danger", err);
+      notify("danger", error);
     });
 
   });
@@ -261,4 +263,73 @@ veda.Module(function (veda) { "use strict";
 
   });
 
+  // On/off-line status indicator
+  var lineHandler = function (status) {
+    var lineStatus = document.getElementById("line-status");
+    lineStatus.style.display = "block";
+    if ( status === "online" ) {
+      setOnline();
+    } else {
+      setOffline();
+    }
+    function setOnline () {
+      lineStatus.classList.add("online");
+      lineStatus.classList.remove("offline");
+    }
+    function setOffline () {
+      lineStatus.classList.remove("online");
+      lineStatus.classList.add("offline");
+    }
+  }
+  veda.on("online offline", lineHandler);
+
+  // Service worker
+  if ("serviceWorker" in navigator) {
+
+    // Install SW
+    navigator.serviceWorker.register("/sw-simple.js", { scope: "/" }).then(function(worker) {
+      console.log("Service worker registered:", worker.scope);
+    }).catch(function(error) {
+      console.log("Registration failed with " + error);
+    });
+
+    // Install application prompt
+    var showAddToHomeScreen = function () {
+      var installApp = document.getElementById("install-app");
+      var installBtn = document.getElementById("install-btn");
+      var rejectInstallBtn = document.getElementById("reject-install-btn");
+      installApp.style.display = "block";
+      installBtn.addEventListener("click", addToHomeScreen);
+      rejectInstallBtn.addEventListener("click", rejectInstall);
+    }
+    var addToHomeScreen = function () {
+      var installApp = document.getElementById("install-app");
+      installApp.style.display = "none";  // Hide the prompt
+      deferredPrompt.prompt();  // Wait for the user to respond to the prompt
+      deferredPrompt.userChoice
+        .then(function(choiceResult) {
+          if (choiceResult.outcome === "accepted") {
+            console.log("User accepted install prompt");
+          } else {
+            console.log("User dismissed install prompt");
+          }
+          deferredPrompt = null;
+        });
+    }
+    var rejectInstall = function () {
+      var installApp = document.getElementById("install-app");
+      installApp.style.display = "none";
+      localStorage.rejectedInstall = true;
+    }
+    var deferredPrompt;
+    window.addEventListener("beforeinstallprompt", function (e) {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      if ( !localStorage.rejectedInstall ) {
+        showAddToHomeScreen();
+      }
+    });
+  }
 });

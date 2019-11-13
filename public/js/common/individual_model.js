@@ -356,6 +356,21 @@ veda.Module(function (veda) { "use strict";
           self.isNew(false);
           self.isSync(false);
           self.isLoaded(false);
+        } else if (error.code === 0 || error.code === 4000 || error.code === 503) {
+          self.isNew(false);
+          self.isSync(false);
+          self.isLoaded(false);
+          self.properties = {
+            "@": uri,
+            "rdf:type": [{type: "Uri", data: "rdfs:Resource"}],
+            "rdfs:label": [
+              {type: "String", data: "Нет связи с сервером. Этот объект сейчас недоступен.", lang: "RU"},
+              {type: "String", data: "Server disconnected. This object is not available now.", lang: "EN"}
+            ]
+          };
+          veda.one("online", function () {
+            self.reset();
+          });
         } else {
           self.isNew(false);
           self.isSync(false);
@@ -366,7 +381,6 @@ veda.Module(function (veda) { "use strict";
             "rdfs:label": [{type: "String", data: uri, lang: "NONE"}]
           };
         }
-        veda.cache.remove(self.id);
         self.trigger("afterLoad", self);
         return self;
       });

@@ -101,6 +101,7 @@ veda.Module(function (veda) { "use strict";
       console.log("client: websocket opened", event.target.url);
       this.sendMessage("ccus=" + veda.ticket);
       self.restore();
+      veda.trigger("ccus-online");
     }
 
     function messageHandler(event) {
@@ -112,6 +113,7 @@ veda.Module(function (veda) { "use strict";
       reconnectDelay = reconnectDelay < reconnectDelayLimit ? reconnectDelay * reconnectDelayFactor : reconnectDelayLimit ;
       console.log("client: websocket closed", event.target.url, "| re-connect in", reconnectDelay / 1000, "sec");
       setTimeout(initSocket, reconnectDelay);
+      veda.trigger("ccus-offline");
     }
 
   };
