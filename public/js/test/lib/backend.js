@@ -51,7 +51,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_rights",
+      url: "get_rights",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "uri": isObj ? arg.uri : uri
@@ -65,7 +65,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_rights_origin",
+      url: "get_rights_origin",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "uri": isObj ? arg.uri : uri
@@ -79,7 +79,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_membership",
+      url: "get_membership",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "uri": isObj ? arg.uri : uri
@@ -95,7 +95,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/authenticate",
+      url: "authenticate",
       data: {
         "login": isObj ? arg.login : login,
         "password": isObj ? arg.password : password
@@ -109,7 +109,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_ticket_trusted",
+      url: "get_ticket_trusted",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "login": isObj ? arg.login : login
@@ -123,7 +123,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/is_ticket_valid",
+      url: "is_ticket_valid",
       ticket: isObj ? arg.ticket : ticket,
       data: {}
     };
@@ -135,7 +135,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_operation_state",
+      url: "get_operation_state",
       data: {
         "module_id": isObj ? arg.module_id : module_id,
         "wait_op_id": isObj ? arg.wait_op_id : wait_op_id
@@ -161,7 +161,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/query",
+      url: "query",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "query": isObj ? arg.query : query,
@@ -181,7 +181,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "GET",
-      url: "api/get_individual",
+      url: "get_individual",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "uri": isObj ? arg.uri : uri,
@@ -196,7 +196,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "POST",
-      url: "api/get_individuals",
+      url: "get_individuals",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "uris": isObj ? arg.uris : uris
@@ -212,7 +212,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "api/remove_individual",
+      url: "remove_individual",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "uri": isObj ? arg.uri : uri,
@@ -230,7 +230,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "api/put_individual",
+      url: "put_individual",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "individual": isObj ? arg.individual : individual,
@@ -248,7 +248,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "api/add_to_individual",
+      url: "add_to_individual",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "individual": isObj ? arg.individual : individual,
@@ -266,7 +266,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "api/set_in_individual",
+      url: "set_in_individual",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "individual": isObj ? arg.individual : individual,
@@ -284,7 +284,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "api/remove_from_individual",
+      url: "remove_from_individual",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "individual": isObj ? arg.individual : individual,
@@ -302,7 +302,7 @@ function Backend () {
     var isObj = typeof arg === "object";
     var params = {
       method: "PUT",
-      url: "api/put_individuals",
+      url: "put_individuals",
       ticket: isObj ? arg.ticket : ticket,
       data: {
         "individuals": isObj ? arg.individuals : individuals,

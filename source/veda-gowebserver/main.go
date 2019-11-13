@@ -272,41 +272,41 @@ func main() {
     }
 
     switch string(ctx.Path()[:]) {
-      case "/api/get_individual":
+      case "/get_individual":
         getIndividual(ctx)
-      case "/api/reset_individual":
+      case "/reset_individual":
         getIndividual(ctx)
-      case "/api/get_individuals":
+      case "/get_individuals":
         getIndividuals(ctx)
-      case "/api/put_individual":
+      case "/put_individual":
         putIndividual(ctx)
-      case "/api/put_individuals":
+      case "/put_individuals":
         putIndividuals(ctx)
-      case "/api/remove_individual":
+      case "/remove_individual":
         removeIndividual(ctx)
-      case "/api/remove_from_individual":
+      case "/remove_from_individual":
         removeFromIndividual(ctx)
-      case "/api/set_in_individual":
+      case "/set_in_individual":
         setInIndividual(ctx)
-      case "/api/add_to_individual":
+      case "/add_to_individual":
         addToIndividual(ctx)
-      case "/api/authenticate":
+      case "/authenticate":
         authenticate(ctx)
-      case "/api/get_rights":
+      case "/get_rights":
         getRights(ctx)
-      case "/api/get_rights_origin":
+      case "/get_rights_origin":
         getAclData(ctx, GetRightsOrigin)
-      case "/api/get_membership":
+      case "/get_membership":
         getAclData(ctx, GetMembership)
-      case "/api/get_ticket_trusted":
+      case "/get_ticket_trusted":
         getTicketTrusted(ctx)
-      case "/api/is_ticket_valid":
+      case "/is_ticket_valid":
         isTicketValid(ctx)
-      case "/api/query":
+      case "/query":
         query(ctx)
-      case "/api/send_to_module":
+      case "/send_to_module":
         sendToModule(ctx)
-      case "/api/get_operation_state":
+      case "/get_operation_state":
         getOperationState(ctx)
       case "/ping":
         ctx.Response.Header.Set("Content-Type", "text/plain; charset=utf-8")

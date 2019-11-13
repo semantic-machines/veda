@@ -402,7 +402,7 @@ veda.Module(function (veda) { "use strict";
    */
   function getSync(ticket, uri) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "api/get_individual?uri=" + uri + "&ticket=" + ticket, false);
+    xhr.open("GET", "get_individual?uri=" + uri + "&ticket=" + ticket, false);
     xhr.send();
     if (xhr.status === 200) {
       return JSON.parse(xhr.responseText, veda.Util.decimalDatetimeReviver);
