@@ -85,8 +85,8 @@ pub fn insert_card<I: BoxableIo + 'static>(
 // INSERT CARD HOLDER
 const INSERT_VEHICLE_HOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
-(Note20,AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32,Note13,Note14,Note24,Note31)
-VALUES(@P1,1,@P2,0,0,0,0,@P3,@P4,@P5,@P6,@P7,'0',@P8,@P9,@P10,@P11,@P12,@P13,@P14,@P15,@P16,@P17)";
+(Note20,AccountID,TimeStamp,UserID,NodeID,Deleted,UserPriority,LastName,Note3,Note4,Note5,Note6,Note11,Note16,Note18,Note19,Note22,Note32,Note24,Note31,Note13,Note14)
+VALUES(@P1,@P2,@P3,@P4,@P5,@P6,@P7,@P8,@P9,@P10,@P11,@P12,@P13,@P14,@P15,@P16,@P17,@P18,@P19,@P20,@P21,@P22)";
 
 const INSERT_HUMAN_CARDHOLDER: &str = "\
 INSERT INTO [WIN-PAK PRO].[dbo].[CardHolder]
@@ -125,29 +125,39 @@ pub fn insert_card_holder<I: BoxableIo + 'static>(
                 .exec(
                     INSERT_VEHICLE_HOLDER,
                     &[
-                        &id,
-                        &now,
-                        &label.as_str(),
+                        &id,             // @P1
+                        &1,              // @P2
+                        &now,            // @P3
+                        &0,              // @P4
+                        &0,              // @P5
+                        &0,              // @P6
+                        &0,              // @P7
+                        &label.as_str(), // @P8
                         &chop::substring(
                             &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:taxId", &mut Individual::default()).unwrap_or_default(),
                             0,
                             63,
                         )
-                        .as_str(),
+                        .as_str(), // @P9
                         &chop::substring(
                             &module.get_literal_of_link(indv, "v-s:correspondentOrganization", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(),
                             0,
                             64,
                         )
-                        .as_str(),
-                        &"ТРАНСПОРТ",
+                        .as_str(), // @P10
+                        &"ТРАНСПОРТ", // @P11
                         &chop::substring(&module.get_literal_of_link(indv, "v-s:supplier", "v-s:shortLabel", &mut Individual::default()).unwrap_or_default(), 0, 63)
-                            .as_str(),
-                        &label.as_str(),
-                        &label.as_str(),
-                        &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(), 0, 63).as_str(),
-                        &note24.as_str(),
-                        &note31.as_str(),
+                            .as_str(), // @P12
+                        &"0",            // @P13
+                        &label.as_str(), // @P14
+                        &label.as_str(), // @P15
+                        &chop::substring(&indv.get_first_literal("rdfs:comment").unwrap_or_default().as_str(), 0, 63).as_str(), // @P16
+                        &note22.as_str(), // @P27
+                        &card_number.as_str(), // @P18
+                        &note24.as_str(), // @P19
+                        &note31.as_str(), // @P20
+                        &note13.as_str(), // @P21
+                        &note14.as_str(), // @P22
                     ],
                 )
                 .and_then(|(_result, trans)| Ok(trans)),

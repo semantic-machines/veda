@@ -74,6 +74,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
     let mut is_update_equipment = false;
 
     if btype == "mnd-s:Pass" {
+        is_update_equipment = true;
         get_equipment_list(&mut indv_b, &mut equipment_list);
         date_from = indv_b.get_first_datetime("v-s:dateFromFact");
         date_to = indv_b.get_first_datetime("v-s:dateToFact");
