@@ -115,22 +115,28 @@ veda.Module(function (veda) { "use strict";
       .catch(handleLoginError);
   });
 
+  var captchaRendered = false;
   function reCAPTCHA(onSuccess, onExpired, onError) {
-    var reCAPTCHA_key = new veda.IndividualModel("cfg:reCAPTCHA_client_key");
-    reCAPTCHA_key.load().then(function (reCAPTCHA_key) {
-      window.captchaCallback = function() {
-        grecaptcha.render("recaptcha", {
-          "sitekey": reCAPTCHA_key.get("rdf:value")[0].toString(),
-          "theme": "light",
-          "callback": onSuccess,
-          "expired-callback": onExpired,
-          "error-callback": onError || onExpired,
-        });
-      };
-      var captchaScript = document.createElement("script");
-      captchaScript.src = "https://www.google.com/recaptcha/api.js?onload=captchaCallback&render=explicit";
-      document.head.appendChild(captchaScript);
-    });
+    if (!captchaRendered) {
+      var reCAPTCHA_key = new veda.IndividualModel("cfg:reCAPTCHA_client_key");
+      reCAPTCHA_key.load().then(function (reCAPTCHA_key) {
+        window.captchaCallback = function() {
+          grecaptcha.render("recaptcha", {
+            "sitekey": reCAPTCHA_key.get("rdf:value")[0].toString(),
+            "theme": "light",
+            "callback": onSuccess,
+            "expired-callback": onExpired,
+            "error-callback": onError || onExpired,
+          });
+          captchaRendered = true;
+        };
+        var captchaScript = document.createElement("script");
+        captchaScript.src = "https://www.google.com/recaptcha/api.js?onload=captchaCallback&render=explicit";
+        document.head.appendChild(captchaScript);
+      });
+    } else {
+      grecaptcha.reset();
+    }
   }
 
   function handleLoginError(error) {
@@ -141,26 +147,16 @@ veda.Module(function (veda) { "use strict";
     var newPasswordError = $("#password-expired-error", loginForm).hide();
     var invalidSecretError = $("#invalid-secret-error", loginForm).hide();
     var invalidPasswordError = $("#invalid-password-error", loginForm).hide();
-    var tooManyFailsError = $("#too-many-fails-error", loginForm).hide();
+    var areYouRobot = $("#are-you-robot", loginForm).hide();
     var lockedError = $("#locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     switch (error.code) {
-      case 423: // Locked
+      case 429: // Locked
         lockedError.show();
         setTimeout(function () {
           lockedError.hide();
           enterLoginPassword.show();
         }, 30 * 60 * 1000);
-        break;
-      case 429: // Too many requests
-        tooManyFailsError.show();
-        reCAPTCHA(function () {
-          tooManyFailsError.hide();
-          enterLoginPassword.show();
-        }, function () {
-          tooManyFailsError.show();
-          enterLoginPassword.hide();
-        });
         break;
       case 465: // Empty password
       case 466: // New password is equal to old
@@ -179,11 +175,16 @@ veda.Module(function (veda) { "use strict";
         }
         secretRequestInfo.show();
         break;
-      case 472: // Not authorized
       case 473: // Authentication failed
       default:
-        enterLoginPassword.show();
         loginFailedError.show();
+        reCAPTCHA(function () {
+          loginFailedError.hide();
+          enterLoginPassword.show();
+        }, function () {
+          loginFailedError.show();
+          enterLoginPassword.hide();
+        });
         break;
     }
   }
