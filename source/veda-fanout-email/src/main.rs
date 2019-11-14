@@ -4,6 +4,7 @@ extern crate log;
 use lettre::smtp::authentication::{Credentials, Mechanism};
 use lettre::smtp::ConnectionReuseParameters;
 use lettre::{ClientSecurity, SmtpClient, SmtpTransport};
+use std::collections::{HashMap, HashSet};
 use v_api::ResultCode;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
@@ -11,7 +12,12 @@ use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
 use v_queue::consumer::*;
-use v_search::{FTQuery};
+use v_search::FTQuery;
+
+struct Recipient {
+    addr: String,
+    alias: Option<String>,
+}
 
 pub struct Context {
     onto: Onto,
@@ -114,16 +120,16 @@ fn prepare_deliverable(new_indv: &mut Individual, module: &mut Module, ctx: &mut
         return ResultCode::Ok;
     }
 
-    let hasMessageType = new_indv.get_first_literal("v-s:hasMessageType");
+    let has_message_type = new_indv.get_first_literal("v-s:hasMessageType");
 
     let mut from = new_indv.get_first_literal("v-wf:from").unwrap_or_default();
-    let to = new_indv.get_literals("v-wf:to");
+    let to = new_indv.get_literals("v-wf:to").unwrap_or_default();
     let subject = new_indv.get_first_literal("v-s:subject");
     let reply_to = new_indv.get_literals("v-wf:replyTo");
     let message_body = new_indv.get_first_literal("v-s:messageBody");
 
     let senderMailbox = new_indv.get_first_literal("v-s:senderMailbox").unwrap_or_default();
-    let recipientMailbox = new_indv.get_literals("v-s:recipientMailbox");
+    let recipient_mailbox = new_indv.get_literals("v-s:recipientMailbox");
     let attachments = new_indv.get_literals("v-s:attachment");
 
     if ctx.always_use_mail_sender {
@@ -138,25 +144,75 @@ fn prepare_deliverable(new_indv: &mut Individual, module: &mut Module, ctx: &mut
         from = ctx.default_mail_sender.to_string();
     }
 
-    if (!from.is_empty() || senderMailbox.is_empty() || !ctx.default_mail_sender.is_empty()) && (to.is_some() || recipientMailbox.is_some()) {
-        //let from_label;
-        let mut email_from;
+    if (!from.is_empty() || senderMailbox.is_empty() || !ctx.default_mail_sender.is_empty()) && (!to.is_empty() || recipient_mailbox.is_some()) {
+        let mut email_from = Recipient {
+            addr: ctx.default_mail_sender.to_string(),
+            alias: None,
+        };
 
         if ctx.always_use_mail_sender == true && !ctx.default_mail_sender.is_empty() && ctx.default_mail_sender.len() > 5 {
             info!("use default mail sender: {}", ctx.default_mail_sender);
-            email_from = ctx.default_mail_sender.to_string();
+            email_from = Recipient {
+                addr: ctx.default_mail_sender.to_string(),
+                alias: None,
+            };
         } else {
             info!("extract [from], {}", from);
-            email_from = "extract_email(sticket, null, from, from_label).getFirstString()".to_owned();
-
-            if (email_from.is_empty() || email_from.len() < 5) && !ctx.default_mail_sender.is_empty() {
-                let emails_from = extract_email(None, &ctx.default_mail_sender.to_string(), ctx, module);
+            if let Some(r) = extract_email(&None, &from, ctx, module).pop() {
+                email_from = r;
             }
 
-            if (email_from.is_empty() || email_from.len() < 5) && !senderMailbox.is_empty() {
-                email_from = senderMailbox;
+            if (email_from.addr.is_empty() || email_from.addr.len() < 5) && !ctx.default_mail_sender.is_empty() {
+                let mut emails = extract_email(&None, &from, ctx, module);
+                if !emails.is_empty() {
+                    email_from = emails.pop().unwrap();
+                }
+
+                if (email_from.addr.is_empty() || email_from.addr.len() < 5) && !ctx.default_mail_sender.is_empty() {
+                    let mut emails = extract_email(&None, &ctx.default_mail_sender.to_string(), ctx, module);
+                    if !emails.is_empty() {
+                        email_from = emails.pop().unwrap();
+                    }
+                }
+
+                if (email_from.addr.is_empty() || email_from.addr.len() < 5) && !senderMailbox.is_empty() {
+                    email_from = Recipient {
+                        addr: senderMailbox,
+                        alias: None,
+                    };
+                }
             }
         }
+
+        if email_from.alias.is_none() {
+            email_from.alias = Some("Veda System".to_owned());
+        }
+
+        let mut rr_email_to_hash = HashMap::new();
+        for elt in to {
+            for r in extract_email(&has_message_type, &elt, ctx, module) {
+                rr_email_to_hash.insert(r.addr.to_owned(), r);
+            }
+        }
+
+        for el in recipient_mailbox.unwrap_or_default() {
+            rr_email_to_hash.insert(
+                el.to_string(),
+                Recipient {
+                    addr: el,
+                    alias: None,
+                },
+            );
+        }
+
+        let mut rr_reply_to_hash = HashMap::new();
+        for elt in reply_to.unwrap_or_default() {
+            for r in extract_email(&has_message_type, &elt, ctx, module) {
+                rr_reply_to_hash.insert(r.addr.to_owned(), r);
+            }
+        }
+
+        if !rr_email_to_hash.is_empty() {}
     }
 
     /*
@@ -181,7 +237,7 @@ fn prepare_deliverable(new_indv: &mut Individual, module: &mut Module, ctx: &mut
     ResultCode::InternalServerError
 }
 
-fn get_email_from_appointment(has_message_type: Option<&str>, ap: &mut Individual, module: &mut Module) -> Vec<String> {
+fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Individual, module: &mut Module) -> Vec<Recipient> {
     let p_uri = ap.get_first_literal("v-s:employee").unwrap_or_default();
     if p_uri.is_empty() {
         return vec![];
@@ -198,6 +254,8 @@ fn get_email_from_appointment(has_message_type: Option<&str>, ap: &mut Individua
         }
     }
 
+    let label = ap.get_first_literal("rdfs:label");
+
     if let Some(has_message_type) = has_message_type {
         if let Some(preference_uri) = prs.get_first_literal("v-ui:hasPreferences") {
             if let Some(preference) = module.get_individual(&preference_uri, &mut Individual::default()) {
@@ -207,7 +265,7 @@ fn get_email_from_appointment(has_message_type: Option<&str>, ap: &mut Individua
                 if let Some(receive_message_types) = preference.get_literals("v-ui:rejectMessageType") {
                     for msg_type in receive_message_types {
                         info!("check preference {}", msg_type);
-                        if !has_message_type.is_empty() && msg_type == has_message_type {
+                        if !has_message_type.is_empty() && &msg_type == has_message_type {
                             need_send = false;
                             break;
                         }
@@ -236,24 +294,33 @@ fn get_email_from_appointment(has_message_type: Option<&str>, ap: &mut Individua
         if ac.is_exists_bool("v-s:deleted", true) {
             return vec![];
         }
-        return ac.get_literals("v-s:mailbox").unwrap_or_default();
+
+        let mut res = vec![];
+        for el in ac.get_literals("v-s:mailbox").unwrap_or_default() {
+            res.push(Recipient {
+                addr: el,
+                alias: label.to_owned(),
+            });
+        }
+
+        return res;
     } else {
         return vec![];
     }
 }
 
-fn extract_email(has_message_type: Option<&str>, ap_id: &str, ctx: &mut Context, module: &mut Module) -> (Vec<String>, String) {
+fn extract_email(has_message_type: &Option<String>, ap_id: &str, ctx: &mut Context, module: &mut Module) -> Vec<Recipient> {
     let mut res = Vec::new();
-    let mut label = String::default();
+    let mut label = None;
     if ap_id.is_empty() || ap_id.len() < 1 {
-        return (vec![], String::default());
+        return vec![];
     }
 
     if let Some(indv) = module.get_individual(ap_id, &mut Individual::default()) {
-        label = indv.get_first_literal("rdfs:label").unwrap_or_default();
+        label = indv.get_first_literal("rdfs:label");
 
         if indv.any_exists("rdf:type", &["v-s:Appointment"]) {
-            return (get_email_from_appointment(has_message_type, indv, module), label);
+            return get_emails_from_appointment(&has_message_type, indv, module);
         } else if indv.any_exists("rdf:type", &["v-s:Position"]) {
             let l_individuals = module
                 .fts
@@ -262,21 +329,25 @@ fn extract_email(has_message_type: Option<&str>, ap_id: &str, ctx: &mut Context,
             for id in l_individuals.result {
                 if let Some(individual) = module.get_individual(&id, &mut Individual::default()) {
                     if !individual.is_exists_bool("v-s:deleted", true) {
-                        res.append(&mut get_email_from_appointment(has_message_type, individual, module));
+                        res.append(&mut get_emails_from_appointment(has_message_type, individual, module));
                     }
                 }
             }
         } else if indv.any_exists("rdf:type", &["v-s:Person"]) {
             for ac_uri in indv.get_literals("v-s:hasAccount").unwrap_or_default() {
                 if ac_uri.is_empty() {
-                    return (vec![], String::default());
+                    return vec![];
                 }
 
                 if let Some(ac) = module.get_individual(&ac_uri, &mut Individual::default()) {
                     if !ac.is_exists_bool("v-s:delete", true) {
-                        if let Some(m) = ac.get_literals("v-s:mailbox") {
-                            return (m, label);
+                        for el in ac.get_literals("v-s:mailbox").unwrap_or_default() {
+                            res.push(Recipient {
+                                addr: el,
+                                alias: label.to_owned(),
+                            });
                         }
+                        return res;
                     }
                 }
             }
@@ -284,7 +355,7 @@ fn extract_email(has_message_type: Option<&str>, ap_id: &str, ctx: &mut Context,
             error!("extract_email: fail extract email from {}, this not appointment or position", ap_id);
         }
     }
-    return (res, label);
+    res
 }
 
 fn connect_to_smtp(ctx: &mut Context, module: &mut Module) -> bool {
