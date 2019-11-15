@@ -17,7 +17,7 @@ use v_onto::onto::Onto;
 use v_queue::consumer::*;
 use v_search::FTQuery;
 
-const ATTACHMENTS_DB_PATH: &str = "/files";
+const ATTACHMENTS_DB_PATH: &str = "data/files";
 
 pub struct Context {
     onto: Onto,
@@ -195,11 +195,32 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
         if !rr_email_to_hash.is_empty() {
             let mut email = Email::builder();
 
+            for id in attachments.unwrap_or_default().iter() {
+                if let Some(file_info) = module.get_individual(id, &mut Individual::default()) {
+                    let path = file_info.get_first_literal("v-s:filePath");
+                    let file_uri = file_info.get_first_literal("v-s:fileUri");
+                    let file_name = file_info.get_first_literal("v-s:fileName");
+
+                    if path.is_some() && file_uri.is_some() && file_name.is_some() {
+                        let mut path = path.unwrap();
+                        if !path.is_empty() {
+                            path += "/";
+                            let full_path = ATTACHMENTS_DB_PATH.to_owned() + path.as_ref() + &file_uri.unwrap();
+
+                            match email.clone().attachment_from_file(Path::new(&full_path), Some(&file_name.unwrap_or_default()), &IMAGE_JPEG) {
+                                Ok(att) => email = att,
+                                Err(e) => error!("fail add attachment {} into email {}, err={}", &full_path, prepared_indv.get_id(), e),
+                            }
+                        }
+                    }
+                }
+            }
+
             email = email.from(email_from);
 
             for el in rr_email_to_hash.values() {
                 if let Some(s) = &el.name {
-                    email = email.to(Mailbox::new_with_name(el.address.to_string(), s.to_string()));
+                    email = email.to(Mailbox::new_with_name(s.to_string(), el.address.to_string()));
                 } else {
                     email = email.to(Mailbox::new(el.address.to_string()));
                 }
@@ -213,29 +234,18 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
                 email = email.text(s);
             }
 
-            for id in attachments.unwrap_or_default().iter() {
-                if let Some(file_info) = module.get_individual(id, &mut Individual::default()) {
-                    let path = file_info.get_first_literal("v-s:filePath");
-                    let file_uri = file_info.get_first_literal("v-s:fileUri");
-                    let file_name = file_info.get_first_literal("v-s:fileName");
-
-                    if path.is_some() && file_uri.is_some() && file_name.is_some() {
-                        let mut path = path.unwrap();
-                        if !path.is_empty() {
-                            path += "/";
-                            let full_path = ATTACHMENTS_DB_PATH.to_owned() + "/" + path.as_ref() + &file_uri.unwrap();
-
-                            email = email.attachment_from_file(Path::new(&full_path), Some(&file_name.unwrap_or_default()), &IMAGE_JPEG).unwrap();
+            match email.build() {
+                Ok(m) => {
+                    if let Some(mailer) = &mut ctx.smtp_client {
+                        if let Err(e) = &mailer.send(m.into()) {
+                            error!("fail send email id={}, err={}", prepared_indv.get_id(), e);
+                        } else {
+                            info!("message {} success send", prepared_indv.get_id());
                         }
                     }
                 }
-            }
-
-            if let Ok(m) = email.build() {
-                if let Some(mailer) = &mut ctx.smtp_client {
-                    //                    if let Err(e) = &mailer.send(m.into()) {
-                    //                        error!("fail send email id={}, err={}", prepared_indv.get_id(), e);
-                    //                    }
+                Err(e) => {
+                    error!("fail create email id={}, err={}", prepared_indv.get_id(), e);
                 }
             }
         }
@@ -312,7 +322,7 @@ fn get_emails_from_appointment(has_message_type: &Option<String>, ap: &mut Indiv
 
         let mut res = vec![];
         for el in ac.get_literals("v-s:mailbox").unwrap_or_default() {
-            res.push(Mailbox::new_with_name(el, label.to_string()));
+            res.push(Mailbox::new_with_name(label.to_string(), el));
         }
 
         return res;
@@ -354,7 +364,7 @@ fn extract_email(has_message_type: &Option<String>, ap_id: &str, ctx: &mut Conte
                 if let Some(ac) = module.get_individual(&ac_uri, &mut Individual::default()) {
                     if !ac.is_exists_bool("v-s:delete", true) {
                         for el in ac.get_literals("v-s:mailbox").unwrap_or_default() {
-                            res.push(Mailbox::new_with_name(el, label.to_owned()));
+                            res.push(Mailbox::new_with_name(label.to_owned(), el));
                         }
                         return res;
                     }
