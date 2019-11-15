@@ -1313,15 +1313,15 @@ v-fs:AttributiveSearchInlineTemplate
         template.one("remove", function () {
           blankObject.off("propertyModified", hideResults);
         });
-        if ( searchBlankTemplate && searchBlankContainer.length ) {
-          searchBlankContainer.empty();
-          return blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
-        }
         // Populate blank with extra parameters from URL
         if (extra) {
           for (var property_uri in extra) {
             blankObject[property_uri] = extra[property_uri];
           }
+        }
+        if ( searchBlankTemplate && searchBlankContainer.length ) {
+          searchBlankContainer.empty();
+          return blankObject.present(searchBlankContainer, searchBlankTemplate, "search");
         }
       });
     }
