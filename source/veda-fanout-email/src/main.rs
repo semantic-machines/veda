@@ -99,38 +99,38 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
     }
 }
 
-fn prepare_deliverable(new_indv: &mut Individual, module: &mut Module, ctx: &mut Context) -> ResultCode {
-    let is_deleted = new_indv.is_exists("v-s:deleted");
+fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx: &mut Context) -> ResultCode {
+    let is_deleted = prepared_indv.is_exists("v-s:deleted");
 
     if is_deleted {
-        info!("new_indv {} is deleted, ignore it", new_indv.get_id());
+        info!("new_indv {} is deleted, ignore it", prepared_indv.get_id());
         return ResultCode::Ok;
     }
 
-    let is_draft_of = new_indv.get_first_literal("v-s:is_draft_of");
-    let actual_version = new_indv.get_first_literal("v-s:actual_version").unwrap_or_default();
+    let is_draft_of = prepared_indv.get_first_literal("v-s:is_draft_of");
+    let actual_version = prepared_indv.get_first_literal("v-s:actual_version").unwrap_or_default();
 
     if is_draft_of.is_some() {
-        info!("new_indv {} is draft, ignore it", new_indv.get_id());
+        info!("new_indv {} is draft, ignore it", prepared_indv.get_id());
         return ResultCode::Ok;
     }
 
-    if actual_version.is_empty() && actual_version != new_indv.get_id() {
-        info!("new{}.v-s:actual_version{} != {}, ignore", new_indv.get_id(), &actual_version, new_indv.get_id());
+    if !actual_version.is_empty() && actual_version != prepared_indv.get_id() {
+        info!("new {}.v-s:actual_version {} != {}, ignore", prepared_indv.get_id(), &actual_version, prepared_indv.get_id());
         return ResultCode::Ok;
     }
 
-    let has_message_type = new_indv.get_first_literal("v-s:hasMessageType");
+    let has_message_type = prepared_indv.get_first_literal("v-s:hasMessageType");
 
-    let mut from = new_indv.get_first_literal("v-wf:from").unwrap_or_default();
-    let to = new_indv.get_literals("v-wf:to").unwrap_or_default();
-    let subject = new_indv.get_first_literal("v-s:subject");
-    let reply_to = new_indv.get_literals("v-wf:replyTo");
-    let message_body = new_indv.get_first_literal("v-s:messageBody");
+    let mut from = prepared_indv.get_first_literal("v-wf:from").unwrap_or_default();
+    let to = prepared_indv.get_literals("v-wf:to").unwrap_or_default();
+    let subject = prepared_indv.get_first_literal("v-s:subject");
+    let reply_to = prepared_indv.get_literals("v-wf:replyTo");
+    let message_body = prepared_indv.get_first_literal("v-s:messageBody");
 
-    let sender_mailbox = new_indv.get_first_literal("v-s:senderMailbox").unwrap_or_default();
-    let recipient_mailbox = new_indv.get_literals("v-s:recipientMailbox");
-    let attachments = new_indv.get_literals("v-s:attachment");
+    let sender_mailbox = prepared_indv.get_first_literal("v-s:senderMailbox").unwrap_or_default();
+    let recipient_mailbox = prepared_indv.get_literals("v-s:recipientMailbox");
+    let attachments = prepared_indv.get_literals("v-s:attachment");
 
     if ctx.always_use_mail_sender {
         info!("use always_use_mail_sender");
@@ -144,34 +144,29 @@ fn prepare_deliverable(new_indv: &mut Individual, module: &mut Module, ctx: &mut
         from = ctx.default_mail_sender.to_string();
     }
 
-    if (!from.is_empty() || sender_mailbox.is_empty() || !ctx.default_mail_sender.is_empty()) && (!to.is_empty() || recipient_mailbox.is_some()) {
+    if (!from.is_empty() || !sender_mailbox.is_empty() || !ctx.default_mail_sender.is_empty()) && (!to.is_empty() || recipient_mailbox.is_some()) {
         let mut email_from = Mailbox::new(ctx.default_mail_sender.to_string());
 
         if ctx.always_use_mail_sender == true && !ctx.default_mail_sender.is_empty() && ctx.default_mail_sender.len() > 5 {
             info!("use default mail sender: {}", ctx.default_mail_sender);
             email_from = Mailbox::new(ctx.default_mail_sender.to_string());
         } else {
-            info!("extract [from], {}", from);
-            if let Some(r) = extract_email(&None, &from, ctx, module).pop() {
-                email_from = r;
+            if !from.is_empty() {
+                info!("extract [from], {}", from);
+                if let Some(r) = extract_email(&None, &from, ctx, module).pop() {
+                    email_from = r;
+                }
             }
 
             if (email_from.address.is_empty() || email_from.address.len() < 5) && !ctx.default_mail_sender.is_empty() {
-                let mut emails = extract_email(&None, &from, ctx, module);
+                let mut emails = extract_email(&None, &ctx.default_mail_sender.to_string(), ctx, module);
                 if !emails.is_empty() {
                     email_from = emails.pop().unwrap();
                 }
+            }
 
-                if (email_from.address.is_empty() || email_from.address.len() < 5) && !ctx.default_mail_sender.is_empty() {
-                    let mut emails = extract_email(&None, &ctx.default_mail_sender.to_string(), ctx, module);
-                    if !emails.is_empty() {
-                        email_from = emails.pop().unwrap();
-                    }
-                }
-
-                if (email_from.address.is_empty() || email_from.address.len() < 5) && !sender_mailbox.is_empty() {
-                    email_from = Mailbox::new(sender_mailbox);
-                }
+            if (email_from.address.is_empty() || email_from.address.len() < 5) && !sender_mailbox.is_empty() {
+                email_from = Mailbox::new(sender_mailbox);
             }
         }
 
@@ -238,11 +233,19 @@ fn prepare_deliverable(new_indv: &mut Individual, module: &mut Module, ctx: &mut
 
             if let Ok(m) = email.build() {
                 if let Some(mailer) = &mut ctx.smtp_client {
-                    if let Err(e) = &mailer.send(m.into()) {
-                        error!("fail send, err={}", e);
-                    }
+                    //                    if let Err(e) = &mailer.send(m.into()) {
+                    //                        error!("fail send email id={}, err={}", prepared_indv.get_id(), e);
+                    //                    }
                 }
             }
+        }
+    } else {
+        if from.is_empty() || from.len() < 5 {
+            error!("push_to_smtp {}: empty or invalid field from {}", prepared_indv.get_id(), from);
+        }
+
+        if to.is_empty() {
+            error!("push_to_smtp {}: empty or invalid field to", prepared_indv.get_id());
         }
     }
 
