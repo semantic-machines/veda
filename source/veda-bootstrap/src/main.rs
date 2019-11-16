@@ -18,7 +18,7 @@ use sysinfo::{ProcessExt, ProcessStatus, SystemExt};
 struct Module {
     name: String,
     exec_name: String,
-    args: String,
+    args: Vec<String>,
     order: u32,
     is_enabled: bool,
 }
@@ -53,7 +53,7 @@ fn main() {
     let mut sys = sysinfo::System::new();
     sys.refresh_processes();
     for (pid, proc) in sys.get_process_list() {
-        if proc.name().starts_with("veda") && proc.name() != "veda-bootstrap" && proc.name() != "veda" {
+        if proc.name().starts_with("veda-") && proc.name() != "veda-bootstrap" && proc.name() != "veda" {
             error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
             return;
         }
@@ -104,7 +104,7 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
                 if let Some(module) = modules.get(name) {
                     match start_module(module) {
                         Ok(child) => {
-                            info!("{} restart module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
+                            info!("{} restart module {}, {}, {:?}", child.id(), module.name, module.exec_name, module.args);
                             *process = child;
                         }
                         Err(e) => {
@@ -129,11 +129,12 @@ fn start_module(module: &Module) -> io::Result<Child> {
     let child = if module.args.is_empty() {
         Command::new(module.exec_name.to_string()).stdout(std_log_file.unwrap()).stderr(err_log_file.unwrap()).spawn()
     } else {
-        Command::new(module.exec_name.to_string()).stdout(std_log_file.unwrap()).stderr(err_log_file.unwrap()).arg(&module.args).spawn()
+        Command::new(module.exec_name.to_string()).stdout(std_log_file.unwrap()).stderr(err_log_file.unwrap()).args(&module.args).spawn()
     };
 
     match child {
         Ok(p) => {
+            info!("success started {} with args {:?}", module.exec_name.to_string(), &module.args);
             if let Ok(mut file) = File::create(".pids/__".to_owned() + &module.name + "-pid") {
                 if let Err(e) = file.write_all(format!("{}", p.id()).as_bytes()) {
                     error!("can not create pid file for {} {}, err={:?}", &module.name, p.id(), e);
@@ -154,7 +155,7 @@ fn start_modules(modules: Vec<&Module>) -> io::Result<Vec<(String, Child)>> {
         //info!("start {:?}", module);
         match start_module(module) {
             Ok(child) => {
-                info!("{} start module {}, {}, {}", child.id(), module.name, module.exec_name, module.args);
+                info!("{} start module {}, {}, {:?}", child.id(), module.name, module.exec_name, module.args);
                 started_processes.push((module.name.to_owned(), child));
             }
             Err(e) => {
@@ -222,7 +223,7 @@ fn get_modules_info(path: &str) -> io::Result<HashMap<String, Module>> {
 
             let mut module = Module {
                 name: line.to_string(),
-                args: String::new(),
+                args: Vec::new(),
                 order,
                 is_enabled: true,
                 exec_name: String::new(),
@@ -230,7 +231,10 @@ fn get_modules_info(path: &str) -> io::Result<HashMap<String, Module>> {
             order += 1;
 
             if let Some(m) = params.get("args") {
-                module.args = m.to_owned();
+                let elements: Vec<&str> = m.split(' ').collect();
+                for el in elements {
+                    module.args.push(el.to_string());
+                }
             }
 
             let module_name = if let Some(m) = params.get("module") {
