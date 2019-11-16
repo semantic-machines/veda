@@ -187,7 +187,10 @@ if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
 fi
 
 if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv1" ]; then
-    ./tools/build-component.sh veda-fanout-email fanout-email
+    cd source/veda-fanout-email
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-fanout-email $PWD
 fi
 
 if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] || [ $1 == "mv1" ]; then
