@@ -188,23 +188,6 @@ bool wait_starting_module(P_MODULE tid_idx, Tid tid)
     return res;
 }
 
-public string[ string ] getAsSimpleMapWithoutPrefix(Individual indv)
-{
-    string[ string ] res;
-
-    foreach (key, val; indv.resources)
-    {
-        string   ss      = val[ 0 ].asString();
-        string[] spl_key = key.split(':');
-        if (spl_key.length > 1)
-            key = spl_key[ 1 ];
-
-        res[ key ] = ss;
-    }
-
-    return res;
-}
-
 CRC32 hash;
 
 /// serialize key2slot struct
@@ -393,36 +376,6 @@ void formattedWrite(Writer, Char, A) (Writer w, in Char[] fmt, A[] args)
     throw new Exception("util.formattedWrite (), count args > 16");
 }
 
-private static string[ dchar ] translit_table;
-
-static this()
-{
-    translit_table =
-    [
-        '№':"N", ',':"_", '-':"_", ' ':"_", 'А':"A", 'Б':"B", 'В':"V", 'Г':"G", 'Д':"D", 'Е':"E", 'Ё':"E",
-        'Ж':"ZH", 'З':"Z", 'И':"I", 'Й':"I", 'К':"K", 'Л':"L", 'М':"M", 'Н':"N", 'О':"O", 'П':"P", 'Р':"R",
-        'С':"S", 'Т':"T", 'У':"U", 'Ф':"F", 'Х':"H", 'Ц':"C", 'Ч':"CH", 'Ш':"SH", 'Щ':"SH", 'Ъ':"'", 'Ы':"Y",
-        'Ь':"'", 'Э':"E", 'Ю':"U", 'Я':"YA", 'а':"a", 'б':"b", 'в':"v", 'г':"g", 'д':"d", 'е':"e", 'ё':"e",
-        'ж':"zh", 'з':"z", 'и':"i", 'й':"i", 'к':"k", 'л':"l", 'м':"m", 'н':"n", 'о':"o", 'п':"p", 'р':"r",
-        'с':"s", 'т':"t", 'у':"u", 'ф':"f", 'х':"h", 'ц':"c", 'ч':"ch", 'ш':"sh", 'щ':"sh", 'ъ':"_", 'ы':"y",
-        'ь':"_", 'э':"e", 'ю':"u", 'я':"ya"
-    ];
-}
-
-/**
- * Переводит русский текст в транслит. В результирующей строке каждая
- * русская буква будет заменена на соответствующую английскую. Не русские
- * символы останутся прежними.
- *
- * Parameters: text
- *            исходный текст с русскими символами
- * Returns: результат
- */
-public static string toTranslit(string text)
-{
-    return translate(text, translit_table);
-}
-
 public JSONValue[] get_array(JSONValue jv, string field_name)
 {
     if (field_name in jv.object)
@@ -488,64 +441,6 @@ public string get_day(tm *timeinfo)
         return text(timeinfo.tm_mday);
 }
 
-public int cmp_date_with_tm(string date, tm *timeinfo)
-{
-    string today_y = get_year(timeinfo);
-    string today_m = get_month(timeinfo);
-    string today_d = get_day(timeinfo);
-
-    for (int i = 0; i < 4; i++)
-    {
-        if (date[ i + 6 ] > today_y[ i ])
-        {
-            return 1;
-        }
-        else if (date[ i + 6 ] < today_y[ i ])
-        {
-            return -1;
-        }
-    }
-
-    for (int i = 0; i < 2; i++)
-    {
-        if (date[ i + 3 ] > today_m[ i ])
-        {
-            return 1;
-        }
-        else if (date[ i + 3 ] < today_m[ i ])
-        {
-            return -1;
-        }
-    }
-
-    for (int i = 0; i < 2; i++)
-    {
-        if (date[ i ] > today_d[ i ])
-        {
-            return 1;
-        }
-        else if (date[ i ] < today_d[ i ])
-        {
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-public bool is_today_in_interval(string from, string to)
-{
-    tm *timeinfo = get_local_time();
-
-    if (from !is null && from.length == 10 && cmp_date_with_tm(from, timeinfo) > 0)
-        return false;
-
-    if (to !is null && to.length == 10 && cmp_date_with_tm(to, timeinfo) < 0)
-        return false;
-
-    return true;
-}
-
 string to_lower_and_replace_delimeters(string in_text)
 {
     if (in_text is null || in_text.length == 0)
@@ -565,71 +460,3 @@ string to_lower_and_replace_delimeters(string in_text)
     return out_text.idup;
 }
 
-////////////
-
-string uxxxx2utf8(string so)
-{
-    string new_s;
-    bool   susecs = false;
-
-    for (int i = 0; i < so.length; i++)
-    {
-        char c = so[ i ];
-        if (c == '\\')
-        {
-            if (so[ i + 1 ] == 'u')
-            {
-                string qqq = so[ i + 2..i + 6 ];
-                try
-                {
-                    int jjj = qqq.to!uint (16);
-                    if (susecs == false)
-                        new_s ~= so[ 0..i ];
-                    i += 5;
-                    new_s ~= cast(dchar)jjj;
-                    susecs = true;
-                }
-                catch (Exception ex)
-                {
-                }
-            }
-            else if (so[ i + 1 ] == 'n')
-            {
-                if (susecs == false)
-                    new_s ~= so[ 0..i ];
-                i += 1;
-                new_s ~= '\n';
-                susecs = true;
-            }
-            else if (so[ i + 1 ] == 't')
-            {
-                if (susecs == false)
-                    new_s ~= so[ 0..i ];
-                i += 1;
-                new_s ~= '\t';
-                susecs = true;
-            }
-            else if (so[ i + 1 ] == '"')
-            {
-                if (susecs == false)
-                    new_s ~= so[ 0..i ];
-                i += 1;
-                new_s ~= '"';
-                susecs = true;
-            }
-            else
-            {
-                new_s ~= c;
-            }
-        }
-        else
-        {
-            if (susecs == true)
-                new_s ~= c;
-        }
-    }
-    if (susecs == true)
-        return new_s;
-    else
-        return so;
-}

@@ -295,7 +295,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems,
                                                        event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     //commit (OptAuthorize.YES, tnx);
@@ -320,7 +320,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.ADD_IN, &individual,
                                                        assigned_subsystems, event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -343,7 +343,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.SET_IN, &individual,
                                                        assigned_subsystems, event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -367,7 +367,7 @@ public string execute_json(string in_msg, Context ctx)
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual,
                                                        assigned_subsystems,
                                                        event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -390,7 +390,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE, &individual,
                                                        assigned_subsystems, event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -475,7 +475,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         if (items.length > 0)
         {
-            rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+            rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, op_id);
 
             log.trace("commit: rc=%s", rc);
 
@@ -497,7 +497,6 @@ static const byte EXISTS_TYPE = 1;
 private OpResult add_to_transaction(Authorization acl_client, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
                                     long assigned_subsystems,
                                     string event_id,
-                                    OptFreeze opt_freeze,
                                     OptAuthorize opt_request,
                                     OptTrace opt_trace)
 {
@@ -669,7 +668,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 if (tnx.is_autocommit)
                 {
                     res.result =
-                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                                  res.op_id);
                 }
                 else
@@ -688,7 +687,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 if (res.result == ResultCode.Ok)
                 {
                     res.result =
-                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id,
                                                  res.op_id);
                 }
             }
@@ -722,7 +721,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                              res.op_id);
             }
             else
