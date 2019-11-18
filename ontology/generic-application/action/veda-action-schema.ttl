@@ -38,7 +38,6 @@ v-s:Action
 .
 # --- В связи с вводом класса возникает предикат v-s:hasAction. Он описан в классе v-s:Activity
 
-
 v-s:PS_hasAction_Action
   rdf:type v-ui:ObjectPropertySpecification ;
   v-ui:forClass v-s:Action ;
@@ -48,6 +47,30 @@ v-s:PS_hasAction_Action
   #v-ui:queryPrefix "('rdf:type'==='v-s:Action')" ;
   rdfs:label "Спецификация свойства v-s:hasAction для класса v-s:Action"@ru ;
   rdfs:label "v-s:hasAction property specification for v-s:Action classes"@en ;
+.
+v-s:PsDateToForAction
+  rdf:type v-ui:DatatypePropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forProperty v-s:dateTo ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 0 ;
+  v-ui:tooltip "Небязательно к заполнению, единичное значение."@ru ;
+  v-ui:tooltip "Non-Required, single value."@en ;
+  rdfs:label "Спецификация даты окончания для класса Action"@ru ;
+  rdfs:label "Preferences property specification for dateTo in Action class"@en ;
+.
+
+v-s:PsResponsibleForAction
+  rdf:type v-ui:ObjectPropertySpecification ;
+  v-ui:forClass v-s:Action ;
+  v-ui:forProperty v-s:responsible ;
+  v-ui:maxCardinality 1 ;
+  v-ui:minCardinality 1 ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment')"^^xsd:string ;
+  v-ui:tooltip "Необязательно к заполнению, единичное значение. Ссылка на объект класса Назначение."@ru ;
+  v-ui:tooltip "Non-required, simple value. Link to instance of Appointment class"@en ;
+  rdfs:label "Спецификация свойства responsible для класса Action"@ru ;
+  rdfs:label "Responsible property specification for Action class"@en ;
 .
 
 # ------------------------------------------------------------ Запланированное событие --
