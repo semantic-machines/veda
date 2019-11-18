@@ -2044,7 +2044,6 @@
       $(".clear", control).on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
         individual.clearValue(rel_uri);
-        $(".fulltext", control).val("");
       });
       this.on("view edit search", function (e) {
         e.stopPropagation();
