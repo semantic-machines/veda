@@ -135,7 +135,6 @@ v-s:Request
   rdfs:subClassOf v-s:Document;
   rdfs:label "Запрос"@ru ;
   rdfs:label "Request"@en ;
-  v-ui:hasTemplate v-s:Request_Template ;
 .
 
 #-----Регистрационный номер
