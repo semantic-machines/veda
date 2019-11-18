@@ -148,11 +148,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
             storage = new TarantoolDriver(log, "individuals", 512);
             db_name = individuals_db_path;
         }
-        else if (_storage_id == P_MODULE.ticket_manager)
-        {
-            storage = new TarantoolDriver(log, "tickets", 513);
-            db_name = tickets_db_path;
-        }
     }
     else
     {
@@ -160,11 +155,6 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
         {
             storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
             db_name = individuals_db_path;
-        }
-        else if (_storage_id == P_MODULE.ticket_manager)
-        {
-            storage = new LmdbDriver(tickets_db_path, DBMode.RW, "ticket_manager", log);
-            db_name = tickets_db_path;
         }
     }
 

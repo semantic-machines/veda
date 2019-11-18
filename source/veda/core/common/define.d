@@ -202,8 +202,6 @@ public enum COMPONENT : ubyte
 
     n_channel                  = 38,
 
-    input_queue                = 41,
-
     user_modules_tool          = 64
 }
 
@@ -226,11 +224,9 @@ public enum MODULE : ubyte
     scripts_main      = COMPONENT.scripts_main,
     scripts_lp        = COMPONENT.scripts_lp,
     scripts_lp1       = COMPONENT.scripts_lp1,
-    fanout_email      = COMPONENT.fanout_email,
     user_modules_tool = COMPONENT.user_modules_tool,
     fanout_sql_np     = COMPONENT.fanout_sql_np,
     fanout_sql_lp     = COMPONENT.fanout_sql_lp,
-    input_queue       = COMPONENT.input_queue
 }
 
 /// Команды используемые процессами
