@@ -346,6 +346,7 @@ veda.Module(function Backend(veda) { "use strict";
       if (backendError.code === 999) {
         return veda.Backend.query(ticket, queryStr, sort, databases, reopen, top, limit, from);
       } else if (backendError.code === 0 || backendError.code === 503 || backendError.code === 4000 ) {
+        params.ticket = undefined;
         return localDB.then(function (db) {
           return db.get(JSON.stringify(params));
         });
@@ -353,7 +354,8 @@ veda.Module(function Backend(veda) { "use strict";
         throw backendError;
       }
     }).then(function (result) {
-      if (result) {
+      if (result && result.result.length) {
+        params.ticket = undefined;
         localDB.then(function (db) {
           db.put(JSON.stringify(params), result);
         });
@@ -644,6 +646,9 @@ veda.Module(function Backend(veda) { "use strict";
 
   // Offline PUT queue
   function enqueueCall(params) {
+    if (typeof params === "object") {
+      params.ticket = undefined;
+    }
     return localDB.then(function (db) {
       return db.get("offline-queue").then(function(queue) {
         queue = queue || [];
