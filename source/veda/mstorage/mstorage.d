@@ -14,7 +14,7 @@ private
            veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
-    import veda.storage.common, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
+    import veda.storage.common, veda.authorization.authorization, veda.authorization.az_lib;
     import veda.onto.individual;
 }
 
@@ -93,26 +93,7 @@ void main(char[][] args)
 
 public Authorization get_acl_client(Logger log)
 {
-    Authorization acl_client;
-
-    try
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        string acl_service = properties.as!(string)("acl_service_url");
-        if (acl_service !is null)
-            acl_client = new ClientAuthorization(acl_service, log);
-        else
-        {
-            acl_client = new AuthorizationUseLib(log);
-        }
-    }
-    catch (Throwable ex)
-    {
-        log.trace("ERR! unable read ./veda.properties");
-    }
-
-    return acl_client;
+    return new AuthorizationUseLib(log);
 }
 
 void init(string node_id)

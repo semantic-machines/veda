@@ -8,8 +8,7 @@ import kaleidic.nanomsg.nano, commando;
 import core.thread, core.atomic;
 import veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.core.common.type, veda.core.impl.app_context_creator;
 import veda.common.logger, veda.util.properd, veda.core.common.context, veda.core.impl.thread_context, veda.common.type, veda.core.common.define;
-import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_client,
-       veda.authorization.az_lib;
+import veda.search.common.isearch, veda.search.xapian.xapian_search, veda.authorization.authorization, veda.authorization.az_lib;
 
 static this()
 {
@@ -162,26 +161,7 @@ private string to_json_str(SearchResult res)
 
 private Authorization get_acl_client(Logger log)
 {
-    Authorization acl_client;
-
-    try
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        string acl_service = properties.as!(string)("acl_service_url");
-        if (acl_service !is null)
-            acl_client = new ClientAuthorization(acl_service, log);
-        else
-        {
-            acl_client = new AuthorizationUseLib(log);
-        }
-    }
-    catch (Throwable ex)
-    {
-        log.trace("ERR! unable read ./veda.properties");
-    }
-
-    return acl_client;
+    return new AuthorizationUseLib(log);
 }
 
 
