@@ -32,6 +32,8 @@ interface Context
 
     @property
     public Ticket sys_ticket(bool is_new = false);
+    
+    public Ticket *get_systicket_from_storage();
 
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
@@ -51,7 +53,7 @@ interface Context
     public void set_az(Authorization in_az);
 
     public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
-                           OptFreeze opt_freeze, OptAuthorize opt_request);
+                           OptAuthorize opt_request);
 
     public Individual[] get_individuals_via_query(string user_uri, string query_str, OptAuthorize op_auth, int top = 10, int limit = 10000);
 
@@ -94,16 +96,6 @@ interface Context
     public Individual               get_individual(Uri uri);
 
     // ////////////////////////////////////////////// TOOLS ////////////////////////////////////////////
-
-    /**
-       Остановить выполнение операций записи, новые команды на запись не принимаются
-     */
-    public void freeze();
-
-    /**
-       Возобновить прием операций записи на выполнение
-     */
-    public void unfreeze();
 
     public string get_config_uri();
     public Individual get_configuration();

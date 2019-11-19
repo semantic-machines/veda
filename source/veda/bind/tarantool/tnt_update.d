@@ -1,7 +1,7 @@
 module veda.bind.tarantool.tnt_update;
 
-import veda.bind.tarantool.tnt_stream;
 import core.stdc.config;
+import veda.bind.tarantool.tnt_stream;
 
 extern (C) :
 
@@ -202,12 +202,12 @@ ssize_t tnt_update_splice(
 /**
  * \brief shortcut for tnt_object() with type == TNT_SBO_SPARSE
  */
-tnt_stream *tnt_update_container(tnt_stream *ops);
+tnt_stream * tnt_update_container(tnt_stream *ops);
 
 /**
  * \brief shortcut for tnt_object_container_close()
  */
-tnt_stream *tnt_update_container(tnt_stream *ops);
+tnt_stream * tnt_update_container(tnt_stream *ops);
 
 int tnt_update_container_close(tnt_stream *ops);
 

@@ -1,8 +1,8 @@
 module veda.bind.tarantool.tnt_object;
 
-import veda.bind.tarantool.tnt_stream;
 import core.stdc.config;
 import core.stdc.stdarg;
+import veda.bind.tarantool.tnt_stream;
 
 extern (C) :
 
@@ -45,11 +45,10 @@ alias c_long ssize_t;
 /**
  * \brief for internal use
  */
-struct tnt_sbo_stack
-{
-    size_t offset;
-    uint   size;
-    byte   type;
+struct tnt_sbo_stack {
+	size_t offset;
+	uint size;
+	byte type;
 }
 
 /**
@@ -61,29 +60,27 @@ struct tnt_sbo_stack
  *                    everything is moved to n bytes, when called
  *                    "tnt_object_container_close"
  */
-enum tnt_sbo_type
-{
-    TNT_SBO_SIMPLE = 0,
-    TNT_SBO_SPARSE = 1,
-    TNT_SBO_PACKED = 2
+enum tnt_sbo_type {
+	TNT_SBO_SIMPLE = 0,
+	TNT_SBO_SPARSE = 1,
+	TNT_SBO_PACKED = 2
 }
 
-struct tnt_sbuf_object
-{
-    tnt_sbo_stack *stack;
-    ubyte         stack_size;
-    ubyte         stack_alloc;
-    tnt_sbo_type  type;
+struct tnt_sbuf_object {
+	tnt_sbo_stack *stack;
+	ubyte stack_size;
+	ubyte stack_alloc;
+	tnt_sbo_type type;
 }
 
 extern (D) auto TNT_OBJ_CAST(T) (auto ref T SB)
 {
-    return cast(tnt_sbuf_object *)SB.subdata;
+	return cast(tnt_sbuf_object *) SB.subdata;
 }
 
 extern (D) auto TNT_SOBJ_CAST(T) (auto ref T S)
 {
-    return TNT_OBJ_CAST(TNT_SBUF_CAST(S));
+	return TNT_OBJ_CAST(TNT_SBUF_CAST(S));
 }
 
 /**
@@ -98,7 +95,6 @@ extern (D) auto TNT_SOBJ_CAST(T) (auto ref T S)
  * \retval  -1 (something was written before
  * \retval   0 success
  */
-
 
 int tnt_object_type(tnt_stream *s, tnt_sbo_type type);
 
@@ -115,7 +111,7 @@ int tnt_object_type(tnt_stream *s, tnt_sbo_type type);
  * \retval NULL error
  */
 
-tnt_stream *tnt_object(tnt_stream *s);
+tnt_stream * tnt_object(tnt_stream *s);
 
 /**
  * \brief Add nil to a stream object
@@ -183,7 +179,7 @@ ssize_t tnt_object_container_close(tnt_stream *s);
 /**
  * \brief create immutable tnt_object from given buffer
  */
-tnt_stream *tnt_object_as(tnt_stream *s, char *buf, size_t buf_len);
+tnt_stream * tnt_object_as(tnt_stream *s, char *buf, size_t buf_len);
 
 /**
  * \brief verify that object is valid msgpack structure

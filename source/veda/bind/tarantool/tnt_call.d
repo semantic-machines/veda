@@ -54,7 +54,6 @@ alias c_long ssize_t;
  * \retval number of bytes written to stream
  */
 
-
 ssize_t tnt_call(
                  tnt_stream *s,
                  const(char) *proc,

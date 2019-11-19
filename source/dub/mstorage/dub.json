@@ -4,7 +4,6 @@
 	"dependencies": {
 		"xapian-d": "1.0.0",
                 "msgpack-d": "1.0.0-beta.6",
-                "urld": "2.0.1"
 	},
 	"versions": ["isMStorage"],
         "libs": [
@@ -23,7 +22,6 @@
 	    "../../veda/core/impl/thread_context.d",
 	    "../../veda/util/queue.d",
     	    "../../veda/util/module_info.d",
-    	    "../../veda/authorization/az_client.d",
     	    "../../veda/storage/common.d",
     	    "../../veda/storage/storage.d",
     	    "../../veda/authorization/authorization.d", 
