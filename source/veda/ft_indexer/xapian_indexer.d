@@ -1,4 +1,3 @@
-
 /**
  * XAPIAN ft indexer
  */
@@ -6,11 +5,11 @@
 module veda.ft_indexer.xapian_indexer;
 
 private import std.concurrency, std.outbuffer, std.datetime, std.conv, std.typecons, std.stdio, std.string, std.file, std.algorithm, std.datetime.stopwatch;
-private import veda.common.type;
 private import veda.bind.xapian_d_header;
+private import veda.common.type;
+private import veda.core.common.define, veda.core.common.type, veda.core.common.context, veda.core.impl.thread_context;
 private import veda.core.util.utils, veda.common.logger;
 private import veda.onto.onto, veda.onto.resource, veda.onto.lang, veda.onto.individual;
-private import veda.core.common.define, veda.core.common.type, veda.core.common.context, veda.core.impl.thread_context;
 private import veda.search.common.vel, veda.search.xapian.xapian_vql, veda.search.common.indexer_property;
 
 // ////// Logger ///////////////////////////////////////////
@@ -18,834 +17,736 @@ import veda.common.logger;
 Logger _log;
 Logger log()
 {
-    if (_log is null)
-        _log = new Logger("veda-core-" ~ process_name, "log", "SEARCH");
-    return _log;
+	if (_log is null)
+		_log = new Logger("veda-core-" ~ process_name, "log", "SEARCH");
+	return _log;
 }
 // ////// ////// ///////////////////////////////////////////
 
 protected byte err;
 
-public class IndexerContext
-{
-    Context         context;
+public class IndexerContext {
+	Context context;
 
-    IndexerProperty iproperty;
+	IndexerProperty iproperty;
 
-    string          use_db;
-    XapianWritableDatabase[ string ] index_dbs;
+	string use_db;
+	XapianWritableDatabase[ string ] index_dbs;
 
-    XapianTermGenerator indexer;
-    string              lang = "russian";
+	XapianTermGenerator indexer;
+	string lang = "russian";
 
-    int[ string ] key2slot;
-    File   *ff_key2slot_w = null;
+	int[ string ] key2slot;
+	File   *ff_key2slot_w = null;
 
-    long   counter                         = 0;
-    long   last_counter_after_timed_commit = 0;
-    auto   sw                              = std.datetime.stopwatch.StopWatch(AutoStart.no);
+	long counter                         = 0;
+	long last_counter_after_timed_commit = 0;
+	auto sw                              = std.datetime.stopwatch.StopWatch(AutoStart.no);
 
-    ulong  last_size_key2slot = 0;
+	ulong last_size_key2slot = 0;
 
-    string thread_name;
+	string thread_name;
 
-    Ticket *ticket;
+	Ticket *ticket;
 
-    void close()
-    {
-        foreach (db; index_dbs.values)
-            db.close(&err);
-    }
+	void close()
+	{
+		foreach (db; index_dbs.values)
+			db.close(&err);
+	}
 
-    bool init(Ticket *_ticket, string _use_db, Context _context)
-    {
-        context = _context;
-        ticket  = _ticket;
-        use_db  = _use_db;
+	bool init(Ticket *_ticket, string _use_db, Context _context)
+	{
+		context = _context;
+		ticket  = _ticket;
+		use_db  = _use_db;
 
-        if (use_db !is null)
-            log.trace("WARN! indexer use only %s db", use_db);
+		if (use_db !is null)
+			log.trace("WARN! indexer use only %s db", use_db);
 
-        string file_name_key2slot = xapian_info_path ~ "/key2slot";
+		string file_name_key2slot = xapian_info_path ~ "/key2slot";
 
-        if (exists(file_name_key2slot) == false)
-            ff_key2slot_w = new File(file_name_key2slot, "w");
-        else
-        {
-            ff_key2slot_w = new File(file_name_key2slot, "r+");
-            long       cur_size = getSize(file_name_key2slot);
-            ff_key2slot_w.seek(0);
-            auto       buf = ff_key2slot_w.rawRead(new char[ cur_size + 128 ]);
+		if (exists(file_name_key2slot) == false)
+			ff_key2slot_w = new File(file_name_key2slot, "w");
+		else {
+			ff_key2slot_w = new File(file_name_key2slot, "r+");
+			long cur_size = getSize(file_name_key2slot);
+			ff_key2slot_w.seek(0);
+			auto buf = ff_key2slot_w.rawRead(new char[ cur_size + 128 ]);
 
-            ResultCode rc;
-            key2slot           = deserialize_key2slot(cast(string)buf, rc);
-            last_size_key2slot = key2slot.length;
-        }
+			ResultCode rc;
+			key2slot           = deserialize_key2slot(cast(string) buf, rc);
+			last_size_key2slot = key2slot.length;
+		}
 
-        // attempt to create a path
-        try
-        {
-            mkdir("data");
-        }
-        catch (Exception ex)
-        {
-        }
+		// attempt to create a path
+		try {
+			mkdir("data");
+		} catch (Exception ex)   {}
 
-        bool need_all_reindex = false;
+		bool need_all_reindex = false;
 
-        byte count_created_db_folder = 0;
+		byte count_created_db_folder = 0;
 
-        foreach (db_name; get_xapian_db_names)
-        {
-            try
-            {
-                mkdir(get_xapiab_db_path(db_name));
-                count_created_db_folder++;
-            } catch (Exception ex) {}
-        }
+		foreach (db_name; get_xapian_db_names) {
+			try {
+				mkdir(get_xapiab_db_path(db_name));
+				count_created_db_folder++;
+			} catch (Exception ex) {}
+		}
 
-        // check in key2slot for properties
-        string[] props = context.get_onto().get_properies();
-        foreach (prop; props)
-        {
-            //log.trace ("prop=%s", prop);
-            get_slot_and_set_if_not_found(prop, key2slot);
-        }
+		// check in key2slot for properties
+		string[] props = context.get_onto().get_properies();
+		foreach (prop; props) {
+			//log.trace ("prop=%s", prop);
+			get_slot_and_set_if_not_found(prop, key2slot);
+		}
 
+		// /////////// XAPIAN INDEXER ///////////////////////////
+		XapianStem stemmer = new_Stem(cast(char *) this.lang, cast(uint) this.lang.length, &err);
 
-        // /////////// XAPIAN INDEXER ///////////////////////////
-        XapianStem stemmer = new_Stem(cast(char *)this.lang, cast(uint)this.lang.length, &err);
+		string dummy;
+		double d_dummy;
 
-        string     dummy;
-        double     d_dummy;
+		//bool       is_exist_db = exists(xapian_search_db_path);
 
-        //bool       is_exist_db = exists(xapian_search_db_path);
+		foreach (db_name; get_xapian_db_names) {
+			if (use_db is null || use_db == db_name) {
+				string path = get_xapiab_db_path(db_name);
+				this.index_dbs[ db_name ] = new_WritableDatabase(path.ptr, cast(uint) path.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
+				if (err != 0) {
+					log.trace("ERR! in new_WritableDatabase[%s], err=%s", path, get_xapian_err_msg(err));
+					return false;
+				} else
+					log.trace("INFO! create new_WritableDatabase[%s]", path);
+			}
+		}
 
-        foreach (db_name; get_xapian_db_names)
-        {
-            if (use_db is null || use_db == db_name)
-            {
-                string path = get_xapiab_db_path(db_name);
-                this.index_dbs[ db_name ] = new_WritableDatabase(path.ptr, cast(uint)path.length, DB_CREATE_OR_OPEN, xapian_db_type, &err);
-                if (err != 0)
-                {
-                    log.trace("ERR! in new_WritableDatabase[%s], err=%s", path, get_xapian_err_msg(err));
-                    return false;
-                }
-                else
-                    log.trace("INFO! create new_WritableDatabase[%s]", path);
-            }
-        }
+		this.indexer = new_TermGenerator(&err);
+		this.indexer.set_stemmer(stemmer, &err);
 
-        this.indexer = new_TermGenerator(&err);
-        this.indexer.set_stemmer(stemmer, &err);
+		this.commit_all_db();
 
-        this.commit_all_db();
+		if (count_created_db_folder != 0) {
+			log.trace("index is empty or not completed");
 
-        if (count_created_db_folder != 0)
-        {
-            log.trace("index is empty or not completed");
+			if (need_all_reindex == true) {
+				log.trace("it does not correspond to the index database, need reindexes");
+			}
+		}
+		return true;
+	}
 
-            if (need_all_reindex == true)
-            {
-                log.trace("it does not correspond to the index database, need reindexes");
-            }
-        }
-        return true;
-    }
+	void reload_index_schema()
+	{
+		if (iproperty !is null)
+			iproperty.load(true);
+	}
 
-    void reload_index_schema()
-    {
-        if (iproperty !is null)
-            iproperty.load(true);
-    }
+	void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context, bool is_trace = false)
+	{
+		bool is_deleted, prev_is_deleted, is_restored;
 
-    void index_msg(ref Individual indv, ref Individual prev_indv, INDV_OP cmd, long op_id, Context context, bool is_trace = false)
-    {
-        bool is_deleted, prev_is_deleted, is_restored;
+		if (cmd == INDV_OP.REMOVE)
+			return;
 
-        if (cmd == INDV_OP.REMOVE)
-            return;
+		//if (is_trace)
+		//if (cmd == INDV_OP.REMOVE)
+		//    is_deleted = true;
 
-        //if (is_trace)
-        //if (cmd == INDV_OP.REMOVE)
-        //    is_deleted = true;
+		if (is_deleted == false && indv.isExists("v-s:deleted", true) == true)
+			is_deleted = true;
 
-        if (is_deleted == false && indv.isExists("v-s:deleted", true) == true)
-            is_deleted = true;
+		if (prev_indv.isExists("v-s:deleted", true) == true)
+			prev_is_deleted = true;
 
-        if (prev_indv.isExists("v-s:deleted", true) == true)
-            prev_is_deleted = true;
+		if (prev_is_deleted == true && is_deleted == false && use_db is null) {
+			log.trace("index msg: restore individual: %s ", indv.uri);
+			is_restored = true;
+		}
 
-        if (prev_is_deleted == true && is_deleted == false && use_db is null)
-        {
-            log.trace("index msg: restore individual: %s ", indv.uri);
-            is_restored = true;
-        }
+		//if (prev_is_deleted == false && is_deleted == true)
+		//    log.trace("index msg: delete individual: %s", indv.uri);
 
-        //if (prev_is_deleted == false && is_deleted == true)
-        //    log.trace("index msg: delete individual: %s", indv.uri);
+		try {
+			if (iproperty is null)
+				iproperty = new IndexerProperty(context);
 
-        try
-        {
-            if (iproperty is null)
-                iproperty = new IndexerProperty(context);
+			iproperty.load(false);
 
-            iproperty.load(false);
+			if (indv.uri !is null && indv.resources.length > 0) {
+				string isDraftOf            = indv.getFirstLiteral("v-s:isDraftOf");
+				string actualVersion        = indv.getFirstLiteral("v-s:actualVersion");
+				string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
+				string previousVersion_new  = indv.getFirstLiteral("v-s:previousVersion");
 
-            if (indv.uri !is null && indv.resources.length > 0)
-            {
-                string isDraftOf            = indv.getFirstLiteral("v-s:isDraftOf");
-                string actualVersion        = indv.getFirstLiteral("v-s:actualVersion");
-                string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
-                string previousVersion_new  = indv.getFirstLiteral("v-s:previousVersion");
+				if (isDraftOf !is null) {
+					log.trace("new_indv [%s] is draft, ignore", indv.uri);
+					return;
+				}
 
-                if (isDraftOf !is null)
-                {
-                    log.trace("new_indv [%s] is draft, ignore", indv.uri);
-                    return;
-                }
-
-                if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri))
-                {
-                    if (actualVersion !is null && actualVersion != indv.uri)
-                        log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", indv.uri, actualVersion, indv.uri);
-                    return;
-                }
+				if (is_deleted == false && (actualVersion !is null && actualVersion != indv.uri)) {
+					if (actualVersion !is null && actualVersion != indv.uri)
+						log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", indv.uri, actualVersion, indv.uri);
+					return;
+				}
 
 //                    log.trace("index document:[%s]", indv.uri);
 
-                Resources types = indv.getResources("rdf:type");
+				Resources types = indv.getResources("rdf:type");
 
-                Resources prev_types  = prev_indv.getResources("rdf:type");
-                string    prev_dbname = "base";
-                foreach (_type; prev_types)
-                {
-                    prev_dbname = iproperty.get_dbname_of_class(_type.uri);
-                    if (prev_dbname != "base")
-                        break;
-                }
+				Resources prev_types  = prev_indv.getResources("rdf:type");
+				string prev_dbname = "base";
+				foreach (_type; prev_types) {
+					prev_dbname = iproperty.get_dbname_of_class(_type.uri);
+					if (prev_dbname != "base")
+						break;
+				}
 
-                string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
+				string uuid = "uid_" ~ to_lower_and_replace_delimeters(indv.uri);
 
-                // используем информацию о типе, для определения, в какой базе следует проводить индексацию
-                string dbname = "base";
-                foreach (_type; types)
-                {
-                    if (_type.uri == "vdi:ClassIndex")
-                        iproperty.add_schema_data(indv);
+				// используем информацию о типе, для определения, в какой базе следует проводить индексацию
+				string dbname = "base";
+				foreach (_type; types) {
+					if (_type.uri == "vdi:ClassIndex")
+						iproperty.add_schema_data(indv);
 
-                    dbname = iproperty.get_dbname_of_class(_type.uri);
-                    if (dbname != "base")
-                        break;
-                }
+					dbname = iproperty.get_dbname_of_class(_type.uri);
+					if (dbname != "base")
+						break;
+				}
 
-                if (prev_dbname != dbname && prev_indv != Individual.init && use_db is null)
-                {
-                    log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
-                    log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
+				if (prev_dbname != dbname && prev_indv != Individual.init && use_db is null) {
+					log.trace("[%s] prev_db[%s] != new_db[%s]", indv.uri, prev_dbname, dbname);
+					log.trace("[%s] remove from [%s]", indv.uri, prev_dbname);
 
-                    if ((prev_dbname in index_dbs) !is null)
-                        index_dbs[ prev_dbname ].delete_document(uuid.ptr, uuid.length, &err);
-                }
+					if ((prev_dbname in index_dbs) !is null)
+						index_dbs[ prev_dbname ].delete_document(uuid.ptr, uuid.length, &err);
+				}
 
-                if (is_deleted == false && dbname == "not-indexed")
-                    return;
+				if (is_deleted == false && dbname == "not-indexed")
+					return;
 
-                if (use_db !is null)
-                {
-                    if (is_deleted == true && use_db != "deleted")
-                        return;
+				if (use_db !is null) {
+					if (is_deleted == true && use_db != "deleted")
+						return;
 
-                    if (dbname != use_db && use_db != "deleted")
-                        return;
-                }
+					if (dbname != use_db && use_db != "deleted")
+						return;
+				}
 
-                sw.start();
+				sw.start();
 
-                OutBuffer      all_text = new OutBuffer();
-                XapianDocument doc      = new_Document(&err);
-                indexer.set_document(doc, &err);
+				OutBuffer all_text = new OutBuffer();
+				XapianDocument doc      = new_Document(&err);
+				indexer.set_document(doc, &err);
 
-                foreach (predicate, resources; indv.resources)
-                {
-                    string prefix;
-                    //int slot = get_slot_and_set_if_not_found(predicate, key2slot);
+				foreach (predicate, resources; indv.resources) {
+					string prefix;
+					//int slot = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                    //all_text.write('|');
+					//all_text.write('|');
 
-                    string type = "xsd__string";
+					string type = "xsd__string";
 
-                    string p_text_ru = "";
-                    string p_text_en = "";
+					string p_text_ru = "";
+					string p_text_en = "";
 
-                    void    doc_add_text_value(int l_slot, string data, byte *err)
-                    {
-                        if (data.length > 16)
-                            data = data[ 0..16 ];
-                        doc.add_value(l_slot, data.ptr, data.length, err);
-                    }
+					void    doc_add_text_value(int l_slot, string data, byte *err)
+					{
+						if (data.length > 16)
+							data = data[ 0..16 ];
+						doc.add_value(l_slot, data.ptr, data.length, err);
+					}
 
-                    void index_double(string predicate, Resource oo)
-                    {
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+					void index_double(string predicate, Resource oo)
+					{
+						int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                        prefix = "X" ~ text(slot_L1) ~ "X";
+						prefix = "X" ~ text(slot_L1) ~ "X";
 
-                        decimal dd     = oo.get!decimal();
-                        double  l_data = dd.toDouble();
-                        doc.add_value(slot_L1, l_data, &err);
-                        prefix = "X" ~ text(slot_L1) ~ "D";
-                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
+						decimal dd     = oo.get!decimal();
+						double l_data = dd.toDouble();
+						doc.add_value(slot_L1, l_data, &err);
+						prefix = "X" ~ text(slot_L1) ~ "D";
+						indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
 //                      log.trace("index [DataType.Double] :[%s], prefix=%s[%s]", text(l_data), prefix, predicate);
-                    }
+					}
 
-                    void index_boolean(string predicate, Resource oo)
-                    {
-                        int    slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+					void index_boolean(string predicate, Resource oo)
+					{
+						int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                        string data = "F";
+						string data = "F";
 
-                        prefix = "X" ~ text(slot_L1) ~ "D";
+						prefix = "X" ~ text(slot_L1) ~ "D";
 
-                        if (oo.get!bool() == true)
-                            data = "T";
+						if (oo.get!bool() == true)
+							data = "T";
 
-                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-                        doc.add_value(slot_L1, data.ptr, data.length, &err);
+						indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+						doc.add_value(slot_L1, data.ptr, data.length, &err);
 
 //                      log.trace("index [DataType.Boolean] :[%s], prefix=%s[%s]", data, prefix,  predicate);
-                    }
+					}
 
-                    void index_integer(string predicate, Resource oo)
-                    {
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+					void index_integer(string predicate, Resource oo)
+					{
+						int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                        prefix = "X" ~ text(slot_L1) ~ "X";
+						prefix = "X" ~ text(slot_L1) ~ "X";
 
-                        double l_data = cast(double)(oo.get!long ());
-                        doc.add_value(slot_L1, l_data, &err);
-                        prefix = "X" ~ text(slot_L1) ~ "D";
-                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
+						double l_data = cast(double) (oo.get!long ());
+						doc.add_value(slot_L1, l_data, &err);
+						prefix = "X" ~ text(slot_L1) ~ "D";
+						indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
 //                      log.trace("index [DataType.Integer] :[%s], prefix=%s[%s]", text(l_data), prefix, predicate);
-                    }
+					}
 
-                    void index_date(string predicate, Resource oo)
-                    {
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+					void index_date(string predicate, Resource oo)
+					{
+						int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
 
-                        prefix = "X" ~ text(slot_L1) ~ "X";
+						prefix = "X" ~ text(slot_L1) ~ "X";
 
-                        long   l_data   = oo.get!long ();
-                        long   std_time = unixTimeToStdTime(l_data);
-                        string data     = SysTime(std_time).toISOString();
-                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+						long l_data   = oo.get!long ();
+						long std_time = unixTimeToStdTime(l_data);
+						string data     = SysTime(std_time).toISOString();
+						indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 
-                        doc.add_value(slot_L1, l_data, &err);
-                        //   slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".Datetime", key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "D";
-                        indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
+						doc.add_value(slot_L1, l_data, &err);
+						//   slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".Datetime", key2slot);
+						prefix = "X" ~ text(slot_L1) ~ "D";
+						indexer.index_data(l_data, prefix.ptr, prefix.length, &err);
 
 //                      log.trace("index [DataType.Datetime] :[%s][%s], prefix=%s[%s]", data, text(l_data), prefix, predicate);
-                    }
+					}
 
-                    void index_uri(string predicate, Resource oo)
-                    {
-                        if (oo.literal !is null)
-                        {
-                            int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-                            prefix = "X" ~ text(slot_L1) ~ "X";
+					void index_uri(string predicate, Resource oo)
+					{
+						if (oo.literal !is null) {
+							int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+							prefix = "X" ~ text(slot_L1) ~ "X";
 
-                            string data = to_lower_and_replace_delimeters(oo.literal);
+							string data = to_lower_and_replace_delimeters(oo.literal);
 
 //                          log.trace("index [DataType.Uri] :[%s], prefix=%s[%s]", data, prefix, predicate);
-                            indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+							indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 
-                            //doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
+							//doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
 
-                            all_text.write(data);
-                            all_text.write('|');
-                        }
-                    }
+							all_text.write(data);
+							all_text.write('|');
+						}
+					}
 
-                    void index_string(string predicate, Resource oo)
-                    {
-                        string data;
+					void index_string(string predicate, Resource oo)
+					{
+						string data;
 
-                        data = oo.literal;
-                        if (data.length < 1)
-                            return;
+						data = oo.literal;
+						if (data.length < 1)
+							return;
 
-                        // if (resources.length > 1)
-                        {
-                            if (oo.lang == LANG.RU)
-                                p_text_ru ~= oo.literal;
-                            else if (oo.lang == LANG.EN)
-                                p_text_en ~= oo.literal;
-                        }
+						// if (resources.length > 1)
+						{
+							if (oo.lang == LANG.RU)
+								p_text_ru ~= oo.literal;
+							else if (oo.lang == LANG.EN)
+								p_text_en ~= oo.literal;
+						}
 
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "X";
+						int slot_L1 = get_slot_and_set_if_not_found(predicate, key2slot);
+						prefix = "X" ~ text(slot_L1) ~ "X";
 
 //                      log.trace("index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix, predicate);
 
-                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
-                        doc_add_text_value(slot_L1, oo.literal, &err);
+						indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+						doc_add_text_value(slot_L1, oo.literal, &err);
 
-                        all_text.write(data);
-                        all_text.write('|');
-                    }
+						all_text.write(data);
+						all_text.write('|');
+					}
 
-                    void index_string_for_first_wildcard(string predicate, Resource oo)
-                    {
-                        char[] data = oo.literal.dup;
+					void index_string_for_first_wildcard(string predicate, Resource oo)
+					{
+						char[] data = oo.literal.dup;
 
-                        if (data.length < 1)
-                            return;
+						if (data.length < 1)
+							return;
 
-                        reverse(data);
+						reverse(data);
 
-                        int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "#F", key2slot);
-                        prefix = "X" ~ text(slot_L1) ~ "X";
+						int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "#F", key2slot);
+						prefix = "X" ~ text(slot_L1) ~ "X";
 
 //                      log.trace("revers index_literal:[%s], lang=%s, prefix=%s[%s]", data, oo.lang, prefix, predicate);
 
-                        indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
+						indexer.index_text(data.ptr, data.length, prefix.ptr, prefix.length, &err);
 //                                        doc.add_value(slot_L1, oo.literal.ptr, oo.literal.length, &err);
 
-                        //all_text.write(data);
-                        //all_text.write('|');
-                    }
+						//all_text.write(data);
+						//all_text.write('|');
+					}
 
-                    void prepare_index(ref Individual idx, Resource rs, string ln, int level = 0)
-                    {
-                        if (rs.type == DataType.String)
-                        {
-                            Resources indexed_field_as_fwildcardZ =
-                                idx.getResources("vdi:indexed_field_as_fwildcard");
+					void prepare_index(ref Individual idx, Resource rs, string ln, int level = 0)
+					{
+						if (rs.type == DataType.String) {
+							Resources indexed_field_as_fwildcardZ =
+							    idx.getResources("vdi:indexed_field_as_fwildcard");
 
-                            if (indexed_field_as_fwildcardZ != Resources.init)
-                            {
-                                foreach (indexed_field_as_fwildcard; indexed_field_as_fwildcardZ)
-                                {
-                                    //writeln("indexed_field_as_fwildcard = ", indexed_field_as_fwildcard, ", rs=", rs.literal);
+							if (indexed_field_as_fwildcardZ != Resources.init) {
+								foreach (indexed_field_as_fwildcard; indexed_field_as_fwildcardZ) {
+									//writeln("indexed_field_as_fwildcard = ", indexed_field_as_fwildcard, ", rs=", rs.literal);
 
-                                    index_string_for_first_wildcard(predicate, rs);
-                                }
-                            }
-                        }
-                        else if (rs.type == DataType.Uri)
-                        {
-                            try
-                            {
-                                // 1. считать индивид по ссылке
-                                Individual inner_indv = context.get_individual(rs.uri);
+									index_string_for_first_wildcard(predicate, rs);
+								}
+							}
+						} else if (rs.type == DataType.Uri)   {
+							try {
+								// 1. считать индивид по ссылке
+								Individual inner_indv = context.get_individual(rs.uri);
 
-                                //string tab; for (int i = 0; i < level; i++)
-                                //    tab ~= "	";
+								//string tab; for (int i = 0; i < level; i++)
+								//    tab ~= "	";
 
-                                //writeln (tab);
-                                //writeln (tab, "@inner_indv = ", inner_indv);
-                                //writeln (tab, "@idx = ", idx);
-                                foreach (predicate, values; idx.resources)
-                                {
-                                    if (predicate == "vdi:inherited_index")
-                                    {
-                                        foreach (value; values)
-                                        {
-                                            // ссылка на наследуемый индекс, переходим вниз
-                                            Individual inhr_idx = iproperty.get_index(value.uri);
+								//writeln (tab);
+								//writeln (tab, "@inner_indv = ", inner_indv);
+								//writeln (tab, "@idx = ", idx);
+								foreach (predicate, values; idx.resources) {
+									if (predicate == "vdi:inherited_index") {
+										foreach (value; values) {
+											// ссылка на наследуемый индекс, переходим вниз
+											Individual inhr_idx = iproperty.get_index(value.uri);
 
 //                                          log.trace("[%s]ссылка на наследуемый индекс, переходим вниз по иерархии индекса [%s]", value, inhr_idx);
 
-                                            if (inhr_idx != Individual.init)
-                                            {
-                                                Resources forProperties =
-                                                    inhr_idx.getResources("vdi:forProperty");
-                                                if (forProperties != Resources.init)
-                                                {
-                                                    foreach (forProperty; forProperties)
-                                                    {
-                                                        Resources links =
-                                                            inner_indv.getResources(forProperty.uri);
+											if (inhr_idx != Individual.init) {
+												Resources forProperties =
+												    inhr_idx.getResources("vdi:forProperty");
+												if (forProperties != Resources.init) {
+													foreach (forProperty; forProperties) {
+														Resources links =
+														    inner_indv.getResources(forProperty.uri);
 
 //                                                        log.trace("forProperty=[%s], links=[%s]", forProperty, links);
 
-                                                        foreach (link; links)
-                                                        {
-                                                            prepare_index(inhr_idx, link,
-                                                                          ln ~ "." ~ forProperty.uri,
-                                                                          level + 1);
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    // в этом индексе не указанно на какое свойство будет индексация,
-                                                    // значит берем поля указанные vdi:indexed_field в текущем индивиде
-                                                    Resources indexed_fields =
-                                                        inhr_idx.getResources("vdi:indexed_field");
-                                                    if (indexed_fields != Resources.init)
-                                                    {
-                                                        foreach (indexed_field; indexed_fields)
-                                                        {
-                                                            Resources rrc =
-                                                                inner_indv.getResources(indexed_field.uri);
-                                                            foreach (rc; rrc)
-                                                            {
+														foreach (link; links) {
+															prepare_index(inhr_idx, link,
+															              ln ~ "." ~ forProperty.uri,
+															              level + 1);
+														}
+													}
+												} else   {
+													// в этом индексе не указанно на какое свойство будет индексация,
+													// значит берем поля указанные vdi:indexed_field в текущем индивиде
+													Resources indexed_fields =
+													    inhr_idx.getResources("vdi:indexed_field");
+													if (indexed_fields != Resources.init) {
+														foreach (indexed_field; indexed_fields) {
+															Resources rrc =
+															    inner_indv.getResources(indexed_field.uri);
+															foreach (rc; rrc) {
 //                                                              log.trace("index %s = %s ", ln ~ "." ~ indexed_field.uri, rc);
 
-                                                                if (rc.type == DataType.Uri)
-                                                                {
-                                                                    index_uri(ln ~ "." ~ indexed_field.uri, rc);
-                                                                }
-                                                                if (rc.type == DataType.String)
-                                                                {
-                                                                    index_string(ln ~ "." ~ indexed_field.uri, rc);
-                                                                }
-                                                                else if (rc.type == DataType.Integer)
-                                                                {
-                                                                    index_integer(ln ~ "." ~ indexed_field.uri, rc);
-                                                                }
-                                                                else if (rc.type == DataType.Datetime)
-                                                                {
-                                                                    index_date(ln ~ "." ~ indexed_field.uri, rc);
-                                                                }
-                                                                else if (rc.type == DataType.Boolean)
-                                                                {
-                                                                    index_boolean(ln ~ "." ~ indexed_field.uri, rc);
-                                                                }
-                                                                else if (rc.type == DataType.Decimal)
-                                                                {
-                                                                    index_double(ln ~ "." ~ indexed_field.uri, rc);
-                                                                }
-                                                            }
+																if (rc.type == DataType.Uri) {
+																	index_uri(ln ~ "." ~ indexed_field.uri, rc);
+																}
+																if (rc.type == DataType.String) {
+																	index_string(ln ~ "." ~ indexed_field.uri, rc);
+																} else if (rc.type == DataType.Integer)   {
+																	index_integer(ln ~ "." ~ indexed_field.uri, rc);
+																} else if (rc.type == DataType.Datetime)   {
+																	index_date(ln ~ "." ~ indexed_field.uri, rc);
+																} else if (rc.type == DataType.Boolean)   {
+																	index_boolean(ln ~ "." ~ indexed_field.uri, rc);
+																} else if (rc.type == DataType.Decimal)   {
+																	index_double(ln ~ "." ~ indexed_field.uri, rc);
+																}
+															}
 
-                                                            if (rrc.length > 0)
-                                                            {
-                                                                index_boolean(ln ~ "." ~ indexed_field.uri ~ ".isExists", Resource(true));
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception("prepare index:" ~ ex.msg);
-                            }
-                        }
-                    }
+															if (rrc.length > 0) {
+																index_boolean(ln ~ "." ~ indexed_field.uri ~ ".isExists", Resource(true));
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							} catch (Exception ex)   {
+								throw new Exception("prepare index:" ~ ex.msg);
+							}
+						}
+					}
 
-                    if (resources.length > 0)
-                    {
-                        index_boolean(predicate ~ ".isExists", Resource(true));
-                    }
+					if (resources.length > 0) {
+						index_boolean(predicate ~ ".isExists", Resource(true));
+					}
 
-                    foreach (oo; resources)
-                    {
-                        if (oo.literal !is null)
-                        {
-                            // если это относится к class_property__2__indiviual, следует обновить
+					foreach (oo; resources) {
+						if (oo.literal !is null) {
+							// если это относится к class_property__2__indiviual, следует обновить
 
-                            //if (predicate != "rdf:type")
-                            {
-                                // используем информацию о типе
-                                foreach (_type; types)
-                                {
-                                    // в онтологии найти для данного класса и для данного предиката
-                                    // информацию об индексировании
-                                    Individual idx = iproperty.get_index(_type.uri, predicate);
-                                    if (idx != Individual.init)
-                                    {
-                                        //writeln("@@@A class= ", _type.uri, ", predicate=", predicate);
+							//if (predicate != "rdf:type")
+							{
+								// используем информацию о типе
+								foreach (_type; types) {
+									// в онтологии найти для данного класса и для данного предиката
+									// информацию об индексировании
+									Individual idx = iproperty.get_index(_type.uri, predicate);
+									if (idx != Individual.init) {
+										//writeln("@@@A class= ", _type.uri, ", predicate=", predicate);
 
-                                        //writeln("@@@A 1 _type.uri ~ predicate= ", _type.uri ~ predicate);
-                                        //writeln("@@@A idx=", idx.uri);
-                                        prepare_index(idx, oo, predicate);
-                                    }
-                                    else
-                                    {
-                                        idx = iproperty.get_index_of_property(predicate);
+										//writeln("@@@A 1 _type.uri ~ predicate= ", _type.uri ~ predicate);
+										//writeln("@@@A idx=", idx.uri);
+										prepare_index(idx, oo, predicate);
+									} else   {
+										idx = iproperty.get_index_of_property(predicate);
 
-                                        if (idx != Individual.init)
-                                        {
-                                            //writeln("@@@B class= ", _type.uri, ", predicate=", predicate);
+										if (idx != Individual.init) {
+											//writeln("@@@B class= ", _type.uri, ", predicate=", predicate);
 
-                                            // для предиката
-                                            //writeln("@@@B 3");
-                                            //writeln("@@@B idx=", idx.uri);
+											// для предиката
+											//writeln("@@@B 3");
+											//writeln("@@@B idx=", idx.uri);
 
-                                            // индексируем по найденному idx
-                                            prepare_index(idx, oo, predicate);
-                                        }
-                                    }
-                                }
-                            }
-                        }
+											// индексируем по найденному idx
+											prepare_index(idx, oo, predicate);
+										}
+									}
+								}
+							}
+						}
 
-                        if (oo.type == DataType.Boolean)
-                            index_boolean(predicate, oo);
-                        else if (oo.type == DataType.Integer)
-                            index_integer(predicate, oo);
-                        else if (oo.type == DataType.Decimal)
-                            index_double(predicate, oo);
-                        else if (oo.type == DataType.String)
-                            index_string(predicate, oo);
-                        else if (oo.type == DataType.Uri)
-                            index_uri(predicate, oo);
-                        else if (oo.type == DataType.Datetime)
-                            index_date(predicate, oo);
-                    }
+						if (oo.type == DataType.Boolean)
+							index_boolean(predicate, oo);
+						else if (oo.type == DataType.Integer)
+							index_integer(predicate, oo);
+						else if (oo.type == DataType.Decimal)
+							index_double(predicate, oo);
+						else if (oo.type == DataType.String)
+							index_string(predicate, oo);
+						else if (oo.type == DataType.Uri)
+							index_uri(predicate, oo);
+						else if (oo.type == DataType.Datetime)
+							index_date(predicate, oo);
+					}
 
-                    if (resources.length > 1)
-                    {
-                        if (p_text_ru.length > 0)
-                        {
-                            int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_ru", key2slot);
-                            prefix = "X" ~ text(slot_L1) ~ "X";
+					if (resources.length > 1) {
+						if (p_text_ru.length > 0) {
+							int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_ru", key2slot);
+							prefix = "X" ~ text(slot_L1) ~ "X";
 
-                            indexer.index_text(p_text_ru.ptr, p_text_ru.length, prefix.ptr, prefix.length, &err);
+							indexer.index_text(p_text_ru.ptr, p_text_ru.length, prefix.ptr, prefix.length, &err);
 
 //                          log.trace("index as ru text:[%s]", p_text_ru);
 
-                            doc_add_text_value(slot_L1, p_text_ru, &err);
-                            //writeln ("slot:", slot_L1, ", value:", p_text_ru);
-                        }
+							doc_add_text_value(slot_L1, p_text_ru, &err);
+							//writeln ("slot:", slot_L1, ", value:", p_text_ru);
+						}
 
-                        if (p_text_en.length > 0)
-                        {
-                            int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_en", key2slot);
-                            prefix = "X" ~ text(slot_L1) ~ "X";
+						if (p_text_en.length > 0) {
+							int slot_L1 = get_slot_and_set_if_not_found(predicate ~ "_en", key2slot);
+							prefix = "X" ~ text(slot_L1) ~ "X";
 
-                            indexer.index_text(p_text_en.ptr, p_text_en.length, prefix.ptr, prefix.length, &err);
+							indexer.index_text(p_text_en.ptr, p_text_en.length, prefix.ptr, prefix.length, &err);
 
 //                          log.trace("index as en text:[%s]", p_text_en);
 
-                            doc_add_text_value(slot_L1, p_text_en, &err);
-                            //writeln ("slot:", slot_L1, ", value:", p_text_en);
-                        }
-                    }
+							doc_add_text_value(slot_L1, p_text_en, &err);
+							//writeln ("slot:", slot_L1, ", value:", p_text_en);
+						}
+					}
 
-                    int slot_L1;
+					int slot_L1;
 
-                    if (type == "xsd:string")
-                    {
-                        bool sp = true;
-                        foreach (oo; resources)
-                        {
-                            if (oo.type == DataType.String && (oo.lang == LANG.RU || oo.lang == LANG.NONE))
-                            {
-                                if (sp == true)
-                                {
-                                    slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_ru", key2slot);
-                                    prefix  = "X" ~ text(slot_L1) ~ "X";
+					if (type == "xsd:string") {
+						bool sp = true;
+						foreach (oo; resources) {
+							if (oo.type == DataType.String && (oo.lang == LANG.RU || oo.lang == LANG.NONE)) {
+								if (sp == true) {
+									slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_ru", key2slot);
+									prefix  = "X" ~ text(slot_L1) ~ "X";
 
-                                    sp = false;
-                                }
+									sp = false;
+								}
 
-                                doc_add_text_value(slot_L1, oo.literal, &err);
-                                indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
+								doc_add_text_value(slot_L1, oo.literal, &err);
+								indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
 
 //                              log.trace("index as (ru or none) xsd:string [%s]", oo.literal);
 
-                                all_text.write(oo.literal);
-                                all_text.write('|');
+								all_text.write(oo.literal);
+								all_text.write('|');
 
-                                //writeln ("slot:", slot_L1, ", value:", oo.literal);
-                            }
-                        }
+								//writeln ("slot:", slot_L1, ", value:", oo.literal);
+							}
+						}
 
-                        sp = true;
-                        foreach (oo; resources)
-                        {
-                            if (oo.type == DataType.String && oo.lang == LANG.EN)
-                            {
-                                if (sp == true)
-                                {
-                                    slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_en", key2slot);
-                                    prefix  = "X" ~ text(slot_L1) ~ "X";
+						sp = true;
+						foreach (oo; resources) {
+							if (oo.type == DataType.String && oo.lang == LANG.EN) {
+								if (sp == true) {
+									slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".text_en", key2slot);
+									prefix  = "X" ~ text(slot_L1) ~ "X";
 
-                                    sp = false;
-                                }
+									sp = false;
+								}
 
-                                doc_add_text_value(slot_L1, oo.literal, &err);
-                                indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
+								doc_add_text_value(slot_L1, oo.literal, &err);
+								indexer.index_text(oo.literal.ptr, oo.literal.length, prefix.ptr, prefix.length, &err);
 
 //                              log.trace("index as (en) xsd:string [%s]", oo.literal);
 
-                                all_text.write(oo.literal);
-                                all_text.write('|');
-                                //writeln ("slot:", slot_L1, ", value:", oo.literal);
-                            }
-                        }
-                    }
-                    else if (type == "xsd:decimal")
-                    {
-                        slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".decimal", key2slot);
-                        prefix  = "X" ~ text(slot_L1) ~ "X";
+								all_text.write(oo.literal);
+								all_text.write('|');
+								//writeln ("slot:", slot_L1, ", value:", oo.literal);
+							}
+						}
+					} else if (type == "xsd:decimal")   {
+						slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".decimal", key2slot);
+						prefix  = "X" ~ text(slot_L1) ~ "X";
 
-                        foreach (oo; resources)
-                        {
-                            if (oo.type == DataType.String)
-                            {
-                                double data = to!double (oo.literal);
-                                doc.add_value(slot_L1, data, &err);
-                                all_text.write(oo.literal);
-                                all_text.write('|');
+						foreach (oo; resources) {
+							if (oo.type == DataType.String) {
+								double data = to!double (oo.literal);
+								doc.add_value(slot_L1, data, &err);
+								all_text.write(oo.literal);
+								all_text.write('|');
 
-                                indexer.index_data(data, prefix.ptr, prefix.length, &err);
-                            }
-                        }
-                    }
-                    else if (type == "xsd:dateTime")
-                    {
-                        slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".dateTime", key2slot);
-                        prefix  = "X" ~ text(slot_L1) ~ "X";
+								indexer.index_data(data, prefix.ptr, prefix.length, &err);
+							}
+						}
+					} else if (type == "xsd:dateTime")   {
+						slot_L1 = get_slot_and_set_if_not_found(predicate ~ ".dateTime", key2slot);
+						prefix  = "X" ~ text(slot_L1) ~ "X";
 
-                        foreach (oo; resources)
-                        {
-                            if (oo.type == DataType.String)
-                            {
-                                long data = stringToTime(oo.literal);
-                                doc.add_value(slot_L1, data, &err);
-                                all_text.write(oo.literal);
-                                all_text.write('|');
+						foreach (oo; resources) {
+							if (oo.type == DataType.String) {
+								long data = stringToTime(oo.literal);
+								doc.add_value(slot_L1, data, &err);
+								all_text.write(oo.literal);
+								all_text.write('|');
 
-                                indexer.index_data(data, prefix.ptr, prefix.length, &err);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //writeln ("not type for:", pp.predicate);
-                    }
-                }
+								indexer.index_data(data, prefix.ptr, prefix.length, &err);
+							}
+						}
+					} else   {
+						//writeln ("not type for:", pp.predicate);
+					}
+				}
 
-                string data = all_text.toString;
-                //writeln("@index = ", data);
+				string data = all_text.toString;
+				//writeln("@index = ", data);
 
-                indexer.index_text(data.ptr, data.length, &err);
+				indexer.index_text(data.ptr, data.length, &err);
 //              log.trace("index all text [%s]", data);
 
-                doc.add_boolean_term(uuid.ptr, uuid.length, &err);
-                doc.set_data(indv.uri.ptr, indv.uri.length, &err);
+				doc.add_boolean_term(uuid.ptr, uuid.length, &err);
+				doc.set_data(indv.uri.ptr, indv.uri.length, &err);
 
-                if (("deleted" in index_dbs) !is null)
-                {
-                    if (is_restored)
-                        index_dbs[ "deleted" ].delete_document(uuid.ptr, uuid.length, &err);
+				if (("deleted" in index_dbs) !is null) {
+					if (is_restored)
+						index_dbs[ "deleted" ].delete_document(uuid.ptr, uuid.length, &err);
 
-                    if (is_deleted)
-                    {
-                        index_dbs[ "deleted" ].replace_document(uuid.ptr, uuid.length, doc, &err);
-                        doc = new_Document(&err);
-                        //log.trace("index to [deleted], uri=[%s]", indv.uri);
-                        indexer.set_document(doc, &err);
-                    }
-                }
+					if (is_deleted) {
+						index_dbs[ "deleted" ].replace_document(uuid.ptr, uuid.length, doc, &err);
+						doc = new_Document(&err);
+						//log.trace("index to [deleted], uri=[%s]", indv.uri);
+						indexer.set_document(doc, &err);
+					}
+				}
 
-                if ((dbname in index_dbs) !is null)
-                {
-                    //log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
-                    index_dbs[ dbname ].replace_document(uuid.ptr, uuid.length, doc, &err);
-                }
+				if ((dbname in index_dbs) !is null) {
+					//log.trace("index to [%s], uri=[%s]", dbname, indv.uri);
+					index_dbs[ dbname ].replace_document(uuid.ptr, uuid.length, doc, &err);
+				}
 
-                if (counter % 5000 == 0)
-                {
-                    if (key2slot.length > 0)
-                        store__key2slot();
+				if (counter % 5000 == 0) {
+					if (key2slot.length > 0)
+						store__key2slot();
 
-                    commit_all_db();
-                }
+					commit_all_db();
+				}
 
-                destroy_Document(doc);
-            }
-        } finally
-        {
-            sw.stop();
+				destroy_Document(doc);
+			}
+		} finally {
+			sw.stop();
 
 //          log.trace("FT: end");
-            //log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
-            counter = op_id;
-        }
-    }
+			//log.trace ("@FT:indexing=%d, uri=%s", counter, indv.uri);
+			counter = op_id;
+		}
+	}
 
-    long prev_commited_counter = 0;
-    void commit_all_db()
-    {
-        auto delta = counter - prev_commited_counter;
+	long prev_commited_counter = 0;
+	void commit_all_db()
+	{
+		auto delta = counter - prev_commited_counter;
 
-        prev_commited_counter = counter;
-        foreach (name, db; index_dbs)
-        {
-            db.commit(&err);
-            if (err != 0)
-                log.trace("EX! FT:commit:%s fail=%d", name, counter);
-        }
+		prev_commited_counter = counter;
+		foreach (name, db; index_dbs) {
+			db.commit(&err);
+			if (err != 0)
+				log.trace("EX! FT:commit:%s fail=%d", name, counter);
+		}
 
-        if (prev_commited_counter != 0)
-        {
-            long msecs = sw.peek.total !"msecs";
+		if (prev_commited_counter != 0) {
+			long msecs = sw.peek.total !"msecs";
 
-            if (msecs > 0)
-            {
-                log.trace("INFO: COMMIT, INDEXED %d, cps=%s", counter, delta / (msecs / 1000.0));
-                sw.reset();
-            }
-        }
-    }
+			if (msecs > 0) {
+				log.trace("INFO: COMMIT, INDEXED %d, cps=%s", counter, delta / (msecs / 1000.0));
+				sw.reset();
+			}
+		}
+	}
 
-    private void store__key2slot()
-    {
-        //writeln("#1 store__key2slot");
-        string hash;
-        string data = serialize_key2slot(key2slot, hash);
+	private void store__key2slot()
+	{
+		//writeln("#1 store__key2slot");
+		string hash;
+		string data = serialize_key2slot(key2slot, hash);
 
-        if (data.length == last_size_key2slot)
-            return;
+		if (data.length == last_size_key2slot)
+			return;
 
-        try
-        {
-            ff_key2slot_w.seek(0);
-            ff_key2slot_w.write('"');
-            ff_key2slot_w.write(hash);
-            ff_key2slot_w.write("\",");
-            ff_key2slot_w.write(data.length);
-            ff_key2slot_w.write('\n');
-            ff_key2slot_w.write(data);
-            ff_key2slot_w.flush();
+		try {
+			ff_key2slot_w.seek(0);
+			ff_key2slot_w.write('"');
+			ff_key2slot_w.write(hash);
+			ff_key2slot_w.write("\",");
+			ff_key2slot_w.write(data.length);
+			ff_key2slot_w.write('\n');
+			ff_key2slot_w.write(data);
+			ff_key2slot_w.flush();
 
-            last_size_key2slot = data.length;
-        }
-        catch (Throwable tr)
-        {
-            log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
-            return;
-        }
-    }
+			last_size_key2slot = data.length;
+		} catch (Throwable tr)   {
+			log.trace("fail store__key2slot [%s] [%s]", data, tr.msg);
+			return;
+		}
+	}
 
-    private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
-    {
+	private int get_slot_and_set_if_not_found(string field, ref int[ string ] key2slot)
+	{
 //	writeln ("get_slot:", field);
-        int slot = get_slot(key2slot, field);
+		int slot = get_slot(key2slot, field);
 
-        if (slot == -1)
-        {
-            // create new slot
-            slot              = cast(int)key2slot.length + 1;
-            key2slot[ field ] = slot;
-            store__key2slot();
-            log.trace("create new slot %s=%d", field, slot);
-        }
+		if (slot == -1) {
+			// create new slot
+			slot              = cast(int) key2slot.length + 1;
+			key2slot[ field ] = slot;
+			store__key2slot();
+			log.trace("create new slot %s=%d", field, slot);
+		}
 
-        return slot;
-    }
+		return slot;
+	}
 }
 
 string node_id;
