@@ -1,9 +1,9 @@
 module veda.bind.tarantool.tnt_request;
 
-import veda.bind.tarantool.tnt_iter;
-import veda.bind.tarantool.tnt_stream;
-import veda.bind.tarantool.tnt_proto;
 import core.stdc.config;
+import veda.bind.tarantool.tnt_iter;
+import veda.bind.tarantool.tnt_proto;
+import veda.bind.tarantool.tnt_stream;
 
 extern (C) :
 
@@ -43,109 +43,106 @@ alias c_long ssize_t;
  * \brief Request creation using connection schema
  */
 
-struct tnt_request
-{
-    /*!< Request sync id. Generated when encoded */
-    /*!< Request type */
-    struct _Anonymous_0
-    {
-        ulong sync; /*!< fields for header */
-        /*!< Space number */
-        /*!< Index number */
-        /*!< Offset for select */
-        /*!< Limit for select */
-        /*!< Iterator for select */
-        /* Search key, proc name or eval expression */
-        /*!< Pointer for
-         * key for select/update/delete,
-         * procedure  for call,
-         * expression for eval,
-         * operations for upsert
-         */
+struct tnt_request {
+	/*!< Request sync id. Generated when encoded */
+	/*!< Request type */
+	struct _Anonymous_0 {
+		ulong sync;	/*!< fields for header */
+		/*!< Space number */
+		/*!< Index number */
+		/*!< Offset for select */
+		/*!< Limit for select */
+		/*!< Iterator for select */
+		/* Search key, proc name or eval expression */
+		/*!< Pointer for
+		 * key for select/update/delete,
+		 * procedure  for call,
+		 * expression for eval,
+		 * operations for upsert
+		 */
 
-        enum tnt_request_t
-        {
-            /*!< Pointer for key object
-             * if allocated inside requests
-             * functions
-             */
-            TNT_OP_SELECT    = 1,
-            TNT_OP_INSERT    = 2,
-            TNT_OP_REPLACE   = 3,
-            TNT_OP_UPDATE    = 4,
-            TNT_OP_DELETE    = 5,
-            /*!< Pointer for
-             * tuple for insert/replace,
-             * ops for update
-             * default tuple for upsert,
-             * args for eval/call
-             */
-            TNT_OP_CALL_16   = 6,
-            TNT_OP_AUTH      = 7,
-            TNT_OP_EVAL      = 8,
-            TNT_OP_UPSERT    = 9,
-            TNT_OP_CALL      = 10,
-            TNT_OP_PING      = 64,
-            TNT_OP_JOIN      = 65,
-            TNT_OP_SUBSCRIBE = 66
-        }
+		enum tnt_request_t {
+			/*!< Pointer for key object
+			 * if allocated inside requests
+			 * functions
+			 */
+			TNT_OP_SELECT    = 1,
+			TNT_OP_INSERT    = 2,
+			TNT_OP_REPLACE   = 3,
+			TNT_OP_UPDATE    = 4,
+			TNT_OP_DELETE    = 5,
+			/*!< Pointer for
+			 * tuple for insert/replace,
+			 * ops for update
+			 * default tuple for upsert,
+			 * args for eval/call
+			 */
+			TNT_OP_CALL_16   = 6,
+			TNT_OP_AUTH      = 7,
+			TNT_OP_EVAL      = 8,
+			TNT_OP_UPSERT    = 9,
+			TNT_OP_CALL      = 10,
+			TNT_OP_PING      = 64,
+			TNT_OP_JOIN      = 65,
+			TNT_OP_SUBSCRIBE = 66
+		}
 
-        tnt_request_t type;
-    }
+		tnt_request_t type;
+	}
 
-    _Anonymous_0 hdr;
-    uint         space_id;
-    uint         index_id;
-    uint         offset;
-    uint         limit;
-    /*!< Pointer for tuple object
-     * if allocated inside requests
-     * functions
-     */
-    /*!< field offset for UPDATE */
-    /*!< allocation mark */
+	_Anonymous_0 hdr;
+	uint space_id;
+	uint index_id;
+	uint offset;
+	uint limit;
+	/*!< Pointer for tuple object
+	 * if allocated inside requests
+	 * functions
+	 */
+	/*!< field offset for UPDATE */
+	/*!< allocation mark */
 
-    /**
-     * \brief Allocate and initialize request object
-     *
-     * if request pointer is NULL, then new request will be created
-     *
-     * \param req    pointer to request
-     * \param stream pointer to stream for schema (may be NULL)
-     *
-     * \returns pointer to request object
-     * \retval  NULL memory allocation failure
-     */
+	/**
+	 * \brief Allocate and initialize request object
+	 *
+	 * if request pointer is NULL, then new request will be created
+	 *
+	 * \param req    pointer to request
+	 * \param stream pointer to stream for schema (may be NULL)
+	 *
+	 * \returns pointer to request object
+	 * \retval  NULL memory allocation failure
+	 */
 
-    enum tnt_iterator_t
-    {
-        TNT_ITER_EQ               = 0,
-        TNT_ITER_REQ              = 1,
-        TNT_ITER_ALL              = 2,
-        TNT_ITER_LT               = 3,
-        TNT_ITER_LE               = 4,
-        TNT_ITER_GE               = 5,
-        TNT_ITER_GT               = 6,
-        TNT_ITER_BITS_ALL_SET     = 7,
-        TNT_ITER_BITS_ANY_SET     = 8,
-        TNT_ITER_BITS_ALL_NOT_SET = 9,
-        TNT_ITER_OVERLAP          = 10,
-        TNT_ITER_NEIGHBOR         = 11
-    }
+	enum tnt_iterator_t {
+		TNT_ITER_EQ               = 0,
+		TNT_ITER_REQ              = 1,
+		TNT_ITER_ALL              = 2,
+		TNT_ITER_LT               = 3,
+		TNT_ITER_LE               = 4,
+		TNT_ITER_GE               = 5,
+		TNT_ITER_GT               = 6,
+		TNT_ITER_BITS_ALL_SET     = 7,
+		TNT_ITER_BITS_ANY_SET     = 8,
+		TNT_ITER_BITS_ALL_NOT_SET = 9,
+		TNT_ITER_OVERLAP          = 10,
+		TNT_ITER_NEIGHBOR         = 11
+	}
 
-    tnt_iterator_t iterator;
-    const(char)*key;
-    const(char)*key_end;
-    struct tnt_stream;
-    tnt_stream *key_object;
-    const(char)*tuple;
-    const(char)*tuple_end;
-    tnt_stream *tuple_object;
-    int        index_base;
-    int        alloc;
+	tnt_iterator_t iterator;
+	const(char) *key;
+	const(char) *key_end;
+	struct tnt_stream;
+
+	tnt_stream *key_object;
+	const(char) *tuple;
+	const(char) *tuple_end;
+	tnt_stream *tuple_object;
+	int index_base;
+	int alloc;
 }
 
-tnt_request *tnt_request_init(tnt_request *req);
+tnt_request * tnt_request_init(tnt_request *req);
 
 /**
  * \brief Free request object
@@ -343,66 +340,66 @@ int tnt_request_writeout(tnt_stream *s, tnt_request *req, ulong *sync);
  * \brief create select request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_select(tnt_request *req);
+tnt_request * tnt_request_select(tnt_request *req);
 
 /**
  * \brief create insert request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_insert(tnt_request *req);
+tnt_request * tnt_request_insert(tnt_request *req);
 
 /**
  * \brief create replace request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_replace(tnt_request *req);
+tnt_request * tnt_request_replace(tnt_request *req);
 
 /**
  * \brief create update request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_update(tnt_request *req);
+tnt_request * tnt_request_update(tnt_request *req);
 
 /**
  * \brief create delete request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_delete(tnt_request *req);
+tnt_request * tnt_request_delete(tnt_request *req);
 
 /**
  * \brief create call request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_call(tnt_request *req);
+tnt_request * tnt_request_call(tnt_request *req);
 
 /**
  * \brief create call request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_call_16(tnt_request *req);
+tnt_request * tnt_request_call_16(tnt_request *req);
 
 /**
  * \brief create auth request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_auth(tnt_request *req);
+tnt_request * tnt_request_auth(tnt_request *req);
 
 /**
  * \brief create eval request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_eval(tnt_request *req);
+tnt_request * tnt_request_eval(tnt_request *req);
 
 /**
  * \brief create upsert request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_upsert(tnt_request *req);
+tnt_request * tnt_request_upsert(tnt_request *req);
 
 /**
  * \brief create ping request object
  * \sa tnt_request_init
  */
-tnt_request *tnt_request_ping(tnt_request *req);
+tnt_request * tnt_request_ping(tnt_request *req);
 
 /* TNT_REQUEST_H_INCLUDED */

@@ -1,8 +1,8 @@
 module veda.bind.tarantool.tnt_io;
 
-import veda.bind.tarantool.tnt_opt;
-import veda.bind.tarantool.tnt_net;
 import core.stdc.config;
+import veda.bind.tarantool.tnt_net;
+import veda.bind.tarantool.tnt_opt;
 
 extern (C) :
 

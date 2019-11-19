@@ -45,21 +45,20 @@ alias c_long ssize_t;
  * Type for resize function
  */
 
-alias char *function(tnt_stream *, size_t) tnt_buf_resize_t;
+alias char * function(tnt_stream *, size_t) tnt_buf_resize_t;
 
 /*!
  * Stream buffer substructure
  */
-struct tnt_stream_buf
-{
-    char   *data;                                /*!< buffer data */
-    size_t size;                                 /*!< buffer used */
-    size_t alloc;                                /*!< current buffer size */
-    size_t rdoff;                                /*!< read offset */
-    char *function(tnt_stream *, size_t) resize; /*!< resize function */
-    void function(tnt_stream *) free;            /*!< custom free function */
-    void   *subdata;                             /*!< subclass */
-    int    as;                                   /*!< constructed from user's string */
+struct tnt_stream_buf {
+	char   *data;								/*!< buffer data */
+	size_t size;								/*!< buffer used */
+	size_t alloc;								/*!< current buffer size */
+	size_t rdoff;								/*!< read offset */
+	char * function(tnt_stream *, size_t) resize;	/*!< resize function */
+	void function(tnt_stream *) free;			/*!< custom free function */
+	void   *subdata;							/*!< subclass */
+	int as;										/*!< constructed from user's string */
 }
 
 /* buffer stream accessors */
@@ -69,7 +68,7 @@ struct tnt_stream_buf
  */
 extern (D) auto TNT_SBUF_CAST(T) (auto ref T S)
 {
-    return cast(tnt_stream_buf *)S.data;
+	return cast(tnt_stream_buf *) S.data;
 }
 
 /*!
@@ -77,7 +76,7 @@ extern (D) auto TNT_SBUF_CAST(T) (auto ref T S)
  */
 extern (D) auto TNT_SBUF_DATA(T) (auto ref T S)
 {
-    return TNT_SBUF_CAST(S).data;
+	return TNT_SBUF_CAST(S).data;
 }
 
 /*!
@@ -85,7 +84,7 @@ extern (D) auto TNT_SBUF_DATA(T) (auto ref T S)
  */
 extern (D) auto TNT_SBUF_SIZE(T) (auto ref T S)
 {
-    return TNT_SBUF_CAST(S).size;
+	return TNT_SBUF_CAST(S).size;
 }
 
 /**
@@ -99,8 +98,9 @@ extern (D) auto TNT_SBUF_SIZE(T) (auto ref T S)
  * \retval  NULL memory allocation failure
  */
 struct tnt_stream;
-tnt_stream *tnt_buf(tnt_stream *s);
 
-tnt_stream *tnt_buf_as(tnt_stream *s, char *buf, size_t buf_len);
+tnt_stream * tnt_buf(tnt_stream *s);
+
+tnt_stream * tnt_buf_as(tnt_stream *s, char *buf, size_t buf_len);
 
 /* TNT_BUF_H_INCLUDED */

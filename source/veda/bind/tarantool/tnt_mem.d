@@ -41,21 +41,20 @@ alias c_long ssize_t;
 
 extern (D) auto TNT_GCC_VERSION(T0, T1) (auto ref T0 major, auto ref T1 minor)
 {
-    return __GNUC__ > major || (__GNUC__ == major && __GNUC_MINOR__ >= minor);
+	return __GNUC__ > major || (__GNUC__ == major && __GNUC_MINOR__ >= minor);
 }
 
 /* clang */
 
 extern (D) auto tntlikely(T) (auto ref T x)
 {
-    return __builtin_expect(!!x, 1);
+	return __builtin_expect(!!x, 1);
 }
 
 extern (D) auto tntunlikely(T) (auto ref T x)
 {
-    return __builtin_expect(!!x, 0);
+	return __builtin_expect(!!x, 0);
 }
-
 
 /**
  * \brief basic allocation function type
@@ -66,27 +65,27 @@ extern (D) auto tntunlikely(T) (auto ref T x)
  * \retval pointer to newly alloced/realloced block
  * \retval NULL on error/free
  */
-alias void *function(void *ptr, size_t size) tnt_allocator_t;
+alias void * function(void *ptr, size_t size) tnt_allocator_t;
 
 /**
  * \brief initialize memory allocation function
  */
-void *tnt_mem_init(void *function() alloc);
+void * tnt_mem_init(void * function() alloc);
 
 /**
  * \brief Internal function
  */
-void *tnt_mem_alloc(size_t size);
+void * tnt_mem_alloc(size_t size);
 
 /**
  * \brief Internal function
  */
-void *tnt_mem_realloc(void *ptr, size_t size);
+void * tnt_mem_realloc(void *ptr, size_t size);
 
 /**
  * \brief Internal function
  */
-char *tnt_mem_dup(char *sz);
+char * tnt_mem_dup(char *sz);
 
 /**
  * \brief Internal function
