@@ -24,8 +24,6 @@ class PThreadContext : Context
 
     public string         name;
 
-    private               string[ string ] prefix_map;
-
     private Search        _vql;
     public Storage        storage;
     private Authorization az;
@@ -379,16 +377,6 @@ class PThreadContext : Context
         return name;
     }
 
-    ref string[ string ] get_prefix_map(){
-        return prefix_map;
-    }
-
-    void add_prefix_map(ref string[ string ] arg){
-        foreach (key, value; arg) {
-            prefix_map[ key ] = value;
-        }
-    }
-
     // *************************************************** external api *********************************** //
 
     // /////////////////////////////////////////////////////// TICKET //////////////////////////////////////////////
@@ -545,23 +533,6 @@ class PThreadContext : Context
     }
 
     //////////////////////////////////////////////// MODULES INTERACTION
-
-    public long get_operation_state(MODULE module_id, long wait_op_id){
-        long  res = -1;
-
-        MInfo info = get_info(module_id);
-
-        if (info.is_Ok) {
-            if (module_id == MODULE.fulltext_indexer || module_id == MODULE.scripts_main)
-                res = info.committed_op_id;
-            else
-                res = info.op_id;
-        }
-
-        log.trace("get_operation_state(%s) res=%s, wait_op_id=%d", text(module_id), info, wait_op_id);
-
-        return res;
-    }
 
     public ResultCode commit(Transaction *in_tnx, OptAuthorize opt_authorize = OptAuthorize.YES){
         ResultCode rc;

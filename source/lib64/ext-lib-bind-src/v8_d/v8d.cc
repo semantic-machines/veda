@@ -23,39 +23,35 @@ using namespace v8;
 
 namespace
 {
-void FatalErrorCallback_r(const char *location, const char *message)
-{
+void FatalErrorCallback_r(const char *location, const char *message){
     std::cerr << "Fatal error in V8: " << location << " " << message;
 }
 }
 
-// veda IO section 
+// veda IO section
 /// Stringify V8 value to JSON
 /// return empty string for empty value
-std::string json_str(v8::Isolate *isolate, v8::Handle<v8::Value> value)
-{
-    if (value.IsEmpty())
-    {
+std::string json_str(v8::Isolate *isolate, v8::Handle<v8::Value> value){
+    if (value.IsEmpty()) {
         return std::string();
     }
 
-    v8::HandleScope             scope(isolate);
+    v8::HandleScope scope(isolate);
 
-    v8::Local<v8::Object>       json = isolate->GetCurrentContext()->
-                                       Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
-    v8::Local<v8::Function>     stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
+    v8::Local<v8::Object> json = isolate->GetCurrentContext()->
+                                 Global()->Get(v8::String::NewFromUtf8(isolate, "JSON"))->ToObject();
+    v8::Local<v8::Function> stringify = json->Get(v8::String::NewFromUtf8(isolate, "stringify")).As<v8::Function>();
 
-    v8::Local<v8::Value>        result = stringify->Call(json, 1, &value);
+    v8::Local<v8::Value> result = stringify->Call(json, 1, &value);
     v8::String::Utf8Value const str(result);
 
     return std::string(*str, str.length());
 }
 
-struct _Buff
-{
-    char *data;
-    int  length;
-    int  allocated_size;
+struct _Buff {
+    char *	data;
+    int		length;
+    int		allocated_size;
 };
 
 _Buff *
@@ -84,10 +80,9 @@ public:
     ~WrappedContext ();
 
     Persistent<Context> context_;
-    Isolate             *isolate_;
+    Isolate *isolate_;
     Isolate *
-    GetIsolate()
-    {
+    GetIsolate(){
         return isolate_;
     }
 };
@@ -96,8 +91,7 @@ class WrappedScript
 {
 public:
 
-    WrappedScript ()
-    {
+    WrappedScript (){
     }
     ~WrappedScript ();
 
@@ -106,28 +100,24 @@ public:
 
 // Extracts a C string from a V8 Utf8Value.
 const char *
-ToCString(const v8::String::Utf8Value& value)
-{
+ToCString(const v8::String::Utf8Value& value){
     return *value ? *value : "<string conversion failed>";
 }
 
 void
-GetEnvStrVariable(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+GetEnvStrVariable(const v8::FunctionCallbackInfo<v8::Value>& args){
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 1)
-    {
+    if (args.Length() != 1) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
 
     v8::String::Utf8Value str(args[ 0 ]);
-    const char            *var_name = ToCString(str);
-    _Buff                 *res      = get_env_str_var(var_name, str.length());
+    const char *var_name	= ToCString(str);
+    _Buff *res				= get_env_str_var(var_name, str.length());
 
-    if (res != NULL)
-    {
+    if (res != NULL) {
         std::string data(res->data, res->length);
 
         Handle<Value> oo = String::NewFromUtf8(isolate, data.c_str());
@@ -136,25 +126,22 @@ GetEnvStrVariable(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
-GetEnvNumVariable(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+GetEnvNumVariable(const v8::FunctionCallbackInfo<v8::Value>& args){
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 1)
-    {
+    if (args.Length() != 1) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
 
     v8::String::Utf8Value str(args[ 0 ]);
-    const char            *var_name = ToCString(str);
-    uint32_t res      = get_env_num_var(var_name, str.length());
+    const char *var_name	= ToCString(str);
+    uint32_t res			= get_env_num_var(var_name, str.length());
 
     args.GetReturnValue().Set(res);
 }
 
-std::string prepare_str_list_element(std::string data, std::string::size_type b_p, std::string::size_type e_p)
-{
+std::string prepare_str_list_element(std::string data, std::string::size_type b_p, std::string::size_type e_p){
     while (data.at(b_p) == ' ')
         b_p++;
 
@@ -173,18 +160,16 @@ std::string prepare_str_list_element(std::string data, std::string::size_type b_
 }
 
 void
-Query(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+Query(const v8::FunctionCallbackInfo<v8::Value>& args){
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() < 2)
-    {
+    if (args.Length() < 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
 
     v8::String::Utf8Value _ticket(args[ 0 ]);
-    const char            *cticket = ToCString(_ticket);
+    const char *cticket = ToCString(_ticket);
 
     v8::String::Utf8Value _query(args[ 1 ]);
     if (_query.length() == 0)
@@ -192,64 +177,54 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     const char *cquery = ToCString(_query);
 
-    const char *csort      = NULL;
-    const char *cdatabases = NULL;
+    const char *csort		= NULL;
+    const char *cdatabases	= NULL;
 
-    int        sort_len      = 0;
-    int        databases_len = 0;
-    int        top           = 100000;
-    int        limit         = 100000;
+    int sort_len		= 0;
+    int databases_len	= 0;
+    int top				= 100000;
+    int limit			= 100000;
 
-    if (args.Length() > 2)
-    {
+    if (args.Length() > 2) {
         v8::String::Utf8Value _sort(args[ 2 ]);
-        if (_sort.length() > 1)
-        {
-            csort    = ToCString(_sort);
-            sort_len = _sort.length();
+        if (_sort.length() > 1) {
+            csort		= ToCString(_sort);
+            sort_len	= _sort.length();
         }
 
-        if (args.Length() > 3)
-        {
+        if (args.Length() > 3) {
             v8::String::Utf8Value _databases(args[ 3 ]);
-            if (_databases.length() > 1)
-            {
-                cdatabases    = ToCString(_databases);
-                databases_len = _databases.length();
+            if (_databases.length() > 1) {
+                cdatabases		= ToCString(_databases);
+                databases_len	= _databases.length();
             }
 
-            if (args.Length() > 4)
-            {
+            if (args.Length() > 4) {
                 top = args[ 4 ]->ToObject()->Uint32Value();
 
-                if (args.Length() > 5)
-                {
+                if (args.Length() > 5) {
                     limit = args[ 5 ]->ToObject()->Uint32Value();
                 }
             }
         }
     }
 
-    _Buff                 *res  = query(cticket, _ticket.length(), cquery, _query.length(), csort, sort_len, cdatabases, databases_len, top, limit);
+    _Buff *res					= query(cticket, _ticket.length(), cquery, _query.length(), csort, sort_len, cdatabases, databases_len, top, limit);
     v8::Handle<v8::Array> arr_1 = v8::Array::New(isolate, 0);
 
-    if (res != NULL)
-    {
+    if (res != NULL) {
         std::string data(res->data, res->length);
 
-		v8::Local<v8::Value> result = v8::JSON::Parse(String::NewFromUtf8(isolate, data.c_str()));
+        v8::Local<v8::Value> result = v8::JSON::Parse(String::NewFromUtf8(isolate, data.c_str()));
 
-        if (data.length() > 5)
-        {
+        if (data.length() > 5) {
             std::string::size_type prev_pos = 1, pos = 1;
-            std::string            el;
+            std::string el;
 
-            int                    i = 0;
-            while ((pos = data.find(',', pos)) != std::string::npos)
-            {
+            int i = 0;
+            while ((pos = data.find(',', pos)) != std::string::npos) {
                 el = prepare_str_list_element(data, prev_pos, pos);
-                if (el.length() > 2)
-                {
+                if (el.length() > 2) {
                     arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
                     i++;
                 }
@@ -257,29 +232,26 @@ Query(const v8::FunctionCallbackInfo<v8::Value>& args)
             }
             el = prepare_str_list_element(data, prev_pos, data.length() - 1);
 
-            if (el.length() > 2)
-            {
+            if (el.length() > 2) {
                 arr_1->Set(i, String::NewFromUtf8(isolate, el.c_str()));
             }
         }
-		args.GetReturnValue().Set(result);
+        args.GetReturnValue().Set(result);
     }
 }
 
 
 void
-GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 2)
-    {
+    if (args.Length() != 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
 
     v8::String::Utf8Value str(args[ 0 ]);
-    const char            *ticket = ToCString(str);
+    const char *ticket = ToCString(str);
 
     v8::String::Utf8Value str1(args[ 1 ]);
 
@@ -288,78 +260,66 @@ GetIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 
     const char *cstr = ToCString(str1);
 
-    _Buff      *doc_as_binobj = read_individual(ticket, str.length(), cstr, str1.length());
+    _Buff *doc_as_binobj = read_individual(ticket, str.length(), cstr, str1.length());
 
-    if (doc_as_binobj != NULL)
-    {
+    if (doc_as_binobj != NULL) {
         std::string data(doc_as_binobj->data, doc_as_binobj->length);
 
         Handle<Value> oo;
-        if (data[ 0 ] == (char)146)
-        {
-            if (data.size() < 2)
-            {
+        if (data[ 0 ] == (char)146) {
+            if (data.size() < 2) {
                 isolate->ThrowException(v8::String::NewFromUtf8(isolate, "invalid msgpack, size < 2"));
                 return;
             }
             oo = msgpack2jsobject(isolate, data.substr(0, data.size()));
-        }
-        else
+        }else
             oo = cbor2jsobject(isolate, data);
 
         args.GetReturnValue().Set(oo);
     }
-
 }
 
 void
-GetIndividuals(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
+GetIndividuals(const v8::FunctionCallbackInfo<v8::Value>& args){
     Isolate *isolate = args.GetIsolate();
 
-    if (args.Length() != 2)
-    {
+    if (args.Length() != 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "Bad parameters"));
         return;
     }
 
     v8::String::Utf8Value str(args[ 0 ]);
-    const char            *ticket = ToCString(str);
+    const char *ticket = ToCString(str);
 
     v8::String::Utf8Value uris(args[ 1 ]);
 
     if (uris.length() == 0)
         return;
 
-    const char            *curis = ToCString(uris);
-    std::string           suris(curis, uris.length());
+    const char *curis = ToCString(uris);
+    std::string suris(curis, uris.length());
 
-    std::string           el;
-    std::istringstream    tokenStream(suris);
+    std::string el;
+    std::istringstream tokenStream(suris);
 
     v8::Handle<v8::Array> arr_1 = v8::Array::New(isolate, 0);
 
-    int                   i = 0;
+    int i = 0;
 
-    while (std::getline(tokenStream, el, ','))
-    {
+    while (std::getline(tokenStream, el, ',')) {
         _Buff *doc_as_binobj = read_individual(ticket, str.length(), el.c_str(), el.length());
 
-        if (doc_as_binobj != NULL)
-        {
+        if (doc_as_binobj != NULL) {
             std::string data(doc_as_binobj->data, doc_as_binobj->length);
 
             Handle<Value> oo;
-            if (data[ 0 ] == (char)146)
-            {
-                if (data.size() < 2)
-                {
+            if (data[ 0 ] == (char)146) {
+                if (data.size() < 2) {
                     isolate->ThrowException(v8::String::NewFromUtf8(isolate, "invalid msgpack, size < 2"));
                     return;
                 }
                 oo = msgpack2jsobject(isolate, data.substr(0, data.size()));
-            }
-            else
+            }else
                 oo = cbor2jsobject(isolate, data);
 
             arr_1->Set(i, oo);
@@ -371,20 +331,18 @@ GetIndividuals(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
-RemoveIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    int     res      = 500;
-    Isolate *isolate = args.GetIsolate();
+RemoveIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
+    int res				= 500;
+    Isolate *isolate	= args.GetIsolate();
 
-    if (args.Length() < 2)
-    {
+    if (args.Length() < 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "RemoveIndividual::Bad count parameters"));
 
         return;
     }
 
     v8::String::Utf8Value str(args[ 0 ]);
-    const char            *ticket = ToCString(str);
+    const char *ticket = ToCString(str);
 
     v8::String::Utf8Value str1(args[ 1 ]);
 
@@ -399,26 +357,23 @@ RemoveIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
-PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    int     res      = 500;
-    Isolate *isolate = args.GetIsolate();
+PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
+    int res				= 500;
+    Isolate *isolate	= args.GetIsolate();
 
-    if (args.Length() < 2)
-    {
+    if (args.Length() < 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
         return;
     }
 
-    if (args[ 1 ]->IsObject())
-    {
+    if (args[ 1 ]->IsObject()) {
         string jsnstr = json_str(isolate, args[ 1 ]);
 
         v8::String::Utf8Value str_ticket(args[ 0 ]);
-        const char            *ticket = ToCString(str_ticket);
+        const char *ticket = ToCString(str_ticket);
 
-        std::vector<char>     buff;
+        std::vector<char> buff;
 
         jsobject2cbor(args[ 1 ], isolate, buff);
 
@@ -432,24 +387,21 @@ PutIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
-AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    int     res      = 500;
-    Isolate *isolate = args.GetIsolate();
+AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
+    int res				= 500;
+    Isolate *isolate	= args.GetIsolate();
 
-    if (args.Length() < 2)
-    {
+    if (args.Length() < 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
         return;
     }
 
-    if (args[ 1 ]->IsObject())
-    {
+    if (args[ 1 ]->IsObject()) {
         v8::String::Utf8Value str_ticket(args[ 0 ]);
-        const char            *ticket = ToCString(str_ticket);
+        const char *ticket = ToCString(str_ticket);
 
-        std::vector<char>     buff;
+        std::vector<char> buff;
 
         jsobject2cbor(args[ 1 ], isolate, buff);
 
@@ -464,23 +416,20 @@ AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
-SetInIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    int     res      = 500;
-    Isolate *isolate = args.GetIsolate();
+SetInIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
+    int res				= 500;
+    Isolate *isolate	= args.GetIsolate();
 
-    if (args.Length() < 2)
-    {
+    if (args.Length() < 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
         return;
     }
 
-    if (args[ 1 ]->IsObject())
-    {
+    if (args[ 1 ]->IsObject()) {
         v8::String::Utf8Value str_ticket(args[ 0 ]);
-        const char            *ticket = ToCString(str_ticket);
-        std::vector<char>     buff;
+        const char *ticket = ToCString(str_ticket);
+        std::vector<char> buff;
 
         jsobject2cbor(args[ 1 ], isolate, buff);
         char *ptr = buff.data();
@@ -493,23 +442,20 @@ SetInIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 void
-RemoveFromIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    int     res      = 500;
-    Isolate *isolate = args.GetIsolate();
+RemoveFromIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
+    int res				= 500;
+    Isolate *isolate	= args.GetIsolate();
 
-    if (args.Length() < 2)
-    {
+    if (args.Length() < 2) {
         isolate->ThrowException(v8::String::NewFromUtf8(isolate, "PutIndividual::Bad count parameters"));
 
         return;
     }
 
-    if (args[ 1 ]->IsObject())
-    {
+    if (args[ 1 ]->IsObject()) {
         v8::String::Utf8Value str_ticket(args[ 0 ]);
-        const char            *ticket = ToCString(str_ticket);
-        std::vector<char>     buff;
+        const char *ticket = ToCString(str_ticket);
+        std::vector<char> buff;
 
         jsobject2cbor(args[ 1 ], isolate, buff);
 
@@ -526,27 +472,24 @@ RemoveFromIndividual(const v8::FunctionCallbackInfo<v8::Value>& args)
 // function is called.  Prints its arguments on stdout separated by
 // spaces and ending with a newline.
 void
-Print(const v8::FunctionCallbackInfo<v8::Value>& args)
-{
-    bool            first = true;
+Print(const v8::FunctionCallbackInfo<v8::Value>& args){
+    bool first = true;
     v8::HandleScope handle_scope(args.GetIsolate());
 
     if (args.Length() == 0)
         return;
 
     v8::String::Utf8Value str(args[ 0 ]);
-    const char            *cstr = ToCString(str);
-    std::string           sstr(cstr, str.length());
+    const char *cstr = ToCString(str);
+    std::string sstr(cstr, str.length());
 
-    if (args.Length() > 1)
-    {
-        for (int i = 1; i < args.Length(); i++)
-        {
+    if (args.Length() > 1) {
+        for (int i = 1; i < args.Length(); i++) {
             sstr = sstr + " ";
 
             v8::String::Utf8Value str_i(args[ i ]);
-            const char            *cstr_i = ToCString(str_i);
-            std::string           sstr_i(cstr_i, str_i.length());
+            const char *cstr_i = ToCString(str_i);
+            std::string sstr_i(cstr_i, str_i.length());
             sstr = sstr + sstr_i;
         }
     }
@@ -555,13 +498,12 @@ Print(const v8::FunctionCallbackInfo<v8::Value>& args)
 }
 
 
-WrappedContext::WrappedContext ()
-{
+WrappedContext::WrappedContext (){
     isolate_ = v8::Isolate::New();
 
-    v8::Locker         locker(isolate_);
+    v8::Locker locker(isolate_);
     v8::Isolate::Scope isolateScope(isolate_);
-    HandleScope        handle_scope(isolate_);
+    HandleScope handle_scope(isolate_);
 
     // Create a template for the global object.
     v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate_);
@@ -596,69 +538,63 @@ WrappedContext::WrappedContext ()
     context_.Reset(isolate_, context);
 }
 
-WrappedContext::~WrappedContext ()
-{
+WrappedContext::~WrappedContext (){
 //  context_.Dispose();
 }
 
-WrappedScript::~WrappedScript ()
-{
+WrappedScript::~WrappedScript (){
 //  script_.Dispose();
 }
 
 
 WrappedContext *
-new_WrappedContext()
-{
+new_WrappedContext(){
     WrappedContext *t = new WrappedContext();
 
     return t;
 }
 
 WrappedScript *
-new_WrappedScript(WrappedContext *_context, char *src)
-{
-    Isolate                *isolate = _context->isolate_;
-    v8::Locker             locker(isolate);
-    v8::Isolate::Scope     isolateScope(isolate);
-    HandleScope            scope(isolate);
+new_WrappedScript(WrappedContext *_context, char *src){
+    Isolate *isolate = _context->isolate_;
+    v8::Locker locker(isolate);
+    v8::Isolate::Scope isolateScope(isolate);
+    HandleScope scope(isolate);
 
     v8::Local<v8::Context> context = v8::Local<v8::Context>::New(isolate, _context->context_);
-    Context::Scope         context_scope(context);
+    Context::Scope context_scope(context);
 
-    Handle<String>         source = v8::String::NewFromUtf8(isolate, src);
+    Handle<String> source = v8::String::NewFromUtf8(isolate, src);
 
-    Handle<Script>         sc = Script::Compile(source);
+    Handle<Script> sc = Script::Compile(source);
 
-    WrappedScript          *v8ws = new WrappedScript();
+    WrappedScript *v8ws = new WrappedScript();
     v8ws->script_.Reset(isolate, sc);
 
     return v8ws;
 }
 
 void
-run_WrappedScript(WrappedContext *_context, WrappedScript *ws, _Buff *_res, _Buff *_out)
-{
-    Isolate                *isolate = _context->isolate_;
+run_WrappedScript(WrappedContext *_context, WrappedScript *ws, _Buff *_res, _Buff *_out){
+    Isolate *isolate = _context->isolate_;
 
-    v8::Locker             locker(isolate);
-    v8::Isolate::Scope     isolateScope(isolate);
+    v8::Locker locker(isolate);
+    v8::Isolate::Scope isolateScope(isolate);
 
-    HandleScope            scope(isolate);
+    HandleScope scope(isolate);
 
     v8::Local<v8::Context> context = v8::Local<v8::Context>::New(isolate, _context->context_);
-    Context::Scope         context_scope(context);
+    Context::Scope context_scope(context);
 
-    v8::Local<v8::Script>  script = v8::Local<v8::Script>::New(isolate, ws->script_);
+    v8::Local<v8::Script> script = v8::Local<v8::Script>::New(isolate, ws->script_);
 
     v8::V8::SetFatalErrorHandler(FatalErrorCallback_r);
     Handle<Value> result = script->Run();
 
-    if (_res != NULL)
-    {
+    if (_res != NULL) {
         String::Utf8Value utf8(result);
 
-        int               c_length;
+        int c_length;
 
         if (utf8.length() >= _res->allocated_size)
             c_length = _res->allocated_size;
@@ -673,19 +609,16 @@ run_WrappedScript(WrappedContext *_context, WrappedScript *ws, _Buff *_res, _Buf
 }
 
 void
-InitializeICU()
-{
+InitializeICU(){
     v8::V8::InitializeICU(NULL);
 }
 
 void
-ShutdownPlatform()
-{
+ShutdownPlatform(){
     v8::V8::ShutdownPlatform();
 }
 
 void
-Dispose()
-{
+Dispose(){
     v8::V8::Dispose();
 }
