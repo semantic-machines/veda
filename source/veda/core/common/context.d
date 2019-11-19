@@ -28,17 +28,10 @@ interface Context
     Onto get_onto();
     public void onto_load();
 
-    public long get_operation_state(MODULE module_id, long wait_op_id);
-
     @property
     public Ticket sys_ticket(bool is_new = false);
 
     public Ticket *get_systicket_from_storage();
-
-    // *************************************************** external API ? *********************************** //
-    ref string[ string ] get_prefix_map();
-    void add_prefix_map(ref string[ string ] arg);
-    // *************************************************** external API *********************************** //
 
 //    //////////////////////////////////////////////////// ONTO //////////////////////////////////////////////
 
