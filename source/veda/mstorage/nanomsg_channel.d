@@ -7,16 +7,14 @@ import kaleidic.nanomsg.nano, veda.mstorage.server, veda.search.xapian.xapian_se
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
 Logger _log;
-Logger log()
-{
+Logger log(){
     if (_log is null)
         _log = new Logger("veda-core-mstorage", "log", "N-CHANNEL");
     return _log;
 }
 // ////// ////// ///////////////////////////////////////////
 
-void nanomsg_channel(string thread_name)
-{
+void nanomsg_channel(string thread_name){
     int    sock;
     string bind_url = null;
 
@@ -39,20 +37,17 @@ void nanomsg_channel(string thread_name)
         core.thread.Thread.getThis().name = thread_name;
 
         sock = nn_socket(AF_SP, NN_REP);
-        if (sock < 0)
-        {
+        if (sock < 0) {
             log.trace("ERR! cannot create socket");
             return;
         }
-        if (nn_bind(sock, cast(char *)bind_url) < 0)
-        {
+        if (nn_bind(sock, cast(char *)bind_url) < 0) {
             log.trace("ERR! cannot bind to socket, url=%s", bind_url);
             return;
         }
         log.trace("success bind to %s", bind_url);
 
-        if (context is null)
-        {
+        if (context is null) {
             context = create_new_ctx(thread_name, log);
             context.set_az(get_acl_client(log));
             context.set_vql(new XapianSearch(context));
@@ -64,21 +59,18 @@ void nanomsg_channel(string thread_name)
                     send(tid_response_reciever, true);
                 });
 
-        while (true)
-        {
+        while (true) {
             try
             {
                 char *buf  = cast(char *)0;
                 int  bytes = nn_recv(sock, &buf, NN_MSG, 0);
-                if (bytes >= 0)
-                {
+                if (bytes >= 0) {
                     string req = cast(string)buf[ 0..bytes ];
                     //log.trace("RECEIVED [%d](%s)", bytes, req);
 
                     string rep;
 
-                    if (req[ 0 ] == '{')
-                    {
+                    if (req[ 0 ] == '{') {
                         //log.trace ("is json");
                         rep = execute_json(req, context);
                     }

@@ -3,8 +3,7 @@ module veda.core.common.transaction;
 import std.stdio, std.json;
 import veda.core.common.context, veda.common.type, veda.core.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang, veda.onto.onto;
 
-struct TransactionItem
-{
+struct TransactionItem {
     INDV_OP    cmd;
     string     ticket_id;
     string     event_id;
@@ -58,8 +57,7 @@ struct TransactionItem
     }
 }
 
-TransactionItem copy_from_immutable(immutable TransactionItem ti)
-{
+TransactionItem copy_from_immutable(immutable TransactionItem ti){
     TransactionItem res;
 
     res.cmd                 = ti.cmd;
@@ -75,8 +73,7 @@ TransactionItem copy_from_immutable(immutable TransactionItem ti)
     return res;
 }
 
-TransactionItem from_json(JSONValue jsn)
-{
+TransactionItem from_json(JSONValue jsn){
     TransactionItem res;
 
     res.cmd                 = cast(INDV_OP)jsn[ "cmd" ].integer;
@@ -91,8 +88,7 @@ TransactionItem from_json(JSONValue jsn)
     return res;
 }
 
-struct Transaction
-{
+struct Transaction {
     private
     {
         TransactionItem *[ string ] buff;
@@ -107,13 +103,11 @@ struct Transaction
     int         count;
 
 
-    public void add_immutable(ref immutable TransactionItem _ti)
-    {
+    public void add_immutable(ref immutable TransactionItem _ti){
         immutable_queue ~= _ti;
     }
 
-    public void add(TransactionItem ti)
-    {
+    public void add(TransactionItem ti){
         queue ~= ti;
         TransactionItem *tii = &queue[ count ];
         string          kk   = ti.new_indv.uri.dup;
@@ -121,8 +115,7 @@ struct Transaction
         count++;
     }
 
-    public void reset()
-    {
+    public void reset(){
         if (buff.length > 0)
             buff = buff.init;
 
@@ -135,18 +128,15 @@ struct Transaction
         count = 0;
     }
 
-    public TransactionItem *get(string uri)
-    {
+    public TransactionItem *get(string uri){
         return buff.get(uri, null);
     }
 
-    public TransactionItem[] get_queue()
-    {
+    public TransactionItem[] get_queue(){
         return queue;
     }
 
-    public ref immutable(TransactionItem)[] get_immutable_queue()
-    {
+    public ref immutable(TransactionItem)[] get_immutable_queue(){
         return immutable_queue;
     }
 }

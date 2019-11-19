@@ -8,8 +8,7 @@ private
     import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage;
 }
 
-public static Context create_new_ctx(string context_name, Logger _log, string _main_module_url = null)
-{
+public static Context create_new_ctx(string context_name, Logger _log, string _main_module_url = null){
     PThreadContext ctx = new PThreadContext();
 
     ctx.node_id = "cfg:standart_node";
@@ -22,8 +21,7 @@ public static Context create_new_ctx(string context_name, Logger _log, string _m
 
     if (_main_module_url !is null)
         ctx.main_module_url = _main_module_url;
-    else
-    {
+    else{
         try
         {
             string[ string ] properties = readProperties("./veda.properties");
@@ -37,12 +35,9 @@ public static Context create_new_ctx(string context_name, Logger _log, string _m
         }
     }
 
-    if (tarantool_url !is null)
-    {
+    if (tarantool_url !is null) {
         ctx.storage = new TarantoolStorage(context_name, ctx.log);
-    }
-    else
-    {
+    }else  {
         ctx.storage = new LmdbStorage(context_name, ctx.log);
     }
 

@@ -23,31 +23,28 @@ public class LmdbStorage : Storage
 
     ~this()
     {
-	    if (tickets_storage_r !is null)
-	        tickets_storage_r.close();
-	        
-	    if (inividuals_storage_r !is null)    
-	        inividuals_storage_r.close();
+        if (tickets_storage_r !is null)
+            tickets_storage_r.close();
+
+        if (inividuals_storage_r !is null)
+            inividuals_storage_r.close();
     }
 
-    override KeyValueDB get_tickets_storage_r()
-    {
+    override KeyValueDB get_tickets_storage_r(){
         if (tickets_storage_r is null)
             tickets_storage_r = new LmdbDriver(tickets_db_path, DBMode.R, name ~ ":tickets", log);
 
         return tickets_storage_r;
     }
 
-    override KeyValueDB get_inividuals_storage_r()
-    {
+    override KeyValueDB get_inividuals_storage_r(){
         if (inividuals_storage_r is null)
             inividuals_storage_r = new LmdbDriver(individuals_db_path, DBMode.R, name ~ ":inividuals", log);
 
         return inividuals_storage_r;
     }
 
-    override long count_individuals()
-    {
+    override long count_individuals(){
         return get_inividuals_storage_r().count_entries();
     }
 }

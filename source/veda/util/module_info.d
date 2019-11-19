@@ -4,16 +4,14 @@ import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.jso
 import std.format, std.array                                                                                     : appender;
 import veda.core.common.define, veda.common.logger;
 
-public struct MInfo
-{
+public struct MInfo {
     string name;
     long   op_id;
     long   committed_op_id;
     bool   is_Ok = false;
 }
 
-public enum OPEN_MODE : byte
-{
+public enum OPEN_MODE : byte {
     /// Выдача и проверка тикетов
     READER        = 1,
     WRITER        = 2,
@@ -44,8 +42,7 @@ class ModuleInfoFile
         {
             module_name = _module_name;
 
-            if (exists(module_info_path) == false)
-            {
+            if (exists(module_info_path) == false) {
                 try
                 {
                     mkdir(module_info_path);
@@ -62,21 +59,16 @@ class ModuleInfoFile
 
             _is_ready = true;
 
-            if (mode == OPEN_MODE.WRITER || mode == OPEN_MODE.READER_WRITER)
-            {
+            if (mode == OPEN_MODE.WRITER || mode == OPEN_MODE.READER_WRITER) {
                 string file_name_lock = fn_module_info ~ ".lock";
-                if (exists(file_name_lock) == false)
-                {
+                if (exists(file_name_lock) == false) {
                     ff_lock_w = new File(file_name_lock, "w");
                     ff_lock_w.write("*");
-                }
-                else
-                {
+                }else  {
                     ff_lock_w = new File(file_name_lock, "r+");
                 }
 
-                if (ff_lock_w.tryLock(LockType.readWrite) == false)
-                {
+                if (ff_lock_w.tryLock(LockType.readWrite) == false) {
                     _is_ready = false;
                     log.trace("ERR! ModuleInfo [%s] already open on write", module_name);
                     return;
@@ -96,13 +88,11 @@ class ModuleInfoFile
         close();
     }
 
-    bool is_ready()
-    {
+    bool is_ready(){
         return _is_ready;
     }
 
-    private bool open_writer()
-    {
+    private bool open_writer(){
         if (mode != OPEN_MODE.WRITER && mode != OPEN_MODE.READER_WRITER)
             return false;
 
@@ -124,20 +114,17 @@ class ModuleInfoFile
         return false;
     }
 
-    public void close()
-    {
+    public void close(){
         if (mode == OPEN_MODE.READER && ff_module_info_r !is null)
             ff_module_info_r.close();
 
-        if (mode == OPEN_MODE.READER_WRITER || mode == OPEN_MODE.WRITER)
-        {
+        if (mode == OPEN_MODE.READER_WRITER || mode == OPEN_MODE.WRITER) {
             if (ff_module_info_w !is null)
                 ff_module_info_w.close();
         }
     }
 
-    private void open_reader()
-    {
+    private void open_reader(){
         try
         {
             ff_module_info_r = new File(fn_module_info, "r");
@@ -149,13 +136,11 @@ class ModuleInfoFile
         }
     }
 
-    bool put_info(long op_id, long committed_op_id)
-    {
+    bool put_info(long op_id, long committed_op_id){
         if (!_is_ready)
             return false;
 
-        if (is_writer_open == false)
-        {
+        if (is_writer_open == false) {
             open_writer();
             if (is_writer_open == false)
                 return false;
@@ -184,12 +169,10 @@ class ModuleInfoFile
         return false;
     }
 
-    public MInfo get_info()
-    {
+    public MInfo get_info(){
         MInfo res;
 
-        if (is_reader_open == false)
-        {
+        if (is_reader_open == false) {
             open_reader();
             if (is_reader_open == false)
                 return res;
@@ -212,15 +195,12 @@ class ModuleInfoFile
             ubyte[] newbuff = ff_module_info_r.rawRead(buff);
             str = cast(string)newbuff[ 0..$ ];
 
-            if (str !is null)
-            {
-                if (str.length > 2)
-                {
+            if (str !is null) {
+                if (str.length > 2) {
                     long end_pos = str.indexOf('\n');
                     str = str[ 0..end_pos ];
 
-                    if (str.length > 10)
-                    {
+                    if (str.length > 10) {
                         ch = str.split(';');
                         //writeln("@ queue.get_info ch=", ch);
                         if (ch.length != 4)

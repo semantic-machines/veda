@@ -29,8 +29,7 @@ public class FanoutProcess : VedaModule
     override ResultCode prepare(string queue_name, string src, INDV_OP cmd, string user_uri, string prev_bin, ref Individual prev_indv, string new_bin,
                                 ref Individual new_indv,
                                 string event_id, long transaction_id, long op_id, long count_pushed,
-                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id)
-    {
+                                long count_popped, long op_id_on_start, long count_from_start, uint cs_id){
         ResultCode rc;
 
         if (is_ready == false)
@@ -39,30 +38,25 @@ public class FanoutProcess : VedaModule
         if (cmd == INDV_OP.REMOVE)
             return ResultCode.Ok;
 
-        if (priority == "low")
-        {
-            if (main_cs_r is null)
-            {
+        if (priority == "low") {
+            if (main_cs_r is null) {
                 log.trace("INFO: open %s, %s, %s", main_queue, my_consumer_path, main_queue_cs);
                 main_cs_r = new Consumer(main_queue, my_consumer_path, main_queue_cs, Mode.R, log);
-                while (main_cs_r.open(true, Mode.R) == false)
-                {
+                while (main_cs_r.open(true, Mode.R) == false) {
                     log.trace("WARN: main queue consumer not open, sleep and repeate");
                     core.thread.Thread.sleep(dur!("seconds")(1));
                 }
             }
 
             main_cs_r.reopen();
-            while (main_cs_r.get_id () == cs_id && main_cs_r.count_popped < count_popped)
-            {
+            while (main_cs_r.get_id() == cs_id && main_cs_r.count_popped < count_popped) {
                 log.tracec("INFO: queue.my=%d > queue.main=%d, sleep...", count_popped, main_cs_r.count_popped);
                 core.thread.Thread.sleep(dur!("seconds")(1));
                 main_cs_r.reopen();
             }
         }
 
-        if (priority == "low" && user_uri == low_priority_user || priority == "normal" && user_uri != low_priority_user)
-        {
+        if (priority == "low" && user_uri == low_priority_user || priority == "normal" && user_uri != low_priority_user) {
             try
             {
                 rc = push_to_mysql(prev_indv, new_indv, user_uri);
@@ -73,8 +67,7 @@ public class FanoutProcess : VedaModule
             }
         }
 
-        if (rc == ResultCode.FailCommit)
-        {
+        if (rc == ResultCode.FailCommit) {
             log.trace("ERR! fail commit");
             return ResultCode.NotReady;
         }
@@ -83,26 +76,21 @@ public class FanoutProcess : VedaModule
         return ResultCode.Ok;
     }
 
-    override void thread_id()
-    {
+    override void thread_id(){
     }
 
-    override void receive_msg(string msg)
-    {
+    override void receive_msg(string msg){
         //log.trace("receive_msg [%s]", msg);
-        if (msg == "unload_batch")
-        {
+        if (msg == "unload_batch") {
             prepare_batch();
         }
     }
 
-    override Context create_context()
-    {
+    override Context create_context(){
         return null;
     }
 
-    override bool open()
-    {
+    override bool open(){
         context.set_vql(new FTQueryClient(context));
         connect_to_mysql(context);
 
@@ -112,29 +100,25 @@ public class FanoutProcess : VedaModule
         return true;
     }
 
-    override bool configure()
-    {
+    override bool configure(){
         log.trace("use configuration: %s", node);
 
         return true;
     }
 
-    override bool close()
-    {
+    override bool close(){
         if (mysql_conn !is null)
             mysql_conn.close();
         return true;
     }
 
-    override void event_of_change(string uri)
-    {
+    override void event_of_change(string uri){
         configure();
     }
 
     bool[ string ] existsTable;
 
-    private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv, string user_uri)
-    {
+    private ResultCode push_to_mysql(ref Individual prev_indv, ref Individual new_indv, string user_uri){
         if (mysql_conn is null)
             return ResultCode.ConnectError;
 
@@ -150,15 +134,13 @@ public class FanoutProcess : VedaModule
             string previousVersion_prev = prev_indv.getFirstLiteral("v-s:previousVersion");
             string previousVersion_new  = new_indv.getFirstLiteral("v-s:previousVersion");
 
-            if (isDraftOf !is null)
-            {
+            if (isDraftOf !is null) {
                 log.trace("new_indv [%s] is draft, ignore", new_indv.uri);
                 return ResultCode.Ok;
             }
 
             if ((actualVersion !is null && actualVersion != new_indv.uri /*||
-                                                                                                   (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)*/))
-            {
+                                                                                                   (previousVersion_prev !is null && previousVersion_prev == previousVersion_new)*/)) {
                 if (actualVersion !is null && actualVersion != new_indv.uri)
                     log.trace("new[%s].v-s:actualVersion[%s] != [%s], ignore", new_indv.uri, actualVersion, new_indv.uri);
 
@@ -171,37 +153,31 @@ public class FanoutProcess : VedaModule
             Resources types        = new_indv.getResources("rdf:type");
             bool      need_prepare = false;
 
-            foreach (type; types)
-            {
-                if (context.get_onto().isSubClasses(type.uri, [ "v-s:Exportable" ]))
-                {
+            foreach (type; types) {
+                if (context.get_onto().isSubClasses(type.uri, [ "v-s:Exportable" ])) {
                     need_prepare = true;
                     break;
                 }
             }
 
-            if (need_prepare)
-            {
+            if (need_prepare) {
                 log.trace("prepare uri=%s, user=%s", new_indv.uri, user_uri);
 
                 mysql_conn.startTransaction();
 
                 // создаем таблицы если их не было
-                foreach (predicate, rss; new_indv.resources)
-                {
+                foreach (predicate, rss; new_indv.resources) {
                     if (rss.length > 0)
                         create_table_if_not_exists(predicate, rss[ 0 ]);
                 }
 
                 // удаляем из всех таблиц по предикатам используя doc_id
                 Resources[ string ] use_predicates = new_indv.resources.dup;
-                foreach (predicate, rss; prev_indv.resources)
-                {
+                foreach (predicate, rss; prev_indv.resources) {
                     use_predicates[ predicate ] = rss;
                 }
 
-                foreach (predicate, rss; use_predicates)
-                {
+                foreach (predicate, rss; use_predicates) {
                     try
                     {
                         mysql_conn.query("DELETE FROM `?` WHERE doc_id = ?", predicate, new_indv.uri);
@@ -209,8 +185,7 @@ public class FanoutProcess : VedaModule
                     }
                     catch (Throwable ex)
                     {
-                        if (ex.msg.indexOf("doesn't exist") < 0 && ex.msg.indexOf("Incorrect table name") < 0)
-                        {
+                        if (ex.msg.indexOf("doesn't exist") < 0 && ex.msg.indexOf("Incorrect table name") < 0) {
                             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
                             mysql_conn.query("ROLLBACK");
                             return ResultCode.FailCommit;
@@ -220,8 +195,7 @@ public class FanoutProcess : VedaModule
 
                 //if (is_deleted == false)
                 {
-                    foreach (predicate, rss; new_indv.resources)
-                    {
+                    foreach (predicate, rss; new_indv.resources) {
                         try
                         {
                             insert_to_sql(predicate, rss, new_indv);
@@ -229,16 +203,13 @@ public class FanoutProcess : VedaModule
                         catch (Exception ex)
                         {
                             log.trace("ERR! push_to_mysql LINE:[%s], FILE:[%s], MSG:[%s]", __LINE__, __FILE__, ex.msg);
-                            if (ex.msg.indexOf("Unknown column 'deleted'") >= 0)
-                            {
+                            if (ex.msg.indexOf("Unknown column 'deleted'") >= 0) {
                                 mysql_conn.query(
                                                  "ALTER TABLE `veda_db`.`" ~ predicate ~ "` " ~
                                                  "ADD `deleted` BOOL NULL");
                                 log.trace("alter table [%s]", predicate);
                                 insert_to_sql(predicate, rss, new_indv);
-                            }
-                            else
-                            {
+                            }else  {
                                 mysql_conn.query("ROLLBACK");
                                 return ResultCode.FailCommit;
                             }
@@ -258,8 +229,7 @@ public class FanoutProcess : VedaModule
         return ResultCode.Ok;
     }
 
-    private void insert_to_sql(string predicate, Resources rss, ref Individual new_indv)
-    {
+    private void insert_to_sql(string predicate, Resources rss, ref Individual new_indv){
         Resource  created    = new_indv.getFirstResource("v-s:created");
         Resources types      = new_indv.getResources("rdf:type");
         bool      is_deleted = new_indv.isExists("v-s:deleted", true);
@@ -269,21 +239,17 @@ public class FanoutProcess : VedaModule
         if (is_deleted)
             i_is_deleted = 1;
 
-        if (rss.length > 0)
-        {
+        if (rss.length > 0) {
             create_table_if_not_exists(predicate, rss[ 0 ]);
 
-            foreach (rs; rss)
-            {
-                foreach (rtype; types)
-                {
+            foreach (rs; rss) {
+                foreach (rtype; types) {
                     MysqlResult res;
 
                     string      type = rtype.data;
                     mysql_conn.query("SET NAMES 'utf8'");
 
-                    if (rs.type == DataType.Boolean)
-                    {
+                    if (rs.type == DataType.Boolean) {
                         int bval = 0;
 
                         if (rs.get!bool == true)
@@ -299,9 +265,7 @@ public class FanoutProcess : VedaModule
                                   predicate,
                                   new_indv.uri, type,
                                   created.asString(), bval, i_is_deleted, mysql_conn.error());
-                    }
-                    else
-                    {
+                    }else  {
                         res = mysql_conn.query("INSERT INTO `?` (doc_id, doc_type, created, value, lang, deleted) VALUES (?, ?, ?, ?, ?, ?)",
                                                predicate,
                                                new_indv.uri, type,
@@ -318,8 +282,7 @@ public class FanoutProcess : VedaModule
         }
     }
 
-    private bool create_table_if_not_exists(string predicate, Resource rs)
-    {
+    private bool create_table_if_not_exists(string predicate, Resource rs){
         if (mysql_conn is null)
             return false;
 
@@ -329,37 +292,25 @@ public class FanoutProcess : VedaModule
         auto rows = mysql_conn.query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?;", database_name,
                                      predicate);
 
-        if (rows.front()[ 0 ] == "0")
-        {
+        if (rows.front()[ 0 ] == "0") {
             // create new table
             try
             {
                 string sql_type;
                 string sql_value_index = ", INDEX civ(`value`)";
 
-                if (rs.type == DataType.Boolean)
-                {
+                if (rs.type == DataType.Boolean) {
                     sql_type = "BOOL";
-                }
-                else if (rs.type == DataType.Integer)
-                {
+                }else if (rs.type == DataType.Integer) {
                     sql_type = "INTEGER";
-                }
-                else if (rs.type == DataType.Decimal)
-                {
+                }else if (rs.type == DataType.Decimal) {
                     sql_type = "DECIMAL (14,4)";
-                }
-                else if (rs.type == DataType.String)
-                {
+                }else if (rs.type == DataType.String) {
                     sql_type        = "TEXT";
                     sql_value_index = "";
-                }
-                else if (rs.type == DataType.Uri)
-                {
+                }else if (rs.type == DataType.Uri) {
                     sql_type = "CHAR(128)";
-                }
-                else if (rs.type == DataType.Datetime)
-                {
+                }else if (rs.type == DataType.Datetime) {
                     sql_type = "DATETIME";
                 }
 
@@ -384,16 +335,13 @@ public class FanoutProcess : VedaModule
                 throw ex;
             }
             return false;
-        }
-        else
-        {
+        }else  {
             existsTable[ predicate ] = true;
             return true;
         }
     }
 
-    private void connect_to_mysql(Context context)
-    {
+    private void connect_to_mysql(Context context){
         try
         {
             is_ready = false;
@@ -401,17 +349,14 @@ public class FanoutProcess : VedaModule
 
             Resources gates = node.resources.get("v-s:push_individual_by_event", Resources.init);
             log.trace("connect_to_mysql:found gates: %s", gates);
-            foreach (gate; gates)
-            {
+            foreach (gate; gates) {
                 Individual connection = context.get_individual(gate.uri);
                 log.trace("connect_to_mysql:connection: %s=[%s]", gate.uri, connection);
                 //subscribe_on_prefetch(gate.uri);
 
                 Resource transport = connection.getFirstResource("v-s:transport");
-                if (transport != Resource.init)
-                {
-                    if (transport.data() == "mysql")
-                    {
+                if (transport != Resource.init) {
+                    if (transport.data() == "mysql") {
                         try
                         {
                             low_priority_user = connection.getFirstLiteral("cfg:low_priority_user");

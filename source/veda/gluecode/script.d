@@ -13,8 +13,7 @@ interface Script
     void run();
 }
 
-struct ScriptInfo
-{
+struct ScriptInfo {
     string id;
     string str_script;
     bool[ string ] trigger_by_type;
@@ -36,21 +35,18 @@ class ScriptsWorkPlace
 void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, string first_section,
                     string before_vars,
                     string vars_env, string after_vars,
-                    bool trace)
-{
+                    bool trace){
     //if (trace)
     //log.trace("prepare_script uri=%s, scripts_order.length=%d", ss.uri, wpl.scripts_order.length);
     g_event_id = ss.uri;
 
     try
     {
-        if (ss.isExists("v-s:deleted", true) || ss.isExists("v-s:disabled", true))
-        {
+        if (ss.isExists("v-s:deleted", true) || ss.isExists("v-s:disabled", true)) {
             log.trace("disable script %s", ss.uri);
             ScriptInfo script = wpl.scripts.get(ss.uri, ScriptInfo.init);
 
-            if (script !is ScriptInfo.init)
-            {
+            if (script !is ScriptInfo.init) {
                 script.compiled_script = null;
                 wpl.scripts[ ss.uri ]  = script;
             }
@@ -58,8 +54,7 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
         }
 
         string scripts_text = ss.getFirstResource("v-s:script").literal;
-        if (scripts_text.length <= 0)
-        {
+        if (scripts_text.length <= 0) {
             log.trace("script %s empty, skip", ss.uri);
             return;
         }
@@ -122,20 +117,16 @@ void prepare_script(ScriptsWorkPlace wpl, Individual ss, ScriptVM script_vm, str
 
             string[] new_scripts_order;
 
-            foreach (oo; wpl.scripts_order)
-            {
-                if (count_find_dependency < script.dependency.length)
-                {
+            foreach (oo; wpl.scripts_order) {
+                if (count_find_dependency < script.dependency.length) {
                     auto soo = wpl.scripts[ oo ];
-                    foreach (dp; soo.dependency.keys)
-                    {
+                    foreach (dp; soo.dependency.keys) {
                         if (script.id == dp)
                             count_find_dependency++;
                     }
                 }
 
-                if (inserted == false && count_find_dependency >= script.dependency.length)
-                {
+                if (inserted == false && count_find_dependency >= script.dependency.length) {
                     new_scripts_order ~= script.id;
                     inserted = true;
                 }

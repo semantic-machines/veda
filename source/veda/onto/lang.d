@@ -4,8 +4,7 @@
 module veda.onto.lang;
 
 /// языки
-public enum LANG : ubyte
-{
+public enum LANG : ubyte {
     /// Не установлен
     NONE = 0,
 

@@ -13,8 +13,7 @@ import std.math, std.stdio, std.conv, std.string;
 /**
  * Коды результата выполнения
  */
-public enum ResultCode
-{
+public enum ResultCode {
     /// 0
     zero                    = 0,
 
@@ -115,8 +114,7 @@ public enum ResultCode
 alias string Uri;
 
 /// Перечисление - Типы данных
-public enum DataType : ubyte
-{
+public enum DataType : ubyte {
     /// URI
     Uri      = 1,
 
@@ -142,8 +140,7 @@ public enum DataType : ubyte
 string nullz = "00000000000000000000000000000000";
 
 /// Десятичное число
-struct decimal
-{
+struct decimal {
     /// мантисса
     long mantissa;
 
@@ -176,15 +173,12 @@ struct decimal
         else
             ff = split(num, ".");
 
-        if (ff.length == 2)
-        {
+        if (ff.length == 2) {
             byte sfp = cast(byte)ff[ 1 ].length;
 
             mantissa = to!long (ff[ 0 ] ~ff[ 1 ]);
             exponent = cast(byte)(exponent - sfp);
-        }
-        else if (ff.length == 1)
-        {
+        }else if (ff.length == 1) {
             mantissa = to!long (num);
             exponent = 0;
         }
@@ -195,16 +189,14 @@ struct decimal
     {
         byte sign = 1;
 
-        if (num < 0)
-        {
+        if (num < 0) {
             num  = -num;
             sign = -1;
         }
 
         byte   count;
         double x = num;
-        while (true)
-        {
+        while (true) {
             if (x - cast(long)(x) <= 0)
                 break;
 
@@ -216,8 +208,7 @@ struct decimal
     }
 
     /// вернуть double
-    double toDouble()
-    {
+    double toDouble(){
         try
         {
             return mantissa * pow(10.0, exponent);
@@ -229,18 +220,15 @@ struct decimal
         }
     }
 
-    string asString()
-    {
+    string asString(){
         string str_res;
         string sign = "";
         string str_mantissa;
 
-        if (mantissa < 0)
-        {
+        if (mantissa < 0) {
             sign         = "-";
             str_mantissa = text(-mantissa);
-        }
-        else
+        }else
             str_mantissa = text(mantissa);
 
         long lh = exponent * -1;
@@ -248,22 +236,17 @@ struct decimal
         lh = str_mantissa.length - lh;
         string slh;
 
-        if (lh >= 0)
-        {
+        if (lh >= 0) {
             if (lh <= str_mantissa.length)
                 slh = str_mantissa[ 0 .. lh ];
-        }
-        else
+        }else
             slh = "";
 
         string slr;
 
-        if (lh >= 0)
-        {
+        if (lh >= 0) {
             slr = str_mantissa[ lh..$ ];
-        }
-        else
-        {
+        }else {
             slr = nullz[ 0.. (-lh) ] ~str_mantissa;
         }
 

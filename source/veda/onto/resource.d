@@ -12,17 +12,13 @@ alias Resource[] Resources;
 alias            Resource[ string ]  MapResource;
 Resources        _empty_Resources = Resources.init;
 
-public Resources get_disappeared(ref Resources A, ref Resources B)
-{
+public Resources get_disappeared(ref Resources A, ref Resources B){
     Resources delta;
 
-    foreach (rA; A)
-    {
+    foreach (rA; A) {
         bool is_found = false;
-        foreach (rB; B)
-        {
-            if (rA == rB)
-            {
+        foreach (rB; B) {
+            if (rA == rB) {
                 is_found = true;
                 break;
             }
@@ -35,32 +31,27 @@ public Resources get_disappeared(ref Resources A, ref Resources B)
     return delta;
 }
 
-public void setMapResources(ref Resources rss, ref MapResource hrss)
-{
+public void setMapResources(ref Resources rss, ref MapResource hrss){
     foreach (rs; rss)
         hrss[ rs.get!string ] = rs;
 }
 
-public string[] getAsArrayStrings(ref Resources rss)
-{
+public string[] getAsArrayStrings(ref Resources rss){
     string[] res;
     foreach (rs; rss)
         res ~= rs.get!string;
     return res;
 }
 
-public bool anyExists(ref MapResource hrss, string object)
-{
+public bool anyExists(ref MapResource hrss, string object){
     if ((object in hrss) !is null)
         return true;
     else
         return false;
 }
 
-public bool anyExists(ref MapResource hrss, string[] objects)
-{
-    foreach (object; objects)
-    {
+public bool anyExists(ref MapResource hrss, string[] objects){
+    foreach (object; objects) {
         if ((object in hrss) !is null)
             return true;
     }
@@ -68,8 +59,7 @@ public bool anyExists(ref MapResource hrss, string[] objects)
 }
 
 /// Ресурс
-struct Resource
-{
+struct Resource {
     /// Тип
     DataType type = DataType.Uri;
 
@@ -97,60 +87,45 @@ struct Resource
         static if (is (T == bool))
             return m_bool;
         else
-        static if (is (T == decimal))
-            return m_decimal;
-        else
-        static if (is (T == long))
-            return m_int;
-        else
-        static if (is (T == ulong))
-            return cast(ulong)m_int;
-        else
-        static if (is (T == string))
-            return m_string;
-        else
-            static assert("Resource can only be casted to (bool, long, double, string. Not " ~ T.stringof ~ ".");
+            static if (is (T == decimal))
+                return m_decimal;
+            else
+                static if (is (T == long))
+                    return m_int;
+                else
+                    static if (is (T == ulong))
+                        return cast(ulong)m_int;
+                    else
+                        static if (is (T == string))
+                            return m_string;
+                        else
+                            static assert("Resource can only be casted to (bool, long, double, string. Not " ~ T.stringof ~ ".");
     }
 
     // /////////////////////////////////////////
-    bool opEquals(bool v) const
-    {
+    bool opEquals(bool v) const {
         return type == DataType.Boolean && m_bool == v;
     }
-    bool opEquals(long v) const
-    {
+    bool opEquals(long v) const {
         return type == DataType.Integer && m_int == v;
     }
-    bool opEquals(decimal v) const
-    {
+    bool opEquals(decimal v) const {
         return type == DataType.Decimal && m_decimal == v;
     }
-    bool opEquals(string v) const
-    {
+    bool opEquals(string v) const {
         return (type == DataType.String || type == DataType.Uri) && m_string == v;
     }
-    bool opEquals(Resource rv) const
-    {
-        if (type == rv.type)
-        {
-            if (type == DataType.Boolean)
-            {
+    bool opEquals(Resource rv) const {
+        if (type == rv.type) {
+            if (type == DataType.Boolean) {
                 return rv.get!bool == m_bool;
-            }
-            else if (type == DataType.Decimal)
-            {
+            }else if (type == DataType.Decimal) {
                 return rv.get!decimal == m_decimal;
-            }
-            else if (type == DataType.Integer)
-            {
+            }else if (type == DataType.Integer) {
                 return rv.get!long == m_int;
-            }
-            else if (type == DataType.Datetime)
-            {
+            }else if (type == DataType.Datetime) {
                 return rv.get!long == m_int;
-            }
-            else if (type == DataType.String || type == DataType.Uri)
-            {
+            }else if (type == DataType.String || type == DataType.Uri) {
                 return rv.get!string == m_string;
             }
         }
@@ -159,24 +134,19 @@ struct Resource
     }
 
     // /////////////////////////////////////////
-    bool opAssign(bool v)
-    {
+    bool    opAssign(bool v){
         type = DataType.Boolean; m_bool = v; return v;
     }
-    int opAssign(int v)
-    {
+    int     opAssign(int v){
         type = DataType.Integer; m_int = v; return v;
     }
-    long opAssign(long v)
-    {
+    long    opAssign(long v){
         type = DataType.Integer; m_int = v; return v;
     }
-    decimal opAssign(decimal v)
-    {
+    decimal opAssign(decimal v){
         type = DataType.Decimal; m_decimal = v; return v;
     }
-    string opAssign(string v)
-    {
+    string  opAssign(string v){
         type = DataType.String; m_string = v; return v;
     }
 
@@ -185,8 +155,7 @@ struct Resource
     /// конструктор
     this(DataType _type, string str, LANG _lang = LANG.NONE)
     {
-        if (_type == DataType.Datetime)
-        {
+        if (_type == DataType.Datetime) {
             try
             {
                 if (str.length == 10 && str[ 4 ] == '-' && str[ 7 ] == '-')
@@ -200,9 +169,7 @@ struct Resource
             {
                 writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
             }
-        }
-        else if (_type == DataType.Integer)
-        {
+        }else if (_type == DataType.Integer) {
             try
             {
                 this = parse!long (str);
@@ -211,9 +178,7 @@ struct Resource
             {
                 writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
             }
-        }
-        else if (_type == DataType.Boolean)
-        {
+        }else if (_type == DataType.Boolean) {
             try
             {
                 this = parse!bool(str);
@@ -222,9 +187,7 @@ struct Resource
             {
                 writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
             }
-        }
-        else if (_type == DataType.Decimal)
-        {
+        }else if (_type == DataType.Decimal) {
             try
             {
                 this = decimal(str);
@@ -233,13 +196,9 @@ struct Resource
             {
                 writeln("Ex!: ", __FUNCTION__, ":", text(__LINE__), ", ", ex.msg);
             }
-        }
-        else if (_type == DataType.Uri)
-        {
+        }else if (_type == DataType.Uri) {
             this = str;
-        }
-        else
-        {
+        }else  {
             this = str;
             lang = _lang;
         }
@@ -282,8 +241,7 @@ struct Resource
         type = _type;
     }
 
-    void toString(scope void delegate(const(char)[]) sink) const
-    {
+    void toString(scope void delegate(const(char)[]) sink) const {
         if (type == DataType.Uri || type == DataType.String)
             sink("(" ~ text(type) ~ ")" ~ get!string());
         else if (type == DataType.Boolean)
@@ -296,18 +254,15 @@ struct Resource
             sink("(" ~ text(type) ~ ")" ~ text(get!long ()));
     }
 
-    string asString()
-    {
+    string asString(){
         if (type == DataType.Uri || type == DataType.String)
             return get!string();
         else if (type == DataType.Boolean)
             return text(get!bool());
-        else if (type == DataType.Datetime)
-        {
+        else if (type == DataType.Datetime) {
             SysTime st = SysTime(unixTimeToStdTime(get!long ()), UTC());
             return st.toISOExtString();
-        }
-        else if (type == DataType.Decimal)
+        }else if (type == DataType.Decimal)
             return text(get!decimal().asString());
         else if (type == DataType.Integer)
             return text(get!long ());
@@ -315,49 +270,40 @@ struct Resource
         return null;
     }
 
-    @property string data()
-    {
+    @property string data(){
         return get!string();
     }
 
-    @property void data(string str)
-    {
+    @property void data(string str){
         this = str;
     }
 
-    string literal()
-    {
+    string literal(){
         return get!string();
     }
 
-    string uri()
-    {
+    string uri(){
         if (type == DataType.Uri)
             return m_string;
         else
             return null;
     }
 
-    string prefix()
-    {
-        if (type == DataType.Uri)
-        {
+    string prefix(){
+        if (type == DataType.Uri) {
             long pos = m_string.indexOf(':');
             return m_string[ 0..pos ];
-        }
-        else
+        }else
             return null;
     }
 
-    void set_uri(string uri)
-    {
+    void set_uri(string uri){
         type     = DataType.Uri;
         m_string = uri;
     }
 }
 
-string getFirstString(Resources rss)
-{
+string getFirstString(Resources rss){
     if (rss is null)
         return null;
 
@@ -367,29 +313,23 @@ string getFirstString(Resources rss)
     return rss[ 0 ].get!string;
 }
 
-string[] getAsStringArray(Resources rss)
-{
+string[] getAsStringArray(Resources rss){
     string[] res;
 
-    foreach (rs; rss)
-    {
+    foreach (rs; rss) {
         res ~= rs.data;
     }
     return res;
 }
 
-string getAsStringify(Resources rss)
-{
+string getAsStringify(Resources rss){
     string res = "";
 
-    foreach (rs; rss)
-    {
+    foreach (rs; rss) {
         if (res.length != 0)
             res ~= "," ~ rs.data;
-        else
-        {
-            if (rs.data !is null)
-            {
+        else{
+            if (rs.data !is null) {
                 res ~= rs.asString();
             }
         }
@@ -397,12 +337,9 @@ string getAsStringify(Resources rss)
     return res;
 }
 
-bool anyExists(Resources rss, string[] objects)
-{
-    foreach (rs; rss)
-    {
-        foreach (object; objects)
-        {
+bool anyExists(Resources rss, string[] objects){
+    foreach (rs; rss) {
+        foreach (object; objects) {
             if (rs.m_string == object)
                 return true;
         }
@@ -410,10 +347,8 @@ bool anyExists(Resources rss, string[] objects)
     return false;
 }
 
-bool anyExists(T) (Resources rss, T object)
-{
-    foreach (rs; rss)
-    {
+bool anyExists(T) (Resources rss, T object){
+    foreach (rs; rss) {
         if (rs == object)
             return true;
     }

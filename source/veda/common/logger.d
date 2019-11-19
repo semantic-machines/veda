@@ -11,13 +11,11 @@ private
 }
 
 /// Процесс отвечающий за логгирование
-private void logger_process()
-{
+private void logger_process(){
     //writeln("SPAWN: Logger");
     LoggerQueue[ string ] llq_2_filename;
 
-    while (true)
-    {
+    while (true) {
         try
         {
             // Receive a message from the owner thread.
@@ -27,8 +25,7 @@ private void logger_process()
             string      file_name = msg[ 1 ];
 
             LoggerQueue llq = llq_2_filename.get(file_name, null);
-            if (llq is null)
-            {
+            if (llq is null) {
                 llq                         = new LoggerQueue(file_name, msg[ 2 ]);
                 llq_2_filename[ file_name ] = llq;
             }
@@ -59,17 +56,16 @@ private void logger_process()
 public class ArrayLogger
 {
     OutBuffer obuff;
-    Logger log;
-    
+    Logger    log;
+
 
     this(Logger _log)
     {
         obuff = new OutBuffer();
-        log = _log;
+        log   = _log;
     }
 
-    public void trace(Char, A ...) (in Char[] fmt, A args)
-    {
+    public void trace(Char, A ...) (in Char[] fmt, A args){
         auto writer = appender!string();
 
         formattedWrite(writer, fmt, args);
@@ -86,13 +82,12 @@ public class ArrayLogger
         else
             obuff.writefln("%04d-%02d-%02d %02d:%02d:%02d.%06d", dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
                            fsec);
-            
+
         if (log !is null)
-	        log.trace (fmt, args);    
+            log.trace(fmt, args);
     }
 
-    string raw()
-    {
+    string raw(){
         return obuff.toString();
     }
 }
@@ -119,14 +114,11 @@ public class Logger
     private string src      = "";
     Tid            tid_logger;
 
-    private void init_tid_logger()
-    {
-        if (tid_logger == Tid.init)
-        {
+    private void init_tid_logger(){
+        if (tid_logger == Tid.init) {
             tid_logger = locate("Logger");
 
-            if (tid_logger == Tid.init)
-            {
+            if (tid_logger == Tid.init) {
                 tid_logger = spawn(&logger_process);
                 register("Logger", tid_logger);
             }
@@ -141,8 +133,7 @@ public class Logger
         ext      = _ext;
     }
 
-    public void close()
-    {
+    public void close(){
         init_tid_logger();
         send(tid_logger, 'X', log_name, ext, src, "");
     }
@@ -153,8 +144,7 @@ public class Logger
                 fmt = разметка сообщения
                 args = выводимые переменные
      */
-    public void trace(Char, A ...) (in Char[] fmt, A args)
-    {
+    public void trace(Char, A ...) (in Char[] fmt, A args){
         init_tid_logger();
         auto writer = appender!string();
         formattedWrite(writer, fmt, args);
@@ -167,8 +157,7 @@ public class Logger
                 fmt = разметка сообщения
                 args = выводимые переменные
      */
-    public void trace_log_and_console(Char, A ...) (in Char[] fmt, A args)
-    {
+    public void trace_log_and_console(Char, A ...) (in Char[] fmt, A args){
         init_tid_logger();
         auto writer = appender!string();
         formattedWrite(writer, fmt, args);
@@ -181,8 +170,7 @@ public class Logger
                 fmt = разметка сообщения
                 args = выводимые переменные
      */
-    public void tracec(Char, A ...) (in Char[] fmt, A args)
-    {
+    public void tracec(Char, A ...) (in Char[] fmt, A args){
         init_tid_logger();
         auto writer = appender!string();
         formattedWrite(writer, fmt, args);
@@ -195,8 +183,7 @@ public class Logger
                 fmt = разметка сообщения
                 args = выводимые переменные
      */
-    public void trace_console(Char, A ...) (in Char[] fmt, A args)
-    {
+    public void trace_console(Char, A ...) (in Char[] fmt, A args){
         init_tid_logger();
         auto writer = appender!string();
         formattedWrite(writer, fmt, args);
@@ -210,8 +197,7 @@ public class Logger
                 data = указатель на данные
                 length = длинна блока данных
      */
-    public void trace_io(bool io, byte *data, ulong length)
-    {
+    public void trace_io(bool io, byte *data, ulong length){
         init_tid_logger();
         if (io == true)
             send(tid_logger, 'I', log_name, ext, src, cast(immutable)(cast(char *)data)[ 0..length ]);
@@ -242,14 +228,13 @@ private class LoggerQueue
 
         try
         {
-        	auto path = "logs";
+            auto path = "logs";
             std_file.mkdir(path);
             writeln("create folder: ", path);
         }
         catch (Exception ex)
         {
         }
-
     }
 
     ~this()
@@ -257,8 +242,7 @@ private class LoggerQueue
         fclose(ff);
     }
 
-    private void open_new_file()
-    {
+    private void open_new_file(){
         count = 0;
 
         SysTime    time = Clock.currTime();
@@ -274,8 +258,7 @@ private class LoggerQueue
 
         writer.put(cast(char)0);
 
-        if (ff !is null)
-        {
+        if (ff !is null) {
             fflush(ff);
             fclose(ff);
         }
@@ -283,8 +266,7 @@ private class LoggerQueue
         ff = fopen(writer.data.ptr, "aw");
     }
 
-    void trace_io(bool io, string data)
-    {
+    void trace_io(bool io, string data){
         if (data.length <= 0)
             return;
 
@@ -318,8 +300,7 @@ private class LoggerQueue
         prev_time = dt.day;
     }
 
-    string trace(string arg, string src)
-    {
+    string trace(string arg, string src){
         SysTime    time = Clock.currTime();
         const auto dt   = cast(DateTime)time;
         const auto fsec = time.fracSecs.total !"usecs";
@@ -354,8 +335,7 @@ private class LoggerQueue
         return writer.data;
     }
 
-    void trace_log_and_console(string arg, string src)
-    {
+    void trace_log_and_console(string arg, string src){
         write(trace(arg, src), "\n");
     }
 }
