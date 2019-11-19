@@ -131,3 +131,16 @@ vdi:index_person
   vdi:indexed_field v-s:tabNumber ;
   vdi:indexed_field v-s:hasAccount ;
 .
+
+# ----------------------------------
+
+vdi:index_type
+  rdf:type vdi:ClassIndex ;
+  vdi:forProperty rdf:type ;
+  vdi:inherited_index vdi:index_class_name ;
+.
+vdi:index_class_name
+  rdf:type vdi:ClassIndex ;
+  vdi:forClass rdfs:Resource ;
+  vdi:indexed_field rdfs:label ;
+.
