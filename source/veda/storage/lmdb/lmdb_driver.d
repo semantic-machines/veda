@@ -300,9 +300,9 @@ public class LmdbDriver : KeyValueDB
             }
             if (rc != 0)
             {
-                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
-                                                                                                                                         rc)),
-                                          _key);
+//                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
+//                                                                                                                                         rc)),
+//                                          _key);
                 mdb_txn_abort(txn);
                 return ResultCode.FailStore;
             }
