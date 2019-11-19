@@ -1,7 +1,7 @@
 module veda.bind.tarantool.tnt_insert;
 
-import veda.bind.tarantool.tnt_stream;
 import core.stdc.config;
+import veda.bind.tarantool.tnt_stream;
 
 extern (C) :
 
@@ -50,7 +50,6 @@ alias c_long ssize_t;
  *
  * \retval number of bytes written to stream
  */
-
 
 ssize_t tnt_insert(tnt_stream *s, uint space, tnt_stream *tuple);
 

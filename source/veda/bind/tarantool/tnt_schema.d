@@ -1,8 +1,8 @@
 module veda.bind.tarantool.tnt_schema;
 
+import core.stdc.config;
 import veda.bind.tarantool.tnt_reply;
 import veda.bind.tarantool.tnt_stream;
-import core.stdc.config;
 
 extern (C) :
 
@@ -49,32 +49,29 @@ struct mh_assoc_t;
  * \internal
  * \brief index value information
  */
-struct tnt_schema_ival
-{
-    const(char)*name;
-    uint name_len;
-    uint number;
+struct tnt_schema_ival {
+	const(char) *name;
+	uint name_len;
+	uint number;
 }
 
 /**
  * \internal
  * \brief space value information
  */
-struct tnt_schema_sval
-{
-    char       *name;
-    uint       name_len;
-    uint       number;
-    mh_assoc_t *index;
+struct tnt_schema_sval {
+	char       *name;
+	uint name_len;
+	uint number;
+	mh_assoc_t *index;
 }
 
 /**
  * \brief Schema of tarantool instance
  */
-struct tnt_schema
-{
-    mh_assoc_t *space_hash; /*!< hash with spaces */
-    int        alloc;       /*!< allocation mark */
+struct tnt_schema {
+	mh_assoc_t *space_hash;	/*!< hash with spaces */
+	int alloc;				/*!< allocation mark */
 }
 
 /**
@@ -92,7 +89,6 @@ struct tnt_schema
  * \retval  0 ok
  */
 
-
 int tnt_schema_add_spaces(tnt_schema *sch, tnt_reply_ *r);
 
 /**
@@ -109,7 +105,6 @@ int tnt_schema_add_spaces(tnt_schema *sch, tnt_reply_ *r);
  * \retval  -1 failed parsing/oom
  * \retval  0 ok
  */
-
 
 int tnt_schema_add_indexes(tnt_schema *sch, tnt_reply_ *r);
 
@@ -151,7 +146,7 @@ int tnt_schema_stoiid(
  * \returns new schema object
  * \retval  NULL oom
  */
-tnt_schema *tnt_schema_new(tnt_schema *sch);
+tnt_schema * tnt_schema_new(tnt_schema *sch);
 
 /**
  * \brief Reset schema to default state (empty)
@@ -165,9 +160,7 @@ void tnt_schema_flush(tnt_schema *sch);
  */
 void tnt_schema_free(tnt_schema *sch);
 
-
 ssize_t tnt_get_space(tnt_stream *s);
-
 
 ssize_t tnt_get_index(tnt_stream *s);
 

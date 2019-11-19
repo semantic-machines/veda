@@ -43,17 +43,17 @@ alias c_long ssize_t;
 
 alias c_long function(void *ptr, const(char) *buf, size_t size) tnt_iob_tx_t;
 struct iovec;
+
 alias c_long function(void *ptr, iovec *iov, int count) tnt_iob_txv_t;
 
-struct tnt_iob
-{
-    char          *buf;
-    size_t        off;
-    size_t        top;
-    size_t        size;
-    tnt_iob_tx_t  tx;
-    tnt_iob_txv_t txv;
-    void          *ptr;
+struct tnt_iob {
+	char          *buf;
+	size_t off;
+	size_t top;
+	size_t size;
+	tnt_iob_tx_t tx;
+	tnt_iob_txv_t txv;
+	void          *ptr;
 }
 
 int tnt_iob_init(

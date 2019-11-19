@@ -1,7 +1,7 @@
 module veda.bind.tarantool.tnt_auth;
 
-import veda.bind.tarantool.tnt_stream;
 import core.stdc.config;
+import veda.bind.tarantool.tnt_stream;
 
 extern (C) :
 
