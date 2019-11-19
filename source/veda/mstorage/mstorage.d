@@ -134,6 +134,18 @@ void init(string node_id)
             log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }
 
+		while (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {	
+			sticket = *core_context.get_systicket_from_storage();
+			
+			if (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {
+				log.trace("system ticket not found, sleep and repeate...");
+				core.thread.Thread.sleep(dur!("msecs")(100));				
+			}
+		}
+		
+        log.trace("system ticket=%s", sticket);
+		set_global_systicket(sticket);	
+
         return;
     } catch (Throwable ex)
     {

@@ -32,6 +32,8 @@ interface Context
 
     @property
     public Ticket sys_ticket(bool is_new = false);
+    
+    public Ticket *get_systicket_from_storage();
 
     // *************************************************** external API ? *********************************** //
     ref string[ string ] get_prefix_map();
