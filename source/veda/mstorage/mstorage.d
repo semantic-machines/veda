@@ -14,11 +14,10 @@ private
            veda.onto.bj8individual.individual8json;
     import veda.common.logger, veda.core.util.utils, veda.core.common.transaction;
     import veda.mstorage.storage_manager, veda.mstorage.nanomsg_channel, veda.storage.storage;
-    import veda.storage.common, veda.authorization.authorization, veda.authorization.az_client, veda.authorization.az_lib;
+    import veda.storage.common, veda.authorization.authorization, veda.authorization.az_lib;
     import veda.onto.individual;
 }
 
-alias veda.mstorage.storage_manager ticket_storage_module;
 alias veda.mstorage.storage_manager indv_storage_thread;
 
 // ////// Logger ///////////////////////////////////////////
@@ -94,26 +93,7 @@ void main(char[][] args)
 
 public Authorization get_acl_client(Logger log)
 {
-    Authorization acl_client;
-
-    try
-    {
-        string[ string ] properties;
-        properties = readProperties("./veda.properties");
-        string acl_service = properties.as!(string)("acl_service_url");
-        if (acl_service !is null)
-            acl_client = new ClientAuthorization(acl_service, log);
-        else
-        {
-            acl_client = new AuthorizationUseLib(log);
-        }
-    }
-    catch (Throwable ex)
-    {
-        log.trace("ERR! unable read ./veda.properties");
-    }
-
-    return acl_client;
+    return new AuthorizationUseLib(log);
 }
 
 void init(string node_id)
@@ -153,6 +133,18 @@ void init(string node_id)
 
             log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }
+
+		while (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {	
+			sticket = *core_context.get_systicket_from_storage();
+			
+			if (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {
+				log.trace("system ticket not found, sleep and repeate...");
+				core.thread.Thread.sleep(dur!("msecs")(100));				
+			}
+		}
+		
+        log.trace("system ticket=%s", sticket);
+		set_global_systicket(sticket);	
 
         return;
     } catch (Throwable ex)
@@ -315,7 +307,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems,
                                                        event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     //commit (OptAuthorize.YES, tnx);
@@ -340,7 +332,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.ADD_IN, &individual,
                                                        assigned_subsystems, event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -363,7 +355,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.SET_IN, &individual,
                                                        assigned_subsystems, event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -387,7 +379,7 @@ public string execute_json(string in_msg, Context ctx)
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual,
                                                        assigned_subsystems,
                                                        event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -410,7 +402,7 @@ public string execute_json(string in_msg, Context ctx)
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE, &individual,
                                                        assigned_subsystems, event_id.str,
-                                                       OptFreeze.NONE, OptAuthorize.YES,
+                                                       OptAuthorize.YES,
                                                        OptTrace.NONE);
 
                     rc ~= ires;
@@ -495,7 +487,7 @@ private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
 
         if (items.length > 0)
         {
-            rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, OptFreeze.NONE, op_id);
+            rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, op_id);
 
             log.trace("commit: rc=%s", rc);
 
@@ -517,7 +509,6 @@ static const byte EXISTS_TYPE = 1;
 private OpResult add_to_transaction(Authorization acl_client, ref Transaction tnx, Ticket *ticket, INDV_OP cmd, Individual *indv,
                                     long assigned_subsystems,
                                     string event_id,
-                                    OptFreeze opt_freeze,
                                     OptAuthorize opt_request,
                                     OptTrace opt_trace)
 {
@@ -689,7 +680,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 if (tnx.is_autocommit)
                 {
                     res.result =
-                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                                  res.op_id);
                 }
                 else
@@ -708,7 +699,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 if (res.result == ResultCode.Ok)
                 {
                     res.result =
-                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id, opt_freeze,
+                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id,
                                                  res.op_id);
                 }
             }
@@ -742,7 +733,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             if (tnx.is_autocommit)
             {
                 res.result =
-                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id, opt_freeze,
+                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                              res.op_id);
             }
             else

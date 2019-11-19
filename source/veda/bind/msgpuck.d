@@ -1,8 +1,8 @@
 module veda.bind.msgpuck;
 
 import core.stdc.config;
-import core.stdc.stdio;
 import core.stdc.stdarg;
+import core.stdc.stdio;
 
 extern (C) :
 
@@ -150,19 +150,18 @@ extern (C) :
 /**
  * \brief MsgPack data types
  */
-enum mp_type
-{
-    MP_NIL    = 0,
-    MP_UINT   = 1,
-    MP_INT    = 2,
-    MP_STR    = 3,
-    MP_BIN    = 4,
-    MP_ARRAY  = 5,
-    MP_MAP    = 6,
-    MP_BOOL   = 7,
-    MP_FLOAT  = 8,
-    MP_DOUBLE = 9,
-    MP_EXT    = 10
+enum mp_type {
+	MP_NIL    = 0,
+	MP_UINT   = 1,
+	MP_INT    = 2,
+	MP_STR    = 3,
+	MP_BIN    = 4,
+	MP_ARRAY  = 5,
+	MP_MAP    = 6,
+	MP_BOOL   = 7,
+	MP_FLOAT  = 8,
+	MP_DOUBLE = 9,
+	MP_EXT    = 10
 }
 
 /**
@@ -216,7 +215,7 @@ uint mp_sizeof_array(uint size);
  * \return \a data + \link mp_sizeof_array() mp_sizeof_array(size) \endlink
  * \sa mp_sizeof_array
  */
-char *mp_encode_array(char *data, uint size);
+char * mp_encode_array(char *data, uint size);
 
 /**
  * \brief Check that \a cur buffer has enough bytes to decode an array header
@@ -283,7 +282,7 @@ uint mp_sizeof_map(uint size);
  * \return \a data + \link mp_sizeof_map() mp_sizeof_map(size)\endlink
  * \sa mp_sizeof_map
  */
-char *mp_encode_map(char *data, uint size);
+char * mp_encode_map(char *data, uint size);
 
 /**
  * \brief Check that \a cur buffer has enough bytes to decode a map header
@@ -343,7 +342,7 @@ uint mp_sizeof_int(long num);
  * \sa \link mp_encode_array() An usage example \endlink
  * \sa mp_sizeof_uint()
  */
-char *mp_encode_uint(char *data, ulong num);
+char * mp_encode_uint(char *data, ulong num);
 
 /**
  * \brief Encode a signed integer \a num.
@@ -355,7 +354,7 @@ char *mp_encode_uint(char *data, ulong num);
  * \sa mp_sizeof_int()
  * \pre \a num < 0
  */
-char *mp_encode_int(char *data, long num);
+char * mp_encode_int(char *data, long num);
 
 /**
  * \brief Check that \a cur buffer has enough bytes to decode an uint
@@ -435,7 +434,7 @@ uint mp_sizeof_double(double num);
  * \sa mp_sizeof_float()
  * \sa \link mp_encode_array() An usage example \endlink
  */
-char *mp_encode_float(char *data, float num);
+char * mp_encode_float(char *data, float num);
 
 /**
  * \brief Encode a double \a num.
@@ -446,7 +445,7 @@ char *mp_encode_float(char *data, float num);
  * \sa \link mp_encode_array() An usage example \endlink
  * \sa mp_sizeof_double()
  */
-char *mp_encode_double(char *data, double num);
+char * mp_encode_double(char *data, double num);
 
 /**
  * \brief Check that \a cur buffer has enough bytes to decode a float
@@ -554,7 +553,7 @@ uint mp_sizeof_bin(uint len);
  * \return \a data + mp_sizeof_strl(len)
  * \sa mp_sizeof_strl()
  */
-char *mp_encode_strl(char *data, uint len);
+char * mp_encode_strl(char *data, uint len);
 
 /**
  * \brief Encode a string of length \a len.
@@ -566,7 +565,7 @@ char *mp_encode_strl(char *data, uint len);
  * data + mp_sizeof_strl(len) + len
  * \sa mp_encode_strl
  */
-char *mp_encode_str(char *data, const(char) *str, uint len);
+char * mp_encode_str(char *data, const(char) *str, uint len);
 
 /**
  * \brief Encode a binstring header of length \a len.
@@ -576,7 +575,7 @@ char *mp_encode_str(char *data, const(char) *str, uint len);
  * \return data + mp_sizeof_binl(\a len)
  * \sa mp_encode_strl
  */
-char *mp_encode_binl(char *data, uint len);
+char * mp_encode_binl(char *data, uint len);
 
 /**
  * \brief Encode a binstring of length \a len.
@@ -588,7 +587,7 @@ char *mp_encode_binl(char *data, uint len);
  * data + mp_sizeof_binl(\a len) + \a len
  * \sa mp_encode_strl
  */
-char *mp_encode_bin(char *data, const(char) *str, uint len);
+char * mp_encode_bin(char *data, const(char) *str, uint len);
 
 /**
  * \brief Encode a sequence of values according to format string.
@@ -682,7 +681,7 @@ uint mp_decode_strl(const(char *) *data);
  * \post *data = *data + mp_sizeof_str(*len)
  * \sa mp_encode_binl
  */
-char *mp_decode_str(const(char *) *data, uint *len);
+char * mp_decode_str(const(char *) *data, uint *len);
 
 /**
  * \brief Decode a length of a binstring from MsgPack \a data
@@ -701,7 +700,7 @@ uint mp_decode_binl(const(char *) *data);
  * \post *data = *data + mp_sizeof_str(*len)
  * \sa mp_encode_binl
  */
-const(char) *mp_decode_bin(const(char *) *data, uint *len);
+const(char) * mp_decode_bin(const(char *) *data, uint *len);
 
 /**
  * \brief Calculate exact buffer size needed to store the nil value.
@@ -719,7 +718,7 @@ uint mp_sizeof_nil();
  * \sa \link mp_encode_array() An usage example \endlink
  * \sa mp_sizeof_nil()
  */
-char *mp_encode_nil(char *data);
+char * mp_encode_nil(char *data);
 
 /**
  * \brief Check that \a cur buffer has enough bytes to decode nil
@@ -756,7 +755,7 @@ uint mp_sizeof_bool(bool val);
  * \sa \link mp_encode_array() An usage example \endlink
  * \sa mp_sizeof_bool()
  */
-char *mp_encode_bool(char *data, bool val);
+char * mp_encode_bool(char *data, bool val);
 
 /**
  * \brief Check that \a cur buffer has enough bytes to decode a bool value
@@ -864,19 +863,18 @@ int mp_check(const(char *) *data, const(char) *end);
 uint mp_decode_array_slowpath(ubyte c, const(char *) *data);
 
 /** See mp_parser_hint */
-enum
-{
-    MP_HINT          = -32,
-    MP_HINT_STR_8    = -32,
-    MP_HINT_STR_16   = -33,
-    MP_HINT_STR_32   = -34,
-    MP_HINT_ARRAY_16 = -35,
-    MP_HINT_ARRAY_32 = -36,
-    MP_HINT_MAP_16   = -37,
-    MP_HINT_MAP_32   = -38,
-    MP_HINT_EXT_8    = -39,
-    MP_HINT_EXT_16   = -40,
-    MP_HINT_EXT_32   = -41
+enum {
+	MP_HINT          = -32,
+	MP_HINT_STR_8    = -32,
+	MP_HINT_STR_16   = -33,
+	MP_HINT_STR_32   = -34,
+	MP_HINT_ARRAY_16 = -35,
+	MP_HINT_ARRAY_32 = -36,
+	MP_HINT_MAP_16   = -37,
+	MP_HINT_MAP_32   = -38,
+	MP_HINT_EXT_8    = -39,
+	MP_HINT_EXT_16   = -40,
+	MP_HINT_EXT_32   = -41
 }
 
 void mp_next_slowpath(const(char *) *data, int k);

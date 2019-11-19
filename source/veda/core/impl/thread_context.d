@@ -558,7 +558,6 @@ class PThreadContext : Context
     }
 
     public OpResult update(string src, long tnx_id, Ticket *ticket, INDV_OP cmd, Individual *indv, string event_id, MODULES_MASK assigned_subsystems,
-                           OptFreeze opt_freeze,
                            OptAuthorize opt_request)
     {
         //log.trace("[%s] add_to_transaction: %s %s", name, text(cmd), *indv);
@@ -625,26 +624,6 @@ class PThreadContext : Context
         }
     }
 
-    public void freeze()
-    {
-        version (isModule)
-        {
-            JSONValue req_body;
-            req_body[ "function" ] = "freeze";
-            OpResult  res = reqrep_json_2_main_module(req_body)[ 0 ];
-        }
-    }
-
-    public void unfreeze()
-    {
-        version (isModule)
-        {
-            JSONValue req_body;
-            req_body[ "function" ] = "unfreeze";
-            OpResult  res = reqrep_json_2_main_module(req_body)[ 0 ];
-        }
-    }
-
     //////////////////////////////////////////////// MODULES INTERACTION
 
     public long get_operation_state(MODULE module_id, long wait_op_id)
@@ -700,7 +679,7 @@ class PThreadContext : Context
                 long update_counter = item.new_indv.getFirstInteger("v-s:updateCounter", -1);
 
                 rc =
-                    this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems, OptFreeze.NONE,
+                    this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems,
                                 opt_authorize).result;
 
                 if (rc == ResultCode.InternalServerError)
@@ -723,7 +702,6 @@ class PThreadContext : Context
 
                         rc =
                             this.update(in_tnx.src, in_tnx.id, ticket, item.cmd, &item.new_indv, item.event_id, item.assigned_subsystems,
-                                        OptFreeze.NONE,
                                         opt_authorize).result;
 
                         if (rc != ResultCode.InternalServerError)

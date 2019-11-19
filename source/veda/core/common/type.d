@@ -71,12 +71,6 @@ public struct Ticket
     }
 }
 
-enum OptFreeze
-{
-    INGORE,
-    NONE
-}  
-    
 enum OptAuthorize
 {
     NO,
