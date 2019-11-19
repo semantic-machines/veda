@@ -5,8 +5,7 @@ module veda.core.common.type;
 
 import veda.common.type;
 
-public enum INDV_OP : byte
-{
+public enum INDV_OP : byte {
     /// Сохранить
     PUT         = 1,
 
@@ -35,8 +34,7 @@ public enum INDV_OP : byte
 /**
  * Обьект - сессионный тикет
  */
-public struct Ticket
-{
+public struct Ticket {
     /// ID
     string     id;
 
@@ -71,40 +69,35 @@ public struct Ticket
     }
 }
 
-enum OptAuthorize
-{
+enum OptAuthorize {
     NO,
     YES
 }
-    
-enum OptTrace
-{
+
+enum OptTrace {
     TRACE,
     NONE
-}   
-    
-public struct OpResult
-{   
+}
+
+public struct OpResult {
     ResultCode result;
     long       op_id;
-}   
-    
+}
+
 /// Результат
-public enum Result
-{
+public enum Result {
     /// OK
     Ok,
-    
+
     /// Ошибка
     Err,
-    
+
     /// Ничего
     Nothing
 }
 
 /// Битовые поля для прав
-public enum Access : ubyte
-{
+public enum Access : ubyte {
     /// Создание
     can_create  = 1,
 

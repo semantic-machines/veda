@@ -9,8 +9,8 @@ import veda.storage.tarantool.tarantool_driver;
 
 public class TarantoolStorage : Storage
 {
-    private KeyValueDB    tickets_storage_r;
-    private KeyValueDB    inividuals_storage_r;
+    private KeyValueDB tickets_storage_r;
+    private KeyValueDB inividuals_storage_r;
 
     this(string _name, Logger _log)
     {
@@ -23,24 +23,21 @@ public class TarantoolStorage : Storage
         log.trace_log_and_console("DESTROY OBJECT TarantoolStorage:[%s]", name);
     }
 
-    override KeyValueDB get_tickets_storage_r()
-    {
+    override KeyValueDB get_tickets_storage_r(){
         if (tickets_storage_r is null)
             tickets_storage_r = new TarantoolDriver(log, "TICKETS", 513);
 
         return tickets_storage_r;
     }
 
-    override KeyValueDB get_inividuals_storage_r()
-    {
+    override KeyValueDB get_inividuals_storage_r(){
         if (inividuals_storage_r is null)
             inividuals_storage_r = new TarantoolDriver(log, "INDIVIDUALS", 512);
 
         return inividuals_storage_r;
     }
 
-    override long count_individuals()
-    {
+    override long count_individuals(){
         return get_inividuals_storage_r().count_entries();
     }
 }

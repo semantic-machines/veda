@@ -28,8 +28,7 @@ alias void MDB_cursor;
    Key sizes must be between 1 and mdb_env_get_maxkeysize() inclusive. The same applies to data sizes in databases with the MDB_DUPSORT flag. Other data items can in theory be from 0 to 0xffffffff bytes long.
 
  */
-struct MDB_val
-{
+struct MDB_val {
     /// size of the data item
     size_t mv_size;
 
@@ -44,8 +43,7 @@ alias int MDB_cmp_func(const MDB_val *a, const MDB_val *b);
 alias void MDB_rel_func(MDB_val *item, void *oldptr, void *newptr, void *relctx);
 
 /// mdb_env
-enum
-{
+enum {
     MDB_FIXEDMAP   =    0x01,     ///-
     MDB_NOSUBDIR   =    0x4000,   ///-
     MDB_NOSYNC     =    0x10000,  ///-
@@ -128,8 +126,7 @@ enum
 
 
 /// mdb_dbi_open
-enum
-{
+enum {
     MDB_REVERSEKEY =    0x02,   ///-
     MDB_DUPSORT    =    0x04,   ///-
     MDB_INTEGERKEY =    0x08,   ///-
@@ -140,8 +137,7 @@ enum
 }
 
 /// mdb_put
-enum
-{
+enum {
     MDB_NOOVERWRITE =   0x10,    ///-
     MDB_NODUPDATA   =   0x20,    ///-
     MDB_CURRENT     =   0x40,    ///-
@@ -156,8 +152,7 @@ enum
 
    This is the set of all operations for retrieving data using a cursor.
  */
-enum MDB_cursor_op
-{
+enum MDB_cursor_op {
     MDB_FIRST,          /// Position at first key/data item
     MDB_FIRST_DUP,      /// Position at first data item of current key. Only for #MDB_DUPSORT
     MDB_GET_BOTH,       /// Position at key/data pair. Only for #MDB_DUPSORT
@@ -179,8 +174,7 @@ enum MDB_cursor_op
 }
 
 /// errors
-enum
-{
+enum {
     /// success
     MDB_SUCCESS          =  0,
     /// key/data pair already exists
@@ -226,8 +220,7 @@ enum
 }
 
 /// statistics for a database in the environment
-struct MDB_stat
-{
+struct MDB_stat {
     uint   ms_psize;            /// Size of a database page. This is currently the same for all databases.
     uint   ms_depth;            /// Depth (height) of the B-tree
     size_t ms_branch_pages;     /// Number of internal (non-leaf) pages
@@ -237,8 +230,7 @@ struct MDB_stat
 }
 
 /// information about the environment
-struct MDB_envinfo
-{
+struct MDB_envinfo {
     void   *me_mapaddr;         /// Address of map, if fixed
     size_t me_mapsize;          /// Size of the data memory map
     size_t me_last_pgno;        /// ID of the last used page

@@ -17,8 +17,7 @@ public abstract class Storage
     abstract KeyValueDB get_tickets_storage_r();
     abstract KeyValueDB get_inividuals_storage_r();
 
-    public string get_binobj_from_individual_storage(string uri)
-    {
+    public string get_binobj_from_individual_storage(string uri){
         string res = get_inividuals_storage_r.get_binobj(uri);
 
         if (res !is null && res.length < 10)
@@ -27,19 +26,16 @@ public abstract class Storage
         return res;
     }
 
-    public void get_obj_from_individual_storage(string uri, ref Individual indv)
-    {
+    public void get_obj_from_individual_storage(string uri, ref Individual indv){
         get_inividuals_storage_r.get_individual(uri, indv);
     }
 
-    public void reopen_ro_ticket_manager_db()
-    {
+    public void reopen_ro_ticket_manager_db(){
         get_tickets_storage_r().reopen();
     }
 }
 
-string getNowAsString()
-{
+string getNowAsString(){
     SysTime sysTime = Clock.currTime();
 
     return sysTime.toISOExtString();

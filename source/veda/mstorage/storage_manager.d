@@ -19,45 +19,36 @@ private
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
 Logger _log;
-Logger log()
-{
+Logger log(){
     if (_log is null)
         _log = new Logger("veda-core-mstorage", "log", "STORAGE-MANAGER");
     return _log;
 }
 
-public string find(P_MODULE storage_id, string uri)
-{
+public string find(P_MODULE storage_id, string uri){
     string res;
     Tid    tid_subject_manager = getTid(P_MODULE.subject_manager);
 
-    if (tid_subject_manager !is Tid.init)
-    {
+    if (tid_subject_manager !is Tid.init) {
         send(tid_subject_manager, CMD_FIND, uri, thisTid);
         receive((string key, string data, Tid tid)
                 {
                     res = data;
                 });
-    }
-    else
+    }else
         throw new Exception("find [" ~ uri ~ "], !!! NOT FOUND TID=" ~ text(P_MODULE.subject_manager));
 
     return res;
 }
 
-public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
-{
+public ResultCode flush_int_module(P_MODULE f_module, bool is_wait){
     ResultCode rc;
     Tid        tid = getTid(f_module);
 
-    if (tid != Tid.init)
-    {
-        if (is_wait == false)
-        {
+    if (tid != Tid.init) {
+        if (is_wait == false) {
             send(tid, CMD_COMMIT);
-        }
-        else
-        {
+        }else  {
             send(tid, CMD_COMMIT, thisTid);
             receive((bool isReady) {});
         }
@@ -67,13 +58,11 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait)
 }
 
 public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id,
-                       out long op_id)
-{
+                       out long op_id){
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
-    if (tid != Tid.init)
-    {
+    if (tid != Tid.init) {
         send(tid, src, opt_request, _ti, tnx_id, thisTid);
 
         receive((ResultCode _rc, Tid from)
@@ -91,13 +80,11 @@ public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request
                        string new_binobj,
                        long update_counter,
                        string event_id, long tnx_id, long assigned_subsystems,
-                       out long op_id)
-{
+                       out long op_id){
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
-    if (tid != Tid.init)
-    {
+    if (tid != Tid.init) {
         immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
                                                                   false, assigned_subsystems);
 
@@ -114,8 +101,7 @@ public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request
     return rc;
 }
 
-public void individuals_manager(P_MODULE _storage_id, string node_id)
-{
+public void individuals_manager(P_MODULE _storage_id, string node_id){
     Queue                        individual_queue;
     Queue                        uris_queue;
 
@@ -140,18 +126,13 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
     string tarantool_url = properties.as!(string)("tarantool_url");
 
-    if (tarantool_url !is null)
-    {
-        if (_storage_id == P_MODULE.subject_manager)
-        {
+    if (tarantool_url !is null) {
+        if (_storage_id == P_MODULE.subject_manager) {
             storage = new TarantoolDriver(log, "individuals", 512);
             db_name = individuals_db_path;
         }
-    }
-    else
-    {
-        if (_storage_id == P_MODULE.subject_manager)
-        {
+    }else  {
+        if (_storage_id == P_MODULE.subject_manager) {
             storage = new LmdbDriver(individuals_db_path, DBMode.RW, "individuals_manager", log);
             db_name = individuals_db_path;
         }
@@ -176,11 +157,9 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
     try
     {
-        if (storage_id == P_MODULE.subject_manager)
-        {
+        if (storage_id == P_MODULE.subject_manager) {
             individual_queue = new Queue(queue_db_path, "individuals-flow", Mode.RW, log);
-            if (individual_queue.open() == false)
-            {
+            if (individual_queue.open() == false) {
                 writefln("thread [%s] terminated", process_name);
                 // SEND ready
                 receive((Tid tid_response_reciever)
@@ -196,20 +175,17 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
             uris_queue.open();
 
             sock = nn_socket(AF_SP, NN_PUB);
-            if (sock >= 0)
-            {
-                if (nn_bind(sock, cast(char *)notify_channel_url) >= 0)
-                {
+            if (sock >= 0) {
+                if (nn_bind(sock, cast(char *)notify_channel_url) >= 0) {
                     already_notify_channel = true;
                 }
             }
         }
 
-        bool is_exit   = false;
+        bool is_exit = false;
         module_info = new ModuleInfoFile(text(storage_id), _log, OPEN_MODE.WRITER);
 
-        if (!module_info.is_ready)
-        {
+        if (!module_info.is_ready) {
             writefln("thread [%s] terminated", process_name);
             // SEND ready
             receive((Tid tid_response_reciever)
@@ -230,15 +206,13 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                     send(tid_response_reciever, true);
                 });
 
-        while (is_exit == false)
-        {
+        while (is_exit == false) {
             try
             {
                 receive(
                         (byte cmd, P_MODULE f_module, string _msg)
                         {
-                            if (cmd == CMD_MSG)
-                            {
+                            if (cmd == CMD_MSG) {
                                 string msg = "MSG:" ~ text(f_module) ~ ":" ~ _msg;
                                 int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
                                 log.trace("SEND %d bytes [%s] TO %s", bytes, msg, notify_channel_url);
@@ -246,8 +220,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         },
                         (byte cmd, P_MODULE f_module, long wait_op_id)
                         {
-                            if (cmd == CMD_COMMIT)
-                            {
+                            if (cmd == CMD_COMMIT) {
                                 string msg = "MSG:" ~ text(f_module) ~ ":COMMIT";
                                 int bytes = nn_send(sock, cast(char *)msg, msg.length + 1, 0);
                                 log.trace("SEND %d bytes [%s] TO %s, wait_op_id=%d", bytes, msg, notify_channel_url, wait_op_id);
@@ -255,19 +228,15 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         },
                         (byte cmd)
                         {
-                            if (cmd == CMD_COMMIT)
-                            {
-                                if (committed_op_id != op_id)
-                                {
+                            if (cmd == CMD_COMMIT) {
+                                if (committed_op_id != op_id) {
                                     storage.flush(1);
 
                                     if (last_reopen_rw_op_id == 0)
                                         last_reopen_rw_op_id = op_id;
 
-                                    if (storage.get_type == DBType.LMDB)
-                                    {
-                                        if (op_id - last_reopen_rw_op_id > max_count_updates)
-                                        {
+                                    if (storage.get_type == DBType.LMDB) {
+                                        if (op_id - last_reopen_rw_op_id > max_count_updates) {
                                             log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
                                             storage.close();
                                             storage.open();
@@ -283,16 +252,14 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                         },
                         (byte cmd, Tid tid_response_reciever)
                         {
-                            if (cmd == CMD_COMMIT)
-                            {
+                            if (cmd == CMD_COMMIT) {
                                 committed_op_id = op_id;
                                 storage.flush(1);
 
                                 if (last_reopen_rw_op_id == 0)
                                     last_reopen_rw_op_id = op_id;
 
-                                if (op_id - last_reopen_rw_op_id > max_count_updates)
-                                {
+                                if (op_id - last_reopen_rw_op_id > max_count_updates) {
                                     log.trace("REOPEN RW DATABASE, op_id=%d", op_id);
                                     storage.close();
                                     storage.open();
@@ -302,20 +269,16 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                                 send(tid_response_reciever, true);
                                 module_info.put_info(op_id, committed_op_id);
                                 log.trace("FLUSH op_id=%d committed_op_id=%d", op_id, committed_op_id);
-                            }
-                            else if (cmd == CMD_EXIT)
-                            {
+                            }else if (cmd == CMD_EXIT) {
                                 is_exit = true;
                                 writefln("[%s] recieve signal EXIT", text(storage_id));
                                 send(tid_response_reciever, true);
-                            }
-                            else
+                            }else
                                 send(tid_response_reciever, false);
                         },
                         (byte cmd, string arg, Tid tid_response_reciever)
                         {
-                            if (cmd == CMD_FIND)
-                            {
+                            if (cmd == CMD_FIND) {
                                 string res = storage.get_binobj(arg);
                                 //writeln("@FIND msg=", msg, ", $res = ", res);
                                 send(tid_response_reciever, arg, res, thisTid);
@@ -326,8 +289,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
                          Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.NotReady;
-                            if (tiz.length == 0)
-                            {
+                            if (tiz.length == 0) {
                                 rc = ResultCode.NoContent;
                                 send(tid_response_reciever, rc, thisTid);
                                 return;
@@ -339,35 +301,28 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
 
                             try
                             {
-                                if (ti.cmd == INDV_OP.PUT || ti.cmd == INDV_OP.REMOVE)
-                                {
-                                    if (ti.assigned_subsystems == ALL_MODULES || ((ti.assigned_subsystems & SUBSYSTEM.STORAGE) == SUBSYSTEM.STORAGE))
-                                    {
+                                if (ti.cmd == INDV_OP.PUT || ti.cmd == INDV_OP.REMOVE) {
+                                    if (ti.assigned_subsystems == ALL_MODULES || ((ti.assigned_subsystems & SUBSYSTEM.STORAGE) == SUBSYSTEM.STORAGE)) {
                                         if (ti.cmd == INDV_OP.REMOVE)
                                             rc = storage.remove(ti.uri);
                                         else
                                             rc = storage.store(ti.uri, ti.new_binobj, op_id);
-                                    }
-                                    else
+                                    }else
                                         rc = ResultCode.Ok;
 
                                     //log.trace ("storage_manager:PUT %s", ti.uri);
-                                    if (rc == ResultCode.Ok)
-                                    {
+                                    if (rc == ResultCode.Ok) {
                                         op_id++;
                                         set_subject_manager_op_id(op_id);
-                                    }
-                                    else
+                                    }else
                                         rc = ResultCode.FailStore;
 
                                     send(tid_response_reciever, rc, thisTid);
 
-                                    if (rc == ResultCode.Ok)
-                                    {
+                                    if (rc == ResultCode.Ok) {
                                         module_info.put_info(op_id, committed_op_id);
 
-                                        if (storage_id == P_MODULE.subject_manager)
-                                        {
+                                        if (storage_id == P_MODULE.subject_manager) {
                                             Individual imm;
                                             imm.uri = text(op_id);
                                             imm.addResource("cmd", Resource(ti.cmd));
@@ -440,19 +395,16 @@ public void individuals_manager(P_MODULE _storage_id, string node_id)
         }
     } finally
     {
-        if (module_info !is null)
-        {
+        if (module_info !is null) {
             module_info.close();
             module_info = null;
         }
 
-        if (individual_queue !is null)
-        {
+        if (individual_queue !is null) {
             individual_queue.close();
             individual_queue = null;
         }
-        if (uris_queue !is null)
-        {
+        if (uris_queue !is null) {
             uris_queue.close();
             uris_queue = null;
         }

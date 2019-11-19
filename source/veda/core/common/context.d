@@ -18,7 +18,7 @@ const ALL_MODULES  = 0;
 
 interface Context
 {
-	public MInfo get_info(MODULE module_id);
+    public MInfo get_info(MODULE module_id);
     public Ticket *get_ticket(string ticket_id, bool is_trace, bool is_systicket = false);
 
     Storage get_storage();
@@ -32,7 +32,7 @@ interface Context
 
     @property
     public Ticket sys_ticket(bool is_new = false);
-    
+
     public Ticket *get_systicket_from_storage();
 
     // *************************************************** external API ? *********************************** //
@@ -107,13 +107,11 @@ import core.atomic;
 
 private shared long count_onto_update = 0;
 
-public void inc_count_onto_update(long delta = 1)
-{
+public void inc_count_onto_update(long delta = 1){
     atomicOp !"+=" (count_onto_update, delta);
 }
 
-public long get_count_onto_update()
-{
+public long get_count_onto_update(){
     return atomicLoad(count_onto_update);
 }
 
@@ -121,13 +119,11 @@ public long get_count_onto_update()
 
 private shared long subject_manager_op_id = 0;
 
-public void set_subject_manager_op_id(long data)
-{
+public void set_subject_manager_op_id(long data){
     atomicStore(subject_manager_op_id, data);
 }
 
-public long get_subject_manager_op_id()
-{
+public long get_subject_manager_op_id(){
     return atomicLoad(subject_manager_op_id);
 }
 
@@ -137,8 +133,7 @@ private shared string systicket_id;
 private shared string systicket_user_uri;
 private shared long   systicket_end_time;
 
-public Ticket get_global_systicket()
-{
+public Ticket get_global_systicket(){
     Ticket t;
 
     t.id       = atomicLoad(systicket_id);
@@ -147,8 +142,7 @@ public Ticket get_global_systicket()
     return t;
 }
 
-public void set_global_systicket(Ticket new_data)
-{
+public void set_global_systicket(Ticket new_data){
     atomicStore(systicket_id, new_data.id);
     atomicStore(systicket_user_uri, new_data.user_uri);
     atomicStore(systicket_end_time, new_data.end_time);

@@ -38,18 +38,15 @@ long    g_count_popped;
 //_Buff      g_script_result;
 //_Buff      g_script_out;
 
-ResultCode g_last_result;
+ResultCode     g_last_result;
 
 private string empty_uid;
 
-bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_types, Onto onto)
-{
+bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_types, Onto onto){
     bool is_pass = false;
 
-    if (script.prevent_by_type.length != 0)
-    {
-        foreach (indv_type; indv_types)
-        {
+    if (script.prevent_by_type.length != 0) {
+        foreach (indv_type; indv_types) {
             if ((indv_type in script.prevent_by_type) !is null)
                 return false;
 
@@ -64,18 +61,14 @@ bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_type
     if (script.trigger_by_uid.length > 0 && (individual_id in script.trigger_by_uid) !is null)
         is_pass = true;
 
-    if (!is_pass && script.trigger_by_type.length > 0)
-    {
-        foreach (indv_type; indv_types)
-        {
-            if ((indv_type in script.trigger_by_type) !is null)
-            {
+    if (!is_pass && script.trigger_by_type.length > 0) {
+        foreach (indv_type; indv_types) {
+            if ((indv_type in script.trigger_by_type) !is null) {
                 is_pass = true;
                 break;
             }
 
-            if (onto.isSubClasses(cast(string)indv_type, script.trigger_by_type.keys) == true)
-            {
+            if (onto.isSubClasses(cast(string)indv_type, script.trigger_by_type.keys) == true) {
                 is_pass = true;
                 break;
             }
@@ -85,37 +78,26 @@ bool is_filter_pass(ScriptInfo *script, string individual_id, string[] indv_type
     return is_pass;
 }
 
-void set_g_prev_state(string prev_state)
-{
-    if (prev_state !is null)
-    {
+void set_g_prev_state(string prev_state){
+    if (prev_state !is null) {
         g_prev_state.data   = cast(char *)prev_state;
         g_prev_state.length = cast(int)prev_state.length;
-    }
-    else
-    {
+    }else  {
         g_prev_state.data   = cast(char *)empty_uid;
         g_prev_state.length = cast(int)empty_uid.length;
     }
 }
 
-void set_g_super_classes(string[] indv_types, Onto onto)
-{
+void set_g_super_classes(string[] indv_types, Onto onto){
     Names super_classes;
 
-    foreach (indv_type; indv_types)
-    {
-        if (super_classes == Names.init)
-        {
+    foreach (indv_type; indv_types) {
+        if (super_classes == Names.init) {
             super_classes = onto.get_super_classes(indv_type);
-        }
-        else
-        {
+        }else  {
             Names i_super_classes = onto.get_super_classes(indv_type);
-            foreach (i_super_class; i_super_classes.keys)
-            {
-                if (super_classes.get(i_super_class, false) == false)
-                {
+            foreach (i_super_class; i_super_classes.keys) {
+                if (super_classes.get(i_super_class, false) == false) {
                     super_classes[ i_super_class ] = true;
                 }
             }
@@ -126,8 +108,7 @@ void set_g_super_classes(string[] indv_types, Onto onto)
     g_super_classes.length = cast(int)superclasses_str.length;
 }
 
-private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id)
-{
+private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _binobj, string _ticket_id, string _event_id){
     ti.cmd        = _cmd;
     ti.new_binobj = _binobj;
     ti.ticket_id  = _ticket_id;
@@ -135,38 +116,29 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
     Ticket *ticket = g_context.get_ticket(ti.ticket_id, false);
     ti.user_uri = ticket.user_uri;
 
-    if (ti.cmd == INDV_OP.REMOVE)
-    {
+    if (ti.cmd == INDV_OP.REMOVE) {
         ti.new_indv.uri = _binobj;
         ti.rc           = ResultCode.Ok;
-    }
-    else
-    {
+    }else  {
         int code = ti.new_indv.deserialize(ti.new_binobj);
-        if (code < 0)
-        {
+        if (code < 0) {
             ti.rc = ResultCode.UnprocessableEntity;
             log.trace("ERR! v8d:transaction:deserialize cmd:[%s] ticket:[%s] event:[%s] binobj[%s]", text(_cmd), _ticket_id, _event_id, _binobj);
             return;
-        }
-        else
+        }else
             ti.rc = ResultCode.Ok;
 
         ti.new_indv.setStatus(ti.rc);
         ti.uri = ti.new_indv.uri;
 
-        if (ti.rc == ResultCode.Ok && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM))
-        {
+        if (ti.rc == ResultCode.Ok && (ti.cmd == INDV_OP.ADD_IN || ti.cmd == INDV_OP.SET_IN || ti.cmd == INDV_OP.REMOVE_FROM)) {
             // log.trace("fill_TransactionItem(%s) [%s]", text (_cmd), ti.new_indv);
             Individual      prev_indv;
 
             TransactionItem *ti1 = tnx.get(ti.new_indv.uri);
-            if (ti1 !is null && ti1.new_binobj.length > 0)
-            {
+            if (ti1 !is null && ti1.new_binobj.length > 0) {
                 prev_indv = ti1.new_indv;
-            }
-            else
-            {
+            }else  {
                 prev_indv = g_context.get_individual(ti.new_indv.uri);
             }
 
@@ -190,8 +162,7 @@ Transaction tnx;
 
 extern (C++)
 {
-struct _Buff
-{
+struct _Buff {
     char *data;
     int  length;
     int  allocated_size;
@@ -200,8 +171,7 @@ struct _Buff
 
 string script_id;
 
-extern (C++) void log_trace(const char *str, int str_length)
-{
+extern (C++) void log_trace(const char *str, int str_length){
     string sstr = cast(string)str[ 0..str_length ];
 
     log.trace("[%s] %s", script_id, sstr);
@@ -210,8 +180,7 @@ extern (C++) void log_trace(const char *str, int str_length)
 //////////////////
 
 //чтение неправильное после операции add set
-extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
-{
+extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length){
     // writeln("@V8:put_individual");
     TransactionItem ti;
 
@@ -224,8 +193,7 @@ extern (C++) ResultCode put_individual(const char *_ticket, int _ticket_length, 
     return ti.rc;
 }
 
-extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
-{
+extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length){
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.ADD_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
@@ -237,8 +205,7 @@ extern (C++) ResultCode add_to_individual(const char *_ticket, int _ticket_lengt
     return ti.rc;
 }
 
-extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
-{
+extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length){
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.SET_IN, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
@@ -250,8 +217,7 @@ extern (C++) ResultCode set_in_individual(const char *_ticket, int _ticket_lengt
     return ti.rc;
 }
 
-extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length)
-{
+extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_length, const char *_binobj, int _binobj_length){
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.REMOVE_FROM, cast(string)_binobj[ 0.._binobj_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
@@ -263,8 +229,7 @@ extern (C++) ResultCode remove_from_individual(const char *_ticket, int _ticket_
     return ti.rc;
 }
 
-extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length)
-{
+extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length){
     TransactionItem ti;
 
     fill_TransactionItem(&ti, INDV_OP.REMOVE, cast(string)_uri[ 0.._uri_length ].dup, cast(string)_ticket[ 0.._ticket_length ].dup,
@@ -278,36 +243,24 @@ extern (C++) ResultCode remove_individual(const char *_ticket, int _ticket_lengt
 
 ////
 
-extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
-{
+extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length){
     //writeln("@V8: get_env_str_var");
     try
     {
         string var_name = cast(string)_var_name[ 0.._var_name_length ];
 
-        if (var_name == "$parent_script_id")
-        {
+        if (var_name == "$parent_script_id") {
             return &g_parent_script_id;
-        }
-        else if (var_name == "$parent_document_id")
-        {
+        }else if (var_name == "$parent_document_id") {
             return &g_parent_document_id;
-        }
-        else if (var_name == "$user")
-        {
+        }else if (var_name == "$user") {
             return &g_user;
-        }
-        else if (var_name == "$uri")
-        {
+        }else if (var_name == "$uri") {
             return &g_uri;
-        }
-        else if (var_name == "$ticket")
-        {
+        }else if (var_name == "$ticket") {
             //log.trace("$ticket=%s %s", g_ticket, g_ticket.data[ 0..g_ticket.length ]);
             return &g_ticket;
-        }
-        else if (var_name == "$super_classes")
-        {
+        }else if (var_name == "$super_classes") {
             return &g_super_classes;
         }
 
@@ -319,19 +272,15 @@ extern (C++)_Buff * get_env_str_var(const char *_var_name, int _var_name_length)
     }
 }
 
-extern (C++) long get_env_num_var(const char *_var_name, int _var_name_length)
-{
+extern (C++) long get_env_num_var(const char *_var_name, int _var_name_length){
     //writeln("@V8: get_env_str_var");
     try
     {
         string var_name = cast(string)_var_name[ 0.._var_name_length ];
 
-        if (var_name == "$queue_elements_count")
-        {
+        if (var_name == "$queue_elements_count") {
             return g_count_pushed;
-        }
-        else if (var_name == "$queue_elements_processed")
-        {
+        }else if (var_name == "$queue_elements_processed") {
             return g_count_popped;
         }
 
@@ -345,8 +294,7 @@ extern (C++) long get_env_num_var(const char *_var_name, int _var_name_length)
 
 
 extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_query, int _query_length,
-                          const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit)
-{
+                          const char *_sort, int _sort_length, const char *_databases, int _databases_length, int top, int limit){
     string res;
     string query;
     string sort;
@@ -371,8 +319,7 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
 
         Ticket *ticket = g_context.get_ticket(ticket_id, false);
 
-        if (ticket is null)
-        {
+        if (ticket is null) {
             log.trace("ERR! [query] ticket not found, id=%s", ticket_id);
             return null;
         }
@@ -402,41 +349,30 @@ extern (C++)_Buff * query(const char *_ticket, int _ticket_length, const char *_
     }
 }
 
-extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length)
-{
+extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, const char *_uri, int _uri_length){
     try
     {
         string uri = cast(string)_uri[ 0.._uri_length ];
 
         //writeln("@p:v8d read_individual, uri=[", uri, "],  ticket=[", _ticket[ 0.._ticket_length ], "]");
 
-        if (uri == "undefined")
-        {
+        if (uri == "undefined") {
             return null;
-        }
-        else if (uri == "$document")
-        {
+        }else if (uri == "$document") {
             return &g_document;
-        }
-        else if (uri == "$prev_state")
-        {
+        }else if (uri == "$prev_state") {
             if (g_prev_state.length > 0)
                 return &g_prev_state;
             else
                 return null;
-        }
-        else if (uri == "$execute_script")
-        {
+        }else if (uri == "$execute_script") {
             if (g_execute_script.length > 0)
                 return &g_execute_script;
             else
                 return null;
-        }
-        else
-        {
+        }else  {
             TransactionItem *ti = tnx.get(uri);
-            if (ti !is null && ti.new_binobj.length > 0)
-            {
+            if (ti !is null && ti.new_binobj.length > 0) {
                 tmp_individual.data   = cast(char *)ti.new_binobj;
                 tmp_individual.length = cast(int)ti.new_binobj.length;
                 return &tmp_individual;
@@ -444,21 +380,17 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
 
             string ticket = cast(string)_ticket[ 0.._ticket_length ];
 
-            if (g_context !is null)
-            {
+            if (g_context !is null) {
                 string icb;
 
                 if (icb is null)
                     icb = g_context.get_storage().get_binobj_from_individual_storage(uri);
 
-                if (icb !is null)
-                {
+                if (icb !is null) {
                     tmp_individual.data   = cast(char *)icb;
                     tmp_individual.length = cast(int)icb.length;
                     return &tmp_individual;
-                }
-                else
-                {
+                }else  {
                     tmp_individual.data   = cast(char *)"";
                     tmp_individual.length = cast(int)0;
                     return null;
@@ -474,8 +406,7 @@ extern (C++)_Buff * read_individual(const char *_ticket, int _ticket_length, con
 }
 
 
-void dump(char *data, int count)
-{
+void dump(char *data, int count){
     string res;
 
     for (int i = 0; i < count; i++)
@@ -519,8 +450,7 @@ class JsVM : ScriptVM
         js_vm = new_WrappedContext();
     }
 
-    Script compile(string code)
-    {
+    Script compile(string code){
         Js res = new Js();
 
         res.vm     = this;
@@ -534,8 +464,7 @@ class Js : Script
     WrappedScript script;
     JsVM          vm;
 
-    void run()
-    {
+    void run(){
         run_WrappedScript(vm.js_vm, script);
     }
 }
@@ -545,12 +474,10 @@ string   g_str_script_out;
 ScriptVM script_vm;
 
 
-ScriptVM get_ScriptVM(Context ctx)
-{
+ScriptVM get_ScriptVM(Context ctx){
     version (libV8)
     {
-        if (script_vm is null)
-        {
+        if (script_vm is null) {
             try
             {
                 script_vm = new JsVM();
@@ -569,8 +496,7 @@ ScriptVM get_ScriptVM(Context ctx)
     return script_vm;
 }
 
-private void reload_ext_scripts(Context ctx)
-{
+private void reload_ext_scripts(Context ctx){
     string   modules_path = "./public/modules";
 
     Script[] scripts;
@@ -587,71 +513,53 @@ private void reload_ext_scripts(Context ctx)
     if (modules_path.exists)
         _modules_de = dirEntries(modules_path, SpanMode.shallow).array;
 
-    foreach (o; _modules_de.array)
-    {
+    foreach (o; _modules_de.array) {
         log.trace("found module [%s]", o.name);
         auto content_drs = dirEntries(o.name, SpanMode.depth).array;
-        foreach (o1; content_drs)
-        {
+        foreach (o1; content_drs) {
             string nm = cast(string)o1.name;
-            if (nm.indexOf("/server/") > 0 || nm.indexOf("/common/") > 0)
-            {
+            if (nm.indexOf("/server/") > 0 || nm.indexOf("/common/") > 0) {
                 modules_de ~= o1;
             }
         }
     }
 
-    foreach (path; [ "./public/js/common/", "./public/js/server/" ])
-    {
+    foreach (path; [ "./public/js/common/", "./public/js/server/" ]) {
         DirEntry[] oFiles = [];
 
         auto       seq = path ~ ".seq";
 
-        if (seq.exists)
-        {
+        if (seq.exists) {
             auto seqFile   = File(seq);
             auto fileNames = seqFile.byLine();
-            foreach (fileName; fileNames)
-            {
-                if (fileName == "$modules")
-                {
+            foreach (fileName; fileNames) {
+                if (fileName == "$modules") {
                     foreach (o; modules_de)
                         oFiles ~= o;
-                }
-                else
-                {
+                }else  {
                     fileName = path ~ fileName;
-                    if (fileName.exists)
-                    {
-                        if (isDir(cast(string)fileName))
-                        {
+                    if (fileName.exists) {
+                        if (isDir(cast(string)fileName)) {
                             auto fls = dirEntries(cast(string)fileName, SpanMode.depth).array;
                             foreach (o; fls)
                                 oFiles ~= o;
-                        }
-                        else
-                        {
+                        }else  {
                             DirEntry fileEntry = DirEntry(cast(string)fileName);
                             oFiles ~= fileEntry;
                         }
                     }
                 }
             }
-        }
-        else
-        {
+        }else  {
             oFiles = dirEntries(path, SpanMode.depth).array;
         }
 
-        foreach (o; oFiles)
-        {
-            if (extension(o.name) == ".js")
-            {
+        foreach (o; oFiles) {
+            if (extension(o.name) == ".js") {
                 //log.trace("load script:%s", o);
                 auto str_js        = cast(ubyte[]) read(o.name);
                 auto str_js_script = script_vm.compile(cast(string)str_js);
-                if (str_js_script !is null)
-                {
+                if (str_js_script !is null) {
                     scripts ~= str_js_script;
                     script_file_name ~= o.name;
                 }
@@ -659,8 +567,7 @@ private void reload_ext_scripts(Context ctx)
         }
     }
 
-    foreach (idx, script; scripts)
-    {
+    foreach (idx, script; scripts) {
         log.tracec("init script=%s", script_file_name[ idx ]);
         script.run();
     }

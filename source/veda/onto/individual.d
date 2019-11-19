@@ -13,8 +13,7 @@ private
 /// Массив индивидуалов
 alias Individual[] Individuals;
 
-public enum BOFormat : ubyte
-{
+public enum BOFormat : ubyte {
     UNKNOWN = 0,
     CBOR    = 1,
     MSGPACK = 2
@@ -26,8 +25,7 @@ public byte[ string ] predicate_2_order;
 public string[] predicate_order_l;
 
 /// Индивидуал
-public struct Individual
-{
+public struct Individual {
     /// URI
     string uri;
 
@@ -38,13 +36,11 @@ public struct Individual
     private CRC32      hash;
 
     /// Вернуть код ошибки
-    public ResultCode  getStatus()
-    {
+    public ResultCode  getStatus(){
         return rc;
     }
 
-    void setStatus(ResultCode _rc)
-    {
+    void setStatus(ResultCode _rc){
         rc = _rc;
     }
 
@@ -54,55 +50,43 @@ public struct Individual
         resources = _resources;
     }
 
-    void reorder(string predicate)
-    {
+    void reorder(string predicate){
         Resources rss;
 
         rss = resources.get(predicate, rss);
 
-        if (rss.length == 2)
-        {
-            if (rss[ 0 ].order > rss[ 1 ].order)
-            {
+        if (rss.length == 2) {
+            if (rss[ 0 ].order > rss[ 1 ].order) {
                 auto aa = rss[ 0 ].order;
                 rss[ 0 ].order         = rss[ 1 ].order;
                 rss[ 1 ].order         = aa;
                 resources[ predicate ] = rss;
             }
-        }
-        else if (rss.length > 2)
-        {
+        }else if (rss.length > 2) {
             auto      rss_sorted = sort!("a.order < b.order", SwapStrategy.stable)(rss);
 
             Resources new_rss;
-            foreach (rr; rss_sorted)
-            {
+            foreach (rr; rss_sorted) {
                 new_rss ~= rr;
             }
             resources[ predicate ] = new_rss;
         }
     }
 
-    int deserialize(string bin)
-    {
+    int deserialize(string bin){
         if (bin.length == 0)
             return -1;
 
-        if ((cast(ubyte[])bin)[ 0 ] == 146)
-        {
+        if ((cast(ubyte[])bin)[ 0 ] == 146) {
             // this MSGPACK
             return msgpack2individual(this, bin);
-        }
-        else
-        {
+        }else  {
             return cbor2individual(&this, bin);
         }
     }
 
-    string serialize()
-    {
-        if (binobj_format == BOFormat.UNKNOWN)
-        {
+    string serialize(){
+        if (binobj_format == BOFormat.UNKNOWN) {
             binobj_format = BOFormat.CBOR;
             try
             {
@@ -124,8 +108,7 @@ public struct Individual
             stderr.writefln("SET binobj_format=%s", text(binobj_format));
         }
 
-        if (predicate_2_order.length == 0)
-        {
+        if (predicate_2_order.length == 0) {
             predicate_order_l =
             [
                 "assigned_subsystems", "u_count", "new_type", "prev_type", "new_state", "prev_state", "user_uri", "rdf:type", "v-s:deleted",
@@ -144,8 +127,7 @@ public struct Individual
             return "";
     }
 
-    Individual dup()
-    {
+    Individual dup(){
         resources.rehash();
         Resources[ string ]    tmp1 = resources.dup;
 
@@ -153,8 +135,7 @@ public struct Individual
         return result;
     }
 
-    Resource getFirstResource(string predicate)
-    {
+    Resource getFirstResource(string predicate){
         Resources rss;
 
         rss = resources.get(predicate, rss);
@@ -164,8 +145,7 @@ public struct Individual
         return Resource.init;
     }
 
-    string getFirstLiteral(string predicate)
-    {
+    string getFirstLiteral(string predicate){
         Resources rss;
 
         rss = resources.get(predicate, rss);
@@ -175,8 +155,7 @@ public struct Individual
         return null;
     }
 
-    long getFirstInteger(string predicate, long default_value = 0)
-    {
+    long getFirstInteger(string predicate, long default_value = 0){
         Resources rss;
 
         rss = resources.get(predicate, rss);
@@ -186,8 +165,7 @@ public struct Individual
         return default_value;
     }
 
-    long getFirstDatetime(string predicate, long default_value = 0)
-    {
+    long getFirstDatetime(string predicate, long default_value = 0){
         Resources rss;
 
         rss = resources.get(predicate, rss);
@@ -197,8 +175,7 @@ public struct Individual
         return default_value;
     }
 
-    bool getFirstBoolean(string predicate, bool default_value = false)
-    {
+    bool getFirstBoolean(string predicate, bool default_value = false){
         Resources rss;
 
         rss = resources.get(predicate, rss);
@@ -208,44 +185,36 @@ public struct Individual
         return default_value;
     }
 
-    void addResource(string uri, Resource rs)
-    {
+    void addResource(string uri, Resource rs){
         Resources rss = resources.get(uri, Resources.init);
 
         rss ~= rs;
         resources[ uri ] = rss;
     }
 
-    void setResources(string uri, Resources in_rss)
-    {
+    void setResources(string uri, Resources in_rss){
         Resources new_rss;
 
-        foreach (in_rs; in_rss)
-        {
+        foreach (in_rs; in_rss) {
             new_rss ~= in_rs;
         }
 
         resources[ uri ] = new_rss;
     }
 
-    void removeResource(string uri)
-    {
+    void removeResource(string uri){
         resources.remove(uri);
     }
 
-    void removeResources(string uri, Resources in_rss)
-    {
+    void removeResources(string uri, Resources in_rss){
         Resources new_rss;
 
         Resources rss = resources.get(uri, Resources.init);
 
-        foreach (rs; rss)
-        {
+        foreach (rs; rss) {
             bool is_found = false;
-            foreach (in_rs; in_rss)
-            {
-                if (in_rs == rs)
-                {
+            foreach (in_rs; in_rss) {
+                if (in_rs == rs) {
                     is_found = true;
                     break;
                 }
@@ -261,23 +230,18 @@ public struct Individual
             resources[ uri ] = new_rss;
     }
 
-    void addUniqueResources(string uri, Resources in_rss)
-    {
+    void addUniqueResources(string uri, Resources in_rss){
         Resources new_rss;
         Resources rss = resources.get(uri, Resources.init);
 
-        foreach (rs; rss)
-        {
+        foreach (rs; rss) {
             new_rss ~= rs;
         }
 
-        foreach (in_rs; in_rss)
-        {
+        foreach (in_rs; in_rss) {
             bool find = false;
-            foreach (rs; rss)
-            {
-                if (in_rs == rs)
-                {
+            foreach (rs; rss) {
+                if (in_rs == rs) {
                     find = true;
                     break;
                 }
@@ -289,24 +253,20 @@ public struct Individual
         resources[ uri ] = new_rss;
     }
 
-    Resources getResources(string predicate)
-    {
+    Resources getResources(string predicate){
         Resources rss;
 
         rss = resources.get(predicate, rss);
         return rss;
     }
 
-    bool isExists(T) (string predicate, T object)
-    {
+    bool isExists(T) (string predicate, T object){
         Resources rss;
 
         rss = resources.get(predicate, rss);
-        foreach (rs; rss)
-        {
+        foreach (rs; rss) {
             //writeln ("@rs=[", rs.get!string, "] object=[", object, "]");
-            if (rs == object)
-            {
+            if (rs == object) {
                 //writeln ("@ true");
                 return true;
             }
@@ -314,15 +274,12 @@ public struct Individual
         return false;
     }
 
-    bool anyExists(T) (string predicate, T[] objects)
-    {
+    bool anyExists(T) (string predicate, T[] objects){
         Resources rss;
 
         rss = resources.get(predicate, rss);
-        foreach (rs; rss)
-        {
-            foreach (object; objects)
-            {
+        foreach (rs; rss) {
+            foreach (object; objects) {
                 if (rs == object)
                     return true;
             }
@@ -330,13 +287,11 @@ public struct Individual
         return false;
     }
 
-    bool compare(Individual B)
-    {
+    bool compare(Individual B){
         if (B.resources.length != resources.length)
             return false;
 
-        foreach (key, A_rss; this.resources)
-        {
+        foreach (key, A_rss; this.resources) {
             Resources B_rss = B.resources.get(key, Resources.init);
 
             if (A_rss.length != B_rss.length)
@@ -345,13 +300,11 @@ public struct Individual
             int count_identical = 0;
             bool[ string ] B_rss_h;
 
-            foreach (B_rs; B_rss)
-            {
+            foreach (B_rs; B_rss) {
                 B_rss_h[ text(B_rs) ] = true;
             }
 
-            foreach (A_rs; A_rss)
-            {
+            foreach (A_rs; A_rss) {
                 if (B_rss_h.get(text(A_rs), false) != true)
                     return false;
             }
@@ -359,30 +312,24 @@ public struct Individual
         return true;
     }
 
-    Individual apply(Individual item)
-    {
+    Individual apply(Individual item){
         Individual res = this.dup();
 
         if (item.uri != uri)
             return res;
 
-        foreach (key, rss; item.resources)
-        {
+        foreach (key, rss; item.resources) {
             Resources new_rss = Resources.init;
-            foreach (rs; rss)
-            {
+            foreach (rs; rss) {
                 new_rss ~= rs;
             }
 
             Resources exists_rss = resources.get(key, Resources.init);
-            foreach (rs; exists_rss)
-            {
+            foreach (rs; exists_rss) {
                 // проверить, чтоб в new_rss, не было rs
                 bool rs_found = false;
-                foreach (rs1; new_rss)
-                {
-                    if (rs1 == rs)
-                    {
+                foreach (rs1; new_rss) {
+                    if (rs1 == rs) {
                         rs_found = true;
                         break;
                     }
@@ -398,12 +345,10 @@ public struct Individual
         return res;
     }
 
-    Individual repare_unique(string predicate)
-    {
+    Individual repare_unique(string predicate){
         Resources rdf_type = resources.get(predicate, Resources.init);
 
-        if (rdf_type != Resources.init)
-        {
+        if (rdf_type != Resources.init) {
             Individual res = this.dup();
 
             Resources  new_rss = Resources.init;
@@ -411,8 +356,7 @@ public struct Individual
             auto       uniq_rdf_type = uniq(rdf_type);
 
             Resource   rc;
-            while (uniq_rdf_type.empty == false)
-            {
+            while (uniq_rdf_type.empty == false) {
                 rc = uniq_rdf_type.front;
                 new_rss ~= rc;
                 uniq_rdf_type.popFront;
@@ -424,21 +368,17 @@ public struct Individual
         return this;
     }
 
-    string get_CRC32()
-    {
+    string get_CRC32(){
         string[] predicates = resources.keys;
 
         predicates.sort();
 
         hash.start();
-        foreach (pp; predicates)
-        {
-            if (pp != "v-s:hash" && pp != "v-s:updateCounter")
-            {
+        foreach (pp; predicates) {
+            if (pp != "v-s:hash" && pp != "v-s:updateCounter") {
                 hash.put(cast(ubyte[])pp);
 
-                foreach (rr; resources[ pp ])
-                {
+                foreach (rr; resources[ pp ]) {
                     hash.put(rr.type);
                     hash.put(cast(ubyte[])rr.asString());
                     hash.put(rr.lang);
@@ -451,12 +391,10 @@ public struct Individual
         return str_hash;
     }
 
-    public long count_values()
-    {
+    public long count_values(){
         long count;
 
-        foreach (vv; resources.values)
-        {
+        foreach (vv; resources.values) {
             count += vv.length;
         }
         return count;

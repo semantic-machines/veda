@@ -23,8 +23,7 @@ alias veda.mstorage.storage_manager indv_storage_thread;
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;
 Logger _log;
-Logger log()
-{
+Logger log(){
     if (_log is null)
         _log = new Logger("veda-core-mstorage", "log", "mstorage");
     return _log;
@@ -40,8 +39,7 @@ static this()
     bsd_signal(SIGINT, &handleTermination2);
 }
 
-extern (C) void handleTermination2(int _signal)
-{
+extern (C) void handleTermination2(int _signal){
     writefln("!SYS: %s: caught signal: %s", process_name, text(_signal));
 
     if (_log !is null)
@@ -58,8 +56,7 @@ extern (C) void handleTermination2(int _signal)
 
 private Context l_context;
 
-void main(char[][] args)
-{
+void main(char[][] args){
     Tid[ P_MODULE ] tids;
     process_name = "mstorage";
     string node_id = null;
@@ -91,13 +88,11 @@ void main(char[][] args)
     //thread_term();
 }
 
-public Authorization get_acl_client(Logger log)
-{
+public Authorization get_acl_client(Logger log){
     return new AuthorizationUseLib(log);
 }
 
-void init(string node_id)
-{
+void init(string node_id){
     Context core_context;
     Ticket  sticket;
 
@@ -118,15 +113,14 @@ void init(string node_id)
 
         l_context = core_context;
 
-        node    = core_context.get_configuration();
+        node = core_context.get_configuration();
         if (node.getStatus() == ResultCode.Ok)
             log.trace_log_and_console("VEDA NODE CONFIGURATION: [%s]", node);
 
         log.trace("init core");
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (node.getStatus() != ResultCode.Ok)
-        {
+        if (node.getStatus() != ResultCode.Ok) {
             core_context.reopen_ro_individuals_storage_db();
             core_context.get_az().reopen();
             node = core_context.get_individual(node_id);
@@ -134,17 +128,17 @@ void init(string node_id)
             log.trace_log_and_console("VEDA NODE CONFIGURATION:[%s]", node);
         }
 
-		while (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {	
-			sticket = *core_context.get_systicket_from_storage();
-			
-			if (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {
-				log.trace("system ticket not found, sleep and repeate...");
-				core.thread.Thread.sleep(dur!("msecs")(100));				
-			}
-		}
-		
+        while (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {
+            sticket = *core_context.get_systicket_from_storage();
+
+            if (sticket.result == ResultCode.TicketNotFound || sticket.result == ResultCode.zero) {
+                log.trace("system ticket not found, sleep and repeate...");
+                core.thread.Thread.sleep(dur!("msecs")(100));
+            }
+        }
+
         log.trace("system ticket=%s", sticket);
-		set_global_systicket(sticket);	
+        set_global_systicket(sticket);
 
         return;
     } catch (Throwable ex)
@@ -154,8 +148,7 @@ void init(string node_id)
     }
 }
 
-bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
-{
+bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids){
     bool res;
     Tid  tid = tids[ tid_idx ];
 
@@ -174,20 +167,17 @@ bool wait_starting_thread(P_MODULE tid_idx, ref Tid[ P_MODULE ] tids)
     return res;
 }
 
-public void exit(P_MODULE module_id)
-{
+public void exit(P_MODULE module_id){
     Tid tid_module = getTid(module_id);
 
-    if (tid_module != Tid.init)
-    {
+    if (tid_module != Tid.init) {
         writefln("send command EXIT to thread_%s", text(module_id));
         send(tid_module, CMD_EXIT, thisTid);
         receive((bool _res) {});
     }
 }
 
-void commiter(string thread_name)
-{
+void commiter(string thread_name){
     core.thread.Thread.getThis().name = thread_name;
 
     // SEND ready
@@ -198,13 +188,11 @@ void commiter(string thread_name)
 
     bool is_exit = false;
 
-    while (is_exit == false)
-    {
+    while (is_exit == false) {
         receiveTimeout(dur!("msecs")(600),
                        (byte cmd, Tid tid_response_reciever)
                        {
-                           if (cmd == CMD_EXIT)
-                           {
+                           if (cmd == CMD_EXIT) {
                                is_exit = true;
                                writefln("[%s] recieve signal EXIT", "commiter");
                                send(tid_response_reciever, true);
@@ -224,21 +212,18 @@ void commiter(string thread_name)
 
 private KeyValueDB inividuals_storage_r;
 
-private Individual get_individual(Context ctx, Ticket *ticket, string uri)
-{
+private Individual get_individual(Context ctx, Ticket *ticket, string uri){
     if (inividuals_storage_r is null)
         inividuals_storage_r = ctx.get_storage().get_inividuals_storage_r();
 
     Individual individual = Individual.init;
 
-    if (inividuals_storage_r is null)
-    {
+    if (inividuals_storage_r is null) {
         log.trace("ERR! storage not ready");
         return individual;
     }
 
-    if (ticket is null)
-    {
+    if (ticket is null) {
         log.trace("get_individual, uri=%s, ticket is null", uri);
         return individual;
     }
@@ -248,8 +233,7 @@ private Individual get_individual(Context ctx, Ticket *ticket, string uri)
     return individual;
 }
 
-public string execute_json(string in_msg, Context ctx)
-{
+public string execute_json(string in_msg, Context ctx){
     JSONValue res;
     JSONValue jsn;
 
@@ -273,8 +257,7 @@ public string execute_json(string in_msg, Context ctx)
 
         string    sfn = fn.str();
 
-        if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from")
-        {
+        if (sfn == "put" || sfn == "remove" || sfn == "add_to" || sfn == "set_in" || sfn == "remove_from") {
             OpResult[] rc;
 
             JSONValue  _ticket           = jsn[ "ticket" ];
@@ -292,12 +275,10 @@ public string execute_json(string in_msg, Context ctx)
 
             Ticket *ticket = ctx.get_ticket(_ticket.str, false);
 
-            if (sfn == "put")
-            {
+            if (sfn == "put") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                foreach (individual_json; individuals_json)
-                {
+                foreach (individual_json; individuals_json) {
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
@@ -316,13 +297,10 @@ public string execute_json(string in_msg, Context ctx)
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
                 }
-            }
-            else if (sfn == "add_to")
-            {
+            }else if (sfn == "add_to") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                foreach (individual_json; individuals_json)
-                {
+                foreach (individual_json; individuals_json) {
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
@@ -339,13 +317,10 @@ public string execute_json(string in_msg, Context ctx)
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
                 }
-            }
-            else if (sfn == "set_in")
-            {
+            }else if (sfn == "set_in") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                foreach (individual_json; individuals_json)
-                {
+                foreach (individual_json; individuals_json) {
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
@@ -362,13 +337,10 @@ public string execute_json(string in_msg, Context ctx)
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
                 }
-            }
-            else if (sfn == "remove_from")
-            {
+            }else if (sfn == "remove_from") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                foreach (individual_json; individuals_json)
-                {
+                foreach (individual_json; individuals_json) {
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
@@ -386,13 +358,10 @@ public string execute_json(string in_msg, Context ctx)
                     if (transaction_id <= 0)
                         transaction_id = ires.op_id;
                 }
-            }
-            else if (sfn == "remove")
-            {
+            }else if (sfn == "remove") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
 
-                foreach (individual_json; individuals_json)
-                {
+                foreach (individual_json; individuals_json) {
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
@@ -412,8 +381,7 @@ public string execute_json(string in_msg, Context ctx)
             }
 
             JSONValue[] all_res;
-            foreach (rr; rc)
-            {
+            foreach (rr; rc) {
                 JSONValue ires;
                 ires[ "result" ] = rr.result;
                 ires[ "op_id" ]  = rr.op_id;
@@ -422,9 +390,7 @@ public string execute_json(string in_msg, Context ctx)
 
             res[ "type" ] = "OpResult";
             res[ "data" ] = all_res;
-        }
-        else if (sfn == "flush")
-        {
+        }else if (sfn == "flush") {
             P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
             long       wait_op_id  = jsn[ "wait_op_id" ].integer;
 
@@ -438,9 +404,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
-        }
-        else if (sfn == "send_to_module")
-        {
+        }else if (sfn == "send_to_module") {
             P_MODULE   f_module_id = cast(P_MODULE)jsn[ "module_id" ].integer;
             string     msg         = jsn[ "msg" ].str;
 
@@ -451,9 +415,7 @@ public string execute_json(string in_msg, Context ctx)
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.Ok;
             res[ "op_id" ]  = -1;
-        }
-        else
-        {
+        }else  {
             res[ "type" ]   = "OpResult";
             res[ "result" ] = ResultCode.BadRequest;
             res[ "op_id" ]  = -1;
@@ -472,27 +434,23 @@ public string execute_json(string in_msg, Context ctx)
     }
 }
 
-private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx)
-{
+private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx){
     ResultCode rc;
 
     OpResult[] rcs;
     long       op_id;
 
-    if (in_tnx.is_autocommit == false)
-    {
+    if (in_tnx.is_autocommit == false) {
         auto items = in_tnx.get_immutable_queue();
 
         log.trace("commit: items=%s", items);
 
-        if (items.length > 0)
-        {
+        if (items.length > 0) {
             rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, op_id);
 
             log.trace("commit: rc=%s", rc);
 
-            if (rc == ResultCode.Ok)
-            {
+            if (rc == ResultCode.Ok) {
                 rcs ~= OpResult(ResultCode.Ok, op_id);
             }
         }
@@ -510,10 +468,8 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                     long assigned_subsystems,
                                     string event_id,
                                     OptAuthorize opt_request,
-                                    OptTrace opt_trace)
-{
-    if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri)
-    {
+                                    OptTrace opt_trace){
+    if (ticket !is null && get_global_systicket().user_uri == ticket.user_uri) {
         //log.trace("WARN! add_to_transaction: [%s %s] from sysuser, skip authorization", text(cmd), indv.uri);
         opt_request = OptAuthorize.NO;
     }
@@ -522,8 +478,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
     OpResult res = OpResult(ResultCode.FailStore, -1);
 
-    if (ticket is null)
-    {
+    if (ticket is null) {
         log.trace("ERR! add_to_transaction: %s %s, ticket is null", text(cmd), *indv);
         res = OpResult(ResultCode.AuthenticationFailed, -1);
         return res;
@@ -531,13 +486,11 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
     try
     {
-        if (indv !is null && (indv.uri is null || indv.uri.length < 2))
-        {
+        if (indv !is null && (indv.uri is null || indv.uri.length < 2)) {
             res.result = ResultCode.InvalidIdentifier;
             return res;
         }
-        if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0))
-        {
+        if (indv is null || (cmd != INDV_OP.REMOVE && indv.resources.length == 0)) {
             res.result = ResultCode.NoContent;
             return res;
         }
@@ -578,36 +531,28 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 return res;
             }
 
-            if (prev_state !is null)
-            {
+            if (prev_state !is null) {
                 int code = prev_indv.deserialize(prev_state);
-                if (code < 0)
-                {
+                if (code < 0) {
                     log.trace("ERR! add_to_transaction: invalid prev_state [%s], uri=%s", prev_state, indv.uri);
                     res.result = ResultCode.UnprocessableEntity;
                     return res;
                 }
 
-                if (cmd == INDV_OP.REMOVE)
-                {
+                if (cmd == INDV_OP.REMOVE) {
                     indv.deserialize(prev_state);
                     _types = set_map_of_type(indv, rdfType);
                 }
 
-                if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
-                {
-                    if (indv.isExists("v-s:deleted", true))
-                    {
-                        if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_delete, true, null, null, null) != Access.can_delete)
-                        {
+                if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE) {
+                    if (indv.isExists("v-s:deleted", true)) {
+                        if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_delete, true, null, null, null) != Access.can_delete) {
                             // для устаноки аттрибута v-s:deleted у индивида проверим доступность бита Delete
                             log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can delete] [%s] ", ticket.user_uri, indv.uri);
                             res.result = ResultCode.NotAuthorized;
                             return res;
                         }
-                    }
-                    else if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update)
-                    {
+                    }else if (acl_client.authorize(indv.uri, ticket.user_uri, Access.can_update, true, null, null, null) != Access.can_update) {
                         // для обновляемого индивида проверим доступность бита Update
                         log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can update] [%s] ", ticket.user_uri, indv.uri);
                         res.result = ResultCode.NotAuthorized;
@@ -615,14 +560,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     }
 
                     // найдем какие из типов были добавлены по сравнению с предыдущим набором типов
-                    foreach (rs; _types)
-                    {
+                    foreach (rs; _types) {
                         string   itype = rs.get!string;
 
                         Resource rr = rdfType.get(itype, Resource.init);
 
-                        if (rr !is Resource.init)
-                        {
+                        if (rr !is Resource.init) {
                             rr.info          = EXISTS_TYPE;
                             rdfType[ itype ] = rr;
                         }
@@ -631,15 +574,11 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             }
         }
 
-        if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE)
-        {
+        if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE) {
             // для новых типов проверим доступность бита Create
-            foreach (key, rr; rdfType)
-            {
-                if (rr.info == NEW_TYPE)
-                {
-                    if (acl_client.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create)
-                    {
+            foreach (key, rr; rdfType) {
+                if (rr.info == NEW_TYPE) {
+                    if (acl_client.authorize(key, ticket.user_uri, Access.can_create, true, null, null, null) != Access.can_create) {
                         log.trace("ERR! add_to_transaction: Not Authorized, user [%s] request [can_create] [%s] ", ticket.user_uri, key);
                         res.result = ResultCode.NotAuthorized;
                         return res;
@@ -659,15 +598,12 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             rdfType.anyExists("v-s:PermissionFilter") == true)
             is_acl_element = true;
 
-        if (cmd == INDV_OP.REMOVE)
-        {
-            if (prev_state !is null)
-            {
+        if (cmd == INDV_OP.REMOVE) {
+            if (prev_state !is null) {
                 prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
 
                 new_state = prev_indv.serialize();
-                if (new_state.length > max_size_of_individual)
-                {
+                if (new_state.length > max_size_of_individual) {
                     res.result = ResultCode.SizeTooLarge;
                     return res;
                 }
@@ -677,16 +613,13 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                               event_id, is_acl_element, is_onto, assigned_subsystems);
 
 
-                if (tnx.is_autocommit)
-                {
+                if (tnx.is_autocommit) {
                     res.result =
                         indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                                  res.op_id);
-                }
-                else
+                }else
                     tnx.add_immutable(ti);
-            }
-            else
+            }else
                 res.result = ResultCode.Ok;
 
 
@@ -694,24 +627,17 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
                                           event_id, is_acl_element, is_onto, assigned_subsystems);
 
-            if (tnx.is_autocommit)
-            {
-                if (res.result == ResultCode.Ok)
-                {
+            if (tnx.is_autocommit) {
+                if (res.result == ResultCode.Ok) {
                     res.result =
                         indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id,
                                                  res.op_id);
                 }
-            }
-            else
-            {
+            }else  {
                 tnx.add_immutable(ti1);
             }
-        }
-        else
-        {
-            if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM)
-            {
+        }else  {
+            if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM) {
                 //log.trace("++ add_to_transaction (%s), prev_indv: %s, op_indv: %s", text (cmd), prev_indv, *indv);
                 indv = indv_apply_cmd(cmd, &prev_indv, indv);
                 //log.trace("++ add_to_transaction (%s), final indv: %s", text (cmd), *indv);
@@ -720,8 +646,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             indv.setResources("v-s:updateCounter", [ Resource(update_counter) ]);
 
             new_state = indv.serialize();
-            if (new_state.length > max_size_of_individual)
-            {
+            if (new_state.length > max_size_of_individual) {
                 res.result = ResultCode.SizeTooLarge;
                 return res;
             }
@@ -730,14 +655,11 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
                                           event_id, is_acl_element, is_onto, assigned_subsystems);
 
-            if (tnx.is_autocommit)
-            {
+            if (tnx.is_autocommit) {
                 res.result =
                     indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                              res.op_id);
-            }
-            else
-            {
+            }else  {
                 tnx.add_immutable(ti);
             }
             //log.trace("res.result=%s", res.result);
@@ -760,8 +682,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
     }
 }
 
-private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
-{
+private Resources set_map_of_type(Individual *indv, ref MapResource rdfType){
     Resources _types;
 
     if (indv is null)
@@ -776,38 +697,30 @@ private Resources set_map_of_type(Individual *indv, ref MapResource rdfType)
     return _types;
 }
 
-public ResultCode flush_storage()
-{
+public ResultCode flush_storage(){
     ResultCode rc;
 
     rc = ResultCode.Ok;
     return rc;
 }
 
-private void flush_ext_module(P_MODULE f_module, long wait_op_id)
-{
+private void flush_ext_module(P_MODULE f_module, long wait_op_id){
     Tid tid = getTid(P_MODULE.subject_manager);
 
-    if (tid != Tid.init)
-    {
+    if (tid != Tid.init) {
         send(tid, CMD_COMMIT, f_module, wait_op_id);
     }
 }
 
-private ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait)
-{
+private ResultCode msg_to_module(P_MODULE f_module, string msg, bool is_wait){
     ResultCode rc;
 
     Tid        tid = getTid(P_MODULE.subject_manager);
 
-    if (tid != Tid.init)
-    {
-        if (is_wait == false)
-        {
+    if (tid != Tid.init) {
+        if (is_wait == false) {
             send(tid, CMD_MSG, f_module, msg);
-        }
-        else
-        {
+        }else  {
             send(tid, CMD_MSG, msg, f_module, thisTid);
             receive((bool isReady) {});
         }

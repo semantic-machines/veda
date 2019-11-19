@@ -25,10 +25,8 @@ class PropertyException : Exception {
  * Params:
  *    path =  A string containing the path and name of the file to be read.
  */
-string[ string ] readProperties(string path)
-{
-    if (!exists(path))
-    {
+string[ string ] readProperties(string path){
+    if (!exists(path)) {
         throw(new PropertyException(text("The '", path, "' file does not exist.")));
     }
     return(parseProperties(readText(path)));
@@ -43,8 +41,7 @@ string[ string ] readProperties(string path)
  * Params:
  *    path =  A string containing the path and name of the file to be read.
  */
-string[ string ] readProperties(File * file)
-{
+string[ string ] readProperties(File * file){
     return(readProperties(file.name));
 }
 
@@ -67,31 +64,24 @@ string[ string ] readProperties(File * file)
  * Params:
  *    input =  The string containing the text to be parsed.
  */
-string[ string ] parseProperties(string input)
-{
+string[ string ] parseProperties(string input){
     string[ string ] output;
 
-    if (input.length > 0)
-    {
+    if (input.length > 0) {
         uint count;
 
-        foreach (line; input.splitLines())
-        {
+        foreach (line; input.splitLines()) {
             line = line.strip();
             count++;
-            if (line.length > 0)
-            {
-                if (line[ 0..1 ] != "#")
-                {
+            if (line.length > 0) {
+                if (line[ 0..1 ] != "#") {
                     auto index = line.indexOf("=");
 
-                    if (index == -1)
-                    {
+                    if (index == -1) {
                         index = line.indexOf(":");
                     }
 
-                    if (index == -1)
-                    {
+                    if (index == -1) {
                         throw(new PropertyException(text("Syntax error on line ", count, " of property data.")));
                     }
 
@@ -117,13 +107,11 @@ string[ string ] parseProperties(string input)
  *                   the default initialization value for the desired type
  *                   is.
  */
-T as(T) (string[ string ] properties, string name, T alternative = T.init)
-{
+T as(T) (string[ string ] properties, string name, T alternative = T.init){
     T      result = alternative;
     string value  = (name in properties ? properties[ name ] : null);
 
-    if (value !is null)
-    {
+    if (value !is null) {
         try {
             result = to!(T)(value);
         } catch (Exception exception) {
@@ -139,13 +127,11 @@ T as(T) (string[ string ] properties, string name, T alternative = T.init)
  * This function will recognise "true", "1", "yes" and "on" as values that
  * convert to a boolean true, with everything else converting to false.
  */
-bool as(T : bool) (string[ string ] properties, string name, T alternative = T.init)
-{
+bool as(T : bool) (string[ string ] properties, string name, T alternative = T.init){
     bool   result = alternative;
     string value  = (name in properties ? properties[ name ] : null);
 
-    if (value !is null)
-    {
+    if (value !is null) {
         value  = value.toLower();
         result = (value == "true" || value == "1" || value == "yes" || value == "on");
     }
@@ -164,13 +150,11 @@ bool as(T : bool) (string[ string ] properties, string name, T alternative = T.i
  *    name =         The name the value is currently keyed under.
  *    sep =          value separater
  */
-T[] asArray(T) (string[ string ] properties, string name, string sep = ",")
-{
+T[] asArray(T) (string[ string ] properties, string name, string sep = ","){
     T[]    result;
     string value = (name in properties ? properties[ name ] : null);
 
-    if (value !is null)
-    {
+    if (value !is null) {
         try {
             result = value.split(sep).map!strip.map!(to!(T)).array;
         } catch (Exception exception) {

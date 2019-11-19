@@ -40,8 +40,7 @@ public class LmdbDriver : KeyValueDB
         parent_thread_name   = _parent_thread_name;
 
         string thread_name = core_thread.getThis().name;
-        if (thread_name is null || thread_name.length == 0)
-        {
+        if (thread_name is null || thread_name.length == 0) {
             core_thread.getThis().name = "core" ~ text(randomUUID().toHash())[ 0..5 ];
         }
 
@@ -49,19 +48,16 @@ public class LmdbDriver : KeyValueDB
 //        reopen_db();
     }
 
-	public DBType get_type ()
-	{
-		return DBType.LMDB;
-	}
+    public DBType get_type(){
+        return DBType.LMDB;
+    }
 
     @property
-    string path()
-    {
+    string path(){
         return this._path;
     }
 
-    public void close()
-    {
+    public void close(){
         if (mode == DBMode.RW)
             flush(1);
         mdb_env_close(env);
@@ -71,22 +67,18 @@ public class LmdbDriver : KeyValueDB
         log.trace("close %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
     }
 
-    public void reopen()
-    {
-        if (mode == DBMode.R)
-        {
+    public void reopen(){
+        if (mode == DBMode.R) {
             log.trace("reopen_db %s, mode=%s, thread:%s", _path, text(mode), core_thread.getThis().name);
             close();
             open();
         }
     }
 
-    public void open()
-    {
+    public void open(){
         //log.trace ("@@@ open_db #1 %s, mode=%s, thread:%s",  _path, text(mode), core.thread.Thread.getThis().name);
 
-        if (db_is_open.get(_path, false) == true)
-        {
+        if (db_is_open.get(_path, false) == true) {
             //log.trace("@@@ open_db #2 ", _path, ", thread:", core.thread.Thread.getThis().name, ", ALREADY OPENNING, db_is_open=", db_is_open);
             return;
         }
@@ -96,8 +88,7 @@ public class LmdbDriver : KeyValueDB
         rc = mdb_env_create(&env);
         if (rc != 0)
             log.trace_log_and_console("WARN! %s(%s) #1:%s", __FUNCTION__ ~ ":" ~ text(__LINE__), _path, fromStringz(mdb_strerror(rc)));
-        else
-        {
+        else{
 //            rc = mdb_env_open(env, cast(char *)_path, MDB_NOMETASYNC | MDB_NOSYNC | MDB_NOTLS, std.conv.octal !664);
 
             if (mode == DBMode.RW)
@@ -114,16 +105,14 @@ public class LmdbDriver : KeyValueDB
 
             read_count = 0;
 
-            if (rc == 0)
-            {
+            if (rc == 0) {
                 log.trace("open LMDB %s, thread:%s", _path, core_thread.getThis().name);
                 db_is_opened = true;
             }
         }
     }
 
-    private int growth_db(MDB_env *env, MDB_txn *txn)
-    {
+    private int growth_db(MDB_env *env, MDB_txn *txn){
         int         rc;
         MDB_envinfo stat;
 
@@ -131,8 +120,7 @@ public class LmdbDriver : KeyValueDB
             mdb_txn_abort(txn);
 
         rc = mdb_env_info(env, &stat);
-        if (rc == 0)
-        {
+        if (rc == 0) {
             size_t map_size     = stat.me_mapsize;
             size_t new_map_size = map_size + 100 * 10_048_576;
 
@@ -140,8 +128,7 @@ public class LmdbDriver : KeyValueDB
                                       _path);
 
             rc = mdb_env_set_mapsize(env, new_map_size);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
                 core_thread.sleep(dur!("msecs")(100));
                 return growth_db(env, txn);
@@ -151,13 +138,11 @@ public class LmdbDriver : KeyValueDB
         return rc;
     }
 
-    public ResultCode store_kv(string in_key, string in_value)
-    {
-	return store (in_key, in_value, -1);
+    public ResultCode store_kv(string in_key, string in_value){
+        return store(in_key, in_value, -1);
     }
 
-    public ResultCode store(string in_key, string in_value, long op_id)
-    {
+    public ResultCode store(string in_key, string in_value, long op_id){
         if (db_is_opened == false)
             open();
 
@@ -177,8 +162,7 @@ public class LmdbDriver : KeyValueDB
             MDB_txn *txn;
 
             rc = mdb_txn_begin(env, null, 0, &txn);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
@@ -186,8 +170,7 @@ public class LmdbDriver : KeyValueDB
                 return ResultCode.FailOpenTransaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
@@ -204,15 +187,13 @@ public class LmdbDriver : KeyValueDB
             data.mv_size = value.length;
 
             rc = mdb_put(txn, dbi, &key, &data, 0);
-            if (rc == MDB_MAP_FULL)
-            {
+            if (rc == MDB_MAP_FULL) {
                 growth_db(env, txn);
 
                 // retry
                 return store(_key, value, op_id);
             }
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
@@ -220,16 +201,14 @@ public class LmdbDriver : KeyValueDB
             }
 
             rc = mdb_txn_commit(txn);
-            if (rc == MDB_MAP_FULL)
-            {
+            if (rc == MDB_MAP_FULL) {
                 growth_db(env, null);
 
                 // retry
                 return store(_key, value, op_id);
             }
 
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR! %s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                           rc)),
                                           _key);
@@ -247,8 +226,7 @@ public class LmdbDriver : KeyValueDB
         }
     }
 
-    public ResultCode remove(string in_key)
-    {
+    public ResultCode remove(string in_key){
         if (db_is_opened == false)
             open();
 
@@ -264,8 +242,7 @@ public class LmdbDriver : KeyValueDB
             MDB_txn *txn;
 
             rc = mdb_txn_begin(env, null, 0, &txn);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
@@ -273,8 +250,7 @@ public class LmdbDriver : KeyValueDB
                 return ResultCode.FailOpenTransaction;
             }
             rc = mdb_dbi_open(txn, null, MDB_CREATE, &dbi);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
@@ -291,15 +267,13 @@ public class LmdbDriver : KeyValueDB
             data.mv_size = 0;
 
             rc = mdb_del(txn, dbi, &key, &data);
-            if (rc == MDB_MAP_FULL)
-            {
+            if (rc == MDB_MAP_FULL) {
                 growth_db(env, txn);
 
                 // retry
                 return remove(_key);
             }
-            if (rc != 0)
-            {
+            if (rc != 0) {
 //                log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
 //                                                                                                                                         rc)),
 //                                          _key);
@@ -308,16 +282,14 @@ public class LmdbDriver : KeyValueDB
             }
 
             rc = mdb_txn_commit(txn);
-            if (rc == MDB_MAP_FULL)
-            {
+            if (rc == MDB_MAP_FULL) {
                 growth_db(env, null);
 
                 // retry
                 return remove(_key);
             }
 
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s, key=%s", _path, fromStringz(mdb_strerror(
                                                                                                                                          rc)),
                                           _key);
@@ -335,14 +307,12 @@ public class LmdbDriver : KeyValueDB
         }
     }
 
-    public void flush(int force)
-    {
+    public void flush(int force){
         try
         {
             int rc = mdb_env_sync(env, force);
 
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ ", (%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
             }
         }
@@ -353,8 +323,7 @@ public class LmdbDriver : KeyValueDB
     }
 
 
-    public long count_entries()
-    {
+    public long count_entries(){
         if (db_is_opened == false)
             open();
 
@@ -368,8 +337,7 @@ public class LmdbDriver : KeyValueDB
         MDB_dbi dbi;
 
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-        if (rc == MDB_BAD_RSLOT)
-        {
+        if (rc == MDB_BAD_RSLOT) {
             log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
             mdb_txn_abort(txn_r);
 
@@ -379,10 +347,8 @@ public class LmdbDriver : KeyValueDB
             rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
         }
 
-        if (rc != 0)
-        {
-            if (rc == MDB_MAP_RESIZED)
-            {
+        if (rc != 0) {
+            if (rc == MDB_MAP_RESIZED) {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen();
                 return count_entries();
@@ -397,8 +363,7 @@ public class LmdbDriver : KeyValueDB
         try
         {
             rc = mdb_dbi_open(txn_r, null, 0, &dbi);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
                 throw new Exception(cast(string)("Fail:" ~  fromStringz(mdb_strerror(rc))));
             }
@@ -406,8 +371,7 @@ public class LmdbDriver : KeyValueDB
             MDB_stat stat;
             rc = mdb_stat(txn_r, dbi, &stat);
 
-            if (rc == 0)
-            {
+            if (rc == 0) {
                 count = stat.ms_entries;
             }
         }catch (Exception ex)
@@ -420,35 +384,28 @@ public class LmdbDriver : KeyValueDB
     }
 
 
-    public void get_individual(string uri, ref Individual individual)
-    {
+    public void get_individual(string uri, ref Individual individual){
         string individual_as_binobj = get_binobj(uri);
 
-        if (individual_as_binobj is null)
-        {
+        if (individual_as_binobj is null) {
             individual.setStatus(ResultCode.NotFound);
             return;
         }
 
-        if (individual_as_binobj !is null && individual_as_binobj.length > 1)
-        {
+        if (individual_as_binobj !is null && individual_as_binobj.length > 1) {
             if (individual.deserialize(individual_as_binobj) > 0)
                 individual.setStatus(ResultCode.Ok);
-            else
-            {
+            else{
                 individual.setStatus(ResultCode.UnprocessableEntity);
                 writeln("ERR!: invalid binobj: [", individual_as_binobj, "] ", uri);
             }
-        }
-        else
-        {
+        }else  {
             individual.setStatus(ResultCode.UnprocessableEntity);
             //writeln ("ERR!: empty binobj: [", individual_as_binobj, "] ", uri);
         }
     }
 
-    public string get_binobj(string _uri)
-    {
+    public string get_binobj(string _uri){
         string uri = _uri.idup;
 
         if (db_is_opened == false)
@@ -469,10 +426,8 @@ public class LmdbDriver : KeyValueDB
         MDB_dbi dbi;
 
         rc = mdb_txn_begin(env, null, MDB_RDONLY, &txn_r);
-        if (rc == MDB_BAD_RSLOT)
-        {
-            for (int i = 0; i < 10 && rc != 0; i++)
-            {
+        if (rc == MDB_BAD_RSLOT) {
+            for (int i = 0; i < 10 && rc != 0; i++) {
                 //log.trace_log_and_console("[%s] warn: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
                 mdb_txn_abort(txn_r);
 
@@ -484,16 +439,12 @@ public class LmdbDriver : KeyValueDB
             }
         }
 
-        if (rc != 0)
-        {
-            if (rc == MDB_MAP_RESIZED)
-            {
+        if (rc != 0) {
+            if (rc == MDB_MAP_RESIZED) {
                 log.trace_log_and_console("WARN! " ~ __FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) %s", _path, fromStringz(mdb_strerror(rc)));
                 reopen();
                 return get_binobj(uri);
-            }
-            else if (rc == MDB_BAD_RSLOT)
-            {
+            }else if (rc == MDB_BAD_RSLOT) {
                 log.trace_log_and_console("WARN! [%s] #2: find:" ~ text(__LINE__) ~ "(%s) MDB_BAD_RSLOT", parent_thread_name, _path);
                 mdb_txn_abort(txn_r);
 
@@ -505,8 +456,7 @@ public class LmdbDriver : KeyValueDB
             }
         }
 
-        if (rc != 0)
-        {
+        if (rc != 0) {
             log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
             return null;
         }
@@ -514,8 +464,7 @@ public class LmdbDriver : KeyValueDB
         try
         {
             rc = mdb_dbi_open(txn_r, null, 0, &dbi);
-            if (rc != 0)
-            {
+            if (rc != 0) {
                 log.trace_log_and_console(__FUNCTION__ ~ ":" ~ text(__LINE__) ~ "(%s) ERR:%s", _path, fromStringz(mdb_strerror(rc)));
                 return null;
             }
@@ -533,8 +482,7 @@ public class LmdbDriver : KeyValueDB
             rc = mdb_get(txn_r, dbi, &key, &data);
             if (rc == 0)
                 str = cast(string)(data.mv_data[ 0..data.mv_size ]);
-            else if (rc == MDB_INVALID)
-            {
+            else if (rc == MDB_INVALID) {
                 log.trace("ERR! MDB_INVALID! lmdb.find, key=%s", uri);
                 reopen();
                 core_thread.sleep(dur!("msecs")(10));
@@ -559,11 +507,9 @@ public class LmdbDriver : KeyValueDB
             mdb_txn_abort(txn_r);
         }
 
-        if (str !is null)
-        {
+        if (str !is null) {
             return str.dup;
-        }
-        else
+        }else
             return str;
     }
 }

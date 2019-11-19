@@ -24,19 +24,16 @@ private class Bdathe
     private bool[ string ]  orphans;
     private bool[ string ] els;
 
-    override string toString()
-    {
+    override string toString(){
         OutBuffer ob = new OutBuffer();
 
         int       idx;
 
         string[]  keys        = el_2_super_els.keys();
         auto      keys_sorted = sort!("toUpper(a) < toUpper(b)", SwapStrategy.stable)(keys);
-        foreach (key; keys_sorted)
-        {
+        foreach (key; keys_sorted) {
             Names value = el_2_super_els[ key ];
-            if (value.keys.length > 0)
-            {
+            if (value.keys.length > 0) {
                 idx++;
                 ob.write(text(idx));
                 ob.write(" el_2_super_els ");
@@ -57,11 +54,9 @@ private class Bdathe
         idx         = 0;
         keys        = el_2_sub_els.keys();
         keys_sorted = sort!("toUpper(a) < toUpper(b)", SwapStrategy.stable)(keys);
-        foreach (key; keys_sorted)
-        {
+        foreach (key; keys_sorted) {
             Names value = el_2_sub_els[ key ];
-            if (value.keys.length > 0)
-            {
+            if (value.keys.length > 0) {
                 idx++;
                 ob.write(text(idx));
                 ob.write(" el_2_sub_els ");
@@ -90,13 +85,13 @@ private class Bdathe
 
 class Onto
 {
-    private Logger  log;
-    public int      reload_count = 0;
+    private Logger log;
+    public int     reload_count = 0;
 
-    private         Individual[ string ] individuals;
+    private        Individual[ string ] individuals;
 
-    private Bdathe  _class;
-    private Bdathe  _property;
+    private Bdathe _class;
+    private Bdathe _property;
 
     public this(Logger _log)
     {
@@ -105,41 +100,32 @@ class Onto
         _property = new Bdathe();
     }
 
-    Individual[ string ] get_individuals()
-    {
+    Individual[ string ] get_individuals(){
         return individuals;
     }
 
-    public Names get_super_classes(string _class_uri)
-    {
+    public Names get_super_classes(string _class_uri){
         return _class.el_2_super_els.get(_class_uri, null);
     }
 
-    public Names get_sub_classes(string _class_uri)
-    {
+    public Names get_sub_classes(string _class_uri){
         return _class.el_2_sub_els.get(_class_uri, null);
     }
 
-    public Names get_sub_properies(string _uri)
-    {
+    public Names get_sub_properies(string _uri){
         return _property.el_2_sub_els.get(_uri, null);
     }
 
-    public string[] get_properies()
-    {
+    public string[] get_properies(){
         return _property.els.keys;
     }
 
-    public bool isSubClasses(string _class_uri, string[] _subclasses_uri)
-    {
-        foreach (_subclass_uri; _subclasses_uri)
-        {
+    public bool isSubClasses(string _class_uri, string[] _subclasses_uri){
+        foreach (_subclass_uri; _subclasses_uri) {
             Names subclasses = _class.el_2_sub_els.get(_subclass_uri, null);
 
-            if (subclasses !is null)
-            {
-                if (subclasses.get(_class_uri, false) == true)
-                {
+            if (subclasses !is null) {
+                if (subclasses.get(_class_uri, false) == true) {
                     return true;
                 }
             }
@@ -148,8 +134,7 @@ class Onto
         return false;
     }
 
-    public void load(Individual[] l_individuals)
-    {
+    public void load(Individual[] l_individuals){
         StopWatch sw1;
 
         foreach (indv; l_individuals)
@@ -170,8 +155,7 @@ class Onto
         //log.trace ("LOAD *** property *** \n%s", _property.toString());
     }
 
-    public void update_onto_hierarchy(ref Individual indv, bool replace = false)
-    {
+    public void update_onto_hierarchy(ref Individual indv, bool replace = false){
         string type_uri = indv.uri;
         Names  icl;
         bool   is_class = false;
@@ -179,8 +163,7 @@ class Onto
 
         bool   is_deleted = indv.isExists("v-s:deleted", true);
 
-        if (is_deleted)
-        {
+        if (is_deleted) {
             individuals.remove(indv.uri);
 
             foreach (indv; individuals)
@@ -188,8 +171,7 @@ class Onto
             return;
         }
 
-        if (indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ]))
-        {
+        if (indv.anyExists("rdf:type", [ "rdf:Property", "owl:ObjectProperty", "owl:DatatypeProperty" ])) {
             if (replace == true)
                 individuals[ indv.uri ] = indv;
             else
@@ -201,9 +183,7 @@ class Onto
             _property.els[ indv.uri ] = true;
 
             is_prop = true;
-        }
-        else if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ]))
-        {
+        }else if (indv.anyExists("rdf:type", [ "owl:Class", "rdfs:Class" ])) {
             if (replace == true)
                 individuals[ indv.uri ] = indv;
             else
@@ -218,25 +198,20 @@ class Onto
         }
 
         // если этот класс числится в осиротевших ссылках, найти в подклассах где он упоминается и так-же обновить.
-        if (is_class && _class.orphans.get(indv.uri, false) == true)
-        {
+        if (is_class && _class.orphans.get(indv.uri, false) == true) {
             Names nuscs = _class.el_2_sub_els.get(indv.uri, null);
 
-            foreach (cl; nuscs.keys)
-            {
+            foreach (cl; nuscs.keys) {
                 _update_element(cl, _class, "rdfs:subClassOf");
                 _class.orphans[ cl ] = false;
             }
 
             //log.trace ("@0 need update [%s]->[%s]", indv.uri, nuscs);
-        }
-        else
-        if (is_prop && _property.orphans.get(indv.uri, false) == true)
-        {
+        }else
+        if (is_prop && _property.orphans.get(indv.uri, false) == true) {
             Names nuscs = _property.el_2_sub_els.get(indv.uri, null);
 
-            foreach (cl; nuscs.keys)
-            {
+            foreach (cl; nuscs.keys) {
                 _update_element(cl, _property, "rdfs:subPropertyOf");
                 _property.orphans[ cl ] = false;
             }
@@ -245,18 +220,15 @@ class Onto
         }
     }
 
-    private void _update_element(string type_uri, Bdathe elh, string parent_predicate)
-    {
+    private void _update_element(string type_uri, Bdathe elh, string parent_predicate){
         // writeln ("@b1 update_element_in_hierarchy, uri=", indv.uri);
         Names superelementes = Names.init;
 
         prepare_superelements(parent_predicate, elh, superelementes, individuals, type_uri);
         elh.el_2_super_els[ type_uri ] = superelementes;
 
-        foreach (elementz; superelementes.keys)
-        {
-            if (individuals.get(elementz, Individual.init) == Individual.init)
-            {
+        foreach (elementz; superelementes.keys) {
+            if (individuals.get(elementz, Individual.init) == Individual.init) {
                 elh.orphans[ elementz ] = true;
                 elh.els.remove(elementz);
             }
@@ -269,15 +241,13 @@ class Onto
 
     private void prepare_superelements(string parent_predicate, Bdathe elh,
                                        ref Names superelementes, ref Individual[ string ] elementes, string look_cl,
-                                       int level = 0)
-    {
+                                       int level = 0){
         //log.trace ("#1 prepare_superelementes=%s", look_cl);
 
         Individual ii = elementes.get(look_cl, Individual.init);
 
         Resource[] list = ii.getResources(parent_predicate);
-        foreach (elementz; list)
-        {
+        foreach (elementz; list) {
             superelementes[ elementz.uri ] = true;
             if (elementz.uri != look_cl)
                 prepare_superelements(parent_predicate, elh, superelementes, elementes, elementz.uri, level + 1);

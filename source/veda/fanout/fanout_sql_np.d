@@ -9,8 +9,7 @@ private import veda.common.type, veda.core.common.define, veda.onto.resource, ve
 private import veda.common.logger, veda.core.impl.thread_context;
 private import veda.vmodule.vmodule, veda.fanout.to_sql;
 
-void main(string[] args)
-{
+void main(string[] args){
     string priority = "normal";
 
     process_name = "fanout-sql-np";

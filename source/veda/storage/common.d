@@ -5,8 +5,7 @@ import veda.common.logger, veda.common.type;
 import veda.onto.individual;
 
 /// Режим работы хранилища
-enum DBMode
-{
+enum DBMode {
     /// чтение
     R  = true,
 
@@ -14,9 +13,8 @@ enum DBMode
     RW = false
 }
 
-enum DBType
-{
-    LMDB  = 1,
+enum DBType {
+    LMDB      = 1,
     TARANTOOL = 2
 }
 
@@ -35,6 +33,6 @@ public interface KeyValueDB
     public ResultCode store(string in_key, string in_value, long op_id);
     public ResultCode store_kv(string in_key, string in_value);
     public ResultCode remove(string in_key);
-    
-    public DBType get_type ();
+
+    public DBType get_type();
 }

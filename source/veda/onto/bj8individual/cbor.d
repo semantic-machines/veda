@@ -37,8 +37,7 @@ int BREAK = 0x1f;
 int TAG_CBOR_MARKER = 55799;
 
 /// Основные типы данных CBOR
-enum MajorType : ubyte
-{
+enum MajorType : ubyte {
     /** Major type 0: unsigned integers. */
     UNSIGNED_INTEGER = 0 << 5,
 
@@ -67,8 +66,7 @@ enum MajorType : ubyte
 }
 
 /// Теги CBOR
-enum TAG : ubyte
-{
+enum TAG : ubyte {
     NONE                        = 255,
 
     TEXT_RU                     = 42,
@@ -121,8 +119,7 @@ enum TAG : ubyte
 }
 
 /// Элемент/заголовок
-struct ElementHeader
-{
+struct ElementHeader {
     /// Тип
     MajorType type = MajorType.NONE;
 
@@ -134,47 +131,35 @@ struct ElementHeader
 }
 
 
-string toString(ElementHeader *el)
-{
+string toString(ElementHeader *el){
     return "type=" ~ text(el.type) ~ ", len=" ~ text(el.v_long) ~ ", tag=" ~ text(el.tag);
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 /// Записать в буффер тип и значение
-public void write_type_value(MajorType type, ulong value, ref OutBuffer ou)
-{
+public void write_type_value(MajorType type, ulong value, ref OutBuffer ou){
     ubyte element_header;
 
-    if (value < 24)
-    {
+    if (value < 24) {
         ubyte ll = cast(ubyte)value;
         element_header = type | ll;
         ou.write(element_header);
-    }
-    else
-    {
-        if (value > uint.max)
-        {
+    }else  {
+        if (value > uint.max) {
             element_header = type | 27;
             ou.write(element_header);
             ou.write(value);
-        }
-        else if (value > ushort.max)
-        {
+        }else if (value > ushort.max) {
             element_header = type | 26;
             ou.write(element_header);
             ou.write(cast(uint)value);
-        }
-        else if (value > ubyte.max)
-        {
+        }else if (value > ubyte.max) {
             element_header = type | 25;
             ou.write(element_header);
             ou.write(cast(ushort)value);
 //            writeln ("@p #write cast(ushort)value=", cast(ushort)value, ", value=", value);
-        }
-        else
-        {
+        }else  {
             element_header = type | 24;
             ou.write(element_header);
             ou.write(cast(ubyte)value);
@@ -186,8 +171,7 @@ public void write_type_value(MajorType type, ulong value, ref OutBuffer ou)
 
 
 /// Записать в буффер integer
-public void write_integer(long vv, ref OutBuffer ou)
-{
+public void write_integer(long vv, ref OutBuffer ou){
     if (vv >= 0)
         write_type_value(MajorType.UNSIGNED_INTEGER, vv, ou);
     else
@@ -195,15 +179,13 @@ public void write_integer(long vv, ref OutBuffer ou)
 }
 
 /// Записать в буффер строку
-public void write_string(string vv, ref OutBuffer ou)
-{
+public void write_string(string vv, ref OutBuffer ou){
     write_type_value(MajorType.TEXT_STRING, vv.length, ou);
     ou.write(vv);
 }
 
 /// Записать в буффер boolean
-public void write_bool(bool vv, ref OutBuffer ou)
-{
+public void write_bool(bool vv, ref OutBuffer ou){
     if (vv == true)
         write_type_value(MajorType.FLOAT_SIMPLE, TRUE, ou);
     else
@@ -211,8 +193,7 @@ public void write_bool(bool vv, ref OutBuffer ou)
 }
 
 /// Читать из буффера тип и значение
-public int read_type_value(ubyte[] src, ElementHeader *header)
-{
+public int read_type_value(ubyte[] src, ElementHeader *header){
     if (src.length == 0)
         return 0;
 
@@ -223,8 +204,7 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
     long      ld    = hh & 0x1f;
     int       d_pos = 1;
 
-    if (ld > 23)
-    {
+    if (ld > 23) {
         d_pos += 1 << (ld - 24);
 
         if (ld == 24)
@@ -242,12 +222,10 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
     //    writeln ("@p res_ld=", ld);
     //}
 
-    if (type == MajorType.TAG)
-    {
+    if (type == MajorType.TAG) {
         ElementHeader main_type_header;
         int           len = read_type_value(src[ d_pos..$ ], &main_type_header);
-        if (len <= 0)
-        {
+        if (len <= 0) {
             //writeln("@%%%1");
             throw new Exception("no content in pos");
         }
@@ -256,16 +234,11 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
         header.v_long = main_type_header.v_long;
         header.type   = main_type_header.type;
 //      writeln ("HEADER:", header.toString());
-    }
-    else
-    {
-        if (type == MajorType.NEGATIVE_INTEGER)
-        {
+    }else  {
+        if (type == MajorType.NEGATIVE_INTEGER) {
             ld = -ld;
             //writeln ("@p #type=", text(type), ", ld=", ld);
-        }
-        else if ((type == MajorType.ARRAY || type == MajorType.TEXT_STRING) && ld > src.length)
-        {
+        }else if ((type == MajorType.ARRAY || type == MajorType.TEXT_STRING) && ld > src.length) {
             //writeln("Err! @d cbor.read_header, ld=", ld);
             throw new Exception("read_type_value: cbor.read_header, ld=" ~ text(ld) ~ ", src=[" ~ text(src) ~ "]");
             //ld = src.length;
@@ -279,8 +252,7 @@ public int read_type_value(ubyte[] src, ElementHeader *header)
     return d_pos;
 }
 
-void hexdump(T) (string z, T[] s)
-{
+void hexdump(T) (string z, T[] s){
     char[] pad = z.dup;
     pad[] = ' ';
 
@@ -290,15 +262,13 @@ void hexdump(T) (string z, T[] s)
     byte *b = cast(byte *)s.ptr;
     int  N  = cast(int)(s.length * T.sizeof);
 
-    for (int i = 0; i < N; i++)
-    {
+    for (int i = 0; i < N; i++) {
         writef("%2.2x ", b[ i ]);
 
         if ((i & 7) == 7)
             writef(" ", pad);
 
-        if ((i & 15) == 15)
-        {
+        if ((i & 15) == 15) {
             writef("    ", pad);
             for (int j = i - 15; j <= i; j++)
                 writef("%s", cast(char)b[ j ]);
@@ -309,22 +279,19 @@ void hexdump(T) (string z, T[] s)
     writefln("\n");
 }
 
-private ushort ushort_from_buff(ubyte[] buff, int pos)
-{
+private ushort ushort_from_buff(ubyte[] buff, int pos){
     ushort res = *((cast(ushort *)(buff.ptr + pos)));
 
     return res;
 }
 
-private uint uint_from_buff(ubyte[] buff, int pos)
-{
+private uint uint_from_buff(ubyte[] buff, int pos){
     uint res = *((cast(uint *)(buff.ptr + pos)));
 
     return res;
 }
 
-private ulong ulong_from_buff(ubyte[] buff, int pos)
-{
+private ulong ulong_from_buff(ubyte[] buff, int pos){
     ulong res = *((cast(ulong *)(buff.ptr + pos)));
 
     return res;
