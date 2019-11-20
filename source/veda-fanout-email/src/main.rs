@@ -132,14 +132,6 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
     let recipient_mailbox = prepared_indv.get_literals("v-s:recipientMailbox");
     let attachments = prepared_indv.get_literals("v-s:attachment");
 
-    if ctx.always_use_mail_sender {
-        info!("use always_use_mail_sender");
-    }
-
-    if !ctx.default_mail_sender.is_empty() {
-        info!("default mail sender: {:?}", ctx.default_mail_sender);
-    }
-
     if from.is_empty() && sender_mailbox.is_empty() && !ctx.default_mail_sender.is_empty() {
         from = ctx.default_mail_sender.to_string();
     }
@@ -401,6 +393,14 @@ fn connect_to_smtp(ctx: &mut Context, module: &mut Module) -> bool {
 
                             ctx.default_mail_sender = connection.get_first_literal("v-s:mailSender").unwrap_or_default();
                             ctx.always_use_mail_sender = connection.get_first_bool("v-s:alwaysUseMailSender").unwrap_or_default();
+
+                            if ctx.always_use_mail_sender {
+                                info!("use always_use_mail_sender");
+                            }
+
+                            if !ctx.default_mail_sender.is_empty() {
+                                info!("default mail sender: {:?}", ctx.default_mail_sender);
+                            }
 
                             let client = SmtpClient::new(host.to_owned() + ":" + &port.to_string(), ClientSecurity::None);
                             if let Err(e) = client {
