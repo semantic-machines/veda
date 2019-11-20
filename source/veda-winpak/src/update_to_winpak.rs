@@ -93,7 +93,7 @@ fn sync_data_to_winpak<'a>(module: &mut Module, conn_str: &str, indv: &mut Indiv
             } else if has_change_kind_for_pass == "d:j2dohw8s79d29mxqwoeut39q92" {
                 date_from = indv_b.get_first_datetime("v-s:dateFromFact");
                 date_to = indv_b.get_first_datetime("v-s:dateToFact");
-            } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" {
+            } else if has_change_kind_for_pass == "d:a5w44zg3l6lwdje9kw09je0wzki" || has_change_kind_for_pass == "d:e8j2tpz9r613hxq4g4rbbxtfqe" {
                 is_update_access_levels = true;
             }
         }
