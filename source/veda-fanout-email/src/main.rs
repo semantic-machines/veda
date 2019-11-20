@@ -30,9 +30,9 @@ pub struct Context {
 fn main() -> Result<(), i32> {
     init_log();
 
-    let mut queue_consumer = Consumer::new("./data/queue", "fanout-email", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_consumer = Consumer::new("./data/queue", "fanout_email0", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
-    let module_info = ModuleInfo::new("./data", "fanout_email", true);
+    let module_info = ModuleInfo::new("./data", "fanout_email0", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
         return Err(-1);
