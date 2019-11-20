@@ -966,7 +966,7 @@
         var active = suggestions.find(".active").removeClass("active");
         var next = active.next();
         if ( next.length ) {
-          next.focus().addClass("active");
+          next.addClass("active").focus();
         } else {
           suggestions.children().first().addClass("active").focus();
         }
@@ -976,7 +976,7 @@
         var active = suggestions.find(".active").removeClass("active");
         var prev = active.prev();
         if ( prev.length ) {
-          prev.focus().addClass("active");
+          prev.addClass("active").focus();
         } else {
           suggestions.children().last().addClass("active").focus();
         }
@@ -2411,7 +2411,7 @@
           var active = suggestions.find(".active").removeClass("active");
           var next = active.next();
           if ( next.length ) {
-            next.focus().addClass("active");
+            next.addClass("active").focus();
           } else {
             suggestions.children().first().addClass("active").focus();
           }
@@ -2421,10 +2421,12 @@
           var active = suggestions.find(".active").removeClass("active");
           var prev = active.prev();
           if ( prev.length ) {
-            prev.focus().addClass("active");
+            prev.addClass("active").focus();
           } else {
             suggestions.children().last().addClass("active").focus();
           }
+        } else if ( e.which === 13 ) { // Enter
+          $(e.target).click();
         }
       };
 
