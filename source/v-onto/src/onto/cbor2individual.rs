@@ -89,6 +89,25 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                     indv.add_bool(&predicate, b);
                 }
             }
+            Type::Bytes => {
+                if let Ok(t) = d._text(&type_info) {
+                    if tag == TagId::URI as u64 {
+                        indv.add_uri(&predicate, &t);
+                    } else {
+                        let mut lang = Lang::NONE;
+
+                        if tag == TagId::TextRu as u64 || tag == TagId::TextEn as u64 {
+                            if tag == TagId::TextRu as u64 {
+                                lang = Lang::RU;
+                            } else if tag == TagId::TextEn as u64 {
+                                lang = Lang::EN;
+                            }
+                        }
+
+                        indv.add_string(predicate, &t, lang);
+                    }
+                }
+            }
             Type::Text => {
                 if let Ok(t) = d._text(&type_info) {
                     if tag == TagId::URI as u64 {
@@ -128,7 +147,7 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                 }
             }
             Type::Int16 => {
-                if let Ok(i) = d._u16(&type_info) {
+                if let Ok(i) = d._i16(&type_info) {
                     if tag == TagId::EpochDateTime as u64 {
                         indv.add_datetime(&predicate, i64::from(i));
                     } else {
@@ -146,7 +165,16 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                 }
             }
             Type::Int32 => {
-                if let Ok(i) = d._u32(&type_info) {
+                if let Ok(i) = d._i32(&type_info) {
+                    if tag == TagId::EpochDateTime as u64 {
+                        indv.add_datetime(&predicate, i64::from(i));
+                    } else {
+                        indv.add_integer(&predicate, i64::from(i));
+                    }
+                }
+            }
+            Type::Int64 => {
+                if let Ok(i) = d._i64(&type_info) {
                     if tag == TagId::EpochDateTime as u64 {
                         indv.add_datetime(&predicate, i64::from(i));
                     } else {
@@ -164,7 +192,7 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                 }
             }
             _ => {
-                error!("cbor:unknown type {:?}", type_info.0);
+                error!("parse cbor:unknown type {:?}, predicate={}, id={}", type_info.0, predicate, indv.uri);
                 return false;
             }
         }
