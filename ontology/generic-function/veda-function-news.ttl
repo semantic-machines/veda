@@ -351,6 +351,14 @@ v-s:NewsReloadPage
 
   Reload now?
   """@en;
-  v-s:script "location.reload();";
+  v-s:script """
+var delReq = window.indexedDB.deleteDatabase("veda");
+delReq.onerror = console.log;
+delReq.onsuccess = console.log;
+document.cookie = "ticket=null; expires=" + new Date(0).toGMTString() + "; path=/files;";
+setTimeout(function () {
+  location.reload();
+}, 3000);
+  """;
   v-s:newsAudience cfg:AllUsersGroup;
 .
