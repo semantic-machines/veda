@@ -27,6 +27,10 @@ cp $backup_path/log.zip $logslog_path/log.zip
 # Backup config.ttl
 cp ./ontology/config.ttl $backup_path/config.ttl
 
+# Delele old logs
+find ./logs/*.log -delete
+rm ./veda.log
+
 # Create backup of databases
 #zip $backup_path/data.zip ./data -1 -r -x "./data/files/*"
 zip $backup_path/data-indv.zip ./data/lmdb-individuals ./data/uris -r -0
@@ -36,12 +40,10 @@ zip $backup_path/data-ft-base.gz ./data/xapian-info ./data/xapian-search-base -r
 zip $backup_path/data-ft-deleted.gz ./data/xapian-search-deleted -r -1
 zip $backup_path/data-ft-system.gz ./data/xapian-search-system -r -1
 
-# Detele old backups and logs
-find ./data/lmdb-individuals.* -exec mv {} ./backup/binlogs \;
-find ./data/lmdb-tickets.* -delete
-find ./logs/*.log -delete
-rm ./veda.log
-rm -r ./data/trails
+# Delete old backups and logs
+#find ./data/lmdb-individuals.* -exec mv {} ./backup/binlogs \;
+#find ./data/lmdb-tickets.* -delete
+#rm -r ./data/trails
 
 # Start optiflow
 ./control-start.sh
