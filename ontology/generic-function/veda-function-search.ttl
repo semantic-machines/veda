@@ -862,6 +862,10 @@ v-fs:AttributiveSearchInlineTemplate
       outline: 2px solid #aaa;
     }
   </style>
+  <h2 class="caption hidden">
+    <span about="@" property="rdfs:label"></span>
+    <hr class="margin-sm">
+  </h2>
   <div class="params">
     <div class="search-form"></div>
     <br>
