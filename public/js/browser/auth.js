@@ -203,12 +203,19 @@ veda.Module(function (veda) { "use strict";
     veda.trigger("login:success", authResult);
   }
 
+  function setTicketCookie(ticket, expires) {
+    document.cookie = "ticket=" + ticket + "; expires=" + new Date(parseInt(expires)).toGMTString() + "; path=/; samesite=strict;";
+  }
+  function delTicketCookie() {
+    setTicketCookie(null, 0);
+  }
+
   veda.on("login:failed", function () {
     $("#app").empty();
     delete storage.ticket;
     delete storage.user_uri;
     delete storage.end_time;
-    veda.Util.delCookie("ticket");
+    delTicketCookie();
 
     if (storage.logout) {
       loginForm.show();
@@ -259,7 +266,7 @@ veda.Module(function (veda) { "use strict";
     veda.user_uri = storage.user_uri = authResult.user_uri;
     veda.ticket = storage.ticket = authResult.ticket;
     veda.end_time = storage.end_time = authResult.end_time;
-    veda.Util.setCookie("ticket", authResult.ticket);
+    setTicketCookie(veda.ticket, veda.end_time);
     // Re-login on ticket expiration
     if( veda.end_time ) {
       var ticketDelay = parseInt(veda.end_time) - Date.now();
@@ -279,7 +286,7 @@ veda.Module(function (veda) { "use strict";
     delete storage.ticket;
     delete storage.user_uri;
     delete storage.end_time;
-    veda.Util.delCookie("ticket");
+    delTicketCookie();
     storage.logout = true;
     location.reload();
   });
@@ -287,7 +294,7 @@ veda.Module(function (veda) { "use strict";
   // Init application
   veda.init()
     .then(function () {
-      // Check if ticket in cookies is valid
+      // Check if ticket is valid
       var ticket = storage.ticket,
           user_uri = storage.user_uri,
           end_time = ( new Date() < new Date(parseInt(storage.end_time)) ) && storage.end_time;
