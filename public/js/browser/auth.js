@@ -204,7 +204,7 @@ veda.Module(function (veda) { "use strict";
   }
 
   function setTicketCookie(ticket, expires) {
-    document.cookie = "ticket=" + ticket + "; expires=" + new Date(parseInt(expires)).toGMTString() + "; path=/; samesite=strict;";
+    document.cookie = "ticket=" + ticket + "; expires=" + new Date(parseInt(expires)).toGMTString() + "; samesite=strict;";
   }
   function delTicketCookie() {
     setTicketCookie(null, 0);
