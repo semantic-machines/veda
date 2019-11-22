@@ -2439,9 +2439,10 @@
     if (isSingle && opts.mode !== "search" && ( this.hasClass("fulltext") || this.hasClass("full") ) ) {
       $(".clear", control).on("click keyup", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
+        selected = [];
+        suggestions.empty();
         individual.clearValue(rel_uri);
         fulltext.val("");
-        suggestions.empty();
       });
       this.on("view edit search", function (e) {
         e.stopPropagation();
@@ -2455,7 +2456,6 @@
     } else {
       $(".clear", control).remove();
     }
-
 
     // Dropdown feature
     var dropdown = $(".dropdown", control);
