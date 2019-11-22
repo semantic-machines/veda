@@ -2040,25 +2040,6 @@
       return newVal;
     }
 
-    if (isSingle && opts.mode !== "search" && ( this.hasClass("fulltext") || this.hasClass("full") ) ) {
-      $(".clear", control).on("click keyup", function (e) {
-        if (e.type !== "click" && e.which !== 13) { return; }
-        individual.clearValue(rel_uri);
-        $(".fulltext", control).val("");
-      });
-      this.on("view edit search", function (e) {
-        e.stopPropagation();
-        if (e.type === "search") {
-          var isSingle = false || $(this).data("single");
-          if (!isSingle) {
-            $(".clear", control).remove();
-          }
-        }
-      });
-    } else {
-      $(".clear", control).remove();
-    }
-
     // Create feature
     var create = $(".create", control);
     if ( this.hasClass("create") || this.hasClass("full") ) {
@@ -2222,11 +2203,10 @@
           .text( actions[2].toString() );
         header.find(".close-menu")
           .click(function () {
+            individual.set(rel_uri, selected);
             fulltextMenu.hide();
             $(document).off("click", clickOutsideMenuHandler);
             $(document).off("keydown", arrowHandler);
-            $(".form-control", control).val("");
-            individual.set(rel_uri, selected);
           })
           .text( "Ok" );
       });
@@ -2257,7 +2237,7 @@
             timeout = setTimeout(performSearch, 750, value);
           } else if (!value.length) {
             if (isSingle) {
-              individual.set(rel_uri, []);
+              individual.clearValue(rel_uri);
             }
             suggestions.empty();
             fulltextMenu.hide();
@@ -2296,6 +2276,7 @@
       var selected = [];
 
       var renderResults = function (results) {
+        suggestions.empty();
         selected = individual.get(rel_uri);
         if (results.length) {
           var rendered = results.map(function (result) {
@@ -2314,14 +2295,13 @@
             }
             return tmpl;
           });
-          suggestions.empty().append(rendered);
+          suggestions.append(rendered);
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
         } else {
-          suggestions.empty();
           fulltextMenu.hide();
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
@@ -2351,9 +2331,7 @@
         if (isSingle) { tmpl.siblings().removeClass("selected"); }
         if ( selected.indexOf(suggestion) >= 0 ) {
           if (isSingle) {
-            individual
-              .set(rel_uri, [])
-              .set(rel_uri, [suggestion]);
+            individual.set(rel_uri, [suggestion]);
             fulltextMenu.hide();
             $(document).off("click", clickOutsideMenuHandler);
             $(document).off("keydown", arrowHandler);
@@ -2364,7 +2342,6 @@
           }
         } else {
           if (isSingle) {
-
             selected = [suggestion];
             individual.set(rel_uri, selected);
             fulltextMenu.hide();
@@ -2386,8 +2363,8 @@
         if ( !$(e.target).hasClass("selected") ) {
           clickHandler(e);
         }
-        individual.set(rel_uri, selected);
         dblTimeout = clearTimeout(dblTimeout);
+        individual.set(rel_uri, selected);
         fulltextMenu.hide();
         $(document).off("click", clickOutsideMenuHandler);
         $(document).off("keydown", arrowHandler);
@@ -2425,8 +2402,11 @@
           } else {
             suggestions.children().last().addClass("active").focus();
           }
-        } else if ( e.which === 13 ) { // Enter
+        } else if ( e.which === 32 ) { // Space
+          e.preventDefault();
           $(e.target).click();
+        } else if ( e.which === 13 ) { // Enter
+          $(e.target).click().click();
         }
       };
 
@@ -2439,7 +2419,7 @@
               fulltext.val(rendered);
             }
           });
-        } else if ( isSingle ) {
+        } else {
           fulltext.val("");
         }
       };
@@ -2455,10 +2435,32 @@
       fulltextMenu.remove();
     }
 
+    // Clear feature
+    if (isSingle && opts.mode !== "search" && ( this.hasClass("fulltext") || this.hasClass("full") ) ) {
+      $(".clear", control).on("click keyup", function (e) {
+        if (e.type !== "click" && e.which !== 13) { return; }
+        individual.clearValue(rel_uri);
+        fulltext.val("");
+        suggestions.empty();
+      });
+      this.on("view edit search", function (e) {
+        e.stopPropagation();
+        if (e.type === "search") {
+          var isSingle = false || $(this).data("single");
+          if (!isSingle) {
+            $(".clear", control).remove();
+          }
+        }
+      });
+    } else {
+      $(".clear", control).remove();
+    }
+
+
     // Dropdown feature
     var dropdown = $(".dropdown", control);
     if ( this.hasClass("dropdown") && this.hasClass("fulltext") || this.hasClass("full") ) {
-      dropdown.on("click keyup", function (e) {
+      dropdown.on("click keydown", function (e) {
         if (e.type !== "click" && e.which !== 13) { return; }
         e.stopPropagation();
         if ( suggestions.is(":empty") ) {
@@ -2476,7 +2478,7 @@
       var downHandler = function (e) {
         if ( e.which === 40) {
           e.stopPropagation();
-          dropdown.focus().click();
+          dropdown.click();
         }
       }
       fulltext.on("focus", function (e) {
