@@ -72,6 +72,11 @@ v-s:recipientMailbox
   rdfs:range xsd:string ;
 .
 
+v-s:attachmentEmailBundle
+  rdf:type v-s:Bundle ;
+  rdfs:comment "Суммарный размер вложений не должен превышать 15 Мб"@ru ;
+  rdfs:comment "The total size of investments should not exceed 15 Mb"@en ;
+.
 ### ------------------------------------------------------
 
 v-s:EmailTemplate
@@ -80,6 +85,29 @@ v-s:EmailTemplate
   rdfs:label "Шаблон отправки email"@ru ;
   rdfs:label "Email send template"@en ;
   v-ui:template """
+<script>
+  template.on("validate", function () {
+    var result = {};
+    var promises = individual["v-s:attachment"].map(function(attach) {
+      return attach.getPropertyChain("v-s:fileSize");
+    });
+    return Promise.all(promises).then(function(fileSizeArr) {
+      var fileSizeSUM = 0;
+      fileSizeArr.forEach(function(fileSize) {
+        fileSizeSUM += +fileSize;
+      });
+      console.log(fileSizeSUM > 15728640); //15 мб
+      if (fileSizeSUM > 15728640) 
+        result["v-s:attachment"] = {
+          state: false,
+          cause: ["v-s:attachmentEmailBundle"]
+        };
+      template.trigger("validated", result);
+    });
+  })
+
+//# sourceURL=v-s:EmailTemplate_pre
+</script>
 <div class="container sheet">
   <h2>
     <span about="v-s:Email" property="rdfs:label"></span><br>
