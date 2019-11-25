@@ -5,7 +5,9 @@ use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
 use std::str;
+use v_api::ResultCode;
 use v_module::module::{init_log, Module};
+use v_module::ticket::Ticket;
 use v_onto::individual::Individual;
 use v_storage::storage::*;
 
@@ -63,11 +65,33 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
         JSONValue::Null
     };
 
+    let mut ticket = Ticket::default();
+
+    if let Some(ticket_id) = v["ticket"].as_str() {
+        get_ticket_from_db(ticket_id, &mut ticket, storage);
+        if ticket.result != ResultCode::Ok {
+            error!("ticket [{}] not found in storage", ticket_id);
+            return Message::default();
+        }
+    } else {
+        error!("field [ticket] not found in request");
+        return Message::default();
+    }
+
+    if !is_ticket_valid(&mut ticket) {
+        error!("ticket [{}] not valid", ticket.id);
+        return Message::default();
+    }
+
+    let assigned_subsystems = v["assigned_subsystems"].as_i64();
+    let event_id = v["event_id"].as_str();
+    let src = v["src"].as_str();
+
     match v["function"].as_str().unwrap_or_default() {
-        "put" => {},
-        "remove" => {},
-        "add_to" => {},
-        "set_in" => {},
+        "put" => {}
+        "remove" => {}
+        "add_to" => {}
+        "set_in" => {}
         "remove_from" => {}
         _ => {
             error!("unknown command {:?}", v["function"].as_str());
@@ -75,4 +99,16 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
     }
 
     Message::default()
+}
+
+fn get_ticket_from_db(id: &str, dest: &mut Ticket, storage: &mut VStorage) {
+    let mut indv = Individual::default();
+    if storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
+        dest.update_from_individual(&mut indv);
+        dest.result = ResultCode::Ok;
+    }
+}
+
+fn is_ticket_valid(ticket: &mut Ticket) -> bool {
+    false
 }
