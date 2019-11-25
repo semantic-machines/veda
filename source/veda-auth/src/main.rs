@@ -15,7 +15,7 @@ use uuid::*;
 use v_api::{IndvOp, ResultCode};
 use v_authorization::Trace;
 use v_az_lmdb::_authorize;
-use v_module::module::{init_log, Module};
+use v_module::module::{init_log, Module, get_ticket_from_db};
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 use v_onto::individual2msgpack::to_msgpack;
@@ -111,14 +111,6 @@ fn req_prepare(request: &Message, systicket: &str, module: &mut Module, pass_lif
     Message::default()
 }
 
-fn update_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
-    let mut indv = Individual::default();
-    if module.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
-        dest.update_from_individual(&mut indv);
-        dest.result = ResultCode::Ok;
-    }
-}
-
 fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket: &str, module: &mut Module) -> Ticket {
     let mut tr_ticket = Ticket::default();
 
@@ -132,7 +124,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
         return tr_ticket;
     }
 
-    update_ticket_from_db(&tr_ticket_id, &mut tr_ticket, module);
+    get_ticket_from_db(&tr_ticket_id, &mut tr_ticket, module);
 
     if tr_ticket.result == ResultCode::Ok {
         let mut is_allow_trusted = false;

@@ -13,6 +13,7 @@ use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
+use crate::ticket::Ticket;
 
 pub struct Module {
     pub storage: VStorage,
@@ -275,4 +276,12 @@ pub fn init_log() {
         .format(|buf, record| writeln!(buf, "{} [{}] - {}", Local::now().format("%Y-%m-%dT%H:%M:%S%.3f"), record.level(), record.args()))
         .filter(None, LevelFilter::Info)
         .init();
+}
+
+pub fn get_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
+    let mut indv = Individual::default();
+    if module.storage.get_individual_from_db(StorageId::Tickets, id, &mut indv) {
+        dest.update_from_individual(&mut indv);
+        dest.result = ResultCode::Ok;
+    }
 }
