@@ -137,11 +137,19 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
     }
 
     if (!from.is_empty() || !sender_mailbox.is_empty() || !ctx.default_mail_sender.is_empty()) && (!to.is_empty() || recipient_mailbox.is_some()) {
-        let mut email_from = Mailbox::new(ctx.default_mail_sender.to_string());
+        let mut email_from = Mailbox::new("".to_string());
 
         if ctx.always_use_mail_sender == true && !ctx.default_mail_sender.is_empty() && ctx.default_mail_sender.len() > 5 {
             info!("use default mail sender: {}", ctx.default_mail_sender);
-            email_from = Mailbox::new(ctx.default_mail_sender.to_string());
+            if !ctx.default_mail_sender.contains("@") {
+                if let Some(r) = extract_email(&None, &ctx.default_mail_sender.to_string(), ctx, module).pop() {
+                    email_from = r;
+                } else {
+                    error!("fail extract email from default_mail_sender {}", ctx.default_mail_sender);
+                }
+            } else {
+                email_from = Mailbox::new(ctx.default_mail_sender.to_string());
+            };
         } else {
             if !from.is_empty() {
                 info!("extract [from], {}", from);
@@ -211,11 +219,7 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
             email = email.from(email_from);
 
             for el in rr_email_to_hash.values() {
-                if let Some(s) = &el.name {
-                    email = email.to(Mailbox::new_with_name(s.to_string(), el.address.to_string()));
-                } else {
-                    email = email.to(Mailbox::new(el.address.to_string()));
-                }
+                email = email.to(el.clone());
             }
 
             if let Some(s) = subject {
@@ -234,10 +238,12 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
                         } else {
                             info!("message {} success send", prepared_indv.get_id());
                         }
+                    } else {
+                        error!("fail send email id={}, mailer not found", prepared_indv.get_id());
                     }
                 }
                 Err(e) => {
-                    error!("fail create email id={}, err={}", prepared_indv.get_id(), e);
+                    error!("fail build email id={}, err={}", prepared_indv.get_id(), e);
                 }
             }
         }
