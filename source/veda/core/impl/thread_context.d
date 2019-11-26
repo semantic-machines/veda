@@ -542,7 +542,6 @@ class PThreadContext : Context
             return ResultCode.Ok;
         }
 
-        if (in_tnx.is_autocommit == true) {
             bool[ string ] uri2exists;
 
             foreach (item; in_tnx.get_queue()) {
@@ -603,59 +602,6 @@ class PThreadContext : Context
                 //else
                 //log.trace ("SUCCESS COMMIT");
             }
-        }else  {
-            version (isModule)
-            {
-                //log.trace("@0 -------------------------------------------------------------------------------------------");
-                //log.trace("@1 commit, tnx.id=%s tnx.len=%d", in_tnx.id, in_tnx.get_queue().length);
-
-                Individual imm;
-                imm.uri = "tnx:" ~ text(in_tnx.id);
-                imm.addResource("fn", Resource(DataType.String, "commit"));
-
-                Resources items;
-
-                int       idx = 0;
-                foreach (ti; in_tnx.get_queue()) {
-                    //log.trace("@2 ti=%s", ti);
-                    Individual iti;
-
-                    iti.uri = "el:" ~ text(idx);
-                    iti.addResource("cmd", Resource(ti.cmd));
-
-                    if (ti.user_uri !is null && ti.user_uri.length > 0)
-                        iti.addResource("user_uri", Resource(DataType.Uri, ti.user_uri));
-
-                    iti.addResource("uri", Resource(DataType.Uri, ti.uri));
-
-                    if (ti.prev_binobj !is null && ti.prev_binobj.length > 0)
-                        iti.addResource("prev_binobj", Resource(DataType.String, ti.prev_binobj));
-
-                    if (ti.new_binobj !is null && ti.new_binobj.length > 0)
-                        iti.addResource("new_binobj", Resource(DataType.String, ti.new_binobj));
-
-                    iti.addResource("update_counter", Resource(DataType.Integer, ti.update_counter));
-                    iti.addResource("event_id", Resource(DataType.String, ti.event_id));
-
-                    string iti_binobj = iti.serialize();
-                    items ~= Resource(iti_binobj);
-                }
-
-                imm.setResources("items", items);
-
-                string binobj = imm.serialize();
-
-                //log.trace("[%s] commit: (isModule), req=(%s)", name, binobj);
-
-                OpResult res = reqrep_binobj_2_main_module(binobj)[ 0 ];
-                //log.trace("[%s] commit: (isModule), rep=(%s)", name, res);
-
-                if (res.result != ResultCode.Ok && res.result != ResultCode.NoContent) {
-                    this.get_logger().trace("FAIL COMMIT");
-                    return res.result;
-                }
-            }
-        }
         return ResultCode.Ok;
     }
 }

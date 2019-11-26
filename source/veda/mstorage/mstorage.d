@@ -284,7 +284,6 @@ public string execute_json(string in_msg, Context ctx){
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.src           = src;
-                    tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems,
                                                        event_id.str,
@@ -306,7 +305,6 @@ public string execute_json(string in_msg, Context ctx){
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.src           = src;
-                    tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.ADD_IN, &individual,
                                                        assigned_subsystems, event_id.str,
@@ -326,7 +324,6 @@ public string execute_json(string in_msg, Context ctx){
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.src           = src;
-                    tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.SET_IN, &individual,
                                                        assigned_subsystems, event_id.str,
@@ -346,7 +343,6 @@ public string execute_json(string in_msg, Context ctx){
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.src           = src;
-                    tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual,
                                                        assigned_subsystems,
@@ -367,7 +363,6 @@ public string execute_json(string in_msg, Context ctx){
                     Transaction tnx;
                     tnx.id            = transaction_id;
                     tnx.src           = src;
-                    tnx.is_autocommit = true;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE, &individual,
                                                        assigned_subsystems, event_id.str,
@@ -432,31 +427,6 @@ public string execute_json(string in_msg, Context ctx){
 
         return res.toString();
     }
-}
-
-private OpResult[] commit(OptAuthorize opt_request, ref Transaction in_tnx){
-    ResultCode rc;
-
-    OpResult[] rcs;
-    long       op_id;
-
-    if (in_tnx.is_autocommit == false) {
-        auto items = in_tnx.get_immutable_queue();
-
-        log.trace("commit: items=%s", items);
-
-        if (items.length > 0) {
-            rc = indv_storage_thread.save(in_tnx.src, P_MODULE.subject_manager, opt_request, items, in_tnx.id, op_id);
-
-            log.trace("commit: rc=%s", rc);
-
-            if (rc == ResultCode.Ok) {
-                rcs ~= OpResult(ResultCode.Ok, op_id);
-            }
-        }
-    }
-
-    return rcs;
 }
 
 public string[]   owl_tags = [ "rdf:Property", "owl:Restriction", "owl:ObjectProperty", "owl:DatatypeProperty", "owl:Class", "rdfs:Class" ];
@@ -613,12 +583,9 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                               event_id, is_acl_element, is_onto, assigned_subsystems);
 
 
-                if (tnx.is_autocommit) {
                     res.result =
                         indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                                  res.op_id);
-                }else
-                    tnx.add_immutable(ti);
             }else
                 res.result = ResultCode.Ok;
 
@@ -627,15 +594,11 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
                                           event_id, is_acl_element, is_onto, assigned_subsystems);
 
-            if (tnx.is_autocommit) {
                 if (res.result == ResultCode.Ok) {
                     res.result =
                         indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id,
                                                  res.op_id);
                 }
-            }else  {
-                tnx.add_immutable(ti1);
-            }
         }else  {
             if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM) {
                 //log.trace("++ add_to_transaction (%s), prev_indv: %s, op_indv: %s", text (cmd), prev_indv, *indv);
@@ -655,17 +618,13 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
                                           event_id, is_acl_element, is_onto, assigned_subsystems);
 
-            if (tnx.is_autocommit) {
                 res.result =
                     indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                              res.op_id);
-            }else  {
-                tnx.add_immutable(ti);
-            }
             //log.trace("res.result=%s", res.result);
         }
 
-        if (tnx.is_autocommit && res.result == ResultCode.Ok)
+        if (res.result == ResultCode.Ok)
             res.result = ResultCode.Ok;
 
         return res;
