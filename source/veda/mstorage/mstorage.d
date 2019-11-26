@@ -467,7 +467,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
         Tid         tid_subject_manager;
 
-        bool        is_acl_element;
         bool        is_onto;
 
         MapResource rdfType;
@@ -476,16 +475,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         string      prev_state;
         Individual  prev_indv;
 
-//        bool        is_new = false;
-
-//        if (indv.getFirstInteger("v-s:updateCounter", 0) == 0 && cmd == INDV_OP.PUT)
-//        {
-//            is_new = true;
-//			  log.trace("INFO! %s is new, use UPSERT", indv.uri);
-//        }
-
-//        if (is_new == false)
-        {
+        
             try
             {
                 prev_state = indv_storage_thread.find(P_MODULE.subject_manager, indv.uri);
@@ -542,7 +532,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                     }
                 }
             }
-        }
+        
 
         if (opt_request == OptAuthorize.YES && cmd != INDV_OP.REMOVE) {
             // для новых типов проверим доступность бита Create
@@ -564,10 +554,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
         if (rdfType.anyExists(owl_tags) == true)
             is_onto = true;
 
-        if (rdfType.anyExists("v-s:PermissionStatement") == true || rdfType.anyExists("v-s:Membership") == true ||
-            rdfType.anyExists("v-s:PermissionFilter") == true)
-            is_acl_element = true;
-
         if (cmd == INDV_OP.REMOVE) {
             if (prev_state !is null) {
                 prev_indv.setResources("v-s:deleted", [ Resource(true) ]);
@@ -580,7 +566,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
                 immutable TransactionItem ti =
                     immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                              event_id, is_acl_element, is_onto, assigned_subsystems);
+                                              event_id, is_onto, assigned_subsystems);
 
 
                     res.result =
@@ -592,7 +578,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
-                                          event_id, is_acl_element, is_onto, assigned_subsystems);
+                                          event_id, is_onto, assigned_subsystems);
 
                 if (res.result == ResultCode.Ok) {
                     res.result =
@@ -616,7 +602,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_acl_element, is_onto, assigned_subsystems);
+                                          event_id, is_onto, assigned_subsystems);
 
                 res.result =
                     indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
