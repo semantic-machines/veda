@@ -2155,7 +2155,7 @@
         spec.present(cntr, treeTmpl, undefined, extra);
       });
     } else {
-      tree.parent().remove();
+      tree.remove();
     }
 
     // Fulltext search feature
@@ -2486,14 +2486,6 @@
       });
     } else {
       dropdown.remove();
-    }
-
-    var postButtons = $(".post-buttons", control);
-    if ( !$(".fulltext", control).length ) {
-      postButtons.removeClass("input-group-btn").children().first().toggleClass("btn-default btn-primary");
-    }
-    if ( !postButtons.children().length ) {
-      postButtons.remove();
     }
 
     this.on("view edit search", function (e) {
