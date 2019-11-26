@@ -23,10 +23,10 @@ auth_result=$($auth_request)
 ticket=$(echo $auth_result | grep -oP '(?<="id":")[\w\d-]+(?=")')
 # echo "ticket = $ticket"
 
-payload='{"ticket":"'$ticket'","individual":'$individual',"prepare_events":true,"event_id":"","transaction_id":""}'
+payload='{"individual":'$individual',"prepare_events":true,"event_id":"","transaction_id":""}'
 # echo "payload = $payload"
 
-put_request="curl -s -X PUT -H 'Content-Type: application/json' http://localhost:$port/put_individual -d '$payload'"
+put_request="curl -s -X PUT -H 'Content-Type: application/json' -b 'ticket=$ticket' http://localhost:$port/put_individual -d '$payload'"
 # echo "put_request = $put_request"
 
 put_result=$(eval $put_request)
