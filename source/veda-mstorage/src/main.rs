@@ -7,10 +7,11 @@ use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use std::str;
-use v_api::ResultCode;
+use v_api::{IndvOp, ResultCode};
 use v_module::module::{init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::individual::Individual;
+use v_onto::json2individual::parse_json_to_individual;
 use v_storage::storage::*;
 
 fn main() -> std::io::Result<()> {
@@ -97,15 +98,41 @@ fn req_prepare<'a>(request: &Message, storage: &mut VStorage, tickets_cache: &mu
     let event_id = v["event_id"].as_str();
     let src = v["src"].as_str();
 
+    let mut op_id = IndvOp::None;
+
     match v["function"].as_str().unwrap_or_default() {
-        "put" => {}
-        "remove" => {}
-        "add_to" => {}
-        "set_in" => {}
-        "remove_from" => {}
+        "put" => {
+            op_id = IndvOp::Put;
+        }
+        "remove" => {
+            op_id = IndvOp::Remove;
+        }
+        "add_to" => {
+            op_id = IndvOp::AddIn;
+        }
+        "set_in" => {
+            op_id = IndvOp::SetIn;
+        }
+        "remove_from" => {
+            op_id = IndvOp::RemoveFrom;
+        }
         _ => {
             error!("unknown command {:?}", v["function"].as_str());
+            return Message::default();
         }
+    }
+
+    if let Some(jindividuals) = v["individuals"].as_array() {
+        for el in jindividuals {
+            let mut indv = Individual::default();
+            if !parse_json_to_individual(el, &mut indv) {
+                error!("fail parse individual fro json");
+                return Message::default();
+            }
+        }
+    } else {
+        error!("field [individuals] is empty");
+        return Message::default();
     }
 
     Message::default()
