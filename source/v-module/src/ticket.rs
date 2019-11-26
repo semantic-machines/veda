@@ -1,7 +1,7 @@
 use v_api::ResultCode;
 use v_onto::individual::Individual;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Ticket {
     pub id: String,
     /// Uri пользователя

@@ -1,9 +1,11 @@
 #[macro_use]
 extern crate log;
 
+use chrono::Utc;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use serde_json::value::Value as JSONValue;
+use std::collections::HashMap;
 use std::str;
 use v_api::ResultCode;
 use v_module::module::{init_log, Module};
@@ -48,9 +50,11 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
+    let mut tickets_cache: HashMap<String, Ticket> = HashMap::new();
+
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = req_prepare(&recv_msg, &mut storage);
+            let res = req_prepare(&recv_msg, &mut storage, &mut tickets_cache);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -58,24 +62,30 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
+fn req_prepare<'a>(request: &Message, storage: &mut VStorage, tickets_cache: &mut HashMap<String, Ticket>) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
         JSONValue::Null
     };
 
+    let fticket = v["ticket"].as_str();
+    if fticket.is_none() {
+        error!("field [ticket] not found in request");
+        return Message::default();
+    }
+    let ticket_id = fticket.unwrap();
     let mut ticket = Ticket::default();
 
-    if let Some(ticket_id) = v["ticket"].as_str() {
+    if let Some(cached_ticket) = tickets_cache.get(ticket_id) {
+        ticket = cached_ticket.clone();
+    } else {
         get_ticket_from_db(ticket_id, &mut ticket, storage);
         if ticket.result != ResultCode::Ok {
             error!("ticket [{}] not found in storage", ticket_id);
             return Message::default();
         }
-    } else {
-        error!("field [ticket] not found in request");
-        return Message::default();
+        tickets_cache.insert(ticket_id.to_string(), ticket.clone());
     }
 
     if !is_ticket_valid(&mut ticket) {
@@ -110,5 +120,19 @@ fn get_ticket_from_db(id: &str, dest: &mut Ticket, storage: &mut VStorage) {
 }
 
 fn is_ticket_valid(ticket: &mut Ticket) -> bool {
-    false
+    if ticket.result != ResultCode::Ok {
+        return false;
+    }
+
+    if Utc::now().timestamp() > ticket.end_time {
+        ticket.result = ResultCode::TicketExpired;
+        return false;
+    }
+
+    if ticket.user_uri.is_empty() {
+        ticket.result = ResultCode::NotReady;
+        return false;
+    }
+
+    true
 }
