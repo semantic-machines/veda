@@ -122,7 +122,7 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
 
 fn start_module(module: &Module) -> io::Result<Child> {
     let datetime: DateTime<Local> = Local::now();
-    let log_path = "logs/veda-".to_owned() + &module.name + "-" + &datetime.format("%Y-%m-%d %H:%M:%S.%f").to_string();
+    let log_path = "logs/veda-".to_owned() + &module.name + "-" + &datetime.format("%Y-%m-%d %H:%M:%S.%f").to_string() + ".log";
     let std_log_file = File::create(log_path.to_string());
     let err_log_file = File::create(log_path);
 
