@@ -271,7 +271,6 @@ class ScriptProcess : VedaModule
 
                     //count++;
                     script.compiled_script.run();
-                    tnx.is_autocommit = true;
                     tnx.id            = transaction_id;
 
                     if (script.disallow_changing_source == true)
@@ -281,7 +280,7 @@ class ScriptProcess : VedaModule
 
                     ResultCode res = g_context.commit(&tnx, OptAuthorize.NO);
 
-                    //log.trace("tnx: id=%s, autocommit=%s", tnx.id, tnx.is_autocommit);
+                    //log.trace("tnx: id=%s", tnx.id);
                     foreach (item; tnx.get_queue()) {
                         log.trace("tnx item: cmd=%s, uri=%s, res=%s", item.cmd, item.new_indv.uri, text(item.rc));
                     }
