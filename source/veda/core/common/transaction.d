@@ -97,7 +97,6 @@ struct Transaction {
     }
 
     string      src;
-    bool        is_autocommit = true;
     long        id;
     ResultCode  rc;
     int         count;
