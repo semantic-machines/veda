@@ -2403,10 +2403,9 @@
             suggestions.children().last().addClass("active").focus();
           }
         } else if ( e.which === 32 ) { // Space
-          e.preventDefault();
-          $(e.target).click();
+          clickHandler(e);
         } else if ( e.which === 13 ) { // Enter
-          $(e.target).click().click();
+          dblclickHandler(e);
         }
       };
 
