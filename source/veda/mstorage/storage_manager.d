@@ -85,7 +85,7 @@ public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init) {
-        immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id, false,
+        immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id,
                                                                   false, assigned_subsystems);
 
         send(tid, src, opt_request, [ ti ], tnx_id, thisTid);
