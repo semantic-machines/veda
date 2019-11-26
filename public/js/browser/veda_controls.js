@@ -2422,6 +2422,9 @@
         } else {
           fulltext.val("");
         }
+        setTimeout(function () {
+          fulltext.focus();
+        }, 100);
       };
 
       individual.on(rel_uri, propertyModifiedHandler);
