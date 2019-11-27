@@ -144,6 +144,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
     //Check if ticket is valid, return fail code if ticket is not valid
     rc, ticket := getTicket(ticketKey)
     if rc != Ok {
+      log.Println("ERR! get file [%s], ticket [%s] not valid, err=%s", uri, ticketKey, rc)
       ctx.Response.SetStatusCode(int(rc))
       return
     }
@@ -153,10 +154,11 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
 
     //If common  request code of operation code are not Ok then return fail code
     if rr.CommonRC != Ok {
-      log.Println("ERR! COMMON FILES: GET INDIVIDUAL user=", ticket.UserURI, ", uri=", uri)
+      log.Println("ERR! get file [%s], fail get info of file, ticket=%s, user=%s, err=%s", ticket.UserURI, ticketKey, uri, rr.CommonRC)
       ctx.Response.SetStatusCode(int(rr.CommonRC))
       return
     } else if rr.OpRC[0] != Ok {
+      log.Println("ERR! get file [%s], fail get info of file, ticket=%s, user=%s, err=%s", ticket.UserURI, ticketKey, uri, rr.OpRC[0])
       ctx.Response.SetStatusCode(int(rr.OpRC[0]))
       return
     }
