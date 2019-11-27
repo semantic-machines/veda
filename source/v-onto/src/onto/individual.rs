@@ -74,6 +74,10 @@ impl Individual {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.obj.resources.is_empty()
+    }
+
     pub fn get_obj(&self) -> &IndividualObj {
         &self.obj
     }

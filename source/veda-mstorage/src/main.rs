@@ -55,7 +55,7 @@ fn main() -> std::io::Result<()> {
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = req_prepare(&recv_msg, &mut storage, &mut tickets_cache);
+            let res = request_prepare(&recv_msg, &mut storage, &mut tickets_cache);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -63,7 +63,7 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn req_prepare<'a>(request: &Message, storage: &mut VStorage, tickets_cache: &mut HashMap<String, Ticket>) -> Message {
+fn request_prepare(request: &Message, storage: &mut VStorage, tickets_cache: &mut HashMap<String, Ticket>) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -98,23 +98,23 @@ fn req_prepare<'a>(request: &Message, storage: &mut VStorage, tickets_cache: &mu
     let event_id = v["event_id"].as_str();
     let src = v["src"].as_str();
 
-    let mut op_id = IndvOp::None;
+    let mut cmd = IndvOp::None;
 
     match v["function"].as_str().unwrap_or_default() {
         "put" => {
-            op_id = IndvOp::Put;
+            cmd = IndvOp::Put;
         }
         "remove" => {
-            op_id = IndvOp::Remove;
+            cmd = IndvOp::Remove;
         }
         "add_to" => {
-            op_id = IndvOp::AddIn;
+            cmd = IndvOp::AddIn;
         }
         "set_in" => {
-            op_id = IndvOp::SetIn;
+            cmd = IndvOp::SetIn;
         }
         "remove_from" => {
-            op_id = IndvOp::RemoveFrom;
+            cmd = IndvOp::RemoveFrom;
         }
         _ => {
             error!("unknown command {:?}", v["function"].as_str());
@@ -128,6 +128,8 @@ fn req_prepare<'a>(request: &Message, storage: &mut VStorage, tickets_cache: &mu
             if !parse_json_to_individual(el, &mut indv) {
                 error!("fail parse individual fro json");
                 return Message::default();
+            } else {
+                individual_prepare(&ticket, &cmd, &mut indv, storage);
             }
         }
     } else {
@@ -136,6 +138,26 @@ fn req_prepare<'a>(request: &Message, storage: &mut VStorage, tickets_cache: &mu
     }
 
     Message::default()
+}
+
+fn individual_prepare(ticket: &Ticket, cmd: &IndvOp, indv: &mut Individual, storage: &mut VStorage) -> (ResultCode, i64) {
+    if indv.get_id().is_empty() || indv.get_id().len() < 2 {
+        return (ResultCode::InvalidIdentifier, -1);
+    }
+
+    if indv.is_empty() || cmd != &IndvOp::Remove {
+        return (ResultCode::NoContent, -1);
+    }
+
+    let mut prev_state = Individual::default();
+    if storage.get_individual(indv.get_id(), &mut prev_state) {
+    } else {
+        if prev_state.is_empty() && cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
+            error!("store, cmd={:?}: not read prev_state uri={}", cmd, indv.get_id());
+        }
+    }
+
+    (ResultCode::FailStore, -1)
 }
 
 fn get_ticket_from_db(id: &str, dest: &mut Ticket, storage: &mut VStorage) {

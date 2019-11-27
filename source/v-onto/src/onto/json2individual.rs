@@ -30,7 +30,7 @@ pub fn parse_json_to_individual(src: &JSONValue, dest: &mut Individual) -> bool 
     res
 }
 
-fn json_to_predicate(predicate: &str, values: &Vec<JSONValue>, dest: &mut Individual) -> bool{
+fn json_to_predicate(predicate: &str, values: &Vec<JSONValue>, dest: &mut Individual) -> bool {
     let mut res = true;
     for val in values {
         if let Some(v) = val.as_object() {
