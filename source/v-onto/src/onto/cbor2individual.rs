@@ -182,6 +182,15 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                     }
                 }
             }
+            Type::UInt64 => {
+                if let Ok(i) = d._u64(&type_info) {
+                    if tag == TagId::EpochDateTime as u64 {
+                        indv.add_datetime(&predicate, i64::from(i as i64));
+                    } else {
+                        indv.add_integer(&predicate, i64::from(i as i64));
+                    }
+                }
+            }
             Type::Array => {
                 if let Ok(len) = d._array(&type_info) {
                     for _x in 0..len {
