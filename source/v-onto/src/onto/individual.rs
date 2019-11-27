@@ -3,6 +3,8 @@ use crate::parser::*;
 use crate::resource::{Resource, Value};
 use chrono::offset::LocalResult::Single;
 use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
+use num::FromPrimitive;
+use num_traits::pow;
 use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::fmt;
@@ -153,6 +155,19 @@ impl Individual {
             if let Ok(m) = value.replace('.', "").parse::<i64>() {
                 self.add_decimal_d(&predicate, m, exp as i64);
             }
+        } else {
+            error!("fail parse [{}] to decimal", value);
+        }
+    }
+
+    pub fn add_decimal_from_i64(&mut self, predicate: &str, value: i64) {
+        self.add_decimal_d(&predicate, value, 1);
+    }
+
+    pub fn add_decimal_from_f64(&mut self, predicate: &str, value: f64) {
+        if let Some(v) = Decimal::from_f64(value) {
+            let exp = v.scale() as i32 * -1;
+            self.add_decimal_d(&predicate, (value * pow(10, exp as usize) as f64) as i64, exp as i64);
         } else {
             error!("fail parse [{}] to decimal", value);
         }
