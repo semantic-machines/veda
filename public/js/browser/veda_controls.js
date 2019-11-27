@@ -2490,6 +2490,11 @@
       dropdown.remove();
     }
 
+    if ( !$(".fulltext", control).length ) {
+      $(".input-group", control).toggleClass("input-group btn-group");
+      $(".input-group-addon", control).toggleClass("input-group-addon btn-default btn-primary");
+    }
+
     this.on("view edit search", function (e) {
       e.stopPropagation();
       if (e.type === "search") {
