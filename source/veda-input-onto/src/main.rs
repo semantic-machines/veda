@@ -1,8 +1,7 @@
 #[macro_use]
 extern crate log;
 
-use chrono::offset::LocalResult::Single;
-use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
+use chrono::Local;
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
 use log::LevelFilter;
@@ -13,14 +12,11 @@ use rio_api::model::NamedOrBlankNode;
 use rio_api::model::Term::{BlankNode, Literal, NamedNode};
 use rio_api::parser::TriplesParser;
 use rio_turtle::{TurtleError, TurtleParser};
-use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
-use std::ops::Sub;
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
 use std::time as std_time;
 use std::{fs, io};
 use v_api::*;
@@ -266,7 +262,7 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
 
             if indv.get_id().is_empty() {
                 id.insert_str(0, &s);
-                indv.set_id (&s);
+                indv.set_id(&s);
             }
 
             let predicate = to_prefix_form(t.predicate.iri, &namespaces2id);
@@ -313,42 +309,10 @@ fn parse_file(file_path: &str, individuals: &mut HashMap<String, Individual>) ->
                             }
                         }
                         "http://www.w3.org/2001/XMLSchema#decimal" => {
-                            let qq = Decimal::from_str(value);
-                            if let Ok(v) = qq {
-                                let exp = v.scale() as i32 * -1;
-                                if let Ok(m) = value.replace('.', "").parse::<i64>() {
-                                    indv.add_decimal_d(&predicate, m, exp as i64);
-                                    //                                    info!("{}{}", m, exp);
-                                }
-                            } else {
-                                error!("fail parse [{}] to decimal", value);
-                            }
+                            indv.add_decimal_from_str(&predicate, value);
                         }
                         "http://www.w3.org/2001/XMLSchema#dateTime" => {
-                            if value.contains('Z') {
-                                if let Ok(v) = DateTime::parse_from_rfc3339(&value) {
-                                    indv.add_datetime(&predicate, v.timestamp());
-                                } else {
-                                    error!("fail parse [{}] to datetime", value);
-                                }
-                            } else {
-                                let ndt;
-                                if value.len() == 10 {
-                                    ndt = NaiveDateTime::parse_from_str(&(value.to_owned() + "T00:00:00"), "%Y-%m-%dT%H:%M:%S");
-                                } else {
-                                    ndt = NaiveDateTime::parse_from_str(&value, "%Y-%m-%dT%H:%M:%S")
-                                }
-
-                                if let Ok(v) = ndt {
-                                    if let Single(offset) = Local.offset_from_local_datetime(&v) {
-                                        indv.add_datetime(&predicate, v.sub(offset).timestamp());
-                                    } else {
-                                        indv.add_datetime(&predicate, v.timestamp());
-                                    }
-                                } else {
-                                    error!("fail parse [{}] to datetime", value);
-                                }
-                            }
+                            indv.add_datetime_from_str(&predicate, value);
                         }
                         _ => {
                             error!("unknown type {}", datatype.iri);
