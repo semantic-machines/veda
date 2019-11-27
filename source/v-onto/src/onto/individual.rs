@@ -1,8 +1,13 @@
 use crate::datatype::{DataType, Lang};
 use crate::parser::*;
 use crate::resource::{Resource, Value};
+use chrono::offset::LocalResult::Single;
+use chrono::{DateTime, Local, NaiveDateTime, TimeZone};
+use rust_decimal::Decimal;
 use std::collections::HashMap;
 use std::fmt;
+use std::ops::Sub;
+use std::str::FromStr;
 
 #[derive(PartialEq, Debug, Clone)]
 pub enum IndividualError {
@@ -91,6 +96,33 @@ impl Individual {
         self.obj.add_datetime(predicate, i)
     }
 
+    pub fn add_datetime_from_str(&mut self, predicate: &str, value: &str) {
+        if value.contains('Z') {
+            if let Ok(v) = DateTime::parse_from_rfc3339(&value) {
+                self.add_datetime(&predicate, v.timestamp());
+            } else {
+                error!("fail parse [{}] to datetime", value);
+            }
+        } else {
+            let ndt;
+            if value.len() == 10 {
+                ndt = NaiveDateTime::parse_from_str(&(value.to_owned() + "T00:00:00"), "%Y-%m-%dT%H:%M:%S");
+            } else {
+                ndt = NaiveDateTime::parse_from_str(&value, "%Y-%m-%dT%H:%M:%S")
+            }
+
+            if let Ok(v) = ndt {
+                if let Single(offset) = Local.offset_from_local_datetime(&v) {
+                    self.add_datetime(&predicate, v.sub(offset).timestamp());
+                } else {
+                    self.add_datetime(&predicate, v.timestamp());
+                }
+            } else {
+                error!("fail parse [{}] to datetime", value);
+            }
+        }
+    }
+
     pub fn set_datetime(&mut self, predicate: &str, i: i64) {
         self.obj.set_datetime(predicate, i)
     }
@@ -113,6 +145,17 @@ impl Individual {
 
     pub fn add_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64) {
         self.obj.add_decimal_d(predicate, mantissa, exponent)
+    }
+
+    pub fn add_decimal_from_str(&mut self, predicate: &str, value: &str) {
+        if let Ok(v) = Decimal::from_str(value) {
+            let exp = v.scale() as i32 * -1;
+            if let Ok(m) = value.replace('.', "").parse::<i64>() {
+                self.add_decimal_d(&predicate, m, exp as i64);
+            }
+        } else {
+            error!("fail parse [{}] to decimal", value);
+        }
     }
 
     pub fn set_decimal_d(&mut self, predicate: &str, mantissa: i64, exponent: i64) {
