@@ -82,19 +82,20 @@ impl Serialize for Value {
     {
         match &self {
             Value::Num(m, e) => {
-                let exp = if *e < 0 {
+                let scale = if *e < 0 {
                     (*e * -1) as u32
                 } else {
                     0
                 };
 
-                let mantissa = if *e > 0 {
+                let num = if *e > 0 {
                     *m * 10_i64.pow(*e as u32)
                 } else {
                     *m
                 };
 
-                let d = Decimal::new(mantissa, exp);
+                let d = Decimal::new(num, scale);
+                info!("num={}, scale={}, out={}", num, scale, &d.to_string());
                 serializer.serialize_str(&d.to_string())
             }
             Value::Int(i) => serializer.serialize_i64(*i),
