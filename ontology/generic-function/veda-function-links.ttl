@@ -269,7 +269,8 @@ v-s:LinksListTemplate
     <thead>
       <tr>
         <th width="30%" about="v-s:Document" property="rdfs:label"></th>
-        <th width="30%" about="rdfs:comment" property="rdfs:label"></th>
+        <th width="10%" about="v-s:created" property="rdfs:label"></th>
+        <th width="20%" about="rdfs:comment" property="rdfs:label"></th>
         <th width="15%" about="v-s:mutualMembership" property="rdfs:label"></th>
         <th width="15%" about="v-s:creator" property="rdfs:label"></th>
         <th width="10%"></th>
@@ -286,9 +287,13 @@ v-s:LinksListTemplate
       </script>
       <tr>
         <td>
-          <div class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
-          <div class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></div>
+          <span class="link-from" about="@" rel="v-s:from" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
+          <span class="link-to view -edit -search" about="@" rel="v-s:to" data-template="v-ui:ClassNameLabelLinkTemplate"></span>
           <veda-control data-type="link" rel="v-s:to" class="-view edit search fulltext"></veda-control>
+        </td>
+        <td>
+          <span class="link-from" about="@" rel="v-s:from"><span about="@" property="v-s:created"></span></span>
+          <span class="link-to" about="@" rel="v-s:to"><span about="@" property="v-s:created"></span></span>
         </td>
         <td>
           <div class="view -edit -search" about="@" property="rdfs:comment"></div>
