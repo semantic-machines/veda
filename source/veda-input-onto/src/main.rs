@@ -67,31 +67,44 @@ fn main() -> NotifyResult<()> {
         processing_files(list_candidate_files, &mut module, &systicket);
     }
 
-    info!("watch file changes...");
-
-    let (tx, rx) = unbounded();
-    let mut watcher: RecommendedWatcher = Watcher::new(tx, std_time::Duration::from_secs(2))?;
-
-    watcher.watch(onto_path, RecursiveMode::Recursive)?;
-
     loop {
-        match rx.recv() {
-            Ok(w_event) => {
-                if let Ok(event) = w_event {
-                    match event.kind {
-                        EventKind::Create(_) | EventKind::Modify(_) => {
-                            if event.flag().is_some() {
-                                println!("changed: {:?}", event);
-                                println!("paths {:?}", event.paths);
-                                processing_files(event.paths, &mut module, &systicket);
+        info!("start watcher changes of files");
+        let (tx, rx) = unbounded();
+        let mut watcher: RecommendedWatcher = Watcher::new(tx, std_time::Duration::from_secs(2))?;
+        watcher.watch(onto_path.clone(), RecursiveMode::Recursive)?;
+
+        let mut prepared_count = 0;
+
+        loop {
+            match rx.recv_timeout(std_time::Duration::from_secs(30)) {
+                Ok(w_event) => {
+                    if let Ok(event) = w_event {
+                        match event.kind {
+                            EventKind::Create(_) | EventKind::Modify(_) => {
+                                if event.flag().is_some() {
+                                    info!("changed: {:?}", event);
+                                    info!("paths {:?}", event.paths);
+                                    processing_files(event.paths, &mut module, &systicket);
+                                    prepared_count += 1;
+                                }
+                            }
+                            _ => {
+                                prepared_count += 1;
+                                info!("ignore: {:?}", event);
+                                info!("paths {:?}", event.paths);
                             }
                         }
-                        _ => {}
                     }
                 }
-            }
-            Err(err) => println!("watch error: {:?}", err),
-        };
+                Err(_err) => {
+                    if prepared_count > 0 {
+                        info!("watcher not respond");
+                        std::mem::drop(watcher);
+                        break;
+                    }
+                }
+            };
+        }
     }
 }
 
