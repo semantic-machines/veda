@@ -95,7 +95,6 @@ impl Serialize for Value {
                 };
 
                 let d = Decimal::new(num, scale);
-                info!("num={}, scale={}, out={}", num, scale, &d.to_string());
                 serializer.serialize_str(&d.to_string())
             }
             Value::Int(i) => serializer.serialize_i64(*i),
