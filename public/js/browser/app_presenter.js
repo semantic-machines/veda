@@ -227,8 +227,8 @@ veda.Module(function (veda) { "use strict";
             if (browserNotificationList.indexOf(notification_uri) >= 0) { return; }
             var notification = new veda.IndividualModel(notification_uri);
             return notification.load().then(function (notification) {
-              return notification.get("v-s:newsAudience").map(function (audience) {
-                return audience.id;
+              return (notification.properties["v-s:newsAudience"] || []).map(function (audience) {
+                return audience.data;
               });
             }).then(function (audience) {
               audience = audience.sort();
@@ -246,7 +246,7 @@ veda.Module(function (veda) { "use strict";
                         localStorage.clientNotification = JSON.stringify(serverNotificationList);
                         if (notification.hasValue("v-s:script")) {
                           var script = notification.get("v-s:script")[0].toString();
-                          eval(script);
+                          return eval(script);
                         }
                       }
                     });
@@ -254,7 +254,7 @@ veda.Module(function (veda) { "use strict";
                 }
               });
             });
-          });
+          }).catch(console.log);
         }, Promise.resolve());
       } else {
         localStorage.clientNotification = JSON.stringify(serverNotificationList);
