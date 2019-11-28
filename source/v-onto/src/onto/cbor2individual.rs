@@ -127,74 +127,41 @@ fn add_value(predicate: &str, d: &mut Decoder<Cursor<&[u8]>>, indv: &mut Individ
                     }
                 }
             }
-            Type::UInt8 => {
-                if let Ok(i) = d._u8(&type_info) {
-                    indv.add_integer(&predicate, i64::from(i));
-                }
-            }
-            Type::Int8 => {
-                if let Ok(i) = d._i8(&type_info) {
-                    indv.add_integer(&predicate, i64::from(i));
-                }
-            }
-            Type::UInt16 => {
-                if let Ok(i) = d._u16(&type_info) {
-                    if tag == TagId::EpochDateTime as u64 {
-                        indv.add_datetime(&predicate, i64::from(i));
-                    } else {
-                        indv.add_integer(&predicate, i64::from(i));
+            Type::UInt8 | Type::Int8 | Type::UInt16 | Type::Int16 | Type::UInt32 | Type::Int32 | Type::Int64 | Type::UInt64 => {
+                if let Ok(mut i) = d._i64(&type_info) {
+                    if i < 0 {
+                        i += 1; // ?! this cbor decoder returned not correct negative number
                     }
-                }
-            }
-            Type::Int16 => {
-                if let Ok(i) = d._i16(&type_info) {
+
                     if tag == TagId::EpochDateTime as u64 {
-                        indv.add_datetime(&predicate, i64::from(i));
+                        indv.add_datetime(&predicate, i);
                     } else {
-                        indv.add_integer(&predicate, i64::from(i));
-                    }
-                }
-            }
-            Type::UInt32 => {
-                if let Ok(i) = d._u32(&type_info) {
-                    if tag == TagId::EpochDateTime as u64 {
-                        indv.add_datetime(&predicate, i64::from(i));
-                    } else {
-                        indv.add_integer(&predicate, i64::from(i));
-                    }
-                }
-            }
-            Type::Int32 => {
-                if let Ok(i) = d._i32(&type_info) {
-                    if tag == TagId::EpochDateTime as u64 {
-                        indv.add_datetime(&predicate, i64::from(i));
-                    } else {
-                        indv.add_integer(&predicate, i64::from(i));
-                    }
-                }
-            }
-            Type::Int64 => {
-                if let Ok(i) = d._i64(&type_info) {
-                    if tag == TagId::EpochDateTime as u64 {
-                        indv.add_datetime(&predicate, i64::from(i));
-                    } else {
-                        indv.add_integer(&predicate, i64::from(i));
-                    }
-                }
-            }
-            Type::UInt64 => {
-                if let Ok(i) = d._u64(&type_info) {
-                    if tag == TagId::EpochDateTime as u64 {
-                        indv.add_datetime(&predicate, i64::from(i as i64));
-                    } else {
-                        indv.add_integer(&predicate, i64::from(i as i64));
+                        indv.add_integer(&predicate, i);
                     }
                 }
             }
             Type::Array => {
                 if let Ok(len) = d._array(&type_info) {
-                    for _x in 0..len {
-                        add_value(predicate, d, indv);
+                    if tag == TagId::DecimalFraction as u64 {
+                        if let Ok((type_info, _tag)) = d.typeinfo_and_tag() {
+                            if let Ok(mut m) = d._i64(&type_info) {
+                                if m < 0 {
+                                    m += 1; // ?! this cbor decoder returned not correct negative number
+                                }
+                                if let Ok((type_info, _tag)) = d.typeinfo_and_tag() {
+                                    if let Ok(mut e) = d._i64(&type_info) {
+                                        if e < 0 {
+                                            e += 1; // ?! this cbor decoder returned not correct negative number
+                                        }
+                                        indv.add_decimal_d(&predicate, m as i64, e);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        for _x in 0..len {
+                            add_value(predicate, d, indv);
+                        }
                     }
                 } else {
                     return false;
