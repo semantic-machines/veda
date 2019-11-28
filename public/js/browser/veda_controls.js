@@ -2226,27 +2226,6 @@
         }
       });
 
-      var keyupHandler = (function () {
-        var timeout;
-        var minLength = 3;
-        return function (e) {
-          if (timeout) { clearTimeout(timeout); }
-          if (e.which === 40 || e.which === 9 || e.which === 16) { return; }
-          var value = e.target.value;
-          if (value.length >= minLength) {
-            timeout = setTimeout(performSearch, 750, value);
-          } else if (!value.length) {
-            if (isSingle) {
-              individual.clearValue(rel_uri);
-            }
-            suggestions.empty();
-            fulltextMenu.hide();
-            $(document).off("click", clickOutsideMenuHandler);
-            $(document).off("keydown", arrowHandler);
-          }
-        };
-      }());
-
       var evalQueryPrefix = function () {
         return new Promise(function (resolve, reject) {
           try {
@@ -2270,6 +2249,28 @@
             });
         });
       };
+
+      var keyupHandler = (function () {
+        var timeout;
+        var minLength = 3;
+        var nav_keys = [37, 38, 39, 40, 9, 16]; // Arrows, shift, tab
+        return function (e) {
+          if (timeout) { clearTimeout(timeout); }
+          if (nav_keys.indexOf(e.which) >= 0) { return; }
+          var value = e.target.value;
+          if (value.length >= minLength) {
+            timeout = setTimeout(performSearch, 750, value);
+          } else if (!value.length) {
+            if (isSingle) {
+              individual.clearValue(rel_uri);
+            }
+            suggestions.empty();
+            fulltextMenu.hide();
+            $(document).off("click", clickOutsideMenuHandler);
+            $(document).off("keydown", arrowHandler);
+          }
+        };
+      }());
 
       fulltext.on("keyup", keyupHandler);
 
@@ -2318,6 +2319,12 @@
         } else {
           clickHandler(e);
         }
+      }).on("keyup", ".suggestion", function (e) {
+        if (e.which === 32) {
+          clickHandler(e);
+        } else if (e.which === 13) {
+          dblclickHandler(e);
+        }
       }).on("dblclick", ".suggestion", function (e) {
         e.preventDefault();
       });
@@ -2326,6 +2333,7 @@
         e.preventDefault();
         var tmpl = $(e.target);
         var suggestion_uri = tmpl.attr("resource");
+        if (!suggestion_uri) { return; }
         var suggestion = new veda.IndividualModel(suggestion_uri);
         tmpl.toggleClass("selected");
         if (isSingle) { tmpl.siblings().removeClass("selected"); }
@@ -2403,9 +2411,7 @@
             suggestions.children().last().addClass("active").focus();
           }
         } else if ( e.which === 32 ) { // Space
-          clickHandler(e);
-        } else if ( e.which === 13 ) { // Enter
-          dblclickHandler(e);
+          e.preventDefault(); // Prevent scrolling on space
         }
       };
 
