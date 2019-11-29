@@ -467,7 +467,6 @@ var request_uri = document["@"],
     delegator_uri = veda.Util.getUri(document["v-s:delegator"]) || "",
     delegate_uri = veda.Util.getUri(document["v-s:delegate"]),
     delegate = get_individual(ticket, delegate_uri),
-    parent_uri = veda.Util.getUri(delegate["v-s:parentOrganization"]),
     position_uris = veda.Util.getUris(document["v-s:delegatedPosition"]),
     request_deleted = veda.Util.hasValue(document, "v-s:deleted", {data: true, type: "Boolean"}),
     delegate,
@@ -511,13 +510,16 @@ position_uris.map(function (position_uri) {
       "rdf:type": veda.Util.newUri("v-s:Appointment"),
       "v-s:employee": veda.Util.newUri(delegate_uri),
       "v-s:occupation": veda.Util.newUri(position_uri),
-      "v-s:parentOrganization": veda.Util.newUri(parent_uri),
       "v-s:dateFrom": dateFrom,
       "v-s:dateTo": dateTo,
       "v-s:origin": veda.Util.newStr(request_type === "v-s:RequestDelegationUser" ? "user" : "admin"),
       "v-s:deleted": veda.Util.newBool(!isActual),
       "rdfs:comment": veda.Util.newStr("создано cfg:Event_Delegation")
     };
+    var position = get_individual(ticket, position_uri);
+    if (position) {
+      appointment["v-s:parentOrganization"] = position["v-s:parentOrganization"];
+    }
     print("[cfg:Event_Delegation] new appointment created", uri);
   }
 
