@@ -8,6 +8,8 @@ use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use std::str;
 use v_api::{IndvOp, ResultCode};
+use v_authorization::{Access, Trace};
+use v_az_lmdb::_authorize;
 use v_module::module::{init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::individual::Individual;
@@ -149,11 +151,60 @@ fn individual_prepare(ticket: &Ticket, cmd: &IndvOp, indv: &mut Individual, stor
         return (ResultCode::NoContent, -1);
     }
 
-    let mut prev_state = Individual::default();
-    if storage.get_individual(indv.get_id(), &mut prev_state) {
+    let mut indv = Individual::default();
+    let mut prev_indv = Individual::default();
+    if storage.get_individual(indv.get_id(), &mut prev_indv) {
+        if indv.is_empty() || cmd == &IndvOp::Remove {
+            indv.set_id(prev_indv.get_id());
+        }
     } else {
-        if prev_state.is_empty() && cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
-            error!("store, cmd={:?}: not read prev_state uri={}", cmd, indv.get_id());
+        if prev_indv.is_empty() && cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
+            error!("fail store, cmd={:?}: not read prev_state uri={}", cmd, indv.get_id());
+        }
+    }
+
+    let mut trace = Trace {
+        acl: &mut String::new(),
+        is_acl: false,
+        group: &mut String::new(),
+        is_group: false,
+        info: &mut String::new(),
+        is_info: false,
+        str_num: 0,
+    };
+
+    if cmd != &IndvOp::Remove {
+        let is_deleted = indv.is_exists("v-s:deleted");
+
+        let res = _authorize(indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0);
+        if res != Access::CanDelete as u8 {
+            error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, indv.get_id());
+            return (ResultCode::NotAuthorized, -1);
+        }
+    } else {
+        let res = _authorize(indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0);
+        if res != Access::CanUpdate as u8 {
+            error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, indv.get_id());
+            return (ResultCode::NotAuthorized, -1);
+        }
+
+        let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
+        let mut added_types = vec![];
+        if let Some(new_types) = indv.get_literals("rdf:type") {
+            for n_el in prev_types.iter() {
+                let mut found = false;
+                for p_el in new_types.iter() {
+                    if p_el == n_el {
+                        found = true;
+                    }
+                }
+                if !found {
+                    added_types.push(n_el);
+                }
+            }
+        } else {
+            error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, indv.get_id());
+            return (ResultCode::NotAuthorized, -1);
         }
     }
 
