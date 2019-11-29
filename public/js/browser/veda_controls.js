@@ -2415,7 +2415,7 @@
         }
       };
 
-      var propertyModifiedHandler = function () {
+      var propertyModifiedHandler = function (value) {
         if ( isSingle && individual.hasValue(rel_uri) ) {
           individual.get(rel_uri)[0].load().then(function(loaded) {
             var rendered = renderTemplate( loaded );
@@ -2427,16 +2427,18 @@
         } else {
           fulltext.val("");
         }
-        setTimeout(function () {
-          fulltext.focus();
-        }, 100);
+        if (value) {
+          setTimeout(function () {
+            fulltext.focus();
+          }, 100);
+        }
       };
 
       individual.on(rel_uri, propertyModifiedHandler);
       control.one("remove", function () {
         individual.off(rel_uri, propertyModifiedHandler);
       });
-      propertyModifiedHandler(rel_uri);
+      propertyModifiedHandler();
 
     } else {
       fulltext.remove();
