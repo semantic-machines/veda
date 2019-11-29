@@ -7,6 +7,7 @@ use v_module::module::*;
 use v_onto::individual::*;
 use v_queue::consumer::*;
 use v_storage::storage::*;
+use v_authorization::Access;
 
 mod common;
 

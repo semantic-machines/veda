@@ -10,6 +10,34 @@ const M_IGNORE_EXCLUSIVE: char = 'N';
 static ACCESS_LIST: [u8; 4] = [1, 2, 4, 8];
 static ACCESS_LIST_PREDICATES: [&str; 9] = ["", "v-s:canCreate", "v-s:canRead", "", "v-s:canUpdate", "", "", "", "v-s:canDelete"];
 
+/// Битовые поля для прав
+#[repr(u8)]
+pub enum Access {
+    /// Создание
+    CanCreate = 1u8,
+
+    /// Чтение
+    CanRead = 2u8,
+
+    /// Изменеие
+    CanUpdate = 4u8,
+
+    /// Удаление
+    CanDelete = 8u8,
+
+    /// Запрет создания
+    CantCreate = 16u8,
+
+    /// Запрет чтения
+    CantRead = 32u8,
+
+    /// Запрет обновления
+    CantUpdate = 64u8,
+
+    /// Запрет удаления
+    CantDelete = 128u8,
+}
+
 pub struct Right {
     pub id: String,
     pub access: u8,
