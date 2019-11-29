@@ -1,40 +1,13 @@
 use std::collections::HashMap;
 use v_onto::individual::Individual;
 use v_storage::storage::{StorageId, VStorage};
+use v_authorization::Access;
 
 pub const PERMISSION_PREFIX: &str = "P";
 pub const MEMBERSHIP_PREFIX: &str = "M";
 pub const FILTER_PREFIX: &str = "F";
 pub const M_IS_EXCLUSIVE: u8 = b'X';
 pub const M_IGNORE_EXCLUSIVE: u8 = b'N';
-
-/// Битовые поля для прав
-#[repr(u8)]
-pub enum Access {
-    /// Создание
-    CanCreate = 1u8,
-
-    /// Чтение
-    CanRead = 2u8,
-
-    /// Изменеие
-    CanUpdate = 4u8,
-
-    /// Удаление
-    CanDelete = 8u8,
-
-    /// Запрет создания
-    CantCreate = 16u8,
-
-    /// Запрет чтения
-    CantRead = 32u8,
-
-    /// Запрет обновления
-    CantUpdate = 64u8,
-
-    /// Запрет удаления
-    CantDelete = 128u8,
-}
 
 pub struct Right {
     pub id: String,
