@@ -133,7 +133,7 @@ v-s:Request
   rdfs:subClassOf v-s:Temporal ;
   rdfs:subClassOf v-s:Controlled ;
   rdfs:subClassOf v-s:Document;
-  rdfs:label "Запрос"@ru ;
+  rdfs:label "Заявка"@ru ;
   rdfs:label "Request"@en ;
 .
 
