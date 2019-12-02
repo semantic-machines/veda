@@ -149,11 +149,6 @@ v-s:Update
   rdfs:label "Обновить"@ru ;
   rdfs:label "Update"@en ;
 .
-v-s:FindBundle
-  rdf:type v-s:Bundle ;
-  rdfs:label "Найти"@ru ;
-  rdfs:label "Find"@en ;
-.
 v-s:Cancel
   rdf:type v-s:Bundle ;
   rdfs:label "Отмена"@ru ;
@@ -390,3 +385,9 @@ v-s:CreateBundle
   rdfs:label "Создать"@ru ;
   rdfs:label "Create"@en ;
 .
+v-s:FindBundle
+  rdf:type v-s:Bundle ;
+  rdfs:label "Найти"@ru ;  
+  rdfs:label "Find"@en ;
+. 
+
