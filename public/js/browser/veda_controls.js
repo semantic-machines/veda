@@ -899,14 +899,16 @@
 
     function performSearch(value) {
       if ( fullName ) {
-        var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
-        var fullNameInput = value.trim().replace(/\s+/g, " ").split(" ");
-        var fullNameQuery = fullNameInput.map(function (token, i) {
-          if (i < 3) {
-            return "'" + fullNameProps[i] + "'=='" + token + "*'";
-          }
-        }).filter(Boolean).join(" && ");
-        value = fullNameQuery;
+        value = value.trim().split("\n").map(function (line) {
+          var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
+          var fullNameInput = line.trim().replace(/\s+/g, " ").split(" ");
+          var fullNameQuery = fullNameInput.map(function (token, i) {
+            if (i < 3) {
+              return "'" + fullNameProps[i] + "'=='" + token + "*'";
+            }
+          }).filter(Boolean).join(" && ");
+          return fullNameQuery;
+        }).join("\n");
       }
       ftQuery(queryPrefix, value, sort, deleted)
         .then(renderResults)
@@ -2622,17 +2624,17 @@
 /* UTILS */
 
   function ftQuery(prefix, input, sort, withDeleted) {
+    input = input.trim();
     var queryString = "";
-    var special = input && input.indexOf("==") > 0 ? input : false;
-    if ( input && !special ) {
+    if ( input ) {
       var lines = input.split("\n");
       var lineQueries = lines.map(function (line) {
+        var special = line && line.indexOf("==") > 0 ? line : false;
+        if (special) { return special; }
         var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
         return words.map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
       });
       queryString = lineQueries.join(" || ");
-    } else if (special) {
-      queryString = special;
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;
