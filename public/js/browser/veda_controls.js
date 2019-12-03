@@ -899,11 +899,11 @@
 
     function performSearch(value) {
       if ( fullName ) {
-        value = value.split("\n").filter(Boolean).map(function (line) {
+        value = value.trim().split("\n").map(function (line) {
           var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
           var fullNameInput = line.trim().replace(/\s+/g, " ").split(" ");
           var fullNameQuery = fullNameInput.map(function (token, i) {
-            if (i < 3) {
+            if (i < 3 && token) {
               return "'" + fullNameProps[i] + "'=='" + token + "*'";
             }
           }).filter(Boolean).join(" && ");
@@ -2632,9 +2632,9 @@
         var special = line && line.indexOf("==") > 0 ? line : false;
         if (special) { return special; }
         var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-        return words.map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
+        return words.filter(Boolean).map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
       });
-      queryString = lineQueries.join(" || ");
+      queryString = lineQueries.filter(Boolean).join(" || ");
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;
