@@ -899,7 +899,7 @@
 
     function performSearch(value) {
       if ( fullName ) {
-        value = value.trim().split("\n").map(function (line) {
+        value = value.split("\n").filter(Boolean).map(function (line) {
           var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
           var fullNameInput = line.trim().replace(/\s+/g, " ").split(" ");
           var fullNameQuery = fullNameInput.map(function (token, i) {
@@ -2624,10 +2624,10 @@
 /* UTILS */
 
   function ftQuery(prefix, input, sort, withDeleted) {
-    input = input.trim();
+    input = input ? input.trim() : "";
     var queryString = "";
     if ( input ) {
-      var lines = input.split("\n");
+      var lines = input.split("\n").filter(Boolean);
       var lineQueries = lines.map(function (line) {
         var special = line && line.indexOf("==") > 0 ? line : false;
         if (special) { return special; }
