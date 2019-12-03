@@ -2364,7 +2364,6 @@
         selected = individual.get(rel_uri);
         if (results.length) {
           var rendered = results.map(function (result) {
-            if (result == undefined) return "";
             var tmpl = $("<a href='#' class='suggestion'></a>")
               .text( renderTemplate(result) )
               .attr("resource", result.id);
@@ -2675,7 +2674,9 @@
         while(result[j++]); // Fast forward to empty element
         result[j-1] = new veda.IndividualModel(individuals[i]).init();
       }
-      return Promise.all(result);
+      return Promise.all(result)
+    }).then(function (fulfilled) {
+      return fulfilled.filter(Boolean);
     });
 
     function incrementalSearch(cursor, limit, results) {
