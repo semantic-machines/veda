@@ -38,7 +38,7 @@ before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - fluxbox >/dev/null 2>&1 &
-  - "cp -R ./qa/onto/* ./ontology 2>/dev/null"
+  - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
   - ./control-start.sh
   - sleep 180
 
