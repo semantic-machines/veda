@@ -147,9 +147,11 @@ private void fill_TransactionItem(TransactionItem *ti, INDV_OP _cmd, string _bin
 
             if (prev_indv.getStatus() == ResultCode.Ok)
                 ti.new_indv = *indv_apply_cmd(ti.cmd, &prev_indv, &ti.new_indv);
-            else
+            else {
                 log.trace("ERR! v8d:transaction: %s to individual[%s], but prev_individual read fail=%s", ti.cmd, ti.new_indv.uri,
                           prev_indv.getStatus());
+                ti.rc = ResultCode.UnprocessableEntity;
+	    }
 
             ti.cmd = INDV_OP.PUT;
         }

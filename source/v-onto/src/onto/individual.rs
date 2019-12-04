@@ -523,13 +523,15 @@ impl Individual {
         None
     }
 
-    pub fn parse_all(&mut self) {
+    pub fn parse_all(&mut self) -> &mut Individual {
         while self.raw.cur < self.raw.data.len() as u64 {
             // next parse
             if !parse_to_predicate("?", self) {
                 break;
             }
         }
+
+        self
     }
 
     pub fn get_predicates_of_type(&mut self, rtype: DataType) -> Vec<String> {
