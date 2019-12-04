@@ -25,7 +25,13 @@ pub fn parse_cbor(raw: &mut RawObj) -> Result<String, i8> {
     }
 
     let input = Cursor::new(raw.data.to_owned());
-    let mut d = Decoder::new(Config::default(), input);
+
+    let mut config = Config::default();
+    if  raw.data.len() > 350000 {
+        config.max_len_array = 10000;
+    }
+
+    let mut d = Decoder::new(config, input);
 
     if let Ok(len) = d.object() {
         raw.len_predicates = len as u32;
@@ -56,7 +62,12 @@ pub fn parse_cbor_to_predicate(expect_predicate: &str, iraw: &mut Individual) ->
     let mut is_found = false;
     let mut cur = Cursor::new(iraw.raw.data.as_slice());
     cur.set_position(iraw.raw.cur);
-    let mut d = Decoder::new(Config::default(), cur);
+
+    let mut config = Config::default();
+    if  iraw.raw.data.len() > 350000 {
+        config.max_len_array = 10000;
+    }
+    let mut d = Decoder::new(config, cur);
 
     for _ in iraw.raw.cur_predicates..iraw.raw.len_predicates {
         if let Ok(type_info) = d.typeinfo() {

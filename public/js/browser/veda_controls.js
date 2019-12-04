@@ -468,7 +468,6 @@
     format: "DD.MM.YYYY HH:mm"
   };
 
-
   // MULTILINGUAL INPUT CONTROLS
 
   // Generic multilingual input behaviour
@@ -733,6 +732,7 @@
       sort = this.data("sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
       complex = this.data("complex") || false,
+      isSingle = this.data("single") || ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ),
       deleted,
       chosenActorType,
       fullName;
@@ -765,7 +765,7 @@
         chosenActorType = this.value;
         var ftValue = $(".fulltext", control).val();
         if (ftValue) {
-          performSearch(undefined, ftValue);
+          performSearch(ftValue);
         }
       }
     }).first().prop("checked", "checked").change();
@@ -777,7 +777,7 @@
       deleted = $(this).is(":checked") ? true : false;
       var ftValue = $(".fulltext", control).val();
       if (ftValue) {
-        performSearch(undefined, ftValue);
+        performSearch(ftValue);
       }
     });
 
@@ -792,19 +792,23 @@
       fullName = $(this).is(":checked") ? true : false;
       var ftValue = $(".fulltext", control).val();
       if (ftValue) {
-        performSearch(undefined, ftValue);
+        performSearch(ftValue);
       }
     });
 
     $(".clear", control).on("click keyup", function (e) {
-      if (e.type !== "click" && e.which !== 13) { return; }
-      individual.clearValue(rel_uri);
-      if ( complex ) {
-        individual.clearValue(rel_uri + ".v-s:employee");
-        individual.clearValue(rel_uri + ".v-s:occupation");
+      if (isSingle) {
+        if (e.type !== "click" && e.which !== 13) { return; }
+        individual.clearValue(rel_uri);
+        if ( complex ) {
+          individual.clearValue(rel_uri + ".v-s:employee");
+          individual.clearValue(rel_uri + ".v-s:occupation");
+        }
       }
-      $(".fulltext", control).val("");
-      $(".fulltext-menu", control).hide();
+      fulltextMenu.hide();
+      $(document).off("click", clickOutsideMenuHandler);
+      $(document).off("keydown", arrowHandler);
+      fulltext.val("");
     });
 
     if (placeholder instanceof veda.IndividualModel) {
@@ -821,23 +825,69 @@
       });
     }
 
-    autosize(fulltext);
-    this.on("edit", function () {
-      autosize.update(fulltext);
+    fulltext.on("input keyup focus", function (e) {
+      var value = e.target.value;
+      if (value) {
+        e.target.setAttribute("rows", value.split("\n").length);
+      } else {
+        e.target.setAttribute("rows", 1);
+      }
     });
-    this.one("remove", function () {
-      autosize.destroy(fulltext);
+
+    var header = $(".header", control);
+    Promise.all([
+      new veda.IndividualModel("v-s:SelectAll").load(),
+      new veda.IndividualModel("v-s:CancelSelection").load(),
+      new veda.IndividualModel("v-s:InvertSelection").load()
+    ]).then(function (actions) {
+      header.find(".select-all")
+        .click(function () { suggestions.children(":not(.selected)").click(); })
+        .text( actions[0].toString() );
+      header.find(".cancel-selection")
+        .click(function () { suggestions.children(".selected").click(); })
+        .text( actions[1].toString() );
+      header.find(".invert-selection")
+        .click(function () { suggestions.children().click(); })
+        .text( actions[2].toString() );
+      header.find(".close-menu")
+        .click(function () {
+          individual.set(rel_uri, selected);
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        })
+        .text( "Ok" );
+    });
+    if (isSingle) {
+      header.hide();
+    }
+
+    this.on("view edit search", function (e) {
+      e.stopPropagation();
+      if (e.type === "search") {
+        var isSingle = false || $(this).data("single");
+        if (isSingle) {
+          header.hide();
+        } else {
+          header.show();
+        }
+      }
     });
 
     var keyupHandler = (function () {
       var timeout;
       var minLength = 3;
+      var nav_keys = [37, 38, 39, 40, 9, 16]; // Arrows, shift, tab
       return function (e) {
         if (timeout) { clearTimeout(timeout); }
+        if (nav_keys.indexOf(e.which) >= 0) { return; }
         var value = e.target.value;
         if (value.length >= minLength) {
-          timeout = setTimeout(performSearch, 750, e, value);
+          timeout = setTimeout(performSearch, 750, value);
         } else if (!value.length) {
+          if (isSingle) {
+            individual.clearValue(rel_uri);
+          }
           suggestions.empty();
           fulltextMenu.hide();
           $(document).off("click", clickOutsideMenuHandler);
@@ -845,17 +895,20 @@
         }
       };
     }());
+    fulltext.on("keyup", keyupHandler);
 
-    function performSearch(e, value) {
+    function performSearch(value) {
       if ( fullName ) {
-        var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
-        var fullNameInput = value.trim().replace(/\s+/g, " ").split(" ");
-        var fullNameQuery = fullNameInput.map(function (token, i) {
-          if (i < 3) {
-            return "'" + fullNameProps[i] + "'=='" + token + "*'";
-          }
-        }).filter(Boolean).join(" && ");
-        value = fullNameQuery;
+        value = value.trim().split("\n").map(function (line) {
+          var fullNameProps = ["v-s:employee.v-s:lastName", "v-s:employee.v-s:firstName",  "v-s:employee.v-s:middleName"];
+          var fullNameInput = line.trim().replace(/\s+/g, " ").split(" ");
+          var fullNameQuery = fullNameInput.map(function (token, i) {
+            if (i < 3 && token) {
+              return "'" + fullNameProps[i] + "'=='" + token + "*'";
+            }
+          }).filter(Boolean).join(" && ");
+          return fullNameQuery;
+        }).join("\n");
       }
       ftQuery(queryPrefix, value, sort, deleted)
         .then(renderResults)
@@ -863,10 +916,6 @@
           console.log("Fulltext query error", error);
         });
     }
-
-    fulltext
-      .on("keyup", keyupHandler)
-      .on("triggerSearch", performSearch);
 
     var selected = [];
 
@@ -878,7 +927,7 @@
           if (individual.hasValue(rel_uri, result) || individual.hasValue(rel_uri + ".v-s:employee", result) || individual.hasValue(rel_uri + ".v-s:occupation", result)) {
             cont.addClass("selected");
           }
-          return result.present(cont, "v-ui:LabelTemplate")
+          return result.present(cont, "<span about='@' property='rdfs:label'></span>")
             .then(function () {
               return cont;
             });
@@ -909,26 +958,47 @@
       } else {
         clickHandler(e);
       }
+    }).on("keyup", ".suggestion", function (e) {
+      if (e.which === 32) {
+        clickHandler(e);
+      } else if (e.which === 13) {
+        dblclickHandler(e);
+      }
     }).on("dblclick", ".suggestion", function (e) {
       e.preventDefault();
     });
 
     function clickHandler(e) {
       e.preventDefault();
-      var tmpl = $(e.target);
+      var tmpl = $(e.currentTarget);
       var suggestion_uri = tmpl.attr("resource");
+      if (!suggestion_uri) { return; }
       var suggestion = new veda.IndividualModel(suggestion_uri);
       tmpl.toggleClass("selected");
+      if (isSingle) { tmpl.siblings().removeClass("selected"); }
       if ( selected.indexOf(suggestion) >= 0 ) {
-        setValue(suggestion);
-        fulltextMenu.hide();
-        $(document).off("click", clickOutsideMenuHandler);
-        $(document).off("keydown", arrowHandler);
+        if (isSingle) {
+          setValue([suggestion]);
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        } else {
+          selected = selected.filter(function (value) {
+            return value !== suggestion;
+          });
+        }
       } else {
-        setValue(suggestion);
-        fulltextMenu.hide();
-        $(document).off("click", clickOutsideMenuHandler);
-        $(document).off("keydown", arrowHandler);
+        if (isSingle) {
+          selected = [suggestion];
+          setValue(selected);
+          fulltextMenu.hide();
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
+        } else {
+          selected = selected.filter(function (value) {
+            return value !== suggestion;
+          }).concat(suggestion);
+        }
       }
       dblTimeout = setTimeout(function () {
         dblTimeout = undefined;
@@ -936,11 +1006,12 @@
     }
 
     function dblclickHandler(e) {
+      e.preventDefault();
       if ( !$(e.target).hasClass("selected") ) {
         clickHandler(e);
       }
-      setValue(selected);
       dblTimeout = clearTimeout(dblTimeout);
+      setValue(selected);
       fulltextMenu.hide();
       $(document).off("click", clickOutsideMenuHandler);
       $(document).off("keydown", arrowHandler);
@@ -980,43 +1051,52 @@
         } else {
           suggestions.children().last().addClass("active").focus();
         }
+      } else if ( e.which === 32 && !fulltext.is(":focus") ) { // Space
+        e.preventDefault(); // Prevent scrolling on space
       }
     }
 
-    function setValue(value) {
+    function setValue(values) {
       if ( complex ) {
         individual.clearValue(rel_uri);
         individual.clearValue(rel_uri + ".v-s:employee");
         individual.clearValue(rel_uri + ".v-s:occupation");
         if (chosenActorType === "v-s:Appointment") {
-          individual.addValue(rel_uri, value);
+          individual.set(rel_uri, values);
         } else if (chosenActorType === "v-s:Person") {
-          value["v-s:employee"][0].load().then(function (person) {
-            individual.addValue(rel_uri + ".v-s:employee", person);
+          Promise.all(values.map(function (value) {
+            return value["v-s:employee"][0].load();
+          })).then(function (persons) {
+            individual.set(rel_uri + ".v-s:employee", persons);
           });
         } else {
-          value["v-s:occupation"][0].load().then(function (position) {
-            individual.addValue(rel_uri + ".v-s:occupation", position);
+          Promise.all(values.map(function (value) {
+            return value["v-s:occupation"][0].load();
+          })).then(function (positions) {
+            individual.set(rel_uri + ".v-s:occupation", positions);
           });
         }
       } else {
-        individual.clearValue(rel_uri);
         if (chosenActorType === "v-s:Appointment") {
-          individual.addValue(rel_uri, value);
+          individual.set(rel_uri, values);
         } else if (chosenActorType === "v-s:Person") {
-          value["v-s:employee"][0].load().then(function (person) {
-            individual.addValue(rel_uri, person);
+          Promise.all(values.map(function (value) {
+            return value["v-s:employee"][0].load();
+          })).then(function (persons) {
+            individual.set(rel_uri, persons);
           });
         } else {
-          value["v-s:occupation"][0].load().then(function (position) {
-            individual.addValue(rel_uri, position);
+          Promise.all(values.map(function (value) {
+            return value["v-s:occupation"][0].load();
+          })).then(function (positions) {
+            individual.set(rel_uri, positions);
           });
         }
       }
     }
 
-    function propertyModifiedHandler() {
-      if ( individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation") ) {
+    function propertyModifiedHandler(values) {
+      if ( isSingle && (individual.hasValue(rel_uri) || individual.hasValue(rel_uri + ".v-s:employee") || individual.hasValue(rel_uri + ".v-s:occupation")) ) {
         var value = individual.get(rel_uri).concat(individual.get(rel_uri + ".v-s:employee"), individual.get(rel_uri + ".v-s:occupation")).filter(Boolean)[0];
         value.load().then(function(value) {
           var newValueStr = value.toString();
@@ -1027,6 +1107,11 @@
         });
       } else {
         fulltext.val("");
+      }
+      if (values) {
+        setTimeout(function () {
+          fulltext.focus();
+        }, 100);
       }
     }
     individual.on( [rel_uri, rel_uri + ".v-s:employee", rel_uri + ".v-s:occupation"].join(" ") , propertyModifiedHandler);
@@ -2006,7 +2091,7 @@
       range = rangeRestriction ? [ rangeRestriction ] : new veda.IndividualModel(rel_uri)["rdfs:range"],
       queryPrefix = this.attr("data-query-prefix") || ( spec && spec.hasValue("v-ui:queryPrefix") ? spec["v-ui:queryPrefix"][0].toString() : range.map(function (item) { return "'rdf:type'==='" + item.id + "'"; }).join(" || ") ),
       sort = this.attr("data-sort") || ( spec && spec.hasValue("v-ui:sort") ? spec["v-ui:sort"][0].toString() : "'rdfs:label_ru' asc , 'rdfs:label_en' asc , 'rdfs:label' asc" ),
-      isSingle = ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ) || this.data("single"),
+      isSingle = this.data("single") || ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ),
       withDeleted = false || this.attr("data-deleted");
 
     this.removeAttr("data-template");
@@ -2281,7 +2366,6 @@
         selected = individual.get(rel_uri);
         if (results.length) {
           var rendered = results.map(function (result) {
-            if (result == undefined) return "";
             var tmpl = $("<a href='#' class='suggestion'></a>")
               .text( renderTemplate(result) )
               .attr("resource", result.id);
@@ -2410,7 +2494,7 @@
           } else {
             suggestions.children().last().addClass("active").focus();
           }
-        } else if ( e.which === 32 ) { // Space
+        } else if ( e.which === 32 && !fulltext.is(":focus") ) { // Space
           e.preventDefault(); // Prevent scrolling on space
         }
       };
@@ -2540,17 +2624,17 @@
 /* UTILS */
 
   function ftQuery(prefix, input, sort, withDeleted) {
+    input = input ? input.trim() : "";
     var queryString = "";
-    var special = input && input.indexOf("==") > 0 ? input : false;
-    if ( input && !special ) {
-      var lines = input.split("\n");
+    if ( input ) {
+      var lines = input.split("\n").filter(Boolean);
       var lineQueries = lines.map(function (line) {
+        var special = line && line.indexOf("==") > 0 ? line : false;
+        if (special) { return special; }
         var words = line.trim().replace(/[-*\s]+/g, " ").split(" ");
-        return words.map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
+        return words.filter(Boolean).map(function (word) { return "'*' == '" + word + "*'"; }).join(" && ");
       });
-      queryString = lineQueries.join(" || ");
-    } else if (special) {
-      queryString = special;
+      queryString = lineQueries.filter(Boolean).join(" || ");
     }
     if (prefix) {
       queryString = queryString ? "(" + prefix + ") && (" + queryString + ")" : "(" + prefix + ")" ;
@@ -2592,7 +2676,9 @@
         while(result[j++]); // Fast forward to empty element
         result[j-1] = new veda.IndividualModel(individuals[i]).init();
       }
-      return Promise.all(result);
+      return Promise.all(result)
+    }).then(function (fulfilled) {
+      return fulfilled.filter(Boolean);
     });
 
     function incrementalSearch(cursor, limit, results) {

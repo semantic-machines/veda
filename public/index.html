@@ -243,10 +243,10 @@
     <script type="html/template" id="actor-control-template">
       <div class="link-control">
         <div class="input-group">
-          <div class="input-group-btn">
-            <button class="btn btn-default select-type dropdown-toggle" id="actor-type-menu" data-toggle="dropdown">
+          <div class="input-group-addon btn btn-default dropdown" style="padding:0;">
+            <span data-toggle="dropdown" id="actor-type-menu" aria-haspopup="true" aria-expanded="true" style="padding:10px;">
               <i class="glyphicon glyphicon-user"></i><i class="caret"></i>
-            </button>
+            </span>
             <div class="dropdown-menu actor-type-menu padding-lg-h" aria-labelledby="actor-type-menu">
               <div class="radio">
                 <label>
@@ -276,12 +276,22 @@
               </div>
             </div>
           </div>
-          <input type="text" class="form-control fulltext" autocomplete="off"/>
-          <span class="input-group-btn">
-            <button class="btn btn-default clear">&#10005;</button>
-          </span>
+          <textarea class="form-control fulltext" autocomplete="off" rows="1"></textarea>
+          <div class="input-group-addon btn btn-default clear">
+            <span>&#10005;</span>
+          </div>
         </div>
         <div class="fulltext-menu">
+          <div class="header clearfix">
+            <small class="actions pull-left">
+              <span class="select-all"></span>
+              <span class="cancel-selection"></span>
+              <span class="invert-selection"></span>
+            </small>
+            <small class="actions pull-right">
+              <span class="close-menu"></span>
+            </small>
+          </div>
           <div class="suggestions"></div>
         </div>
       </div>
