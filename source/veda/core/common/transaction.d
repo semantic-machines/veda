@@ -20,14 +20,12 @@ struct TransactionItem {
     Individual prev_indv;
     Individual new_indv;
 
-    bool       is_onto;
-
     long       assigned_subsystems;
 
     ResultCode rc;
 
     immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id
-                   , bool _is_onto, long _assigned_subsystems)
+                   , long _assigned_subsystems)
     {
         cmd                 = _cmd;
         user_uri            = _user_uri;
@@ -36,7 +34,6 @@ struct TransactionItem {
         new_binobj          = _new_binobj;
         update_counter      = _update_counter;
         event_id            = _event_id;
-        is_onto             = _is_onto;
         assigned_subsystems = _assigned_subsystems;
     }
 
@@ -49,7 +46,6 @@ struct TransactionItem {
         new_binobj          = ti.new_binobj;
         update_counter      = ti.update_counter;
         event_id            = ti.event_id;
-        is_onto             = ti.is_onto;
         assigned_subsystems = ti.assigned_subsystems;
     }
 }

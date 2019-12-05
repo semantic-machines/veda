@@ -467,8 +467,6 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
         Tid         tid_subject_manager;
 
-        bool        is_onto;
-
         MapResource rdfType;
         Resources   _types = set_map_of_type(indv, rdfType);
 
@@ -547,12 +545,8 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
             }
         }
 
-        long   update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0);
-        update_counter++;
+        long   update_counter = prev_indv.getFirstInteger("v-s:updateCounter", 0) + 1;
         string new_state;
-
-        if (rdfType.anyExists(owl_tags) == true)
-            is_onto = true;
 
         if (cmd == INDV_OP.REMOVE) {
             if (prev_state !is null) {
@@ -566,7 +560,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
                 immutable TransactionItem ti =
                     immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                              event_id, is_onto, assigned_subsystems);
+                                              event_id, assigned_subsystems);
 
 
                     res.result =
@@ -578,7 +572,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             immutable TransactionItem ti1 =
                 immutable TransactionItem(INDV_OP.REMOVE, ticket.user_uri, indv.uri, prev_state, null, update_counter,
-                                          event_id, is_onto, assigned_subsystems);
+                                          event_id, assigned_subsystems);
 
                 if (res.result == ResultCode.Ok) {
                     res.result =
@@ -602,16 +596,13 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
 
             immutable TransactionItem ti =
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
-                                          event_id, is_onto, assigned_subsystems);
+                                          event_id, assigned_subsystems);
 
                 res.result =
                     indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
                                              res.op_id);
             //log.trace("res.result=%s", res.result);
         }
-
-        if (res.result == ResultCode.Ok)
-            res.result = ResultCode.Ok;
 
         return res;
     }
