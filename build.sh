@@ -193,6 +193,13 @@ if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $
     cp $CARGO_TARGET_DIR/release/veda-fanout-email $PWD
 fi
 
+if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 == "mv1" ]; then
+    cd source/veda-fanout-sql
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-fanout-sql $PWD
+fi
+
 if [ -z $1 ] || [ $1 == "fanout-sql-np" ] || [ $1 == "veda-fanout-sql-lp" ] || [ $1 == "mv1" ]; then
     ./tools/build-component.sh veda-fanout-sql-np fanout-sql-np
     ./tools/build-component.sh veda-fanout-sql-lp fanout-sql-lp
