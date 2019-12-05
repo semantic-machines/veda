@@ -733,7 +733,7 @@
       actorType = this.data("actor-type") || "v-s:Appointment v-s:Person v-s:Position",
       complex = this.data("complex") || false,
       isSingle = this.data("single") || ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ),
-      deleted,
+      withDeleted = false || this.attr("data-deleted"),
       chosenActorType,
       fullName;
 
@@ -769,17 +769,6 @@
         }
       }
     }).first().prop("checked", "checked").change();
-
-    // Deleted check label & handler
-    $("[name='actor-deleted']", control).each(function () {
-      $(this).parent().append( new veda.IndividualModel(this.value).toString() );
-    }).change(function () {
-      deleted = $(this).is(":checked") ? true : false;
-      var ftValue = $(".fulltext", control).val();
-      if (ftValue) {
-        performSearch(ftValue);
-      }
-    });
 
     // Full name check label & handler
     $("[name='full-name']", control).each(function () {
@@ -910,7 +899,7 @@
           return fullNameQuery;
         }).join("\n");
       }
-      ftQuery(queryPrefix, value, sort, deleted)
+      ftQuery(queryPrefix, value, sort, withDeleted)
         .then(renderResults)
         .catch(function (error) {
           console.log("Fulltext query error", error);
