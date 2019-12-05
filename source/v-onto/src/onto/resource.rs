@@ -1,6 +1,6 @@
 use crate::datatype::{DataType, Lang};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Value {
     Int(i64),
     Str(String, Lang),
