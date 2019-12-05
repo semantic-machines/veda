@@ -563,9 +563,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                               event_id, assigned_subsystems);
 
 
-                    res.result =
-                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
-                                                 res.op_id);
+                    res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti ], tnx.id, res.op_id);
             }else
                 res.result = ResultCode.Ok;
 
@@ -575,9 +573,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                           event_id, assigned_subsystems);
 
                 if (res.result == ResultCode.Ok) {
-                    res.result =
-                        indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti1 ], tnx.id,
-                                                 res.op_id);
+                    res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti1 ], tnx.id, res.op_id);
                 }
         }else  {
             if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM) {
@@ -598,10 +594,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
                                           event_id, assigned_subsystems);
 
-                res.result =
-                    indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, opt_request, [ ti ], tnx.id,
-                                             res.op_id);
-            //log.trace("res.result=%s", res.result);
+                res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti ], tnx.id, res.op_id);
         }
 
         return res;
