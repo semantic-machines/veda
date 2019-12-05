@@ -59,7 +59,7 @@ impl LMDBStorage {
                 db_handle = env.get_default_db(DbFlags::empty());
             }
             Err(e) => {
-                error!("ERR! LMDB: fail opening read only environment, err={:?}", e);
+                error!("LMDBStorage: fail opening read only environment, err={:?}", e);
                 db_handle = Err(MdbError::Corrupted);
             }
         }
@@ -112,7 +112,7 @@ impl Storage for LMDBStorage {
                                     if parse_raw(iraw).is_ok() {
                                         return true;
                                     } else {
-                                        error!("LMDBStorage: fail parse binobj, len={}, uri={}", iraw.get_raw_len(), uri);
+                                        error!("LMDBStorage: fail parse binobj, len={}, uri=[{}]", iraw.get_raw_len(), uri);
                                         return false;
                                     }
                                 }
@@ -121,7 +121,7 @@ impl Storage for LMDBStorage {
                                         return false;
                                     }
                                     _ => {
-                                        error!("db.get {:?}, {}", e, uri);
+                                        error!("LMDBStorage: db.get {:?}, uri=[{}]", e, uri);
                                         return false;
                                     }
                                 },
@@ -132,17 +132,17 @@ impl Storage for LMDBStorage {
                                 if c == -30785 {
                                     is_need_reopen = true;
                                 } else {
-                                    error!("fail crate transaction, err={}", e);
+                                    error!("LMDBStorage: fail crate transaction, err={}, uri=[{}]", e, uri);
                                     return false;
                                 }
                             }
                             _ => {
-                                error!("fail crate transaction, err={}", e);
+                                error!("LMDBStorage: fail crate transaction, err={}, uri=[{}]", e, uri);
                             }
                         },
                     },
                     Err(e) => {
-                        error!("db handle, err={}", e);
+                        error!("LMDBStorage: db handle, err={}, uri=[{}]", e, uri);
                         return false;
                     }
                 },
@@ -151,14 +151,14 @@ impl Storage for LMDBStorage {
                         is_need_reopen = true;
                     }
                     _ => {
-                        error!("db environment, err={}", e);
+                        error!("LMDBStorage: db environment, err={}, uri=[{}]", e, uri);
                         return false;
                     }
                 },
             }
 
             if is_need_reopen {
-                warn!("db {} reopen {:?}", self.db_path, storage);
+                warn!("LMDBStorage: db {} reopen {:?}", self.db_path, storage);
 
                 self.open(storage.clone(), self.mode.clone());
             }
@@ -227,7 +227,7 @@ impl Storage for LMDBStorage {
                                         return None;
                                     }
                                     _ => {
-                                        error!("db.get {:?}, {}", e, key);
+                                        error!("db.get {:?}, key=[{}]", e, key);
                                         return None;
                                     }
                                 },

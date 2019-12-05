@@ -534,9 +534,36 @@ impl Individual {
         self
     }
 
+    pub fn apply_predicate_as_set(&mut self, predicate: &str, dest: &mut Individual) {
+        if let Some(v) = self.obj.resources.get(predicate) {
+            dest.obj.set_resources(predicate, v);
+        }
+    }
+
+    pub fn apply_predicate_as_add_unique(&mut self, predicate: &str, dest: &mut Individual) {
+        if let Some(v) = self.obj.resources.get(predicate) {
+            dest.obj.add_unique_resources(predicate, v);
+        }
+    }
+
+    pub fn apply_predicate_as_remove(&mut self, predicate: &str, dest: &mut Individual) {
+        if let Some(v) = self.obj.resources.get(predicate) {
+            dest.obj.remove_resources(predicate, v);
+        }
+    }
+
+    pub fn get_predicates(&mut self) -> Vec<String> {
+        self.parse_all();
+        let mut res: Vec<String> = Vec::new();
+
+        for (key, _vals) in self.obj.resources.iter() {
+            res.push(key.to_string());
+        }
+        res
+    }
+
     pub fn get_predicates_of_type(&mut self, rtype: DataType) -> Vec<String> {
         self.parse_all();
-
         let mut res: Vec<String> = Vec::new();
 
         for (key, vals) in self.obj.resources.iter() {
@@ -602,6 +629,52 @@ impl IndividualObj {
     pub fn clear(&mut self, predicate: &str) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.clear();
+    }
+
+    pub fn add_unique_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+
+        for el in b.iter() {
+            if !values.contains(el) {
+                values.push(Resource {
+                    rtype: el.rtype.clone(),
+                    order: el.order,
+                    value: el.value.clone(),
+                });
+            }
+        }
+    }
+
+    pub fn remove_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+
+        for el in b.iter() {
+            let mut idx = 0;
+            let mut is_found = false;
+            for elv in values.iter() {
+                if elv == el {
+                    is_found = true;
+                    break;
+                }
+                idx += 1;
+            }
+
+            if is_found {
+                values.remove(idx);
+            }
+        }
+    }
+
+    pub fn set_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        for el in b.iter() {
+            values.push(Resource {
+                rtype: el.rtype.clone(),
+                order: el.order,
+                value: el.value.clone(),
+            });
+        }
     }
 
     pub fn add_bool(&mut self, predicate: &str, b: bool) {
