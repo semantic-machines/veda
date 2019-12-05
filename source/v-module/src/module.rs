@@ -1,4 +1,5 @@
 use crate::info::ModuleInfo;
+use crate::ticket::Ticket;
 use chrono::Local;
 use env_logger::Builder;
 use ini::Ini;
@@ -13,7 +14,6 @@ use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
-use crate::ticket::Ticket;
 
 pub struct Module {
     pub storage: VStorage,
@@ -92,14 +92,18 @@ impl Module {
         }
     }
 
-    pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
+    pub fn get_sys_ticket_id_from_db(storage: &mut VStorage) -> Result<String, i32> {
         let mut indv = Individual::default();
-        if self.storage.get_individual_from_db(StorageId::Tickets, "systicket", &mut indv) {
+        if storage.get_individual_from_db(StorageId::Tickets, "systicket", &mut indv) {
             if let Some(c) = indv.get_first_literal("v-s:resource") {
                 return Ok(c);
             }
         }
         Err(-1)
+    }
+
+    pub fn get_sys_ticket_id(&mut self) -> Result<String, i32> {
+        Module::get_sys_ticket_id_from_db(&mut self.storage)
     }
 
     pub fn get_literal_of_link(&mut self, indv: &mut Individual, link: &str, field: &str, to: &mut Individual) -> Option<String> {
