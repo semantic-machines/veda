@@ -978,7 +978,8 @@
       if (isSingle) { tmpl.siblings().removeClass("selected"); }
       if ( selected.indexOf(suggestion) >= 0 ) {
         if (isSingle) {
-          setValue([suggestion]);
+          selected = [suggestion];
+          setValue(selected);
           fulltextMenu.hide();
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
@@ -1021,7 +1022,7 @@
       if( !$(e.target).closest(fulltextMenu).length && e.target !== fulltext[0] ) {
         if( fulltextMenu.is(":visible") ) {
           if ( selected.length ) {
-            setValue(selected[0]);
+            setValue(selected);
           }
           fulltextMenu.hide();
           $(document).off("click", clickOutsideMenuHandler);
