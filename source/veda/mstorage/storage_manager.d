@@ -57,38 +57,13 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait){
     return rc;
 }
 
-public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, immutable (TransactionItem)[] _ti, long tnx_id,
+public ResultCode save(string src, P_MODULE storage_id, immutable (TransactionItem)[] _ti, long tnx_id,
                        out long op_id){
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init) {
-        send(tid, src, opt_request, _ti, tnx_id, thisTid);
-
-        receive((ResultCode _rc, Tid from)
-                {
-                    if (from == getTid(storage_id))
-                        rc = _rc;
-                    op_id = get_subject_manager_op_id();
-                    return true;
-                });
-    }
-    return rc;
-}
-
-public ResultCode save(string src, P_MODULE storage_id, OptAuthorize opt_request, INDV_OP cmd, string user_uri, string indv_uri, string prev_binobj,
-                       string new_binobj,
-                       long update_counter,
-                       string event_id, long tnx_id, long assigned_subsystems,
-                       out long op_id){
-    ResultCode rc;
-    Tid        tid = getTid(storage_id);
-
-    if (tid != Tid.init) {
-        immutable(TransactionItem) ti = immutable TransactionItem(cmd, user_uri, indv_uri, prev_binobj, new_binobj, update_counter, event_id,
-                                                                  assigned_subsystems);
-
-        send(tid, src, opt_request, [ ti ], tnx_id, thisTid);
+        send(tid, src, _ti, tnx_id, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -285,8 +260,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id){
                                 return;
                             }
                         },
-                        (string src, OptAuthorize opt_request, immutable(TransactionItem)[] tiz, long tnx_id,
-                         Tid tid_response_reciever)
+                        (string src, immutable(TransactionItem)[] tiz, long tnx_id, Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.NotReady;
                             if (tiz.length == 0) {
