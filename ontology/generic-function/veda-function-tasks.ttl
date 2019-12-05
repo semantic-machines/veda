@@ -349,7 +349,7 @@ v-ft:PSfrom_to_DecisionForm
   v-ui:forProperty v-wf:to ;
   v-ui:forProperty v-wf:from ;
   v-ui:maxCardinality 1 ;
-  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:employee.v-s:hasAccount.isExists'=='true' && 'v-s:official'=='true') || ('rdf:type'=='v-s:Position' && 'v-s:origin'=='Role')" ;
+  v-ui:queryPrefix "('rdf:type'=='v-s:Appointment' && 'v-s:employee.v-s:hasAccount.isExists'=='true' && 'v-s:official'=='true')" ;
 .
 
 v-ft:Inbox
