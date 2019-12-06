@@ -39,6 +39,9 @@ func addToIndividual(ctx *fasthttp.RequestCtx) {
   if len(ticketKey) == 0 {
     ticketKey = string(ctx.Request.Header.Cookie("ticket"))
   }
+  if len(ticketKey) == 0 && jsonData["ticket"] != nil {
+    ticketKey = jsonData["ticket"].(string)
+  }
 
   rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
   if rc1 != Ok {

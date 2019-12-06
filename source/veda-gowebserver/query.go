@@ -58,6 +58,10 @@ func query(ctx *fasthttp.RequestCtx) {
       return
     }
 
+    if len(ticketKey) == 0 && jsonData["ticket"] != nil {
+      ticketKey = jsonData["ticket"].(string)
+    }
+
     if jsonData["query"] != nil {
       query = jsonData["query"].(string)
     }
