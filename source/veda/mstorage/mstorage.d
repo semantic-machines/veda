@@ -271,8 +271,6 @@ public string execute_json(string in_msg, Context ctx){
             if (auto p = "src" in jsn)
                 src = jsn[ "src" ].str;
 
-            long   transaction_id = 0;
-
             Ticket *ticket = ctx.get_ticket(_ticket.str, false);
 
             if (sfn == "put") {
@@ -282,7 +280,7 @@ public string execute_json(string in_msg, Context ctx){
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
-                    tnx.id            = transaction_id;
+                    tnx.id            = 0;
                     tnx.src           = src;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.PUT, &individual, assigned_subsystems,
@@ -293,8 +291,6 @@ public string execute_json(string in_msg, Context ctx){
                     //commit (OptAuthorize.YES, tnx);
 
                     rc ~= ires;
-                    if (transaction_id <= 0)
-                        transaction_id = ires.op_id;
                 }
             }else if (sfn == "add_to") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
@@ -303,7 +299,7 @@ public string execute_json(string in_msg, Context ctx){
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
-                    tnx.id            = transaction_id;
+                    tnx.id            = 0;
                     tnx.src           = src;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.ADD_IN, &individual,
@@ -312,8 +308,6 @@ public string execute_json(string in_msg, Context ctx){
                                                        OptTrace.NONE);
 
                     rc ~= ires;
-                    if (transaction_id <= 0)
-                        transaction_id = ires.op_id;
                 }
             }else if (sfn == "set_in") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
@@ -322,7 +316,7 @@ public string execute_json(string in_msg, Context ctx){
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
-                    tnx.id            = transaction_id;
+                    tnx.id            = 0;
                     tnx.src           = src;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.SET_IN, &individual,
@@ -331,8 +325,6 @@ public string execute_json(string in_msg, Context ctx){
                                                        OptTrace.NONE);
 
                     rc ~= ires;
-                    if (transaction_id <= 0)
-                        transaction_id = ires.op_id;
                 }
             }else if (sfn == "remove_from") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
@@ -341,7 +333,7 @@ public string execute_json(string in_msg, Context ctx){
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
-                    tnx.id            = transaction_id;
+                    tnx.id            = 0;
                     tnx.src           = src;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE_FROM, &individual,
@@ -351,8 +343,6 @@ public string execute_json(string in_msg, Context ctx){
                                                        OptTrace.NONE);
 
                     rc ~= ires;
-                    if (transaction_id <= 0)
-                        transaction_id = ires.op_id;
                 }
             }else if (sfn == "remove") {
                 JSONValue[] individuals_json = jsn[ "individuals" ].array;
@@ -361,7 +351,7 @@ public string execute_json(string in_msg, Context ctx){
                     Individual  individual = json_to_individual(individual_json);
 
                     Transaction tnx;
-                    tnx.id            = transaction_id;
+                    tnx.id            = 0;
                     tnx.src           = src;
                     OpResult ires = add_to_transaction(
                                                        ctx.get_az(), tnx, ticket, INDV_OP.REMOVE, &individual,
@@ -370,8 +360,6 @@ public string execute_json(string in_msg, Context ctx){
                                                        OptTrace.NONE);
 
                     rc ~= ires;
-                    if (transaction_id <= 0)
-                        transaction_id = ires.op_id;
                 }
             }
 
@@ -563,7 +551,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                               event_id, assigned_subsystems);
 
 
-                    res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti ], tnx.id, res.op_id);
+                    res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti ], res.op_id);
             }else
                 res.result = ResultCode.Ok;
 
@@ -573,7 +561,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                                           event_id, assigned_subsystems);
 
                 if (res.result == ResultCode.Ok) {
-                    res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti1 ], tnx.id, res.op_id);
+                    res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti1 ], res.op_id);
                 }
         }else  {
             if (cmd == INDV_OP.ADD_IN || cmd == INDV_OP.SET_IN || cmd == INDV_OP.REMOVE_FROM) {
@@ -594,7 +582,7 @@ private OpResult add_to_transaction(Authorization acl_client, ref Transaction tn
                 immutable TransactionItem(INDV_OP.PUT, ticket.user_uri, indv.uri, prev_state, new_state, update_counter,
                                           event_id, assigned_subsystems);
 
-                res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti ], tnx.id, res.op_id);
+                res.result = indv_storage_thread.save(tnx.src, P_MODULE.subject_manager, [ ti ], res.op_id);
         }
 
         return res;
