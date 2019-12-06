@@ -227,7 +227,12 @@ fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx:
             }
 
             if let Some(s) = message_body {
-                email = email.text(s);
+                let sl = s.to_lowercase();
+                if sl.contains("<html>") && sl.contains("</html>") {
+                    email = email.html(s);
+                } else {
+                    email = email.text(s);
+                }
             }
 
             match email.build() {
