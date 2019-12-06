@@ -12,10 +12,11 @@ use v_authorization::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::module::{init_log, Module};
 use v_module::ticket::Ticket;
-use v_onto::individual::Individual;
+use v_onto::individual::{Individual, RawObj};
+use v_onto::individual2msgpack::to_msgpack;
 use v_onto::json2individual::parse_json_to_individual;
 use v_queue::queue::Queue;
-use v_queue::record::Mode;
+use v_queue::record::{Mode, MsgType};
 use v_storage::storage::*;
 
 fn main() -> std::io::Result<()> {
@@ -67,9 +68,11 @@ fn main() -> std::io::Result<()> {
 
     let mut tickets_cache: HashMap<String, Ticket> = HashMap::new();
 
+    let mut op_id = 0;
+
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = request_prepare(&sys_ticket, &recv_msg, &mut storage, &mut queue_out, &mut tickets_cache);
+            let res = request_prepare(&sys_ticket, &mut op_id, &recv_msg, &mut storage, &mut queue_out, &mut tickets_cache);
             if let Err(e) = server.send(res) {
                 error!("fail send {:?}", e);
             }
@@ -77,7 +80,14 @@ fn main() -> std::io::Result<()> {
     }
 }
 
-fn request_prepare(sys_ticket: &Ticket, request: &Message, storage: &mut VStorage, queue_out: &mut Queue, tickets_cache: &mut HashMap<String, Ticket>) -> Message {
+fn request_prepare(
+    sys_ticket: &Ticket,
+    op_id: &mut i64,
+    request: &Message,
+    storage: &mut VStorage,
+    queue_out: &mut Queue,
+    tickets_cache: &mut HashMap<String, Ticket>,
+) -> Message {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -142,7 +152,7 @@ fn request_prepare(sys_ticket: &Ticket, request: &Message, storage: &mut VStorag
                 error!("fail parse individual fro json");
                 return Message::default();
             } else {
-                individual_prepare(&ticket, &cmd, event_id, src, assigned_subsystems, &mut indv, storage, queue_out, sys_ticket);
+                operation_prepare(&cmd, op_id, &ticket, event_id, src, assigned_subsystems, &mut indv, storage, queue_out, sys_ticket);
             }
         }
     } else {
@@ -153,9 +163,10 @@ fn request_prepare(sys_ticket: &Ticket, request: &Message, storage: &mut VStorag
     Message::default()
 }
 
-fn individual_prepare(
-    ticket: &Ticket,
+fn operation_prepare(
     cmd: &IndvOp,
+    op_id: &mut i64,
+    ticket: &Ticket,
     event_id: Option<&str>,
     src: Option<&str>,
     assigned_subsystems: Option<i64>,
@@ -180,16 +191,19 @@ fn individual_prepare(
         return (ResultCode::NoContent, -1);
     }
 
-    let mut indv = Individual::default();
+    let mut new_indv = Individual::default();
     let mut prev_indv = Individual::default();
-    if storage.get_individual(indv.get_id(), &mut prev_indv) {
-        if indv.is_empty() || cmd == &IndvOp::Remove {
-            indv.set_id(prev_indv.get_id());
+    let prev_state = storage.get_raw_value(StorageId::Individuals, new_indv.get_id());
+
+    if !prev_state.is_empty() {
+        prev_indv = Individual::new_raw(RawObj::new(prev_state));
+        if new_indv.is_empty() || cmd == &IndvOp::Remove {
+            new_indv.set_id(prev_indv.get_id());
         }
     }
 
     if prev_indv.is_empty() && cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
-        error!("fail store, cmd={:?}: not read prev_state uri={}", cmd, indv.get_id());
+        error!("fail store, cmd={:?}: not read prev_state uri={}", cmd, new_indv.get_id());
         return (ResultCode::FailStore, -1);
     }
 
@@ -204,23 +218,23 @@ fn individual_prepare(
     };
 
     if cmd == &IndvOp::Remove {
-        let is_deleted = indv.is_exists("v-s:deleted");
+        let is_deleted = new_indv.is_exists("v-s:deleted");
 
-        if is_need_authorize && _authorize(indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
-            error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, indv.get_id());
+        if is_need_authorize && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
+            error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
             return (ResultCode::NotAuthorized, -1);
         }
     } else {
         if is_need_authorize {
-            if _authorize(indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
-                error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, indv.get_id());
+            if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
+                error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
                 return (ResultCode::NotAuthorized, -1);
             }
 
             // check access can_create for new types
             let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
             let mut added_types = vec![];
-            if let Some(new_types) = indv.get_literals("rdf:type") {
+            if let Some(new_types) = new_indv.get_literals("rdf:type") {
                 for n_el in prev_types.iter() {
                     let mut found = false;
                     for p_el in new_types.iter() {
@@ -233,7 +247,7 @@ fn individual_prepare(
                     }
                 }
             } else {
-                error!("fail store, Not Authorized, user {} request [can update] for {} ", ticket.user_uri, indv.get_id());
+                error!("fail store, Not Authorized, user {} request [can update] for {} ", ticket.user_uri, new_indv.get_id());
                 return (ResultCode::NotAuthorized, -1);
             }
 
@@ -251,37 +265,46 @@ fn individual_prepare(
         let update_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
 
         if cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
-            indv_apply_cmd(cmd, &mut prev_indv, &mut indv);
+            indv_apply_cmd(cmd, &mut prev_indv, &mut new_indv);
         }
 
-        indv.set_integer("v-s:updateCounter", update_counter);
+        new_indv.set_integer("v-s:updateCounter", update_counter);
 
-        save(&ticket, &cmd, event_id, src, assigned_subsystems, &mut indv, storage, queue_out);
+        // store to main storage
+        let mut new_state: Vec<u8> = Vec::new();
+        if to_msgpack(&new_indv, &mut new_state).is_ok() && storage.put_kv_raw(StorageId::Individuals, new_indv.get_id(), new_state.clone()) {
+            info!("store individual, id={}", new_indv.get_id());
+        } else {
+            error!("fail store individual, id={}", new_indv.get_id());
+            return (ResultCode::FailStore, -1);
+        }
+
+        // store to queue
+
+        let mut queue_element = Individual::default();
+        queue_element.set_id(&format!("{}", op_id));
+        queue_element.add_binary("new_state", new_state);
+        queue_element.add_integer("cmd", cmd.to_i64());
+        //queue_element.add_integer("date", date);
+
+        info!("add to queue: uri={}", new_indv.get_id());
+
+        let mut raw1: Vec<u8> = Vec::new();
+        if let Err(e) = to_msgpack(&queue_element, &mut raw1) {
+            error!("fail serialize, err={:?}", e);
+            return (ResultCode::FailStore, -1);
+        }
+        if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
+            error!("fail push into queue, err={:?}", e);
+            return (ResultCode::FailStore, -1);
+        }
     }
 
     (ResultCode::FailStore, -1)
 }
 
-fn save(
-    ticket: &Ticket,
-    cmd: &IndvOp,
-    event_id: Option<&str>,
-    src: Option<&str>,
-    assigned_subsystems: Option<i64>,
-    indv: &mut Individual,
-    storage: &mut VStorage,
-    queue_out: &mut Queue,
-) {
-    if cmd == &IndvOp::Remove {
-    } else {
-    }
-}
-
 fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Individual) {
     if !prev_indv.is_empty() {
-        //if (prev_indv.resources.get("rdf:type", Resources.init).length == 0) {
-        //log.trace("WARN! stores individual does not contain any type: arg:[%s] prev_indv:[%s]", text(*indv), text(*prev_indv));
-        //}
         let list_predicates = indv.get_predicates();
 
         for predicate in list_predicates {
