@@ -2554,6 +2554,8 @@
           $(document).off("click", clickOutsideMenuHandler);
           $(document).off("keydown", arrowHandler);
         } else {
+          $(document).off("click", clickOutsideMenuHandler);
+          $(document).off("keydown", arrowHandler);
           fulltextMenu.show();
           $(document).on("click", clickOutsideMenuHandler);
           $(document).on("keydown", arrowHandler);
