@@ -13,6 +13,7 @@ use v_az_lmdb::_authorize;
 use v_module::module::{init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::individual::{Individual, RawObj};
+use v_onto::datatype::Lang;
 use v_onto::individual2msgpack::to_msgpack;
 use v_onto::json2individual::parse_json_to_individual;
 use v_queue::queue::Queue;
@@ -196,7 +197,7 @@ fn operation_prepare(
     let prev_state = storage.get_raw_value(StorageId::Individuals, new_indv.get_id());
 
     if !prev_state.is_empty() {
-        prev_indv = Individual::new_raw(RawObj::new(prev_state));
+        prev_indv = Individual::new_raw(RawObj::new(prev_state.clone()));
         if new_indv.is_empty() || cmd == &IndvOp::Remove {
             new_indv.set_id(prev_indv.get_id());
         }
@@ -283,8 +284,38 @@ fn operation_prepare(
 
         let mut queue_element = Individual::default();
         queue_element.set_id(&format!("{}", op_id));
-        queue_element.add_binary("new_state", new_state);
-        queue_element.add_integer("cmd", cmd.to_i64());
+        queue_element.set_integer("cmd", cmd.to_i64());
+        queue_element.set_uri("uri", new_indv.get_id());
+
+        if !ticket.user_uri.is_empty() {
+            queue_element.set_uri("user_uri", &ticket.user_uri);
+        }
+
+        if !new_state.is_empty() {
+            queue_element.set_binary("new_state", new_state);
+        }
+
+        if !prev_state.is_empty() {
+            queue_element.set_binary("prev_state", prev_state);
+        }
+
+        if let Some (v) = event_id {
+            queue_element.set_string("event_id", v, Lang::NONE);
+        }
+
+        queue_element.set_integer("tnx_id", *op_id);
+
+        let src = if let Some (v) = src {
+            if v.is_empty() {
+                "?"
+            } else {
+                v
+            }
+        } else {
+            "?"
+        };
+        queue_element.set_string("src", "?", Lang::NONE);
+
         //queue_element.add_integer("date", date);
 
         info!("add to queue: uri={}", new_indv.get_id());
@@ -298,6 +329,8 @@ fn operation_prepare(
             error!("fail push into queue, err={:?}", e);
             return (ResultCode::FailStore, -1);
         }
+
+        *op_id += 1;
     }
 
     (ResultCode::FailStore, -1)
