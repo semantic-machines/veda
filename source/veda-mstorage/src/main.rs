@@ -12,8 +12,8 @@ use v_authorization::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::module::{init_log, Module};
 use v_module::ticket::Ticket;
-use v_onto::individual::{Individual, RawObj};
 use v_onto::datatype::Lang;
+use v_onto::individual::{Individual, RawObj};
 use v_onto::individual2msgpack::to_msgpack;
 use v_onto::json2individual::parse_json_to_individual;
 use v_queue::queue::Queue;
@@ -122,7 +122,7 @@ fn request_prepare(
     let assigned_subsystems = v["assigned_subsystems"].as_i64();
     let event_id = v["event_id"].as_str();
     let src = v["src"].as_str();
-    let mut cmd = IndvOp::None;
+    let cmd;
 
     match v["function"].as_str().unwrap_or_default() {
         "put" => {
@@ -153,7 +153,7 @@ fn request_prepare(
                 error!("fail parse individual fro json");
                 return Message::default();
             } else {
-                operation_prepare(&cmd, op_id, &ticket, event_id, src, assigned_subsystems, &mut indv, storage, queue_out, sys_ticket);
+                operation_prepare(cmd.clone(), op_id, &ticket, event_id, src, assigned_subsystems, &mut indv, storage, queue_out, sys_ticket);
             }
         }
     } else {
@@ -165,7 +165,7 @@ fn request_prepare(
 }
 
 fn operation_prepare(
-    cmd: &IndvOp,
+    cmd: IndvOp,
     op_id: &mut i64,
     ticket: &Ticket,
     event_id: Option<&str>,
@@ -176,19 +176,17 @@ fn operation_prepare(
     queue_out: &mut Queue,
     sys_ticket: &Ticket,
 ) -> (ResultCode, i64) {
-    let is_need_authorize;
-
-    if sys_ticket.user_uri == ticket.user_uri {
-        is_need_authorize = false;
+    let is_need_authorize = if sys_ticket.user_uri == ticket.user_uri {
+        false
     } else {
-        is_need_authorize = true;
-    }
+        true
+    };
 
     if indv.get_id().is_empty() || indv.get_id().len() < 2 {
         return (ResultCode::InvalidIdentifier, -1);
     }
 
-    if indv.is_empty() || cmd != &IndvOp::Remove {
+    if indv.is_empty() || cmd != IndvOp::Remove {
         return (ResultCode::NoContent, -1);
     }
 
@@ -198,12 +196,12 @@ fn operation_prepare(
 
     if !prev_state.is_empty() {
         prev_indv = Individual::new_raw(RawObj::new(prev_state.clone()));
-        if new_indv.is_empty() || cmd == &IndvOp::Remove {
+        if new_indv.is_empty() || cmd == IndvOp::Remove {
             new_indv.set_id(prev_indv.get_id());
         }
     }
 
-    if prev_indv.is_empty() && cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
+    if prev_indv.is_empty() && cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
         error!("fail store, cmd={:?}: not read prev_state uri={}", cmd, new_indv.get_id());
         return (ResultCode::FailStore, -1);
     }
@@ -218,18 +216,23 @@ fn operation_prepare(
         str_num: 0,
     };
 
-    if cmd == &IndvOp::Remove {
-        let is_deleted = new_indv.is_exists("v-s:deleted");
-
-        if is_need_authorize && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
-            error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
-            return (ResultCode::NotAuthorized, -1);
-        }
-    } else {
-        if is_need_authorize {
-            if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
-                error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
+    if is_need_authorize {
+        if cmd == IndvOp::Remove {
+            if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
+                error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
                 return (ResultCode::NotAuthorized, -1);
+            }
+        } else {
+            if let Some(is_deleted) = new_indv.get_first_bool("v-s:deleted") {
+                if is_deleted && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
+                    error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
+                    return (ResultCode::NotAuthorized, -1);
+                }
+            } else {
+                if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
+                    error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
+                    return (ResultCode::NotAuthorized, -1);
+                }
             }
 
             // check access can_create for new types
@@ -258,82 +261,109 @@ fn operation_prepare(
                     return (ResultCode::NotAuthorized, -1);
                 }
             }
-            // end authorize
         }
+        // end authorize
     }
 
-    if cmd != &IndvOp::Remove {
+    if cmd != IndvOp::Remove {
         let update_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
 
-        if cmd == &IndvOp::AddIn || cmd == &IndvOp::SetIn || cmd == &IndvOp::RemoveFrom {
-            indv_apply_cmd(cmd, &mut prev_indv, &mut new_indv);
+        if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
+            indv_apply_cmd(&cmd, &mut prev_indv, &mut new_indv);
         }
 
         new_indv.set_integer("v-s:updateCounter", update_counter);
 
-        // store to main storage
-        let mut new_state: Vec<u8> = Vec::new();
-        if to_msgpack(&new_indv, &mut new_state).is_ok() && storage.put_kv_raw(StorageId::Individuals, new_indv.get_id(), new_state.clone()) {
-            info!("store individual, id={}", new_indv.get_id());
+        if store(&cmd, op_id, ticket, event_id, src, assigned_subsystems, &mut new_indv, prev_state, update_counter, storage, queue_out) {
+            *op_id += 1;
+            return (ResultCode::Ok, *op_id);
         } else {
-            error!("fail store individual, id={}", new_indv.get_id());
+            error!("fail store to main DB");
             return (ResultCode::FailStore, -1);
         }
-
-        // store to queue
-
-        let mut queue_element = Individual::default();
-        queue_element.set_id(&format!("{}", op_id));
-        queue_element.set_integer("cmd", cmd.to_i64());
-        queue_element.set_uri("uri", new_indv.get_id());
-
-        if !ticket.user_uri.is_empty() {
-            queue_element.set_uri("user_uri", &ticket.user_uri);
-        }
-
-        if !new_state.is_empty() {
-            queue_element.set_binary("new_state", new_state);
-        }
-
-        if !prev_state.is_empty() {
-            queue_element.set_binary("prev_state", prev_state);
-        }
-
-        if let Some (v) = event_id {
-            queue_element.set_string("event_id", v, Lang::NONE);
-        }
-
-        queue_element.set_integer("tnx_id", *op_id);
-
-        let src = if let Some (v) = src {
-            if v.is_empty() {
-                "?"
-            } else {
-                v
-            }
-        } else {
-            "?"
-        };
-        queue_element.set_string("src", "?", Lang::NONE);
-
-        //queue_element.add_integer("date", date);
-
-        info!("add to queue: uri={}", new_indv.get_id());
-
-        let mut raw1: Vec<u8> = Vec::new();
-        if let Err(e) = to_msgpack(&queue_element, &mut raw1) {
-            error!("fail serialize, err={:?}", e);
-            return (ResultCode::FailStore, -1);
-        }
-        if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
-            error!("fail push into queue, err={:?}", e);
-            return (ResultCode::FailStore, -1);
-        }
-
-        *op_id += 1;
     }
 
     (ResultCode::FailStore, -1)
+}
+
+fn store(
+    cmd: &IndvOp,
+    op_id: &mut i64,
+    ticket: &Ticket,
+    event_id: Option<&str>,
+    src: Option<&str>,
+    assigned_subsystems: Option<i64>,
+    new_indv: &mut Individual,
+    prev_state: Vec<u8>,
+    update_counter: i64,
+    storage: &mut VStorage,
+    queue_out: &mut Queue,
+) -> bool {
+    // store to main DB
+    let mut new_state: Vec<u8> = Vec::new();
+    if to_msgpack(&new_indv, &mut new_state).is_ok() && storage.put_kv_raw(StorageId::Individuals, new_indv.get_id(), new_state.clone()) {
+        info!("store individual, id={}", new_indv.get_id());
+    } else {
+        error!("fail store individual, id={}", new_indv.get_id());
+        return false;
+    }
+
+    // store to queue
+
+    let mut queue_element = Individual::default();
+    queue_element.set_id(&format!("{}", op_id));
+    queue_element.set_integer("cmd", cmd.to_i64());
+    queue_element.set_uri("uri", new_indv.get_id());
+
+    if !ticket.user_uri.is_empty() {
+        queue_element.set_uri("user_uri", &ticket.user_uri);
+    }
+
+    if !new_state.is_empty() {
+        queue_element.set_binary("new_state", new_state);
+    }
+
+    if !prev_state.is_empty() {
+        queue_element.set_binary("prev_state", prev_state);
+    }
+
+    if let Some(v) = event_id {
+        queue_element.set_string("event_id", v, Lang::NONE);
+    }
+
+    queue_element.set_integer("tnx_id", *op_id);
+
+    let src = if let Some(v) = src {
+        if v.is_empty() {
+            "?"
+        } else {
+            v
+        }
+    } else {
+        "?"
+    };
+    queue_element.set_string("src", src, Lang::NONE);
+    queue_element.add_datetime("date", Utc::now().naive_utc().timestamp());
+    queue_element.add_integer("op_id", *op_id + 1);
+    queue_element.add_integer("u_count", update_counter);
+
+    if let Some(i) = assigned_subsystems {
+        queue_element.add_integer("assigned_subsystems", i);
+    }
+
+    info!("add to queue: uri={}", new_indv.get_id());
+
+    let mut raw1: Vec<u8> = Vec::new();
+    if let Err(e) = to_msgpack(&queue_element, &mut raw1) {
+        error!("fail serialize, err={:?}", e);
+        return false;
+    }
+    if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
+        error!("fail push into queue, err={:?}", e);
+        return false;
+    }
+
+    false
 }
 
 fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Individual) {
