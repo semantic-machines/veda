@@ -1,3 +1,4 @@
+use chrono::NaiveDateTime;
 use v_api::ResultCode;
 use v_onto::individual::Individual;
 
@@ -44,6 +45,16 @@ impl Ticket {
 
         if !self.user_uri.is_empty() && (when.is_none() || duration < 10) {
             error!("found a session ticket is not complete, we believe that the user has not been found.");
+            self.user_uri = String::default();
+            return;
+        }
+        let when = when.unwrap();
+
+        if let Ok(t) = NaiveDateTime::parse_from_str(&when, "%Y-%m-%dT%H:%M:%S%.f") {
+            self.start_time = t.timestamp();
+            self.end_time = self.start_time + duration as i64;
+        } else {
+            error!("fail parse field [ticket:when] = {}", when);
             self.user_uri = String::default();
         }
     }
