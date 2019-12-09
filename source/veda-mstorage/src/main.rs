@@ -10,6 +10,7 @@ use std::str;
 use v_api::{IndvOp, ResultCode};
 use v_authorization::{Access, Trace};
 use v_az_lmdb::_authorize;
+use v_module::info::ModuleInfo;
 use v_module::module::{init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
@@ -22,6 +23,8 @@ use v_storage::storage::*;
 
 fn main() -> std::io::Result<()> {
     init_log();
+
+    let base_path = "./data";
 
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
@@ -41,7 +44,7 @@ fn main() -> std::io::Result<()> {
     if !tarantool_addr.is_empty() {
         storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
     } else {
-        storage = VStorage::new_lmdb("./data", StorageMode::ReadOnly);
+        storage = VStorage::new_lmdb(base_path, StorageMode::ReadOnly);
     }
 
     let mut sys_ticket = Ticket::default();
@@ -69,7 +72,17 @@ fn main() -> std::io::Result<()> {
 
     let mut tickets_cache: HashMap<String, Ticket> = HashMap::new();
 
+    let info = ModuleInfo::new(base_path, "subject_manager", true);
+    if info.is_err() {
+        error!("fail open info file, {:?}", info.err());
+        return Ok(());
+    }
+
     let mut op_id = 0;
+    let mut mstorage_info = info.unwrap();
+    if let Some((_op_id, committed_op_id)) = mstorage_info.read_info() {
+        op_id = committed_op_id;
+    }
 
     loop {
         if let Ok(recv_msg) = server.recv() {
