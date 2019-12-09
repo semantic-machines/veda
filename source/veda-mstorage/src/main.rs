@@ -4,6 +4,7 @@ extern crate log;
 use chrono::Utc;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
+use serde_json::json;
 use serde_json::value::Value as JSONValue;
 use std::collections::HashMap;
 use std::str;
@@ -40,11 +41,24 @@ fn main() -> std::io::Result<()> {
         info!("tarantool addr={}", &tarantool_addr);
     }
 
+    let notify_channel_url = section.get("notify_channel_url");
+    if notify_channel_url.is_none() {
+        error!("fail read property [notify_channel_url]");
+        return Ok(());
+    };
+
+    let notify_soc = Socket::new(Protocol::Pub0).unwrap();
+
+    if let Err(e) = notify_soc.listen(notify_channel_url.unwrap()) {
+        error!("fail connect to, {} err={}", notify_channel_url.unwrap(), e);
+        return Ok(());
+    }
+
     let mut storage: VStorage;
     if !tarantool_addr.is_empty() {
         storage = VStorage::new_tt(tarantool_addr, "veda6", "123456");
     } else {
-        storage = VStorage::new_lmdb(base_path, StorageMode::ReadOnly);
+        storage = VStorage::new_lmdb(base_path, StorageMode::ReadWrite);
     }
 
     let mut sys_ticket = Ticket::default();
@@ -68,7 +82,7 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    let mut queue_out = Queue::new("./data", "individuals-flowz", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_out = Queue::new(base_path, "individuals-flowz", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
 
     let mut tickets_cache: HashMap<String, Ticket> = HashMap::new();
 
@@ -86,10 +100,51 @@ fn main() -> std::io::Result<()> {
 
     loop {
         if let Ok(recv_msg) = server.recv() {
-            let res = request_prepare(&sys_ticket, &mut op_id, &recv_msg, &mut storage, &mut queue_out, &mut tickets_cache);
-            if let Err(e) = server.send(res) {
+            let mut out_msg = JSONValue::default();
+            out_msg["type"] = json!("OpResult");
+            let resp = request_prepare(&sys_ticket, &mut op_id, &recv_msg, &mut storage, &mut queue_out, &mut mstorage_info, &mut tickets_cache);
+            if let Ok(v) = resp {
+                let mut data = vec![];
+                for el in v.iter() {
+                    let mut out_el = JSONValue::default();
+                    out_el["result"] = json!(el.res.clone() as u32);
+                    out_el["op_id"] = json!(el.op_id);
+                    data.push(out_el);
+
+                    if el.res == ResultCode::Ok {
+                        // !!! заменить на async
+                        let msg_to_modules = format!("#{};{};{}", el.id, el.op_id, el.counter);
+                        notify_soc.send(Message::from(msg_to_modules.as_bytes()));
+                    }
+                }
+                out_msg["data"] = json!(data);
+            } else {
+                if let Some(err_code) = resp.err() {
+                    out_msg["result"] = json!(err_code as u32);
+                }
+            }
+
+            if let Err(e) = server.send(Message::from(out_msg.to_string().as_bytes())) {
                 error!("fail send {:?}", e);
             }
+        }
+    }
+}
+
+struct Response {
+    id: String,
+    res: ResultCode,
+    op_id: i64,
+    counter: i64,
+}
+
+impl Response {
+    fn new(id: &str, rc: ResultCode, _op_id: i64, _counter: i64) -> Self {
+        Response {
+            id: id.to_string(),
+            res: rc,
+            op_id: _op_id,
+            counter: _counter,
         }
     }
 }
@@ -100,8 +155,9 @@ fn request_prepare(
     request: &Message,
     storage: &mut VStorage,
     queue_out: &mut Queue,
+    mstorage_info: &mut ModuleInfo,
     tickets_cache: &mut HashMap<String, Ticket>,
-) -> Message {
+) -> Result<Vec<Response>, ResultCode> {
     let v: JSONValue = if let Ok(v) = serde_json::from_slice(request.as_slice()) {
         v
     } else {
@@ -111,7 +167,7 @@ fn request_prepare(
     let fticket = v["ticket"].as_str();
     if fticket.is_none() {
         error!("field [ticket] not found in request");
-        return Message::default();
+        return Err(ResultCode::TicketNotFound);
     }
     let ticket_id = fticket.unwrap();
     let mut ticket = Ticket::default();
@@ -122,14 +178,14 @@ fn request_prepare(
         get_ticket_from_db(ticket_id, &mut ticket, storage);
         if ticket.result != ResultCode::Ok {
             error!("ticket [{}] not found in storage", ticket_id);
-            return Message::default();
+            return Err(ResultCode::TicketNotFound);
         }
         tickets_cache.insert(ticket_id.to_string(), ticket.clone());
     }
 
     if !is_ticket_valid(&mut ticket) {
         error!("ticket [{}] not valid", ticket.id);
-        return Message::default();
+        return Err(ResultCode::TicketExpired);
     }
 
     let assigned_subsystems = v["assigned_subsystems"].as_i64();
@@ -155,26 +211,37 @@ fn request_prepare(
         }
         _ => {
             error!("unknown command {:?}", v["function"].as_str());
-            return Message::default();
+            return Err(ResultCode::BadRequest);
         }
     }
 
     if let Some(jindividuals) = v["individuals"].as_array() {
+        let mut res_of_id = vec![];
         for el in jindividuals {
             let mut indv = Individual::default();
             if !parse_json_to_individual(el, &mut indv) {
                 error!("fail parse individual fro json");
-                return Message::default();
             } else {
-                operation_prepare(cmd.clone(), op_id, &ticket, event_id, src, assigned_subsystems, &mut indv, storage, queue_out, sys_ticket);
+                res_of_id.push(operation_prepare(
+                    cmd.clone(),
+                    op_id,
+                    &ticket,
+                    event_id,
+                    src,
+                    assigned_subsystems,
+                    &mut indv,
+                    storage,
+                    queue_out,
+                    mstorage_info,
+                    sys_ticket,
+                ));
             }
         }
     } else {
         error!("field [individuals] is empty");
-        return Message::default();
     }
 
-    Message::default()
+    Err(ResultCode::InternalServerError)
 }
 
 fn operation_prepare(
@@ -184,26 +251,26 @@ fn operation_prepare(
     event_id: Option<&str>,
     src: Option<&str>,
     assigned_subsystems: Option<i64>,
-    indv: &mut Individual,
+    new_indv: &mut Individual,
     storage: &mut VStorage,
     queue_out: &mut Queue,
+    mstorage_info: &mut ModuleInfo,
     sys_ticket: &Ticket,
-) -> (ResultCode, i64) {
+) -> Response {
     let is_need_authorize = if sys_ticket.user_uri == ticket.user_uri {
         false
     } else {
         true
     };
 
-    if indv.get_id().is_empty() || indv.get_id().len() < 2 {
-        return (ResultCode::InvalidIdentifier, -1);
+    if new_indv.get_id().is_empty() || new_indv.get_id().len() < 2 {
+        return Response::new(new_indv.get_id(), ResultCode::InvalidIdentifier, -1, -1);
     }
 
-    if indv.is_empty() || cmd != IndvOp::Remove {
-        return (ResultCode::NoContent, -1);
+    if new_indv.is_empty() || (cmd != IndvOp::Remove && new_indv.is_empty()) {
+        return Response::new(new_indv.get_id(), ResultCode::NoContent, -1, -1);
     }
 
-    let mut new_indv = Individual::default();
     let mut prev_indv = Individual::default();
     let prev_state = storage.get_raw_value(StorageId::Individuals, new_indv.get_id());
 
@@ -216,7 +283,7 @@ fn operation_prepare(
 
     if prev_indv.is_empty() && cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
         error!("fail store, cmd={:?}: not read prev_state uri={}", cmd, new_indv.get_id());
-        return (ResultCode::FailStore, -1);
+        return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
     }
 
     let mut trace = Trace {
@@ -233,28 +300,32 @@ fn operation_prepare(
         if cmd == IndvOp::Remove {
             if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
                 error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
-                return (ResultCode::NotAuthorized, -1);
+                return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
             }
         } else {
-            if let Some(is_deleted) = new_indv.get_first_bool("v-s:deleted") {
-                if is_deleted && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
-                    error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
-                    return (ResultCode::NotAuthorized, -1);
-                }
-            } else {
-                if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
-                    error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
-                    return (ResultCode::NotAuthorized, -1);
+            if !prev_state.is_empty() {
+                if let Some(is_deleted) = new_indv.get_first_bool("v-s:deleted") {
+                    if is_deleted && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
+                        error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
+                        return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                    }
+                } else {
+                    if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
+                        error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
+                        return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                    }
                 }
             }
 
             // check access can_create for new types
             let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
+            let new_types = new_indv.get_literals("rdf:type").unwrap_or_default();
             let mut added_types = vec![];
-            if let Some(new_types) = new_indv.get_literals("rdf:type") {
-                for n_el in prev_types.iter() {
+
+            if !new_types.is_empty() {
+                for n_el in new_types.iter() {
                     let mut found = false;
-                    for p_el in new_types.iter() {
+                    for p_el in prev_types.iter() {
                         if p_el == n_el {
                             found = true;
                         }
@@ -264,14 +335,14 @@ fn operation_prepare(
                     }
                 }
             } else {
-                error!("fail store, Not Authorized, user {} request [can update] for {} ", ticket.user_uri, new_indv.get_id());
-                return (ResultCode::NotAuthorized, -1);
+                error!("fail store, not found type for new individual, user {}, id={} ", ticket.user_uri, new_indv.get_id());
+                return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
             }
 
             for type_id in added_types.iter() {
                 if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, &mut trace).unwrap_or(0) != Access::CanCreate as u8 {
                     error!("fail store, Not Authorized, user {} request [can create] for {} ", ticket.user_uri, type_id);
-                    return (ResultCode::NotAuthorized, -1);
+                    return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
                 }
             }
         }
@@ -282,21 +353,25 @@ fn operation_prepare(
         let update_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
 
         if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
-            indv_apply_cmd(&cmd, &mut prev_indv, &mut new_indv);
+            indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
         }
 
         new_indv.set_integer("v-s:updateCounter", update_counter);
 
-        if store(&cmd, op_id, ticket, event_id, src, assigned_subsystems, &mut new_indv, prev_state, update_counter, storage, queue_out) {
+        if store(&cmd, op_id, ticket, event_id, src, assigned_subsystems, new_indv, prev_state, update_counter, storage, queue_out) {
             *op_id += 1;
-            return (ResultCode::Ok, *op_id);
+            if let Err(e) = mstorage_info.put_info(*op_id, *op_id) {
+                error!("not completed store to main DB, error={:?}", e);
+                return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
+            }
+            return Response::new(new_indv.get_id(), ResultCode::Ok, *op_id, update_counter);
         } else {
             error!("fail store to main DB");
-            return (ResultCode::FailStore, -1);
+            return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
         }
     }
 
-    (ResultCode::FailStore, -1)
+    Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1)
 }
 
 fn store(
@@ -376,7 +451,7 @@ fn store(
         return false;
     }
 
-    false
+    true
 }
 
 fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Individual) {
