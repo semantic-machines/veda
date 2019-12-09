@@ -1,5 +1,6 @@
 use crc32fast::Hasher;
 use std::fs::*;
+use std::io::{BufRead, BufReader};
 use std::io::{Error, ErrorKind, Seek, SeekFrom, Write};
 use std::path::Path;
 
@@ -60,5 +61,49 @@ impl ModuleInfo {
         //info!("op_id={}", op_id);
 
         Ok(())
+    }
+
+    pub fn read_info(&mut self) -> Option<(i64, i64)> {
+        let mut res = false;
+        let mut op_id = 0;
+        let mut committed_op_id = 0;
+
+        if self.ff_info.seek(SeekFrom::Start(0)).is_err() {
+            return None;
+        }
+
+        if let Some(line) = BufReader::new(&self.ff_info).lines().next() {
+            res = true;
+            if let Ok(ll) = line {
+                let (module_name, _op_id, _committed_op_id, _crc) = scan_fmt!(&ll.to_owned(), "{};{};{};{}", String, i64, i64, String);
+
+                match module_name {
+                    Some(q) => {
+                        if q != self.name {
+                            res = false;
+                        }
+                    }
+                    None => res = false,
+                }
+
+                match _op_id {
+                    Some(q) => op_id = q,
+                    None => res = false,
+                }
+
+                match _committed_op_id {
+                    Some(q) => committed_op_id = q,
+                    None => res = false,
+                }
+            } else {
+                return None;
+            }
+        }
+
+        if res {
+            return Some((op_id, committed_op_id));
+        }
+
+        None
     }
 }
