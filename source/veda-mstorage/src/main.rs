@@ -50,8 +50,10 @@ fn main() -> std::io::Result<()> {
     let notify_soc = Socket::new(Protocol::Pub0).unwrap();
 
     if let Err(e) = notify_soc.listen(notify_channel_url.unwrap()) {
-        error!("fail connect to, {} err={}", notify_channel_url.unwrap(), e);
+        error!("fail connect to, {}, err={}", notify_channel_url.unwrap(), e);
         return Ok(());
+    } else {
+        info!("bind to notify_channel={}", notify_channel_url.unwrap());
     }
 
     let mut storage: VStorage;
@@ -82,7 +84,7 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
-    let mut queue_out = Queue::new(base_path, "individuals-flowz", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
+    let mut queue_out = Queue::new(&(base_path.to_owned() + "/queue"), "individuals-flow", Mode::ReadWrite).expect("!!!!!!!!! FAIL QUEUE");
 
     let mut tickets_cache: HashMap<String, Ticket> = HashMap::new();
 
@@ -97,6 +99,7 @@ fn main() -> std::io::Result<()> {
     if let Some((_op_id, committed_op_id)) = mstorage_info.read_info() {
         op_id = committed_op_id;
     }
+    info!("started with op_id={}", op_id);
 
     loop {
         if let Ok(recv_msg) = server.recv() {
@@ -114,7 +117,7 @@ fn main() -> std::io::Result<()> {
                     if el.res == ResultCode::Ok {
                         // !!! заменить на async
                         let msg_to_modules = format!("#{};{};{}", el.id, el.op_id, el.counter);
-                        notify_soc.send(Message::from(msg_to_modules.as_bytes()));
+                        info!("notify={:?}", notify_soc.send(Message::from(msg_to_modules.as_bytes())));
                     }
                 }
                 out_msg["data"] = json!(data);
@@ -163,6 +166,8 @@ fn request_prepare(
     } else {
         JSONValue::Null
     };
+
+    info!("@ v={:?}", v);
 
     let fticket = v["ticket"].as_str();
     if fticket.is_none() {
@@ -220,7 +225,8 @@ fn request_prepare(
         for el in jindividuals {
             let mut indv = Individual::default();
             if !parse_json_to_individual(el, &mut indv) {
-                error!("fail parse individual fro json");
+                error!("fail parse individual from json");
+                res_of_id.push(Response::new("", ResultCode::BadRequest, -1, -1));
             } else {
                 res_of_id.push(operation_prepare(
                     cmd.clone(),
@@ -237,6 +243,7 @@ fn request_prepare(
                 ));
             }
         }
+        return Ok(res_of_id);
     } else {
         error!("field [individuals] is empty");
     }
@@ -267,7 +274,7 @@ fn operation_prepare(
         return Response::new(new_indv.get_id(), ResultCode::InvalidIdentifier, -1, -1);
     }
 
-    if new_indv.is_empty() || (cmd != IndvOp::Remove && new_indv.is_empty()) {
+    if cmd != IndvOp::Remove && new_indv.is_empty() {
         return Response::new(new_indv.get_id(), ResultCode::NoContent, -1, -1);
     }
 
@@ -276,9 +283,9 @@ fn operation_prepare(
 
     if !prev_state.is_empty() {
         prev_indv = Individual::new_raw(RawObj::new(prev_state.clone()));
-        if new_indv.is_empty() || cmd == IndvOp::Remove {
-            new_indv.set_id(prev_indv.get_id());
-        }
+        //if new_indv.is_empty() || cmd == IndvOp::Remove {
+        //    new_indv.set_id(prev_indv.get_id());
+        //}
     }
 
     if prev_indv.is_empty() && cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
@@ -349,33 +356,34 @@ fn operation_prepare(
         // end authorize
     }
 
-    if cmd != IndvOp::Remove {
-        let update_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
+    let update_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
+    new_indv.set_integer("v-s:updateCounter", update_counter);
 
-        if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
-            indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
-        }
+    if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
+        indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
+    }
 
-        new_indv.set_integer("v-s:updateCounter", update_counter);
+    if cmd == IndvOp::Remove {
+        new_indv.set_bool("v-s:deleted", true);
+    }
 
-        if store(&cmd, op_id, ticket, event_id, src, assigned_subsystems, new_indv, prev_state, update_counter, storage, queue_out) {
-            *op_id += 1;
-            if let Err(e) = mstorage_info.put_info(*op_id, *op_id) {
-                error!("not completed store to main DB, error={:?}", e);
-                return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
-            }
-            return Response::new(new_indv.get_id(), ResultCode::Ok, *op_id, update_counter);
-        } else {
-            error!("fail store to main DB");
+    if to_storage_and_queue(IndvOp::Put, op_id, ticket, event_id, src, assigned_subsystems, new_indv, prev_state, update_counter, storage, mstorage_info, queue_out) {
+        error!("not completed store to main DB");
+        return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
+    }
+
+    if cmd == IndvOp::Remove {
+        if to_storage_and_queue(cmd, op_id, ticket, event_id, src, assigned_subsystems, new_indv, vec![], update_counter, storage, mstorage_info, queue_out) {
+            error!("not completed store to main DB");
             return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
         }
     }
 
-    Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1)
+    Response::new(new_indv.get_id(), ResultCode::Ok, *op_id, update_counter)
 }
 
-fn store(
-    cmd: &IndvOp,
+fn to_storage_and_queue(
+    cmd: IndvOp,
     op_id: &mut i64,
     ticket: &Ticket,
     event_id: Option<&str>,
@@ -385,18 +393,29 @@ fn store(
     prev_state: Vec<u8>,
     update_counter: i64,
     storage: &mut VStorage,
+    mstorage_info: &mut ModuleInfo,
     queue_out: &mut Queue,
 ) -> bool {
-    // store to main DB
+    // update main DB
+
     let mut new_state: Vec<u8> = Vec::new();
-    if to_msgpack(&new_indv, &mut new_state).is_ok() && storage.put_kv_raw(StorageId::Individuals, new_indv.get_id(), new_state.clone()) {
-        info!("store individual, id={}", new_indv.get_id());
+    if cmd == IndvOp::Remove {
+        if storage.remove(StorageId::Individuals, new_indv.get_id()) {
+            info!("remove individual, id={}", new_indv.get_id());
+        } else {
+            error!("fail remove individual, id={}", new_indv.get_id());
+            return false;
+        }
     } else {
-        error!("fail store individual, id={}", new_indv.get_id());
-        return false;
+        if to_msgpack(&new_indv, &mut new_state).is_ok() && storage.put_kv_raw(StorageId::Individuals, new_indv.get_id(), new_state.clone()) {
+            info!("store individual, id={}", new_indv.get_id());
+        } else {
+            error!("fail store individual, id={}", new_indv.get_id());
+            return false;
+        }
     }
 
-    // store to queue
+    // add to queue
 
     let mut queue_element = Individual::default();
     queue_element.set_id(&format!("{}", op_id));
@@ -446,8 +465,14 @@ fn store(
         error!("fail serialize, err={:?}", e);
         return false;
     }
-    if let Err(e) = queue_out.push(&raw1, MsgType::Object) {
+    if let Err(e) = queue_out.push(&raw1, MsgType::String) {
         error!("fail push into queue, err={:?}", e);
+        return false;
+    }
+
+    *op_id += 1;
+    if let Err(e) = mstorage_info.put_info(*op_id, *op_id) {
+        error!("fail put info, error={:?}", e);
         return false;
     }
 
