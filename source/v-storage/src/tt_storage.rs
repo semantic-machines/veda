@@ -53,6 +53,26 @@ impl Storage for TTStorage {
         false
     }
 
+    fn remove(&mut self, storage: StorageId, key: &str) -> bool {
+        let space = if storage == StorageId::Tickets {
+            TICKETS_SPACE_ID
+        } else if storage == StorageId::Az {
+            AZ_SPACE_ID
+        } else {
+            INDIVIDUALS_SPACE_ID
+        };
+
+        let tuple = (key,);
+        let resp = self.client.delete(space, &tuple).and_then(move |response| Ok(response.data));
+
+        if let Err(e) = self.rt.block_on(resp) {
+            error!("tarantool: fail remove, db [{:?}], err = {:?}", storage, e);
+            false
+        } else {
+            true
+        }
+    }
+
     fn put_kv(&mut self, storage: StorageId, key: &str, val: &str) -> bool {
         let space = if storage == StorageId::Tickets {
             TICKETS_SPACE_ID
@@ -66,7 +86,7 @@ impl Storage for TTStorage {
         let resp = self.client.replace(space, &tuple).and_then(move |response| Ok(response.data));
 
         if let Err(e) = self.rt.block_on(resp) {
-            error!("fail replace, tarantool db [{:?}], err = {:?}", storage, e);
+            error!("tarantool: fail replace, db [{:?}], err = {:?}", storage, e);
             false
         } else {
             true
@@ -85,7 +105,7 @@ impl Storage for TTStorage {
         let resp = self.client.replace_raw(space, val).and_then(move |response| Ok(response.data));
 
         if let Err(e) = self.rt.block_on(resp) {
-            error!("fail replace, tarantool db [{:?}], err = {:?}", storage, e);
+            error!("tarantool: fail replace, db [{:?}], err = {:?}", storage, e);
             false
         } else {
             true
