@@ -1,6 +1,12 @@
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate mysql;
+
+use std::collections::HashMap;
+use std::{thread, time};
+
 use v_api::ResultCode;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
@@ -8,10 +14,16 @@ use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
 use v_queue::consumer::*;
-use mysql;
 
 pub struct Context {
     onto: Onto,
+    conn: Connection,
+    tables: HashMap<String, bool>,
+}
+
+pub struct Connection {
+    opts: mysql::Opts,
+    pool: mysql::Pool,
 }
 
 fn main() -> Result<(), i32> {
@@ -27,25 +39,26 @@ fn main() -> Result<(), i32> {
 
     let mut module = Module::default();
 
-    let mut ctx = Context {
-        onto: Onto::default(),
-    };
-
-    connect_to_mysql(&mut ctx, &mut module);
-
-    info!("load onto start");
-    load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
-    info!("load onto end");
-
-    module.listen_queue(
-        &mut queue_consumer,
-        &mut module_info.unwrap(),
-        &mut ctx,
-        &mut (void as fn(&mut Module, &mut Context)),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual)),
-        &mut (void as fn(&mut Module, &mut Context)),
-    );
-    Ok(())
+    if let Ok(conn) = connect_to_mysql(&mut module, -1, 30000) {
+        if let Ok(tables) = read_tables(&conn) {
+            let mut ctx = Context {
+                onto: Onto::default(),
+                conn: conn,
+                tables: tables,
+            };
+            load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+            module.listen_queue(
+                &mut queue_consumer,
+                &mut module_info.unwrap(),
+                &mut ctx,
+                &mut (void as fn(&mut Module, &mut Context)),
+                &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual)),
+                &mut (void as fn(&mut Module, &mut Context)),
+            );
+            return Ok(());
+        }
+    }
+    Err(-1)
 }
 
 fn void(_module: &mut Module, _ctx: &mut Context) {}
@@ -60,7 +73,7 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
 
     let mut prev_state = Individual::default();
-    get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+    let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
 
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
@@ -72,36 +85,55 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
     if let Some(types) = new_state.get_literals("rdf:type") {
         for itype in types {
             if ctx.onto.is_some_entered(&itype, &["v-s:Exportable"]) {
-                export(&mut new_state, module, ctx);
+                export(&mut new_state,&mut prev_state, is_new, module, ctx);
                 break;
             }
         }
     }
 }
 
-fn export(individual: &mut Individual, _module: &mut Module, _ctx: &mut Context) -> ResultCode {
-    info!("{} exported", individual.get_id());
+fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, module: &mut Module, ctx: &mut Context) -> ResultCode {
+    info!("{} exported", new_state.get_id());
     ResultCode::Ok
 
-    /*let is_deleted = individual.is_exists("v-s:deleted");
+    /*let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
-    if is_deleted {
-        info!("new_indv {} is deleted, ignore it", individual.get_id());
+    let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
+
+    if !actual_version.is_empty() && actual_version != new_state.get_id() {
+        info!("new {}.v-s:actual_version {} != {}, ignore", new_state.get_id(), &actual_version, new_state.get_id());
         return ResultCode::Ok;
     }
 
-    let actual_version = individual.get_first_literal("v-s:actual_version").unwrap_or_default();
-
-    if !actual_version.is_empty() && actual_version != individual.get_id() {
-        info!("new {}.v-s:actual_version {} != {}, ignore", individual.get_id(), &actual_version, individual.get_id());
-        return ResultCode::Ok;
-    }
-
-    ResultCode::InternalServerError
-    */
+    ResultCode::InternalServerError*/
 }
 
-fn connect_to_mysql(_ctx: &mut Context, module: &mut Module) -> bool {
+fn create_class_table(class: String, ctx: &mut Context) -> Result<(), &'static str> {
+    Ok(())
+}
+
+fn create_property_table(property: String, ctx: &mut Context) -> Result<(), &'static str> {
+    Ok(())
+}
+
+fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'static str> {
+    let mut tables: HashMap<String, bool> = HashMap::new();
+    if let Some(db) = connection.opts.get_db_name() {
+        if let Ok(result) = connection.pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = :db;", params!{"db" => db}) {
+            result.for_each(|row| {
+                if let Some(name) = row.unwrap().get(0) {
+                    tables.insert(name, true);
+                }
+            });
+            return Ok(tables);
+        }
+        return Err("Query error");
+    } else {
+        Err("No DB specified")
+    }
+}
+
+fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Connection, &'static str> {
     if let Some(node) = module.get_individual("cfg:standart_node", &mut Individual::default()) {
         if let Some(v) = node.get_literals("v-s:push_individual_by_event") {
             for el in v {
@@ -109,34 +141,47 @@ fn connect_to_mysql(_ctx: &mut Context, module: &mut Module) -> bool {
                 if module.storage.get_individual(&el, &mut connection) && !connection.is_exists_bool("v-s:deleted", true) {
                     if let Some(transport) = connection.get_first_literal("v-s:transport") {
                         if transport == "mysql" {
-                            info!("found connect to mysql {}", connection.get_id());
-
+                            info!("Found configuration to connect to MySQL: {}", connection.get_id());
                             let host = connection.get_first_literal("v-s:host").unwrap_or_default();
-                            if host.is_empty() {
-                                error!("param [host] is empty");
-                                return false;
-                            }
                             let port = connection.get_first_integer("v-s:port").unwrap_or(3306) as u16;
-                            let login = connection.get_first_literal("v-s:login").;
-                            let pass = connection.get_first_literal("v-s:password");
-                            let db = connection.get_first_literal("v-s:sql_database");
-
+                            let login = connection.get_first_literal("v-s:login").unwrap();
+                            let pass = connection.get_first_literal("v-s:password").unwrap();
+                            let db = connection.get_first_literal("v-s:sql_database").unwrap();
+                            info!("Trying to connect to mysql, host: {}, port: {}, login: {}, pass: {}, db: {}", host, port, login, pass, db);
                             let mut builder = mysql::OptsBuilder::new();
                             builder.ip_or_hostname(Some(host))
                                 .tcp_port(port)
                                 .user(Some(login))
                                 .pass(Some(pass))
                                 .db_name(Some(db));
-
-
-                            info!("connected to mysql {} {:#?} {:#?} {:#?} {:#?}", host, port, login, pass, db);
-                            return true;
+                            let opts: mysql::Opts = builder.into();
+                            match mysql::Pool::new(opts.clone()) {
+                                Ok(pool) => {
+                                    info!("Connection to MySQL established successfully");
+                                    let conn = Connection {
+                                      opts: opts,
+                                      pool: pool,
+                                    };
+                                    return Ok(conn)
+                                },
+                                Err(_) => {
+                                    error!("Connection to MySQL failed");
+                                    return Err("Connection to MySQL failed")
+                                },
+                            };
                         }
                     }
                 }
             }
         }
     }
-    error!("not found configuration for connection to mysql server");
-    false
+    if tries != 0 {
+        let tries = tries - 1;
+        thread::sleep(time::Duration::from_millis(timeout));
+        error!("Configuration not found yet, retry.");
+        connect_to_mysql(module, tries, timeout)
+    } else {
+        error!("Configuration to connect to mysql not found");
+        Err("Configuration to connect to mysql not found")
+    }
 }
