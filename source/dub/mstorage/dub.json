@@ -3,7 +3,7 @@
 	"description": "veda-mstorage",
 	"dependencies": {
 		"xapian-d": "1.0.0",
-                "msgpack-d": "1.0.0-beta.6",
+                "msgpack-d": "1.0.0-beta.8",
 	},
 	"versions": ["isMStorage"],
         "libs": [
