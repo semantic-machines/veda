@@ -108,12 +108,59 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool,
     ResultCode::InternalServerError*/
 }
 
-fn create_class_table(class: String, ctx: &mut Context) -> Result<(), &'static str> {
-    Ok(())
+fn create_class_table(class: &str, ctx: &mut Context) -> Result<(), &'static str> {
+    if let Some(table) = ctx.tables.get(class) {
+        Ok(())
+    } else {
+        if let Some(db) = ctx.conn.opts.get_db_name() {
+            let sql_type = "1";
+            let sql_value_index = "1";
+            let query =
+                "CREATE TABLE `:db`.`:class` ( \
+                `ID` BIGINT NOT NULL AUTO_INCREMENT, \
+                `doc_id` CHAR(128) NOT NULL, \
+                 PRIMARY KEY (`ID`), \
+                 INDEX c1(`doc_id`), \
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+            if let Ok(result) = ctx.conn.pool.prep_exec(query, params!{"db" => db,"class" => class}) {
+                Ok(())
+            } else {
+                Err("Query error")
+            }
+        } else {
+            Err("No DB specified")
+        }
+    }
 }
 
-fn create_property_table(property: String, ctx: &mut Context) -> Result<(), &'static str> {
-    Ok(())
+fn create_property_table(property: &str, ctx: &mut Context) -> Result<(), &'static str> {
+    if let Some(table) = ctx.tables.get(property) {
+        Ok(())
+    } else {
+        if let Some(db) = ctx.conn.opts.get_db_name() {
+            let sql_type = "1";
+            let sql_value_index = "1";
+            let query =
+                "CREATE TABLE `:db`.`:property` ( \
+                `ID` BIGINT NOT NULL AUTO_INCREMENT, \
+                `doc_id` CHAR(128) NOT NULL, \
+                `doc_type` CHAR(128) NOT NULL, \
+                `created` DATETIME NULL, \
+                `value` :sql_type NULL, \
+                `lang` CHAR(2) NULL, \
+                `deleted` BOOL NULL, \
+                 PRIMARY KEY (`ID`), \
+                 INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) :sql_value_index \
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
+            if let Ok(result) = ctx.conn.pool.prep_exec(query, params!{"db" => db,"property" => property, "sql_type" => sql_type, "sql_value_index" => sql_value_index}) {
+                Ok(())
+            } else {
+                Err("Query error")
+            }
+        } else {
+            Err("No DB specified")
+        }
+    }
 }
 
 fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'static str> {
@@ -125,9 +172,10 @@ fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'stati
                     tables.insert(name, true);
                 }
             });
-            return Ok(tables);
+            Ok(tables)
+        } else {
+            Err("Query error")
         }
-        return Err("Query error");
     } else {
         Err("No DB specified")
     }
