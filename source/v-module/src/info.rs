@@ -16,12 +16,20 @@ impl ModuleInfo {
     pub fn new(base_path: &str, info_name: &str, is_writer: bool) -> std::io::Result<ModuleInfo> {
         if !Path::new(&base_path).exists() {
             if let Err(e) = create_dir_all(base_path.to_owned()) {
-                error!("queue:{} create path, err={}", info_name, e);
+                error!("queue:{} create dir [{}], err={}", info_name, base_path, e);
                 return Err(e);
             }
         }
 
-        let file_name_info = base_path.to_owned() + "/module-info/" + info_name + "_info";
+        let info_path = base_path.to_owned() + "/module-info/";
+        if !Path::new(&info_path).exists() {
+            if let Err(e) = create_dir_all(info_path.to_owned()) {
+                error!("queue:{} create dir [{}], err={}", info_name, info_path, e);
+                return Err(e);
+            }
+        }
+
+        let file_name_info = info_path + info_name + "_info";
 
         match OpenOptions::new().read(true).write(is_writer).create(true).open(file_name_info) {
             Ok(ff) => Ok(ModuleInfo {
