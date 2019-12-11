@@ -13,7 +13,10 @@ use v_module::module::*;
 use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
+use v_onto::resource::Resource;
+use v_onto::datatype::DataType;
 use v_queue::consumer::*;
+use syntax::util::map_in_place::MapInPlace;
 
 pub struct Context {
     onto: Onto,
@@ -43,8 +46,8 @@ fn main() -> Result<(), i32> {
         if let Ok(tables) = read_tables(&conn) {
             let mut ctx = Context {
                 onto: Onto::default(),
-                conn: conn,
-                tables: tables,
+                conn,
+                tables,
             };
             load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
             module.listen_queue(
@@ -92,54 +95,47 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
     }
 }
 
-fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, module: &mut Module, ctx: &mut Context) -> ResultCode {
+fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, module: &mut Module, ctx: &mut Context) {
     info!("{} exported", new_state.get_id());
-    ResultCode::Ok
 
-    /*let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
+    let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
     let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
 
     if !actual_version.is_empty() && actual_version != new_state.get_id() {
         info!("new {}.v-s:actual_version {} != {}, ignore", new_state.get_id(), &actual_version, new_state.get_id());
-        return ResultCode::Ok;
+        return;
     }
 
-    ResultCode::InternalServerError*/
-}
+    for predicate in new_state.get_predicates() {
+        if let Some(resources) = new_state.get_resources(&predicate) {
 
-fn create_class_table(class: &str, ctx: &mut Context) -> Result<(), &'static str> {
-    if let Some(table) = ctx.tables.get(class) {
-        Ok(())
-    } else {
-        if let Some(db) = ctx.conn.opts.get_db_name() {
-            let sql_type = "1";
-            let sql_value_index = "1";
-            let query =
-                "CREATE TABLE `:db`.`:class` ( \
-                `ID` BIGINT NOT NULL AUTO_INCREMENT, \
-                `doc_id` CHAR(128) NOT NULL, \
-                 PRIMARY KEY (`ID`), \
-                 INDEX c1(`doc_id`), \
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-            if let Ok(result) = ctx.conn.pool.prep_exec(query, params!{"db" => db,"class" => class}) {
-                Ok(())
-            } else {
-                Err("Query error")
-            }
         } else {
-            Err("No DB specified")
+
         }
     }
+
 }
 
-fn create_property_table(property: &str, ctx: &mut Context) -> Result<(), &'static str> {
+fn check_create_property_table(property: &str, value: Resource, ctx: &mut Context) -> Result<(), &'static str> {
     if let Some(table) = ctx.tables.get(property) {
         Ok(())
     } else {
         if let Some(db) = ctx.conn.opts.get_db_name() {
-            let sql_type = "1";
-            let sql_value_index = "1";
+            let mut sql_type = "";
+            let mut sql_value_index = ", INDEX civ(`value`)";
+            match value.rtype {
+                DataType::Boolean => sql_type = "BOOL",
+                DataType::Datetime => sql_type = "DATETIME",
+                DataType::Decimal => sql_type = "DECIMAL (14,4)",
+                DataType::Integer => sql_type = "INTEGER",
+                DataType::String => {
+                    sql_type = "TEXT";
+                    sql_value_index = "";
+                }
+                DataType::Uri => sql_type = "CHAR(128)",
+                _unsupported => error!("Unsupported property value type: {:#?}", _unsupported),
+            }
             let query =
                 "CREATE TABLE `:db`.`:property` ( \
                 `ID` BIGINT NOT NULL AUTO_INCREMENT, \
@@ -155,9 +151,11 @@ fn create_property_table(property: &str, ctx: &mut Context) -> Result<(), &'stat
             if let Ok(result) = ctx.conn.pool.prep_exec(query, params!{"db" => db,"property" => property, "sql_type" => sql_type, "sql_value_index" => sql_value_index}) {
                 Ok(())
             } else {
+                error!("Query error: {}", query);
                 Err("Query error")
             }
         } else {
+            error!("No DB specified");
             Err("No DB specified")
         }
     }
@@ -207,8 +205,8 @@ fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Con
                                 Ok(pool) => {
                                     info!("Connection to MySQL established successfully");
                                     let conn = Connection {
-                                      opts: opts,
-                                      pool: pool,
+                                      opts,
+                                      pool,
                                     };
                                     return Ok(conn)
                                 },
