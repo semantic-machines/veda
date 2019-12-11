@@ -116,9 +116,8 @@ fn main() -> std::io::Result<()> {
                     data.push(out_el);
 
                     if el.res == ResultCode::Ok {
-                        // !!! заменить на async
                         let msg_to_modules = format!("#{};{};{}", el.id, el.op_id, el.counter);
-                        info!("notify={:?}", notify_soc.send(Message::from(msg_to_modules.as_bytes())));
+                        debug!("notify other modules={:?}", notify_soc.send(Message::from(msg_to_modules.as_bytes())));
                     }
                 }
                 out_msg["data"] = json!(data);
@@ -167,8 +166,6 @@ fn request_prepare(
     } else {
         JSONValue::Null
     };
-
-    info!("@ v={:?}", v);
 
     let fticket = v["ticket"].as_str();
     if fticket.is_none() {
@@ -290,10 +287,6 @@ fn operation_prepare(
             error!("fail parse individual prev states, cmd={:?}, uri={}", cmd, new_indv.get_id());
             return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
         }
-
-        //if new_indv.is_empty() || cmd == IndvOp::Remove {
-        //    new_indv.set_id(prev_indv.get_id());
-        //}
     }
 
     if prev_indv.is_empty() && (cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom) {
@@ -314,7 +307,7 @@ fn operation_prepare(
     if is_need_authorize {
         if cmd == IndvOp::Remove {
             if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
-                error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
+                error!("operation [Remove], Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
                 //return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
             }
         } else {
@@ -473,7 +466,7 @@ fn to_storage_and_queue(
         queue_element.add_integer("assigned_subsystems", i);
     }
 
-    info!("add to queue: uri={}", new_indv.get_id());
+    debug!("add to queue: uri={}", new_indv.get_id());
 
     let mut raw1: Vec<u8> = Vec::new();
     if let Err(e) = to_msgpack(&queue_element, &mut raw1) {
