@@ -315,7 +315,7 @@ fn operation_prepare(
         if cmd == IndvOp::Remove {
             if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
                 error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
-                return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                //return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
             }
         } else {
             if !prev_state.is_empty() {
@@ -332,32 +332,34 @@ fn operation_prepare(
                 }
             }
 
-            // check access can_create for new types
-            let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
-            let new_types = new_indv.get_literals("rdf:type").unwrap_or_default();
-            let mut added_types = vec![];
+            if cmd != IndvOp::Remove {
+                // check access can_create for new types
+                let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
+                let new_types = new_indv.get_literals("rdf:type").unwrap_or_default();
+                let mut added_types = vec![];
 
-            if !new_types.is_empty() {
-                for n_el in new_types.iter() {
-                    let mut found = false;
-                    for p_el in prev_types.iter() {
-                        if p_el == n_el {
-                            found = true;
+                if !new_types.is_empty() {
+                    for n_el in new_types.iter() {
+                        let mut found = false;
+                        for p_el in prev_types.iter() {
+                            if p_el == n_el {
+                                found = true;
+                            }
+                        }
+                        if !found {
+                            added_types.push(n_el);
                         }
                     }
-                    if !found {
-                        added_types.push(n_el);
-                    }
-                }
-            } else if cmd == IndvOp::Put {
-                error!("fail store, not found type for new individual, user {}, id={} ", ticket.user_uri, new_indv.get_id());
-                return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
-            }
-
-            for type_id in added_types.iter() {
-                if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, &mut trace).unwrap_or(0) != Access::CanCreate as u8 {
-                    error!("fail store, Not Authorized, user {} request [can create] for {} ", ticket.user_uri, type_id);
+                } else if cmd == IndvOp::Put {
+                    error!("fail store, not found type for new individual, user {}, id={} ", ticket.user_uri, new_indv.get_id());
                     return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                }
+
+                for type_id in added_types.iter() {
+                    if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, &mut trace).unwrap_or(0) != Access::CanCreate as u8 {
+                        error!("fail store, Not Authorized, user {} request [can create] for {} ", ticket.user_uri, type_id);
+                        return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                    }
                 }
             }
         }
