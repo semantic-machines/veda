@@ -14,13 +14,15 @@ import (
 )
 
 //uploadFile handles file uploading from request context
-func uploadFile(ctx *fasthttp.RequestCtx) {
+func uploadFile(ctx *fasthttp.RequestCtx, ticketKey string) {
   defer func() {
     if r := recover(); r != nil {
       log.Println("Recovered in uploadFile", r)
       ctx.Response.SetStatusCode(int(InternalServerError))
     }
   }()
+
+  log.Printf("%v start upload file\n", ticketKey)
 
   //Get form from context
   form, err := ctx.Request.MultipartForm()
@@ -45,6 +47,7 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
   //Getting path parts from form
   pathParts := strings.Split(form.Value["path"][0], "/")
   attachmentsPathCurr := attachmentsPath
+
   //Creating directories for file
   for i := 1; i < len(pathParts); i++ {
     attachmentsPathCurr += "/" + pathParts[i]
@@ -54,6 +57,7 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
 
   if len(form.Value["content"]) > 0 {
     content := form.Value["content"][0]
+    log.Printf("%v from [content], path=%v, size=%v\n", ticketKey, path, len(content))
 
     if len(content) > 0 {
 
@@ -76,10 +80,11 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
         }
       }
     }
-  }
+  } 
 
   if len(form.File["file"]) > 0 {
 
+    log.Printf("%v from [file], path=%v\n", ticketKey, path)
     //Create file in destination directory
     destFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
     if err != nil {
@@ -98,18 +103,24 @@ func uploadFile(ctx *fasthttp.RequestCtx) {
       return
     }
 
+    log.Printf("%v get file from client\n", ticketKey)
+
     defer srcFile.Close()
 
     //Copy srce file from form to destination
-    _, err = io.Copy(destFile, srcFile)
+    file_size, err := io.Copy(destFile, srcFile)
     if err != nil {
       log.Println("ERR! ON COPYING FILE ON UPLOAD: ", err)
       ctx.Response.SetStatusCode(int(InternalServerError))
       return
     }
 
+    log.Printf("%v writing file to server, size=%v\n", ticketKey, file_size)
+
     ctx.Response.SetStatusCode(int(Ok))
-  }
+  } 
+
+  log.Printf("%v end upload file\n", ticketKey)
 }
 
 //files is handler for this rest request, routeParts is parts of request path separated by slash
@@ -134,7 +145,7 @@ func files(ctx *fasthttp.RequestCtx, routeParts []string) {
   if len(routeParts) > 2 {
     uri = routeParts[2]
   } else {
-    uploadFile(ctx)
+    uploadFile(ctx, ticketKey)
     return
   }
 

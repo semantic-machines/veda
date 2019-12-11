@@ -59,7 +59,7 @@ impl LMDBStorage {
                 db_handle = env.get_default_db(DbFlags::empty());
             }
             Err(e) => {
-                error!("LMDBStorage: fail opening read only environment, err={:?}", e);
+                error!("LMDB:fail opening read only environment, err={:?}", e);
                 db_handle = Err(MdbError::Corrupted);
             }
         }
@@ -112,7 +112,7 @@ impl Storage for LMDBStorage {
                                     if parse_raw(iraw).is_ok() {
                                         return true;
                                     } else {
-                                        error!("LMDBStorage: fail parse binobj, len={}, uri=[{}]", iraw.get_raw_len(), uri);
+                                        error!("LMDB:fail parse binobj, len={}, uri=[{}]", iraw.get_raw_len(), uri);
                                         return false;
                                     }
                                 }
@@ -121,7 +121,7 @@ impl Storage for LMDBStorage {
                                         return false;
                                     }
                                     _ => {
-                                        error!("LMDBStorage: db.get {:?}, uri=[{}]", e, uri);
+                                        error!("LMDB:db.get {:?}, uri=[{}]", e, uri);
                                         return false;
                                     }
                                 },
@@ -132,17 +132,17 @@ impl Storage for LMDBStorage {
                                 if c == -30785 {
                                     is_need_reopen = true;
                                 } else {
-                                    error!("LMDBStorage: fail crate transaction, err={}, uri=[{}]", e, uri);
+                                    error!("LMDB:fail crate transaction, err={}, uri=[{}]", e, uri);
                                     return false;
                                 }
                             }
                             _ => {
-                                error!("LMDBStorage: fail crate transaction, err={}, uri=[{}]", e, uri);
+                                error!("LMDB:fail crate transaction, err={}, uri=[{}]", e, uri);
                             }
                         },
                     },
                     Err(e) => {
-                        error!("LMDBStorage: db handle, err={}, uri=[{}]", e, uri);
+                        error!("LMDB:db handle, err={}, uri=[{}]", e, uri);
                         return false;
                     }
                 },
@@ -151,7 +151,7 @@ impl Storage for LMDBStorage {
                         is_need_reopen = true;
                     }
                     _ => {
-                        error!("LMDBStorage: db environment, err={}, uri=[{}]", e, uri);
+                        error!("LMDB:db environment, err={}, uri=[{}]", e, uri);
                         return false;
                     }
                 },
@@ -186,6 +186,18 @@ impl Storage for LMDBStorage {
             return put_kv_lmdb(&self.tickets_db_env, &self.tickets_db_handle, key, val.as_slice());
         } else if storage == StorageId::Az {
             return put_kv_lmdb(&self.az_db_env, &self.az_db_handle, key, val.as_slice());
+        }
+
+        false
+    }
+
+    fn remove(&mut self, storage: StorageId, key: &str) -> bool {
+        if storage == StorageId::Individuals {
+            return remove_from_lmdb(&self.individuals_db_env, &self.individuals_db_handle, key);
+        } else if storage == StorageId::Tickets {
+            return remove_from_lmdb(&self.tickets_db_env, &self.tickets_db_handle, key);
+        } else if storage == StorageId::Az {
+            return remove_from_lmdb(&self.az_db_env, &self.az_db_handle, key);
         }
 
         false
@@ -227,7 +239,7 @@ impl Storage for LMDBStorage {
                                         return None;
                                     }
                                     _ => {
-                                        error!("db.get {:?}, key=[{}]", e, key);
+                                        error!("LMDB:db.get {:?}, key=[{}]", e, key);
                                         return None;
                                     }
                                 },
@@ -238,17 +250,17 @@ impl Storage for LMDBStorage {
                                 if c == -30785 {
                                     is_need_reopen = true;
                                 } else {
-                                    error!("fail crate transaction, err={}", e);
+                                    error!("LMDB:fail crate transaction, err={}", e);
                                     return None;
                                 }
                             }
                             _ => {
-                                error!("fail crate transaction, err={}", e);
+                                error!("LMDB:fail crate transaction, err={}", e);
                             }
                         },
                     },
                     Err(e) => {
-                        error!("db handle, err={}", e);
+                        error!("LMDB:db handle, err={}", e);
                         return None;
                     }
                 },
@@ -257,7 +269,7 @@ impl Storage for LMDBStorage {
                         is_need_reopen = true;
                     }
                     _ => {
-                        error!("db environment, err={}", e);
+                        error!("LMDB:db environment, err={}", e);
                         return None;
                     }
                 },
@@ -309,7 +321,7 @@ impl Storage for LMDBStorage {
                                         return Vec::default();
                                     }
                                     _ => {
-                                        error!("db.get {:?}, {}", e, key);
+                                        error!("LMDB:db.get {:?}, {}", e, key);
                                         return Vec::default();
                                     }
                                 },
@@ -320,17 +332,17 @@ impl Storage for LMDBStorage {
                                 if c == -30785 {
                                     is_need_reopen = true;
                                 } else {
-                                    error!("fail crate transaction, err={}", e);
+                                    error!("LMDB:fail crate transaction, err={}", e);
                                     return Vec::default();
                                 }
                             }
                             _ => {
-                                error!("fail crate transaction, err={}", e);
+                                error!("LMDB:fail crate transaction, err={}", e);
                             }
                         },
                     },
                     Err(e) => {
-                        error!("db handle, err={}", e);
+                        error!("LMDB:db handle, err={}", e);
                         return Vec::default();
                     }
                 },
@@ -339,7 +351,7 @@ impl Storage for LMDBStorage {
                         is_need_reopen = true;
                     }
                     _ => {
-                        error!("db environment, err={}", e);
+                        error!("LMDB:db environment, err={}", e);
                         return Vec::default();
                     }
                 },
@@ -356,6 +368,47 @@ impl Storage for LMDBStorage {
     }
 }
 
+fn remove_from_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str) -> bool {
+    match db_env {
+        Ok(env) => match env.new_transaction() {
+            Ok(txn) => match db_handle {
+                Ok(handle) => {
+                    let db = txn.bind(&handle);
+                    if let Err(e) = db.del(&key) {
+                        error!("LMDB:failed put, err={}", e);
+                        return false;
+                    }
+
+                    if let Err(e) = txn.commit() {
+                        if let MdbError::Other(c, _) = e {
+                            if c == -30792 {
+                                if grow_db(db_env) {
+                                    return remove_from_lmdb(db_env, db_handle, key);
+                                }
+                            }
+                        }
+                        error!("LMDB:failed to commit, err={}", e);
+                        return false;
+                    }
+                    true
+                }
+                Err(e) => {
+                    error!("LMDB:db handle, err={}", e);
+                    false
+                }
+            },
+            Err(e) => {
+                error!("LMDB:db create transaction, err={}", e);
+                false
+            }
+        },
+        Err(e) => {
+            error!("LMDB:db environment, err={}", e);
+            false
+        }
+    }
+}
+
 fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHandle, MdbError>, key: &str, val: &[u8]) -> bool {
     match db_env {
         Ok(env) => match env.new_transaction() {
@@ -363,7 +416,7 @@ fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHand
                 Ok(handle) => {
                     let db = txn.bind(&handle);
                     if let Err(e) = db.set(&key, &val) {
-                        error!("failed put, err={}", e);
+                        error!("LMDB:failed put, err={}", e);
                         return false;
                     }
 
@@ -375,23 +428,23 @@ fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHand
                                 }
                             }
                         }
-                        error!("failed to commit, err={}", e);
+                        error!("LMDB:failed to commit, err={}", e);
                         return false;
                     }
                     true
                 }
                 Err(e) => {
-                    error!("db handle, err={}", e);
+                    error!("LMDB:db handle, err={}", e);
                     false
                 }
             },
             Err(e) => {
-                error!("db create transaction, err={}", e);
+                error!("LMDB:db create transaction, err={}", e);
                 false
             }
         },
         Err(e) => {
-            error!("db environment, err={}", e);
+            error!("LMDB:db environment, err={}", e);
             false
         }
     }
@@ -409,7 +462,7 @@ fn grow_db(db_env: &Result<Environment, MdbError>) -> bool {
             }
         }
         Err(e) => {
-            error!("db environment, err={}", e);
+            error!("LMDB:db environment, err={}", e);
         }
     }
     false

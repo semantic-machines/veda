@@ -3,7 +3,7 @@
 	"description": "veda-input-queue",
 	"dependencies": {
 		"d-nanomsg": "0.2.0",
-		"msgpack-d": "1.0.0-beta.6",
+		"msgpack-d": "1.0.0-beta.8",
                 "urld": "2.0.1"
 	},
         "versions": ["isModule", "std_socket"],

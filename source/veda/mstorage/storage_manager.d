@@ -57,13 +57,12 @@ public ResultCode flush_int_module(P_MODULE f_module, bool is_wait){
     return rc;
 }
 
-public ResultCode save(string src, P_MODULE storage_id, immutable (TransactionItem)[] _ti, long tnx_id,
-                       out long op_id){
+public ResultCode save(string src, P_MODULE storage_id, immutable (TransactionItem)[] _ti, out long op_id){
     ResultCode rc;
     Tid        tid = getTid(storage_id);
 
     if (tid != Tid.init) {
-        send(tid, src, _ti, tnx_id, thisTid);
+        send(tid, src, _ti, thisTid);
 
         receive((ResultCode _rc, Tid from)
                 {
@@ -260,7 +259,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id){
                                 return;
                             }
                         },
-                        (string src, immutable(TransactionItem)[] tiz, long tnx_id, Tid tid_response_reciever)
+                        (string src, immutable(TransactionItem)[] tiz, Tid tid_response_reciever)
                         {
                             ResultCode rc = ResultCode.NotReady;
                             if (tiz.length == 0) {
@@ -317,10 +316,7 @@ public void individuals_manager(P_MODULE _storage_id, string node_id){
                                             if (ti.event_id !is null && ti.event_id.length > 0)
                                                 imm.addResource("event_id", Resource(DataType.String, ti.event_id));
 
-                                            if (tnx_id <= 0)
-                                                tnx_id = op_id;
-
-                                            imm.addResource("tnx_id", Resource(tnx_id));
+                                            imm.addResource("tnx_id", Resource(op_id));
 
                                             if (src is null || src == "")
                                                 src = "?";

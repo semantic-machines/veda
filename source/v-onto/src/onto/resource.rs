@@ -18,6 +18,14 @@ pub struct Resource {
 }
 
 impl Resource {
+    pub fn get_copy(&self) -> Self {
+        Resource {
+            rtype: self.rtype.clone(),
+            order: self.order.clone(),
+            value: self.value.clone(),
+        }
+    }
+
     pub fn get_binary(&self) -> &[u8] {
         if let Value::Binary(v) = &self.value {
             v

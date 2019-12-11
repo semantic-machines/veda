@@ -105,7 +105,11 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
         }
 
         if let Some(s) = card_data.6 {
-            indv.set_string("v-s:birthday", &s, Lang::NONE);
+            if let Ok(d) = NaiveDate::parse_from_str(&s, "%d.%m.%Y") {
+                indv.set_datetime("v-s:birthday", d.and_hms (0,0,0).timestamp());
+            } else {
+                error!("fail parse date, v-s:birthday={}", &s);
+            }
         }
 
         if let Some(s) = card_data.7 {
