@@ -46,16 +46,26 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
                 write_array_len(out, 3)?;
             }
             write_u8(out, r.rtype.clone() as u8)?;
-            write_str(out, s)?;
+
+            if s.is_empty() {
+                write_nil(out)?;
+            } else {
+                write_str(out, s)?;
+            }
 
             if l != Lang::NONE {
                 write_u8(out, l as u8)?;
             }
         }
         DataType::Uri => {
+            let s = r.get_str();
             write_array_len(out, 2)?;
             write_u8(out, r.rtype.clone() as u8)?;
-            write_str(out, r.get_str())?;
+            if s.is_empty() {
+                write_nil(out)?;
+            } else {
+                write_str(out, s)?;
+            }
         }
     }
 

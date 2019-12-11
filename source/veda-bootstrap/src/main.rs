@@ -49,13 +49,16 @@ fn main() {
         return;
     }
     let modules = modules.unwrap();
+    let module_full_names: Vec<String> = modules.values().map(|x| x.exec_name[2..].to_string()).collect();
 
     let mut sys = sysinfo::System::new();
     sys.refresh_processes();
     for (pid, proc) in sys.get_process_list() {
         if proc.name().starts_with("veda-") && proc.name() != "veda-bootstrap" && proc.name() != "veda" {
-            error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
-            return;
+            if module_full_names.contains(&proc.name().to_string()) {
+                error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
+                return;
+            }
         }
     }
 

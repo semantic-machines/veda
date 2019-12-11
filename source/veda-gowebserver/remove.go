@@ -40,6 +40,9 @@ func removeFromIndividual(ctx *fasthttp.RequestCtx) {
   if len(ticketKey) == 0 {
     ticketKey = string(ctx.Request.Header.Cookie("ticket"))
   }
+  if len(ticketKey) == 0 && jsonData["ticket"] != nil {
+    ticketKey = jsonData["ticket"].(string)
+  }
 
   rc1, assignedSubsystems := getUint64FromJson(jsonData, "assigned_subsystems")
   if rc1 != Ok {
@@ -111,6 +114,9 @@ func removeIndividual(ctx *fasthttp.RequestCtx) {
   ticketKey = string(ctx.QueryArgs().Peek("ticket")[:])
   if len(ticketKey) == 0 {
     ticketKey = string(ctx.Request.Header.Cookie("ticket"))
+  }
+  if len(ticketKey) == 0 && jsonData["ticket"] != nil {
+    ticketKey = jsonData["ticket"].(string)
   }
 
   if jsonData["assigned_subsystems"] != nil {

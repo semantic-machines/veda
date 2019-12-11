@@ -52,6 +52,21 @@ impl IndvOp {
         }
     }
 
+    pub fn to_i64(&self) -> i64 {
+        match self {
+            IndvOp::Put => 1,
+            IndvOp::Get => 2,
+            IndvOp::Remove => 51,
+            IndvOp::AddIn => 47,
+            IndvOp::SetIn => 45,
+            IndvOp::RemoveFrom => 48,
+            IndvOp::Authorize => 8,
+            IndvOp::GetTicket => 3,
+            // ...
+            IndvOp::None => 52,
+        }
+    }
+
     pub fn as_string(&self) -> String {
         match self {
             IndvOp::Get => "get",
@@ -240,7 +255,6 @@ impl APIClient {
     }
 
     pub fn connect(&mut self) -> bool {
-
         if self.addr.is_empty() {
             error!("api-client:invalid addr: [{}]", self.addr);
             return self.is_ready;
