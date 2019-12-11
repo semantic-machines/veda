@@ -12,7 +12,7 @@ use v_api::{IndvOp, ResultCode};
 use v_authorization::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::info::ModuleInfo;
-use v_module::module::{init_log, Module};
+use v_module::module::{create_sys_ticket, init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::{Individual, RawObj};
@@ -68,8 +68,7 @@ fn main() -> std::io::Result<()> {
     if let Ok(ticket_id) = Module::get_sys_ticket_id_from_db(&mut storage) {
         get_ticket_from_db(&ticket_id, &mut sys_ticket, &mut storage);
     } else {
-        error!("system ticket not found");
-        return Ok(());
+        sys_ticket = create_sys_ticket(&mut storage);
     }
 
     let param_name = "main_module_url";
