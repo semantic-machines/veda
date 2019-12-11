@@ -70,7 +70,6 @@ struct Transaction {
     {
         TransactionItem *[ string ] buff;
         TransactionItem[]            queue;
-        immutable(TransactionItem)[] immutable_queue;
     }
 
     string      src;
@@ -78,10 +77,6 @@ struct Transaction {
     ResultCode  rc;
     int         count;
 
-
-    public void add_immutable(ref immutable TransactionItem _ti){
-        immutable_queue ~= _ti;
-    }
 
     public void add(TransactionItem ti){
         queue ~= ti;
@@ -98,9 +93,6 @@ struct Transaction {
         if (queue.length > 0)
             queue = queue.init;
 
-        if (immutable_queue.length > 0)
-            immutable_queue = immutable_queue.init;
-
         count = 0;
     }
 
@@ -112,7 +104,4 @@ struct Transaction {
         return queue;
     }
 
-    public ref immutable(TransactionItem)[] get_immutable_queue(){
-        return immutable_queue;
-    }
 }
