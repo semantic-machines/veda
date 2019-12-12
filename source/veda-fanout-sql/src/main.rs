@@ -16,9 +16,8 @@ use v_onto::onto::Onto;
 use v_onto::resource::Resource;
 use v_onto::datatype::DataType;
 use v_queue::consumer::*;
-use syntax::util::map_in_place::MapInPlace;
 
-pub struct Context {
+pub struct Context{
     onto: Onto,
     conn: Connection,
     tables: HashMap<String, bool>,
@@ -96,7 +95,7 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
 }
 
 fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, module: &mut Module, ctx: &mut Context) {
-    info!("{} exported", new_state.get_id());
+    info!("<< Exporting {}", new_state.get_id());
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
@@ -109,50 +108,68 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool,
 
     for predicate in new_state.get_predicates() {
         if let Some(resources) = new_state.get_resources(&predicate) {
-
-        } else {
-
+            for resource in resources {
+                if let Ok(_) = check_create_property_table(&predicate, &resource, ctx) {
+                    //info!("predicate: {}, type: {:#?}, order: {}, value: {:?}", predicate, resource.rtype, resource.order, resource.value)
+                    ctx.conn.pool.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false));
+                    /*if let Err(e) = ctx.conn.pool.prep_exec("DELETE FROM `:table` WHERE doc_id = `:doc`", (predicate, new_state.get_id())) {
+                        error!("{}", e);
+                    }*/
+                }
+            }
         }
     }
-
+    info!("Export done! >>");
 }
 
-fn check_create_property_table(property: &str, value: Resource, ctx: &mut Context) -> Result<(), &'static str> {
-    if let Some(table) = ctx.tables.get(property) {
+fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
+    if let Some(true) = ctx.tables.get(property) {
         Ok(())
     } else {
         if let Some(db) = ctx.conn.opts.get_db_name() {
-            let mut sql_type = "";
-            let mut sql_value_index = ", INDEX civ(`value`)";
-            match value.rtype {
-                DataType::Boolean => sql_type = "BOOL",
-                DataType::Datetime => sql_type = "DATETIME",
-                DataType::Decimal => sql_type = "DECIMAL (14,4)",
-                DataType::Integer => sql_type = "INTEGER",
-                DataType::String => {
-                    sql_type = "TEXT";
-                    sql_value_index = "";
+            if let Ok(mut conn) = ctx.conn.pool.get_conn() {
+                let mut sql_type = "";
+                let mut sql_value_index = ", INDEX civ(`value`)";
+                match &resource.rtype {
+                    DataType::Boolean => sql_type = "BOOL",
+                    DataType::Datetime => sql_type = "DATETIME",
+                    DataType::Decimal => sql_type = "DECIMAL (14,4)",
+                    DataType::Integer => sql_type = "INTEGER",
+                    DataType::String => {
+                        sql_type = "TEXT";
+                        sql_value_index = "";
+                    }
+                    DataType::Uri => sql_type = "CHAR(128)",
+                    _unsupported => error!("Unsupported property value type: {:#?}", _unsupported),
                 }
-                DataType::Uri => sql_type = "CHAR(128)",
-                _unsupported => error!("Unsupported property value type: {:#?}", _unsupported),
-            }
-            let query =
-                "CREATE TABLE `:db`.`:property` ( \
+                let query = format!(
+                "CREATE TABLE `{}`.`{}` ( \
                 `ID` BIGINT NOT NULL AUTO_INCREMENT, \
                 `doc_id` CHAR(128) NOT NULL, \
                 `doc_type` CHAR(128) NOT NULL, \
                 `created` DATETIME NULL, \
-                `value` :sql_type NULL, \
+                `value` {} NULL, \
                 `lang` CHAR(2) NULL, \
                 `deleted` BOOL NULL, \
                  PRIMARY KEY (`ID`), \
-                 INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) :sql_value_index \
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-            if let Ok(result) = ctx.conn.pool.prep_exec(query, params!{"db" => db,"property" => property, "sql_type" => sql_type, "sql_value_index" => sql_value_index}) {
-                Ok(())
+                 INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) {} \
+                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
+                    db, property, sql_type, sql_value_index
+                );
+                info!("Query: {}", query);
+                match conn.query(query) {
+                    Ok(_) => {
+                        info!("Table created: {}", property);
+                        ctx.tables.insert(property.to_string(), true);
+                        Ok(())
+                    },
+                    Err(e) => {
+                        error!("Table create error: {}", e);
+                        Err("Table create error")
+                    }
+                }
             } else {
-                error!("Query error: {}", query);
-                Err("Query error")
+                Err("No connection in pool")
             }
         } else {
             error!("No DB specified");
@@ -170,6 +187,7 @@ fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'stati
                     tables.insert(name, true);
                 }
             });
+            info!("Tables {:#?}", tables);
             Ok(tables)
         } else {
             Err("Query error")
