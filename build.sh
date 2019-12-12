@@ -170,7 +170,6 @@ if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ]; th
 fi
 
 if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv2" ]; then
-#    ./tools/build-component.sh veda-mstorage mstorage
 
     cd source/veda-mstorage
     cargo build --release
