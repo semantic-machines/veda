@@ -59,22 +59,22 @@ fn main() -> Result<(), i32> {
         &mut queue_consumer,
         &mut module_info.unwrap(),
         &mut ctx,
-        &mut (before_bath as fn(&mut Module, &mut Context)),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual)),
-        &mut (after_bath as fn(&mut Module, &mut Context)),
+        &mut (before_batch as fn(&mut Module, &mut Context)),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
+        &mut (after_batch as fn(&mut Module, &mut Context)),
     );
     Ok(())
 }
 
-fn before_bath(_module: &mut Module, _ctx: &mut Context) {}
+fn before_batch(_module: &mut Module, _ctx: &mut Context) {}
 
-fn after_bath(_module: &mut Module, _ctx: &mut Context) {}
+fn after_batch(_module: &mut Module, _ctx: &mut Context) {}
 
-fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) {
+fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
-        return;
+        return Ok(());
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
@@ -97,6 +97,8 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
             }
         }
     }
+
+    Ok(())
 }
 
 fn prepare_deliverable(prepared_indv: &mut Individual, module: &mut Module, ctx: &mut Context) -> ResultCode {
