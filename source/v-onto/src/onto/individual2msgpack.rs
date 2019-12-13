@@ -58,7 +58,7 @@ fn write_resource(out: &mut Vec<u8>, r: &Resource) -> Result<(), Error> {
             }
         }
         DataType::Uri => {
-            let s = r.get_str();
+            let s = r.get_uri();
             write_array_len(out, 2)?;
             write_u8(out, r.rtype.clone() as u8)?;
             if s.is_empty() {
