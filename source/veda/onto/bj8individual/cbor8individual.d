@@ -159,67 +159,6 @@ private static int read_element(Individual *individual, ubyte[] src, out string 
     return pos;
 }
 
-private void write_individual(Individual *ii, ref OutBuffer ou){
-    ulong     map_len = ii.resources.length + 1;
-    MajorType type    = MajorType.MAP;
-
-    write_type_value(type, map_len, ou);
-    write_string("@", ou);
-    write_string(ii.uri, ou);
-
-    foreach (key, resources; ii.resources) {
-        if (resources.length > 0)
-            write_resources(key, resources, ou);
-    }
-}
-
-private void write_resources(string uri, ref Resources vv, ref OutBuffer ou){
-    write_string(uri, ou);
-
-    if (vv.length > 1)
-        write_type_value(MajorType.ARRAY, vv.length, ou);
-
-    foreach (value; vv) {
-        if (value.type == DataType.Uri) {
-            string svalue = value.get!string;
-            //if (svalue !is null && svalue.length > 0)
-            {
-                write_type_value(MajorType.TAG, TAG.URI, ou);
-                write_string(svalue, ou);
-            }
-        }else if (value.type == DataType.Binary) {
-            string svalue = value.get!string;
-            //if (svalue !is null && svalue.length > 0)
-            {
-                write_type_value(MajorType.TAG, TAG.CBOR_ENCODED, ou);
-                write_string(svalue, ou);
-            }
-        }else if (value.type == DataType.Integer) {
-            write_integer(value.get!long, ou);
-        }else if (value.type == DataType.Datetime) {
-            write_type_value(MajorType.TAG, TAG.EPOCH_DATE_TIME, ou);
-            write_integer(value.get!long, ou);
-        }else if (value.type == DataType.Decimal) {
-            decimal x = value.get!decimal;
-
-            write_type_value(MajorType.TAG, TAG.DECIMAL_FRACTION, ou);
-            write_type_value(MajorType.ARRAY, 2, ou);
-            write_integer(x.mantissa, ou);
-            write_integer(x.exponent, ou);
-        }else if (value.type == DataType.Boolean) {
-            write_bool(value.get!bool, ou);
-        }else  {
-            string svalue = value.get!string;
-            //if (svalue !is null && svalue.length > 0)
-            {
-                if (value.lang != LANG.NONE)
-                    write_type_value(MajorType.TAG, value.lang + 41, ou);
-                write_string(svalue, ou);
-            }
-        }
-    }
-}
-
 // ///////////////////////////////////////////////////////////////////////////////////
 public int cbor2individual(Individual *individual, string in_str){
     try
@@ -232,12 +171,4 @@ public int cbor2individual(Individual *individual, string in_str){
         //throw new Exception("invalid cbor");
         return -1;
     }
-}
-
-public string individual2cbor(Individual *in_obj){
-    OutBuffer ou = new OutBuffer();
-
-    write_individual(in_obj, ou);
-
-    return ou.toString();
 }

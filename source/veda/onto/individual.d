@@ -85,48 +85,6 @@ public struct Individual {
         }
     }
 
-    string serialize(){
-        if (binobj_format == BOFormat.UNKNOWN) {
-            binobj_format = BOFormat.CBOR;
-            try
-            {
-                string[ string ] properties;
-                properties = readProperties("./veda.properties");
-                string s_binobj_format = properties.as!(string)("binobj_format");
-
-                if (s_binobj_format == "cbor")
-                    binobj_format = BOFormat.CBOR;
-
-                if (s_binobj_format == "msgpack")
-                    binobj_format = BOFormat.MSGPACK;
-            }
-            catch (Throwable ex)
-            {
-                stderr.writefln("ERR! unable read ./veda.properties, ex=%s", ex.msg);
-            }
-
-            stderr.writefln("SET binobj_format=%s", text(binobj_format));
-        }
-
-        if (predicate_2_order.length == 0) {
-            predicate_order_l =
-            [
-                "assigned_subsystems", "u_count", "new_type", "prev_type", "new_state", "prev_state", "user_uri", "rdf:type", "v-s:deleted",
-                "v-s:isDraftOf", "v-s:actualVersion", "v-s:previousVersion", "v-s:created", "v-s:runAt"
-            ];
-
-            foreach (idx, el; predicate_order_l)
-                predicate_2_order[ el ] = cast(byte)idx;
-        }
-
-        if (binobj_format == BOFormat.CBOR)
-            return individual2cbor(&this);
-        else if (binobj_format == BOFormat.MSGPACK)
-            return individual2msgpack(this);
-        else
-            return "";
-    }
-
     Individual dup(){
         resources.rehash();
         Resources[ string ]    tmp1 = resources.dup;
