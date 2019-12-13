@@ -1,6 +1,10 @@
 #[macro_use]
 extern crate log;
 
+// TODO: Store and check CRC of each loaded ttl-file.
+//  - On module start check each file CRC to load ontology changes to DB.
+//  - This will allow to copy ttl-files when system is off.
+
 use chrono::Local;
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
