@@ -67,6 +67,9 @@ impl Serialize for Resource {
                     tup.serialize_field("lang", &*l)?;
                 }
             }
+            Value::Uri(s) => {
+                tup.serialize_field("data", &*s)?;
+            }
             _ => {}
         }
         tup.serialize_field("type", &self.rtype)?;
@@ -110,6 +113,15 @@ impl Serialize for Value {
                 if *l != Lang::NONE {
                     tup.serialize_field("lang", &*l)?;
                 }
+                tup.end()
+            }
+            Value::Uri(s) => {
+                //serializer.serialize_newtype_variant("type", 0, "data", s)
+
+                let mut tup = serializer.serialize_struct("E", 0)?;
+                //tup.serialize_element(&*s)?;
+                tup.serialize_field("data", &*s)?;
+
                 tup.end()
             }
             _ => serializer.serialize_none(),

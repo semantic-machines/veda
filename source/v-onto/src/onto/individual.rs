@@ -224,6 +224,8 @@ impl Individual {
                     for el in v {
                         if let Value::Str(_s, _l) = &el.value {
                             return true;
+                        } else if let Value::Uri(_s) = &el.value {
+                            return true;
                         }
                     }
                 }
@@ -248,6 +250,12 @@ impl Individual {
                 Some(v) => {
                     for el in v {
                         if let Value::Str(s, _l) = &el.value {
+                            for ve in values {
+                                if str::eq(ve, s) {
+                                    return true;
+                                }
+                            }
+                        } else if let Value::Uri(s) = &el.value {
                             for ve in values {
                                 if str::eq(ve, s) {
                                     return true;
@@ -331,6 +339,8 @@ impl Individual {
                             .map(|el| {
                                 if let Value::Str(s, _l) = &el.value {
                                     s.to_string()
+                                } else if let Value::Uri(s) = &el.value {
+                                    s.to_string()
                                 } else {
                                     "".to_string()
                                 }
@@ -358,6 +368,9 @@ impl Individual {
             match self.obj.resources.get(predicate) {
                 Some(v) => match &v[0].value {
                     Value::Str(s, _l) => {
+                        return Some(s.to_string());
+                    }
+                    Value::Uri(s) => {
                         return Some(s.to_string());
                     }
                     _ => {
@@ -803,7 +816,7 @@ impl IndividualObj {
         values.push(Resource {
             rtype: DataType::Uri,
             order: values.len() as u16,
-            value: Value::Str(s.to_owned(), Lang::NONE),
+            value: Value::Uri(s.to_owned()),
         });
     }
 
@@ -813,7 +826,7 @@ impl IndividualObj {
         values.push(Resource {
             rtype: DataType::Uri,
             order: 0,
-            value: Value::Str(s.to_owned(), Lang::NONE),
+            value: Value::Uri(s.to_owned()),
         });
     }
 
@@ -824,7 +837,7 @@ impl IndividualObj {
             values.push(Resource {
                 rtype: DataType::Uri,
                 order: 0,
-                value: Value::Str(s.to_owned(), Lang::NONE),
+                value: Value::Uri(s.to_owned()),
             });
         }
     }
