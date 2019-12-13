@@ -23,8 +23,8 @@ use v_storage::storage::*;
 #[derive(Debug)]
 #[repr(u8)]
 pub enum PrepareError {
-    Fatal = 1,
-    Recoverable = 2,
+    Fatal = 101,
+    Recoverable = 102,
 }
 
 const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
