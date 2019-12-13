@@ -2,6 +2,16 @@ use crate::individual::*;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 
+// TODO: Make Ontology a part of module
+
+// TODO: Cold start on the empty db or a start with new/changed ttl-files.
+//  - Primary modules are: `input-onto`, `storage`, `ft-indexer`, `ft-search`, `acl-indexer`(?).
+//  - These modules should start first.
+//  - Secondary modules are all the rest. They should start processing queue only when ontology is fully loaded.
+//  - Otherwise the logical error can occur when ontology in not loaded and module can not capture individuals of desired super class.
+
+// TODO: Load ontology individuals to have them by hand at runtime.
+
 #[derive(PartialEq, Debug)]
 pub enum RelType {
     Sub,
