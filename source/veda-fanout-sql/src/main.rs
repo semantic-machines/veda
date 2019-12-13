@@ -141,28 +141,9 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool,
                                 }
                             }
                         }
-
                     }
                 } else {
                     continue;
-                }
-            }
-        }
-    }
-
-    for predicate in predicates {
-        if let Some(resources) = new_state.get_resources(&predicate) {
-            for resource in resources {
-                if let Ok(_) = check_create_property_table(&predicate, &resource, ctx) {
-                    //info!("predicate: {}, type: {:#?}, order: {}, value: {:?}", predicate, resource.rtype, resource.order, resource.value)
-                    if let Ok(mut conn) = ctx.conn.pool.get_conn() {
-                        if let Ok(mut transaction) = conn.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false)) {
-                            let query = format!("DELETE FROM `{}` WHERE doc_id = `{}`", &predicate, new_state.get_id());
-                            if let Err(e) = transaction.query(query) {
-                                error!("{}", e);
-                            }
-                        }
-                    }
                 }
             }
         }
