@@ -49,6 +49,7 @@ fn main() -> Result<(), i32> {
                 tables,
             };
             load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+            info!("Ontology: {}", ctx.onto);
             module.listen_queue(
                 &mut queue_consumer,
                 &mut module_info.unwrap(),
@@ -95,7 +96,8 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
 }
 
 fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, module: &mut Module, ctx: &mut Context) {
-    info!("<< Exporting {}", new_state.get_id());
+    let uri = new_state.get_id();
+    info!("<< Exporting {}", uri);
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
@@ -105,16 +107,62 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool,
         info!("new {}.v-s:actual_version {} != {}, ignore", new_state.get_id(), &actual_version, new_state.get_id());
         return;
     }
+    let predicates = new_state.get_predicates();
 
-    for predicate in new_state.get_predicates() {
+    for predicate in predicates {
+        if let Some(resources) = new_state.get_resources(&predicate) {
+            if let Ok(resource) = resources.first() {
+                if let Err(_) = check_create_property_table(&predicate, &resource, ctx) {
+                    error!("Unable to create table for property: `{}`, export aborted for individual: `{}`", predicate, uri);
+                    return;
+                }
+            }
+        }
+    }
+
+    if let Ok(mut conn) = ctx.conn.pool.get_conn() {
+        if let Ok(mut transaction) = conn.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false)) {
+            for predicate in predicates {
+                if let Some(resources) = new_state.get_resources(&predicate) {
+                    for resource in resources {
+                        if resource.order == 0 {
+                            let query = format!("DELETE FROM `{}` WHERE doc_id = `{}`", &predicate, new_state.get_id());
+                            if let Err(e) = transaction.query(query) {
+                                error!("Delete individual `{}` from property table `{}` failed", uri, predicate);
+                                match transaction.rollback() {
+                                    Ok(_) => {
+                                        info!("Export individual `{}` transaction rollback SUCCESS", uri);
+                                        return;
+                                    },
+                                    Err(_) => {
+                                        error!("Export individual `{}` transaction rollback FAILED", uri);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
+
+    for predicate in predicates {
         if let Some(resources) = new_state.get_resources(&predicate) {
             for resource in resources {
                 if let Ok(_) = check_create_property_table(&predicate, &resource, ctx) {
                     //info!("predicate: {}, type: {:#?}, order: {}, value: {:?}", predicate, resource.rtype, resource.order, resource.value)
-                    ctx.conn.pool.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false));
-                    /*if let Err(e) = ctx.conn.pool.prep_exec("DELETE FROM `:table` WHERE doc_id = `:doc`", (predicate, new_state.get_id())) {
-                        error!("{}", e);
-                    }*/
+                    if let Ok(mut conn) = ctx.conn.pool.get_conn() {
+                        if let Ok(mut transaction) = conn.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false)) {
+                            let query = format!("DELETE FROM `{}` WHERE doc_id = `{}`", &predicate, new_state.get_id());
+                            if let Err(e) = transaction.query(query) {
+                                error!("{}", e);
+                            }
+                        }
+                    }
                 }
             }
         }
