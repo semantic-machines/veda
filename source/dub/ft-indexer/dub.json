@@ -4,8 +4,9 @@
 	"dependencies": {
 		"xapian-d": "1.0.0", 
 		"d-nanomsg": "0.2.0",
-                "msgpack-d": "1.0.0-beta.8",
-                "urld": "2.0.1"
+        "msgpack-d": "1.0.0-beta.8",
+        "urld": "2.0.1",
+		"proper-d": "0.0.2"
         },
         "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
@@ -25,7 +26,6 @@
         "sourceFiles":[
     	    "../../veda/core/impl/app_context_creator.d",
     	    "../../veda/core/impl/thread_context.d",
-    	    "../../veda/util/properd.d",
      	    "../../veda/authorization/authorization.d",
     	    "../../veda/storage/common.d",
     	    "../../veda/storage/storage.d",

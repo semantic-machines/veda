@@ -7,7 +7,7 @@ import core.thread, std.conv, std.stdio, std.string, std.conv, std.datetime;
 import veda.bind.tarantool.tnt_stream, veda.bind.tarantool.tnt_net, veda.bind.tarantool.tnt_opt, veda.bind.tarantool.tnt_ping;
 import veda.bind.tarantool.tnt_reply, veda.bind.tarantool.tnt_insert, veda.bind.tarantool.tnt_delete, veda.bind.tarantool.tnt_object,
        veda.bind.tarantool.tnt_select;
-import veda.util.properd, veda.bind.msgpuck;
+import properd, veda.bind.msgpuck;
 import veda.common.logger, veda.common.type;
 import veda.onto.individual;
 import veda.storage.common;

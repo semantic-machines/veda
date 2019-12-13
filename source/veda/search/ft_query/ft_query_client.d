@@ -1,6 +1,6 @@
 module veda.search.ft_query.ft_query_client;
 
-import kaleidic.nanomsg.nano, veda.util.properd;
+import kaleidic.nanomsg.nano, properd;
 import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, std.outbuffer;
 import veda.common.type, veda.core.common.define, veda.core.common.type, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.common.logger;
 import veda.core.common.context;

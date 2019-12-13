@@ -8,7 +8,7 @@ private
     import std.stdio, std.typecons, std.conv, std.algorithm, std.digest.crc, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                           : SwapStrategy;
     import veda.common.type, veda.onto.resource, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
-    import veda.util.properd;
+    import properd;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
