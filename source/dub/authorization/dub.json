@@ -5,7 +5,8 @@
         "license": "LGPL v3",
         "dependencies": {
                 "msgpack-d": "1.0.0-beta.8",
-                "urld": "2.0.1"
+                "urld": "2.0.1",
+           		"proper-d": "0.0.2"
         },
         "libs": [
                     "nanomsg", "tarantool"
@@ -23,7 +24,6 @@
 	    "../../veda/common/logger.d",
 	    "../../veda/common/type.d",
 	    "../../veda/core/common/type.d",
-	    "../../veda/util/properd.d",
 	    "../../veda/core/common/define.d"
 	],
 	"configurations": [

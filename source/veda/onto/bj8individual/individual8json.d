@@ -3,65 +3,6 @@ module veda.onto.bj8individual.individual8json;
 import std.conv, std.stdio, std.json, std.datetime, std.string;
 import veda.common.type, veda.onto.individual, veda.onto.resource, veda.onto.lang;
 
-static LANG[ string ] Lang;
-static DataType[ string ] Resource_type;
-
-static this() {
-    Lang =
-    [
-        "NONE":LANG.NONE, "none":LANG.NONE,
-        "RU":LANG.RU, "ru":LANG.RU,
-        "EN":LANG.EN, "en":LANG.EN
-    ];
-
-    Resource_type =
-    [
-        "Uri":DataType.Uri,
-        "String":DataType.String,
-        "Integer":DataType.Integer,
-        "Datetime":DataType.Datetime,
-        "Decimal":DataType.Decimal,
-        "Boolean":DataType.Boolean,
-        "Binary":DataType.Binary,
-    ];
-}
-
-public string getString(ref JSONValue src, string key){
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.STRING)
-        return res.str;
-
-    return null;
-}
-
-public long getLong(ref JSONValue src, string key){
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.INTEGER)
-        return res.integer();
-
-    return 0;
-}
-
-public bool getBool(ref JSONValue src, string key){
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.TRUE)
-        return true;
-
-    return false;
-}
-
-public float getFloat(ref JSONValue src, string key){
-    JSONValue res = src[ key ];
-
-    if (res.type == JSON_TYPE.FLOAT)
-        return res.floating();
-
-    return 0;
-}
-
 JSONValue individual_to_json(Individual individual, string[] filters = []){
 //    writeln ("\nINDIVIDUAL->:", individual);
     JSONValue json;
@@ -124,35 +65,6 @@ JSONValue[] individuals_to_json(Individual[] individuals){
     return res;
 }
 
-Individual json_to_individual(ref JSONValue individual_json){
-    Individual individual = Individual.init;
-
-    try
-    {
-        //log.trace ("\nJSON->:%s", individual_json);
-
-        foreach (string property_name, property_values; individual_json) {
-//      writeln ("property_name=",property_name);
-            if (property_name == "@") {
-                individual.uri = property_values.str;
-                continue;
-            }
-            Resource[] resources = Resource[].init;
-            foreach (size_t index, property_value; property_values)
-                resources ~= json_to_resource(property_value);
-
-            if (resources.length > 0)
-                individual.resources[ property_name ] = resources;
-        }
-        //log.trace ("->INDIVIDUAL:%s", individual);
-    }
-    catch (Throwable tr)
-    {
-        stderr.writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", tr.msg, "], in ", individual_json);
-    }
-
-    return individual;
-}
 
 JSONValue resource_to_json(Resource resource){
     JSONValue resource_json;
@@ -190,79 +102,5 @@ JSONValue resource_to_json(Resource resource){
         resource_json[ "data" ] = JSONValue.init;
 
     return resource_json;
-}
-
-Resource json_to_resource(JSONValue resource_json){
-    //writeln ("resource_json=", resource_json);
-    Resource resource = Resource.init;
-
-    try
-    {
-        DataType type;
-
-        if (resource_json[ "type" ].type == JSON_TYPE.INTEGER)
-            type = cast(DataType)resource_json.getLong("type");
-        else
-            type = Resource_type.get(resource_json.getString("type"), DataType.String);
-
-        auto data_type = resource_json[ "data" ].type;
-
-        if (type == DataType.String) {
-            JSONValue jlang = resource_json.object.get("lang", JSONValue.init);
-
-            if (jlang !is JSONValue.init) {
-                //writeln ("#1 jlang=", jlang);
-                if (jlang.type == JSON_TYPE.STRING)
-                    resource.lang = Lang.get(jlang.str, Lang[ "NONE" ]);
-
-                if (jlang.type == JSON_TYPE.INTEGER)
-                    resource.lang = cast(LANG)jlang.integer;
-            }else  {
-                //writeln ("#2 jlang=", jlang);
-            }
-            resource.data = resource_json.getString("data");
-        }else if (type == DataType.Boolean) {
-            if (data_type == JSON_TYPE.TRUE || data_type == JSON_TYPE.FALSE) {
-                resource = resource_json.getBool("data");
-            }
-        }else if (type == DataType.Uri) {
-            resource.data = resource_json.getString("data");
-        }else if (type == DataType.Binary) {
-            resource.data = resource_json.getString("data");
-        }else if (type == DataType.Decimal) {
-            if (data_type == JSON_TYPE.FLOAT) {
-                resource = decimal(resource_json.getFloat("data"));
-            }else if (data_type == JSON_TYPE.INTEGER) {
-                resource = decimal(resource_json.getLong("data"));
-            }else if (data_type == JSON_TYPE.STRING) {
-                resource = decimal(resource_json.getString("data"));
-            }
-        }else if (type == DataType.Integer) {
-            resource = resource_json.getLong("data");
-        }else if (type == DataType.Datetime) {
-            if (data_type == JSON_TYPE.INTEGER) {
-                resource = resource_json.getLong("data");
-            }else if (data_type == JSON_TYPE.STRING) {
-                string val = resource_json.getString("data");
-
-                long   tm;
-
-                if (val.indexOf('-') >= 1)
-                    tm = stdTimeToUnixTime(SysTime.fromISOExtString(val).stdTime());
-                else
-                    tm = to!long (val);
-                resource = tm;
-            }
-        }
-
-        resource.type = type;
-    }
-    catch (Exception ex)
-    {
-        stderr.writeln("EX! ", __FILE__, ", line:", __LINE__, ", [", ex.msg, "], in ", resource_json);
-        throw ex;
-    }
-
-    return resource;
 }
 

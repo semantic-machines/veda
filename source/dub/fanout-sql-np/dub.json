@@ -5,7 +5,8 @@
 		"mysql-d": "0.3.3",
 		"d-nanomsg": "0.2.0",
                 "msgpack-d": "1.0.0-beta.8",
-                "urld": "2.0.1"
+                "urld": "2.0.1",
+                "proper-d": "0.0.2"
         },
         "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
@@ -24,7 +25,6 @@
 	    "../../lib64/liblmdb.a",
     	    "../../veda/core/impl/app_context_creator.d",
     	    "../../veda/core/impl/thread_context.d",
-	    "../../veda/util/properd.d",
 	    "../../veda/bind/nano.d",
 	    "../../veda/core/util/utils.d",
 	    "../../veda/util/queue.d",

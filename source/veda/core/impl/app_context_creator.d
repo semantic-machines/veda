@@ -3,7 +3,7 @@ module veda.core.impl.app_context_creator;
 private
 {
     import std.stdio;
-    import veda.util.properd;
+    import properd;
     import veda.core.impl.thread_context, veda.core.common.context, veda.common.logger;
     import veda.storage.lmdb.lmdb_storage, veda.storage.tarantool.tarantool_storage;
 }

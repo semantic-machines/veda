@@ -191,7 +191,7 @@ if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./tools/build-component.sh veda-authorization authorization
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv1" ]; then
+if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv2" ]; then
     cd source/veda-fanout-email
     cargo build --release
     cd $BUILD_PATH

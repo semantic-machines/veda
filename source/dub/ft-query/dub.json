@@ -3,9 +3,10 @@
 	"description": "veda-ft-query",
 	"dependencies": {
                 "xapian-d": "1.0.0",
-		"d-nanomsg": "0.2.0",
-		"msgpack-d": "1.0.0-beta.8",
-                "urld": "2.0.1"
+				"d-nanomsg": "0.2.0",
+				"msgpack-d": "1.0.0-beta.8",
+                "urld": "2.0.1",
+                "proper-d": "0.0.2"
 	},
         "versions": ["isModule", "std_socket"],
         "license": "LGPL v3",
@@ -38,7 +39,6 @@
     	    "../../veda/util/queue.d",
     	    "../../veda/util/module_info.d",
     	    "../../veda/ft_query/ft_query.d",
-    	    "../../veda/util/properd.d"
 	],
         "libs":["nanomsg", "tarantool"],
 	"configurations": [
