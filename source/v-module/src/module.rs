@@ -9,7 +9,8 @@ use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
 use nng::{Protocol, Socket};
 use std::io::Write;
-use uuid::*;
+use std::process;
+use uuid::Uuid;
 use v_api::*;
 use v_onto::datatype::Lang;
 use v_onto::individual::*;
@@ -18,6 +19,13 @@ use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
+
+#[derive(Debug)]
+#[repr(u8)]
+pub enum PrepareError {
+    Fatal = 1,
+    Recoverable = 2,
+}
 
 const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
 
@@ -169,13 +177,9 @@ impl Module {
         queue_consumer: &mut Consumer,
         module_info: &mut ModuleInfo,
         module_context: &mut T,
-        // TODO: Fix typo `before_bath` -> `before_batch`
-        before_bath: &mut fn(&mut Module, &mut T),
-        // TODO: Return result to cancel reading queue forward if error occured in module
-        // TODO: Create common enum for error types theat could happen in module. Process common errors according to their type.
-        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual),
-        // TODO: Fix typo `after_bath` -> `after_batch`
-        after_bath: &mut fn(&mut Module, &mut T),
+        before_batch: &mut fn(&mut Module, &mut T),
+        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<(), PrepareError>,
+        after_batch: &mut fn(&mut Module, &mut T),
     ) {
         let soc = Socket::new(Protocol::Sub0).unwrap();
 
@@ -193,7 +197,7 @@ impl Module {
         loop {
             let mut size_batch = 0;
 
-            before_bath(self, module_context);
+            before_batch(self, module_context);
 
             // read queue current part info
             if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
@@ -240,7 +244,9 @@ impl Module {
 
                 let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
-                    prepare(self, module_info, module_context, &mut queue_element);
+                    if let Err(e) = prepare(self, module_info, module_context, &mut queue_element) {
+                        process::exit(e as i32);
+                    }
                 }
 
                 queue_consumer.commit_and_next();
@@ -251,7 +257,7 @@ impl Module {
                     info!("get from queue, count: {}", self.queue_prepared_count);
                 }
             }
-            after_bath(self, module_context);
+            after_batch(self, module_context);
 
             let wmsg = soc.recv();
             if let Err(e) = wmsg {
