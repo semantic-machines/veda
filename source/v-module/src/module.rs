@@ -163,8 +163,12 @@ impl Module {
         queue_consumer: &mut Consumer,
         module_info: &mut ModuleInfo,
         module_context: &mut T,
+        // TODO: Fix typo `before_bath` -> `before_batch`
         before_bath: &mut fn(&mut Module, &mut T),
+        // TODO: Return result to cancel reading queue forward if error occured in module
+        // TODO: Create common enum for error types theat could happen in module. Process common errors according to their type.
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual),
+        // TODO: Fix typo `after_bath` -> `after_batch`
         after_bath: &mut fn(&mut Module, &mut T),
     ) {
         let soc = Socket::new(Protocol::Sub0).unwrap();
