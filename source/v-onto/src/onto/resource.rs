@@ -5,6 +5,7 @@ use crate::datatype::{DataType, Lang};
 pub enum Value {
     Int(i64),
     Str(String, Lang),
+    Uri(String),
     Bool(bool),
     Num(i64, i64),
     Binary(Vec<u8>),
@@ -37,6 +38,14 @@ impl Resource {
 
     pub fn get_str(&self) -> &str {
         if let Value::Str(s, _) = &self.value {
+            &s
+        } else {
+            ""
+        }
+    }
+
+    pub fn get_uri(&self) -> &str {
+        if let Value::Uri(s) = &self.value {
             &s
         } else {
             ""

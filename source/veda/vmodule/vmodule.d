@@ -3,7 +3,7 @@ module veda.vmodule.vmodule;
 private
 {
 	import core.stdc.stdlib, core.sys.posix.signal, core.sys.posix.unistd, core.runtime, core.thread, core.memory;
-	import kaleidic.nanomsg.nano, veda.util.properd;
+	import kaleidic.nanomsg.nano, properd;
 	import std.stdio, std.conv, std.utf, std.string, std.file, std.datetime, std.json, core.thread, std.uuid, std.outbuffer, std.algorithm : remove;
 	import veda.common.logger, veda.core.impl.thread_context, veda.core.impl.app_context_creator;
 	import veda.common.type, veda.core.common.define, veda.core.common.type, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;

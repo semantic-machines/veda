@@ -46,26 +46,26 @@ fn main() -> Result<(), i32> {
         &mut queue_consumer,
         &mut module_info.unwrap(),
         &mut ctx,
-        &mut (before_bath as fn(&mut Module, &mut Context)),
-        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual)),
-        &mut (after_bath as fn(&mut Module, &mut Context)),
+        &mut (before_batch as fn(&mut Module, &mut Context)),
+        &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
+        &mut (after_batch as fn(&mut Module, &mut Context)),
     );
     Ok(())
 }
 
-fn before_bath(_module: &mut Module, _ctx: &mut Context) {}
+fn before_batch(_module: &mut Module, _ctx: &mut Context) {}
 
-fn after_bath(_module: &mut Module, ctx: &mut Context) {
+fn after_batch(_module: &mut Module, ctx: &mut Context) {
     if (ctx.permission_statement_counter + ctx.membership_counter) % 100 == 0 {
         info!("count prepared: permissions={}, memberships={}", ctx.permission_statement_counter, ctx.membership_counter);
     }
 }
 
-fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) {
+fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
-        return;
+        return Ok(());
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
@@ -87,8 +87,11 @@ fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
     }
 
     if let Err(e) = module_info.put_info(op_id, op_id) {
-        error!("fail write module_info, op_id={}, err={:?}", op_id, e)
+        error!("fail write module_info, op_id={}, err={:?}", op_id, e);
+        return Err(PrepareError::Fatal);
     }
+
+    Ok (())
 }
 
 fn prepare_permission_statement(prev_state: &mut Individual, new_state: &mut Individual, ctx: &mut Context) {

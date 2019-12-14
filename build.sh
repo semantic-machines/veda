@@ -169,8 +169,13 @@ if [ -z $1 ] || [ $1 == "bootstrap" ] || [ $1 == "veda" ] || [ $1 == "mv2" ]; th
 
 fi
 
-if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv1" ]; then
-    ./tools/build-component.sh veda-mstorage mstorage
+if [ -z $1 ] || [ $1 == "mstorage" ] || [ $1 == "veda-mstorage" ] || [ $1 == "mv2" ]; then
+
+    cd source/veda-mstorage
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-mstorage $PWD
+
 fi
 
 if [ -z $1 ] || [ $1 == "ro-storage" ] || [ $1 == "veda-ro-storage" ] || [ $1 == "mv2" ] ; then
@@ -186,7 +191,7 @@ if [ $1 == "authorization" ] || [ $1 == "veda-authorization" ] ; then
     ./tools/build-component.sh veda-authorization authorization
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv1" ]; then
+if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $1 == "mv2" ]; then
     cd source/veda-fanout-email
     cargo build --release
     cd $BUILD_PATH

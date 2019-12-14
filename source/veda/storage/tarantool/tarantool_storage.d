@@ -3,7 +3,7 @@
  */
 module veda.storage.tarantool.tarantool_storage;
 
-import veda.core.common.define, veda.common.logger, veda.util.properd;
+import veda.core.common.define, veda.common.logger, properd;
 import veda.common.type, veda.storage.common, veda.storage.storage;
 import veda.storage.tarantool.tarantool_driver;
 
