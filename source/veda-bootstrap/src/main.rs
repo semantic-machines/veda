@@ -15,6 +15,13 @@ use std::{io, thread, time};
 use sysinfo::{ProcessExt, ProcessStatus, SystemExt};
 
 #[derive(Debug)]
+#[repr(u8)]
+pub enum ModuleError {
+    Fatal = 101,
+    Recoverable = 102,
+}
+
+#[derive(Debug)]
 struct Module {
     name: String,
     exec_name: String,
@@ -54,11 +61,9 @@ fn main() {
     let mut sys = sysinfo::System::new();
     sys.refresh_processes();
     for (pid, proc) in sys.get_process_list() {
-        if proc.name().starts_with("veda-") && proc.name() != "veda-bootstrap" && proc.name() != "veda" {
-            if module_full_names.contains(&proc.name().to_string()) {
-                error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
-                return;
-            }
+        if proc.name().starts_with("veda-") && proc.name() != "veda-bootstrap" && proc.name() != "veda" && module_full_names.contains(&proc.name().to_string()) {
+            error!("unable start, found other running process: pid={}, {:?} ({:?}) ", pid, proc.exe(), proc.status());
+            return;
         }
     }
 
@@ -98,24 +103,31 @@ fn watch_started_modules(modules: &HashMap<String, Module>, processes: &mut Vec<
         sys.refresh_processes();
         for (name, process) in processes.iter_mut() {
             if !is_ok_process(&mut sys, process.id()) {
-                error!("found dead module {} {}", process.id(), name);
-
-                if let Ok(_0) = process.kill() {
-                    warn!("attempt stop module {} {}", process.id(), name);
-                }
-
-                if let Some(module) = modules.get(name) {
-                    match start_module(module) {
-                        Ok(child) => {
-                            info!("{} restart module {}, {}, {:?}", child.id(), module.name, module.exec_name, module.args);
-                            *process = child;
-                        }
-                        Err(e) => {
-                            error!("fail execute {}, err={:?}", module.exec_name, e);
-                        }
-                    }
+                let exit_code = if let Ok(c) = process.wait() {
+                    c.code().unwrap_or_default()
                 } else {
-                    error!("? internal error, not found module {}", name)
+                    0
+                };
+
+                if exit_code != ModuleError::Fatal as i32 {
+                    error!("found dead module {} {}, exit code = {}, restart this", process.id(), name, exit_code);
+                    if let Ok(_0) = process.kill() {
+                        warn!("attempt stop module {} {}", process.id(), name);
+                    }
+
+                    if let Some(module) = modules.get(name) {
+                        match start_module(module) {
+                            Ok(child) => {
+                                info!("{} restart module {}, {}, {:?}", child.id(), module.name, module.exec_name, module.args);
+                                *process = child;
+                            }
+                            Err(e) => {
+                                error!("fail execute {}, err={:?}", module.exec_name, e);
+                            }
+                        }
+                    } else {
+                        error!("? internal error, not found module {}", name)
+                    }
                 }
             }
         }
@@ -143,7 +155,7 @@ fn start_module(module: &Module) -> io::Result<Child> {
                     error!("can not create pid file for {} {}, err={:?}", &module.name, p.id(), e);
                 }
             }
-            if module.name == "mstorage".to_owned() {
+            if module.name == "mstorage" {
                 thread::sleep(time::Duration::from_millis(100));
             }
             Ok(p)

@@ -8,7 +8,7 @@ private
     import std.stdio, std.typecons, std.conv, std.algorithm, std.digest.crc, std.exception : assumeUnique;
     import std.algorithm, std.algorithm.mutation                                           : SwapStrategy;
     import veda.common.type, veda.onto.resource, veda.onto.bj8individual.cbor8individual, veda.onto.bj8individual.msgpack8individual;
-    import veda.util.properd;
+    import properd;
 }
 /// Массив индивидуалов
 alias Individual[] Individuals;
@@ -83,48 +83,6 @@ public struct Individual {
         }else  {
             return cbor2individual(&this, bin);
         }
-    }
-
-    string serialize(){
-        if (binobj_format == BOFormat.UNKNOWN) {
-            binobj_format = BOFormat.CBOR;
-            try
-            {
-                string[ string ] properties;
-                properties = readProperties("./veda.properties");
-                string s_binobj_format = properties.as!(string)("binobj_format");
-
-                if (s_binobj_format == "cbor")
-                    binobj_format = BOFormat.CBOR;
-
-                if (s_binobj_format == "msgpack")
-                    binobj_format = BOFormat.MSGPACK;
-            }
-            catch (Throwable ex)
-            {
-                stderr.writefln("ERR! unable read ./veda.properties, ex=%s", ex.msg);
-            }
-
-            stderr.writefln("SET binobj_format=%s", text(binobj_format));
-        }
-
-        if (predicate_2_order.length == 0) {
-            predicate_order_l =
-            [
-                "assigned_subsystems", "u_count", "new_type", "prev_type", "new_state", "prev_state", "user_uri", "rdf:type", "v-s:deleted",
-                "v-s:isDraftOf", "v-s:actualVersion", "v-s:previousVersion", "v-s:created", "v-s:runAt"
-            ];
-
-            foreach (idx, el; predicate_order_l)
-                predicate_2_order[ el ] = cast(byte)idx;
-        }
-
-        if (binobj_format == BOFormat.CBOR)
-            return individual2cbor(&this);
-        else if (binobj_format == BOFormat.MSGPACK)
-            return individual2msgpack(this);
-        else
-            return "";
     }
 
     Individual dup(){

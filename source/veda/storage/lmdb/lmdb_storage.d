@@ -3,7 +3,7 @@
  */
 module veda.storage.lmdb.lmdb_storage;
 
-import veda.common.logger, veda.util.properd;
+import veda.common.logger, properd;
 import veda.common.type, veda.storage.common, veda.storage.storage;
 import veda.storage.lmdb.lmdb_driver;
 

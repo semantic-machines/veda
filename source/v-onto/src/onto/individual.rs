@@ -224,6 +224,8 @@ impl Individual {
                     for el in v {
                         if let Value::Str(_s, _l) = &el.value {
                             return true;
+                        } else if let Value::Uri(_s) = &el.value {
+                            return true;
                         }
                     }
                 }
@@ -248,6 +250,12 @@ impl Individual {
                 Some(v) => {
                     for el in v {
                         if let Value::Str(s, _l) = &el.value {
+                            for ve in values {
+                                if str::eq(ve, s) {
+                                    return true;
+                                }
+                            }
+                        } else if let Value::Uri(s) = &el.value {
                             for ve in values {
                                 if str::eq(ve, s) {
                                     return true;
@@ -331,6 +339,8 @@ impl Individual {
                             .map(|el| {
                                 if let Value::Str(s, _l) = &el.value {
                                     s.to_string()
+                                } else if let Value::Uri(s) = &el.value {
+                                    s.to_string()
                                 } else {
                                     "".to_string()
                                 }
@@ -358,6 +368,9 @@ impl Individual {
             match self.obj.resources.get(predicate) {
                 Some(v) => match &v[0].value {
                     Value::Str(s, _l) => {
+                        return Some(s.to_string());
+                    }
+                    Value::Uri(s) => {
                         return Some(s.to_string());
                     }
                     _ => {
@@ -532,21 +545,23 @@ impl Individual {
         self
     }
 
-    pub fn apply_predicate_as_set(&mut self, predicate: &str, dest: &mut Individual) {
-        if let Some(v) = self.obj.resources.get(predicate) {
-            dest.obj.set_resources(predicate, v);
+    pub fn apply_predicate_as_set(&mut self, predicate: &str, new_data: &mut Individual) {
+        if let Some(v) = new_data.obj.resources.get(predicate) {
+            self.obj.set_resources(predicate, v);
         }
     }
 
-    pub fn apply_predicate_as_add_unique(&mut self, predicate: &str, dest: &mut Individual) {
-        if let Some(v) = self.obj.resources.get(predicate) {
-            dest.obj.add_unique_resources(predicate, v);
+    pub fn apply_predicate_as_add_unique(&mut self, predicate: &str, new_data: &mut Individual) {
+        if let Some(v) = new_data.obj.resources.get(predicate) {
+            self.obj.add_unique_resources(predicate, v);
         }
     }
 
-    pub fn apply_predicate_as_remove(&mut self, predicate: &str, dest: &mut Individual) {
-        if let Some(v) = self.obj.resources.get(predicate) {
-            dest.obj.remove_resources(predicate, v);
+    pub fn apply_predicate_as_remove(&mut self, predicate: &str, new_data: &mut Individual) {
+        let exclude = new_data.get_resources(predicate).unwrap_or_default();
+
+        if let Some(v) = new_data.obj.resources.get(predicate) {
+            self.obj.exclude_and_set_resources(predicate, v, &exclude);
         }
     }
 
@@ -675,6 +690,32 @@ impl IndividualObj {
         }
     }
 
+    pub fn add_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+
+        for el in b.iter() {
+            values.push(Resource {
+                rtype: el.rtype.clone(),
+                order: values.len() as u16,
+                value: el.value.clone(),
+            });
+        }
+    }
+
+    pub fn exclude_and_set_resources(&mut self, predicate: &str, b: &Vec<Resource>, exclude: &Vec<Resource>) {
+        let values = self.resources.entry(predicate.to_owned()).or_default();
+        values.clear();
+        for el in b.iter() {
+            if !exclude.contains(el) {
+                values.push(Resource {
+                    rtype: el.rtype.clone(),
+                    order: el.order,
+                    value: el.value.clone(),
+                });
+            }
+        }
+    }
+
     pub fn add_bool(&mut self, predicate: &str, b: bool) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.push(Resource {
@@ -775,7 +816,7 @@ impl IndividualObj {
         values.push(Resource {
             rtype: DataType::Uri,
             order: values.len() as u16,
-            value: Value::Str(s.to_owned(), Lang::NONE),
+            value: Value::Uri(s.to_owned()),
         });
     }
 
@@ -785,7 +826,7 @@ impl IndividualObj {
         values.push(Resource {
             rtype: DataType::Uri,
             order: 0,
-            value: Value::Str(s.to_owned(), Lang::NONE),
+            value: Value::Uri(s.to_owned()),
         });
     }
 
@@ -796,7 +837,7 @@ impl IndividualObj {
             values.push(Resource {
                 rtype: DataType::Uri,
                 order: 0,
-                value: Value::Str(s.to_owned(), Lang::NONE),
+                value: Value::Uri(s.to_owned()),
             });
         }
     }

@@ -1,6 +1,7 @@
 use crate::info::ModuleInfo;
 use crate::ticket::Ticket;
 use chrono::Local;
+use chrono::{NaiveDateTime, Utc};
 use env_logger::Builder;
 use ini::Ini;
 use log::LevelFilter;
@@ -8,12 +9,25 @@ use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
 use nng::{Protocol, Socket};
 use std::io::Write;
+use std::process;
+use uuid::Uuid;
 use v_api::*;
+use v_onto::datatype::Lang;
 use v_onto::individual::*;
+use v_onto::individual2msgpack::to_msgpack;
 use v_onto::parser::*;
 use v_queue::{consumer::*, record::*};
 use v_search::*;
 use v_storage::storage::*;
+
+#[derive(Debug)]
+#[repr(u8)]
+pub enum PrepareError {
+    Fatal = 101,
+    Recoverable = 102,
+}
+
+const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
 
 pub struct Module {
     pub storage: VStorage,
@@ -163,13 +177,9 @@ impl Module {
         queue_consumer: &mut Consumer,
         module_info: &mut ModuleInfo,
         module_context: &mut T,
-        // TODO: Fix typo `before_bath` -> `before_batch`
-        before_bath: &mut fn(&mut Module, &mut T),
-        // TODO: Return result to cancel reading queue forward if error occured in module
-        // TODO: Create common enum for error types theat could happen in module. Process common errors according to their type.
-        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual),
-        // TODO: Fix typo `after_bath` -> `after_batch`
-        after_bath: &mut fn(&mut Module, &mut T),
+        before_batch: &mut fn(&mut Module, &mut T),
+        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<(), PrepareError>,
+        after_batch: &mut fn(&mut Module, &mut T),
     ) {
         let soc = Socket::new(Protocol::Sub0).unwrap();
 
@@ -187,7 +197,7 @@ impl Module {
         loop {
             let mut size_batch = 0;
 
-            before_bath(self, module_context);
+            before_batch(self, module_context);
 
             // read queue current part info
             if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
@@ -234,7 +244,9 @@ impl Module {
 
                 let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
-                    prepare(self, module_info, module_context, &mut queue_element);
+                    if let Err(e) = prepare(self, module_info, module_context, &mut queue_element) {
+                        process::exit(e as i32);
+                    }
                 }
 
                 queue_consumer.commit_and_next();
@@ -245,7 +257,7 @@ impl Module {
                     info!("get from queue, count: {}", self.queue_prepared_count);
                 }
             }
-            after_bath(self, module_context);
+            after_batch(self, module_context);
 
             let wmsg = soc.recv();
             if let Err(e) = wmsg {
@@ -292,4 +304,66 @@ pub fn get_ticket_from_db(id: &str, dest: &mut Ticket, module: &mut Module) {
         dest.update_from_individual(&mut indv);
         dest.result = ResultCode::Ok;
     }
+}
+
+pub fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, storage: &mut VStorage) {
+    let mut ticket_indv = Individual::default();
+
+    ticket.result = ResultCode::FailStore;
+    ticket_indv.add_string("rdf:type", "ticket:ticket", Lang::NONE);
+
+    if !ticket.id.is_empty() && !ticket.id.is_empty() {
+        ticket_indv.set_id(&ticket.id);
+    } else {
+        ticket_indv.set_id(&Uuid::new_v4().to_hyphenated().to_string());
+    }
+
+    ticket_indv.add_string("ticket:login", login, Lang::NONE);
+    ticket_indv.add_string("ticket:accessor", user_id, Lang::NONE);
+
+    let now = Utc::now();
+    let start_time_str = format!("{:?}", now.naive_utc());
+
+    if start_time_str.len() > 28 {
+        ticket_indv.add_string("ticket:when", &start_time_str[0..28], Lang::NONE);
+    } else {
+        ticket_indv.add_string("ticket:when", &start_time_str, Lang::NONE);
+    }
+
+    ticket_indv.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
+
+    let mut raw1: Vec<u8> = Vec::new();
+    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1) {
+        ticket.update_from_individual(&mut ticket_indv);
+        ticket.result = ResultCode::Ok;
+        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
+        ticket.end_time = ticket.start_time + duration as i64 * 10000000;
+
+        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10000 - TICKS_TO_UNIX_EPOCH) / 1000, 0));
+        info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, start_time_str, end_time_str);
+    } else {
+        error!("fail store ticket {:?}", ticket)
+    }
+}
+
+pub fn create_sys_ticket(storage: &mut VStorage) -> Ticket {
+    let mut ticket = Ticket::default();
+    create_new_ticket("veda", "cfg:VedaSystem", 90000000, &mut ticket, storage);
+
+    if ticket.result == ResultCode::Ok {
+        let mut sys_ticket_link = Individual::default();
+        sys_ticket_link.set_id("systicket");
+        sys_ticket_link.add_uri("rdf:type", "rdfs:Resource");
+        sys_ticket_link.add_uri("v-s:resource", &ticket.id);
+        let mut raw1: Vec<u8> = Vec::new();
+        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1) {
+            return ticket;
+        } else {
+            error!("fail store system ticket link")
+        }
+    } else {
+        error!("fail create sys ticket")
+    }
+
+    ticket
 }

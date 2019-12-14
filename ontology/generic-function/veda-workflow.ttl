@@ -2118,6 +2118,17 @@ v-wf:isDirectTask
   rdfs:domain v-wf:DecisionForm ;
   rdfs:range xsd:boolean ;
 .
+v-wf:isSetStatus
+  rdf:type rdf:Property ;
+  rdfs:isDefinedBy v-wf: ;
+  rdfs:label "Задача, меняющая статус"@ru ;
+  rdfs:label "Task changed status"@en ;
+  rdfs:domain v-wf:WorkItem ;
+  rdfs:domain v-wf:Process ;
+  rdfs:domain v-wf:DecisionForm ;
+  rdfs:range xsd:boolean ;
+.
+
 
 # --------------------------- WorkOrder --------------------------
 v-wf:WorkOrder

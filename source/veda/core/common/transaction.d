@@ -23,46 +23,6 @@ struct TransactionItem {
     long       assigned_subsystems;
 
     ResultCode rc;
-
-    immutable this(INDV_OP _cmd, string _user_uri, string _uri, string _prev_binobj, string _new_binobj, long _update_counter, string _event_id
-                   , long _assigned_subsystems)
-    {
-        cmd                 = _cmd;
-        user_uri            = _user_uri;
-        uri                 = _uri;
-        prev_binobj         = _prev_binobj;
-        new_binobj          = _new_binobj;
-        update_counter      = _update_counter;
-        event_id            = _event_id;
-        assigned_subsystems = _assigned_subsystems;
-    }
-
-    immutable this(TransactionItem ti)
-    {
-        cmd                 = ti.cmd;
-        user_uri            = ti.user_uri;
-        uri                 = ti.uri;
-        prev_binobj         = ti.prev_binobj;
-        new_binobj          = ti.new_binobj;
-        update_counter      = ti.update_counter;
-        event_id            = ti.event_id;
-        assigned_subsystems = ti.assigned_subsystems;
-    }
-}
-
-TransactionItem from_json(JSONValue jsn){
-    TransactionItem res;
-
-    res.cmd                 = cast(INDV_OP)jsn[ "cmd" ].integer;
-    res.user_uri            = jsn[ "user_uri" ].str;
-    res.uri                 = jsn[ "uri" ].str;
-    res.prev_binobj         = jsn[ "prev_binobj" ].str;
-    res.new_binobj          = jsn[ "new_binobj" ].str;
-    res.update_counter      = jsn[ "update_counter" ].integer;
-    res.event_id            = jsn[ "event_id" ].str;
-    res.assigned_subsystems = jsn[ "assigned_subsystems" ].integer;
-
-    return res;
 }
 
 struct Transaction {

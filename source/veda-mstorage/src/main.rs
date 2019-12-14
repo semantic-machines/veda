@@ -12,12 +12,13 @@ use v_api::{IndvOp, ResultCode};
 use v_authorization::{Access, Trace};
 use v_az_lmdb::_authorize;
 use v_module::info::ModuleInfo;
-use v_module::module::{init_log, Module};
+use v_module::module::{create_sys_ticket, init_log, Module};
 use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::{Individual, RawObj};
 use v_onto::individual2msgpack::to_msgpack;
 use v_onto::json2individual::parse_json_to_individual;
+use v_onto::parser::parse_raw;
 use v_queue::queue::Queue;
 use v_queue::record::{Mode, MsgType};
 use v_storage::storage::*;
@@ -46,9 +47,7 @@ fn main() -> std::io::Result<()> {
         error!("fail read property [notify_channel_url]");
         return Ok(());
     };
-
     let notify_soc = Socket::new(Protocol::Pub0).unwrap();
-
     if let Err(e) = notify_soc.listen(notify_channel_url.unwrap()) {
         error!("fail connect to, {}, err={}", notify_channel_url.unwrap(), e);
         return Ok(());
@@ -67,8 +66,7 @@ fn main() -> std::io::Result<()> {
     if let Ok(ticket_id) = Module::get_sys_ticket_id_from_db(&mut storage) {
         get_ticket_from_db(&ticket_id, &mut sys_ticket, &mut storage);
     } else {
-        error!("system ticket not found");
-        return Ok(());
+        sys_ticket = create_sys_ticket(&mut storage);
     }
 
     let param_name = "main_module_url";
@@ -115,9 +113,10 @@ fn main() -> std::io::Result<()> {
                     data.push(out_el);
 
                     if el.res == ResultCode::Ok {
-                        // !!! заменить на async
-                        let msg_to_modules = format!("#{};{};{}", el.id, el.op_id, el.counter);
-                        info!("notify={:?}", notify_soc.send(Message::from(msg_to_modules.as_bytes())));
+                        let msg_to_modules = format!("#{};{};{}", el.id, el.counter, el.op_id);
+                        if notify_soc.send(Message::from(msg_to_modules.as_bytes())).is_err() {
+                            error!("fail notify, id={}", el.id);
+                        }
                     }
                 }
                 out_msg["data"] = json!(data);
@@ -166,8 +165,6 @@ fn request_prepare(
     } else {
         JSONValue::Null
     };
-
-    info!("@ v={:?}", v);
 
     let fticket = v["ticket"].as_str();
     if fticket.is_none() {
@@ -261,7 +258,7 @@ fn operation_prepare(
     new_indv: &mut Individual,
     storage: &mut VStorage,
     queue_out: &mut Queue,
-    mstorage_info: &mut ModuleInfo,
+    my_info: &mut ModuleInfo,
     sys_ticket: &Ticket,
 ) -> Response {
     let is_need_authorize = if sys_ticket.user_uri == ticket.user_uri {
@@ -283,13 +280,16 @@ fn operation_prepare(
 
     if !prev_state.is_empty() {
         prev_indv = Individual::new_raw(RawObj::new(prev_state.clone()));
-        //if new_indv.is_empty() || cmd == IndvOp::Remove {
-        //    new_indv.set_id(prev_indv.get_id());
-        //}
+        if parse_raw(&mut prev_indv).is_ok() {
+            prev_indv.parse_all();
+        } else {
+            error!("fail parse individual prev states, cmd={:?}, uri={}", cmd, new_indv.get_id());
+            return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
+        }
     }
 
-    if prev_indv.is_empty() && cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
-        error!("fail store, cmd={:?}: not read prev_state uri={}", cmd, new_indv.get_id());
+    if prev_indv.is_empty() && (cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom) {
+        error!("fail update, cmd={:?}: not read prev_state uri={}", cmd, new_indv.get_id());
         return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
     }
 
@@ -306,80 +306,87 @@ fn operation_prepare(
     if is_need_authorize {
         if cmd == IndvOp::Remove {
             if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
-                error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
-                return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                error!("operation [Remove], Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
+                //return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
             }
         } else {
             if !prev_state.is_empty() {
                 if let Some(is_deleted) = new_indv.get_first_bool("v-s:deleted") {
                     if is_deleted && _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanDelete as u8, true, &mut trace).unwrap_or(0) != Access::CanDelete as u8 {
-                        error!("fail store, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
+                        error!("fail update, Not Authorized, user {} request [can delete] {} ", ticket.user_uri, new_indv.get_id());
                         return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
                     }
                 } else {
                     if _authorize(new_indv.get_id(), &ticket.user_uri, Access::CanUpdate as u8, true, &mut trace).unwrap_or(0) != Access::CanUpdate as u8 {
-                        error!("fail store, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
+                        error!("fail update, Not Authorized, user {} request [can update] {} ", ticket.user_uri, new_indv.get_id());
                         return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
                     }
                 }
             }
 
-            // check access can_create for new types
-            let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
-            let new_types = new_indv.get_literals("rdf:type").unwrap_or_default();
-            let mut added_types = vec![];
+            if cmd != IndvOp::Remove {
+                // check access can_create for new types
+                let prev_types = prev_indv.get_literals("rdf:type").unwrap_or_default();
+                let new_types = new_indv.get_literals("rdf:type").unwrap_or_default();
+                let mut added_types = vec![];
 
-            if !new_types.is_empty() {
-                for n_el in new_types.iter() {
-                    let mut found = false;
-                    for p_el in prev_types.iter() {
-                        if p_el == n_el {
-                            found = true;
+                if !new_types.is_empty() {
+                    for n_el in new_types.iter() {
+                        let mut found = false;
+                        for p_el in prev_types.iter() {
+                            if p_el == n_el {
+                                found = true;
+                            }
+                        }
+                        if !found {
+                            added_types.push(n_el);
                         }
                     }
-                    if !found {
-                        added_types.push(n_el);
-                    }
-                }
-            } else {
-                error!("fail store, not found type for new individual, user {}, id={} ", ticket.user_uri, new_indv.get_id());
-                return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
-            }
-
-            for type_id in added_types.iter() {
-                if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, &mut trace).unwrap_or(0) != Access::CanCreate as u8 {
-                    error!("fail store, Not Authorized, user {} request [can create] for {} ", ticket.user_uri, type_id);
+                } else if cmd == IndvOp::Put {
+                    error!("fail update, not found type for new individual, user {}, id={} ", ticket.user_uri, new_indv.get_id());
                     return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                }
+
+                for type_id in added_types.iter() {
+                    if _authorize(type_id, &ticket.user_uri, Access::CanCreate as u8, true, &mut trace).unwrap_or(0) != Access::CanCreate as u8 {
+                        error!("fail update, Not Authorized, user {} request [can create] for {} ", ticket.user_uri, type_id);
+                        return Response::new(new_indv.get_id(), ResultCode::NotAuthorized, -1, -1);
+                    }
                 }
             }
         }
         // end authorize
     }
 
-    let update_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
-    new_indv.set_integer("v-s:updateCounter", update_counter);
-
-    if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
-        indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
-    }
+    let upd_counter = prev_indv.get_first_integer("v-s:updateCounter").unwrap_or(0) + 1;
+    new_indv.set_integer("v-s:updateCounter", upd_counter);
 
     if cmd == IndvOp::Remove {
         new_indv.set_bool("v-s:deleted", true);
     }
 
-    if to_storage_and_queue(IndvOp::Put, op_id, ticket, event_id, src, assigned_subsystems, new_indv, prev_state, update_counter, storage, mstorage_info, queue_out) {
-        error!("not completed store to main DB");
-        return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
-    }
+    if cmd == IndvOp::AddIn || cmd == IndvOp::SetIn || cmd == IndvOp::RemoveFrom {
+        indv_apply_cmd(&cmd, &mut prev_indv, new_indv);
 
-    if cmd == IndvOp::Remove {
-        if to_storage_and_queue(cmd, op_id, ticket, event_id, src, assigned_subsystems, new_indv, vec![], update_counter, storage, mstorage_info, queue_out) {
-            error!("not completed store to main DB");
+        if !to_storage_and_queue(IndvOp::Put, op_id, ticket, event_id, src, assigned_subsystems, &mut prev_indv, prev_state, upd_counter, storage, my_info, queue_out) {
+            error!("not completed update to main DB");
+            return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
+        }
+    } else {
+        if !to_storage_and_queue(IndvOp::Put, op_id, ticket, event_id, src, assigned_subsystems, new_indv, prev_state, upd_counter, storage, my_info, queue_out) {
+            error!("not completed update to main DB");
             return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
         }
     }
 
-    Response::new(new_indv.get_id(), ResultCode::Ok, *op_id, update_counter)
+    if cmd == IndvOp::Remove {
+        if !to_storage_and_queue(cmd, op_id, ticket, event_id, src, assigned_subsystems, new_indv, vec![], upd_counter, storage, my_info, queue_out) {
+            error!("not completed update to main DB");
+            return Response::new(new_indv.get_id(), ResultCode::FailStore, -1, -1);
+        }
+    }
+
+    Response::new(new_indv.get_id(), ResultCode::Ok, *op_id, upd_counter)
 }
 
 fn to_storage_and_queue(
@@ -408,9 +415,9 @@ fn to_storage_and_queue(
         }
     } else {
         if to_msgpack(&new_indv, &mut new_state).is_ok() && storage.put_kv_raw(StorageId::Individuals, new_indv.get_id(), new_state.clone()) {
-            info!("store individual, id={}", new_indv.get_id());
+            info!("update, id={}", new_indv.get_id());
         } else {
-            error!("fail store individual, id={}", new_indv.get_id());
+            error!("fail update individual, id={}", new_indv.get_id());
             return false;
         }
     }
@@ -458,7 +465,7 @@ fn to_storage_and_queue(
         queue_element.add_integer("assigned_subsystems", i);
     }
 
-    info!("add to queue: uri={}", new_indv.get_id());
+    debug!("add to queue: uri={}", new_indv.get_id());
 
     let mut raw1: Vec<u8> = Vec::new();
     if let Err(e) = to_msgpack(&queue_element, &mut raw1) {
@@ -484,15 +491,17 @@ fn indv_apply_cmd(cmd: &IndvOp, prev_indv: &mut Individual, indv: &mut Individua
         let list_predicates = indv.get_predicates();
 
         for predicate in list_predicates {
-            if cmd == &IndvOp::AddIn {
-                // add value to set or ignore if exists
-                prev_indv.apply_predicate_as_add_unique(&predicate, indv);
-            } else if cmd == &IndvOp::SetIn {
-                // set value to predicate
-                prev_indv.apply_predicate_as_set(&predicate, indv);
-            } else if cmd == &IndvOp::RemoveFrom {
-                // remove predicate or value in set
-                prev_indv.apply_predicate_as_remove(&predicate, indv);
+            if predicate != "v-s:updateCounter" {
+                if cmd == &IndvOp::AddIn {
+                    // add value to set or ignore if exists
+                    prev_indv.apply_predicate_as_add_unique(&predicate, indv);
+                } else if cmd == &IndvOp::SetIn {
+                    // set value to predicate
+                    prev_indv.apply_predicate_as_set(&predicate, indv);
+                } else if cmd == &IndvOp::RemoveFrom {
+                    // remove predicate or value in set
+                    prev_indv.apply_predicate_as_remove(&predicate, indv);
+                }
             }
         }
     }

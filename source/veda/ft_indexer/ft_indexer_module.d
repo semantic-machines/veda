@@ -8,7 +8,7 @@ private import veda.bind.xapian_d_header, veda.ft_indexer.xapian_indexer;
 private import veda.common.logger, veda.core.impl.thread_context, veda.search.xapian.xapian_search;
 private import veda.common.type, veda.core.common.define, veda.onto.resource, veda.onto.lang, veda.onto.individual, veda.util.queue;
 private import veda.core.common.context, veda.vmodule.vmodule;
-private import veda.util.properd, veda.core.common.type;
+private import properd, veda.core.common.type;
 
 // ////// Logger ///////////////////////////////////////////
 import veda.common.logger;

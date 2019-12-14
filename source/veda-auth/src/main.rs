@@ -3,7 +3,7 @@ extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
-use chrono::{NaiveDateTime, Utc};
+use chrono::Utc;
 use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use rand::{thread_rng, Rng};
@@ -15,18 +15,16 @@ use uuid::*;
 use v_api::{IndvOp, ResultCode};
 use v_authorization::Trace;
 use v_az_lmdb::_authorize;
-use v_module::module::{init_log, Module, get_ticket_from_db};
+use v_module::module::{create_new_ticket, create_sys_ticket, get_ticket_from_db, init_log, Module};
+use v_module::ticket::Ticket;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
-use v_onto::individual2msgpack::to_msgpack;
 use v_search::{FTQuery, FTResult};
-use v_storage::storage::{StorageId, StorageMode};
-use v_module::ticket::Ticket;
+use v_storage::storage::StorageMode;
 
 const EMPTY_SHA256_HASH: &str = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 const DEFAULT_DURATION: i32 = 40000;
 const ALLOW_TRUSTED_GROUP: &str = "cfg:TrustedAuthenticationUserGroup";
-const TICKS_TO_UNIX_EPOCH: i64 = 62135596800000;
 const MAX_COUNT_FAILED_ATTEMPTS: i32 = 5;
 const BLOCKING_PERIOD: i64 = 60 * 25;
 
@@ -51,7 +49,7 @@ fn main() -> std::io::Result<()> {
     } else {
         error!("fail get systicket, create new");
 
-        create_sys_ticket(&mut module)
+        create_sys_ticket(&mut module.storage).id
     };
 
     let pass_lifetime = get_password_lifetime(&mut module);
@@ -168,7 +166,7 @@ fn get_ticket_trusted(tr_ticket_id: Option<&str>, login: Option<&str>, systicket
                             continue;
                         }
 
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut tr_ticket, module);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut tr_ticket, &mut module.storage);
 
                         info!("trusted authenticate, result ticket={:?}", tr_ticket);
 
@@ -371,7 +369,7 @@ fn authenticate(
                         ticket.result = ResultCode::AuthenticationFailed;
                         error!("fail store new password {} for user, user={}", password, person.get_id());
                     } else {
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
                         info!("update password {} for user, user={}", password, person.get_id());
                     }
                     return ticket;
@@ -439,7 +437,7 @@ fn authenticate(
                     }
 
                     if !exist_password.is_empty() && !password.is_empty() && password.len() > 63 && exist_password == password {
-                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, module);
+                        create_new_ticket(login, &user_id, DEFAULT_DURATION, &mut ticket, &mut module.storage);
                         suspicious.remove(login);
                         return ticket;
                     } else {
@@ -481,66 +479,4 @@ fn remove_secret(uses_credential: &mut Individual, person_id: &str, module: &mut
             error!("fail remove secret code for user, user={}", person_id);
         }
     }
-}
-
-fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut Ticket, module: &mut Module) {
-    let mut ticket_indv = Individual::default();
-
-    ticket.result = ResultCode::FailStore;
-    ticket_indv.add_string("rdf:type", "ticket:ticket", Lang::NONE);
-
-    if !ticket.id.is_empty() && !ticket.id.is_empty() {
-        ticket_indv.set_id(&ticket.id);
-    } else {
-        ticket_indv.set_id(&Uuid::new_v4().to_hyphenated().to_string());
-    }
-
-    ticket_indv.add_string("ticket:login", login, Lang::NONE);
-    ticket_indv.add_string("ticket:accessor", user_id, Lang::NONE);
-
-    let now = Utc::now();
-    let start_time_str = format!("{:?}", now.naive_utc());
-
-    if start_time_str.len() > 28 {
-        ticket_indv.add_string("ticket:when", &start_time_str[0..28], Lang::NONE);
-    } else {
-        ticket_indv.add_string("ticket:when", &start_time_str, Lang::NONE);
-    }
-
-    ticket_indv.add_string("ticket:duration", &duration.to_string(), Lang::NONE);
-
-    let mut raw1: Vec<u8> = Vec::new();
-    if to_msgpack(&ticket_indv, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1) {
-        ticket.update_from_individual(&mut ticket_indv);
-        ticket.result = ResultCode::Ok;
-        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
-        ticket.end_time = ticket.start_time + duration as i64 * 10000000;
-
-        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10000 - TICKS_TO_UNIX_EPOCH) / 1000, 0));
-        info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, start_time_str, end_time_str);
-    } else {
-        error!("fail store ticket {:?}", ticket)
-    }
-}
-
-fn create_sys_ticket(module: &mut Module) -> String {
-    let mut ticket = Ticket::default();
-    create_new_ticket("veda", "cfg:VedaSystem", 90000000, &mut ticket, module);
-
-    if ticket.result == ResultCode::Ok {
-        let mut sys_ticket_link = Individual::default();
-        sys_ticket_link.set_id("systicket");
-        sys_ticket_link.add_uri("rdf:type", "rdfs:Resource");
-        sys_ticket_link.add_uri("v-s:resource", &ticket.id);
-        let mut raw1: Vec<u8> = Vec::new();
-        if to_msgpack(&sys_ticket_link, &mut raw1).is_ok() && module.storage.put_kv_raw(StorageId::Tickets, sys_ticket_link.get_id(), raw1) {
-            return ticket.id;
-        } else {
-            error!("fail store system ticket link")
-        }
-    } else {
-        error!("fail create sys ticket")
-    }
-
-    String::default()
 }
