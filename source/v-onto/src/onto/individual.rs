@@ -644,7 +644,7 @@ impl IndividualObj {
         values.clear();
     }
 
-    pub fn add_unique_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+    pub fn add_unique_resources(&mut self, predicate: &str, b: &[Resource]) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
 
         for el in b.iter() {
@@ -658,7 +658,7 @@ impl IndividualObj {
         }
     }
 
-    pub fn remove_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+    pub fn remove_resources(&mut self, predicate: &str, b: &[Resource]) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
 
         for el in b.iter() {
@@ -678,7 +678,7 @@ impl IndividualObj {
         }
     }
 
-    pub fn set_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+    pub fn set_resources(&mut self, predicate: &str, b: &[Resource]) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.clear();
         for el in b.iter() {
@@ -690,7 +690,7 @@ impl IndividualObj {
         }
     }
 
-    pub fn add_resources(&mut self, predicate: &str, b: &Vec<Resource>) {
+    pub fn add_resources(&mut self, predicate: &str, b: &[Resource]) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
 
         for el in b.iter() {
@@ -702,7 +702,7 @@ impl IndividualObj {
         }
     }
 
-    pub fn exclude_and_set_resources(&mut self, predicate: &str, b: &Vec<Resource>, exclude: &Vec<Resource>) {
+    pub fn exclude_and_set_resources(&mut self, predicate: &str, b: &[Resource], exclude: &[Resource]) {
         let values = self.resources.entry(predicate.to_owned()).or_default();
         values.clear();
         for el in b.iter() {

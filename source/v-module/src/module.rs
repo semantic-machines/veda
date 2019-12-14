@@ -336,10 +336,10 @@ pub fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut
     if to_msgpack(&ticket_indv, &mut raw1).is_ok() && storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1) {
         ticket.update_from_individual(&mut ticket_indv);
         ticket.result = ResultCode::Ok;
-        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
-        ticket.end_time = ticket.start_time + duration as i64 * 10000000;
+        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10_000;
+        ticket.end_time = ticket.start_time + duration as i64 * 10_000_000;
 
-        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10000 - TICKS_TO_UNIX_EPOCH) / 1000, 0));
+        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10_000 - TICKS_TO_UNIX_EPOCH) / 1_000, 0));
         info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, start_time_str, end_time_str);
     } else {
         error!("fail store ticket {:?}", ticket)
@@ -348,7 +348,7 @@ pub fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut
 
 pub fn create_sys_ticket(storage: &mut VStorage) -> Ticket {
     let mut ticket = Ticket::default();
-    create_new_ticket("veda", "cfg:VedaSystem", 90000000, &mut ticket, storage);
+    create_new_ticket("veda", "cfg:VedaSystem", 90_000_000, &mut ticket, storage);
 
     if ticket.result == ResultCode::Ok {
         let mut sys_ticket_link = Individual::default();
