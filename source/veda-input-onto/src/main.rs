@@ -194,11 +194,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
 
                 let is_need_store = if let Some(indv_db) = module.get_individual(indv_file.get_id(), &mut Individual::default()) {
                     indv_db.parse_all();
-                    if !indv_db.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion", "v-s:fullUrl"]) {
-                        true
-                    } else {
-                        false
-                    }
+                    !indv_db.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion", "v-s:fullUrl"])
                 } else {
                     true
                 };
