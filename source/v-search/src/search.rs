@@ -118,7 +118,7 @@ impl FTClient {
         if let Err(e) = self.client.dial(self.addr.as_str()) {
             error!("ft-client:fail dial to ft-service, [{}], err={}", self.addr, e);
         } else {
-            info!("sucess connect to ft-service, [{}]", self.addr);
+            info!("success connect to ft-service, [{}]", self.addr);
             self.is_ready = true;
         }
         self.is_ready
