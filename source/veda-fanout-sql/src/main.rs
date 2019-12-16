@@ -6,6 +6,7 @@ extern crate mysql;
 
 use std::collections::HashMap;
 use std::{thread, time, process};
+use chrono::{NaiveDate, NaiveDateTime};
 
 use v_api::ResultCode;
 use v_module::info::ModuleInfo;
@@ -14,7 +15,9 @@ use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
 use v_onto::resource::Resource;
+use v_onto::resource::Value;
 use v_onto::datatype::DataType;
+use v_onto::datatype::Lang;
 use v_queue::consumer::*;
 
 pub struct Context{
@@ -49,7 +52,6 @@ fn main() -> Result<(), i32> {
                 tables,
             };
             load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
-            info!("Ontology: {}", ctx.onto);
             module.listen_queue(
                 &mut queue_consumer,
                 &mut module_info.unwrap(),
@@ -98,14 +100,14 @@ fn process(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
 fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<String>, is_new: bool, module: &mut Module, ctx: &mut Context) -> Result<(), PrepareError> {
     let uri = new_state.get_id().to_string();
 
-    info!("<< Exporting {}", uri);
+    //info!("<< Exporting {}", uri);
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
     let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
 
     if !actual_version.is_empty() && actual_version != uri {
-        info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
+        //info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
         return Ok(());
     }
     let predicates = new_state.get_predicates();
@@ -131,9 +133,9 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
                     if let Some(resources) = prev_state.get_resources(&predicate) {
                         for resource in resources {
                             if resource.order == 0 {
-                                let query = format!("DELETE FROM `{}` WHERE doc_id = `{}`", &predicate, uri);
+                                let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", &predicate, uri);
                                 if let Err(e) = transaction.query(query) {
-                                    error!("Delete individual `{}` from property table `{}` failed", uri, predicate);
+                                    error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
                                     tr_error = true;
                                     break;
                                 }
@@ -143,21 +145,57 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
                 }
             }
 
-            /*let classes = new_state.get_resources("rdf:type")?;
-            for class in classes
-            for predicate in new_state.get_predicates() {
+            if tr_error {
+                error!("Rollback transaction for `{}`", uri);
+                transaction.rollback();
+                return Err(PrepareError::Fatal);
+            }
 
-            }*/
+            let created = NaiveDateTime::from_timestamp(new_state.get_first_datetime("v-s:created").unwrap_or_default(), 0);
+            let deleted = match is_deleted { true => "1", _ => "NULL" };
+
+            new_state.get_resources("rdf:type").unwrap().iter().for_each(|class| {
+                let class_uri = &class.get_uri();
+                new_state.get_predicates().iter().for_each(|predicate| {
+                    new_state.get_resources(predicate).unwrap().iter().for_each(|resource| {
+                        let uri = new_state.get_id();
+                        let value = match &resource.value {
+                            Value::Bool(true) => String::from("1"),
+                            Value::Bool(_) => String::from("0"),
+                            Value::Int(int_value) => int_value.to_string(),
+                            Value::Str(str_value, lang) => format!("'{}'", str_value.replace("'", "\\'")),
+                            Value::Uri(uri_value) => format!("'{}'", uri_value.replace("'", "\\'")),
+                            Value::Num(_, _) => resource.get_float().to_string(),
+                            Value::Datetime(timestamp) => format!("'{}'", NaiveDateTime::from_timestamp(*timestamp, 0)),
+                            _ => String::from("NULL"),
+                        };
+                        let lang = match &resource.get_lang() {
+                            Lang::NONE => String::from("NULL"),
+                            lang=> format!("'{}'", lang.to_string()),
+                        };
+                        let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', '{}', {}, {}, {})",
+                            predicate, uri, class_uri, created, value, lang, deleted
+                        );
+                        //info!("Query: {}", query);
+                        if let Err(e) = transaction.query(query) {
+                            error!("Insert individual `{}` to property table `{}` failed. {:?}", uri, predicate, e);
+                            tr_error = true;
+                        }
+                    });
+                });
+            });
 
             if tr_error {
+                error!("Rollback transaction for `{}`", uri);
                 transaction.rollback();
                 return Err(PrepareError::Fatal);
             } else {
+                //info!("Commit transaction for `{}`", uri);
                 transaction.commit();
             }
         }
     }
-    info!("Export done! >>");
+    info!("{}: Export done!", uri);
     Ok(())
 }
 
@@ -195,10 +233,10 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
                     db, property, sql_type, sql_value_index
                 );
-                info!("Query: {}", query);
+                //info!("Query: {}", query);
                 match conn.query(query) {
                     Ok(_) => {
-                        info!("Table created: {}", property);
+                        //info!("Table created: {}", property);
                         ctx.tables.insert(property.to_string(), true);
                         Ok(())
                     },
@@ -226,7 +264,7 @@ fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'stati
                     tables.insert(name, true);
                 }
             });
-            info!("Tables {:#?}", tables);
+            //info!("Tables {:#?}", tables);
             Ok(tables)
         } else {
             Err("Query error")
@@ -267,8 +305,8 @@ fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Con
                                     };
                                     return Ok(conn)
                                 },
-                                Err(_) => {
-                                    error!("Connection to MySQL failed");
+                                Err(e) => {
+                                    error!("Connection to MySQL failed. {:?}", e);
                                     return Err("Connection to MySQL failed")
                                 },
                             };
