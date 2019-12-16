@@ -183,26 +183,29 @@ impl Module {
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<(), PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T),
     ) {
-        let soc = Socket::new(Protocol::Sub0).unwrap();
+        let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut is_ready_notify_channel = false;
+        let mut count_timeout_error = 0;
 
         loop {
             if !is_ready_notify_channel && !self.notify_channel_url.is_empty() {
-                if let Err(e) = soc.dial(&self.notify_channel_url) {
-                    error!("fail connect to, {} err={}", self.notify_channel_url, e);
-                }
-
+                soc = Socket::new(Protocol::Sub0).unwrap();
                 if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
                     error!("fail set timeout, {} err={}", self.notify_channel_url, e);
                 }
 
-                let all_topics = vec![];
-                if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
-                    error!("fail subscribe, {} err={}", self.notify_channel_url, e);
-                    soc.close()
+                if let Err(e) = soc.dial(&self.notify_channel_url) {
+                    error!("fail connect to, {} err={}", self.notify_channel_url, e);
                 } else {
-                    info! ("success subscribe on queue changes: {}", self.notify_channel_url);
-                    is_ready_notify_channel = true;
+                    let all_topics = vec![];
+                    if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                        error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+                        soc.close();
+                        is_ready_notify_channel = false;
+                    } else {
+                        info!("success subscribe on queue changes: {}", self.notify_channel_url);
+                        is_ready_notify_channel = true;
+                    }
                 }
             }
 
@@ -272,7 +275,15 @@ impl Module {
 
             let wmsg = soc.recv();
             if let Err(e) = wmsg {
-                error!("fail recv from slave node, err={:?}", e);
+                error!("fail recv from queue notify channel, err={:?}", e);
+
+                if count_timeout_error > 0 && size_batch > 0 {
+                    warn!("queue changed but we not received notify message, need reconnect...");
+                    is_ready_notify_channel = false;
+                    count_timeout_error += 1;
+                }
+            } else {
+                count_timeout_error = 0;
             }
         }
     }
