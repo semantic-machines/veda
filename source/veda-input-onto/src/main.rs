@@ -1,10 +1,6 @@
 #[macro_use]
 extern crate log;
 
-// TODO: Store and check CRC of each loaded ttl-file.
-//  - On module start check each file CRC to load ontology changes to DB.
-//  - This will allow to copy ttl-files when system is off.
-
 use chrono::Local;
 use crossbeam_channel::unbounded;
 use env_logger::Builder;
@@ -16,6 +12,9 @@ use rio_api::model::NamedOrBlankNode;
 use rio_api::model::Term::{BlankNode, Literal, NamedNode};
 use rio_api::parser::TriplesParser;
 use rio_turtle::{TurtleError, TurtleParser};
+use ron::de::from_reader;
+use ron::ser::{to_string_pretty, PrettyConfig};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{DirEntry, File};
 use std::io::BufReader;
@@ -29,6 +28,11 @@ use v_module::onto::*;
 use v_onto::datatype::Lang;
 use v_onto::individual::Individual;
 use v_onto::onto::*;
+
+#[derive(Serialize, Deserialize)]
+struct FileHash {
+    data: HashMap<String, String>,
+}
 
 fn main() -> NotifyResult<()> {
     let env_var = "RUST_LOG";
@@ -44,18 +48,12 @@ fn main() -> NotifyResult<()> {
 
     let mut module = Module::default();
 
-    let mut list_candidate_files: Vec<PathBuf> = Vec::new();
-
     let onto_path = "ontology".to_owned();
 
     let mut onto = Onto::default();
     info!("load onto start");
     load_onto(&mut module.fts, &mut module.storage, &mut onto);
     info!("load onto end");
-    if onto.relations.is_empty() {
-        info!("ontology not found");
-        collect_file_paths(&onto_path, &mut list_candidate_files);
-    }
 
     info!("start prepare files");
 
@@ -67,8 +65,66 @@ fn main() -> NotifyResult<()> {
         return Ok(());
     }
 
+    let mut list_files: Vec<PathBuf> = Vec::new();
+    collect_file_paths(&onto_path, &mut list_files);
+
+    let mut new_hashes_set: FileHash = FileHash {
+        data: HashMap::new(),
+    };
+    for el in list_files.iter() {
+        if let Some(s) = el.to_str() {
+            if let Ok(hash) = get_hash_of_file(s) {
+                new_hashes_set.data.insert(s.to_owned(), hash);
+            }
+        }
+    }
+
+    let prev_hashes_set: FileHash;
+    let path_files_hashes = onto_path.clone() + "/files_hashes.ron";
+    if let Ok(f) = File::open(&path_files_hashes) {
+        match from_reader(f) {
+            Ok(x) => prev_hashes_set = x,
+            Err(e) => {
+                error!("Failed to load files_hashes: {}", e);
+                prev_hashes_set = FileHash {
+                    data: HashMap::new(),
+                }
+            }
+        };
+    } else {
+        prev_hashes_set = FileHash {
+            data: HashMap::new(),
+        }
+    }
+
+    let mut list_candidate_files: Vec<PathBuf> = Vec::new();
+    if onto.relations.is_empty() {
+        info!("ontology not found");
+        for el in list_files.iter() {
+            list_candidate_files.push(el.to_owned());
+        }
+    } else {
+        for el in list_files.iter() {
+            if let Some(s) = el.to_str() {
+                let new_hash = new_hashes_set.data.get(s);
+                let prev_hash = prev_hashes_set.data.get(s);
+
+                if prev_hash.is_none() && new_hash.is_some() {
+                    info!("found new file {}", s);
+                    list_candidate_files.push(el.to_owned());
+                } else if prev_hash.is_some() && new_hash.is_none() {
+                    info!("found deleted file {}", s);
+                } else if prev_hash.unwrap() != new_hash.unwrap() {
+                    info!("found changes in file {}", s);
+                    list_candidate_files.push(el.to_owned());
+                }
+            }
+        }
+    }
+
     if !list_candidate_files.is_empty() {
-        processing_files(list_candidate_files, &mut module, &systicket);
+        processing_files(list_candidate_files, &mut new_hashes_set.data, &mut module, &systicket);
+        store_hash_list(&new_hashes_set, &path_files_hashes);
     }
 
     loop {
@@ -87,8 +143,9 @@ fn main() -> NotifyResult<()> {
                             EventKind::Create(_) | EventKind::Modify(_) => {
                                 if event.flag().is_some() {
                                     info!("changed: {:?}", event);
-                                    info!("paths {:?}", event.paths);
-                                    processing_files(event.paths, &mut module, &systicket);
+                                    if processing_files(event.paths, &mut new_hashes_set.data, &mut module, &systicket) > 0 {
+                                        store_hash_list(&new_hashes_set, &path_files_hashes);
+                                    }
                                     prepared_count += 1;
                                 }
                             }
@@ -108,6 +165,18 @@ fn main() -> NotifyResult<()> {
                     }
                 }
             };
+        }
+    }
+}
+
+fn store_hash_list(new_hashes_set: &FileHash, path_files_hashes: &str) {
+    if !new_hashes_set.data.is_empty() {
+        if let Ok(mut file) = File::create(path_files_hashes) {
+            if let Err(e) = file.write_all(to_string_pretty(&new_hashes_set, PrettyConfig::default()).unwrap_or_default().as_bytes()) {
+                error!("fail write hashes of ttl files, err={}", e);
+            }
+        } else {
+            error!("fail create hashes of ttl files");
         }
     }
 }
@@ -136,14 +205,24 @@ fn extract_path_and_name(path: &PathBuf) -> Option<(&str, &str)> {
     None
 }
 
-fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &str) {
+fn processing_files(files_paths: Vec<PathBuf>, hash_list: &mut HashMap<String, String>, module: &mut Module, systicket: &str) -> i32 {
+    let mut count_prepared_ttl_files = 0;
     let mut file2indv: HashMap<String, HashMap<String, Individual>> = HashMap::new();
     let mut priority_list: Vec<(i64, String, String)> = Vec::new();
 
-    for file_path in file_paths {
+    for file_path_buf in files_paths {
+        let file_path = file_path_buf.to_str().unwrap_or_default().to_string();
+        if let Some(ext) = file_path_buf.extension() {
+            if let Some(ext) = ext.to_str() {
+                if ext != "ttl" {
+                    continue;
+                }
+            }
+        }
+
         let path;
         let name;
-        if let Some(w) = extract_path_and_name(&file_path) {
+        if let Some(w) = extract_path_and_name(&file_path_buf) {
             path = w.0;
             name = w.1;
         } else {
@@ -156,6 +235,9 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
 
         let new_hash = match get_hash_of_file(path) {
             Ok(new_h) => {
+                hash_list.remove(&file_path);
+                hash_list.insert(file_path, new_h.clone());
+                count_prepared_ttl_files += 1;
                 if module.get_individual(&new_id, &mut file_info_indv).is_some() {
                     if let Some(old_h) = file_info_indv.get_first_literal("v-s:hash") {
                         if old_h == new_h {
@@ -194,11 +276,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
 
                 let is_need_store = if let Some(indv_db) = module.get_individual(indv_file.get_id(), &mut Individual::default()) {
                     indv_db.parse_all();
-                    if !indv_db.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion", "v-s:fullUrl"]) {
-                        true
-                    } else {
-                        false
-                    }
+                    !indv_db.compare(indv_file, vec!["v-s:updateCounter", "v-s:previousVersion", "v-s:actualVersion", "v-s:fullUrl"])
                 } else {
                     true
                 };
@@ -217,6 +295,7 @@ fn processing_files(file_paths: Vec<PathBuf>, module: &mut Module, systicket: &s
     }
 
     info!("end prepare {} files", file2indv.len());
+    count_prepared_ttl_files
 }
 
 fn full_file_info_indv(onto_id: &str, individuals: &mut HashMap<String, Individual>, new_indv: &mut Individual, hash: Option<String>, path: &str, name: &str) {
@@ -422,7 +501,9 @@ fn collect_file_paths(onto_path: &str, res: &mut Vec<PathBuf>) {
         } else {
             return;
         }
-        res.push(path);
+        if let Ok(p) = path.canonicalize() {
+            res.push(p);
+        }
     }
     visit_dirs(Path::new(&onto_path), res, &prepare_file).unwrap_or_default();
 }

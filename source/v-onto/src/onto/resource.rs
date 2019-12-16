@@ -23,7 +23,7 @@ impl Resource {
     pub fn get_copy(&self) -> Self {
         Resource {
             rtype: self.rtype.clone(),
-            order: self.order.clone(),
+            order: self.order,
             value: self.value.clone(),
         }
     }

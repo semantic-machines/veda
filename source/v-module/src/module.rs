@@ -7,9 +7,11 @@ use ini::Ini;
 use log::LevelFilter;
 use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
+use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
 use std::process;
+use std::time::Duration;
 use uuid::Uuid;
 use v_api::*;
 use v_onto::datatype::Lang;
@@ -181,20 +183,32 @@ impl Module {
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<(), PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T),
     ) {
-        let soc = Socket::new(Protocol::Sub0).unwrap();
-
-        if !self.notify_channel_url.is_empty() {
-            if let Err(e) = soc.dial(&self.notify_channel_url) {
-                error!("fail connect to, {} err={}", self.notify_channel_url, e);
-            }
-
-            let all_topics = vec![];
-            if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
-                error!("fail subscribe, {} err={}", self.notify_channel_url, e);
-            }
-        }
+        let mut soc = Socket::new(Protocol::Sub0).unwrap();
+        let mut is_ready_notify_channel = false;
+        let mut count_timeout_error = 0;
 
         loop {
+            if !is_ready_notify_channel && !self.notify_channel_url.is_empty() {
+                soc = Socket::new(Protocol::Sub0).unwrap();
+                if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
+                    error!("fail set timeout, {} err={}", self.notify_channel_url, e);
+                }
+
+                if let Err(e) = soc.dial(&self.notify_channel_url) {
+                    error!("fail connect to, {} err={}", self.notify_channel_url, e);
+                } else {
+                    let all_topics = vec![];
+                    if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                        error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+                        soc.close();
+                        is_ready_notify_channel = false;
+                    } else {
+                        info!("success subscribe on queue changes: {}", self.notify_channel_url);
+                        is_ready_notify_channel = true;
+                    }
+                }
+            }
+
             let mut size_batch = 0;
 
             before_batch(self, module_context);
@@ -261,7 +275,15 @@ impl Module {
 
             let wmsg = soc.recv();
             if let Err(e) = wmsg {
-                error!("fail recv from slave node, err={:?}", e);
+                error!("fail recv from queue notify channel, err={:?}", e);
+
+                if count_timeout_error > 0 && size_batch > 0 {
+                    warn!("queue changed but we not received notify message, need reconnect...");
+                    is_ready_notify_channel = false;
+                    count_timeout_error += 1;
+                }
+            } else {
+                count_timeout_error = 0;
             }
         }
     }
@@ -336,10 +358,10 @@ pub fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut
     if to_msgpack(&ticket_indv, &mut raw1).is_ok() && storage.put_kv_raw(StorageId::Tickets, ticket_indv.get_id(), raw1) {
         ticket.update_from_individual(&mut ticket_indv);
         ticket.result = ResultCode::Ok;
-        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10000;
-        ticket.end_time = ticket.start_time + duration as i64 * 10000000;
+        ticket.start_time = (TICKS_TO_UNIX_EPOCH + now.timestamp_millis()) * 10_000;
+        ticket.end_time = ticket.start_time + duration as i64 * 10_000_000;
 
-        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10000 - TICKS_TO_UNIX_EPOCH) / 1000, 0));
+        let end_time_str = format!("{:?}", NaiveDateTime::from_timestamp((ticket.end_time / 10_000 - TICKS_TO_UNIX_EPOCH) / 1_000, 0));
         info!("create new ticket {}, login={}, user={}, start={}, end={}", ticket.id, ticket.user_login, ticket.user_uri, start_time_str, end_time_str);
     } else {
         error!("fail store ticket {:?}", ticket)
@@ -348,7 +370,7 @@ pub fn create_new_ticket(login: &str, user_id: &str, duration: i32, ticket: &mut
 
 pub fn create_sys_ticket(storage: &mut VStorage) -> Ticket {
     let mut ticket = Ticket::default();
-    create_new_ticket("veda", "cfg:VedaSystem", 90000000, &mut ticket, storage);
+    create_new_ticket("veda", "cfg:VedaSystem", 90_000_000, &mut ticket, storage);
 
     if ticket.result == ResultCode::Ok {
         let mut sys_ticket_link = Individual::default();
