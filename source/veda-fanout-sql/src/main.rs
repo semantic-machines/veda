@@ -6,9 +6,8 @@ extern crate mysql;
 
 use std::collections::HashMap;
 use std::{thread, time, process};
-use chrono::{NaiveDate, NaiveDateTime};
+use chrono::NaiveDateTime;
 
-use v_api::ResultCode;
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_module::onto::load_onto;
@@ -68,7 +67,7 @@ fn main() -> Result<(), i32> {
 
 fn void(_module: &mut Module, _ctx: &mut Context) {}
 
-fn process(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
+fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
@@ -87,17 +86,17 @@ fn process(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
         error!("fail write module_info, op_id={}, err={:?}", op_id, e)
     }
 
-    if let Some(types) = new_state.get_literals("rdf:type") {
-        for itype in &types {
-            if ctx.onto.is_some_entered(&itype, &["v-s:Exportable"]) {
-                return export(&mut new_state, &mut prev_state, &types, is_new, module, ctx);
+    if let Some(classes) = new_state.get_literals("rdf:type") {
+        for class in &classes {
+            if ctx.onto.is_some_entered(&class, &["v-s:Exportable"]) {
+                return export(&mut new_state, &mut prev_state, &classes, is_new, ctx);
             }
         }
     }
     Ok(())
 }
 
-fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<String>, is_new: bool, module: &mut Module, ctx: &mut Context) -> Result<(), PrepareError> {
+fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec<String>, is_new: bool, ctx: &mut Context) -> Result<(), PrepareError> {
     let uri = new_state.get_id().to_string();
 
     //info!("<< Exporting {}", uri);
@@ -110,8 +109,8 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
         //info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
         return Ok(());
     }
-    let predicates = new_state.get_predicates();
 
+    let predicates = new_state.get_predicates();
     for predicate in &predicates {
         if let Some(resources) = new_state.get_resources(&predicate) {
             if let Some(resource) = resources.first() {
@@ -125,37 +124,26 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
 
     if let Ok(mut conn) = ctx.conn.pool.get_conn() {
         if let Ok(mut transaction) = conn.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false)) {
-
             let mut tr_error = false;
 
             if !is_new {
-                for predicate in prev_state.get_predicates() {
-                    if let Some(resources) = prev_state.get_resources(&predicate) {
-                        for resource in resources {
-                            if resource.order == 0 {
-                                let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", &predicate, uri);
-                                if let Err(e) = transaction.query(query) {
-                                    error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
-                                    tr_error = true;
-                                    break;
-                                }
+                prev_state.get_predicates().iter().for_each(|predicate| {
+                    prev_state.get_resources(&predicate).unwrap().iter().for_each(|resource| {
+                        if resource.order == 0 {
+                            let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate, uri);
+                            if let Err(e) = transaction.query(query) {
+                                error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
+                                tr_error = true;
                             }
                         }
-                    }
-                }
-            }
-
-            if tr_error {
-                error!("Rollback transaction for `{}`", uri);
-                transaction.rollback();
-                return Err(PrepareError::Fatal);
+                    });
+                });
             }
 
             let created = NaiveDateTime::from_timestamp(new_state.get_first_datetime("v-s:created").unwrap_or_default(), 0);
             let deleted = match is_deleted { true => "1", _ => "NULL" };
 
-            new_state.get_resources("rdf:type").unwrap().iter().for_each(|class| {
-                let class_uri = &class.get_uri();
+            classes.iter().for_each(|class| {
                 new_state.get_predicates().iter().for_each(|predicate| {
                     new_state.get_resources(predicate).unwrap().iter().for_each(|resource| {
                         let uri = new_state.get_id();
@@ -163,9 +151,9 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
                             Value::Bool(true) => String::from("1"),
                             Value::Bool(_) => String::from("0"),
                             Value::Int(int_value) => int_value.to_string(),
-                            Value::Str(str_value, lang) => format!("'{}'", str_value.replace("'", "\\'")),
+                            Value::Str(str_value, _lang) => format!("'{}'", str_value.replace("'", "\\'")),
                             Value::Uri(uri_value) => format!("'{}'", uri_value.replace("'", "\\'")),
-                            Value::Num(_, _) => resource.get_float().to_string(),
+                            Value::Num(_m, _e) => resource.get_float().to_string(),
                             Value::Datetime(timestamp) => format!("'{}'", NaiveDateTime::from_timestamp(*timestamp, 0)),
                             _ => String::from("NULL"),
                         };
@@ -174,7 +162,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
                             lang=> format!("'{}'", lang.to_string()),
                         };
                         let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', '{}', {}, {}, {})",
-                            predicate, uri, class_uri, created, value, lang, deleted
+                            predicate, uri, class, created, value, lang, deleted
                         );
                         //info!("Query: {}", query);
                         if let Err(e) = transaction.query(query) {
@@ -186,17 +174,24 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<S
             });
 
             if tr_error {
-                error!("Rollback transaction for `{}`", uri);
-                transaction.rollback();
+                match transaction.rollback() {
+                    Ok(_) => info!("Transaction rolled back for `{}`", uri),
+                    Err(e) => error!("Transaction rolled back failed for `{}`. {:?}", uri, e),
+                }
                 return Err(PrepareError::Fatal);
             } else {
                 //info!("Commit transaction for `{}`", uri);
-                transaction.commit();
+                match transaction.commit() {
+                    Ok(_) => info!("{}: Export done!", uri),
+                    Err(e) => {
+                        error!("Transaction commit failed for `{}`. {:?}", uri, e);
+                        return Err(PrepareError::Fatal);
+                    }
+                }
             }
         }
     }
-    info!("{}: Export done!", uri);
-    Ok(())
+    Err(PrepareError::Recoverable)
 }
 
 fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
