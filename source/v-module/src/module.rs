@@ -7,9 +7,11 @@ use ini::Ini;
 use log::LevelFilter;
 use nng::options::protocol::pubsub::Subscribe;
 use nng::options::Options;
+use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
 use std::process;
+use std::time::Duration;
 use uuid::Uuid;
 use v_api::*;
 use v_onto::datatype::Lang;
@@ -182,19 +184,28 @@ impl Module {
         after_batch: &mut fn(&mut Module, &mut T),
     ) {
         let soc = Socket::new(Protocol::Sub0).unwrap();
-
-        if !self.notify_channel_url.is_empty() {
-            if let Err(e) = soc.dial(&self.notify_channel_url) {
-                error!("fail connect to, {} err={}", self.notify_channel_url, e);
-            }
-
-            let all_topics = vec![];
-            if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
-                error!("fail subscribe, {} err={}", self.notify_channel_url, e);
-            }
-        }
+        let mut is_ready_notify_channel = false;
 
         loop {
+            if !is_ready_notify_channel && !self.notify_channel_url.is_empty() {
+                if let Err(e) = soc.dial(&self.notify_channel_url) {
+                    error!("fail connect to, {} err={}", self.notify_channel_url, e);
+                }
+
+                if let Err(e) = soc.set_opt::<RecvTimeout>(Some(Duration::from_secs(30))) {
+                    error!("fail set timeout, {} err={}", self.notify_channel_url, e);
+                }
+
+                let all_topics = vec![];
+                if let Err(e) = soc.set_opt::<Subscribe>(all_topics) {
+                    error!("fail subscribe, {} err={}", self.notify_channel_url, e);
+                    soc.close()
+                } else {
+                    info! ("success subscribe on queue changes: {}", self.notify_channel_url);
+                    is_ready_notify_channel = true;
+                }
+            }
+
             let mut size_batch = 0;
 
             before_batch(self, module_context);
