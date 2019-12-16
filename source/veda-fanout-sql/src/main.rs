@@ -5,7 +5,7 @@ extern crate log;
 extern crate mysql;
 
 use std::collections::HashMap;
-use std::{thread, time};
+use std::{thread, time, process};
 
 use v_api::ResultCode;
 use v_module::info::ModuleInfo;
@@ -36,7 +36,7 @@ fn main() -> Result<(), i32> {
     let module_info = ModuleInfo::new("./data", "fanout_sql", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
-        return Err(-1);
+        process::exit(101);
     }
 
     let mut module = Module::default();
@@ -55,7 +55,7 @@ fn main() -> Result<(), i32> {
                 &mut module_info.unwrap(),
                 &mut ctx,
                 &mut (void as fn(&mut Module, &mut Context)),
-                &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual)),
+                &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
                 &mut (void as fn(&mut Module, &mut Context)),
             );
             return Ok(());
@@ -66,11 +66,11 @@ fn main() -> Result<(), i32> {
 
 fn void(_module: &mut Module, _ctx: &mut Context) {}
 
-fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) {
+fn process(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("cmd is none");
-        return;
+        return Ok(());
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
@@ -86,35 +86,36 @@ fn prepare(module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context,
     }
 
     if let Some(types) = new_state.get_literals("rdf:type") {
-        for itype in types {
+        for itype in &types {
             if ctx.onto.is_some_entered(&itype, &["v-s:Exportable"]) {
-                export(&mut new_state,&mut prev_state, is_new, module, ctx);
-                break;
+                return export(&mut new_state, &mut prev_state, &types, is_new, module, ctx);
             }
         }
     }
+    Ok(())
 }
 
-fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, module: &mut Module, ctx: &mut Context) {
-    let uri = new_state.get_id();
+fn export(new_state: &mut Individual, prev_state: &mut Individual, types: &Vec<String>, is_new: bool, module: &mut Module, ctx: &mut Context) -> Result<(), PrepareError> {
+    let uri = new_state.get_id().to_string();
+
     info!("<< Exporting {}", uri);
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
     let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
 
-    if !actual_version.is_empty() && actual_version != new_state.get_id() {
-        info!("new {}.v-s:actual_version {} != {}, ignore", new_state.get_id(), &actual_version, new_state.get_id());
-        return;
+    if !actual_version.is_empty() && actual_version != uri {
+        info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
+        return Ok(());
     }
     let predicates = new_state.get_predicates();
 
-    for predicate in predicates {
+    for predicate in &predicates {
         if let Some(resources) = new_state.get_resources(&predicate) {
-            if let Ok(resource) = resources.first() {
+            if let Some(resource) = resources.first() {
                 if let Err(_) = check_create_property_table(&predicate, &resource, ctx) {
-                    error!("Unable to create table for property: `{}`, export aborted for individual: `{}`", predicate, uri);
-                    return;
+                    error!("Fatal error! Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
+                    return Err(PrepareError::Fatal);
                 }
             }
         }
@@ -122,33 +123,42 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool,
 
     if let Ok(mut conn) = ctx.conn.pool.get_conn() {
         if let Ok(mut transaction) = conn.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false)) {
-            for predicate in predicates {
-                if let Some(resources) = new_state.get_resources(&predicate) {
-                    for resource in resources {
-                        if resource.order == 0 {
-                            let query = format!("DELETE FROM `{}` WHERE doc_id = `{}`", &predicate, new_state.get_id());
-                            if let Err(e) = transaction.query(query) {
-                                error!("Delete individual `{}` from property table `{}` failed", uri, predicate);
-                                match transaction.rollback() {
-                                    Ok(_) => {
-                                        info!("Export individual `{}` transaction rollback SUCCESS", uri);
-                                        return;
-                                    },
-                                    Err(_) => {
-                                        error!("Export individual `{}` transaction rollback FAILED", uri);
-                                        return;
-                                    }
+
+            let mut tr_error = false;
+
+            if !is_new {
+                for predicate in prev_state.get_predicates() {
+                    if let Some(resources) = prev_state.get_resources(&predicate) {
+                        for resource in resources {
+                            if resource.order == 0 {
+                                let query = format!("DELETE FROM `{}` WHERE doc_id = `{}`", &predicate, uri);
+                                if let Err(e) = transaction.query(query) {
+                                    error!("Delete individual `{}` from property table `{}` failed", uri, predicate);
+                                    tr_error = true;
+                                    break;
                                 }
                             }
                         }
                     }
-                } else {
-                    continue;
                 }
+            }
+
+            /*let classes = new_state.get_resources("rdf:type")?;
+            for class in classes
+            for predicate in new_state.get_predicates() {
+
+            }*/
+
+            if tr_error {
+                transaction.rollback();
+                return Err(PrepareError::Fatal);
+            } else {
+                transaction.commit();
             }
         }
     }
     info!("Export done! >>");
+    Ok(())
 }
 
 fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
