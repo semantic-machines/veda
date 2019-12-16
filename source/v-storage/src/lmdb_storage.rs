@@ -381,10 +381,8 @@ fn remove_from_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<D
 
                     if let Err(e) = txn.commit() {
                         if let MdbError::Other(c, _) = e {
-                            if c == -30792 {
-                                if grow_db(db_env) {
-                                    return remove_from_lmdb(db_env, db_handle, key);
-                                }
+                            if c == -30792 && grow_db(db_env) {
+                                return remove_from_lmdb(db_env, db_handle, key);
                             }
                         }
                         error!("LMDB:failed to commit, err={}", e);
@@ -422,10 +420,8 @@ fn put_kv_lmdb(db_env: &Result<Environment, MdbError>, db_handle: &Result<DbHand
 
                     if let Err(e) = txn.commit() {
                         if let MdbError::Other(c, _) = e {
-                            if c == -30792 {
-                                if grow_db(db_env) {
-                                    return put_kv_lmdb(db_env, db_handle, key, val);
-                                }
+                            if c == -30792 && grow_db(db_env) {
+                                return put_kv_lmdb(db_env, db_handle, key, val);
                             }
                         }
                         error!("LMDB:failed to commit, err={}", e);
