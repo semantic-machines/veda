@@ -99,8 +99,6 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
 fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec<String>, is_new: bool, ctx: &mut Context) -> Result<(), PrepareError> {
     let uri = new_state.get_id().to_string();
 
-    info!("Export {}", uri);
-
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
     let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
@@ -194,16 +192,16 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         }
         return Err(PrepareError::Fatal);
     }
-    match transaction.commit() {
+    return match transaction.commit() {
         Ok(_) => {
-            info!("Transaction committed for `{}`", uri);
-            return Ok(());
+            info!("`{}` Ok", uri);
+            Ok(())
         },
         Err(e) => {
             error!("Transaction commit failed for `{}`. {:?}", uri, e);
-            return Err(PrepareError::Fatal);
-        }
-    }
+            Err(PrepareError::Fatal)
+        },
+    };
 }
 
 fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
