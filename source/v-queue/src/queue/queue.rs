@@ -85,8 +85,13 @@ impl Queue {
                     return Err(ErrorQueue::FailOpen);
                 }
 
+                if let Err(e) = queue.put_info_push() {
+                    error!("queue:{}:{} open, write info of part, err={:?}", queue.name, queue.id, e);
+                    return Err(ErrorQueue::FailWrite);
+                }
+
                 if let Err(e) = queue.put_info_queue() {
-                    error!("queue:{}:{} open, write info, err={:?}", queue.name, queue.id, e);
+                    error!("queue:{}:{} open, write info of queue, err={:?}", queue.name, queue.id, e);
                     return Err(ErrorQueue::FailWrite);
                 }
             }
