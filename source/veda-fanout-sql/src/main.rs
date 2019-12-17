@@ -210,58 +210,57 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
 
 fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
     if let Some(true) = ctx.tables.get(property) {
-        Ok(())
-    } else {
-        if let Some(db) = ctx.conn.opts.get_db_name() {
-            if let Ok(mut conn) = ctx.conn.pool.get_conn() {
-                let mut sql_type = "";
-                let mut sql_value_index = ", INDEX civ(`value`)";
-                match &resource.rtype {
-                    DataType::Boolean => sql_type = "BOOL",
-                    DataType::Datetime => sql_type = "DATETIME",
-                    DataType::Decimal => sql_type = "DECIMAL (14,4)",
-                    DataType::Integer => sql_type = "INTEGER",
-                    DataType::String => {
-                        sql_type = "TEXT";
-                        sql_value_index = "";
-                    }
-                    DataType::Uri => sql_type = "CHAR(128)",
-                    _unsupported => error!("Unsupported property value type: {:#?}", _unsupported),
-                }
-                let query = format!(
-                "CREATE TABLE `{}`.`{}` ( \
-                `ID` BIGINT NOT NULL AUTO_INCREMENT, \
-                `doc_id` CHAR(128) NOT NULL, \
-                `doc_type` CHAR(128) NOT NULL, \
-                `created` DATETIME NULL, \
-                `value` {} NULL, \
-                `lang` CHAR(2) NULL, \
-                `deleted` BOOL NULL, \
-                 PRIMARY KEY (`ID`), \
-                 INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) {} \
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
-                    db, property, sql_type, sql_value_index
-                );
-                //info!("Query: {}", query);
-                match conn.query(query) {
-                    Ok(_) => {
-                        //info!("Table created: {}", property);
-                        ctx.tables.insert(property.to_string(), true);
-                        Ok(())
-                    },
-                    Err(e) => {
-                        error!("Table create error: {}", e);
-                        Err("Table create error")
-                    }
-                }
-            } else {
-                Err("No connection in pool")
-            }
-        } else {
-            error!("No DB specified");
-            Err("No DB specified")
-        }
+        return Ok(());
     }
+
+    let db = match ctx.conn.opts.get_db_name() {
+        None => return Err("No DB specified"),
+        Some(db) => db,
+    };
+
+    let mut conn = match ctx.conn.pool.get_conn()  {
+        Err(_) => return Err("No connection in pool"),
+        Ok(conn) => conn,
+    };
+
+    let mut sql_type = "";
+    let mut sql_value_index = ", INDEX civ(`value`)";
+    match &resource.rtype {
+        DataType::Boolean => sql_type = "BOOL",
+        DataType::Datetime => sql_type = "DATETIME",
+        DataType::Decimal => sql_type = "DECIMAL (14,4)",
+        DataType::Integer => sql_type = "INTEGER",
+        DataType::String => {
+            sql_type = "TEXT";
+            sql_value_index = "";
+        },
+        DataType::Uri => sql_type = "CHAR(128)",
+        _unsupported => error!("Unsupported property value type: {:#?}", _unsupported),
+    }
+    let query = format!(
+        "CREATE TABLE `{}`.`{}` ( \
+            `ID` BIGINT NOT NULL AUTO_INCREMENT, \
+            `doc_id` CHAR(128) NOT NULL, \
+            `doc_type` CHAR(128) NOT NULL, \
+            `created` DATETIME NULL, \
+            `value` {} NULL, \
+            `lang` CHAR(2) NULL, \
+            `deleted` BOOL NULL, \
+             PRIMARY KEY (`ID`), \
+             INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) {} \
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
+        db, property, sql_type, sql_value_index
+    );
+    return match conn.query(query) {
+        Ok(_) => {
+            ctx.tables.insert(property.to_string(), true);
+            Ok(())
+        },
+        Err(e) => {
+            error!("Table create error: {}", e);
+            Err("Table create error")
+        },
+    };
 }
 
 fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'static str> {
