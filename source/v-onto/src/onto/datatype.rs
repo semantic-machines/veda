@@ -28,4 +28,12 @@ impl Lang {
             _ => Lang::NONE,
         }
     }
+
+    pub fn to_string(&self) -> &str {
+        match self {
+            Lang::RU => "ru",
+            Lang::EN => "en",
+            Lang::NONE => "none",
+        }
+    }
 }
