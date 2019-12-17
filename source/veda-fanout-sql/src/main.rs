@@ -106,7 +106,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
     let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
 
     if !actual_version.is_empty() && actual_version != uri {
-        info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
+        info!("Skip not actual version. {}.v-s:actual_version {} != {}", uri, &actual_version, uri);
         return Ok(());
     }
 
@@ -115,30 +115,28 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         if let Some(resources) = new_state.get_resources(&predicate) {
             if let Some(resource) = resources.first() {
                 if let Err(_) = check_create_property_table(&predicate, &resource, ctx) {
-                    error!("Fatal error! Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
+                    error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
                     return Err(PrepareError::Fatal);
                 }
             }
         }
     }
 
-    let conn = ctx.conn.pool.get_conn();
+    let mut conn = match ctx.conn.pool.get_conn() {
+        Err(e) => {
+            error!("Get connection failed. {:?}", e);
+            return Err(PrepareError::Recoverable);
+        },
+        Ok(conn) => conn,
+    };
 
-    if let Err(e) = conn {
-        error!("Get connection failed. {:?}", e);
-        return Err(PrepareError::Recoverable);
-    }
-
-    let mut conn = conn.unwrap();
-
-    let transaction = conn.start_transaction(true, Some(mysql::IsolationLevel::ReadCommitted), None);
-
-    if let Err(e) = transaction {
-        error!("Transaction start failed. {:?}", e);
-        return Err(PrepareError::Recoverable);
-    }
-
-    let mut transaction = transaction.unwrap();
+    let mut transaction = match conn.start_transaction(true, Some(mysql::IsolationLevel::ReadCommitted), None) {
+        Err(e) => {
+            error!("Transaction start failed. {:?}", e);
+            return Err(PrepareError::Recoverable);
+        },
+        Ok(transaction) => transaction,
+    };
 
     let mut tr_error = false;
 
