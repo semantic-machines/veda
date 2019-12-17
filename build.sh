@@ -198,7 +198,7 @@ if [ -z $1 ] || [ $1 == "fanout-email" ] || [ $1 == "veda-fanout-email" ] || [ $
     cp $CARGO_TARGET_DIR/release/veda-fanout-email $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 == "mv1" ]; then
+if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 == "mv2" ]; then
     cd source/veda-fanout-sql
     cargo build --release
     cd $BUILD_PATH
