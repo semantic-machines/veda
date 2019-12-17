@@ -43,7 +43,7 @@ fn main() -> Result<(), i32> {
 
     let mut module = Module::default();
 
-    if let Ok(conn) = connect_to_mysql(&mut module, -1, 30000) {
+    if let Ok(conn) = connect_to_mysql(&mut module, -1, 20000) {
         if let Ok(tables) = read_tables(&conn) {
             let mut ctx = Context {
                 onto: Onto::default(),
@@ -99,14 +99,14 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
 fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec<String>, is_new: bool, ctx: &mut Context) -> Result<(), PrepareError> {
     let uri = new_state.get_id().to_string();
 
-    //info!("<< Exporting {}", uri);
+    info!("Export {}", uri);
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
     let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
 
     if !actual_version.is_empty() && actual_version != uri {
-        //info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
+        info!("new {}.v-s:actual_version {} != {}, ignore", uri, &actual_version, uri);
         return Ok(());
     }
 
@@ -122,76 +122,90 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         }
     }
 
-    if let Ok(mut conn) = ctx.conn.pool.get_conn() {
-        if let Ok(mut transaction) = conn.start_transaction(true, Option::from(mysql::IsolationLevel::ReadCommitted), Option::from(false)) {
-            let mut tr_error = false;
+    let conn = ctx.conn.pool.get_conn();
 
-            if !is_new {
-                prev_state.get_predicates().iter().for_each(|predicate| {
-                    prev_state.get_resources(&predicate).unwrap().iter().for_each(|resource| {
-                        if resource.order == 0 {
-                            let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate, uri);
-                            if let Err(e) = transaction.query(query) {
-                                error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
-                                tr_error = true;
-                            }
-                        }
-                    });
-                });
-            }
+    if let Err(e) = conn {
+        error!("Get connection failed. {:?}", e);
+        return Err(PrepareError::Recoverable);
+    }
 
-            let created = NaiveDateTime::from_timestamp(new_state.get_first_datetime("v-s:created").unwrap_or_default(), 0);
-            let deleted = match is_deleted { true => "1", _ => "NULL" };
+    let mut conn = conn.unwrap();
 
-            classes.iter().for_each(|class| {
-                new_state.get_predicates().iter().for_each(|predicate| {
-                    new_state.get_resources(predicate).unwrap().iter().for_each(|resource| {
-                        let uri = new_state.get_id();
-                        let value = match &resource.value {
-                            Value::Bool(true) => String::from("1"),
-                            Value::Bool(_) => String::from("0"),
-                            Value::Int(int_value) => int_value.to_string(),
-                            Value::Str(str_value, _lang) => format!("'{}'", str_value.replace("'", "\\'")),
-                            Value::Uri(uri_value) => format!("'{}'", uri_value.replace("'", "\\'")),
-                            Value::Num(_m, _e) => resource.get_float().to_string(),
-                            Value::Datetime(timestamp) => format!("'{}'", NaiveDateTime::from_timestamp(*timestamp, 0)),
-                            _ => String::from("NULL"),
-                        };
-                        let lang = match &resource.get_lang() {
-                            Lang::NONE => String::from("NULL"),
-                            lang=> format!("'{}'", lang.to_string()),
-                        };
-                        let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', '{}', {}, {}, {})",
-                            predicate, uri, class, created, value, lang, deleted
-                        );
-                        //info!("Query: {}", query);
-                        if let Err(e) = transaction.query(query) {
-                            error!("Insert individual `{}` to property table `{}` failed. {:?}", uri, predicate, e);
-                            tr_error = true;
-                        }
-                    });
-                });
-            });
+    let transaction = conn.start_transaction(true, Some(mysql::IsolationLevel::ReadCommitted), None);
 
-            if tr_error {
-                match transaction.rollback() {
-                    Ok(_) => info!("Transaction rolled back for `{}`", uri),
-                    Err(e) => error!("Transaction rolled back failed for `{}`. {:?}", uri, e),
-                }
-                return Err(PrepareError::Fatal);
-            } else {
-                //info!("Commit transaction for `{}`", uri);
-                match transaction.commit() {
-                    Ok(_) => info!("{}: Export done!", uri),
-                    Err(e) => {
-                        error!("Transaction commit failed for `{}`. {:?}", uri, e);
-                        return Err(PrepareError::Fatal);
+    if let Err(e) = transaction {
+        error!("Transaction start failed. {:?}", e);
+        return Err(PrepareError::Recoverable);
+    }
+
+    let mut transaction = transaction.unwrap();
+
+    let mut tr_error = false;
+
+    if !is_new {
+        prev_state.get_predicates().iter().for_each(|predicate| {
+            prev_state.get_resources(&predicate).unwrap().iter().for_each(|resource| {
+                if resource.order == 0 {
+                    let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate, uri);
+                    if let Err(e) = transaction.query(query) {
+                        error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
+                        tr_error = true;
                     }
                 }
-            }
+            });
+        });
+    }
+
+    let created = NaiveDateTime::from_timestamp(new_state.get_first_datetime("v-s:created").unwrap_or_default(), 0);
+    let deleted = match is_deleted { true => "1", _ => "NULL" };
+
+    classes.iter().for_each(|class| {
+        new_state.get_predicates().iter().for_each(|predicate| {
+            new_state.get_resources(predicate).unwrap().iter().for_each(|resource| {
+                let uri = new_state.get_id();
+                let value = match &resource.value {
+                    Value::Bool(true) => String::from("1"),
+                    Value::Bool(_) => String::from("0"),
+                    Value::Int(int_value) => int_value.to_string(),
+                    Value::Str(str_value, _lang) => format!("'{}'", str_value.replace("'", "\\'")),
+                    Value::Uri(uri_value) => format!("'{}'", uri_value.replace("'", "\\'")),
+                    Value::Num(_m, _e) => resource.get_float().to_string(),
+                    Value::Datetime(timestamp) => format!("'{}'", NaiveDateTime::from_timestamp(*timestamp, 0)),
+                    _ => String::from("NULL"),
+                };
+                let lang = match &resource.get_lang() {
+                    Lang::NONE => String::from("NULL"),
+                    lang=> format!("'{}'", lang.to_string()),
+                };
+                let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', '{}', {}, {}, {})",
+                                    predicate, uri, class, created, value, lang, deleted
+                );
+                //info!("Query: {}", query);
+                if let Err(e) = transaction.query(query) {
+                    error!("Insert individual `{}` to property table `{}` failed. {:?}", uri, predicate, e);
+                    tr_error = true;
+                }
+            });
+        });
+    });
+
+    if tr_error {
+        match transaction.rollback() {
+            Ok(_) => info!("Transaction rolled back for `{}`", uri),
+            Err(e) => error!("Transaction rolled back failed for `{}`. {:?}", uri, e),
+        }
+        return Err(PrepareError::Fatal);
+    }
+    match transaction.commit() {
+        Ok(_) => {
+            info!("Transaction committed for `{}`", uri);
+            return Ok(());
+        },
+        Err(e) => {
+            error!("Transaction commit failed for `{}`. {:?}", uri, e);
+            return Err(PrepareError::Fatal);
         }
     }
-    Err(PrepareError::Recoverable)
 }
 
 fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
