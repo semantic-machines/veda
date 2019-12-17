@@ -319,9 +319,17 @@ class Consumer
         }
 
         File *ff_queue_r = queue.get_r_queue_file(id);
-        ff_queue_r.seek(start_pos_record);
 
-        ff_queue_r.rawRead(header_buff);
+        ff_queue_r.seek(start_pos_record);
+		auto readed_len = ff_queue_r.rawRead(header_buff).length;
+
+        if (readed_len != header_buff.length) {
+			if (readed_len > 0) {
+				log.trace("ERR! queue:consumer(%s):pop, fail read header from queue", name);
+			}
+            return null;
+		}
+
         header.from_buff(header_buff);
 
         if (header.start_pos != start_pos_record) {
@@ -578,10 +586,16 @@ class Queue
     }
 
     private File *get_r_queue_file(int part_id){
+
         if (id != part_id || ff_queue_r is null) {
+
             id = part_id;
             string part_name = name ~ "-" ~ text(id);
             file_name_queue = path ~ "/" ~ part_name ~ "/" ~ name ~ "_queue";
+
+			if (ff_queue_r !is null) {
+				ff_queue_r.close ();
+			}
 
             ff_queue_r = new File(file_name_queue, "r");
         }
