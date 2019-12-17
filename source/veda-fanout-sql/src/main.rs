@@ -43,7 +43,7 @@ fn main() -> Result<(), i32> {
 
     let mut module = Module::default();
 
-    if let Ok(conn) = connect_to_mysql(&mut module, -1, 20000) {
+    if let Ok(conn) = connect_to_mysql(&mut module, 5, 20000) {
         if let Ok(tables) = read_tables(&conn) {
             let mut ctx = Context {
                 onto: Onto::default(),
@@ -59,10 +59,9 @@ fn main() -> Result<(), i32> {
                 &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
                 &mut (void as fn(&mut Module, &mut Context)),
             );
-            return Ok(());
         }
     }
-    Err(-1)
+    process::exit(102);
 }
 
 fn void(_module: &mut Module, _ctx: &mut Context) {}
@@ -262,20 +261,16 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
 fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'static str> {
     let mut tables: HashMap<String, bool> = HashMap::new();
     if let Some(db) = connection.opts.get_db_name() {
-        if let Ok(result) = connection.pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = :db;", params!{"db" => db}) {
+        if let Ok(result) = connection.pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = :db;", params! {"db" => db}) {
             result.for_each(|row| {
                 if let Some(name) = row.unwrap().get(0) {
                     tables.insert(name, true);
                 }
             });
-            //info!("Tables {:#?}", tables);
-            Ok(tables)
-        } else {
-            Err("Query error")
+            return Ok(tables);
         }
-    } else {
-        Err("No DB specified")
     }
+    Err("Read existing tables error")
 }
 
 fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Connection, &'static str> {
@@ -307,13 +302,13 @@ fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Con
                                       opts,
                                       pool,
                                     };
-                                    return Ok(conn)
+                                    return Ok(conn);
                                 },
                                 Err(e) => {
                                     error!("Connection to MySQL failed. {:?}", e);
-                                    return Err("Connection to MySQL failed")
+                                    return Err("Connection to MySQL failed");
                                 },
-                            };
+                            }
                         }
                     }
                 }
