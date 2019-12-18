@@ -67,13 +67,13 @@ fn void(_module: &mut Module, _ctx: &mut Context) {}
 fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
-        error!("cmd is none");
+        error!("Queue element cmd is none. Skip element.");
         return Ok(());
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
     if let Err(e) = module_info.put_info(op_id, op_id) {
-        error!("fail write module_info, op_id={}, err={:?}", op_id, e)
+        error!("Failed to write module_info, op_id={}, err={:?}", op_id, e);
     }
 
     let mut prev_state = Individual::default();
