@@ -112,17 +112,6 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         return Ok(());
     }
 
-    for predicate in new_state.get_predicates() {
-        if let Some(resources) = new_state.get_resources(&predicate) {
-            if let Some(resource) = resources.first() {
-                if let Err(_) = check_create_property_table(&predicate, &resource, ctx) {
-                    error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
-                    return Err(PrepareError::Fatal);
-                }
-            }
-        }
-    }
-
     let mut conn = match ctx.chan.pool.get_conn() {
         Err(e) => {
             error!("Get connection failed. {:?}", e);
@@ -140,6 +129,17 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
     };
 
     let mut tr_error = false;
+
+    for predicate in new_state.get_predicates() {
+        if let Some(resources) = new_state.get_resources(&predicate) {
+            if let Some(resource) = resources.first() {
+                if let Err(_) = check_create_property_table(&mut ctx.tables, &predicate, &resource, &mut transaction) {
+                    error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
+                    tr_error = true;
+                }
+            }
+        }
+    }
 
     if !is_new {
         prev_state.get_predicates().iter().for_each(|predicate| {
@@ -182,7 +182,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
                 let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', {}, {}, {}, {})",
                                     predicate, uri, class, created, value, lang, deleted
                 );
-                info!("Query: {}", query);
+                //info!("Query: {}", query);
                 if let Err(e) = transaction.query(query) {
                     error!("Insert individual `{}` to property table `{}` failed. {:?}", uri, predicate, e);
                     tr_error = true;
@@ -210,16 +210,10 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
     };
 }
 
-fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Context) -> Result<(), &'static str> {
-    if let Some(true) = ctx.tables.get(property) {
+fn check_create_property_table(tables: &mut HashMap<String, bool>, property: &str, resource: &Resource, transaction: &mut mysql::Transaction) -> Result<(), &'static str> {
+    if let Some(true) = tables.get(property) {
         return Ok(());
     }
-
-    let mut conn = match ctx.chan.pool.get_conn()  {
-        Err(_) => return Err("No connection in pool"),
-        Ok(conn) => conn,
-    };
-
     let mut sql_type = "";
     let mut sql_value_index = ", INDEX civ(`value`)";
     match &resource.rtype {
@@ -248,15 +242,12 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
         property, sql_type, sql_value_index
     );
-    return match conn.query(query) {
+    return match transaction.query(query) {
         Ok(_) => {
-            ctx.tables.insert(property.to_string(), true);
+            tables.insert(property.to_owned(), true);
             Ok(())
         },
-        Err(e) => {
-            error!("Table create error: {}", e);
-            Err("Table create error")
-        },
+        Err(_) => Err("Unable to create table"),
     };
 }
 
