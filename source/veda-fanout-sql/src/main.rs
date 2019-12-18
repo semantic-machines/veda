@@ -21,47 +21,52 @@ use v_queue::consumer::*;
 
 pub struct Context{
     onto: Onto,
-    conn: Connection,
+    chan: Channel,
     tables: HashMap<String, bool>,
 }
 
-pub struct Connection {
+pub struct Channel {
     opts: mysql::Opts,
     pool: mysql::Pool,
 }
 
-fn main() -> Result<(), i32> {
+fn main() {
     init_log();
 
     let mut queue_consumer = Consumer::new("./data/queue", "fanout_sql", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-
     let module_info = ModuleInfo::new("./data", "fanout_sql", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
         process::exit(101);
     }
-
     let mut module = Module::default();
 
-    if let Ok(conn) = connect_to_mysql(&mut module, 5, 20000) {
-        if let Ok(tables) = read_tables(&conn) {
-            let mut ctx = Context {
-                onto: Onto::default(),
-                conn,
-                tables,
-            };
-            load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
-            module.listen_queue(
-                &mut queue_consumer,
-                &mut module_info.unwrap(),
-                &mut ctx,
-                &mut (void as fn(&mut Module, &mut Context)),
-                &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
-                &mut (void as fn(&mut Module, &mut Context)),
-            );
-        }
-    }
-    process::exit(102);
+    let chan = match connect_to_mysql(&mut module, 5, 20000) {
+        Err(_) => process::exit(101),
+        Ok(chan) => chan,
+    };
+
+    let tables = match read_tables(&chan) {
+        Err(_) => process::exit(101),
+        Ok(tables) => tables,
+    };
+
+    let mut ctx = Context {
+        onto: Onto::default(),
+        chan,
+        tables,
+    };
+
+    load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
+
+    module.listen_queue(
+        &mut queue_consumer,
+        &mut module_info.unwrap(),
+        &mut ctx,
+        &mut (void as fn(&mut Module, &mut Context)),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
+        &mut (void as fn(&mut Module, &mut Context)),
+    );
 }
 
 fn void(_module: &mut Module, _ctx: &mut Context) {}
@@ -107,8 +112,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         return Ok(());
     }
 
-    let predicates = new_state.get_predicates();
-    for predicate in &predicates {
+    for predicate in new_state.get_predicates() {
         if let Some(resources) = new_state.get_resources(&predicate) {
             if let Some(resource) = resources.first() {
                 if let Err(_) = check_create_property_table(&predicate, &resource, ctx) {
@@ -119,7 +123,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         }
     }
 
-    let mut conn = match ctx.conn.pool.get_conn() {
+    let mut conn = match ctx.chan.pool.get_conn() {
         Err(e) => {
             error!("Get connection failed. {:?}", e);
             return Err(PrepareError::Recoverable);
@@ -151,7 +155,10 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         });
     }
 
-    let created = NaiveDateTime::from_timestamp(new_state.get_first_datetime("v-s:created").unwrap_or_default(), 0);
+    let created = match new_state.get_first_datetime("v-s:created") {
+        Some(timestamp) => format!("'{}'", NaiveDateTime::from_timestamp(timestamp, 0).to_string()),
+        None => String::from("NULL"),
+    };
     let deleted = match is_deleted { true => "1", _ => "NULL" };
 
     classes.iter().for_each(|class| {
@@ -172,10 +179,10 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
                     Lang::NONE => String::from("NULL"),
                     lang=> format!("'{}'", lang.to_string()),
                 };
-                let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', '{}', {}, {}, {})",
+                let query = format!("INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', {}, {}, {}, {})",
                                     predicate, uri, class, created, value, lang, deleted
                 );
-                //info!("Query: {}", query);
+                info!("Query: {}", query);
                 if let Err(e) = transaction.query(query) {
                     error!("Insert individual `{}` to property table `{}` failed. {:?}", uri, predicate, e);
                     tr_error = true;
@@ -208,12 +215,7 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
         return Ok(());
     }
 
-    let db = match ctx.conn.opts.get_db_name() {
-        None => return Err("No DB specified"),
-        Some(db) => db,
-    };
-
-    let mut conn = match ctx.conn.pool.get_conn()  {
+    let mut conn = match ctx.chan.pool.get_conn()  {
         Err(_) => return Err("No connection in pool"),
         Ok(conn) => conn,
     };
@@ -233,7 +235,7 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
         _unsupported => error!("Unsupported property value type: {:#?}", _unsupported),
     }
     let query = format!(
-        "CREATE TABLE `{}`.`{}` ( \
+        "CREATE TABLE `{}` ( \
             `ID` BIGINT NOT NULL AUTO_INCREMENT, \
             `doc_id` CHAR(128) NOT NULL, \
             `doc_type` CHAR(128) NOT NULL, \
@@ -244,7 +246,7 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
              PRIMARY KEY (`ID`), \
              INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) {} \
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
-        db, property, sql_type, sql_value_index
+        property, sql_type, sql_value_index
     );
     return match conn.query(query) {
         Ok(_) => {
@@ -258,10 +260,10 @@ fn check_create_property_table(property: &str, resource: &Resource, ctx: &mut Co
     };
 }
 
-fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'static str> {
+fn read_tables(chan: &Channel) -> Result<HashMap<String, bool>, &'static str> {
     let mut tables: HashMap<String, bool> = HashMap::new();
-    if let Some(db) = connection.opts.get_db_name() {
-        if let Ok(result) = connection.pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = :db;", params! {"db" => db}) {
+    if let Some(db) = chan.opts.get_db_name() {
+        if let Ok(result) = chan.pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = :db;", params! {"db" => db}) {
             result.for_each(|row| {
                 if let Some(name) = row.unwrap().get(0) {
                     tables.insert(name, true);
@@ -273,7 +275,7 @@ fn read_tables(connection: &Connection) -> Result<HashMap<String, bool>, &'stati
     Err("Read existing tables error")
 }
 
-fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Connection, &'static str> {
+fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Channel, &'static str> {
     if let Some(node) = module.get_individual("cfg:standart_node", &mut Individual::default()) {
         if let Some(v) = node.get_literals("v-s:push_individual_by_event") {
             for el in v {
@@ -298,11 +300,11 @@ fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Con
                             match mysql::Pool::new(opts.clone()) {
                                 Ok(pool) => {
                                     info!("Connection to MySQL established successfully");
-                                    let conn = Connection {
+                                    let chan = Channel {
                                       opts,
                                       pool,
                                     };
-                                    return Ok(conn);
+                                    return Ok(chan);
                                 },
                                 Err(e) => {
                                     error!("Connection to MySQL failed. {:?}", e);
