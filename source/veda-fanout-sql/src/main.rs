@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate log;
-
-#[macro_use]
 extern crate mysql;
 
 use std::collections::HashMap;
@@ -21,13 +19,8 @@ use v_queue::consumer::*;
 
 pub struct Context{
     onto: Onto,
-    chan: Channel,
-    tables: HashMap<String, bool>,
-}
-
-pub struct Channel {
-    opts: mysql::Opts,
     pool: mysql::Pool,
+    tables: HashMap<String, bool>,
 }
 
 fn main() {
@@ -41,19 +34,19 @@ fn main() {
     }
     let mut module = Module::default();
 
-    let chan = match connect_to_mysql(&mut module, 5, 20000) {
+    let pool = match connect_to_mysql(&mut module, 5, 20000) {
         Err(_) => process::exit(101),
-        Ok(chan) => chan,
+        Ok(pool) => pool,
     };
 
-    let tables = match read_tables(&chan) {
+    let tables = match read_tables(&pool) {
         Err(_) => process::exit(101),
         Ok(tables) => tables,
     };
 
     let mut ctx = Context {
         onto: Onto::default(),
-        chan,
+        pool,
         tables,
     };
 
@@ -79,16 +72,15 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
+    if let Err(e) = module_info.put_info(op_id, op_id) {
+        error!("fail write module_info, op_id={}, err={:?}", op_id, e)
+    }
 
     let mut prev_state = Individual::default();
     let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
 
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
-
-    if let Err(e) = module_info.put_info(op_id, op_id) {
-        error!("fail write module_info, op_id={}, err={:?}", op_id, e)
-    }
 
     if let Some(classes) = new_state.get_literals("rdf:type") {
         for class in &classes {
@@ -112,7 +104,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
         return Ok(());
     }
 
-    let mut conn = match ctx.chan.pool.get_conn() {
+    let mut conn = match ctx.pool.get_conn() {
         Err(e) => {
             error!("Get connection failed. {:?}", e);
             return Err(PrepareError::Recoverable);
@@ -130,21 +122,16 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
 
     let mut tr_error = false;
 
-    for predicate in new_state.get_predicates() {
-        if let Some(resources) = new_state.get_resources(&predicate) {
-            if let Some(resource) = resources.first() {
-                if let Err(_) = check_create_property_table(&mut ctx.tables, &predicate, &resource, &mut transaction) {
-                    error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
-                    tr_error = true;
-                }
-            }
-        }
-    }
-
+    // Remove previous item from DB
     if !is_new {
         prev_state.get_predicates().iter().for_each(|predicate| {
             prev_state.get_resources(&predicate).unwrap().iter().for_each(|resource| {
                 if resource.order == 0 {
+                    // Check or create table before delete
+                    if let Err(_) = check_create_property_table(&mut ctx.tables, &predicate, &resource, &mut transaction) {
+                        error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
+                        tr_error = true;
+                    }
                     let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate, uri);
                     if let Err(e) = transaction.query(query) {
                         error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
@@ -164,6 +151,13 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &Vec
     classes.iter().for_each(|class| {
         new_state.get_predicates().iter().for_each(|predicate| {
             new_state.get_resources(predicate).unwrap().iter().for_each(|resource| {
+                // Check or create table before insert
+                if resource.order == 0 {
+                    if let Err(_) = check_create_property_table(&mut ctx.tables, &predicate, &resource, &mut transaction) {
+                        error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
+                        tr_error = true;
+                    }
+                }
                 let uri = new_state.get_id();
                 let value = match &resource.value {
                     Value::Bool(true) => String::from("1"),
@@ -251,22 +245,20 @@ fn check_create_property_table(tables: &mut HashMap<String, bool>, property: &st
     };
 }
 
-fn read_tables(chan: &Channel) -> Result<HashMap<String, bool>, &'static str> {
+fn read_tables(pool: &mysql::Pool) -> Result<HashMap<String, bool>, &'static str> {
     let mut tables: HashMap<String, bool> = HashMap::new();
-    if let Some(db) = chan.opts.get_db_name() {
-        if let Ok(result) = chan.pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = :db;", params! {"db" => db}) {
-            result.for_each(|row| {
-                if let Some(name) = row.unwrap().get(0) {
-                    tables.insert(name, true);
-                }
-            });
-            return Ok(tables);
-        }
+    if let Ok(result) = pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables;", ()) {
+        result.for_each(|row| {
+            if let Some(name) = row.unwrap().get(0) {
+                tables.insert(name, true);
+            }
+        });
+        return Ok(tables);
     }
     Err("Read existing tables error")
 }
 
-fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Channel, &'static str> {
+fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<mysql::Pool, &'static str> {
     if let Some(node) = module.get_individual("cfg:standart_node", &mut Individual::default()) {
         if let Some(v) = node.get_literals("v-s:push_individual_by_event") {
             for el in v {
@@ -291,11 +283,7 @@ fn connect_to_mysql(module: &mut Module, tries: i64, timeout: u64) -> Result<Cha
                             match mysql::Pool::new(opts.clone()) {
                                 Ok(pool) => {
                                     info!("Connection to MySQL established successfully");
-                                    let chan = Channel {
-                                      opts,
-                                      pool,
-                                    };
-                                    return Ok(chan);
+                                    return Ok(pool);
                                 },
                                 Err(e) => {
                                     error!("Connection to MySQL failed. {:?}", e);
