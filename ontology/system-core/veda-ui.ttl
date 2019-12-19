@@ -2584,12 +2584,6 @@ v-ui:TreeTemplate
       });
     })).then(function () {
       if ( parentRow ) {
-        // if ($(".modal").length == 0) {
-        //   var addButton = drawAddButton(parentRow);
-        //   parentRow.children().last().append(addButton);
-        // }
-        // var addButton = drawAddButton(parentRow);
-        // parentRow.children().last().append(addButton);
         parentRow.after( cont.children() );
       } else {
         tbody.append( cont.children() );
@@ -2612,9 +2606,13 @@ v-ui:TreeTemplate
       var row = $this.closest("tr"),
           uri = row.attr("resource"),
           value = new veda.IndividualModel(uri);
+
       $("#create-NewItem", template).remove();
-      var addButton = drawAddButton(row);
-      row.children().last().append(addButton);
+      if ($(".modal").length == 0) {
+        var addButton = drawAddButton(row);
+        row.children().last().append(addButton);
+      }
+      
       if (isSingle) {
         target.set(rel_uri, [value]);
       } else {
