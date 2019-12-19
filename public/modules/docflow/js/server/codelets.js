@@ -196,7 +196,7 @@ veda.Module(function (veda) { "use strict";
               };
           }
       };
-      //return [veda.Workflow.get_new_variable('status', veda.Util.newStr(status))];
+      return [veda.Workflow.get_new_variable('status', veda.Util.newStr(status))];
   };
 
   veda.Codelet.is_exists_net_executor = function (process)
