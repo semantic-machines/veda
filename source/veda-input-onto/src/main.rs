@@ -20,7 +20,7 @@ use std::fs::{DirEntry, File};
 use std::io::BufReader;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::time as std_time;
+use std::{time as std_time, thread};
 use std::{fs, io};
 use v_api::*;
 use v_module::info::ModuleInfo;
@@ -48,6 +48,11 @@ fn main() -> NotifyResult<()> {
         .init();
 
     let mut module = Module::default();
+
+    while module.api.connect() == false {
+        info! ("wait for start main module ...");
+        thread::sleep(std::time::Duration::from_millis(100));
+    }
 
     let onto_path = "ontology".to_owned();
 
