@@ -30,9 +30,23 @@ int main(string[] args){
 	return -1;
     }
 
+    if (input_onto_info.get_info().committed_op_id == 0) {
     while (input_onto_info.get_info().committed_op_id == 0) {
 		log.trace("wait for load ontology...");
         Thread.sleep(dur!("seconds")(1));
+    }
+	auto op_id_input_onto = input_onto_info.get_info().committed_op_id;
+
+    auto fulltext_indexer_info = new ModuleInfoFile("fulltext_indexer", log, OPEN_MODE.READER);
+    if (!fulltext_indexer_info.is_ready) {
+	log.trace("%s ModuleInfo not ready, terminated", "fulltext_indexer");
+	return -1;
+    }
+
+    while (fulltext_indexer_info.get_info().committed_op_id < op_id_input_onto) {
+		log.trace("wait for ft indexed ontology...");
+        Thread.sleep(dur!("seconds")(1));
+    }
     }
 
     if (vm_id == "main") {

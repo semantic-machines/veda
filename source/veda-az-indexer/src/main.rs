@@ -40,7 +40,7 @@ fn main() -> Result<(), i32> {
         return Err(-1);
     }
 
-    wait_load_ontology();
+    //wait_load_ontology();
 
     let mut queue_consumer = Consumer::new("./data/queue", "az-indexer", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
 
