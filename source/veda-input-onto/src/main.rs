@@ -53,11 +53,6 @@ fn main() -> NotifyResult<()> {
         return Ok(());
     }
     let mut module_info = module_info.unwrap();
-    if module_info.read_info().is_none() {
-        if let Err(e) = module_info.put_info(0, 0) {
-            info!("fail write module info, err={}", e);
-        }
-    }
 
     let mut module = Module::default();
 
