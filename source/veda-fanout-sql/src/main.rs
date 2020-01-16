@@ -256,7 +256,10 @@ fn check_create_property_table(
             tables.insert(property.to_owned(), true);
             Ok(())
         }
-        Err(_) => Err("Unable to create table"),
+        Err(e) => {
+            error!("Error creating property table: {}", e);
+            Err("Unable to create table")
+        },
     }
 }
 
