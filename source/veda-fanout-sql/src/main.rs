@@ -274,6 +274,7 @@ fn read_tables(pool: &mysql::Pool) -> Result<HashMap<String, bool>, &'static str
         });
         return Ok(tables);
     }
+    info!("Existing tables: {:?}", tables);
     Err("Read existing tables error")
 }
 
