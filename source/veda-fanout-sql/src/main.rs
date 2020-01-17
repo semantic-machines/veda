@@ -255,7 +255,7 @@ fn check_create_property_table(
 
     match transaction.query(query) {
         Ok(_) => {
-            tables.insert(property.to_owned(), true);
+            tables.insert(property.to_lowercase(), true);
             Ok(())
         }
         Err(e) => {
