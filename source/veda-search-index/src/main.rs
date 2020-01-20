@@ -21,7 +21,6 @@ use v_onto::datatype::DataType;
 use v_onto::datatype::Lang;
 use v_queue::consumer::*;
 use v_onto::resource::Value::Int;
-use std::borrow::BorrowMut;
 
 pub struct Context {
     onto: Onto,
@@ -195,7 +194,7 @@ async fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new:
 
     for predicate in new_state.get_predicates() {
         if let Some(resources) = new_state.get_resources(&predicate) {
-            create_predicate_column(&predicate, ctx).await?;
+            create_predicate_column(&predicate, &resources, ctx).await?;
             insert_block = set_column_value(insert_block, &predicate, &resources);
         }
     }
@@ -211,18 +210,35 @@ async fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new:
     Ok(())
 }
 
-async fn create_predicate_column(predicate: &str, ctx: &mut Context) -> Result<(), Error> {
-    if let Some(exists) = ctx.columns.get(predicate) {
-        return Ok(());
-    }
+async fn create_predicate_column(predicate: &str, resources: &Vec<Resource>, ctx: &mut Context) -> Result<(), Error> {
     if predicate == "rdf:type" || predicate == "v-s:created" {
         return Ok(());
     }
-    //let query = format!("ALTER TABLE veda.individuals ADD COLUMN IF NOT EXISTS `{}` Nested ( str Nullable(String), int Nullable(Int64), date Nullable(Datetime), num Nullable(Float64) )", predicate.replace(":", "__").replace("-", "_"));
-    let query = format!("ALTER TABLE veda.individuals ADD COLUMN IF NOT EXISTS `{}` Nested ( str String, int Int64, date Datetime, num Float64 )", predicate.replace(":", "__").replace("-", "_"));
+    let mut column_name = predicate.replace(":", "__").replace("-", "_");
+    let column_suffix = match &resources[0].rtype {
+        DataType::Uri => ".str",
+        DataType::String => ".str",
+        DataType::Integer => ".int",
+        DataType::Datetime => ".date",
+        DataType::Decimal => ".num",
+        DataType::Boolean => ".int",
+        DataType::Binary => ".str"
+    };
+    let sql_type = match column_suffix {
+        ".str" => "String",
+        ".int" => "Int64",
+        ".date" => "Datetime",
+        ".num" => "Float64",
+        _ => "String",
+    };
+    column_name.push_str(column_suffix);
+    if let Some(exists) = ctx.columns.get(&column_name) {
+        return Ok(());
+    }
+    let query = format!("ALTER TABLE veda.individuals ADD COLUMN IF NOT EXISTS `{}` Array({})", column_name, sql_type);
     let mut client = ctx.pool.get_handle().await?;
     client.execute(query).await?;
-    ctx.columns.borrow_mut().insert(predicate.to_string(), true);
+    ctx.columns.insert(column_name, true);
     Ok(())
 }
 
