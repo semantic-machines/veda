@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate log;
 
-use clickhouse_rs::{Pool, errors::Error, ClientHandle, Block};
+use clickhouse_rs::{Pool, errors::Error, ClientHandle, Block, types, types::Value as clickValue};
 use futures::executor::block_on;
 use tokio;
 
@@ -22,6 +22,8 @@ use v_onto::datatype::Lang;
 use v_queue::consumer::*;
 use v_onto::resource::Value::Int;
 
+use std::sync::Arc;
+
 pub struct Context {
     onto: Onto,
     pool: Pool,
@@ -29,9 +31,60 @@ pub struct Context {
     block: Option<Block>,
 }
 
+
+async fn test() -> Result<(), Error> {
+    let url = format!("tcp://default:cyqqxc@127.0.0.1:9000/");
+    let pool = Pool::new(url);
+
+    let ddl = r"
+        CREATE TABLE IF NOT EXISTS test (
+            id  UInt32,
+            amount Array(UInt32),
+            name Array(String)
+        ) Engine = MergeTree() order by id";
+
+    let mut block = Block::new();
+    block.push(vec![
+        (String::from("id"), clickValue::UInt32(1)),
+        (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(11)]))),
+        //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
+        (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("aaa").into_bytes()))])))
+    ])?;
+    block.push(vec![
+        (String::from("id"), clickValue::UInt32(2)),
+        (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(22)]))),
+        //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
+        (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("bbb").into_bytes()))])))
+    ])?;
+    block.push(vec![
+        (String::from("id"), clickValue::UInt32(3)),
+        (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(33)]))),
+        //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
+        (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("ccc").into_bytes()))])))
+    ])?;
+
+    info!("Block: {:?}", block);
+
+    let mut client = pool.get_handle().await?;
+    client.execute(ddl).await?;
+    client.insert("test", block).await?;
+    let block = client.query("SELECT * FROM test").fetch_all().await?;
+
+    for row in block.rows() {
+        let id: u32             = row.get("id")?;
+        let amount: Vec<u32>    = row.get("amount")?;
+        let name: Vec<&str>     = row.get("name")?;
+        info!("Found payment {}: {:?} {:?}", id, amount, name);
+    }
+
+    Ok(())
+}
+
 #[tokio::main]
 async fn main() ->  Result<(), Error> {
     init_log();
+
+    //return test().await;
 
     if get_info_of_module("input-onto").unwrap_or((0, 0)).0 == 0 {
         wait_module("fulltext_indexer", wait_load_ontology());
@@ -115,14 +168,6 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
 
 fn set_column_value(block: Block, predicate: &str, resources: &Vec<Resource>) -> Block {
     let mut predicate = predicate.replace(":", "__").replace("-", "_");
-    if predicate == "rdf__type" {
-        let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
-        return block.column(&predicate, vec![column_value]);
-    }
-    if predicate == "v_s__created" {
-        let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_datetime()).collect();
-        return block.column(&predicate, column_value);
-    }
     match &resources[0].rtype {
         DataType::Integer => {
             predicate.push_str(".int");
@@ -244,7 +289,7 @@ async fn create_predicate_column(predicate: &str, resources: &Vec<Resource>, ctx
 
 async fn delete_individual(uri: &str, ctx: &Context) -> Result<(), Error> {
     let mut client = ctx.pool.get_handle().await?;
-    let query = format!("DELETE FROM veda.individuals WHERE `@` = '{}'", uri);
+    let query = format!("DELETE FROM veda.individuals WHERE `id` = '{}'", uri);
     client.execute(query).await?;
     Ok(())
 }
@@ -281,12 +326,12 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
     let init_individuals_table = r"
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
-            rdf__type Array(String),
-            v_s__created Datetime
+            `rdf__type.str` Array(String),
+            `v_s__created.date` Array(Datetime)
         )
         ENGINE = MergeTree()
-        ORDER BY (rdf__type[1], v_s__created)
-        PARTITION BY (rdf__type[1], toStartOfMonth(v_s__created))
+        ORDER BY (`rdf__type.str`[1], `v_s__created.date`[1])
+        PARTITION BY (`rdf__type.str`[1], toStartOfMonth(`v_s__created.date`[1]))
     ";
     let mut client = pool.get_handle().await?;
     client.execute(init_veda_db).await?;
