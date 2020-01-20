@@ -12,7 +12,7 @@ ft-query
 
 fanout-email
 
-#search-index
+search-index
 
 fanout-sql
 
