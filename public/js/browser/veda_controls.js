@@ -2688,7 +2688,7 @@
         }
       }
       fulltext.on("focus", function (e) {
-        fulltext.off("keydown").one("keydown", downHandler);
+        fulltext.off("keydown", downHandler).one("keydown", downHandler);
       });
     } else {
       dropdown.remove();
