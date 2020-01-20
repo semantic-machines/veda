@@ -1,3 +1,7 @@
+/*
+ * Инициирует и проводит сеансы обмена данными с внешними системами, является master частью в протоколе связи.
+ * Знает о всех точках обмена (load_linked_nodes)
+*/
 #[macro_use]
 extern crate log;
 
@@ -38,9 +42,7 @@ fn main() -> std::io::Result<()> {
     let mut node_upd_counter = 0;
     let mut link_node_addresses = HashMap::new();
 
-    get_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
-
-    //    let mut total_prepared_count: u64 = 0;
+    load_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
 
     loop {
         for (node_id, node_addr) in &link_node_addresses {
@@ -54,7 +56,7 @@ fn main() -> std::io::Result<()> {
             }
             debug!("success connect to, {} {}", node_id, node_addr);
 
-            processing_consumer_of_node(&mut queue_consumer, &mut soc, node_id, node_addr);
+            send_changes_to_node(&mut queue_consumer, &mut soc, node_id, node_addr);
 
             // request changes from slave node
             loop {
@@ -79,7 +81,7 @@ fn main() -> std::io::Result<()> {
                     break;
                 }
 
-                let res = processing_message_contains_changes(msg, &systicket, &mut module);
+                let res = processing_message_contains_one_change(msg, &systicket, &mut module);
                 if res.1 != ExImCode::Ok {
                     error!("fail accept changes, uri={}, err={:?}", res.0, res.1);
                 }
