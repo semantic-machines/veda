@@ -75,14 +75,17 @@ async fn main() ->  Result<(), Error> {
         &mut queue_consumer,
         &mut module_info.unwrap(),
         &mut ctx,
-        &mut (void as fn(&mut Module, &mut Context)),
+        &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
-        &mut (void as fn(&mut Module, &mut Context)),
+        &mut (after as fn(&mut Module, &mut Context, u32)),
     );
     Ok(())
 }
 
-fn void(_module: &mut Module, _ctx: &mut Context) {}
+fn before(_module: &mut Module, _ctx: &mut Context, batch_size: u32) -> Option<u32> {
+    Some(1000)
+}
+fn after(_module: &mut Module, _ctx: &mut Context, processed_batch_size: u32) {}
 
 fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
     let cmd = get_cmd(queue_element);
