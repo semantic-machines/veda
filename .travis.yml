@@ -41,7 +41,7 @@ before_script:
   - fluxbox >/dev/null 2>&1 &
   - "cp -R ./qa/onto/* ./ontology 2>/dev/null || :"
   - ./control-start.sh
-  - sleep 180
+  - sleep 60
 
 script:
   - travis_wait 20 grunt test --stack --verbose
