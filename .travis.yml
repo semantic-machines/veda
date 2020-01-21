@@ -52,7 +52,7 @@ script:
   - testcafe chromium qa/testcafe/testCreatingNetInterface.js
   - testcafe chromium qa/testcafe/testDeleteAndRecovery.js --screenshots screens --screenshots-on-fails screens --speed 0.5
   - testcafe chromium qa/testcafe/testJournal.js
-  - testcafe chromium qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.5
+  - testcafe chromium qa/testcafe/testAttributiveSearch.js --screenshots screens --screenshots-on-fails screens --speed 0.2
   - testcafe chromium qa/testcafe/testPerson.js
   - testcafe chromium qa/testcafe/testRights.js
   - testcafe chromium qa/testcafe/testSearchRangeOfDates.js
