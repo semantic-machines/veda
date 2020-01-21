@@ -29,16 +29,17 @@ fn main() {
         println!("BEGIN netdata.plugin_veda_queue");
 
         for consumer in queue_list.iter_mut() {
+            let mut delta = 0;
             if consumer.queue.get_info_queue() {
                 if consumer.queue.get_info_of_part(consumer.queue.id, true).is_ok() {
                     if consumer.get_info() {
                         if consumer.queue.count_pushed >= consumer.count_popped {
-                            let delta = consumer.queue.count_pushed - consumer.count_popped;
-                            println!("SET queue_{}={}", consumer.name, delta);
+                            delta = consumer.queue.count_pushed - consumer.count_popped;
                         }
                     }
                 }
             }
+            println!("SET queue_{}={}", consumer.name, delta);
         }
         println!("END");
 
