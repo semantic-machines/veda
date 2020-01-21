@@ -20,7 +20,7 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
     }
     let param1 = card_number.unwrap_or_default();
 
-    let mut card_data = (false, None, None, None, None, None, None, None, None);
+    let mut card_data = (false, None, None, None, None, None, None, None, None, None);
     let mut access_levels = Vec::new();
 
     let future = SqlConnection::connect(conn_str)
@@ -55,8 +55,13 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
                 } else {
                     None
                 };
+                let f9 = if let Some(v) = row.get::<_, Option<&str>>(8) {
+                    Some(v.to_owned())
+                } else {
+                    None
+                };
 
-                card_data = (true, f1, f2, f3, f4, f5, f6, f7, f8);
+                card_data = (true, f1, f2, f3, f4, f5, f6, f7, f8, f9);
                 Ok(())
             })
         })
@@ -119,6 +124,10 @@ pub fn sync_data_from_winpak(module: &mut Module, systicket: &str, conn_str: &st
 
         if let Some(s) = card_data.8 {
             indv.set_string("mnd-s:passEquipment", &s, Lang::NONE);
+        }
+
+        if let Some(s) = card_data.9 {
+            indv.set_string("mnd-s:briefingDate", &s, Lang::NONE);
         }
 
         let mut access_level_uris = Vec::new();
