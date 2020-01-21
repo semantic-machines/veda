@@ -137,7 +137,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
                         error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
                         tr_error = true;
                     }
-                    let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate, uri);
+                    let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate.to_lowercase(), uri);
                     if let Err(e) = transaction.query(query) {
                         error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
                         tr_error = true;
@@ -178,12 +178,12 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
                     _ => String::from("NULL"),
                 };
                 let lang = match &resource.get_lang() {
-                    Lang::NONE => String::from("NULL"),
-                    lang => format!("'{}'", lang.to_string()),
+                    Lang::NONE => String::from("'NO'"),
+                    lang => format!("'{}'", lang.to_string().to_uppercase()),
                 };
                 let query = format!(
                     "INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', {}, {}, {}, {})",
-                    predicate, uri, class, created, value, lang, deleted
+                    predicate.to_lowercase(), uri, class, created, value, lang, deleted
                 );
                 //info!("Query: {}", query);
                 if let Err(e) = transaction.query(query) {
@@ -250,7 +250,7 @@ fn check_create_property_table(
          PRIMARY KEY (`ID`), \
          INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) {} \
          ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
-        property, sql_type, sql_value_index
+        property.to_lowercase(), sql_type, sql_value_index
     );
 
     match transaction.query(query) {
@@ -269,9 +269,8 @@ fn read_tables(pool: &mysql::Pool) -> Result<HashMap<String, bool>, &'static str
     let mut tables: HashMap<String, bool> = HashMap::new();
     if let Ok(result) = pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables;", ()) {
         result.for_each(|row| {
-            if let Some(name) = row.unwrap().get(0) {
-                tables.insert(name, true);
-            }
+            let name: String = row.unwrap().get(0).unwrap();
+            tables.insert(name.to_lowercase(), true);
         });
         debug!("Existing tables: {:?}", tables);
         return Ok(tables);
