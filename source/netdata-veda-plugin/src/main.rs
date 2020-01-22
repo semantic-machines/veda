@@ -43,6 +43,6 @@ fn main() {
         }
         println!("END");
 
-        thread::sleep(time::Duration::from_millis(3000));
+        thread::sleep(time::Duration::from_millis(1000));
     }
 }
