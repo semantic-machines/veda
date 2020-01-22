@@ -10,7 +10,6 @@ use nng::options::Options;
 use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
-use std::process;
 use std::time::Duration;
 use std::{thread, time};
 use uuid::Uuid;
@@ -264,7 +263,14 @@ impl Module {
                 let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
                     if let Err(e) = prepare(self, module_info, module_context, &mut queue_element) {
-                        process::exit(e as i32);
+                        match e {
+                            PrepareError::Fatal => {
+                                warn! ("found fatal error, stop listen queue");
+                                //process::exit(e as i32);
+                                return;
+                            }
+                            _ => {}
+                        }
                     }
                 }
 
