@@ -130,6 +130,8 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, soc: &mut Socket, nod
                         if e != ExImCode::TransmitFailed {
                             break;
                         }
+                    } else {
+                        break;
                     }
                 }
 
