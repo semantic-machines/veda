@@ -52,6 +52,7 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
     let node_id = node_id.unwrap();
+    info! ("my node_id={}", node_id);
 
     load_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
 
