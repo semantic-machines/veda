@@ -264,8 +264,9 @@ pub fn processing_message_contains_one_change(my_node_id: &str, recv_msg: Vec<u8
         if target_veda.is_none() {
             return (recv_indv.get_id().to_owned(), ExImCode::InvalidTarget);
         }
+        let target_veda = target_veda.unwrap();
 
-        if my_node_id != target_veda.unwrap() {
+        if target_veda != "*" && my_node_id != target_veda {
             return (recv_indv.get_id().to_owned(), ExImCode::InvalidTarget);
         }
 
