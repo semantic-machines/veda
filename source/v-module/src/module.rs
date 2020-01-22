@@ -291,7 +291,7 @@ impl Module {
             if prepared_batch_size == size_batch {
                 let wmsg = soc.recv();
                 if let Err(e) = wmsg {
-                    warn!("fail recv from queue notify channel, err={:?}", e);
+                    debug!("fail recv from queue notify channel, err={:?}", e);
 
                     if count_timeout_error > 0 && size_batch > 0 {
                         warn!("queue changed but we not received notify message, need reconnect...");
