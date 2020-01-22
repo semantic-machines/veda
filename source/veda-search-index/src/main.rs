@@ -55,22 +55,10 @@ impl Context {
         let mut row_counter: i32 = 0;
         for element in &mut self.batch {
             row_counter += 1;
-            let new_state = &mut element.0;
-            let prev_state = &mut element.1;
-            let is_new = element.2;
+
+            let (new_state, prev_state, is_new) = element;
+
             for predicate in new_state.get_predicates() {
-
-                //let (column_name, column_type) = create_predicate_column(&predicate, &resources, &mut self.pool, &mut self.db_columns).await?;
-
-                /*if !columns.contains_key(&column_name) {
-                    match column_type.as_str() {
-                        "Array(String)" => columns.insert(column_name, ColumnData::Str(Vec::new())),
-                        "Array(Datetime)" => columns.insert(column_name, ColumnData::Date(Vec::new())),
-                        "Array(Int64)" => columns.insert(column_name, ColumnData::Int(Vec::new())),
-                        "Array(Datetime)" => columns.insert(column_name, ColumnData::Num(Vec::new())),
-                        _ => columns.insert(column_name, ColumnData::Str(Vec::new())),
-                    };
-                }*/
 
                 if let Some(resources) = new_state.get_resources(&predicate) {
                     let mut column_name = predicate.replace(":", "__").replace("-", "_");
@@ -78,14 +66,14 @@ impl Context {
                         DataType::Integer => {
                             column_name.push_str(".int");
                             let column_type = "Array(Int64)".to_string();
-                            create_predicate_column2(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
+                            create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_int()).collect();
                         },
                         DataType::String => {
                             column_name.push_str(".str");
                             let column_type = "Array(String)".to_string();
-                            create_predicate_column2(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
+                            create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<String> = resources.iter().map(|resource| {
                                 let str_value = resource.get_str();
@@ -99,14 +87,14 @@ impl Context {
                         DataType::Uri => {
                             column_name.push_str(".str");
                             let column_type = "Array(String)".to_string();
-                            create_predicate_column2(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
+                            create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
                         },
                         DataType::Boolean => {
                             column_name.push_str(".int");
                             let column_type = "Array(Int64)".to_string();
-                            create_predicate_column2(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
+                            create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<i64> = resources.iter().map(|resource| {
                                 match resource.value {
@@ -118,14 +106,14 @@ impl Context {
                         DataType::Decimal => {
                             column_name.push_str(".num");
                             let column_type = "Array(Float64)".to_string();
-                            create_predicate_column2(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
+                            create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
                         },
                         DataType::Datetime => {
                             column_name.push_str(".date");
                             let column_type = "Array(Datetime)".to_string();
-                            create_predicate_column2(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
+                            create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
                         },
@@ -369,42 +357,7 @@ async fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new:
     Ok(())
 }
 
-async fn create_predicate_column(predicate: &str, resources: &Vec<Resource>, pool: &mut Pool, db_columns: &mut HashMap<String, String>) -> Result<(String, String), Error> {
-    if predicate == "rdf:type" {
-        return Ok(("rdf__type.str".to_owned(), "Array(String)".to_owned()));
-    }
-    if predicate == "v-s:created.date" {
-        return Ok(("v_s__created".to_owned(), "Array(Datetime)".to_owned()));
-    }
-    let mut column_name = predicate.replace(":", "__").replace("-", "_");
-    let column_suffix = match &resources[0].rtype {
-        DataType::Uri => ".str",
-        DataType::String => ".str",
-        DataType::Integer => ".int",
-        DataType::Datetime => ".date",
-        DataType::Decimal => ".num",
-        DataType::Boolean => ".int",
-        DataType::Binary => ".str"
-    };
-    let column_type = (match column_suffix {
-        ".str" => "Array(String)",
-        ".int" => "Array(Int64)",
-        ".date" => "Array(Datetime)",
-        ".num" => "Array(Float64)",
-        _ => "Array(String)",
-    }).to_string();
-    column_name.push_str(column_suffix);
-    if let Some(column_type) = db_columns.get(&column_name) {
-        return Ok((column_name, column_type.to_owned()));
-    }
-    let query = format!("ALTER TABLE veda.individuals ADD COLUMN IF NOT EXISTS `{}` Array({})", column_name, column_type);
-    let mut client = pool.get_handle().await?;
-    client.execute(query).await?;
-    db_columns.insert(column_name.to_string(), column_type.to_string());
-    Ok((column_name, column_type))
-}
-
-async fn create_predicate_column2(column_name: &str, column_type: &str, pool: &mut Pool, db_columns: &mut HashMap<String, String>) -> Result<(), Error> {
+async fn create_predicate_column(column_name: &str, column_type: &str, pool: &mut Pool, db_columns: &mut HashMap<String, String>) -> Result<(), Error> {
     if let Some(_) = db_columns.get(column_name) {
         return Ok(());
     }
