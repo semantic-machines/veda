@@ -54,10 +54,16 @@ impl Context {
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
         let mut columns_keys: Vec<String> = Vec::new();
 
+        let mut ids: Vec<String> = Vec::new();
+
         let mut row_counter: usize = 0;
+
         for element in &mut self.batch {
 
             let (new_state, prev_state, is_new) = element;
+
+            let id = new_state.get_id().to_owned();
+            ids.push(id);
 
             for predicate in new_state.get_predicates() {
 
@@ -65,7 +71,7 @@ impl Context {
                     let mut column_name = predicate.replace(":", "__").replace("-", "_");
                     match &resources[0].rtype {
                         DataType::Integer => {
-                            column_name.push_str(".int");
+                            column_name.push_str("_int");
                             let column_type = "Array(Int64)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
@@ -87,7 +93,7 @@ impl Context {
                             }
                         },
                         DataType::String => {
-                            column_name.push_str(".str");
+                            column_name.push_str("_str");
                             let column_type = "Array(String)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
@@ -116,7 +122,7 @@ impl Context {
                             }
                         },
                         DataType::Uri => {
-                            column_name.push_str(".str");
+                            column_name.push_str("_str");
                             let column_type = "Array(String)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
@@ -138,7 +144,7 @@ impl Context {
                             }
                         },
                         DataType::Boolean => {
-                            column_name.push_str(".int");
+                            column_name.push_str("_int");
                             let column_type = "Array(Int64)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
@@ -165,7 +171,7 @@ impl Context {
                             }
                         },
                         DataType::Decimal => {
-                            column_name.push_str(".num");
+                            column_name.push_str("_num");
                             let column_type = "Array(Float64)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
@@ -187,7 +193,7 @@ impl Context {
                             }
                         },
                         DataType::Datetime => {
-                            column_name.push_str(".date");
+                            column_name.push_str("_date");
                             let column_type = "Array(Datetime)".to_string();
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
@@ -217,7 +223,8 @@ impl Context {
             row_counter += 1;
         }
 
-        // Justify columns
+        let mut block = Block::new().column("id", ids);
+
         for column_name in columns_keys {
             let column_data = columns.get_mut(&column_name).unwrap();
             if let ColumnData::Int(column) = column_data {
@@ -225,33 +232,45 @@ impl Context {
                 for _i in column_size..row_counter {
                     column.push(vec![0]);
                 }
-                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Str(column) = column_data {
                 let column_size = column.len();
                 for _i in column_size..row_counter {
                     column.push(vec!["".to_string()]);
                 }
-                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Num(column) = column_data {
                 let column_size = column.len();
                 for _i in column_size..row_counter {
                     column.push(vec![0 as f64]);
                 }
-                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Date(column) = column_data {
                 let column_size = column.len();
                 for _i in column_size..row_counter {
                     column.push(vec![Tz::UTC.timestamp(0, 0)]);
                 }
-                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
             }
         }
 
-        info!("Batch columns: {:?}", columns.keys());
+        //info!("Block = {:?}", block);
+
+        let mut client = self.pool.get_handle().await?;
+
+        client.insert("veda.individuals", block).await?;
+
+        info!("Block inserted successfully!");
+
         self.clear_batch();
+
         Ok(())
     }
 
@@ -271,8 +290,7 @@ async fn test() -> Result<(), Error> {
             name Array(String)
         ) Engine = MergeTree() order by id";
 
-    let mut block = Block::new();
-    block.push(vec![
+    /*block.push(vec![
         (String::from("id"), clickValue::UInt32(1)),
         (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(11)]))),
         //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
@@ -289,9 +307,29 @@ async fn test() -> Result<(), Error> {
         (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(33)]))),
         //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
         (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("ccc").into_bytes()))])))
-    ])?;
+    ])?;*/
 
-    info!("Block: {:?}", block);
+    let mut column1: Vec<u32> = Vec::new();
+    column1.push(1);
+    column1.push(2);
+    column1.push(3);
+
+    let mut column2: Vec<Vec<u32>> = Vec::new();
+    column2.push(vec![1]);
+    column2.push(vec![2]);
+    column2.push(vec![3]);
+
+    let mut column3: Vec<Vec<String>> = Vec::new();
+    column3.push(vec!["1".to_string()]);
+    column3.push(vec!["2".to_string()]);
+    column3.push(vec!["3".to_string()]);
+
+    let block = Block::new()
+        .column("id", column1)
+        .column("amount", column2)
+        .column("name", column3);
+
+    //info!("Block: {:?}", &block);
 
     let mut client = pool.get_handle().await?;
     client.execute(ddl).await?;
@@ -467,7 +505,6 @@ async fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new:
 
     for predicate in new_state.get_predicates() {
         if let Some(resources) = new_state.get_resources(&predicate) {
-            //create_predicate_column(&predicate, &resources, ctx).await?;
             insert_block = set_column_value(insert_block, &predicate, &resources);
         }
     }
@@ -533,12 +570,12 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
     let init_individuals_table = r"
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
-            `rdf__type.str` Array(String),
-            `v_s__created.date` Array(Datetime)
+            `rdf__type_str` Array(String),
+            `v_s__created_date` Array(Datetime)
         )
         ENGINE = MergeTree()
-        ORDER BY (`rdf__type.str`[1], `v_s__created.date`[1])
-        PARTITION BY (`rdf__type.str`[1], toStartOfMonth(`v_s__created.date`[1]))
+        ORDER BY (`rdf__type_str`[1], `v_s__created_date`[1])
+        PARTITION BY (`rdf__type_str`[1], toStartOfMonth(`v_s__created_date`[1]))
     ";
     let mut client = pool.get_handle().await?;
     client.execute(init_veda_db).await?;
