@@ -240,7 +240,7 @@ fn send_out_obj(out_obj: &mut Individual, soc: &mut Socket, node_addr: &str) -> 
     Ok(())
 }
 
-pub fn processing_message_contains_one_change(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> (String, ExImCode) {
+pub fn processing_message_contains_one_change(my_node_id: &str, recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> (String, ExImCode) {
     let mut recv_indv = Individual::new_raw(RawObj::new(recv_msg));
 
     if parse_raw(&mut recv_indv).is_ok() {
@@ -262,6 +262,10 @@ pub fn processing_message_contains_one_change(recv_msg: Vec<u8>, systicket: &str
 
         let target_veda = recv_indv.get_first_literal("target_veda");
         if target_veda.is_none() {
+            return (recv_indv.get_id().to_owned(), ExImCode::InvalidTarget);
+        }
+
+        if my_node_id != target_veda.unwrap() {
             return (recv_indv.get_id().to_owned(), ExImCode::InvalidTarget);
         }
 
