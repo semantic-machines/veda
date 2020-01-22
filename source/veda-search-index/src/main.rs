@@ -24,6 +24,7 @@ use v_onto::resource::Value::Int;
 
 use std::sync::Arc;
 use std::borrow::BorrowMut;
+use crate::ColumnData::{Str, Date};
 
 type Batch = Vec<BatchElement>;
 
@@ -51,10 +52,10 @@ impl Context {
     pub async fn process_batch(&mut self) -> Result<(), Error> {
 
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
+        let mut columns_keys: Vec<String> = Vec::new();
 
-        let mut row_counter: i32 = 0;
+        let mut row_counter: usize = 0;
         for element in &mut self.batch {
-            row_counter += 1;
 
             let (new_state, prev_state, is_new) = element;
 
@@ -65,14 +66,29 @@ impl Context {
                     match &resources[0].rtype {
                         DataType::Integer => {
                             column_name.push_str(".int");
-                            let column_type = "Array(Int64)".to_string();
+                            let column_type = "Array(Int64)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_int()).collect();
+
+                            if !columns.contains_key(&column_name) {
+                                let new_column = ColumnData::Int(Vec::new());
+                                columns.insert(column_name.clone(), new_column);
+                                columns_keys.push(column_name.clone());
+                            }
+
+                            let column_data = columns.get_mut(&column_name).unwrap();
+                            if let ColumnData::Int(column) = column_data {
+                                let column_size = column.len();
+                                for _i in column_size..row_counter {
+                                    column.push(vec![0]);
+                                }
+                                column.push(column_value);
+                            }
                         },
                         DataType::String => {
                             column_name.push_str(".str");
-                            let column_type = "Array(String)".to_string();
+                            let column_type = "Array(String)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<String> = resources.iter().map(|resource| {
@@ -83,17 +99,47 @@ impl Context {
                                 };
                                 format!("{}{}", str_value.replace("'", "\\'"), lang)
                             }).collect();
+
+                            if !columns.contains_key(&column_name) {
+                                let new_column = ColumnData::Str(Vec::new());
+                                columns.insert(column_name.clone(), new_column);
+                                columns_keys.push(column_name.clone());
+                            }
+
+                            let column_data = columns.get_mut(&column_name).unwrap();
+                            if let ColumnData::Str(column) = column_data {
+                                let column_size = column.len();
+                                for _i in column_size..row_counter {
+                                    column.push(vec!["".to_string()]);
+                                }
+                                column.push(column_value);
+                            }
                         },
                         DataType::Uri => {
                             column_name.push_str(".str");
-                            let column_type = "Array(String)".to_string();
+                            let column_type = "Array(String)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
+
+                            if !columns.contains_key(&column_name) {
+                                let new_column = ColumnData::Str(Vec::new());
+                                columns.insert(column_name.clone(), new_column);
+                                columns_keys.push(column_name.clone());
+                            }
+
+                            let column_data = columns.get_mut(&column_name).unwrap();
+                            if let ColumnData::Str(column) = column_data {
+                                let column_size = column.len();
+                                for _i in column_size..row_counter {
+                                    column.push(vec!["".to_string()]);
+                                }
+                                column.push(column_value);
+                            }
                         },
                         DataType::Boolean => {
                             column_name.push_str(".int");
-                            let column_type = "Array(Int64)".to_string();
+                            let column_type = "Array(Int64)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<i64> = resources.iter().map(|resource| {
@@ -102,13 +148,43 @@ impl Context {
                                     _ => 0
                                 }
                             }).collect();
+
+                            if !columns.contains_key(&column_name) {
+                                let new_column = ColumnData::Int(Vec::new());
+                                columns.insert(column_name.clone(), new_column);
+                                columns_keys.push(column_name.clone());
+                            }
+
+                            let column_data = columns.get_mut(&column_name).unwrap();
+                            if let ColumnData::Int(column) = column_data {
+                                let column_size = column.len();
+                                for _i in column_size..row_counter {
+                                    column.push(vec![0]);
+                                }
+                                column.push(column_value);
+                            }
                         },
                         DataType::Decimal => {
                             column_name.push_str(".num");
-                            let column_type = "Array(Float64)".to_string();
+                            let column_type = "Array(Float64)";
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
+
+                            if !columns.contains_key(&column_name) {
+                                let new_column = ColumnData::Num(Vec::new());
+                                columns.insert(column_name.clone(), new_column);
+                                columns_keys.push(column_name.clone());
+                            }
+
+                            let column_data = columns.get_mut(&column_name).unwrap();
+                            if let ColumnData::Num(column) = column_data {
+                                let column_size = column.len();
+                                for _i in column_size..row_counter {
+                                    column.push(vec![0 as f64]);
+                                }
+                                column.push(column_value);
+                            }
                         },
                         DataType::Datetime => {
                             column_name.push_str(".date");
@@ -116,6 +192,21 @@ impl Context {
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
+
+                            if !columns.contains_key(&column_name) {
+                                let new_column = ColumnData::Date(Vec::new());
+                                columns.insert(column_name.clone(), new_column);
+                                columns_keys.push(column_name.clone());
+                            }
+
+                            let column_data = columns.get_mut(&column_name).unwrap();
+                            if let ColumnData::Date(column) = column_data {
+                                let column_size = column.len();
+                                for _i in column_size..row_counter {
+                                    column.push(vec![Tz::UTC.timestamp(0, 0)]);
+                                }
+                                column.push(column_value);
+                            }
                         },
                         _ => {
                             error!("Value type is not supported");
@@ -123,7 +214,42 @@ impl Context {
                     }
                 }
             }
+            row_counter += 1;
         }
+
+        // Justify columns
+        for column_name in columns_keys {
+            let column_data = columns.get_mut(&column_name).unwrap();
+            if let ColumnData::Int(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..row_counter {
+                    column.push(vec![0]);
+                }
+                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+            }
+            if let ColumnData::Str(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..row_counter {
+                    column.push(vec!["".to_string()]);
+                }
+                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+            }
+            if let ColumnData::Num(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..row_counter {
+                    column.push(vec![0 as f64]);
+                }
+                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+            }
+            if let ColumnData::Date(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..row_counter {
+                    column.push(vec![Tz::UTC.timestamp(0, 0)]);
+                }
+                info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+            }
+        }
+
         info!("Batch columns: {:?}", columns.keys());
         self.clear_batch();
         Ok(())
