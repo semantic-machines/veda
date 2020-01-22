@@ -93,12 +93,11 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
     let date = queue_element.get_first_integer("date");
-    if date.is_none() {
-        return Err(PrepareError::Fatal);
-    }
+//    if date.is_none() {
+//        return Ok(());
+//    }
 
     let exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state);
-
     if exportable.is_none() {
         return Ok(());
     }
