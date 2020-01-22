@@ -1,33 +1,27 @@
 #[macro_use]
 extern crate log;
 
-use clickhouse_rs::{Pool, errors::Error, ClientHandle, Block, types, types::Value as clickValue};
-use futures::executor::block_on;
-use tokio;
-
+use std::process;
 use std::collections::HashMap;
-use std::{thread, time, process};
-use chrono::{DateTime, Utc, TimeZone};
+
+use clickhouse_rs::{Pool, errors::Error, Block};
+use chrono::{DateTime, TimeZone};
 use chrono_tz::Tz;
+
+use tokio;
+use futures::executor::block_on;
 
 use v_module::info::ModuleInfo;
 use v_module::module::*;
 use v_module::onto::load_onto;
 use v_onto::individual::*;
 use v_onto::onto::Onto;
-use v_onto::resource::Resource;
 use v_onto::resource::Value;
 use v_onto::datatype::DataType;
 use v_onto::datatype::Lang;
 use v_queue::consumer::*;
-use v_onto::resource::Value::Int;
-
-use std::sync::Arc;
-use std::borrow::BorrowMut;
-use crate::ColumnData::{Str, Date};
 
 type Batch = Vec<BatchElement>;
-
 type BatchElement = (Individual, Individual, bool);
 
 pub struct Context {
@@ -60,9 +54,21 @@ impl Context {
 
         for element in &mut self.batch {
 
-            let (new_state, prev_state, is_new) = element;
+            let (new_state, _prev_state, _is_new) = element;
 
             let id = new_state.get_id().to_owned();
+
+            let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
+
+            if !actual_version.is_empty() && actual_version != id {
+                info!("Skip not actual version. {}.v-s:actual_version {} != {}", id, &actual_version, id);
+                continue;
+            }
+            // Remove previous state from individuals table
+            /*if !is_new {
+                delete_individual(&uri, ctx).await?
+            }*/
+
             ids.push(id);
 
             for predicate in new_state.get_predicates() {
@@ -279,73 +285,6 @@ impl Context {
     }
 }
 
-async fn test() -> Result<(), Error> {
-    let url = format!("tcp://default:cyqqxc@127.0.0.1:9000/");
-    let pool = Pool::new(url);
-
-    let ddl = r"
-        CREATE TABLE IF NOT EXISTS test (
-            id  UInt32,
-            amount Array(UInt32),
-            name Array(String)
-        ) Engine = MergeTree() order by id";
-
-    /*block.push(vec![
-        (String::from("id"), clickValue::UInt32(1)),
-        (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(11)]))),
-        //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
-        (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("aaa").into_bytes()))])))
-    ])?;
-    block.push(vec![
-        (String::from("id"), clickValue::UInt32(2)),
-        (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(22)]))),
-        //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
-        (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("bbb").into_bytes()))])))
-    ])?;
-    block.push(vec![
-        (String::from("id"), clickValue::UInt32(3)),
-        (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(33)]))),
-        //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
-        (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("ccc").into_bytes()))])))
-    ])?;*/
-
-    let mut column1: Vec<u32> = Vec::new();
-    column1.push(1);
-    column1.push(2);
-    column1.push(3);
-
-    let mut column2: Vec<Vec<u32>> = Vec::new();
-    column2.push(vec![1]);
-    column2.push(vec![2]);
-    column2.push(vec![3]);
-
-    let mut column3: Vec<Vec<String>> = Vec::new();
-    column3.push(vec!["1".to_string()]);
-    column3.push(vec!["2".to_string()]);
-    column3.push(vec!["3".to_string()]);
-
-    let block = Block::new()
-        .column("id", column1)
-        .column("amount", column2)
-        .column("name", column3);
-
-    //info!("Block: {:?}", &block);
-
-    let mut client = pool.get_handle().await?;
-    client.execute(ddl).await?;
-    client.insert("test", block).await?;
-    let block = client.query("SELECT * FROM test").fetch_all().await?;
-
-    for row in block.rows() {
-        let id: u32             = row.get("id")?;
-        let amount: Vec<u32>    = row.get("amount")?;
-        let name: Vec<&str>     = row.get("name")?;
-        info!("Found payment {}: {:?} {:?}", id, amount, name);
-    }
-
-    Ok(())
-}
-
 #[tokio::main]
 async fn main() ->  Result<(), Error> {
     init_log();
@@ -402,11 +341,13 @@ async fn main() ->  Result<(), Error> {
     Ok(())
 }
 
-fn before(_module: &mut Module, _ctx: &mut Context, batch_size: u32) -> Option<u32> {
+fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<u32> {
     Some(1000)
 }
-fn after(_module: &mut Module, ctx: &mut Context, processed_batch_size: u32) {
-    block_on(ctx.process_batch());
+fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) {
+    if block_on(ctx.process_batch()).is_err() {
+        error!("Error processing batch");
+    }
 }
 
 fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
@@ -432,94 +373,6 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
     Ok(())
 }
 
-fn set_column_value(block: Block, predicate: &str, resources: &Vec<Resource>) -> Block {
-    let mut predicate = predicate.replace(":", "__").replace("-", "_");
-    match &resources[0].rtype {
-        DataType::Integer => {
-            predicate.push_str(".int");
-            let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_int()).collect();
-            block.column(&predicate, vec![column_value])
-        },
-        DataType::String => {
-            predicate.push_str(".str");
-            let column_value: Vec<String> = resources.iter().map(|resource| {
-                let str_value = resource.get_str();
-                let lang = match resource.get_lang() {
-                    Lang::NONE => String::from(""),
-                    lang => format!("@{}", lang.to_string()),
-                };
-                format!("{}{}", str_value.replace("'", "\\'"), lang)
-            }).collect();
-            block.column(&predicate, vec![column_value])
-        },
-        DataType::Uri => {
-            predicate.push_str(".str");
-            let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
-            block.column(&predicate, vec![column_value])
-        },
-        DataType::Boolean => {
-            predicate.push_str(".int");
-            let column_value: Vec<i64> = resources.iter().map(|resource| {
-                match resource.value {
-                    Value::Bool(true) => 1,
-                    _ => 0
-                }
-            }).collect();
-            block.column(&predicate, vec![column_value])
-        },
-        DataType::Decimal => {
-            predicate.push_str(".num");
-            let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
-            block.column(&predicate, vec![column_value])
-        },
-        DataType::Datetime => {
-            predicate.push_str(".date");
-            //let column_value: Vec<NaiveDateTime> = resources.iter().map(|resource| NaiveDateTime::from_timestamp(*resource.get_datetime(), 0)).collect();
-            let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
-            block.column(&predicate, vec![column_value])
-        },
-        _ => {
-            error!("Value type is not supported");
-            block
-        }
-    }
-}
-
-async fn export(new_state: &mut Individual, prev_state: &mut Individual, is_new: bool, ctx: &mut Context) -> Result<(), Error> {
-    let uri = new_state.get_id().to_owned();
-    info!("Export individual: {}", uri);
-
-    let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
-
-    if !actual_version.is_empty() && actual_version != uri {
-        info!("Skip not actual version. {}.v-s:actual_version {} != {}", uri, &actual_version, uri);
-        return Ok(());
-    }
-
-    // Remove previous state from individuals table
-    /*if !is_new {
-        delete_individual(&uri, ctx).await?
-    }*/
-
-    let mut insert_block = Block::new().column("id", vec![uri]);
-
-    for predicate in new_state.get_predicates() {
-        if let Some(resources) = new_state.get_resources(&predicate) {
-            insert_block = set_column_value(insert_block, &predicate, &resources);
-        }
-    }
-
-    info!("Block = {:?}", insert_block);
-
-    let mut client = ctx.pool.get_handle().await?;
-
-    client.insert("veda.individuals", insert_block).await?;
-
-    info!("Export done: {}", new_state.get_id());
-
-    Ok(())
-}
-
 async fn create_predicate_column(column_name: &str, column_type: &str, pool: &mut Pool, db_columns: &mut HashMap<String, String>) -> Result<(), Error> {
     if let Some(_) = db_columns.get(column_name) {
         return Ok(());
@@ -528,13 +381,6 @@ async fn create_predicate_column(column_name: &str, column_type: &str, pool: &mu
     let mut client = pool.get_handle().await?;
     client.execute(query).await?;
     db_columns.insert(column_name.to_string(), column_type.to_string());
-    Ok(())
-}
-
-async fn delete_individual(uri: &str, ctx: &Context) -> Result<(), Error> {
-    let mut client = ctx.pool.get_handle().await?;
-    let query = format!("DELETE FROM veda.individuals WHERE `id` = '{}'", uri);
-    client.execute(query).await?;
     Ok(())
 }
 
@@ -587,7 +433,7 @@ async fn read_columns(pool: &mut Pool) -> Result<HashMap<String, String>, Error>
     let read_columns = "DESCRIBE veda.individuals";
     let mut columns: HashMap<String, String> = HashMap::new();
     let mut client = pool.get_handle().await?;
-    let block = client.query("DESCRIBE veda.individuals").fetch_all().await?;
+    let block = client.query(read_columns).fetch_all().await?;
     for row in block.rows() {
         let name: String      = row.get("name")?;
         let data_type: String = row.get("type")?;
@@ -595,3 +441,83 @@ async fn read_columns(pool: &mut Pool) -> Result<HashMap<String, String>, Error>
     }
     Ok(columns)
 }
+
+////////////////
+
+/*
+#[cfg(test)]
+mod test {
+
+    use super::*;
+    use clickhouse_rs::types::Value as clickValue;
+    use std::sync::Arc;
+
+    #[test]
+    async fn test() -> Result<(), Error> {
+        let url = format!("tcp://default:cyqqxc@127.0.0.1:9000/");
+        let pool = Pool::new(url);
+
+        let ddl = r"
+        CREATE TABLE IF NOT EXISTS test (
+            id  UInt32,
+            amount Array(UInt32),
+            name Array(String)
+        ) Engine = MergeTree() order by id";
+
+        let mut block_rows = Block::new();
+        block_rows.push(vec![
+            (String::from("id"), clickValue::UInt32(11)),
+            (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(11)]))),
+            //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
+            (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("11").into_bytes()))])))
+        ])?;
+        block_rows.push(vec![
+            (String::from("id"), clickValue::UInt32(22)),
+            (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(22)]))),
+            //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
+            (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("22").into_bytes()))])))
+        ])?;
+        block_rows.push(vec![
+            (String::from("id"), clickValue::UInt32(33)),
+            (String::from("amount"), clickValue::Array(&types::SqlType::UInt32, Arc::new(vec![clickValue::UInt32(33)]))),
+            //(String::from("name"), clickValue::String(Arc::new(String::from("aaa").into_bytes())))
+            (String::from("name"), clickValue::Array(&types::SqlType::String, Arc::new(vec![clickValue::String(Arc::new(String::from("33").into_bytes()))])))
+        ])?;
+
+        let mut column1: Vec<u32> = Vec::new();
+        column1.push(1);
+        column1.push(2);
+        column1.push(3);
+
+        let mut column2: Vec<Vec<u32>> = Vec::new();
+        column2.push(vec![1]);
+        column2.push(vec![2]);
+        column2.push(vec![3]);
+
+        let mut column3: Vec<Vec<String>> = Vec::new();
+        column3.push(vec!["1".to_string()]);
+        column3.push(vec!["2".to_string()]);
+        column3.push(vec!["3".to_string()]);
+
+        let block_cols = Block::new()
+            .column("id", column1)
+            .column("amount", column2)
+            .column("name", column3);
+
+        let mut client = pool.get_handle().await?;
+        client.execute(ddl).await?;
+        client.insert("test", block_rows).await?;
+        client.insert("test", block_cols).await?;
+
+        let block = client.query("SELECT * FROM test").fetch_all().await?;
+
+        for row in block.rows() {
+            let id: u32             = row.get("id")?;
+            let amount: Vec<u32>    = row.get("amount")?;
+            let name: Vec<&str>     = row.get("name")?;
+            info!("Found payment {}: {:?} {:?}", id, amount, name);
+        }
+
+        Ok(())
+    }
+}*/
