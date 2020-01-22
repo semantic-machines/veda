@@ -282,7 +282,7 @@ pub fn processing_message_contains_one_change(my_node_id: &str, recv_msg: Vec<u8
                     error!("fail update, uri={}, result_code={:?}", recv_indv.get_id(), res.result);
                     return (recv_indv.get_id().to_owned(), ExImCode::FailUpdate);
                 } else {
-                    info!("success update, uri={}", recv_indv.get_id());
+                    info!("get form {}, success update, uri={}", source_veda, recv_indv.get_id());
                     return (recv_indv.get_id().to_owned(), ExImCode::Ok);
                 }
             }
