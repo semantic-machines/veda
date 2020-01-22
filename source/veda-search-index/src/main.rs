@@ -344,9 +344,11 @@ async fn main() ->  Result<(), Error> {
 fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<u32> {
     Some(1000)
 }
+
 fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) {
-    if block_on(ctx.process_batch()).is_err() {
-        error!("Error processing batch");
+    if let Err(e) = block_on(ctx.process_batch()) {
+        error!("Error processing batch: {}", e);
+        process::exit(101);
     }
 }
 
