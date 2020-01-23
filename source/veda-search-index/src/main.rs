@@ -419,7 +419,7 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
             `rdf__type_str` Array(String),
-            `v_s__created_date` Array(DateTime)
+            `v_s__created_date` Array(DateTime) DEFAULT [toDateTime(0)]
         )
         ENGINE = MergeTree()
         ORDER BY (`rdf__type_str`[1], `v_s__created_date`[1])
