@@ -260,6 +260,9 @@ impl Consumer {
                             error!("queue:consumer({}):pop, queue {}:{} {}", self.name, self.queue.name, self.id, e.as_str());
                             return false;
                         }
+                    } else {
+                        warn!("use next part {}", self.id);
+                        break;
                     }
                 }
 
