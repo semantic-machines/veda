@@ -200,7 +200,7 @@ impl Context {
                         },
                         DataType::Datetime => {
                             column_name.push_str("_date");
-                            let column_type = "Array(Datetime)".to_string();
+                            let column_type = "Array(DateTime)".to_string();
                             create_predicate_column(&column_name, &column_type, &mut self.pool, &mut self.db_columns).await?;
 
                             let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
@@ -419,7 +419,7 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
             `rdf__type_str` Array(String),
-            `v_s__created_date` Array(Datetime)
+            `v_s__created_date` Array(DateTime)
         )
         ENGINE = MergeTree()
         ORDER BY (`rdf__type_str`[1], `v_s__created_date`[1])
