@@ -429,7 +429,7 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
         )
         ENGINE = MergeTree()
         ORDER BY (`rdf__type_str`[1], `v_s__created_date`[1])
-        PARTITION BY (`rdf__type_str`[1], toStartOfMonth(`v_s__created_date`[1]))
+        PARTITION BY (`rdf__type_str`[1], toStartOfYear(`v_s__created_date`[1]))
     ";
     let mut client = pool.get_handle().await?;
     client.execute(init_veda_db).await?;
