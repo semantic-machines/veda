@@ -5,7 +5,7 @@ use std::process;
 use std::collections::HashMap;
 
 use clickhouse_rs::{Pool, errors::Error, Block};
-use chrono::{DateTime, TimeZone};
+use chrono::prelude::*;
 use chrono_tz::Tz;
 
 use tokio;
@@ -231,8 +231,8 @@ impl Context {
 
         let mut block = Block::new().column("id", ids);
 
-        for column_name in columns_keys {
-            let column_data = columns.get_mut(&column_name).unwrap();
+        for column_name in &columns_keys {
+            let column_data = columns.get_mut(column_name).unwrap();
             if let ColumnData::Int(column) = column_data {
                 let column_size = column.len();
                 for _i in column_size..row_counter {
@@ -269,11 +269,17 @@ impl Context {
 
         //info!("Block = {:?}", block);
 
+        let before: DateTime<Utc> = Utc::now();
+
         let mut client = self.pool.get_handle().await?;
 
         client.insert("veda.individuals", block).await?;
 
-        info!("Block inserted successfully!");
+        let duration = (Utc::now() - before).num_milliseconds() as usize;
+
+        let cps = (row_counter * 1000 / duration) as f64;
+
+        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", row_counter, columns_keys.len() + 1, duration, cps);
 
         self.clear_batch();
 
