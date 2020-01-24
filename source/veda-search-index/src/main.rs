@@ -363,7 +363,7 @@ async fn main() ->  Result<(), Error> {
 }
 
 fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<u32> {
-    Some(1000)
+    Some(10000)
 }
 
 fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) {
