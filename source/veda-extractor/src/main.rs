@@ -93,12 +93,11 @@ fn prepare(module: &mut Module, _module_info: &mut ModuleInfo, ctx: &mut Context
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
     let date = queue_element.get_first_integer("date");
-    if date.is_none() {
-        return Err(PrepareError::Fatal);
-    }
+//    if date.is_none() {
+//        return Ok(());
+//    }
 
     let exportable = is_exportable(module, ctx, &mut prev_state, &mut new_state);
-
     if exportable.is_none() {
         return Ok(());
     }
@@ -148,7 +147,7 @@ fn is_exportable(module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut 
                     }
 
                     if let Some(t) = doc.get_first_literal("rdf:type") {
-                        if t == "gen:InternalDocument" || t == "gen:Contract" {
+                        if t == "gen:InternalDocument" || t == "gen:Contract" || t == "gen:RequestIT" {
                             if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source", &mut Individual::default()) {
                                 for predicate in doc.get_predicates_of_type(DataType::Uri) {
                                     if predicate == "v-s:lastEditor" || predicate == "v-s:creator" || predicate == "v-s:initiator" {

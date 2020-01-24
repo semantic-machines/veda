@@ -130,6 +130,8 @@ pub fn send_changes_to_node(queue_consumer: &mut Consumer, soc: &mut Socket, nod
                         if e != ExImCode::TransmitFailed {
                             break;
                         }
+                    } else {
+                        break;
                     }
                 }
 
@@ -238,7 +240,7 @@ fn send_out_obj(out_obj: &mut Individual, soc: &mut Socket, node_addr: &str) -> 
     Ok(())
 }
 
-pub fn processing_message_contains_one_change(recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> (String, ExImCode) {
+pub fn processing_message_contains_one_change(my_node_id: &str, recv_msg: Vec<u8>, systicket: &str, module: &mut Module) -> (String, ExImCode) {
     let mut recv_indv = Individual::new_raw(RawObj::new(recv_msg));
 
     if parse_raw(&mut recv_indv).is_ok() {
@@ -262,6 +264,11 @@ pub fn processing_message_contains_one_change(recv_msg: Vec<u8>, systicket: &str
         if target_veda.is_none() {
             return (recv_indv.get_id().to_owned(), ExImCode::InvalidTarget);
         }
+        let target_veda = target_veda.unwrap();
+
+        if target_veda != "*" && my_node_id != target_veda {
+            return (recv_indv.get_id().to_owned(), ExImCode::InvalidTarget);
+        }
 
         let new_state = recv_indv.get_first_binobj("new_state");
         if cmd != IndvOp::Remove && new_state.is_some() {
@@ -276,7 +283,7 @@ pub fn processing_message_contains_one_change(recv_msg: Vec<u8>, systicket: &str
                     error!("fail update, uri={}, result_code={:?}", recv_indv.get_id(), res.result);
                     return (recv_indv.get_id().to_owned(), ExImCode::FailUpdate);
                 } else {
-                    info!("success update, uri={}", recv_indv.get_id());
+                    info!("get form {}, success update, uri={}", source_veda, recv_indv.get_id());
                     return (recv_indv.get_id().to_owned(), ExImCode::Ok);
                 }
             }

@@ -42,26 +42,38 @@ fn main() -> std::io::Result<()> {
     let mut node_upd_counter = 0;
     let mut link_node_addresses = HashMap::new();
 
+    let mut node_id = get_db_id(&mut module);
+    if node_id.is_none() {
+        node_id = create_db_id(&mut module);
+    }
+
+    if node_id.is_none() {
+        error!("fail create node_id");
+        return Ok(());
+    }
+    let node_id = node_id.unwrap();
+    info! ("my node_id={}", node_id);
+
     load_linked_nodes(&mut module, &mut node_upd_counter, &mut link_node_addresses);
 
     loop {
-        for (node_id, node_addr) in &link_node_addresses {
-            let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
+        for (remote_node_id, remote_node_addr) in &link_node_addresses {
+            let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
 
             let mut soc = Socket::new(Protocol::Req0).unwrap();
 
-            if let Err(e) = soc.dial(node_addr) {
-                error!("fail connect to, {} {}, err={}", node_id, node_addr, e);
+            if let Err(e) = soc.dial(remote_node_addr) {
+                error!("fail connect to, {} {}, err={}", remote_node_id, remote_node_addr, e);
                 continue;
             }
-            debug!("success connect to, {} {}", node_id, node_addr);
+            debug!("success connect to, {} {}", remote_node_id, remote_node_addr);
 
-            send_changes_to_node(&mut queue_consumer, &mut soc, node_id, node_addr);
+            send_changes_to_node(&mut queue_consumer, &mut soc, remote_node_id, remote_node_addr);
 
             // request changes from slave node
             loop {
                 let req = Message::from(("?,".to_owned() + &node_id).as_bytes());
-                info!("send request for changes to {}", node_addr);
+                //info!("send request for changes to {}", remote_node_addr);
                 if let Err(e) = soc.send(req) {
                     error!("fail send request to slave node, err={:?}", e);
                     break;
@@ -76,12 +88,12 @@ fn main() -> std::io::Result<()> {
 
                 let msg = wmsg.unwrap().to_vec();
 
-                if msg.len() > 2 && msg[0] == b'[' && msg[1] == b']' {
+                if msg.len() == 2 && msg[0] == b'[' && msg[1] == b']' {
                     // this empty result
                     break;
                 }
 
-                let res = processing_message_contains_one_change(msg, &systicket, &mut module);
+                let res = processing_message_contains_one_change(&node_id, msg, &systicket, &mut module);
                 if res.1 != ExImCode::Ok {
                     error!("fail accept changes, uri={}, err={:?}", res.0, res.1);
                 }
