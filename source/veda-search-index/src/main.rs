@@ -93,6 +93,11 @@ impl Context {
             ids.push(id);
 
             for predicate in new_state.get_predicates() {
+                if predicate == "?" {
+                    error! ("found invalid predicate={}, id={}", predicate, new_state.get_id());
+                    continue;
+                }
+
                 if let Some(resources) = new_state.get_resources(&predicate) {
                     let mut column_name = predicate.replace(":", "__").replace("-", "_");
                     match &resources[0].rtype {
