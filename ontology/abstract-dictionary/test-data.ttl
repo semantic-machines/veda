@@ -45,14 +45,6 @@ td:script_find_long_terms
   """;
 .
 
-
-td:khvostiaImage
-  rdf:type v-s:File ;
-  v-s:fileUri "Khvostia" ;
-  v-s:fileName "Khvostia" ;
-  v-s:filePath "/mondi" ;
-.
-
 td:Analyst1
   rdf:type v-s:Position ;
   v-s:parentUnit td:ApplicationDevelopmentGroup ;
@@ -115,7 +107,6 @@ td:BB-semantic_machines
 td:BushenevVT
   rdf:type v-s:Account ;
   v-s:login "BushenevVT"^^xsd:string ;
-  v-s:mailbox "valeriy.bushenev@gmail.com"^^xsd:string ;
   v-s:owner td:ValeriyBushenev ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BushenevVT" ;
@@ -124,7 +115,6 @@ td:BushenevVT
 td:BychinAT
   rdf:type v-s:Account ;
   v-s:login "BychinAT"^^xsd:string ;
-  v-s:mailbox "andrey.bychin@mondigroup.com"^^xsd:string ;
   v-s:owner td:AndreyBychin ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "BychinAT" ;
@@ -132,7 +122,6 @@ td:BychinAT
 td:KarpovRT
   rdf:type v-s:Account ;
   v-s:login "KarpovRT"^^xsd:string ;
-  v-s:mailbox "roman.karpov@mondigroup.com"^^xsd:string ;
   v-s:owner td:RomanKarpov ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KarpovRT" ;
@@ -141,7 +130,6 @@ td:KarpovRT
 td:KhvostiAT
   rdf:type v-s:Account ;
   v-s:login "KhvostiAT"^^xsd:string ;
-  v-s:mailbox "Alexandra.khvostikova@mondigroup.com"^^xsd:string ;
   v-s:owner td:AleksandraKhvostikova ;
   v-s:password "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"^^xsd:string ;
   rdfs:label "KhvostiAT" ;
@@ -696,13 +684,6 @@ d:test-field-v-s:classFrom
   rdf:type v-s:Variable ;
   v-s:classFrom cfg:VedaSystem;
   rdfs:label "этот индивид служит для добавления в поиск поля v-s:classFrom, нужно для тестов" ;
-.
-d:Membership_71014133_71025564
-  rdf:type v-s:Membership ;
-  v-s:memberOf d:mondi_position_71025564 ;
-  v-s:resource d:mondi_position_71014133 ;
-  rdfs:label "Начальник управления - в группу Начальник службы"@ru ;
-  rdfs:label "Начальник управления - в группу Начальник службы"@en ;
 .
 
 s-wf:RouteTest
