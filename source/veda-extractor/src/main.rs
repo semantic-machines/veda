@@ -147,7 +147,7 @@ fn is_exportable(module: &mut Module, ctx: &mut Context, _prev_state_indv: &mut 
                     }
 
                     if let Some(t) = doc.get_first_literal("rdf:type") {
-                        if t == "gen:InternalDocument" || t == "gen:Contract" {
+                        if t == "gen:InternalDocument" || t == "gen:Contract" || t == "gen:RequestIT" {
                             if let Some(src) = module.get_literal_of_link(new_state_indv, "v-wf:to", "sys:source", &mut Individual::default()) {
                                 for predicate in doc.get_predicates_of_type(DataType::Uri) {
                                     if predicate == "v-s:lastEditor" || predicate == "v-s:creator" || predicate == "v-s:initiator" {
