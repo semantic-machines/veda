@@ -56,19 +56,15 @@ impl Context {
     }
 
     pub async fn process_typed_batch(&mut self) -> Result<(), Error> {
-        let mut classes: Vec<String> = Vec::new();
-        for class in self.typed_batch.keys() {
-            classes.push(class.clone());
-        }
-        //for class in classes {
-            //let batch = self.typed_batch.get(&class).unwrap();
-            //self.process_batch2(*self.typed_batch.get(&class).unwrap()).await?;
-        //}
-
+        let typed_batch = &mut self.typed_batch;
+        let classes = typed_batch.keys();
+//        for class in classes {
+//            self.process_type_batch(class).await?;
+//        }
         Ok(())
     }
 
-    pub async fn process_batch2(&mut self, batch: Batch) -> Result<(), Error> {
+    pub async fn process_type_batch(&mut self, batch_class: &str) -> Result<(), Error> {
 
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
         let mut columns_keys: Vec<String> = Vec::new();
@@ -77,9 +73,9 @@ impl Context {
 
         let mut row_counter: usize = 0;
 
-        for element in batch {
+        for element in self.typed_batch.get_mut(batch_class).unwrap() {
 
-            let (_class, mut new_state, _prev_state, _is_new) = element;
+            let (_, new_state, _, _) = element;
 
             let id = new_state.get_id().to_owned();
 
