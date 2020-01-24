@@ -52,15 +52,26 @@ fn main() -> std::io::Result<()> {
         return Ok(());
     }
 
+    let mut node_id = get_db_id(&mut module);
+    if node_id.is_none() {
+        node_id = create_db_id(&mut module);
+    }
+    if node_id.is_none() {
+        error!("fail create node_id");
+        return Ok(());
+    }
+    let node_id = node_id.unwrap();
+    info!("my node_id={}", node_id);
+
     loop {
         if let Ok(recv_msg) = server.recv() {
             let msg = recv_msg.to_vec();
 
             if msg.len() > 1 && msg[0] == b'?' {
                 // this request changes from master
-                if let Ok(node_id) = from_utf8(&msg[2..msg.len()]) {
+                if let Ok(remote_node_id) = from_utf8(&msg[2..msg.len()]) {
                     // читаем элемент очереди, создаем обьект и отправляем на server
-                    let mut queue_consumer = Consumer::new("./data/out", node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
+                    let mut queue_consumer = Consumer::new("./data/out", remote_node_id, "extract").expect("!!!!!!!!! FAIL QUEUE");
 
                     if let Err(e) = queue_consumer.queue.get_info_of_part(queue_consumer.id, true) {
                         error!("get_info_of_part {}: {}", queue_consumer.id, e.as_str());
@@ -76,15 +87,17 @@ fn main() -> std::io::Result<()> {
                             }
                         } else {
                             let indv = &mut Individual::new_raw(raw);
-                            match create_out_obj(indv, node_id) {
+                            match create_out_obj(indv, remote_node_id) {
                                 Ok(out_obj) => {
                                     let mut raw1: Vec<u8> = Vec::new();
                                     if to_msgpack(&out_obj, &mut raw1).is_ok() {
-                                        info!("send {} to {}", out_obj.get_id(), node_id);
+                                        info!("send {} to {}", out_obj.get_id(), remote_node_id);
                                         let req = Message::from(raw1.as_slice());
 
                                         if let Err(e) = server.send(req) {
                                             error!("fail send {:?}", e);
+                                        } else {
+                                            queue_consumer.commit_and_next();
                                         }
                                         continue;
                                     }
@@ -102,7 +115,7 @@ fn main() -> std::io::Result<()> {
                     error!("fail send {:?}", e);
                 }
             } else {
-                let res = processing_message_contains_one_change(msg, &systicket, &mut module);
+                let res = processing_message_contains_one_change(&node_id, msg, &systicket, &mut module);
                 if let Err(e) = server.send(Message::from(enc_slave_resp(&res.0, res.1).as_bytes())) {
                     error!("fail send {:?}", e);
                 }

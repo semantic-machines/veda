@@ -10,7 +10,6 @@ use nng::options::Options;
 use nng::options::RecvTimeout;
 use nng::{Protocol, Socket};
 use std::io::Write;
-use std::process;
 use std::time::Duration;
 use std::{thread, time};
 use uuid::Uuid;
@@ -264,7 +263,14 @@ impl Module {
                 let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
                     if let Err(e) = prepare(self, module_info, module_context, &mut queue_element) {
-                        process::exit(e as i32);
+                        match e {
+                            PrepareError::Fatal => {
+                                warn! ("found fatal error, stop listen queue");
+                                //process::exit(e as i32);
+                                return;
+                            }
+                            _ => {}
+                        }
                     }
                 }
 
@@ -285,7 +291,7 @@ impl Module {
             if prepared_batch_size == size_batch {
                 let wmsg = soc.recv();
                 if let Err(e) = wmsg {
-                    warn!("fail recv from queue notify channel, err={:?}", e);
+                    debug!("fail recv from queue notify channel, err={:?}", e);
 
                     if count_timeout_error > 0 && size_batch > 0 {
                         warn!("queue changed but we not received notify message, need reconnect...");

@@ -30,7 +30,14 @@ impl Queue {
         }
 
         let file_name_info_queue = base_path.to_owned() + "/" + queue_name + "_info_queue";
-        if let Ok(fqi) = OpenOptions::new().read(true).write(true).create(true).open(file_name_info_queue) {
+
+        let wfqi = if in_mode == Mode::ReadWrite {
+            OpenOptions::new().read(true).write(true).create(true).open(file_name_info_queue)
+        } else {
+            OpenOptions::new().read(true).open(file_name_info_queue)
+        };
+
+        if let Ok(fqi) = wfqi {
             let tmp_f1 = fqi.try_clone().unwrap();
             let tmp_f2 = fqi.try_clone().unwrap();
 
