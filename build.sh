@@ -9,6 +9,12 @@ if [ ! -f ./ontology/config.ttl ]
 then
   cp ./ontology/config.ttl.cfg ./ontology/config.ttl
 fi
+
+if [ ! -f ./ontology/system-accounts.ttl ]
+then
+  cp ./ontology/system-accounts.ttl.cfg ./ontology/system-accounts.ttl
+fi
+
 ./tools/update-version-ttl.sh
 
 export CARGO_TARGET_DIR=$HOME/tmp
@@ -59,7 +65,7 @@ if [ -z $1 ] || [ $1 == "az-indexer" ] || [ $1 == "veda-az-indexer" ] || [ $1 ==
 
 fi
 
-if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
+if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] || [ $1 == "exim" ]; then
 
     rm ./veda-exim-inquire
 
@@ -70,7 +76,7 @@ if [ $1 == "exim-inquire" ] || [ $1 == "veda-exim-inquire" ] ; then
 
 fi
 
-if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] ; then
+if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] || [ $1 == "exim" ]; then
 
     rm ./veda-exim-respond
 
@@ -81,7 +87,7 @@ if [ $1 == "exim-respond" ] || [ $1 == "veda-exim-respond" ] ; then
 
 fi
 
-if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] ; then
+if [ $1 == "extractor" ] || [ $1 == "veda-extractor" ] || [ $1 == "exim" ]; then
 
     echo start make VEDA-EXTRACTOR
     rm ./veda-extractor
