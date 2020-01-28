@@ -1491,7 +1491,6 @@ v-ui:SectionHeaderTemplate
 </div>
 <script>
   $("span.glyphicon", template).click(function(){
-    console.log("clicked");
     var self = $(this);
     self.toggleClass("glyphicon-chevron-left glyphicon-chevron-down");
     var parentHeader = self.closest(".section-header");
