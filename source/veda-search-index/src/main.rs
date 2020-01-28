@@ -81,227 +81,31 @@ impl Context {
 
         info!("Processing batch: {}", class);
 
+        let mut id_column: Vec<String> = Vec::new();
+
+        let mut sign_column: Vec<i8> = Vec::new();
+
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
-        let mut columns_keys: Vec<String> = Vec::new();
-
-        let mut ids: Vec<String> = Vec::new();
-
-        let mut row_counter: usize = 0;
-
         for element in batch {
-            let (_, new_state, _, _) = element;
+            let (_, new_state, prev_state, is_new) = element;
 
-            let id = new_state.get_id().to_owned();
-
-            let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
-
+            let id = new_state.get_id().to_string();
+            let actual_version = new_state.get_first_literal("v-s:actualVersion").unwrap_or_default();
             if !actual_version.is_empty() && actual_version != id {
-                info!("Skip not actual version. {}.v-s:actual_version {} != {}", id, &actual_version, id);
+                info!("Skip not actual version. {}.v-s:actualVersion {} != {}", id, &actual_version, id);
                 continue;
             }
-            // Remove previous state from individuals table
-            /*if !is_new {
-                delete_individual(&uri, ctx).await?
-            }*/
 
-            ids.push(id);
-
-            for predicate in new_state.get_predicates() {
-                if let Some(resources) = new_state.get_resources(&predicate) {
-                    let re = Regex::new(r"([[:punct:]]|[[:space:]])").unwrap();
-                    let mut column_name = re.replace_all(&predicate, "_").into_owned();
-                    match &resources[0].rtype {
-                        DataType::Integer => {
-                            column_name.push_str("_int");
-                            let column_type = "Array(Int64)";
-                            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
-                            let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_int()).collect();
-
-                            if !columns.contains_key(&column_name) {
-                                let new_column = ColumnData::Int(Vec::new());
-                                columns.insert(column_name.clone(), new_column);
-                                columns_keys.push(column_name.clone());
-                            }
-
-                            let column_data = columns.get_mut(&column_name).unwrap();
-                            if let ColumnData::Int(column) = column_data {
-                                let column_size = column.len();
-                                for _i in column_size..row_counter {
-                                    column.push(vec![0]);
-                                }
-                                column.push(column_value);
-                            }
-                        },
-                        DataType::String => {
-                            column_name.push_str("_str");
-                            let column_type = "Array(String)";
-                            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
-                            let column_value: Vec<String> = resources.iter().map(|resource| {
-                                let str_value = resource.get_str();
-                                let lang = match resource.get_lang() {
-                                    Lang::NONE => String::from(""),
-                                    lang => format!("@{}", lang.to_string()),
-                                };
-                                format!("{}{}", str_value.replace("'", "\\'"), lang)
-                            }).collect();
-
-                            if !columns.contains_key(&column_name) {
-                                let new_column = ColumnData::Str(Vec::new());
-                                columns.insert(column_name.clone(), new_column);
-                                columns_keys.push(column_name.clone());
-                            }
-
-                            let column_data = columns.get_mut(&column_name).unwrap();
-                            if let ColumnData::Str(column) = column_data {
-                                let column_size = column.len();
-                                for _i in column_size..row_counter {
-                                    column.push(vec!["".to_string()]);
-                                }
-                                column.push(column_value);
-                            }
-                        },
-                        DataType::Uri => {
-                            column_name.push_str("_str");
-                            let column_type = "Array(String)";
-                            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
-                            let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
-
-                            if !columns.contains_key(&column_name) {
-                                let new_column = ColumnData::Str(Vec::new());
-                                columns.insert(column_name.clone(), new_column);
-                                columns_keys.push(column_name.clone());
-                            }
-
-                            let column_data = columns.get_mut(&column_name).unwrap();
-                            if let ColumnData::Str(column) = column_data {
-                                let column_size = column.len();
-                                for _i in column_size..row_counter {
-                                    column.push(vec!["".to_string()]);
-                                }
-                                column.push(column_value);
-                            }
-                        },
-                        DataType::Boolean => {
-                            column_name.push_str("_int");
-                            let column_type = "Array(Int64)";
-                            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
-                            let column_value: Vec<i64> = resources.iter().map(|resource| {
-                                match resource.value {
-                                    Value::Bool(true) => 1,
-                                    _ => 0
-                                }
-                            }).collect();
-
-                            if !columns.contains_key(&column_name) {
-                                let new_column = ColumnData::Int(Vec::new());
-                                columns.insert(column_name.clone(), new_column);
-                                columns_keys.push(column_name.clone());
-                            }
-
-                            let column_data = columns.get_mut(&column_name).unwrap();
-                            if let ColumnData::Int(column) = column_data {
-                                let column_size = column.len();
-                                for _i in column_size..row_counter {
-                                    column.push(vec![0]);
-                                }
-                                column.push(column_value);
-                            }
-                        },
-                        DataType::Decimal => {
-                            column_name.push_str("_num");
-                            let column_type = "Array(Float64)";
-                            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
-                            let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
-
-                            if !columns.contains_key(&column_name) {
-                                let new_column = ColumnData::Num(Vec::new());
-                                columns.insert(column_name.clone(), new_column);
-                                columns_keys.push(column_name.clone());
-                            }
-
-                            let column_data = columns.get_mut(&column_name).unwrap();
-                            if let ColumnData::Num(column) = column_data {
-                                let column_size = column.len();
-                                for _i in column_size..row_counter {
-                                    column.push(vec![0 as f64]);
-                                }
-                                column.push(column_value);
-                            }
-                        },
-                        DataType::Datetime => {
-                            column_name.push_str("_date");
-                            let column_type = "Array(DateTime)".to_string();
-                            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
-                            let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
-
-                            if !columns.contains_key(&column_name) {
-                                let new_column = ColumnData::Date(Vec::new());
-                                columns.insert(column_name.clone(), new_column);
-                                columns_keys.push(column_name.clone());
-                            }
-
-                            let column_data = columns.get_mut(&column_name).unwrap();
-                            if let ColumnData::Date(column) = column_data {
-                                let column_size = column.len();
-                                for _i in column_size..row_counter {
-                                    column.push(vec![Tz::UTC.timestamp(0, 0)]);
-                                }
-                                column.push(column_value);
-                            }
-                        },
-                        _ => {
-                            error!("Value type is not supported");
-                        }
-                    }
-                }
+            if !*is_new {
+                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut columns, client, db_columns).await?;
             }
-            row_counter += 1;
+            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut columns, client, db_columns).await?;
         }
 
-        let mut block = Block::new().column("id", ids);
+        let rows= id_column.len();
 
-        for column_name in &columns_keys {
-            let column_data = columns.get_mut(column_name).unwrap();
-            if let ColumnData::Int(column) = column_data {
-                let column_size = column.len();
-                for _i in column_size..row_counter {
-                    column.push(vec![0]);
-                }
-                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
-                block = block.column(&column_name, column.to_owned());
-            }
-            if let ColumnData::Str(column) = column_data {
-                let column_size = column.len();
-                for _i in column_size..row_counter {
-                    column.push(vec!["".to_string()]);
-                }
-                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
-                block = block.column(&column_name, column.to_owned());
-            }
-            if let ColumnData::Num(column) = column_data {
-                let column_size = column.len();
-                for _i in column_size..row_counter {
-                    column.push(vec![0 as f64]);
-                }
-                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
-                block = block.column(&column_name, column.to_owned());
-            }
-            if let ColumnData::Date(column) = column_data {
-                let column_size = column.len();
-                for _i in column_size..row_counter {
-                    column.push(vec![Tz::UTC.timestamp(0, 0)]);
-                }
-                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
-                block = block.column(&column_name, column.to_owned());
-            }
-        }
+        let block = Context::mk_block(id_column, sign_column, &mut columns);
 
         //info!("Block = {:?}", block);
 
@@ -314,13 +118,13 @@ impl Context {
             duration = 1;
         }
 
-        let cps = (row_counter * 1000 / duration) as f64;
+        let cps = (rows * 1000 / duration) as f64;
 
-        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", row_counter, columns_keys.len() + 1, duration, cps);
+        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", rows, columns.keys().len() + 1, duration, cps);
 
         stats.total_duration += duration;
 
-        stats.total_rows += row_counter;
+        stats.total_rows += rows;
 
         let total_cps = (stats.total_rows * 1000 / stats.total_duration) as f64;
 
@@ -337,6 +141,222 @@ impl Context {
 
         Ok(())
     }
+
+    async fn add_to_table(
+        individual: &mut Individual,
+        sign: i8,
+        id_column: &mut Vec<String>,
+        sign_column: &mut Vec<i8>,
+        columns: &mut HashMap<String, ColumnData>,
+        client: &mut ClientHandle,
+        db_columns: &mut HashMap<String, String>
+    )  -> Result<(), Error> {
+
+        let rows = id_column.len();
+
+        let id = individual.get_id().to_owned();
+
+        id_column.push(id);
+
+        sign_column.push(sign);
+
+        for predicate in individual.get_predicates() {
+            if let Some(resources) = individual.get_resources(&predicate) {
+                let re = Regex::new(r"([[:punct:]]|[[:space:]])").unwrap();
+                let mut column_name = re.replace_all(&predicate, "_").into_owned();
+                match &resources[0].rtype {
+                    DataType::Integer => {
+                        column_name.push_str("_int");
+                        let column_type = "Array(Int64)";
+                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
+
+                        let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_int()).collect();
+
+                        if !columns.contains_key(&column_name) {
+                            let new_column = ColumnData::Int(Vec::new());
+                            columns.insert(column_name.clone(), new_column);
+                        }
+
+                        let column_data = columns.get_mut(&column_name).unwrap();
+                        if let ColumnData::Int(column) = column_data {
+                            let column_size = column.len();
+                            for _i in column_size..rows {
+                                column.push(vec![0]);
+                            }
+                            column.push(column_value);
+                        }
+                    },
+                    DataType::String => {
+                        column_name.push_str("_str");
+                        let column_type = "Array(String)";
+                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
+
+                        let column_value: Vec<String> = resources.iter().map(|resource| {
+                            let str_value = resource.get_str();
+                            let lang = match resource.get_lang() {
+                                Lang::NONE => String::from(""),
+                                lang => format!("@{}", lang.to_string()),
+                            };
+                            format!("{}{}", str_value.replace("'", "\\'"), lang)
+                        }).collect();
+
+                        if !columns.contains_key(&column_name) {
+                            let new_column = ColumnData::Str(Vec::new());
+                            columns.insert(column_name.clone(), new_column);
+                        }
+
+                        let column_data = columns.get_mut(&column_name).unwrap();
+                        if let ColumnData::Str(column) = column_data {
+                            let column_size = column.len();
+                            for _i in column_size..rows {
+                                column.push(vec!["".to_string()]);
+                            }
+                            column.push(column_value);
+                        }
+                    },
+                    DataType::Uri => {
+                        column_name.push_str("_str");
+                        let column_type = "Array(String)";
+                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
+
+                        let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
+
+                        if !columns.contains_key(&column_name) {
+                            let new_column = ColumnData::Str(Vec::new());
+                            columns.insert(column_name.clone(), new_column);
+                        }
+
+                        let column_data = columns.get_mut(&column_name).unwrap();
+                        if let ColumnData::Str(column) = column_data {
+                            let column_size = column.len();
+                            for _i in column_size..rows {
+                                column.push(vec!["".to_string()]);
+                            }
+                            column.push(column_value);
+                        }
+                    },
+                    DataType::Boolean => {
+                        column_name.push_str("_int");
+                        let column_type = "Array(Int64)";
+                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
+
+                        let column_value: Vec<i64> = resources.iter().map(|resource| {
+                            match resource.value {
+                                Value::Bool(true) => 1,
+                                _ => 0
+                            }
+                        }).collect();
+
+                        if !columns.contains_key(&column_name) {
+                            let new_column = ColumnData::Int(Vec::new());
+                            columns.insert(column_name.clone(), new_column);
+                        }
+
+                        let column_data = columns.get_mut(&column_name).unwrap();
+                        if let ColumnData::Int(column) = column_data {
+                            let column_size = column.len();
+                            for _i in column_size..rows {
+                                column.push(vec![0]);
+                            }
+                            column.push(column_value);
+                        }
+                    },
+                    DataType::Decimal => {
+                        column_name.push_str("_num");
+                        let column_type = "Array(Float64)";
+                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
+
+                        let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
+
+                        if !columns.contains_key(&column_name) {
+                            let new_column = ColumnData::Num(Vec::new());
+                            columns.insert(column_name.clone(), new_column);
+                        }
+
+                        let column_data = columns.get_mut(&column_name).unwrap();
+                        if let ColumnData::Num(column) = column_data {
+                            let column_size = column.len();
+                            for _i in column_size..rows {
+                                column.push(vec![0 as f64]);
+                            }
+                            column.push(column_value);
+                        }
+                    },
+                    DataType::Datetime => {
+                        column_name.push_str("_date");
+                        let column_type = "Array(DateTime)".to_string();
+                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
+
+                        let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
+
+                        if !columns.contains_key(&column_name) {
+                            let new_column = ColumnData::Date(Vec::new());
+                            columns.insert(column_name.clone(), new_column);
+                        }
+
+                        let column_data = columns.get_mut(&column_name).unwrap();
+                        if let ColumnData::Date(column) = column_data {
+                            let column_size = column.len();
+                            for _i in column_size..rows {
+                                column.push(vec![Tz::UTC.timestamp(0, 0)]);
+                            }
+                            column.push(column_value);
+                        }
+                    },
+                    _ => {
+                        error!("Value type is not supported");
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn mk_block(id_column: Vec<String>, sign_column: Vec<i8>, columns: &mut HashMap<String, ColumnData>) -> Block {
+
+        let rows = id_column.len();
+
+        let mut block = Block::new()
+            .column("id", id_column)
+            .column("sign", sign_column);
+
+        for (column_name, column_data) in columns.iter_mut() {
+            if let ColumnData::Int(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..rows {
+                    column.push(vec![0]);
+                }
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
+            }
+            if let ColumnData::Str(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..rows {
+                    column.push(vec!["".to_string()]);
+                }
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
+            }
+            if let ColumnData::Num(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..rows {
+                    column.push(vec![0 as f64]);
+                }
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
+            }
+            if let ColumnData::Date(column) = column_data {
+                let column_size = column.len();
+                for _i in column_size..rows {
+                    column.push(vec![Tz::UTC.timestamp(0, 0)]);
+                }
+                //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
+                block = block.column(&column_name, column.to_owned());
+            }
+        }
+        block
+    }
+
 }
 
 #[tokio::main]
@@ -484,10 +504,11 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
     let init_individuals_table = r"
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
+            sign Int8 DEFAULT 1,
             `rdf_type_str` Array(String),
             `v_s_created_date` Array(DateTime) DEFAULT [toDateTime(0)]
         )
-        ENGINE = MergeTree()
+        ENGINE = CollapsingMergeTree(sign)
         ORDER BY (`rdf_type_str`[1], `v_s_created_date`[1])
         PARTITION BY (`rdf_type_str`[1])
     ";
