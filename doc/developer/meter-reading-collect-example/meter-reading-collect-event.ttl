@@ -18,7 +18,7 @@
 
 mrc:Event_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт добавляет значение счетчика в поле[последнее значение] обьекта счетчик" ;
   v-s:triggerByType mrc:MeterReading ;
   v-s:preventByType v-s:Version;
