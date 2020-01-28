@@ -8,6 +8,8 @@ use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
 use chrono::prelude::*;
 use chrono_tz::Tz;
 
+use regex::Regex;
+
 use tokio;
 use futures::executor::block_on;
 
@@ -25,12 +27,21 @@ type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
 type BatchElement = (String, Individual, Individual, bool);
 
+const BATCH_SIZE: u32 = 100_000;
+
+pub struct Stats {
+    total_duration: usize,
+    total_rows: usize,
+    started: DateTime<Utc>,
+    last: DateTime<Utc>,
+}
+
 pub struct Context {
     onto: Onto,
     pool: Pool,
     db_columns: HashMap<String, String>,
-    batch: Batch,
     typed_batch: TypedBatch,
+    stats: Stats,
 }
 
 enum ColumnData {
@@ -41,9 +52,6 @@ enum ColumnData {
 }
 
 impl Context {
-    pub fn add_to_batch(&mut self, element: BatchElement) {
-        self.batch.push(element);
-    }
 
     pub fn add_to_typed_batch(&mut self, element: BatchElement) {
         let (class, _new_state, _prev_state, _is_new) = &element;
@@ -56,16 +64,23 @@ impl Context {
     }
 
     pub async fn process_typed_batch(&mut self) -> Result<(), Error> {
-        let client = &mut self.pool.get_handle().await?;
-        let db_columns = &mut self.db_columns;
-        for (_, batch) in self.typed_batch.iter_mut() {
-            Context::process_batch(batch, client, db_columns).await?;
+        if !self.typed_batch.is_empty() {
+            let client = &mut self.pool.get_handle().await?;
+            let db_columns = &mut self.db_columns;
+            let stats = &mut self.stats;
+            for (class, batch) in self.typed_batch.iter_mut() {
+                Context::process_batch(&class, batch, client, db_columns, stats).await?;
+            }
+            self.typed_batch.clear();
+            stats.last = Utc::now();
         }
-        self.typed_batch.clear();
         Ok(())
     }
 
-    async fn process_batch(batch: &mut Batch, client: &mut ClientHandle, db_columns: &mut HashMap<String, String>) -> Result<(), Error> {
+    async fn process_batch(class: &str, batch: &mut Batch, client: &mut ClientHandle, db_columns: &mut HashMap<String, String>, stats: &mut Stats) -> Result<(), Error> {
+
+        info!("Processing batch: {}", class);
+
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
         let mut columns_keys: Vec<String> = Vec::new();
@@ -93,13 +108,9 @@ impl Context {
             ids.push(id);
 
             for predicate in new_state.get_predicates() {
-                if predicate == "?" {
-                    error! ("found invalid predicate={}, id={}", predicate, new_state.get_id());
-                    continue;
-                }
-
                 if let Some(resources) = new_state.get_resources(&predicate) {
-                    let mut column_name = predicate.replace(":", "__").replace("-", "_");
+                    let re = Regex::new(r"([[:punct:]]|[[:space:]])").unwrap();
+                    let mut column_name = re.replace_all(&predicate, "_").into_owned();
                     match &resources[0].rtype {
                         DataType::Integer => {
                             column_name.push_str("_int");
@@ -298,15 +309,34 @@ impl Context {
 
         client.insert("veda.individuals", block).await?;
 
-        let duration = (Utc::now() - before).num_milliseconds() as usize;
+        let mut duration = (Utc::now() - before).num_milliseconds() as usize;
+        if duration == 0 {
+            duration = 1;
+        }
 
         let cps = (row_counter * 1000 / duration) as f64;
 
         info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", row_counter, columns_keys.len() + 1, duration, cps);
 
+        stats.total_duration += duration;
+
+        stats.total_rows += row_counter;
+
+        let total_cps = (stats.total_rows * 1000 / stats.total_duration) as f64;
+
+        let uptime = Utc::now() - stats.started;
+        let uptime_ms = if uptime.is_zero() {
+            1
+        } else {
+            uptime.num_milliseconds()
+        } as usize;
+
+        let uptime_cps = (stats.total_rows * 1000 / uptime_ms) as f64;
+
+        info!("Total rows inserted = {}, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h{}m{}s, avg. uptime cps = {}", stats.total_rows, stats.total_duration, total_cps, uptime.num_seconds() / 3600, uptime.num_seconds() % 3600 / 60, uptime.num_seconds() % 3600 % 60, uptime_cps);
+
         Ok(())
     }
-
 }
 
 #[tokio::main]
@@ -341,15 +371,20 @@ async fn main() ->  Result<(), Error> {
 
     info!("Columns: {:?}", db_columns);
 
-    let batch: Batch = Vec::new();
     let typed_batch: TypedBatch = HashMap::new();
+    let stats = Stats {
+        total_duration: 0,
+        total_rows: 0,
+        started: Utc::now(),
+        last: Utc::now(),
+    };
 
     let mut ctx = Context {
         onto: Onto::default(),
         pool,
         db_columns,
-        batch,
         typed_batch,
+        stats
     };
 
     load_onto(&mut module.fts, &mut module.storage, &mut ctx.onto);
@@ -368,7 +403,7 @@ async fn main() ->  Result<(), Error> {
 }
 
 fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<u32> {
-    Some(10000)
+    Some(BATCH_SIZE)
 }
 
 fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) {
@@ -449,12 +484,12 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
     let init_individuals_table = r"
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
-            `rdf__type_str` Array(String),
-            `v_s__created_date` Array(DateTime) DEFAULT [toDateTime(0)]
+            `rdf_type_str` Array(String),
+            `v_s_created_date` Array(DateTime) DEFAULT [toDateTime(0)]
         )
         ENGINE = MergeTree()
-        ORDER BY (`rdf__type_str`[1], `v_s__created_date`[1])
-        PARTITION BY (`rdf__type_str`[1], toStartOfYear(`v_s__created_date`[1]))
+        ORDER BY (`rdf_type_str`[1], `v_s_created_date`[1])
+        PARTITION BY (`rdf_type_str`[1])
     ";
     let mut client = pool.get_handle().await?;
     client.execute(init_veda_db).await?;
