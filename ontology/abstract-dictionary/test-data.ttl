@@ -674,7 +674,7 @@ v-wf:UserTaskForm1
 
 d:Bychina_create_Person
   rdf:type v-s:PermissionStatement ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   v-s:permissionSubject td:AndreyBychin ;
   v-s:permissionObject v-s:Person, v-ui:Preferences, v-s:Appointment ;
   v-s:canCreate "true"^^xsd:boolean ;
