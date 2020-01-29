@@ -2,7 +2,7 @@
 extern crate log;
 extern crate mysql;
 
-use chrono::NaiveDateTime;
+use chrono::prelude::*;
 use std::collections::HashMap;
 use std::{process, thread, time};
 
@@ -102,10 +102,10 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
 
-    let actual_version = new_state.get_first_literal("v-s:actual_version").unwrap_or_default();
+    let actual_version = new_state.get_first_literal("v-s:actualVersion").unwrap_or_default();
 
     if !actual_version.is_empty() && actual_version != uri {
-        info!("Skip not actual version. {}.v-s:actual_version {} != {}", uri, &actual_version, uri);
+        info!("Skip not actual version. {}.v-s:actualVersion {} != {}", uri, &actual_version, uri);
         return Ok(());
     }
 
@@ -132,12 +132,14 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
         prev_state.get_predicates().iter().for_each(|predicate| {
             prev_state.get_resources(&predicate).unwrap().iter().for_each(|resource| {
                 if resource.order == 0 {
+                    let mut predicate = predicate.to_lowercase();
+                    predicate.truncate(64);
                     // Check or create table before delete
-                    if check_create_property_table(&mut ctx.tables, &predicate, &resource, &mut transaction).is_err() {
+                    if check_create_predicate_table(&mut ctx.tables, &predicate, &resource, &mut transaction).is_err() {
                         error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
                         tr_error = true;
                     }
-                    let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate.to_lowercase(), uri);
+                    let query = format!("DELETE FROM `{}` WHERE doc_id = '{}'", predicate, uri);
                     if let Err(e) = transaction.query(query) {
                         error!("Delete individual `{}` from property table `{}` failed. {:?}", uri, predicate, e);
                         tr_error = true;
@@ -160,8 +162,10 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
     classes.iter().for_each(|class| {
         new_state.get_predicates().iter().for_each(|predicate| {
             new_state.get_resources(predicate).unwrap().iter().for_each(|resource| {
+                let mut predicate = predicate.to_lowercase();
+                predicate.truncate(64);
                 // Check or create table before insert
-                if resource.order == 0 && check_create_property_table(&mut ctx.tables, &predicate, &resource, &mut transaction).is_err() {
+                if resource.order == 0 && check_create_predicate_table(&mut ctx.tables, &predicate, &resource, &mut transaction).is_err() {
                     error!("Unable to create table for property: `{}`, export aborted for individual: `{}`.", predicate, uri);
                     tr_error = true;
                 }
@@ -183,7 +187,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
                 };
                 let query = format!(
                     "INSERT INTO `{}` (doc_id, doc_type, created, value, lang, deleted) VALUES ('{}', '{}', {}, {}, {}, {})",
-                    predicate.to_lowercase(), uri, class, created, value, lang, deleted
+                    predicate, uri, class, created, value, lang, deleted
                 );
                 //info!("Query: {}", query);
                 if let Err(e) = transaction.query(query) {
@@ -214,16 +218,15 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
     }
 }
 
-fn check_create_property_table(
+fn check_create_predicate_table(
     tables: &mut HashMap<String, bool>,
-    property: &str,
+    predicate: &str,
     resource: &Resource,
     transaction: &mut mysql::Transaction,
 ) -> Result<(), &'static str> {
-    if tables.contains_key(property.to_lowercase().as_str()) {
+    if tables.contains_key(predicate) {
         return Ok(());
     }
-
     let mut sql_type = "";
     let mut sql_value_index = ", INDEX civ(`value`)";
     match &resource.rtype {
@@ -250,12 +253,12 @@ fn check_create_property_table(
          PRIMARY KEY (`ID`), \
          INDEX c1(`doc_id`), INDEX c2(`doc_type`), INDEX c3 (`created`), INDEX c4(`lang`) {} \
          ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;",
-        property.to_lowercase(), sql_type, sql_value_index
+        predicate, sql_type, sql_value_index
     );
 
     match transaction.query(query) {
         Ok(_) => {
-            tables.insert(property.to_lowercase(), true);
+            tables.insert(predicate.to_owned(), true);
             Ok(())
         }
         Err(e) => {
@@ -270,7 +273,7 @@ fn read_tables(pool: &mysql::Pool) -> Result<HashMap<String, bool>, &'static str
     if let Ok(result) = pool.prep_exec("SELECT TABLE_NAME FROM information_schema.tables;", ()) {
         result.for_each(|row| {
             let name: String = row.unwrap().get(0).unwrap();
-            tables.insert(name.to_lowercase(), true);
+            tables.insert(name, true);
         });
         debug!("Existing tables: {:?}", tables);
         return Ok(tables);
