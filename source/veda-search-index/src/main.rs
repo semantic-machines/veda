@@ -137,7 +137,7 @@ impl Context {
 
         let uptime_cps = (stats.total_rows * 1000 / uptime_ms) as f64;
 
-        info!("Total rows inserted = {}, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h{}m{}s, avg. uptime cps = {}", stats.total_rows, stats.total_duration, total_cps, uptime.num_seconds() / 3600, uptime.num_seconds() % 3600 / 60, uptime.num_seconds() % 3600 % 60, uptime_cps);
+        info!("Total rows inserted = {}, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}", stats.total_rows, stats.total_duration, total_cps, uptime.num_seconds() / 3600, uptime.num_seconds() % 3600 / 60, uptime.num_seconds() % 3600 % 60, uptime_cps);
 
         Ok(())
     }
