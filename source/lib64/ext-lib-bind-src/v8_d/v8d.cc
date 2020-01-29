@@ -404,8 +404,6 @@ AddToIndividual(const v8::FunctionCallbackInfo<v8::Value>& args){
         std::vector<char> buff;
 
         jsobject2cbor(args[ 1 ], isolate, buff);
-
-        jsobject2cbor(args[ 1 ], isolate, buff);
         char *ptr = buff.data();
         res = add_to_individual(ticket, str_ticket.length(), ptr, buff.size());
 

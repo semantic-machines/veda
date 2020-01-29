@@ -932,7 +932,7 @@ mnd-s:InternalDocumentToCompany1_membership
 ```
 cfg:Event_Notify_Task
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт уведомления о новой задаче" ;
   v-s:triggerByType v-wf:UserTaskForm ;
   v-s:script """
