@@ -547,7 +547,7 @@ v-s:RecursiveScheduledActionTemplate
 
 cfg:ScheduledAction_CreateInstruction_Daily
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Создание поручения для запланированных событий" ;
   v-s:triggerByUid cfg:daily ;
   v-s:runAt "V8.LowPriority";

@@ -489,7 +489,7 @@ v-s:GroupsGeneratorsAreActual
 
 v-s:Event_GroupGenerator
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт распределения по группам авторизации" ;
   v-s:triggerByType v-s:GroupAuthorized ;
   v-s:preventByType v-s:Version;
@@ -698,7 +698,7 @@ function generateGroups(document) {
 
 v-s:Event_GroupGeneratorsReset
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт обработки генераторов групп авторизации" ;
   v-s:triggerByType v-s:GroupGenerator ;
   v-s:runAt "V8.LowPriority" ;
@@ -714,7 +714,7 @@ set_in_individual(veda.ticket, {
 
 v-s:Event_PermissionGenerator
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт обработки генераторов прав" ;
   v-s:triggerByType v-s:PermissionGenerator ;
   v-s:runAt "V8.LowPriority" ;
@@ -816,7 +816,7 @@ return ( this["@"] !== "cfg:Guest" ? "cfg:AllUsersGroup" : undefined );
 
 cfg:Event_7
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт включает индивид в группу индивидов своего класса." ;
   rdfs:comment "Скрипт включает индивид в группу индивидов своего класса." ;
   v-s:triggerByType v-s:ClassAuthorized ;
@@ -861,7 +861,7 @@ _classes.map(function (class_uri) {
 
 cfg:Event_8
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
   rdfs:comment "Скрипт включает группу индивидов класса в группу индивидов суперкласса. Включает класс в группу суперкласса." ;
   v-s:triggerByType rdfs:Class ;

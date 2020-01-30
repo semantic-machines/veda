@@ -809,7 +809,8 @@
       isSingle = this.data("single") || ( spec && spec.hasValue("v-ui:maxCardinality") ? spec["v-ui:maxCardinality"][0] === 1 : true ),
       withDeleted = false || this.attr("data-deleted"),
       chosenActorType,
-      fullName;
+      fullName,
+      onlyDeleted;
 
     var tabindex = this.attr("tabindex");
     if (tabindex) {
@@ -859,6 +860,20 @@
       });
     }).change(function () {
       fullName = $(this).is(":checked") ? true : false;
+      var ftValue = $(".fulltext", control).val();
+      if (ftValue) {
+        performSearch(ftValue);
+      }
+    });
+
+    $("[name='only-deleted']", control).each(function () {
+      var label = new veda.IndividualModel(this.value);
+      var that = this;
+      label.load().then(function (label) {
+        $(that).parent().append( new veda.IndividualModel(that.value).toString() );
+      });
+    }).change(function () {
+      onlyDeleted = $(this).is(":checked") ? true : false;
       var ftValue = $(".fulltext", control).val();
       if (ftValue) {
         performSearch(ftValue);
@@ -983,7 +998,13 @@
           return fullNameQuery;
         }).join("\n");
       }
-      ftQuery(queryPrefix, value, sort, withDeleted)
+      var ftQueryPromise;
+      if (onlyDeleted) {
+        ftQueryPromise = ftQuery(queryPrefix + " && 'v-s:deleted'=='true'", value, sort, withDeleted);
+      } else {
+        ftQueryPromise = ftQuery(queryPrefix, value, sort, withDeleted);
+      }
+      ftQueryPromise
         .then(renderResults)
         .catch(function (error) {
           console.log("Fulltext query error", error);
