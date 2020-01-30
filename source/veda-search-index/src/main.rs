@@ -116,32 +116,26 @@ impl Context {
 
         let rows= id_column.len();
 
-        info!("Memory table created in {} us", now.elapsed().as_micros());
+        let block = Context::mk_block(id_column, sign_column, &mut columns);
+
+        info!("Block prepared in {} us", now.elapsed().as_micros());
 
         stats.total_prepare_duration += now.elapsed().as_millis() as usize;
 
         let now = Instant::now();
 
-        let block = Context::mk_block(id_column, sign_column, &mut columns);
-
-        info!("Block created in {} us", now.elapsed().as_micros());
-
-        //info!("Block = {:?}", block);
-
-        let now = Instant::now();
-
         client.insert("veda.individuals", block).await?;
 
-        let mut insert_duration = now.elapsed().as_micros() as usize;
+        let mut insert_duration = now.elapsed().as_millis() as usize;
         if insert_duration == 0 {
             insert_duration = 1;
         }
 
-        let cps = (rows * 1_000_000 / insert_duration) as f64;
+        let cps = (rows * 1000 / insert_duration) as f64;
 
         info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} us, cps = {}", rows, columns.keys().len() + 2, insert_duration, cps);
 
-        stats.total_insert_duration += insert_duration / 1000;
+        stats.total_insert_duration += insert_duration;
 
         stats.total_rows += rows;
 
@@ -182,7 +176,7 @@ impl Context {
         for predicate in individual.get_predicates() {
             if let Some(resources) = individual.get_resources(&predicate) {
                 lazy_static! {
-                   static ref RE: Regex = Regex::new("[^a-zA-Z]").unwrap();
+                   static ref RE: Regex = Regex::new("[^a-zA-Z0-9]").unwrap();
                 }
                 let mut column_name = RE.replace_all(&predicate, "_").into_owned();
                 match &resources[0].rtype {
