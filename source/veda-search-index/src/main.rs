@@ -32,6 +32,7 @@ type Batch = Vec<BatchElement>;
 type BatchElement = (String, Individual, Individual, bool);
 
 const BATCH_SIZE: u32 = 100_000;
+const BLOCK_LIMIT: usize = 10_000;
 
 pub struct Stats {
     total_prepare_duration: usize,
@@ -75,6 +76,10 @@ impl Context {
             let db_columns = &mut self.db_columns;
             let stats = &mut self.stats;
             for (class, batch) in self.typed_batch.iter_mut() {
+                while batch.len() > BLOCK_LIMIT {
+                    let mut slice = batch.drain(0..BLOCK_LIMIT).collect();
+                    Context::process_batch(&class, &mut slice, client, db_columns, stats).await?;
+                }
                 Context::process_batch(&class, batch, client, db_columns, stats).await?;
             }
             self.typed_batch.clear();
