@@ -938,7 +938,7 @@ print("[cfg:Event_Daily_1] *************************** END *********************
 .
 cfg:Event_Daily_Additional
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт запускается раз в день, создан для сохранения очердности" ;
   v-s:triggerByUid cfg:dailyAdditional ;
   v-s:script """
