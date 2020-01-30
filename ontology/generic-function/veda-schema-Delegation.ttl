@@ -448,7 +448,7 @@ v-s:AllUsersGroup_RequestDelegation_BaseUser_membership
 
 cfg:Event_Delegation
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByType v-s:RequestDelegation ;
   v-s:script """
@@ -582,7 +582,7 @@ put_individual(ticket, allDelegated, _event_id);
 
 cfg:Event_ProcessAllDelegated
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystem ;
+  v-s:author cfg:VedaSystemAppointment ;
   rdfs:label "Скрипт обработки запросов на делегирование" ;
   v-s:triggerByUid cfg:daily ;
   v-s:script """
