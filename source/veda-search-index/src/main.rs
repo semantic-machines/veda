@@ -1,12 +1,16 @@
 #[macro_use]
 extern crate log;
 
+#[macro_use]
+extern crate lazy_static;
+
 use std::process;
 use std::collections::HashMap;
 
 use clickhouse_rs::{Pool, errors::Error, Block, ClientHandle};
 use chrono::prelude::*;
 use chrono_tz::Tz;
+use std::time::Instant;
 
 use regex::Regex;
 
@@ -30,10 +34,11 @@ type BatchElement = (String, Individual, Individual, bool);
 const BATCH_SIZE: u32 = 100_000;
 
 pub struct Stats {
-    total_duration: usize,
+    total_prepare_duration: usize,
+    total_insert_duration: usize,
     total_rows: usize,
-    started: DateTime<Utc>,
-    last: DateTime<Utc>,
+    started: Instant,
+    last: Instant,
 }
 
 pub struct Context {
@@ -65,6 +70,7 @@ impl Context {
 
     pub async fn process_typed_batch(&mut self) -> Result<(), Error> {
         if !self.typed_batch.is_empty() {
+            let now = Instant::now();
             let client = &mut self.pool.get_handle().await?;
             let db_columns = &mut self.db_columns;
             let stats = &mut self.stats;
@@ -72,14 +78,19 @@ impl Context {
                 Context::process_batch(&class, batch, client, db_columns, stats).await?;
             }
             self.typed_batch.clear();
-            stats.last = Utc::now();
+            stats.last = Instant::now();
+            info!("Batch processed in {} ms", now.elapsed().as_millis());
         }
         Ok(())
     }
 
     async fn process_batch(class: &str, batch: &mut Batch, client: &mut ClientHandle, db_columns: &mut HashMap<String, String>, stats: &mut Stats) -> Result<(), Error> {
 
-        info!("Processing batch: {}", class);
+        let now = Instant::now();
+
+        info!("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+        info!("Processing class batch: {}, count: {}", class, batch.len().clone());
 
         let mut id_column: Vec<String> = Vec::new();
 
@@ -105,39 +116,47 @@ impl Context {
 
         let rows= id_column.len();
 
+        info!("Memory table created in {} us", now.elapsed().as_micros());
+
+        stats.total_prepare_duration += now.elapsed().as_millis() as usize;
+
+        let now = Instant::now();
+
         let block = Context::mk_block(id_column, sign_column, &mut columns);
+
+        info!("Block created in {} us", now.elapsed().as_micros());
 
         //info!("Block = {:?}", block);
 
-        let before: DateTime<Utc> = Utc::now();
+        let now = Instant::now();
 
         client.insert("veda.individuals", block).await?;
 
-        let mut duration = (Utc::now() - before).num_milliseconds() as usize;
-        if duration == 0 {
-            duration = 1;
+        let mut insert_duration = now.elapsed().as_micros() as usize;
+        if insert_duration == 0 {
+            insert_duration = 1;
         }
 
-        let cps = (rows * 1000 / duration) as f64;
+        let cps = (rows * 1_000_000 / insert_duration) as f64;
 
-        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", rows, columns.keys().len() + 1, duration, cps);
+        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} us, cps = {}", rows, columns.keys().len() + 2, insert_duration, cps);
 
-        stats.total_duration += duration;
+        stats.total_insert_duration += insert_duration / 1000;
 
         stats.total_rows += rows;
 
-        let total_cps = (stats.total_rows * 1000 / stats.total_duration) as f64;
+        let total_cps = (stats.total_rows * 1000 / stats.total_insert_duration) as f64;
 
-        let uptime = Utc::now() - stats.started;
-        let uptime_ms = if uptime.is_zero() {
+        let uptime = stats.started.elapsed();
+        let uptime_ms = if uptime.as_millis() == 0 {
             1
         } else {
-            uptime.num_milliseconds()
+            uptime.as_millis()
         } as usize;
 
         let uptime_cps = (stats.total_rows * 1000 / uptime_ms) as f64;
 
-        info!("Total rows inserted = {}, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}", stats.total_rows, stats.total_duration, total_cps, uptime.num_seconds() / 3600, uptime.num_seconds() % 3600 / 60, uptime.num_seconds() % 3600 % 60, uptime_cps);
+        info!("Total rows inserted = {}, total prepare duration = {} ms, total insert duration = {} ms, avg. insert cps = {}, uptime = {}h {}m {}s, avg. uptime cps = {}", stats.total_rows, stats.total_prepare_duration, stats.total_insert_duration, total_cps, (uptime_ms / 1000) / 3600, (uptime_ms / 1000) % 3600 / 60, (uptime_ms / 1000) % 3600 % 60, uptime_cps);
 
         Ok(())
     }
@@ -162,8 +181,10 @@ impl Context {
 
         for predicate in individual.get_predicates() {
             if let Some(resources) = individual.get_resources(&predicate) {
-                let re = Regex::new(r"([[:punct:]]|[[:space:]])").unwrap();
-                let mut column_name = re.replace_all(&predicate, "_").into_owned();
+                lazy_static! {
+                   static ref RE: Regex = Regex::new("[^a-zA-Z]").unwrap();
+                }
+                let mut column_name = RE.replace_all(&predicate, "_").into_owned();
                 match &resources[0].rtype {
                     DataType::Integer => {
                         column_name.push_str("_int");
@@ -393,10 +414,11 @@ async fn main() ->  Result<(), Error> {
 
     let typed_batch: TypedBatch = HashMap::new();
     let stats = Stats {
-        total_duration: 0,
+        total_prepare_duration: 0,
+        total_insert_duration: 0,
         total_rows: 0,
-        started: Utc::now(),
-        last: Utc::now(),
+        started: Instant::now(),
+        last: Instant::now(),
     };
 
     let mut ctx = Context {
