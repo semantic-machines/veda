@@ -270,7 +270,7 @@ impl Consumer {
                 self.pos_record = 0;
 
                 self.open(true);
-                self.put_info();
+                self.commit();
 
                 if let Err(e) = self.queue.open_part(self.id) {
                     error!("queue:consumer({}):pop, queue {}:{}, open part: {}", self.name, self.queue.name, self.id, e.as_str());
@@ -353,7 +353,7 @@ impl Consumer {
         }
     }
 
-    pub fn put_info(&mut self) {
+    pub fn commit(&mut self) {
         if self.ff_info_pop.seek(SeekFrom::Start(0)).is_err() {
             error!("fail put info, set consumer.ready = false");
             self.is_ready = false;
@@ -364,21 +364,30 @@ impl Consumer {
         }
     }
 
-    pub fn commit_and_next(&mut self) -> bool {
+    pub fn next(&mut self, commit: bool) -> bool {
         if !self.is_ready {
             error!("commit");
             return false;
         }
 
         self.count_popped += 1;
-        if self.ff_info_pop.seek(SeekFrom::Start(0)).is_err() {
+
+        if commit {
+            if self.ff_info_pop.seek(SeekFrom::Start(0)).is_err() {
+                return false;
+            }
+
+            if self.ff_info_pop.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
+                return true;
+            };
+
             return false;
         }
 
-        if self.ff_info_pop.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
-            return true;
-        };
+        true
+    }
 
-        false
+    pub fn commit_and_next(&mut self) -> bool {
+        self.next(true)
     }
 }
