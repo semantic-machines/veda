@@ -181,7 +181,7 @@ impl Module {
         module_info: &mut ModuleInfo,
         module_context: &mut T,
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
-        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<(), PrepareError>,
+        prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
         after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32),
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
@@ -260,21 +260,28 @@ impl Module {
                     }
                 }
 
+                let mut need_commit = true;
+
                 let mut queue_element = Individual::new_raw(raw);
                 if parse_raw(&mut queue_element).is_ok() {
-                    if let Err(e) = prepare(self, module_info, module_context, &mut queue_element) {
-                        match e {
-                            PrepareError::Fatal => {
-                                warn! ("found fatal error, stop listen queue");
-                                //process::exit(e as i32);
-                                return;
+                    match prepare(self, module_info, module_context, &mut queue_element) {
+                        Err(e) => {
+                            match e {
+                                PrepareError::Fatal => {
+                                    warn!("found fatal error, stop listen queue");
+                                    //process::exit(e as i32);
+                                    return;
+                                }
+                                _ => {}
                             }
-                            _ => {}
+                        }
+                        Ok(b) => {
+                            need_commit = b;
                         }
                     }
                 }
 
-                queue_consumer.commit_and_next();
+                queue_consumer.next(need_commit);
 
                 self.queue_prepared_count += 1;
 
