@@ -123,6 +123,8 @@ impl Context {
 
         let block = Context::mk_block(id_column, sign_column, &mut columns);
 
+        //info!("Block {:?}", block);
+
         info!("Block prepared in {} us", now.elapsed().as_micros());
 
         stats.total_prepare_duration += now.elapsed().as_millis() as usize;
@@ -138,7 +140,7 @@ impl Context {
 
         let cps = (rows * 1000 / insert_duration) as f64;
 
-        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} us, cps = {}", rows, columns.keys().len() + 2, insert_duration, cps);
+        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", rows, columns.keys().len() + 2, insert_duration, cps);
 
         stats.total_insert_duration += insert_duration;
 
@@ -200,9 +202,8 @@ impl Context {
                         let column_data = columns.get_mut(&column_name).unwrap();
                         if let ColumnData::Int(column) = column_data {
                             let column_size = column.len();
-                            for _i in column_size..rows {
-                                column.push(vec![0]);
-                            }
+                            let mut empty = vec![vec![0]; rows - column_size];
+                            column.append(&mut empty);
                             column.push(column_value);
                         }
                     },
@@ -228,9 +229,8 @@ impl Context {
                         let column_data = columns.get_mut(&column_name).unwrap();
                         if let ColumnData::Str(column) = column_data {
                             let column_size = column.len();
-                            for _i in column_size..rows {
-                                column.push(vec!["".to_string()]);
-                            }
+                            let mut empty = vec![vec!["".to_owned()]; rows - column_size];
+                            column.append(&mut empty);
                             column.push(column_value);
                         }
                     },
@@ -249,9 +249,8 @@ impl Context {
                         let column_data = columns.get_mut(&column_name).unwrap();
                         if let ColumnData::Str(column) = column_data {
                             let column_size = column.len();
-                            for _i in column_size..rows {
-                                column.push(vec!["".to_string()]);
-                            }
+                            let mut empty = vec![vec!["".to_owned()]; rows - column_size];
+                            column.append(&mut empty);
                             column.push(column_value);
                         }
                     },
@@ -275,9 +274,8 @@ impl Context {
                         let column_data = columns.get_mut(&column_name).unwrap();
                         if let ColumnData::Int(column) = column_data {
                             let column_size = column.len();
-                            for _i in column_size..rows {
-                                column.push(vec![0]);
-                            }
+                            let mut empty = vec![vec![0]; rows - column_size];
+                            column.append(&mut empty);
                             column.push(column_value);
                         }
                     },
@@ -296,9 +294,8 @@ impl Context {
                         let column_data = columns.get_mut(&column_name).unwrap();
                         if let ColumnData::Num(column) = column_data {
                             let column_size = column.len();
-                            for _i in column_size..rows {
-                                column.push(vec![0 as f64]);
-                            }
+                            let mut empty = vec![vec![0 as f64]; rows - column_size];
+                            column.append(&mut empty);
                             column.push(column_value);
                         }
                     },
@@ -317,9 +314,8 @@ impl Context {
                         let column_data = columns.get_mut(&column_name).unwrap();
                         if let ColumnData::Date(column) = column_data {
                             let column_size = column.len();
-                            for _i in column_size..rows {
-                                column.push(vec![Tz::UTC.timestamp(0, 0)]);
-                            }
+                            let mut empty = vec![vec![Tz::UTC.timestamp(0, 0)]; rows - column_size];
+                            column.append(&mut empty);
                             column.push(column_value);
                         }
                     },
@@ -343,33 +339,29 @@ impl Context {
         for (column_name, column_data) in columns.iter_mut() {
             if let ColumnData::Int(column) = column_data {
                 let column_size = column.len();
-                for _i in column_size..rows {
-                    column.push(vec![0]);
-                }
+                let mut empty = vec![vec![0]; rows - column_size];
+                column.append(&mut empty);
                 //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
                 block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Str(column) = column_data {
                 let column_size = column.len();
-                for _i in column_size..rows {
-                    column.push(vec!["".to_string()]);
-                }
+                let mut empty = vec![vec!["".to_string()]; rows - column_size];
+                column.append(&mut empty);
                 //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
                 block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Num(column) = column_data {
                 let column_size = column.len();
-                for _i in column_size..rows {
-                    column.push(vec![0 as f64]);
-                }
+                let mut empty = vec![vec![0 as f64]; rows - column_size];
+                column.append(&mut empty);
                 //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
                 block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Date(column) = column_data {
                 let column_size = column.len();
-                for _i in column_size..rows {
-                    column.push(vec![Tz::UTC.timestamp(0, 0)]);
-                }
+                let mut empty = vec![vec![Tz::UTC.timestamp(0, 0)]; rows - column_size];
+                column.append(&mut empty);
                 //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
                 block = block.column(&column_name, column.to_owned());
             }
