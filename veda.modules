@@ -10,9 +10,9 @@ ft-indexer
 
 ft-query
 
-fanout-email
+#fanout-email
 
-fanout-sql
+#fanout-sql
 
 #fanout-sql-lp
 
