@@ -365,20 +365,28 @@ impl Consumer {
     }
 
     pub fn commit_and_next(&mut self) -> bool {
+        self.next(true)
+    }
+
+    pub fn next(&mut self, commit: bool) -> bool {
         if !self.is_ready {
             error!("commit");
             return false;
         }
 
-        self.count_popped += 1;
-        if self.ff_info_pop.seek(SeekFrom::Start(0)).is_err() {
+        if commit {
+            self.count_popped += 1;
+            if self.ff_info_pop.seek(SeekFrom::Start(0)).is_err() {
+                return false;
+            }
+
+            if self.ff_info_pop.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
+                return true;
+            };
+
             return false;
         }
 
-        if self.ff_info_pop.write(format!("{};{};{};{};{}\n", self.queue.name, self.name, self.pos_record, self.count_popped, self.id).as_bytes()).is_ok() {
-            return true;
-        };
-
-        false
+        true
     }
 }

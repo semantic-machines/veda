@@ -61,7 +61,7 @@ fn main() {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before_bath as fn(&mut Module, &mut Context, size_batch: u32)-> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
         &mut (void as fn(&mut Module, &mut Context, prepared_batch_size: u32)),
     );
 }
@@ -69,11 +69,11 @@ fn main() {
 fn before_bath(_module: &mut Module, _ctx: &mut Context, _size_batch: u32)->Option<u32> {None}
 fn void(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) {}
 
-fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
+fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("Queue element cmd is none. Skip element.");
-        return Ok(());
+        return Ok(true);
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
@@ -94,10 +94,10 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
             }
         }
     }
-    Ok(())
+    Ok(true)
 }
 
-fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[String], is_new: bool, ctx: &mut Context) -> Result<(), PrepareError> {
+fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[String], is_new: bool, ctx: &mut Context) -> Result<bool, PrepareError> {
     let uri = new_state.get_id().to_string();
 
     let is_deleted = new_state.is_exists_bool("v-s:deleted", true);
@@ -106,7 +106,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
 
     if !actual_version.is_empty() && actual_version != uri {
         info!("Skip not actual version. {}.v-s:actualVersion {} != {}", uri, &actual_version, uri);
-        return Ok(());
+        return Ok(true);
     }
 
     let mut conn = match ctx.pool.get_conn() {
@@ -209,7 +209,7 @@ fn export(new_state: &mut Individual, prev_state: &mut Individual, classes: &[St
     match transaction.commit() {
         Ok(_) => {
             info!("`{}` Ok", uri);
-            Ok(())
+            Ok(true)
         }
         Err(e) => {
             error!("Transaction commit failed for `{}`. {:?}", uri, e);

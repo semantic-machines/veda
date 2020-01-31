@@ -13,8 +13,4 @@ log = "0.4"
 rusty_tarantool = { git = "https://github.com/zheludkovm/RustyTarantool" }
 tokio = "0.1"
 lmdb-rs-m = "0.7.7"
-nng = "0.5.1"
-rust-ini = "0.13"
-lazy_static = "1.4.0"
-
 v_onto = { path = "../v-onto" }
