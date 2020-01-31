@@ -291,7 +291,7 @@ v-s:RequestDelegationTemplate
     }
   }
 
-  if ( individual.isNew() && !individual.hasValue("v-s:delegator") ) {
+  if ( individual.isNew() && !individual.hasValue("v-s:delegator") &&  template.data("mode") != "search") {
     individual["v-s:delegator"] = [ veda.user ];
   } else if ( individual.isNew() && individual.hasValue("v-s:delegator") ) {
     delegatorHandler(individual["v-s:delegator"]);
