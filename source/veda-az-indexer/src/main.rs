@@ -50,7 +50,7 @@ fn main() -> Result<(), i32> {
         &mut ctx,
         &mut (before_batch as fn(&mut Module, &mut Context, batch_size: u32) -> Option<u32>),
         &mut (prepare as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
-        &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32)),
+        &mut (after_batch as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
     );
     Ok(())
 }
@@ -59,10 +59,11 @@ fn before_batch(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> O
     None
 }
 
-fn after_batch(_module: &mut Module, ctx: &mut Context, _prepared_batch_size: u32) {
+fn after_batch(_module: &mut Module, ctx: &mut Context, _prepared_batch_size: u32) -> bool {
     if (ctx.permission_statement_counter + ctx.membership_counter) % 100 == 0 {
         info!("count prepared: permissions={}, memberships={}", ctx.permission_statement_counter, ctx.membership_counter);
     }
+    false
 }
 
 fn prepare(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
