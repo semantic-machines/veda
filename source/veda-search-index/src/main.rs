@@ -429,8 +429,8 @@ async fn main() ->  Result<(), Error> {
         &mut module_info.unwrap(),
         &mut ctx,
         &mut (before as fn(&mut Module, &mut Context, u32) -> Option<u32>),
-        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<(), PrepareError>),
-        &mut (after as fn(&mut Module, &mut Context, u32)),
+        &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
+        &mut (after as fn(&mut Module, &mut Context, u32) -> bool),
     );
     Ok(())
 }
@@ -439,18 +439,19 @@ fn before(_module: &mut Module, _ctx: &mut Context, _batch_size: u32) -> Option<
     Some(BATCH_SIZE)
 }
 
-fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) {
+fn after(_module: &mut Module, ctx: &mut Context, _processed_batch_size: u32) -> bool {
     if let Err(e) = block_on(ctx.process_typed_batch()) {
         error!("Error processing batch: {}", e);
         process::exit(101);
     }
+    true
 }
 
-fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<(), PrepareError> {
+fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
     if cmd.is_none() {
         error!("Queue element cmd is none. Skip element.");
-        return Ok(());
+        return Ok(false);
     }
 
     let op_id = queue_element.get_first_integer("op_id").unwrap_or_default();
@@ -472,7 +473,7 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
         };
     }
 
-    Ok(())
+    Ok(false)
 }
 
 async fn create_predicate_column(column_name: &str, column_type: &str, client: &mut ClientHandle, db_columns: &mut HashMap<String, String>) -> Result<(), Error> {
