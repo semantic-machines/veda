@@ -4,13 +4,14 @@ use nng::{Message, Protocol, Socket};
 use std::cell::RefCell;
 use std::str;
 use std::sync::Mutex;
+use uuid::Uuid;
 use v_onto::individual::{Individual, RawObj};
 
 pub fn storage_manager() -> std::io::Result<()> {
     let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
     let section = conf.section(None::<String>).expect("fail parse veda.properties");
 
-    let ro_storage_url = "inproc://nng/example7";
+    let ro_storage_url = "inproc://nng/".to_owned() + &Uuid::new_v4().to_hyphenated().to_string();
     STORAGE.lock().unwrap().get_mut().addr = ro_storage_url.to_owned();
 
     let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
@@ -59,7 +60,7 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
     Message::default()
 }
 
-// Client
+// Inproc client
 
 pub struct Client {
     soc: Socket,
