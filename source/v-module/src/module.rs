@@ -182,7 +182,7 @@ impl Module {
         module_context: &mut T,
         before_batch: &mut fn(&mut Module, &mut T, batch_size: u32) -> Option<u32>,
         prepare: &mut fn(&mut Module, &mut ModuleInfo, &mut T, &mut Individual) -> Result<bool, PrepareError>,
-        after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32),
+        after_batch: &mut fn(&mut Module, &mut T, prepared_batch_size: u32) -> bool,
     ) {
         let mut soc = Socket::new(Protocol::Sub0).unwrap();
         let mut is_ready_notify_channel = false;
@@ -292,7 +292,9 @@ impl Module {
             }
 
             if size_batch > 0 {
-                after_batch(self, module_context, prepared_batch_size);
+                if after_batch(self, module_context, prepared_batch_size) {
+                    queue_consumer.commit();
+                }
             }
 
             if prepared_batch_size == size_batch {

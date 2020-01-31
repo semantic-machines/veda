@@ -60,14 +60,18 @@ fn main() {
         &mut queue_consumer,
         &mut module_info.unwrap(),
         &mut ctx,
-        &mut (before_bath as fn(&mut Module, &mut Context, size_batch: u32)-> Option<u32>),
+        &mut (before_bath as fn(&mut Module, &mut Context, size_batch: u32) -> Option<u32>),
         &mut (process as fn(&mut Module, &mut ModuleInfo, &mut Context, &mut Individual) -> Result<bool, PrepareError>),
-        &mut (void as fn(&mut Module, &mut Context, prepared_batch_size: u32)),
+        &mut (void as fn(&mut Module, &mut Context, prepared_batch_size: u32) -> bool),
     );
 }
 
-fn before_bath(_module: &mut Module, _ctx: &mut Context, _size_batch: u32)->Option<u32> {None}
-fn void(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) {}
+fn before_bath(_module: &mut Module, _ctx: &mut Context, _size_batch: u32) -> Option<u32> {
+    None
+}
+fn void(_module: &mut Module, _ctx: &mut Context, _prepared_batch_size: u32) -> bool {
+    false
+}
 
 fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context, queue_element: &mut Individual) -> Result<bool, PrepareError> {
     let cmd = get_cmd(queue_element);
@@ -264,7 +268,7 @@ fn check_create_predicate_table(
         Err(e) => {
             error!("Error creating property table: {}", e);
             Err("Unable to create table")
-        },
+        }
     }
 }
 
