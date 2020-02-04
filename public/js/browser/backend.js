@@ -86,7 +86,6 @@ veda.Module(function Backend(veda) { "use strict";
        403: "Forbidden",
        404: "Not found",
        422: "Unprocessable entity",
-       423: "Locked",
        429: "Too many requests",
        465: "Empty password",
        466: "New password is equal to old",
