@@ -20,7 +20,7 @@
 cfg:Event_0
   rdf:type v-s:Event1 ;
   v-s:runAt "V8.LowPriority" ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "test event";
   rdfs:comment "test event";
   v-s:script """
@@ -31,7 +31,7 @@ log_trace("res=", res);
 
 cfg:Event_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   v-s:preventByType v-s:Version;
   rdfs:label "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup" ;
   rdfs:comment "Скрипт помещает все индивиды в группу cfg:TTLResourcesGroup" ;
@@ -73,7 +73,7 @@ put_individual(ticket, membership, _event_id);
 
 cfg:Event_2
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
   rdfs:comment "Скрипт выдает права авторам (v-s:author), владельцам (v-s:owner), издателям (v-s:publisher) и создателям (v-s:creator)";
   v-s:preventByType v-s:Version;
@@ -140,7 +140,7 @@ function addPermission(permission_uri, subject_uri, object_uri, rights) {
 
 cfg:Event_3
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт создает журнал документа" ;
   rdfs:comment "Скрипт создает журнал документа" ;
   v-s:preventByType v-s:Version;
@@ -255,7 +255,7 @@ if (super_classes.indexOf("v-s:Journaling") >= 0) {
 
 cfg:Event_4
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает персону в группу должности" ;
   rdfs:comment "Скрипт включает персону в группу должности при сохранении назначения. Если назначение удаляется, включение персоны в группу должности также удаляется." ;
   v-s:triggerByType v-s:Appointment ;
@@ -299,7 +299,7 @@ if (deleted) {
 cfg:Event_5
   v-s:disabled true ;
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
   rdfs:comment "Скрипт включает персону (кроме cfg:Guest) в группу cfg:AllUsersGroup." ;
   v-s:triggerByType v-s:Person ;
@@ -368,7 +368,7 @@ if (deleted !== membership_deleted) {
 
 cfg:Event_6
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
   rdfs:comment "Скрипт включает индивид онтологии и UI настроек в группу cfg:OntologyGroup." ;
   v-s:triggerByType owl:Ontology ;
@@ -431,7 +431,7 @@ put_individual (ticket, membership, _event_id);
 
 cfg:Event_9
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает вложенные индивиды в группу своего родителя." ;
   rdfs:comment "Скрипт включает вложенные индивиды в группу своего родителя." ;
   v-s:triggerByType v-s:Embedded ;
@@ -495,7 +495,7 @@ if (deleted) {
 
 cfg:Event_10
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
   rdfs:comment "Скрипт включает журнал и записи журнала в группу документа с ограниченим прав до R." ;
   v-s:triggerByType v-s:Journal ;
@@ -535,7 +535,7 @@ put_individual (ticket, membership, _event_id);
 
 cfg:Event_11
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
   rdfs:comment "Скрипт включает задания в группу запущенного процесса с ограниченим прав до R." ;
   v-s:triggerByType v-wf:Process ;
@@ -575,7 +575,7 @@ put_individual (ticket, membership, _event_id);
 
 cfg:Event_12
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает процесс в группу журнала документа." ;
   rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
   v-s:triggerByType v-s:ProcessStarted ;
@@ -610,7 +610,7 @@ put_individual (ticket, membership, _event_id);
 
 cfg:Event_13
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Manually create version" ;
   rdfs:comment "Manually create version" ;
   v-s:triggerByType v-s:ManuallyVersioned ;
@@ -644,7 +644,7 @@ if ( veda.Util.hasValue( document, 'v-s:triggerVersionCreation', {data: true, ty
 
 cfg:Event_14
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Пусто." ;
   rdfs:comment "Пусто." ;
   v-s:disabled true ;
@@ -654,7 +654,7 @@ cfg:Event_14
 
 cfg:Event_15
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки связей документов" ;
   rdfs:comment "Скрипт обработки связей документов" ;
   v-s:triggerByType v-s:Link ;
@@ -742,7 +742,7 @@ cfg:Event_15
 
 cfg:Event_15_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки связей документов" ;
   rdfs:comment "Скрипт обработки связей документов" ;
   v-s:triggerByType v-s:LinkObject ;
@@ -830,7 +830,7 @@ cfg:Event_15_1
 
 cfg:Event_16
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обработки обратных ссылок" ;
   rdfs:comment "Скрипт обработки обратных ссылок" ;
   v-s:triggerByType v-s:BackwardLink ;
@@ -918,7 +918,7 @@ cfg:Event_16
 
 cfg:Event_Hourly_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в час" ;
   v-s:triggerByUid cfg:hourly ;
   v-s:script """
@@ -928,7 +928,7 @@ print("[cfg:Event_Hourly_1] *************************** END ********************
 .
 cfg:Event_Daily_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в день" ;
   v-s:triggerByUid cfg:daily ;
   v-s:script """
@@ -936,19 +936,9 @@ print("[cfg:Event_Daily_1] ************************** START ********************
 print("[cfg:Event_Daily_1] *************************** END ***************************");
   """ ;
 .
-cfg:Event_Daily_Additional
-  rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
-  rdfs:label "Скрипт запускается раз в день, создан для сохранения очердности" ;
-  v-s:triggerByUid cfg:dailyAdditional ;
-  v-s:script """
-print("[cfg:Event_Daily_Additional] ************************** START **************************");
-print("[cfg:Event_Daily_Additional] *************************** END ***************************");
-  """ ;
-.
 cfg:Event_Weekly_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в неделю" ;
   v-s:triggerByUid cfg:weekly ;
   v-s:script """
@@ -958,7 +948,7 @@ print("[cfg:Event_Weekly_1] *************************** END ********************
 .
 cfg:Event_Monthly_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в месяц" ;
   v-s:triggerByUid cfg:monthly ;
   v-s:script """
@@ -968,7 +958,7 @@ print("[cfg:Event_Monthly_1] *************************** END *******************
 .
 cfg:Event_Yearly_1
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт запускается раз в год" ;
   v-s:triggerByUid cfg:yearly ;
   v-s:script """
@@ -978,7 +968,7 @@ print("[cfg:Event_Yearly_1] *************************** END ********************
 .
 cfg:Event_Notify_Task
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт уведомления о новой задаче" ;
   v-s:triggerByType v-wf:UserTaskForm ;
   v-s:disabled true ;
@@ -990,7 +980,7 @@ var task_id = document["@"],
 .
 cfg:Event_Notify_Comment
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт уведомления о новом комментарии" ;
   v-s:triggerByType v-s:Comment ;
   v-s:disabled true ;

@@ -204,11 +204,6 @@ v-s:FullNameBundle
   rdfs:label "Фамилия Имя Отчество"@ru ;
   rdfs:label "Surname Name Patronymic"@en ;
 .
-v-s:OnlyDeleted
-  rdf:type v-s:Bundle ;
-  rdfs:label "Только удаленные"@ru ;
-  rdfs:label "Only deleted"@en ;
-.
 v-s:InvertSelection
   rdf:type v-s:Bundle ;
   rdfs:label "Инвертировать"@ru ;

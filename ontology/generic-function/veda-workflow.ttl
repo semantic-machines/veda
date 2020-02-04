@@ -2167,7 +2167,7 @@ v-wf:decisionFormList
 v-wf:event_df1
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:StartForm ;
   v-s:dependency cfg:Event_3 ;
   v-s:runAt "V8.LowPriority" ;
@@ -2195,7 +2195,7 @@ if ( (!parent_script_id || fromShedulerScript) && toBeSent) {
 v-wf:event_df2
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:Process ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
@@ -2225,7 +2225,7 @@ if ( !deleted && !stopped && triggeredByWf ) {
 v-wf:event_df3
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkItem ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
@@ -2255,7 +2255,7 @@ if ( !deleted && triggeredByWf ) {
 v-wf:event_df4
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:WorkOrder ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
@@ -2285,7 +2285,7 @@ if ( enforce_processing || triggeredByWf && !deleted ) {
 v-wf:event_df5
   rdf:type v-s:Event ;
   rdfs:isDefinedBy v-wf: ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystemAccount ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:runAt "V8.LowPriority" ;
   v-s:script """
@@ -2311,7 +2311,7 @@ if ( !deleted ) {
 
 v-wf:ProcessStopEvent
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт включает процесс в группу журнала документа." ;
   rdfs:comment "Скрипт включает процесс в группу журнала документа." ;
   v-s:triggerByType v-wf:Process ;
