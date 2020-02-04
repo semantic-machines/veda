@@ -17,7 +17,7 @@ pub fn insert_to_winpak<'a>(module: &mut Module, systicket: &str, conn_str: &str
         return sync_res;
     }
 
-    indv.set_uri("v-s:lastEditor", "cfg:VedaSystem");
+    indv.set_uri("v-s:lastEditor", "cfg:VedaSystemAppointment");
 
     if sync_res == ResultCode::Ok {
         indv.set_uri("v-s:hasStatus", "v-s:StatusAccepted");
