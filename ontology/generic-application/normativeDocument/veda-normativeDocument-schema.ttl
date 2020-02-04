@@ -22,7 +22,6 @@ v-s:NormativeDocument
 .
 
 # --- В связи с вводом класса возникает предикат v-s:hasNormativeDocument. Он описан в классе v-s:NormativeDocument
-# --- Конкретные индивиды класса должны вводиться в онтологиях конкретных организаций
 
 v-s:hasNormativeDocumentRequirement
   rdf:type owl:ObjectProperty ;
@@ -48,7 +47,6 @@ v-s:NormativeDocumentRequirement
   rdfs:label "Normative document requirement"@en ;
 .
 # --- В связи с вводом класса возникает предикат v-s:hasNormativeDocumentRequirement. Он описан в классе v-s:NormativeDocument
-# --- Конкретные индивиды класса должны вводиться в онтологиях конкретных организаций
 
 v-s:checkQuestion
   rdf:type owl:DatatypeProperty ;

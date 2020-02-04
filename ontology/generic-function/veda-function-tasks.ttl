@@ -99,7 +99,7 @@ v-ft:completedCount
 
 v-ft:Event_UpdateTaskCounter
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Скрипт обновления счетчиков задач" ;
   v-s:triggerByType v-wf:DecisionForm ;
   v-s:runAt "V8.LowPriority" ;

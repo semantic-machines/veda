@@ -166,7 +166,7 @@ v-s:FavoritesIndicatorTemplate
 
 v-s:SubscriptionSave_Event
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Обработка сохранения v-s:Subscription" ;
   rdfs:comment "Обработка сохранения v-s:Subscription" ;
   v-s:triggerByType v-s:Subscription ;
@@ -257,7 +257,7 @@ print("[v-s:SubscriptionSave_Event] *************************** END ************
 
 v-s:SubscribedNotification_Event
   rdf:type v-s:Event ;
-  v-s:author cfg:VedaSystemAppointment ;
+  v-s:author cfg:VedaSystem ;
   rdfs:label "Отправка уведомления от v-s:Subscribed" ;
   rdfs:comment "Notification from v-s:Subscribed" ;
   v-s:triggerByType v-s:Subscribed ;
