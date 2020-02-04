@@ -144,67 +144,29 @@ veda.Module(function (veda) { "use strict";
     var enterNewPassword = $("#enter-new-password", loginForm).hide();
     var loginFailedError = $("#login-failed-error", loginForm).hide();
     var passwordExpiredError = $("#password-expired-error", loginForm).hide();
-    var invalidSecretWarning = $("#invalid-secret-warning", loginForm).hide();
-    var emptyPasswordWarning = $("#empty-password-warning", loginForm).hide();
-    var equalPasswordWarning = $("#equal-password-warning", loginForm).hide();
-    var invalidPasswordWarning = $("#invalid-password-warning", loginForm).hide();
-    var frequentPassChangeWarning = $("#frequent-pass-change-warning", loginForm).hide();
+    var newPasswordError = $("#password-expired-error", loginForm).hide();
+    var invalidSecretError = $("#invalid-secret-error", loginForm).hide();
+    var invalidPasswordError = $("#invalid-password-error", loginForm).hide();
     var areYouRobot = $("#are-you-robot", loginForm).hide();
-    var authLockedError = $("#auth-locked-error", loginForm).hide();
-    var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
+    var lockedError = $("#locked-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     switch (error.code) {
-      case 423: // Password change is allowed once a day
-        frequentPassChangeWarning.show();
-        passChangeLockedError.show();
+      case 429: // Locked
+        lockedError.show();
         setTimeout(function () {
-          frequentPassChangeWarning.hide();
-          passChangeLockedError.hide();
-          enterLoginPassword.show();
-        }, 30 * 60 * 1000);
-        break;
-      case 429: // Too many auth fails
-        authLockedError.show();
-        setTimeout(function () {
-          authLockedError.hide();
+          lockedError.hide();
           enterLoginPassword.show();
         }, 30 * 60 * 1000);
         break;
       case 465: // Empty password
-        emptyPasswordWarning.show();
-        passChangeLockedError.show();
-        setTimeout(function () {
-          emptyPasswordWarning.hide();
-          passChangeLockedError.hide();
-          enterNewPassword.show();
-        }, 30 * 60 * 1000);
-        break;
       case 466: // New password is equal to old
-        equalPasswordWarning.show();
-        passChangeLockedError.show();
-        setTimeout(function () {
-          equalPasswordWarning.hide();
-          passChangeLockedError.hide();
-          enterNewPassword.show();
-        }, 30 * 60 * 1000);
-        break;
       case 467: // Invalid password
-        invalidPasswordWarning.show();
-        passChangeLockedError.show();
-        setTimeout(function () {
-          invalidPasswordWarning.hide();
-          passChangeLockedError.hide();
-          enterNewPassword.show();
-        }, 30 * 60 * 1000);
+        enterNewPassword.show();
+        invalidPasswordError.show();
         break;
       case 468: // Invalid secret
-        invalidSecretWarning.show();
-        passChangeLockedError.show();
-        setTimeout(function () {
-          invalidSecretWarning.hide();
-          passChangeLockedError.hide();
-          enterNewPassword.show();
-        }, 30 * 60 * 1000);
+        enterNewPassword.show();
+        invalidSecretError.show();
         break;
       case 469: // Password expired
         enterNewPassword.show();
@@ -234,14 +196,9 @@ veda.Module(function (veda) { "use strict";
     var enterNewPassword = $("#enter-new-password", loginForm).hide();
     var loginFailedError = $("#login-failed-error", loginForm).hide();
     var passwordExpiredError = $("#password-expired-error", loginForm).hide();
-    var invalidSecretWarning = $("#invalid-secret-warning", loginForm).hide();
-    var emptyPasswordWarning = $("#empty-password-warning", loginForm).hide();
-    var equalPasswordWarning = $("#equal-password-warning", loginForm).hide();
-    var invalidPasswordWarning = $("#invalid-password-warning", loginForm).hide();
-    var frequentPassChangeWarning = $("#frequent-pass-change-warning", loginForm).hide();
-    var areYouRobot = $("#are-you-robot", loginForm).hide();
-    var authLockedError = $("#auth-locked-error", loginForm).hide();
-    var passChangeLockedError = $("#pass-change-locked-error", loginForm).hide();
+    var newPasswordError = $("#password-expired-error", loginForm).hide();
+    var invalidSecretError = $("#invalid-secret-error", loginForm).hide();
+    var invalidPasswordError = $("#invalid-password-error", loginForm).hide();
     var secretRequestInfo = $("#secret-request-info", loginForm).hide();
     veda.trigger("login:success", authResult);
   }
