@@ -320,8 +320,16 @@ var subject = Mustache.render(subjectTemplate, view).replace (/&#x2F;/g, '/');
 var message = Mustache.render(bodyTemplate, view).replace (/&#x2F;/g, '/');
 
 var recepients = [];
+var handleredSubscriptions = {};
 var subscription = get_individual(ticket, document["v-s:hasSubscription"][0].data);
 while (subscription) {
+  print("handleredSubscription: ", subscription["@"]);
+  if (handleredSubscriptions[subscription["@"]]) {
+    print("BREAK SUBSCRIPTION LOOP, subscriptionUri: ", subscription["@"]);
+    break;
+  }
+  handleredSubscriptions[subscription["@"]] = true;
+  //print(veda.Util.toJson(handleredSubscriptions));
   if (subscription["v-s:creator"][0].data !== author["v-s:employee"][0].data) {
     recepients.push(subscription["v-s:creator"][0]);
   };
