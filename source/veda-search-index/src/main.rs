@@ -101,6 +101,8 @@ impl Context {
 
         let mut sign_column: Vec<i8> = Vec::new();
 
+        let mut version_column: Vec<u32> = Vec::new();
+
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
         for element in batch {
@@ -114,14 +116,14 @@ impl Context {
             }
 
             if !*is_new {
-                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut columns, client, db_columns).await?;
+                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_columns).await?;
             }
-            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut columns, client, db_columns).await?;
+            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_columns).await?;
         }
 
         let rows= id_column.len();
 
-        let block = Context::mk_block(id_column, sign_column, &mut columns);
+        let block = Context::mk_block(id_column, sign_column, version_column, &mut columns);
 
         //info!("Block {:?}", block);
 
@@ -167,6 +169,7 @@ impl Context {
         sign: i8,
         id_column: &mut Vec<String>,
         sign_column: &mut Vec<i8>,
+        version_column: &mut Vec<u32>,
         columns: &mut HashMap<String, ColumnData>,
         client: &mut ClientHandle,
         db_columns: &mut HashMap<String, String>
@@ -176,7 +179,11 @@ impl Context {
 
         let id = individual.get_id().to_owned();
 
+        let version = individual.get_first_integer("v-s:updateCounter").unwrap_or(0) as u32;
+
         id_column.push(id);
+
+        version_column.push(version);
 
         sign_column.push(sign);
 
@@ -328,13 +335,19 @@ impl Context {
         Ok(())
     }
 
-    fn mk_block(id_column: Vec<String>, sign_column: Vec<i8>, columns: &mut HashMap<String, ColumnData>) -> Block {
+    fn mk_block(
+        id_column: Vec<String>,
+        sign_column: Vec<i8>,
+        version_column: Vec<u32>,
+        columns: &mut HashMap<String, ColumnData>
+    ) -> Block {
 
         let rows = id_column.len();
 
         let mut block = Block::new()
             .column("id", id_column)
-            .column("sign", sign_column);
+            .column("sign", sign_column)
+            .column("version", version_column);
 
         for (column_name, column_data) in columns.iter_mut() {
             if let ColumnData::Int(column) = column_data {
@@ -519,11 +532,12 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
         CREATE TABLE IF NOT EXISTS veda.individuals (
             id String,
             sign Int8 DEFAULT 1,
+            version UInt32,
             `rdf_type_str` Array(String),
             `v_s_created_date` Array(DateTime) DEFAULT [toDateTime(0)]
         )
-        ENGINE = CollapsingMergeTree(sign)
-        ORDER BY (`rdf_type_str`[1], `v_s_created_date`[1])
+        ENGINE = VersionedCollapsingMergeTree(sign, version)
+        ORDER BY (`rdf_type_str`[1], `v_s_created_date`[1], id)
         PARTITION BY (`rdf_type_str`[1])
     ";
     let mut client = pool.get_handle().await?;
