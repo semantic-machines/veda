@@ -32,6 +32,14 @@ v-s:LayoutTemplate
   rdfs:label "Шаблон макета"@ru ;
   rdfs:label "Layout template"@en ;
   v-ui:template """
+<script>
+  return veda.user.isMemberOf("cfg:SuperUser").then(function (isMember) {
+    if (isMember !== true) {
+      $("#adminPanel", template).remove();
+    }
+  });
+  //# sourceURL=v-s:LayoutTemplate_pre
+</script>
 <div class="page">
   <nav role="navigation" class="navbar navbar-veda">
     <div class="container">
@@ -55,12 +63,12 @@ v-s:LayoutTemplate
             </script>
             <a href="#/@"><span class="fa fa-lg fa-user-o"></span></a>
           </li>
-          <li about="v-fs:FulltextSearch">
+          <li about="v-s:MultiFunctionalSearch">
             <script>
               template.tooltip({
                 container: template,
-                placement: "bottom",
                 trigger: "hover",
+                placement: "bottom",
                 title: individual["rdfs:label"].join(" ")
               });
             </script>
@@ -69,7 +77,8 @@ v-s:LayoutTemplate
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
           <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li id="user-info"></li>
-          <li id="menu" class="dropdown" about="v-s:MainMenu" data-template="v-s:MenuTemplate"></li>
+          <li id="adminPanel" about="v-s:Administration" data-template="v-ui:AdministrationIconTemplate"></li>
+          <li id="log-out" about="v-s:Exit" data-template="v-ui:ExitButtonTemplate"></li>
           <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
           <li style="padding-left:10px; margin-left:10px; border-left:1px solid #ddd;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
         </ul>
@@ -95,13 +104,17 @@ v-s:LayoutTemplate
     document.title = vedaInfo.toString();
   });
 
+  $("#log-out", template).click(function(){
+    veda.logout();
+  })
+
   // Render user
   var userInfo = $("#user-info", template);
   var userInfoTmpl = "v-ui:IconPersonTemplate";
   userInfo.empty();
   veda.user.present(userInfo, userInfoTmpl);
 
-  //# sourceURL=v-s:MainPageTemplate
+  //# sourceURL=v-s:LayoutTemplate_post
 </script>
   """ ;
 .
