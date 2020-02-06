@@ -211,12 +211,29 @@ if [ -z $1 ] || [ $1 == "fanout-sql" ] || [ $1 == "veda-fanout-sql" ] || [ $1 ==
     cp $CARGO_TARGET_DIR/release/veda-fanout-sql $PWD
 fi
 
-if [ -z $1 ] || [ $1 == "search-index" ] || [ $1 == "veda-search-index" ] || [ $1 == "mv2" ]; then
-    cd source/veda-search-index
+if [ -z $1 ] || [ $1 == "search-index-wt" ] || [ $1 == "veda-search-index-wt" ] || [ $1 == "mv2" ]; then
+    echo BUILD WT
+    cd source/veda-search-index-wt
     cargo build --release
     cd $BUILD_PATH
-    cp $CARGO_TARGET_DIR/release/veda-search-index $PWD
+    cp $CARGO_TARGET_DIR/release/veda-search-index-wt $PWD
 fi
+
+if [ -z $1 ] || [ $1 == "search-index-tt" ] || [ $1 == "veda-search-index-tt" ] || [ $1 == "mv2" ]; then
+    echo BUILD TT
+    cd source/veda-search-index-tt
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-search-index-tt $PWD
+fi
+
+#if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] || [ $1 == "mv2" ]; then
+#    echo BUILD PT
+#    cd source/veda-search-index-pt
+#    cargo build --release
+#    cd $BUILD_PATH
+#    cp $CARGO_TARGET_DIR/release/veda-search-index-pt $PWD
+#fi
 
 if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
     rm ./veda-scripts-main
