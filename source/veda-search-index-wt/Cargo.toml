@@ -1,5 +1,5 @@
 [package]
-name = "veda-search-index"
+name = "veda-search-index-wt"
 version = "0.1.0"
 authors = ["Roman Karpov <roman.karpov@gmail.com>"]
 edition = "2018"

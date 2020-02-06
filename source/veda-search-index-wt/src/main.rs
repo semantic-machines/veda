@@ -59,7 +59,7 @@ enum ColumnData {
 
 impl Context {
 
-    pub fn add_to_typed_batch(&mut self, element: BatchElement) {
+    fn add_to_typed_batch(&mut self, element: BatchElement) {
         let (class, _new_state, _prev_state, _is_new) = &element;
         if !self.typed_batch.contains_key(class) {
             let new_batch = Batch::new();
@@ -69,7 +69,7 @@ impl Context {
         batch.push(element);
     }
 
-    pub async fn process_typed_batch(&mut self) -> Result<(), Error> {
+    async fn process_typed_batch(&mut self) -> Result<(), Error> {
         if !self.typed_batch.is_empty() {
             let now = Instant::now();
             let client = &mut self.pool.get_handle().await?;
@@ -133,7 +133,7 @@ impl Context {
 
         let now = Instant::now();
 
-        client.insert("veda.individuals", block).await?;
+        client.insert("veda_wt.individuals", block).await?;
 
         let mut insert_duration = now.elapsed().as_millis() as usize;
         if insert_duration == 0 {
@@ -394,8 +394,8 @@ async fn main() ->  Result<(), Error> {
         wait_module("fulltext_indexer", wait_load_ontology());
     }
 
-    let mut queue_consumer = Consumer::new("./data/queue", "search_index", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
-    let module_info = ModuleInfo::new("./data", "search_index", true);
+    let mut queue_consumer = Consumer::new("./data/queue", "search_index_wt", "individuals-flow").expect("!!!!!!!!! FAIL QUEUE");
+    let module_info = ModuleInfo::new("./data", "search_index_wt", true);
     if module_info.is_err() {
         error!("{:?}", module_info.err());
         process::exit(101);
@@ -493,7 +493,7 @@ async fn create_predicate_column(column_name: &str, column_type: &str, client: &
     if let Some(_) = db_columns.get(column_name) {
         return Ok(());
     }
-    let query = format!("ALTER TABLE veda.individuals ADD COLUMN IF NOT EXISTS `{}` {}", column_name, column_type);
+    let query = format!("ALTER TABLE veda_wt.individuals ADD COLUMN IF NOT EXISTS `{}` {}", column_name, column_type);
     client.execute(query).await?;
     db_columns.insert(column_name.to_string(), column_type.to_string());
     Ok(())
@@ -527,9 +527,9 @@ fn connect_to_clickhouse(module: &mut Module) -> Result<Pool, &'static str> {
 }
 
 async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
-    let init_veda_db = "CREATE DATABASE IF NOT EXISTS veda";
+    let init_veda_db = "CREATE DATABASE IF NOT EXISTS veda_wt";
     let init_individuals_table = r"
-        CREATE TABLE IF NOT EXISTS veda.individuals (
+        CREATE TABLE IF NOT EXISTS veda_wt.individuals (
             id String,
             sign Int8 DEFAULT 1,
             version UInt32,
@@ -547,7 +547,7 @@ async fn init_clickhouse(pool: &mut Pool) -> Result<(), Error> {
 }
 
 async fn read_columns(pool: &mut Pool) -> Result<HashMap<String, String>, Error> {
-    let read_columns = "DESCRIBE veda.individuals";
+    let read_columns = "DESCRIBE veda_wt.individuals";
     let mut columns: HashMap<String, String> = HashMap::new();
     let mut client = pool.get_handle().await?;
     let block = client.query(read_columns).fetch_all().await?;
