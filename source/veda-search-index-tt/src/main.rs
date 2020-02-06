@@ -29,7 +29,7 @@ use v_queue::consumer::*;
 
 type TypedBatch = HashMap<String, Batch>;
 type Batch = Vec<BatchElement>;
-type BatchElement = (String, Individual, Individual, bool);
+type BatchElement = (Individual, i8);
 
 const BATCH_SIZE: u32 = 100_000;
 const BLOCK_LIMIT: usize = 10_000;
@@ -59,14 +59,50 @@ enum ColumnData {
 
 impl Context {
 
-    fn add_to_typed_batch(&mut self, element: BatchElement) {
-        let (class, _new_state, _prev_state, _is_new) = &element;
-        if !self.typed_batch.contains_key(class) {
-            let new_batch = Batch::new();
-            self.typed_batch.insert(class.clone(), new_batch);
+    fn add_to_typed_batch(&mut self, queue_element: &mut Individual) {
+        let mut new_state = Individual::default();
+        get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+
+        let id = new_state.get_id().to_string();
+        let actual_version = new_state.get_first_literal("v-s:actualVersion").unwrap_or_default();
+        if !actual_version.is_empty() && actual_version != id {
+            info!("Skip not actual version. {}.v-s:actualVersion {} != {}", id, &actual_version, id);
+            return;
         }
-        let batch = self.typed_batch.get_mut(class).unwrap();
-        batch.push(element);
+
+        let mut prev_state = Individual::default();
+        let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+        if !is_new {
+            if let Some(type_resources) = prev_state.get_resources("rdf:type") {
+                for type_resource in type_resources {
+                    if let Value::Uri(type_name)  = type_resource.value {
+                        let mut prev_state = Individual::default();
+                        get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+                        if !self.typed_batch.contains_key(&type_name) {
+                            let new_batch = Batch::new();
+                            self.typed_batch.insert(type_name.clone(), new_batch);
+                        }
+                        let batch = self.typed_batch.get_mut(&type_name).unwrap();
+                        batch.push((prev_state, -1));
+                    }
+                }
+            }
+        }
+
+        if let Some(type_resources) = new_state.get_resources("rdf:type") {
+            for type_resource in type_resources {
+                if let Value::Uri(type_name)  = type_resource.value {
+                    let mut new_state = Individual::default();
+                    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+                    if !self.typed_batch.contains_key(&type_name) {
+                        let new_batch = Batch::new();
+                        self.typed_batch.insert(type_name.clone(), new_batch);
+                    }
+                    let batch = self.typed_batch.get_mut(&type_name).unwrap();
+                    batch.push((new_state, 1));
+                }
+            }
+        }
     }
 
     async fn process_typed_batch(&mut self) -> Result<(), Error> {
@@ -107,20 +143,8 @@ impl Context {
 
         create_type_table(type_name, client, db_type_tables).await?;
 
-        for element in batch {
-            let (_, new_state, prev_state, is_new) = element;
-
-            let id = new_state.get_id().to_string();
-            let actual_version = new_state.get_first_literal("v-s:actualVersion").unwrap_or_default();
-            if !actual_version.is_empty() && actual_version != id {
-                info!("Skip not actual version. {}.v-s:actualVersion {} != {}", id, &actual_version, id);
-                continue;
-            }
-
-            if !*is_new {
-                Context::add_to_table(type_name, prev_state, -1, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_type_tables).await?;
-            }
-            Context::add_to_table(type_name, new_state, 1, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_type_tables).await?;
+        for (individual, sign) in batch {
+            Context::add_to_table(type_name, individual, *sign, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_type_tables).await?;
         }
 
         let rows= id_column.len();
@@ -477,20 +501,7 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
         error!("Failed to write module_info, op_id={}, err={:?}", op_id, e);
     }
 
-    let mut new_state = Individual::default();
-    get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
-
-    if let Some(resources) = new_state.get_resources("rdf:type") {
-        for type_resource in resources.iter() {
-            if let Value::Uri(type_name) = &type_resource.value {
-                let mut prev_state = Individual::default();
-                let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
-                let mut new_state = Individual::default();
-                get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
-                ctx.add_to_typed_batch((type_name.into(), new_state, prev_state, is_new));
-            };
-        }
-    }
+    ctx.add_to_typed_batch(queue_element);
 
     Ok(false)
 }
