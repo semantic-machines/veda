@@ -8,7 +8,7 @@
     var opts = $.extend( {}, veda_literal_input.defaults, options ),
       input = $(opts.template),
       spec = opts.spec,
-      placeholder = spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : "",
+      placeholder = this.attr("placeholder") || (spec && spec.hasValue("v-ui:placeholder") ? spec["v-ui:placeholder"].join(" ") : ""),
       property_uri = opts.property_uri,
       individual = opts.individual,
       timeout;

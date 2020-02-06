@@ -1395,24 +1395,16 @@ v-fs:FulltextBlankTemplate
       border-bottom-left-radius: 4px!important;
     }
   </style>
-  <h2 about="v-fs:EnterQuery" property="rdfs:label"></h2>
+  <em about="v-s:SearchForContentBundle" property="rdfs:label"></em>
   <div class="input-group">
-    <veda-control property="*" data-type="string"></veda-control>
+    <veda-control property="*" data-type="string" placeholder="Введите запрос"></veda-control>
     <span class="input-group-btn">
       <button class="btn btn-primary search-button" id="custom-search-button" type="button" about="v-fs:Find" property="rdfs:label"></button>
     </span>
   </div>
-  <small class="advanced-toggle text-muted" about="v-fs:AdvancedSearchBundle" property="rdfs:label" style="border-bottom:1px dashed #707070; cursor:pointer;"></small>
-  <div class="advanced-search hidden panel panel-default margin-md">
-    <div class="panel-body bg-default">
-      <em about="rdf:type" property="rdfs:label"></em>
-      <div rel="rdf:type" data-template="v-ui:LabelTemplate"></div>
-      <veda-control rel="rdf:type" data-type="link" data-query-prefix="'rdf:type'=='owl:Class' && 'rdfs:subClassOf'=='v-s:UserThing'" class="fulltext dropdown"></veda-control>
-    </div>
-  </div>
 </div>
 <script>
-  var find = container.siblings(".search-actions").find("#search-button.search-button").addClass("hidden");
+  var find = container.siblings(".search-actions").find("#search-button.search-button");
   var customFind = $("#custom-search-button.search-button", template);
   customFind.click(function () {
     if ( $("input", template).val() ) {
@@ -1424,18 +1416,6 @@ v-fs:FulltextBlankTemplate
       var value = this.value;
       individual.set("*", [value]);
       find.click();
-    }
-  });
-  if (individual.advanced) {
-    $(".advanced-search", template).removeClass("hidden");
-  }
-  $(".advanced-toggle", template).click(function (e) {
-    e.preventDefault();
-    individual.advanced = !individual.advanced;
-    if (individual.advanced) {
-      $(".advanced-search", template).removeClass("hidden");
-    } else {
-      $(".advanced-search", template).addClass("hidden");
     }
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
@@ -1454,10 +1434,11 @@ v-fs:FulltextResultTemplate
       <th width="1%"><input type="checkbox" class="toggle-select-all"></th>
       <th width="1%">#</th>
       <th width="1%"><span class="glyphicon glyphicon-search"></span></th>
-      <th width="5%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
-      <th width="30%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
-      <th width="5%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th width="4%" class="orderby" data-orderby="rdf:type.rdfs:label"><span about="rdf:type" property="rdfs:label"></span></th>
+      <th width="29%" class="orderby" data-orderby="rdfs:label"><span about="rdfs:label" property="rdfs:label"></span></th>
+      <th width="4%" class="orderby" data-orderby="v-s:created"><span about="v-s:created" property="rdfs:label"></span></th>
+      <th width="4%" class="orderby" data-orderby="v-s:creator"><span about="v-s:creator" property="rdfs:label"></span></th>
+      <th width="4%" class="orderby" data-orderby="v-s:attachment"><span about="v-s:attachment" property="rdfs:label"></span></th>
     </tr>
   </thead>
   <tbody class="result-container">
@@ -1469,6 +1450,7 @@ v-fs:FulltextResultTemplate
       <td about="@" property="rdfs:label"></td>
       <td about="@" property="v-s:created"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
+      <td about="@" property="v-s:attachment"></td>
     </tr>
   </tbody>
 </table>
