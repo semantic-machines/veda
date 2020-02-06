@@ -477,18 +477,19 @@ fn process(_module: &mut Module, module_info: &mut ModuleInfo, ctx: &mut Context
         error!("Failed to write module_info, op_id={}, err={:?}", op_id, e);
     }
 
-    let mut prev_state = Individual::default();
-    let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
-
     let mut new_state = Individual::default();
     get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
 
     if let Some(resources) = new_state.get_resources("rdf:type") {
-        if let Some(class) = resources.get(0) {
-            if let Value::Uri(class) = &class.value {
-                ctx.add_to_typed_batch((class.into(), new_state, prev_state, is_new));
+        for type_resource in resources.iter() {
+            if let Value::Uri(type_name) = &type_resource.value {
+                let mut prev_state = Individual::default();
+                let is_new = !get_inner_binobj_as_individual(queue_element, "prev_state", &mut prev_state);
+                let mut new_state = Individual::default();
+                get_inner_binobj_as_individual(queue_element, "new_state", &mut new_state);
+                ctx.add_to_typed_batch((type_name.into(), new_state, prev_state, is_new));
             };
-        };
+        }
     }
 
     Ok(false)
