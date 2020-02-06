@@ -1564,9 +1564,13 @@ v-fs:AdvancedSearchTemplate
 </div>
 <script>
   var find = container.siblings(".search-actions").find("#search-button.search-button");
-  function typeHandler() {
+  function propertyModifiedHandler() {
     if (!individual.hasValue("rdf:type")) {
       individual["rdf:type"] = [new veda.IndividualModel("v-s:Document")];
+      return;
+    }
+    if (individual.hasValue("*") || individual.hasValue("v-s:created")) {
+      find.removeAttr("disabled");
       return;
     }
     if (individual.hasValue("rdf:type", "v-s:Document")) {
@@ -1575,10 +1579,10 @@ v-fs:AdvancedSearchTemplate
       find.removeAttr("disabled");
     }
   }
-  typeHandler();
-  individual.on("rdf:type", typeHandler);
+  propertyModifiedHandler();
+  individual.on("propertyModified", propertyModifiedHandler);
   template.one("remove", function(){
-    individual.off("rdf:type", typeHandler);
+    individual.off("propertyModified", propertyModifiedHandler);
   });
   //# sourceURL=v-fs:AdvancedSearchTemplate_post
 </script>
@@ -1625,16 +1629,29 @@ v-fs:FulltextBlankTemplate
   var find = container.siblings(".search-actions").find("#search-button.search-button");
   var customFind = $("#custom-search-button.search-button", template);
   customFind.click(function () {
-    if ( $("input", template).val() ) {
-      find.click();
-    }
+    find.click();
   });
+
   $("input", template).keydown(function (e) {
     if (e.which === 13 && this.value) {
       var value = this.value;
       individual.set("*", [value]);
       find.click();
     }
+  });
+  function propertyModifiedHandler() {
+    if (individual.hasValue("*")) {
+      customFind.removeAttr("disabled", "disabled");
+      find.removeAttr("disabled", "disabled");
+    } else {
+      customFind.attr("disabled", "disabled");
+      find.attr("disabled", "disabled");
+    }
+  }
+  propertyModifiedHandler();
+  individual.on("propertyModified", propertyModifiedHandler);
+  template.one("remove", function(){
+    individual.off("propertyModified", propertyModifiedHandler);
   });
   //# sourceURL=v-fs:FulltextBlankTemplate_post
 </script>
@@ -1668,7 +1685,7 @@ v-fs:FulltextResultTemplate
       <td about="@" property="rdfs:label"></td>
       <td about="@" property="v-s:created"></td>
       <td about="@" rel="v-s:creator" data-template="v-ui:LabelTemplate"></td>
-      <td about="@" property="v-s:attachment"></td>
+      <td about="@" rel="v-s:attachment" data-template="v-ui:FileMinTemplate"></td>
     </tr>
   </tbody>
 </table>
