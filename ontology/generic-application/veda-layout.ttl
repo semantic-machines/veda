@@ -63,7 +63,7 @@ v-s:LayoutTemplate
             </script>
             <a href="#/@"><span class="fa fa-lg fa-user-o"></span></a>
           </li>
-          <li about="v-s:MultiFunctionalSearch">
+          <li about="v-fs:MultiFunctionalSearch">
             <script>
               template.tooltip({
                 container: template,
