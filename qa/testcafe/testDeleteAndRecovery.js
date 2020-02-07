@@ -13,7 +13,7 @@ import { Selector, t } from 'testcafe';
   const startFormSuggestion = Selector('.suggestion[resource="v-wf:StartForm"]');
   const labelInput = Selector('veda-control[property="rdfs:label"] .form-control');
   const saveBtn = Selector('#save');
-  const fulltextSearch = Selector('li[about="v-fs:FulltextSearch"]');
+  const fulltextSearch = Selector('li[about="v-fs:MultiFunctionalSearch"]');
   const fulltextQueryInput = Selector('veda-control[property="*"] .form-control');
   const searchBtn = Selector('.search-button');
   const searchResult = Selector('.results a.glyphicon.glyphicon-search');
@@ -50,8 +50,6 @@ import { Selector, t } from 'testcafe';
       .wait(5000)
       .click(recoverBtn)
       .click(fulltextSearch)
-      .click(advancedSearch)
-      .click(deleteTypeValue)
       .click(fulltextQueryInput)
       .pressKey('ctrl+a delete')
       .typeText(fulltextQueryInput, timeStamp)

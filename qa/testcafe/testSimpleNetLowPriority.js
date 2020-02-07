@@ -17,7 +17,7 @@ import { Selector, t } from 'testcafe';
       .typeText('div#object-container div#props-col div#props table#taskTemplateProperties tbody tr td veda-control#VClabel input.form-control', timeStamp)
       .dragToElement('.state-io-condition-input .ep', '.glyphicon-stop')
       .click('button#workflow-save-button')
-      .click('li[about="v-fs:FulltextSearch"]')
+      .click('li[about="v-fs:MultiFunctionalSearch"]')
       .typeText('veda-control[property="*"] input.form-control', 'Тестовый шаблон маршрута lowPriority')
       .click('small[about="v-fs:AdvancedSearchBundle"]')
       .click('span[about="v-s:UserThing"] button.btn.btn-default.button-delete')
