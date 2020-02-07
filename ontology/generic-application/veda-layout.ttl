@@ -32,14 +32,6 @@ v-s:LayoutTemplate
   rdfs:label "Шаблон макета"@ru ;
   rdfs:label "Layout template"@en ;
   v-ui:template """
-<script>
-  return veda.user.isMemberOf("cfg:SuperUser").then(function (isMember) {
-    if (isMember !== true) {
-      $("#adminPanel", template).remove();
-    }
-  });
-  //# sourceURL=v-s:LayoutTemplate_pre
-</script>
 <div class="page">
   <nav role="navigation" class="navbar navbar-veda">
     <div class="container">
@@ -77,7 +69,7 @@ v-s:LayoutTemplate
           <li about="v-cal:TasksCalendar" data-template="v-cal:FunctionCalendarIndicatorTemplate"></li>
           <li about="v-ft:Inbox" data-template="v-ft:FunctionTasksIndicatorTemplate"></li>
           <li id="user-info"></li>
-          <li id="adminPanel" about="v-s:Administration" data-template="v-ui:AdministrationIconTemplate"></li>
+          <li id="menu" class="dropdown" about="v-s:MainMenu" data-template="v-s:MenuTemplate"></li>
           <li id="log-out" about="v-s:Exit" data-template="v-ui:ExitButtonTemplate"></li>
           <li about="v-ui:AvailableLanguage" data-template="v-ui:LanguageSwitchTemplate"></li>
           <li style="padding-left:10px; margin-left:10px; border-left:1px solid #ddd;" about="@" data-template="v-ui:FullWidthSwitchTemplate"></li>
