@@ -14,10 +14,6 @@ ft-query
 
 #fanout-sql
 
-#fanout-sql-lp
-
-#fanout-sql-np
-
 #ltr-scripts
     module = scripts
     args = ltr
