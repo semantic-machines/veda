@@ -1,5 +1,4 @@
 use crate::storage::{StorageId, StorageMode, VStorage};
-use ini::Ini;
 use nng::{Message, Protocol, Socket};
 use std::cell::RefCell;
 use std::str;
@@ -7,23 +6,9 @@ use std::sync::Mutex;
 use uuid::Uuid;
 use v_onto::individual::{Individual, RawObj};
 
-pub fn storage_manager() -> std::io::Result<()> {
-    let conf = Ini::load_from_file("veda.properties").expect("fail load veda.properties file");
-    let section = conf.section(None::<String>).expect("fail parse veda.properties");
-
+pub fn storage_manager(tarantool_addr: String) -> std::io::Result<()> {
     let ro_storage_url = "inproc://nng/".to_owned() + &Uuid::new_v4().to_hyphenated().to_string();
     STORAGE.lock().unwrap().get_mut().addr = ro_storage_url.to_owned();
-
-    let tarantool_addr = if let Some(p) = section.get("tarantool_url") {
-        p.to_owned()
-    } else {
-        warn!("param [tarantool_url] not found in veda.properties");
-        "".to_owned()
-    };
-
-    if !tarantool_addr.is_empty() {
-        info!("tarantool addr={}", &tarantool_addr);
-    }
 
     let mut storage: VStorage;
     if !tarantool_addr.is_empty() {
@@ -62,19 +47,19 @@ fn req_prepare(request: &Message, storage: &mut VStorage) -> Message {
 
 // Inproc client
 
-pub struct Client {
+pub struct StorageROClient {
     soc: Socket,
     addr: String,
     is_ready: bool,
 }
 
 lazy_static! {
-    pub static ref STORAGE: Mutex<RefCell<Client>> = Mutex::new(RefCell::new(Client::new()));
+    pub static ref STORAGE: Mutex<RefCell<StorageROClient>> = Mutex::new(RefCell::new(StorageROClient::new()));
 }
 
-impl Client {
-    pub fn new() -> Client {
-        Client {
+impl StorageROClient {
+    pub fn new() -> StorageROClient {
+        StorageROClient {
             soc: Socket::new(Protocol::Req0).unwrap(),
             addr: "".to_owned(),
             is_ready: false,
