@@ -95,7 +95,7 @@ impl Context {
 
         info!("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
-        info!("Processing class batch: {}, count: {}", class, batch.len().clone());
+        info!("Processing class batch: {}, count: {}", class, batch.len());
 
         let mut id_column: Vec<String> = Vec::new();
 
@@ -105,33 +105,33 @@ impl Context {
 
         let mut columns: HashMap<String, ColumnData> = HashMap::new();
 
-        for element in batch {
-            let (_, new_state, prev_state, is_new) = element;
+        let mut rows = 0;
 
+        for element in batch {
+            rows += 1;
+            let (_, new_state, prev_state, is_new) = element;
             let id = new_state.get_id().to_string();
             let actual_version = new_state.get_first_literal("v-s:actualVersion").unwrap_or_default();
             if !actual_version.is_empty() && actual_version != id {
                 info!("Skip not actual version. {}.v-s:actualVersion {} != {}", id, &actual_version, id);
                 continue;
             }
-
             if !*is_new {
-                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_columns).await?;
+                rows += 1;
+                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut version_column, &mut columns).await?;
             }
-            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut version_column, &mut columns, client, db_columns).await?;
+            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut version_column, &mut columns).await?;
         }
 
-        let rows= id_column.len();
-
-        let block = Context::mk_block(id_column, sign_column, version_column, &mut columns);
-
-        //info!("Block {:?}", block);
-
-        info!("Block prepared in {} us", now.elapsed().as_micros());
+        info!("Batch prepared in {} us", now.elapsed().as_micros());
 
         stats.total_prepare_duration += now.elapsed().as_millis() as usize;
 
         let now = Instant::now();
+
+        let block = Context::mk_block(id_column, sign_column, version_column, &mut columns, client, db_columns).await?;
+
+        //info!("Block {:?}", block);
 
         client.insert("veda_wt.individuals", block).await?;
 
@@ -142,7 +142,7 @@ impl Context {
 
         let cps = (rows * 1000 / insert_duration) as f64;
 
-        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", rows, columns.keys().len() + 2, insert_duration, cps);
+        info!("Block inserted successfully! Rows = {}, columns = {}, duration = {} ms, cps = {}", rows, columns.keys().len() + 3, insert_duration, cps);
 
         stats.total_insert_duration += insert_duration;
 
@@ -171,8 +171,6 @@ impl Context {
         sign_column: &mut Vec<i8>,
         version_column: &mut Vec<u32>,
         columns: &mut HashMap<String, ColumnData>,
-        client: &mut ClientHandle,
-        db_columns: &mut HashMap<String, String>
     )  -> Result<(), Error> {
 
         let rows = id_column.len();
@@ -196,9 +194,6 @@ impl Context {
                 match &resources[0].rtype {
                     DataType::Integer => {
                         column_name.push_str("_int");
-                        let column_type = "Array(Int64)";
-                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
                         let column_value: Vec<i64> = resources.iter().map(|resource| resource.get_int()).collect();
 
                         if !columns.contains_key(&column_name) {
@@ -216,9 +211,6 @@ impl Context {
                     },
                     DataType::String => {
                         column_name.push_str("_str");
-                        let column_type = "Array(String)";
-                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
                         let column_value: Vec<String> = resources.iter().map(|resource| {
                             let str_value = resource.get_str();
                             let lang = match resource.get_lang() {
@@ -243,9 +235,6 @@ impl Context {
                     },
                     DataType::Uri => {
                         column_name.push_str("_str");
-                        let column_type = "Array(String)";
-                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
                         let column_value: Vec<String> = resources.iter().map(|resource| resource.get_uri().to_string()).collect();
 
                         if !columns.contains_key(&column_name) {
@@ -263,9 +252,6 @@ impl Context {
                     },
                     DataType::Boolean => {
                         column_name.push_str("_int");
-                        let column_type = "Array(Int64)";
-                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
                         let column_value: Vec<i64> = resources.iter().map(|resource| {
                             match resource.value {
                                 Value::Bool(true) => 1,
@@ -288,9 +274,6 @@ impl Context {
                     },
                     DataType::Decimal => {
                         column_name.push_str("_num");
-                        let column_type = "Array(Float64)";
-                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
                         let column_value: Vec<f64> = resources.iter().map(|resource| resource.get_float()).collect();
 
                         if !columns.contains_key(&column_name) {
@@ -308,9 +291,6 @@ impl Context {
                     },
                     DataType::Datetime => {
                         column_name.push_str("_date");
-                        let column_type = "Array(DateTime)".to_string();
-                        create_predicate_column(&column_name, &column_type, client, db_columns).await?;
-
                         let column_value: Vec<DateTime<Tz>> = resources.iter().map(|resource| Tz::UTC.timestamp(resource.get_datetime(), 0)).collect();
 
                         if !columns.contains_key(&column_name) {
@@ -335,12 +315,14 @@ impl Context {
         Ok(())
     }
 
-    fn mk_block(
+    async fn mk_block(
         id_column: Vec<String>,
         sign_column: Vec<i8>,
         version_column: Vec<u32>,
-        columns: &mut HashMap<String, ColumnData>
-    ) -> Block {
+        columns: &mut HashMap<String, ColumnData>,
+        client: &mut ClientHandle,
+        db_columns: &mut HashMap<String, String>
+    ) -> Result<Block, Error> {
 
         let rows = id_column.len();
 
@@ -350,7 +332,9 @@ impl Context {
             .column("version", version_column);
 
         for (column_name, column_data) in columns.iter_mut() {
+            let mut column_type = "Array(String)";
             if let ColumnData::Int(column) = column_data {
+                column_type = "Array(Int64)";
                 let column_size = column.len();
                 let mut empty = vec![vec![0]; rows - column_size];
                 column.append(&mut empty);
@@ -358,6 +342,7 @@ impl Context {
                 block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Str(column) = column_data {
+                column_type = "Array(String)";
                 let column_size = column.len();
                 let mut empty = vec![vec!["".to_string()]; rows - column_size];
                 column.append(&mut empty);
@@ -365,6 +350,7 @@ impl Context {
                 block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Num(column) = column_data {
+                column_type = "Array(Float64)";
                 let column_size = column.len();
                 let mut empty = vec![vec![0 as f64]; rows - column_size];
                 column.append(&mut empty);
@@ -372,14 +358,16 @@ impl Context {
                 block = block.column(&column_name, column.to_owned());
             }
             if let ColumnData::Date(column) = column_data {
+                column_type = "Array(DateTime)";
                 let column_size = column.len();
                 let mut empty = vec![vec![Tz::UTC.timestamp(0, 0)]; rows - column_size];
                 column.append(&mut empty);
                 //info!("column: {}, size: {}, {:?}", column_name, column.len(), column);
                 block = block.column(&column_name, column.to_owned());
             }
+            create_predicate_column(&column_name, &column_type, client, db_columns).await?;
         }
-        block
+        Ok(block)
     }
 
 }
