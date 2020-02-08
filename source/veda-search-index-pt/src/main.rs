@@ -132,7 +132,7 @@ impl Context {
         info!("Processing class batch: {}, count: {}", type_name, rows);
 
         for (individual, sign) in batch {
-            Context::add_to_predicate_tables(individual, type_name, *sign, &mut predicate_tables).await?;
+            Context::add_to_predicate_tables(individual, type_name, *sign, &mut predicate_tables);
         }
 
         let elapsed = now.elapsed().as_millis();
@@ -183,12 +183,12 @@ impl Context {
         Ok(())
     }
 
-    async fn add_to_predicate_tables(
+    fn add_to_predicate_tables(
         individual: &mut Individual,
         type_name: &str,
         sign: i8,
         predicate_tables: &mut HashMap<String, (Vec<String>, Vec<DateTime<Tz>>, Vec<String>, Vec<i8>, Vec<u32>, HashMap<String, ColumnData>)>,
-    )  -> Result<(), Error> {
+    ) {
 
         let id = individual.get_id().to_owned();
 
@@ -328,7 +328,6 @@ impl Context {
                 }
             }
         }
-        Ok(())
     }
 
     async fn mk_block(
