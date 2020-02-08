@@ -118,9 +118,9 @@ impl Context {
             }
             if !*is_new {
                 rows += 1;
-                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut version_column, &mut columns).await?;
+                Context::add_to_table(prev_state, -1, &mut id_column, &mut sign_column, &mut version_column, &mut columns);
             }
-            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut version_column, &mut columns).await?;
+            Context::add_to_table(new_state, 1, &mut id_column, &mut sign_column, &mut version_column, &mut columns);
         }
 
         info!("Batch prepared in {} us", now.elapsed().as_micros());
@@ -164,14 +164,14 @@ impl Context {
         Ok(())
     }
 
-    async fn add_to_table(
+    fn add_to_table(
         individual: &mut Individual,
         sign: i8,
         id_column: &mut Vec<String>,
         sign_column: &mut Vec<i8>,
         version_column: &mut Vec<u32>,
         columns: &mut HashMap<String, ColumnData>,
-    )  -> Result<(), Error> {
+    ) {
 
         let rows = id_column.len();
 
@@ -312,7 +312,6 @@ impl Context {
                 }
             }
         }
-        Ok(())
     }
 
     async fn mk_block(
