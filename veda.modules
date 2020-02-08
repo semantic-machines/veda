@@ -16,7 +16,7 @@ search-index-wt
 
 search-index-tt
 
-#search-index-pt
+search-index-pt
 
 fanout-sql
 

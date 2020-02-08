@@ -227,13 +227,13 @@ if [ -z $1 ] || [ $1 == "search-index-tt" ] || [ $1 == "veda-search-index-tt" ] 
     cp $CARGO_TARGET_DIR/release/veda-search-index-tt $PWD
 fi
 
-#if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] || [ $1 == "mv2" ]; then
-#    echo BUILD PT
-#    cd source/veda-search-index-pt
-#    cargo build --release
-#    cd $BUILD_PATH
-#    cp $CARGO_TARGET_DIR/release/veda-search-index-pt $PWD
-#fi
+if [ -z $1 ] || [ $1 == "search-index-pt" ] || [ $1 == "veda-search-index-pt" ] || [ $1 == "mv2" ]; then
+    echo BUILD PT
+    cd source/veda-search-index-pt
+    cargo build --release
+    cd $BUILD_PATH
+    cp $CARGO_TARGET_DIR/release/veda-search-index-pt $PWD
+fi
 
 if [ -z $1 ] || [ $1 == "scripts" ] || [ $1 == "veda-scripts" ] || [ $1 == "mv1" ]; then
     rm ./veda-scripts-main
