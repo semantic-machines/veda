@@ -516,7 +516,7 @@ async fn create_type_table(type_name: &str, client: &mut ClientHandle, db_type_t
         )
         ENGINE = VersionedCollapsingMergeTree(sign, version)
         ORDER BY (`v_s_created_date`[1], id)
-        PARTITION BY (toStartOfMonth(`v_s_created_date`[1]))
+        PARTITION BY (toYear(`v_s_created_date`[1]))
     ", type_name);
     client.execute(query).await?;
     let mut table_columns: HashMap<String, String> = HashMap::new();
